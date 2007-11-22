@@ -3,7 +3,7 @@
 //See "IrrDevice.hpp"
 
 #include "../include/IrrDevice.hpp"
-#include "../src_internal/MastEventReceiver.hpp"
+#include "../include/private/MastEventReceiver.hpp"
 
 using namespace irr;
 IrrlichtDevice* IrrDevice::device_ = 0;

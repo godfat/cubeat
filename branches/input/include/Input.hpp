@@ -17,8 +17,6 @@
 #include <vector>
 #include <map>
 
-#define _USE_WIIMOTE_
-
 #ifdef _USE_WIIMOTE_
 #include <wiimote.h>
 #endif

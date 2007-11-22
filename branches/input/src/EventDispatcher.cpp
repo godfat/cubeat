@@ -7,44 +7,31 @@
 #include "../include/EventDispatcher.hpp"
 #include "../include/Input.hpp"
 
-using boost::tuples::tie;
+using std::tr1::tie;
+using std::tr1::get;
 
 void EventDispatcher::
-     subscribe_btn_event(Button const* btn, BSTATE state, CallbackType cb, PickingCallback pcb)
+     subscribe_btn_event(Button const* btn, BSTATE state, BtnCallbackType cb)
 {
-    listeners_.push_back( tie( btn, state, cb, pcb ) );
+    btn_listeners_.push_back( tie( btn, state, cb ) );
 }
 
+/*
 void EventDispatcher::
-     subscribe_btn_event(InteractiveObject* obj, Button const* btn, BSTATE state, ObjCallbackType ocb)
+     subscribe_obj_event(InteractiveObject* obj, ObjCallbackType ocb)
 {
-    obj_listeners_.insert( make_pair( tie( obj, btn, state ), ocb ) );
-}
+    obj_listeners_.insert( make_pair( obj, ocb ) );
+}*/
 
 void EventDispatcher::dispatch()
 {
-    for( Listener::const_iterator it = listeners_.begin();
-         it != listeners_.end(); ++it )
+    for( BtnListener::const_iterator it = btn_listeners_.begin();
+         it != btn_listeners_.end(); ++it )
     {
-        Button const* btn = it->get<0>();
-        if( btn->state() != it->get<1>() ) continue;
+        Button const* btn = get<BUTTON>(*it);            
+        if( btn->state() != get<STATE>(*it) ) continue; 
             
-        it->get<2>()();
-
-        if( it->get<3>() == NULL ) continue;
-
-        InterObjList const& list = it->get<3>()( btn->owner()->cursor().x(), 
-                                                 btn->owner()->cursor().y() );
-
-        for( InterObjList::const_iterator it2 = list.begin();
-             it2 != list.end() ; ++it2 )
-        {
-            ObjCallbackType cb =
-                obj_listeners_[ tie(*it2, it->get<0>(), it->get<1>()) ];
-
-            if( cb == NULL ) continue;
-
-            cb( *it2 );   //anything else?
-        }
+        get<BCALLBACK>(*it)( btn->owner()->cursor().x(),   
+                             btn->owner()->cursor().y() ); 
     }
 }

@@ -3,8 +3,8 @@
 #include "../include/IrrDevice.hpp"
 
 Crosshair::Crosshair(Input const* input)
-    :x_(0), y_(0), lx_(0), ly_(0), topbound_(0), leftbound_(0),
-     rightbound_(640), bottombound_(480), owner_(input)
+    :x_(0), y_(0), lx_(0), ly_(0), leftbound_(0), rightbound_(640), 
+     topbound_(0), bottombound_(480), owner_(input)
 {
     //DO NOT DEREFERENCE or USE "input", "owner_" in the constructor.
     bottombound_ = IrrDevice::i()->getVideoDriver()->getScreenSize().Height;

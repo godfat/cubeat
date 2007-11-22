@@ -12,25 +12,27 @@
 
 #include "Button.hpp"
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
+//#include <boost/tuple/tuple.hpp>
+//#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tr1/tuple.hpp>
 #include <boost/function.hpp>
 #include <map>
 #include <vector>
 
 class InteractiveObject;
-using boost::tuples::tuple;
+using std::tr1::tuple;
+using std::tr1::tuple_element;
 
-typedef std::vector< InteractiveObject* >                           InterObjList;
-typedef boost::function<void()>                                     CallbackType;
-typedef boost::function<void(InteractiveObject* /*,Event*/)>        ObjCallbackType;
-typedef boost::function<InterObjList const(int x, int y)>           PickingCallback;
+typedef boost::function<void(int x, int y)>                  BtnCallbackType;
+typedef boost::function<void(InteractiveObject* /*,Event*/)> ObjCallbackType;
 
-typedef tuple<Button const*, BSTATE, CallbackType, PickingCallback> CBTuple;
-typedef std::vector< CBTuple >                                      Listener;
-typedef std::map< 
-            tuple<InteractiveObject*, Button const*, BSTATE>, 
-            ObjCallbackType >                                       ObjListener;
+//typedef tuple<InteractiveObject*, ObjCallbackType>           ObjEvent;
+typedef tuple<Button const*, BSTATE, BtnCallbackType>        BtnEvent;
+
+typedef std::vector< BtnEvent >                              BtnListener;
+
+//typedef std::map< tuple_element<0, ObjEvent>::type, 
+//                  tuple_element<1, ObjEvent>::type >         ObjListener;
 
 class EventDispatcher
 {
@@ -40,17 +42,18 @@ public:
         return singleton;
     }
 
-    void subscribe_btn_event(Button const*, BSTATE, CallbackType, PickingCallback);
-    void subscribe_btn_event(InteractiveObject*, Button const*, BSTATE, ObjCallbackType);
+    void subscribe_btn_event(Button const*, BSTATE, BtnCallbackType);
+    void subscribe_obj_event(InteractiveObject*, ObjCallbackType);
 
     void dispatch();
 
 private:
+    enum blah { BUTTON = 0, STATE = 1, BCALLBACK = 2 };
     EventDispatcher(){}
     EventDispatcher(EventDispatcher const&);
 
-    Listener    listeners_;              //for global / scene event listening
-    ObjListener obj_listeners_;        //for obj specific (on_object) event dispatch
+    BtnListener btn_listeners_;       
+//    ObjListener obj_listeners_;       
 };
 
 #endif

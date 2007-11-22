@@ -1,4 +1,4 @@
-﻿
+
 //Test case
 
 #include "include/Input.hpp"
@@ -31,7 +31,7 @@ void fptr()
 //暫時充當 InteractiveMapView::pick() 會抓到的那個人
 InteractiveObject* test = 0;
 
-InterObjList const picking(int x, int y)
+InterObjList /*const*/ picking(int x, int y)
 {
     InterObjList a;
     //測試輸出 cursor 位置

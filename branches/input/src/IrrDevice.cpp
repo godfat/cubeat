@@ -2,8 +2,8 @@
 //A Singleton pattern for wrapping up IrrlichtDevice pointer.
 //See "IrrDevice.hpp"
 
-#include "../include/IrrDevice.hpp"
-#include "../include/private/MastEventReceiver.hpp"
+#include "IrrDevice.hpp"
+#include "private/MastEventReceiver.hpp"
 
 using namespace irr;
 IrrlichtDevice* IrrDevice::device_ = 0;

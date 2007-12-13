@@ -1,4 +1,4 @@
-
+﻿
 //Test case
 
 #include "include/Input.hpp"
@@ -22,41 +22,36 @@ bool update_block()
     return false;
 }
 
-//As a button-related callback
-void fptr()
-{
-    std::cout << LAST_TIME << "\n";
-}
-
 //暫時充當 InteractiveMapView::pick() 會抓到的那個人
 InteractiveObject* test = 0;
 
-InterObjList /*const*/ picking(int x, int y)
+//As a button-related callback
+void fptr(int x, int y)
 {
-    InterObjList a;
+    std::cout << LAST_TIME << "\n";
+
     //測試輸出 cursor 位置
     std::cout << x << "," << y << "\n";
+    
+    std::vector<InteractiveObject*> a; //picked list..
     //假設一定會抓到 test ........
     a.push_back( test );
-    return a;
+    a[0]->hit_reaction();
 }
 
 int main()
 {
     std::cout << IrrDevice::init(true) << std::endl;
-    Input input1("config/input_setting_1p.yml");
-    Input input2("config/input_setting_2p.yml");
+    Input input1("config/input_setting_1p.yml"); 
+    Input input2("config/input_setting_2p.yml"); 
     InteractiveObject testObj;
 
     video::IVideoDriver* driver = IrrDevice::i()->getVideoDriver();
 
     //註冊 button 事件的 callback，還有 picking 
-    EventDispatcher::i().subscribe_btn_event(&input1.trig1(), BTN_PRESS, fptr, picking);
-
-    //註冊 interactive object
-    testObj.interact_with(&input1.trig1(), BTN_PRESS);
-
-    //暫時充當 InteractiveMapView::pick() 會抓到的那個人
+    EventDispatcher::i().subscribe_btn_event(&input1.trig1(), BTN_PRESS, fptr);
+    
+    //暫時充當 InteractiveMapView::pick() 會抓到的那個人          
     ::test = &testObj;
 
     while( IrrDevice::i()->run() ) {

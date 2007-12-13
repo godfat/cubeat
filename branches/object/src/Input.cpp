@@ -38,8 +38,8 @@ void Input::update_all()
 //end of static functions
 
 Input::Input(char const* path)
-    :trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
-     haste_(this), pause_(this), cursor_(this)
+    :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
+     haste_(this), pause_(this)
 {
     std::ifstream infile;
     infile.open( path );

@@ -14,6 +14,7 @@
 #include "Crosshair.hpp"
 #include "Button.hpp"
 
+#include <string>
 #include <vector>
 #include <map>
 

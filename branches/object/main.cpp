@@ -1,4 +1,4 @@
-﻿
+
 //Test case
 
 #include "include/Input.hpp"
@@ -73,7 +73,7 @@ int main()
     SpriteView cursor2( &guiv );
 
     ButtonView something( &guiv );
-    node2view.insert( make_pair( something.body(), &something ) );
+    node2view.insert( std::make_pair( something.body(), &something ) );
 
     SpriteView anotherthing( &guiv );
     anotherthing.moveTo(0,0,10);

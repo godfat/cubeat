@@ -100,7 +100,7 @@ public:
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
-	    recalculateImidiateValues<T>();
+	    recalculateImidiateValues(startPoint);
     };
 
 	//! destructor
@@ -137,18 +137,16 @@ public:
 	virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_UNKNOWN; }
 
 private:
-
-    template<class T>
-    void recalculateImidiateValues() {
+    template <class TT>
+    void recalculateImidiateValues(TT const&) {
         WayLength = End - Start;
         Vector = 1;
     }
 
-    template<>
-    void recalculateImidiateValues< irr::core::vector3df >() {
+    void recalculateImidiateValues(core::vector3df const&) {
         Vector = End - Start;
-	    WayLength = (f32)Vector.getLength();
-	    Vector.normalize();
+      WayLength = (f32)Vector.getLength();
+      Vector.normalize();
     }
 
     ISceneManager* smgr_;

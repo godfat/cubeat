@@ -13,9 +13,9 @@ IrrDevice::IrrDevice(bool test)
     if( !test )
         device_ = irr::createDevice( irr::video::EDT_NULL, 
                                      irr::core::dimension2d<irr::s32>(640,480), 
-                                     16, false, false, false, &MastEventReceiver::i());
+                                     32, false, false, false, &MastEventReceiver::i());
     else
         device_ = irr::createDevice( irr::video::EDT_OPENGL, 
                                      irr::core::dimension2d<irr::s32>(640,480), 
-                                     16, false, false, false, &MastEventReceiver::i());
+                                     32, false, false, false, &MastEventReceiver::i());
 }

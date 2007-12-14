@@ -4,86 +4,65 @@
 
 #include "ISceneNode.h"
 #include "boost/function.hpp"
+#include "EasingEquations.hpp"
+
+#include "IrrDevice.hpp" //probably a bad idea, we'll see.
 
 namespace irr
 {
 namespace scene
 {
 
-namespace SetterCallback {
-    struct PosSetter{
+namespace setter {
+    struct Position{
         static void set(ISceneNode* node, core::vector3df val ) {
             node->setPosition(val);
         }
     };
-    struct RotSetter{
+    struct Rotation{
         static void set(ISceneNode* node, core::vector3df val ) {
             node->setRotation(val);
         }
     };
-    struct ScaleSetter{
+    struct Scale{
         static void set(ISceneNode* node, core::vector3df val ) {
             node->setScale(val);
         }
     };
-    struct RGBSetter{
-        static void set(ISceneNode* node, f32 val ) {
-            node->getMaterial(0).DiffuseColor.setRed((u32)val%256);
-            node->getMaterial(0).DiffuseColor.setGreen((u32)val%256);
-            node->getMaterial(0).DiffuseColor.setBlue((u32)val%256);
+    struct RGB{
+        static void set(ISceneNode* node, s32 val ) {
+            node->getMaterial(0).DiffuseColor.setRed(val%256);
+            node->getMaterial(0).DiffuseColor.setGreen(val%256);
+            node->getMaterial(0).DiffuseColor.setBlue(val%256);
         }
     };
-    struct RedSetter{
-        static void set(ISceneNode* node, f32 val ) {
-            node->getMaterial(0).DiffuseColor.setRed((u32)val);
+    struct Red{
+        static void set(ISceneNode* node, s32 val ) {
+            node->getMaterial(0).DiffuseColor.setRed(val);
         }
     };
-    struct GreenSetter{
-        static void set(ISceneNode* node, f32 val ) {
-            node->getMaterial(0).DiffuseColor.setGreen((u32)val);
+    struct Green{
+        static void set(ISceneNode* node, s32 val ) {
+            node->getMaterial(0).DiffuseColor.setGreen(val);
         }
     };
-    struct BlueSetter{
-        static void set(ISceneNode* node, f32 val ) {
-            node->getMaterial(0).DiffuseColor.setBlue((u32)val);
+    struct Blue{
+        static void set(ISceneNode* node, s32 val ) {
+            node->getMaterial(0).DiffuseColor.setBlue(val);
         }
     };
-    struct AlphaSetter{
-        static void set(ISceneNode* node, f32 val ) {
-            node->getMaterial(0).DiffuseColor.setAlpha((u32)val);
+    struct Alpha{
+        static void set(ISceneNode* node, s32 val ) {
+            node->getMaterial(0).DiffuseColor.setAlpha(val);
         }
     };
-    struct FrameSetter{
+    struct Frame{
         static void set(ISceneNode* node, f32 val ) {
             if( node->getType() != ESNT_ANIMATED_MESH ) return;
             static_cast<IAnimatedMeshSceneNode*>(node)->setCurrentFrame( val );
         }
     };
-} //animCallback
-
-/*
-in ObjectView:
-{
-    moveTo( ..., function<void()> cb = NULL) {
-        ISceneNodeAnimator* anim = 
-            new CustomAnimator<vector3df, Linear, PosSetter>(..., cb);
-        body_->addAnimator( anim );
-    }
-
-    step1() {
-        moveTo( 0, 540, 10, 2000, bind(&ObjectView::step2, this) );
-    }
-    step2() {
-        moveTo( 420, 540, 10, 2000, bind(&ObjectView::step3, this) );
-    }
-    step3() {
-        moveTo( 420, 0, 10, 2000, bind(&ObjectView::step4, this) );
-    }
-    step4() {
-        moveTo( 0, 0, 10, 2000, bind(&ObjectView::step1, this) );
-    }
-};
-*/
+}   //setter
 
 template <class T, template<class> class Eq, class Setter>
 class CustomAnimator : public ISceneNodeAnimator
@@ -92,14 +71,16 @@ class CustomAnimator : public ISceneNodeAnimator
 public:
 
 	//! constructor
-    CustomAnimator(ISceneManager* smgr, u32 now, T const& startPoint, T const& endPoint, 
-                   u32 timeForWay, bool loop = false, EndCallback cb = NULL) 
-        : smgr_(smgr), Start(startPoint), End(endPoint), WayLength(0.0f), TimeFactor(0.0f), 
-          StartTime(now), TimeForWay(timeForWay), Loop(loop), cb_(cb)
+    CustomAnimator(T const& startPoint, T const& endPoint, u32 timeForWay, 
+                   bool loop = true, EndCallback cb = NULL, u32 delayTime = 0) 
+        : Start(startPoint), End(endPoint), WayLength(0.0f), TimeForWay(timeForWay), 
+          Loop(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
+        smgr_ = IrrDevice::i()->getSceneManager();
+        StartTime = IrrDevice::i()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(startPoint);
     };
 
@@ -122,7 +103,7 @@ public:
         }
         else {
             u32 time = t % TimeForWay;
-            pos = Eq<T>::calculate((f32)time, pos, Vector*WayLength, (f32)TimeForWay, node);
+            pos = Eq<T>::calculate((f32)time, pos, static_cast<T>(Vector*WayLength), (f32)TimeForWay, node);
             Setter::set(node, pos);
         }
     }
@@ -137,16 +118,16 @@ public:
 	virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_UNKNOWN; }
 
 private:
-    template <class TT>
+    template<class TT>
     void recalculateImidiateValues(TT const&) {
-        WayLength = End - Start;
+        WayLength = static_cast<f32>(End - Start);
         Vector = 1;
     }
 
     void recalculateImidiateValues(core::vector3df const&) {
         Vector = End - Start;
-      WayLength = (f32)Vector.getLength();
-      Vector.normalize();
+        WayLength = Vector.getLength();
+        Vector.normalize();
     }
 
     ISceneManager* smgr_;
@@ -155,7 +136,7 @@ private:
 	T End;
 	T Vector;
 	f32 WayLength;
-	f32 TimeFactor;
+  //f32 TimeFactor;
 	u32 StartTime;
 	u32 TimeForWay;
 	bool Loop;

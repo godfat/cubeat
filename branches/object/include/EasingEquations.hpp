@@ -1,4 +1,7 @@
 
+#ifndef _SHOOTING_CUBES_EASING_EQUATIONS_
+#define _SHOOTING_CUBES_EASING_EQUATIONS_
+
 /**
  * C++ Port by Johnson Lin to combine with Irrlicht Animator system 
  * 2007.10.17
@@ -524,3 +527,5 @@ namespace easing {
 	};
 
 } //easing
+
+#endif //_SHOOTING_CUBES_EASING_EQUATIONS_

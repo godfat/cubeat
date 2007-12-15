@@ -43,7 +43,7 @@ void fptr(int x, int y)
     //Pick
     ISceneManager* smgr = IrrDevice::i()->getSceneManager();
     ISceneCollisionManager* colm = smgr->getSceneCollisionManager();
-    ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(x, y), 1, true);
+    ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(x, y), 1, true);
     
     if( ButtonView* test = node2view[picked] ) {
         test->onPress();  //just a test, shouldn't be here

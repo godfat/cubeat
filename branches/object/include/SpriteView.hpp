@@ -12,12 +12,6 @@ public:
 
     virtual SpriteView* clone() const;
 
-    //temp
-    void step1();
-    void step2();
-    void step3();
-    void step4();
-
     virtual ~SpriteView();
 
 protected:

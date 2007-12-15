@@ -2,13 +2,10 @@
 #include "../include/IrrDevice.hpp"
 #include "../include/SpriteView.hpp"
 #include "../include/GUIView.hpp"
-#include "boost/bind.hpp"
 
 using namespace irr;
 using namespace core;
 using namespace scene;
-using boost::function;
-using boost::bind;
 
 SpriteView::SpriteView(GUIView const* parent)
     :ObjectView(parent)
@@ -30,19 +27,6 @@ SpriteView* SpriteView::clone() const
 {
     SpriteView* obj = new SpriteView(*this);
     return obj;
-}
-
-void SpriteView::step1() {
-    moveTo( 540, 0, 10, 4000, bind(&SpriteView::step2, this) );
-}
-void SpriteView::step2() {
-    moveTo( 540, 420, 10, 3000, bind(&SpriteView::step3, this) );
-}
-void SpriteView::step3() {
-    moveTo( 0, 420, 10, 4000, bind(&SpriteView::step4, this) );
-}
-void SpriteView::step4() {
-    moveTo( 0, 0, 10, 3000, bind(&SpriteView::step1, this) );
 }
 
 SpriteView::~SpriteView()

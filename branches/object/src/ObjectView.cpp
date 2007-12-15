@@ -1,6 +1,8 @@
 
 #include "../include/IrrDevice.hpp"
 #include "../include/ObjectView.hpp"
+#include "../include/Setters.hpp"
+#include "../include/EasingEquations.hpp"
 #include "../include/CustomAnimator.hpp"
 
 using namespace irr;
@@ -32,7 +34,7 @@ void ObjectView::moveTo(int x, int y, int z, int delay_ms, function<void()> cb)
     vector3df oldpos = body_->getPosition();
     vector3df newpos = vector3df(x-320+51,-y+240-21,z);
     ISceneNodeAnimator* anim = 
-        new CustomAnimator<vector3df, Linear, Position>(oldpos, newpos, delay_ms, false, cb);
+        new CustomAnimator<Linear, Position>(oldpos, newpos, delay_ms, false, cb);
     body_->addAnimator( anim );
     anim->drop();
 }

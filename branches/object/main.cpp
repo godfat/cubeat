@@ -1,4 +1,4 @@
-﻿
+
 //Test case
 
 #include "include/Input.hpp"

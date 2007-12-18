@@ -22,7 +22,7 @@ public:
 	//! constructor
     CustomAnimator(ISceneNode* node, T const& start, T const& end, u32 duration, 
                    bool loop = true, EndCallback cb = 0, u32 delayTime = 0) 
-        : start_(start), end_(end), distance_(0.0f), duration_(duration), 
+        : start_(start), end_(end), length_(0.0f), duration_(duration), 
           loop_(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
@@ -37,7 +37,7 @@ public:
 
     CustomAnimator(ISceneNode* node, T const& end, u32 duration, bool loop = true, 
                    EndCallback cb = 0, u32 delayTime = 0) 
-        : end_(end), distance_(0.0f), duration_(duration), loop_(loop), cb_(cb)
+        : end_(end), length_(0.0f), duration_(duration), loop_(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
@@ -46,6 +46,7 @@ public:
         node->addAnimator( this );
         this->drop();
         Accessor::get(node, start_);
+        printf("%d\n",start_);
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);
     };
@@ -56,19 +57,20 @@ public:
 	//! animates a scene node
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
 	    if ( !node ) return;
+        if ( timeMs < startTime_ ) return;
 
 	    u32 t = (timeMs-startTime_);
 	    T pos = start_;
 
         if (!loop_ && t >= duration_) {
-		    pos = end_; 
+            pos = Eq<T>::calculate((f32)duration_, pos, distance_, (f32)duration_, node);
             Accessor::set(node, pos);
             if( cb_ ) cb_();
             smgr_->addToAnimatorDeletionQueue(this, node); 
         }
         else {
             u32 time = t % duration_;
-            pos = Eq<T>::calculate((f32)time, pos, static_cast<T>(vector_*distance_), (f32)duration_, node);
+            pos = Eq<T>::calculate((f32)time, pos, distance_, (f32)duration_, node);
             Accessor::set(node, pos);
         }
     }
@@ -85,20 +87,23 @@ public:
 protected:
     template<class TT>
     void recalculateImidiateValues(TT const&) {
-        distance_ = static_cast<f32>(end_ - start_);
+        length_ = static_cast<f32>(end_ - start_);
         vector_ = 1;
+        distance_ = static_cast<T>(length_);
     }
 
     void recalculateImidiateValues(core::vector3df const&) {
         vector_ = end_ - start_;
-        distance_ = vector_.getLength();
+        length_ = vector_.getLength();
         vector_.normalize();
+        distance_ = static_cast<T>(length_ * vector_);
     }
 
     void recalculateImidiateValues(core::vector2df const&) {
         vector_ = end_ - start_;
-        distance_ = vector_.getLength();
+        length_ = vector_.getLength();
         vector_.normalize();
+        distance_ = static_cast<T>(length_ * vector_);
     }
 
     ISceneManager* smgr_;
@@ -106,7 +111,8 @@ protected:
     T start_;
 	T end_;
 	T vector_;
-	f32 distance_;
+    f32 length_;
+	T distance_;
   //f32 timeFactor_;
 	u32 startTime_;
 	u32 duration_;

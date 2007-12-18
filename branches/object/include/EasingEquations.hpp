@@ -286,7 +286,7 @@ namespace easing {
     {
 	public: 
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-            return -c/2 * sinf(t/d * (irr::core::PI*2)) + c/2 + b;
+            return static_cast<T>(c * (-cosf(t/d * (irr::core::PI*2))+1)/2 + b);
 		}
     };
 

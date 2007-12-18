@@ -52,7 +52,7 @@ namespace accessor {
         }
     };
 
-    struct RGB : Accessor<s32>{
+    struct RGBDiffuse : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
             if( !node->getMaterialCount() ) return;
             node->getMaterial(0).DiffuseColor.setRed(val%256);
@@ -62,6 +62,19 @@ namespace accessor {
         static void get(ISceneNode* node, value_type& out) {
             if( !node->getMaterialCount() ) return;
             out = node->getMaterial(0).DiffuseColor.getAverage();
+        }
+    };
+
+    struct RGBEmissive : Accessor<s32>{
+        static void set(ISceneNode* node, value_type const& val ) {
+            if( !node->getMaterialCount() ) return;
+            node->getMaterial(0).EmissiveColor.setRed(val%256);
+            node->getMaterial(0).EmissiveColor.setGreen(val%256);
+            node->getMaterial(0).EmissiveColor.setBlue(val%256);
+        }
+        static void get(ISceneNode* node, value_type& out) {
+            if( !node->getMaterialCount() ) return;
+            out = node->getMaterial(0).EmissiveColor.getAverage();
         }
     };
 

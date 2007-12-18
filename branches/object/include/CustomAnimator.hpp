@@ -46,7 +46,6 @@ public:
         node->addAnimator( this );
         this->drop();
         Accessor::get(node, start_);
-        printf("%d\n",start_);
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);
     };

@@ -20,8 +20,8 @@ class CustomAnimator : public ISceneNodeAnimator
 public:
 
 	//! constructor
-    CustomAnimator(ISceneNode* node, T const& start, T const& end, u32 duration, 
-                   bool loop = true, EndCallback cb = 0, u32 delayTime = 0) 
+    CustomAnimator(T const& start, T const& end, u32 duration, bool loop = true, 
+                   EndCallback cb = 0, u32 delayTime = 0) 
         : start_(start), end_(end), length_(0.0f), duration_(duration), 
           loop_(loop), cb_(cb)
     {
@@ -29,8 +29,6 @@ public:
 	    setDebugName("CustomAnimator");
 	    #endif
         smgr_ = IrrDevice::i()->getSceneManager();
-        node->addAnimator( this );
-        this->drop();
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);
     };
@@ -43,8 +41,6 @@ public:
 	    setDebugName("CustomAnimator");
 	    #endif
         smgr_ = IrrDevice::i()->getSceneManager();
-        node->addAnimator( this );
-        this->drop();
         Accessor::get(node, start_);
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);

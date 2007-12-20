@@ -129,7 +129,7 @@ int main()
     while( IrrDevice::i()->run() ) 
     if( IrrDevice::i()->isWindowActive() && !update_block( timer->getRealTime() ) )
     {
-        driver->beginScene(true, true, video::SColor(0,0,0,0));
+        driver->beginScene(true, true, video::SColor(0,64,64,64));
 
         Input::update_all();
         EventDispatcher::i().dispatch();

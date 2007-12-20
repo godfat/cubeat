@@ -15,6 +15,7 @@ public:
 
 private:
     irr::scene::ICameraSceneNode* camera_;
+    irr::scene::ILightSceneNode* light_;
 };
 
 #endif

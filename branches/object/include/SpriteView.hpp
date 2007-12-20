@@ -28,7 +28,9 @@ public:
     {
         irr::scene::ISceneNodeAnimator* anim = 
             new irr::scene::CustomAnimator<Eq, Accessor>
-                (body_, start, end, duration, loop, cb, delay);
+                (start, end, duration, loop, cb, delay);
+        body_->addAnimator( anim );
+        anim->drop();
     }
 
     template <template <class> class Eq, class Accessor>
@@ -41,6 +43,8 @@ public:
         irr::scene::ISceneNodeAnimator* anim = 
             new irr::scene::CustomAnimator<Eq, Accessor>
                 (body_, end, duration, loop, cb, delay);
+        body_->addAnimator( anim );
+        anim->drop();
     }
 
     virtual ~SpriteView();

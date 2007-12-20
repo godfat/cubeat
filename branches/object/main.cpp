@@ -12,8 +12,8 @@
 #include "include/Accessors.hpp"
 #include "include/EasingEquations.hpp"
 
-#include <boost/bind.hpp>
-#include <iostream>
+#include <boost/tr1/functional.hpp>
+// #include <iostream>
 #include <map>
 
 using namespace irr;
@@ -22,7 +22,8 @@ using namespace video;
 using namespace scene;
 using namespace easing;
 using namespace accessor;
-using boost::bind;
+using std::tr1::bind;
+using std::tr1::ref;
 
 const int FRAMERATE = 60;
 u32 LAST_TIME = 0;
@@ -63,10 +64,10 @@ it is too troublesome to use boost/tr1 bind with them. The code would have to be
 
 using boost::mem_fn;
 
-boost::function<void()> next_step = bind(step1, sprite);
+std::tr1::function<void()> next_step = bind(step1, sprite);
 
 EventDispatcher::i().subscribe_timer( bind( mem_fn( 
-    static_cast<void(SpriteView::*)(int, int, int, boost::function<void()>, int)>
+    static_cast<void(SpriteView::*)(int, int, int, std::tr1::function<void()>, int)>
         (&SpriteView::moveTo) ), &sprite, 0, 0, 3000, next_step, 0), 2000);
                               ^mem_fn                             ^bind  ^subscribe_timer
 
@@ -78,26 +79,32 @@ void step1(SpriteView&);  //prototype
 
 void step4_alt_timer(SpriteView& sprite)
 {
-    boost::function<void()> next_step = bind(step1, sprite);
+    // std::cout << "before sprite address: " << sprite << std::endl;
+    std::tr1::function<void()> next_step = bind(step1, ref(sprite));
     EventDispatcher::i().subscribe_timer( bind( &SpriteView::moveTween,
         &sprite, 0, 0, 3000, next_step, 0), 2000);
+    // std::cout << "after sprite address: " << sprite << std::endl;
 }
 
-void step4(SpriteView& sprite) {
-    sprite.moveTween( 0, 0, 3000, bind(step1, sprite) );
-}
+// void step4(SpriteView& sprite) {
+//     sprite.moveTween( 0, 0, 3000, bind(step1, sprite) );
+// }
 void step3(SpriteView& sprite) {
-    sprite.moveTween( 0, 420, 4000, bind(step4_alt_timer, sprite) );
+    sprite.moveTween( 0, 420, 4000, bind(step4_alt_timer, ref(sprite)) );
 }
 void step2(SpriteView& sprite) {
-    sprite.moveTween( 540, 420, 3000, bind(step3, sprite), 2500 );
+    sprite.moveTween( 540, 420, 3000, bind(step3, ref(sprite)), 2500 );
 }
 void step1(SpriteView& sprite) {
-    sprite.moveTween( 540, 0, 4000, bind(step2, sprite) );
+    sprite.moveTween( 540, 0, 4000, bind(step2, ref(sprite)) );
 }
 
 void glow(ButtonView& button) {
     button.tween<SineCirc, RGBEmissive>(0, 500, false);
+}
+
+void test(SpriteView*){
+    std::cout << "test...." << std::endl;
 }
 
 int main()
@@ -119,8 +126,10 @@ int main()
 
     ButtonView something( &guiv );
     node2view.insert( std::make_pair( something.body(), &something ) );
+    EventDispatcher::i().subscribe_obj_event(test, &input2.trig1(), &something);
 
     SpriteView anotherthing( &guiv );
+    // std::cout << "orignal sprite address: " << &anotherthing << std::endl;
     anotherthing.moveTo(0,0);
 
     bool init = false;
@@ -137,8 +146,8 @@ int main()
         smgr->drawAll();
 
         if( !init ) { 
-            EventDispatcher::i().subscribe_timer( bind(step1, anotherthing), 1000 );
-            EventDispatcher::i().subscribe_timer( bind(glow, something), 1000, true );
+            EventDispatcher::i().subscribe_timer( bind(step1, ref(anotherthing)), 1000 );
+            EventDispatcher::i().subscribe_timer( bind(glow, ref(something)), 1000, true );
             init = true; 
         }
 

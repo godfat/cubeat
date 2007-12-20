@@ -28,6 +28,6 @@ LINK_LIBRARIES (Irrlicht GL X11 Xext Xxf86vm freetype)
 
 ADD_EXECUTABLE (bin/Hello ${SOURCES})
 
-SET (CMAKE_CXX_FLAGS "-std=c++98 -pedantic -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math")
+SET (CMAKE_CXX_FLAGS "-std=c++98 -pedantic -Wall -W --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -DBOOST_HAS_TR1")
 
 SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -framework AppKit -framework Foundation")

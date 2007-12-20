@@ -5,6 +5,7 @@
 #include "../include/Accessors.hpp"
 #include "../include/EasingEquations.hpp"
 #include "../include/CustomAnimator.hpp"
+#include <iostream>
 
 using namespace irr;
 using namespace core;
@@ -12,7 +13,7 @@ using namespace scene;
 using namespace video;
 using namespace easing;
 using namespace accessor;
-using boost::function;
+using std::tr1::function;
 
 SpriteView::SpriteView(GUIView const* parent)
     :ObjectView(parent)
@@ -49,8 +50,12 @@ void SpriteView::moveTo(int x, int y)
 
 void SpriteView::moveTween(int x, int y, int delay_ms, function<void()> cb, int delay)
 {
+    // std::cout << "before move, this: " << this << std::endl;
+    // std::cout << "before move, body_: " << body_ << std::endl;
     vector2df newpos = vector2df(x-320.f+51.f, -y+240.f-21.f);
     tween<Linear, Pos2D>(newpos, delay_ms, false, cb, delay);
+    // std::cout << "after move, this: " << this << std::endl;
+    // std::cout << "after move, body_: " << body_ << std::endl;
 }
 
 SpriteView* SpriteView::clone() const

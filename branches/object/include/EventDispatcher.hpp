@@ -13,7 +13,7 @@
 #include "Button.hpp"
 
 #include <boost/tr1/tuple.hpp>
-#include <boost/function.hpp>
+#include <boost/tr1/functional.hpp>
 #include <map>
 #include <ctime>
 #include <vector>
@@ -22,20 +22,25 @@
 using std::tr1::tuple;
 using std::tr1::tuple_element;
 
-//typedef boost::function<void(InteractiveObject* /*,Event*/)> ObjCallback;
+//typedef std::tr1::function<void(InteractiveObject* /*,Event*/)> ObjCallback;
 //typedef tuple<InteractiveObject*, ObjCallbackType>           ObjEvent;
 //typedef std::map< tuple_element<0, ObjEvent>::type, 
 //                  tuple_element<1, ObjEvent>::type >         ObjListener;
 
+class SpriteView;
+
 class EventDispatcher
 {
-    typedef boost::function<void(int x, int y)>            BtnCallback;
-    typedef boost::function<void()>                        TimerCallback;
+    typedef std::tr1::function<void(int x, int y)>            BtnCallback;
+    typedef std::tr1::function<void()>                        TimerCallback;
     typedef tuple<BtnCallback, Button const*, BSTATE>      BtnEvent;
     typedef tuple<TimerCallback, std::time_t, std::time_t, bool> Timer;
     typedef std::vector< BtnEvent >                        BtnListener;
     typedef std::list< Timer >                             Timers;
     typedef std::vector< Timers::iterator >                TimerRemoval;
+    typedef std::tr1::function<void(SpriteView*)>             ObjCallback;
+    typedef tuple<ObjCallback, Button const*, SpriteView*> ObjEvent;
+    typedef std::list<ObjEvent>   ObjListener;
 
 public:
     static EventDispatcher& i() {
@@ -45,22 +50,24 @@ public:
 
     EventDispatcher& subscribe_btn_event(BtnCallback, Button const*, BSTATE);
     EventDispatcher& subscribe_timer(TimerCallback, int, bool loop = false);
-//  EventDispatcher& subscribe_obj_event(InteractiveObject*, ObjCallback);
+    EventDispatcher& subscribe_obj_event(ObjCallback, Button const*, SpriteView*);
 
     void dispatch();
 
 private:
     enum blah { BCALLBACK = 0, BUTTON = 1, STATE = 2 };
     enum bleh { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3 };
+    struct OE{enum{OBJ_CB, BTN, SPRITE};};
     EventDispatcher(){}
     EventDispatcher(EventDispatcher const&);
+    void dispatch_obj();
 
     void cleanup();
 
     BtnListener  btn_listeners_;   
     Timers       timers_;
     TimerRemoval timers_to_be_deleted;
-//  ObjListener obj_listeners_;       
+    ObjListener  obj_listeners_;       
 };
 
 #endif

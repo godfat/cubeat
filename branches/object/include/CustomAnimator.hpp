@@ -5,7 +5,8 @@
 #include "ISceneNode.h"
 #include "IrrDevice.hpp" //probably a bad idea, we'll see.
 
-#include <boost/function.hpp>
+#include <boost/tr1/functional.hpp>
+// #include <iostream>
 
 namespace irr
 {
@@ -15,7 +16,7 @@ namespace scene
 template <template<class> class Eq, class Accessor>
 class CustomAnimator : public ISceneNodeAnimator
 {
-    typedef boost::function<void()> EndCallback;
+    typedef std::tr1::function<void()> EndCallback;
     typedef typename Accessor::value_type T;
 public:
 
@@ -25,11 +26,13 @@ public:
         : start_(start), end_(end), length_(0.0f), duration_(duration), 
           loop_(loop), cb_(cb)
     {
+        // std::cout << "after init list" << std::endl;
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
         smgr_ = IrrDevice::i()->getSceneManager();
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
+        // std::cout << "before recal" << std::endl;
 	    recalculateImidiateValues(end);
     };
 
@@ -37,12 +40,15 @@ public:
                    EndCallback cb = 0, u32 delayTime = 0) 
         : end_(end), length_(0.0f), duration_(duration), loop_(loop), cb_(cb)
     {
+        // std::cout << "after init list" << std::endl;
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
         smgr_ = IrrDevice::i()->getSceneManager();
+        // std::cout << "before accessor, node: " << node << std::endl;
         Accessor::get(node, start_);
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
+        // std::cout << "before recal" << std::endl;
 	    recalculateImidiateValues(end);
     };
 

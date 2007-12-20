@@ -2,6 +2,7 @@
 #define _SHOOTING_CUBES_SETTERS_
 
 #include "ISceneNode.h"
+// #include <iostream>
 
 namespace irr {
 namespace scene {
@@ -18,6 +19,7 @@ namespace accessor {
             node->setPosition(val);
         }
         static void get(ISceneNode const* node, value_type& out) {
+            // std::cout << "the node address: " << node << std::endl;
             out = node->getPosition();
         }
     };
@@ -29,7 +31,9 @@ namespace accessor {
         }
         static void get(ISceneNode const* node, value_type& out) {
             core::vector3df pos;
+            // std::cout << "before Pos3D::get" << std::endl;
             Pos3D::get(node, pos);
+            // std::cout << "after Pos3D::get" << std::endl;
             out = value_type(pos.X, pos.Y);
         }
     };

@@ -31,16 +31,16 @@ class SpriteView;
 
 class EventDispatcher
 {
-    typedef std::tr1::function<void(int x, int y)>            BtnCallback;
-    typedef std::tr1::function<void()>                        TimerCallback;
+    typedef std::tr1::function<void(int x, int y)>         BtnCallback;
+    typedef std::tr1::function<void()>                     TimerCallback;
     typedef tuple<BtnCallback, Button const*, BSTATE>      BtnEvent;
     typedef tuple<TimerCallback, std::time_t, std::time_t, bool> Timer;
     typedef std::vector< BtnEvent >                        BtnListener;
     typedef std::list< Timer >                             Timers;
     typedef std::vector< Timers::iterator >                TimerRemoval;
-    typedef std::tr1::function<void(SpriteView*)>             ObjCallback;
+    typedef std::tr1::function<void(SpriteView*)>          ObjCallback;
     typedef tuple<ObjCallback, Button const*, SpriteView*> ObjEvent;
-    typedef std::list<ObjEvent>   ObjListener;
+    typedef std::list<ObjEvent>                            ObjListener;
 
 public:
     static EventDispatcher& i() {

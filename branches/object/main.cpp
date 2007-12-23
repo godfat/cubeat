@@ -13,7 +13,7 @@
 #include "include/EasingEquations.hpp"
 
 #include <boost/tr1/functional.hpp>
-// #include <iostream>
+#include <iostream>
 #include <map>
 
 using namespace irr;
@@ -79,16 +79,14 @@ void step1(SpriteView&);  //prototype
 
 void step4_alt_timer(SpriteView& sprite)
 {
-    // std::cout << "before sprite address: " << sprite << std::endl;
     std::tr1::function<void()> next_step = bind(step1, ref(sprite));
     EventDispatcher::i().subscribe_timer( bind( &SpriteView::moveTween,
         &sprite, 0, 0, 3000, next_step, 0), 2000);
-    // std::cout << "after sprite address: " << sprite << std::endl;
 }
 
-// void step4(SpriteView& sprite) {
-//     sprite.moveTween( 0, 0, 3000, bind(step1, sprite) );
-// }
+void step4(SpriteView& sprite) {
+    sprite.moveTween( 0, 0, 3000, bind(step1, ref(sprite)) );
+}
 void step3(SpriteView& sprite) {
     sprite.moveTween( 0, 420, 4000, bind(step4_alt_timer, ref(sprite)) );
 }
@@ -100,7 +98,7 @@ void step1(SpriteView& sprite) {
 }
 
 void glow(ButtonView& button) {
-    button.tween<SineCirc, RGBEmissive>(0, 500, false);
+    button.tween<SineCirc, Alpha>(0, 500, false);
 }
 
 void test(SpriteView*){
@@ -129,7 +127,6 @@ int main()
     EventDispatcher::i().subscribe_obj_event(test, &input2.trig1(), &something);
 
     SpriteView anotherthing( &guiv );
-    // std::cout << "orignal sprite address: " << &anotherthing << std::endl;
     anotherthing.moveTo(0,0);
 
     bool init = false;
@@ -156,6 +153,5 @@ int main()
 
         driver->endScene();
     }
-
     return 0;
 }

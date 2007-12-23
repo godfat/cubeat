@@ -17,7 +17,6 @@ public:
     virtual ~ButtonView();
 
 private:
-    // ButtonView(ButtonView const&){std::cout << "!!!!!!ERRRRRROORR!!!!!" << std::endl;}
 };
 
 #endif

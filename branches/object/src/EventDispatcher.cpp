@@ -10,7 +10,6 @@
 
 #include <boost/foreach.hpp>
 #include <algorithm>
-// #include <iostream>
 
 using std::tr1::tie;
 using std::tr1::get;
@@ -75,9 +74,7 @@ void EventDispatcher::dispatch()
     for(Timers::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         irr::u32 now = irrTimer->getRealTime();
         if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
-            // std::cout << "before call" << std::endl;
             get<TCALLBACK>(*t)(); 
-            // std::cout << "after call" << std::endl;
             get<LASTTIME>(*t) = now;
             if( get<LOOP>(*t) == false ) {
                 timers_to_be_deleted.push_back(t);

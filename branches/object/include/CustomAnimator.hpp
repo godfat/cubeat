@@ -6,7 +6,6 @@
 #include "IrrDevice.hpp" //probably a bad idea, we'll see.
 
 #include <boost/tr1/functional.hpp>
-// #include <iostream>
 
 namespace irr
 {
@@ -26,29 +25,11 @@ public:
         : start_(start), end_(end), length_(0.0f), duration_(duration), 
           loop_(loop), cb_(cb)
     {
-        // std::cout << "after init list" << std::endl;
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
         smgr_ = IrrDevice::i()->getSceneManager();
         startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
-        // std::cout << "before recal" << std::endl;
-	    recalculateImidiateValues(end);
-    };
-
-    CustomAnimator(ISceneNode* node, T const& end, u32 duration, bool loop = true, 
-                   EndCallback cb = 0, u32 delayTime = 0) 
-        : end_(end), length_(0.0f), duration_(duration), loop_(loop), cb_(cb)
-    {
-        // std::cout << "after init list" << std::endl;
-	    #ifdef _DEBUG
-	    setDebugName("CustomAnimator");
-	    #endif
-        smgr_ = IrrDevice::i()->getSceneManager();
-        // std::cout << "before accessor, node: " << node << std::endl;
-        Accessor::get(node, start_);
-        startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
-        // std::cout << "before recal" << std::endl;
 	    recalculateImidiateValues(end);
     };
 

@@ -1,0 +1,15 @@
+
+inputs = Dir.glob('*.erb')
+outputs = inputs.map{|o| o[0..-5]}
+
+task :default => [:begin, outputs, :end].flatten
+task :begin do; puts "processing templates: #{inputs.inspect}"; end
+task :end do; puts "processed output: #{outputs.inspect}"; end
+
+inputs.zip(outputs).each{ |input, output|
+  file output => input do
+    open output, 'w' do |o|
+      o << `erb #{input}`
+    end
+  end
+}

@@ -4,14 +4,24 @@
 
 typedef MapModel* pMapModel;
 typedef CubeModel* pCubeModel;
+typedef MapSetting* pMapSetting;
 ...
+
+struct MapSetting{
+    int width, height;
+};
 
 class MapModel{
 public:
-    static pMapModel create(){
+    static pMapModel create(pMapSetting setting){
         // map doesn't need a pool
-        return pMapModel(new MapModel);
+        return pMapModel(new MapModel(setting));
     }
+    MapModel(pMapSetting setting): setting_(setting){
+    }
+private:
+    pMapSetting setting_;
+    
 };
 
 class CubeModel{
@@ -25,13 +35,15 @@ public:
 
 class MapPresenter{
 public:
-    MapPresenter():
+    MapPresenter(pMapSetting setting):
+        setting_(setting),
         view_(MapView::create()),
-        model_(MapModel::create())
+        model_(MapModel::create(setting))
     {}
 private:
-    MapView* view_;
-    MapModel* model_;
+    pMapSetting setting_;
+    pMapView view_;
+    pMapModel model_;
 };
 
 class CubePresenter{

@@ -18,7 +18,7 @@ public:
 
     int& x() { return x_; }
     int& y() { return y_; }
-    
+
     void write_state_now_to_last() { lx_ = x_; ly_ = y_; }
     void constrain();
 

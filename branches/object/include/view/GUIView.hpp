@@ -6,10 +6,10 @@
 class GUIView : public ObjectView
 {
 public:
-    GUIView(ObjectView const* parent = 0);
+    //GUIView(ObjectView const* parent = 0);
 
+    virtual GUIView& init(ObjectView const* parent = 0);
     virtual GUIView* clone() const;
-
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual ~GUIView();
 

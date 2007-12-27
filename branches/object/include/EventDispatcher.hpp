@@ -24,7 +24,7 @@ using std::tr1::tuple_element;
 
 //typedef std::tr1::function<void(InteractiveObject* /*,Event*/)> ObjCallback;
 //typedef tuple<InteractiveObject*, ObjCallbackType>           ObjEvent;
-//typedef std::map< tuple_element<0, ObjEvent>::type, 
+//typedef std::map< tuple_element<0, ObjEvent>::type,
 //                  tuple_element<1, ObjEvent>::type >         ObjListener;
 
 class SpriteView;
@@ -64,10 +64,10 @@ private:
 
     void cleanup();
 
-    BtnListener  btn_listeners_;   
+    BtnListener  btn_listeners_;
     Timers       timers_;
     TimerRemoval timers_to_be_deleted;
-    ObjListener  obj_listeners_;       
+    ObjListener  obj_listeners_;
 };
 
 #endif

@@ -3,8 +3,7 @@
 #define _SHOOTING_CUBE_CUSTOM_ANIMATOR_
 
 #include "ISceneNode.h"
-#include "IrrDevice.hpp" //probably a bad idea, we'll see.
-
+#include "include/IrrDevice.hpp"
 #include <boost/tr1/functional.hpp>
 
 namespace irr
@@ -15,14 +14,16 @@ namespace scene
 template <template<class> class Eq, class Accessor>
 class CustomAnimator : public ISceneNodeAnimator
 {
+protected:
     typedef std::tr1::function<void()> EndCallback;
     typedef typename Accessor::value_type T;
+
 public:
 
 	//! constructor
-    CustomAnimator(T const& start, T const& end, u32 duration, bool loop = true, 
-                   EndCallback cb = 0, u32 delayTime = 0) 
-        : start_(start), end_(end), length_(0.0f), duration_(duration), 
+    CustomAnimator(T const& start, T const& end, u32 duration, bool loop = true,
+                   EndCallback cb = 0, u32 delayTime = 0)
+        : start_(start), end_(end), length_(0.0f), duration_(duration),
           loop_(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
@@ -44,15 +45,16 @@ public:
 	    u32 t = (timeMs-startTime_);
 	    T pos = start_;
 
-        if (!loop_ && t >= duration_) {
-            pos = Eq<T>::calculate((f32)duration_, pos, distance_, (f32)duration_, node);
+        f32 dur = static_cast<f32>( duration_ );
+        if ( !loop_ && t >= duration_ ) {
+            pos = Eq<T>::calculate(dur, pos, distance_, dur, node);
             Accessor::set(node, pos);
             if( cb_ ) cb_();
-            smgr_->addToAnimatorDeletionQueue(this, node); 
+            smgr_->addToAnimatorDeletionQueue(this, node);
         }
         else {
-            u32 time = t % duration_;
-            pos = Eq<T>::calculate((f32)time, pos, distance_, (f32)duration_, node);
+            f32 time = static_cast<f32>( t % duration_ );
+            pos = Eq<T>::calculate(time, pos, distance_, dur, node);
             Accessor::set(node, pos);
         }
     }

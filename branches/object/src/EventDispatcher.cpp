@@ -3,10 +3,10 @@
    blah
 */
 
-#include "../include/EventDispatcher.hpp"
-#include "../include/Input.hpp"
-#include "../include/IrrDevice.hpp"
-#include "../include/SpriteView.hpp"
+#include "include/EventDispatcher.hpp"
+#include "include/Input.hpp"
+#include "include/IrrDevice.hpp"
+#include "include/view/SpriteView.hpp"
 
 #include <boost/foreach.hpp>
 #include <algorithm>
@@ -20,14 +20,14 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 
-EventDispatcher& 
+EventDispatcher&
 EventDispatcher::subscribe_btn_event(BtnCallback cb, Button const* btn, BSTATE state)
 {
     btn_listeners_.push_back( tie( cb, btn, state ) );
     return *this;
 }
 
-EventDispatcher& 
+EventDispatcher&
 EventDispatcher::subscribe_timer(TimerCallback cb, int duration, bool loop)
 {
     irr::u32 now = IrrDevice::i()->getTimer()->getRealTime();
@@ -35,7 +35,7 @@ EventDispatcher::subscribe_timer(TimerCallback cb, int duration, bool loop)
     return *this;
 }
 
-EventDispatcher& 
+EventDispatcher&
 EventDispatcher::subscribe_obj_event(ObjCallback ocb, Button const* btn, SpriteView* obj)
 {
     obj_listeners_.push_back( tie( ocb, btn, obj ) );
@@ -63,9 +63,9 @@ void EventDispatcher::dispatch_obj(){
 void EventDispatcher::dispatch()
 {
     BOOST_FOREACH(BtnEvent& b, btn_listeners_) {
-        Button const* btn = get<BUTTON>(b);            
-        if( btn->state() != get<STATE>(b) ) continue; 
-        get<BCALLBACK>(b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() ); 
+        Button const* btn = get<BUTTON>(b);
+        if( btn->state() != get<STATE>(b) ) continue;
+        get<BCALLBACK>(b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
     }
 
     dispatch_obj();
@@ -74,7 +74,7 @@ void EventDispatcher::dispatch()
     for(Timers::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         irr::u32 now = irrTimer->getRealTime();
         if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
-            get<TCALLBACK>(*t)(); 
+            get<TCALLBACK>(*t)();
             get<LASTTIME>(*t) = now;
             if( get<LOOP>(*t) == false ) {
                 timers_to_be_deleted.push_back(t);

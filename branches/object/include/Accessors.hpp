@@ -1,17 +1,13 @@
-#ifndef _SHOOTING_CUBES_SETTERS_
-#define _SHOOTING_CUBES_SETTERS_
+#ifndef _SHOOTING_CUBES_ACCESSORS_
+#define _SHOOTING_CUBES_ACCESSORS_
 
+#include "Accessor_proto.hpp"
 #include "ISceneNode.h"
 
 namespace irr {
 namespace scene {
 
 namespace accessor {
-
-    template <class T>
-    struct Accessor {
-        typedef T value_type;
-    };
 
     struct Pos3D : Accessor<core::vector3df>{
         static void set(ISceneNode* node, value_type const& val ) {
@@ -132,8 +128,37 @@ namespace accessor {
             out = static_cast<IAnimatedMeshSceneNode const*>(node)->getFrameNr();
         }
     };
+
+    struct Visible : Accessor<bool>{
+        static void set(ISceneNode* node, value_type const& val ) {
+            node->setVisible(val);
+        }
+        static void get(ISceneNode const* node, value_type& out) {
+            out = node->isVisible();
+        }
+    };
+
+    struct GroupID : Accessor<s32>{
+        static void set(ISceneNode* node, value_type const& val ) {
+            node->setID(val);
+        }
+        static void get(ISceneNode const* node, value_type& out) {
+            out = node->getID();
+        }
+    };
+
+    struct Size2D : Accessor<core::dimension2df>{
+        static void set(ISceneNode* node, value_type const& val ) {
+            if( node->getType() != ESNT_BILLBOARD ) return;
+            static_cast<IBillboardSceneNode*>(node)->setSize( val );
+        }
+        static void get(ISceneNode* node, value_type& out) {
+            if( node->getType() != ESNT_BILLBOARD ) return;
+            out = static_cast<IBillboardSceneNode*>(node)->getSize();
+        }
+    };
 }   //accessor
 }   //scene
 }   //irr
 
-#endif 
+#endif

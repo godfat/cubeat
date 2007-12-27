@@ -5,9 +5,10 @@
 #include "include/Input.hpp"
 #include "include/IrrDevice.hpp"
 #include "include/EventDispatcher.hpp"
-#include "include/GUIView.hpp"
-#include "include/SpriteView.hpp"
-#include "include/ButtonView.hpp"
+#include "include/view/GUIView.hpp"
+#include "include/view/SpriteView.hpp"
+#include "include/view/ButtonView.hpp"
+#include "include/view/AnimatedSpriteView.hpp"
 
 #include "include/Accessors.hpp"
 #include "include/EasingEquations.hpp"
@@ -117,17 +118,24 @@ int main()
     //subscribe a button click related callback
     EventDispatcher::i().subscribe_btn_event(fptr, &input2.trig1(), BTN_PRESS);
 
-    GUIView guiv;
+    GUIView guiv; guiv.init();
 
-    SpriteView cursor1( &guiv );
-    SpriteView cursor2( &guiv );
+    SpriteView cursor1; cursor1.init( &guiv );
+    SpriteView cursor2; cursor2.init( &guiv );
 
-    ButtonView something( &guiv );
+    ButtonView something; 
+    something.init( &guiv ).moveTo(100,100).set<RGBDiffuse>(128);
+
     node2view.insert( std::make_pair( something.body(), &something ) );
     EventDispatcher::i().subscribe_obj_event(test, &input2.trig1(), &something);
 
-    SpriteView anotherthing( &guiv );
+    SpriteView anotherthing; anotherthing.init( &guiv );
     anotherthing.moveTo(0,0);
+
+    //newly added
+    AnimatedSpriteView girl("test"); 
+    girl.init( &guiv ).addAnime("stand",3).addAnime("hit",5).moveTo(400,300).set<Size2D>(dimension2df(128,192));
+    girl.playAnime("stand", 1000, true);
 
     bool init = false;
     ITimer* timer = IrrDevice::i()->getTimer();

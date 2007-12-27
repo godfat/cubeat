@@ -1,5 +1,5 @@
 
-#include "../../include/private/MastEventReceiver.hpp"
+#include "include/private/MastEventReceiver.hpp"
 
 using namespace irr;
 using namespace core;

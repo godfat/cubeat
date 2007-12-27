@@ -49,7 +49,7 @@ public:
     Button const& haste() const { return haste_; }
     Button const& pause() const { return pause_; }
 
-private:   
+private:
     Input(Input const&);    //No copy constructor
 
     void update();
@@ -74,5 +74,5 @@ private:
     wiimote wiimote_;
 #endif
 };
-   
+
 #endif

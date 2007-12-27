@@ -1,18 +1,19 @@
 
-#include "../include/IrrDevice.hpp"
-#include "../include/ButtonView.hpp"
-#include "../include/GUIView.hpp"
+#include "include/IrrDevice.hpp"
+#include "include/view/ButtonView.hpp"
+#include "include/view/GUIView.hpp"
 
 #include <iostream>
 
 using namespace irr;
 using namespace core;
 using namespace scene;
-
+/*
 ButtonView::ButtonView(GUIView const* parent)
     :SpriteView(parent)
 {
 }
+*/
 
 ButtonView* ButtonView::clone() const
 {

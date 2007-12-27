@@ -7,10 +7,6 @@ typedef CubeModel* pCubeModel;
 typedef MapSetting* pMapSetting;
 ...
 
-struct MapSetting{
-    int width, height;
-};
-
 namespace psc{
     namespace model{
         class Map;
@@ -43,6 +39,18 @@ public:
                 
             }
         }
+    	// n_of_newcomers_ = 0;
+
+        // for(container_type::reverse_iterator i=data_.rbegin(), iend=data_.rend();
+        //     i!=iend; ++i)
+        // {
+        //     if(Square* s = *i){
+        //      if( !s->has_grounded() ) ++n_of_newcomers_;
+        //         if( s->cycle_and_die() ){
+        //             *i = NULL;
+        //         }
+        //     }
+        // }
     }
 private:
     pMapSetting setting_;

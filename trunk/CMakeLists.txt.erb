@@ -1,0 +1,22 @@
+
+PROJECT (shooting-cubes)
+
+SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i }.join("\n") %>)
+
+SET (CMAKE_VERBOSE_MAKEFILE on)
+
+FIND_PACKAGE (boost REQUIRED)
+
+INCLUDE_DIRECTORIES (/opt/local/include
+                     /home/godfat/projects/irr/irrlicht/include
+                     ./)
+
+LINK_DIRECTORIES (/home/godfat/projects/irr/irrlicht/source/Irrlicht/MacOSX/build/Release)
+
+LINK_LIBRARIES (Irrlicht)
+
+ADD_EXECUTABLE (bin/Hello ${SOURCES})
+
+SET (CMAKE_CXX_FLAGS "-std=c++98 -pedantic -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -DBOOST_HAS_TR1")
+
+SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -framework AppKit -framework Foundation -framework OpenGL")

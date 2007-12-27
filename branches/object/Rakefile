@@ -1,0 +1,26 @@
+
+inputs = Dir.glob('*.erb')
+outputs = inputs.map{|o| o[0..-5]}
+
+desc 'preprocess + build all'
+task :default => [:preprocess, :build].flatten
+
+desc 'erb preprocessing'
+task :preprocess => [:begin, outputs, :end]
+
+task :begin do; puts "processing templates: #{inputs.inspect}"; end
+task :end do; puts "processed output: #{outputs.inspect}"; end
+
+inputs.zip(outputs).each{ |input, output|
+  file output => input do
+    open output, 'w' do |o|
+      o << `erb #{input}`
+    end
+  end
+}
+
+desc 'start building'
+task :build do
+  sh 'cmake .'
+  sh 'make'
+end

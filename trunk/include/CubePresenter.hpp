@@ -11,17 +11,42 @@ struct MapSetting{
     int width, height;
 };
 
+namespace psc{
+    namespace model{
+        class Map;
+        class Cube;
+    }
+    namespace presenter{
+        class Map;
+        class Cube;
+    }
+    namespace view{
+        class Map;
+        class Cube;
+    }
+}
+
 class MapModel{
 public:
+    typedef multi_array<2, pCubeModel> container_type;
     static pMapModel create(pMapSetting setting){
         // map doesn't need a pool
         return pMapModel(new MapModel(setting));
     }
-    MapModel(pMapSetting setting): setting_(setting){
+    MapModel(pMapSetting setting): setting_(setting),
+     cubes_(extents[setting.width][setting.height])
+    {
+    }
+    pMapModel cycle(){
+        BOOST_FOREACH(container_type::iterator row, cubes_){
+            BOOST_FOREACH(pCubeModel cube, row){
+                
+            }
+        }
     }
 private:
     pMapSetting setting_;
-    
+    container_type cubes_;
 };
 
 class CubeModel{

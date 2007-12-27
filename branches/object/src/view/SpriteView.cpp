@@ -1,10 +1,10 @@
 
-#include "include/IrrDevice.hpp"
-#include "include/view/SpriteView.hpp"
-#include "include/view/GUIView.hpp"
-#include "include/Accessors.hpp"
-#include "include/EasingEquations.hpp"
-#include "include/CustomAnimator.hpp"
+#include "IrrDevice.hpp"
+#include "view/SpriteView.hpp"
+#include "view/GUIView.hpp"
+#include "Accessors.hpp"
+#include "EasingEquations.hpp"
+#include "CustomAnimator.hpp"
 #include <iostream>
 
 using namespace irr;

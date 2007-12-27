@@ -2,16 +2,16 @@
 //Test case: I WILL NOT USE CHINESE IN COMMENT AGAIN..
 //windows utf8 is so troublesome.
 
-#include "include/Input.hpp"
-#include "include/IrrDevice.hpp"
-#include "include/EventDispatcher.hpp"
-#include "include/view/GUIView.hpp"
-#include "include/view/SpriteView.hpp"
-#include "include/view/ButtonView.hpp"
-#include "include/view/AnimatedSpriteView.hpp"
+#include "Input.hpp"
+#include "IrrDevice.hpp"
+#include "EventDispatcher.hpp"
+#include "view/GUIView.hpp"
+#include "view/SpriteView.hpp"
+#include "view/ButtonView.hpp"
+#include "view/AnimatedSpriteView.hpp"
 
-#include "include/Accessors.hpp"
-#include "include/EasingEquations.hpp"
+#include "Accessors.hpp"
+#include "EasingEquations.hpp"
 
 #include <boost/tr1/functional.hpp>
 #include <iostream>
@@ -102,7 +102,7 @@ void glow(ButtonView& button) {
     button.tween<SineCirc, Alpha>(0, 500, false);
 }
 
-void test(SpriteView*){
+void test(SpriteView*) {
     std::cout << "test...." << std::endl;
 }
 

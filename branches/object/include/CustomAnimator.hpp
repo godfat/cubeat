@@ -3,7 +3,7 @@
 #define _SHOOTING_CUBE_CUSTOM_ANIMATOR_
 
 #include "ISceneNode.h"
-#include "include/IrrDevice.hpp"
+#include "IrrDevice.hpp"
 #include <boost/tr1/functional.hpp>
 
 namespace irr

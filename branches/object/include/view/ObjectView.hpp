@@ -5,7 +5,7 @@
    We might need a queue and loop-finite-times features to tween interface
    will be implemented when needed. */
 
-#include "include/CustomAnimator.hpp"
+#include "CustomAnimator.hpp"
 
 #include <boost/tr1/functional.hpp>
 

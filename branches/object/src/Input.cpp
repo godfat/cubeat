@@ -3,12 +3,12 @@
    Input Implementation
 */
 
-#include "include/Input.hpp"
+#include "Input.hpp"
 
-#include "include/private/MastEventReceiver.hpp"
+#include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
-#include "include/private/Wiimote_IR_internal.hpp"
+#include "private/Wiimote_IR_internal.hpp"
 #endif
 
 #include <iostream>

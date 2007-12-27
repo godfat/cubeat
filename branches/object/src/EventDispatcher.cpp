@@ -3,10 +3,10 @@
    blah
 */
 
-#include "include/EventDispatcher.hpp"
-#include "include/Input.hpp"
-#include "include/IrrDevice.hpp"
-#include "include/view/SpriteView.hpp"
+#include "EventDispatcher.hpp"
+#include "Input.hpp"
+#include "IrrDevice.hpp"
+#include "view/SpriteView.hpp"
 
 #include <boost/foreach.hpp>
 #include <algorithm>

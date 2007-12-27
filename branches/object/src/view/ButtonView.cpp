@@ -1,7 +1,7 @@
 
-#include "include/IrrDevice.hpp"
-#include "include/view/ButtonView.hpp"
-#include "include/view/GUIView.hpp"
+#include "IrrDevice.hpp"
+#include "view/ButtonView.hpp"
+#include "view/GUIView.hpp"
 
 #include <iostream>
 

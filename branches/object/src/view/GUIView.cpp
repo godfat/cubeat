@@ -1,6 +1,6 @@
 
-#include "include/IrrDevice.hpp"
-#include "include/view/GUIView.hpp"
+#include "IrrDevice.hpp"
+#include "view/GUIView.hpp"
 
 using namespace irr;
 using namespace core;

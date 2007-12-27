@@ -4,7 +4,7 @@
    internal use only. Adapted from Wiiuse lib 0.9 (wiiuse.net)
 */
 
-#include "include/private/Wiimote_IR_internal.hpp"
+#include "private/Wiimote_IR_internal.hpp"
 
 /*
  *	wiiuse

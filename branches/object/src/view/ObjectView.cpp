@@ -1,8 +1,8 @@
 
-#include "include/IrrDevice.hpp"
-#include "include/view/ObjectView.hpp"
+#include "IrrDevice.hpp"
+#include "view/ObjectView.hpp"
 
-#include "include/Accessors.hpp"
+#include "Accessors.hpp"
 
 using namespace irr;
 using namespace core;

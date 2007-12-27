@@ -2,8 +2,8 @@
 #ifndef _SHOOTING_CUBES_TEXTURE_ANIMATOR_
 #define _SHOOTING_CUBES_TEXTURE_ANIMATOR_
 
-#include "include/Accessor_proto.hpp"
-#include "include/CustomAnimator.hpp"
+#include "Accessor_proto.hpp"
+#include "CustomAnimator.hpp"
 
 //for debug & warning purpose
 #include <iostream>

@@ -1,8 +1,8 @@
 
-#include "include/view/AnimatedSpriteView.hpp"
-#include "include/TextureAnimator.hpp"
-#include "include/EasingEquations.hpp"
-#include "include/IrrDevice.hpp"
+#include "view/AnimatedSpriteView.hpp"
+#include "TextureAnimator.hpp"
+#include "EasingEquations.hpp"
+#include "IrrDevice.hpp"
 
 #include <sstream>
 

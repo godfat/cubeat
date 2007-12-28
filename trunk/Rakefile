@@ -5,8 +5,15 @@ end
 
 #####
 
-inputs = Dir.glob('**/*.erb')
-outputs = inputs.map{|o| o[0..-5]}
+# inputs = Dir.glob('**/*.erb')
+# outputs = inputs.map{|o| o[0..-5]}
+inputs = FileList['**/*.erb']
+outputs = inputs.ext
+
+desc 'erb preprocessing'
+task :preprocess => [:begin, outputs, :end].flatten
+task :begin do; puts "processing templates: #{inputs.inspect}"; end
+task :end do; puts "processed output: #{outputs.inspect}"; end
 
 require 'erb'
 require 'open-uri'
@@ -15,21 +22,42 @@ require 'lib/attr_builder'
 inputs.zip(outputs).each{ |input, output|
   file output => input do
     open output, 'w' do |o|
-      $__class__ = (output.gsub %r{.*/}, '')[0..-5]
+      # $__class__ = (output.gsub %r{.*/}, '')[0..-5]
+      $__class__ = output.pathmap('%f').ext
       o << ERB.new(open(input).read).result
     end
   end
 }
 
-desc 'erb preprocessing'
-task :preprocess => [:begin, outputs, :end].flatten
-task :begin do; puts "processing templates: #{inputs.inspect}"; end
-task :end do; puts "processed output: #{outputs.inspect}"; end
+#####
+
+require 'rake/clean'
+require 'fileutils'
+CLEAN.include '*.o', outputs
+task :clobber => :clean do
+  sh 'make clean' rescue nil
+  File.delete 'Makefile' rescue nil
+  File.delete 'CMakeCache.txt' rescue nil
+  File.delete 'cmake_install.cmake' rescue nil
+  FileUtils.rm_r 'CMakeFiles' rescue nil
+end
 
 #####
 
-desc 'start building'
+desc 'preprocess and build'
 task :build => :preprocess do
   sh 'cmake .'
   sh 'make'
+end
+
+desc 'clobber and build'
+task :rebuild => [:clobber, :build]
+
+#####
+
+namespace :svk do
+  %w{commit push pull status update}.each{ |cmd|
+    desc "svk #{cmd}"
+    task(cmd){sh "svk #{cmd}"}
+  }
 end

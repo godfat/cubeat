@@ -22,74 +22,87 @@ namespace psc{
     }
 }
 
-class MapModel{
-public:
-    typedef multi_array<2, pCubeModel> container_type;
-    static pMapModel create(pMapSetting setting){
-        // map doesn't need a pool
-        return pMapModel(new MapModel(setting));
-    }
-    MapModel(pMapSetting setting): setting_(setting),
-     cubes_(extents[setting.width][setting.height])
-    {
-    }
-    pMapModel cycle(){
-        BOOST_FOREACH(container_type::iterator row, cubes_){
-            BOOST_FOREACH(pCubeModel cube, row){
-                
-            }
+namespace psc{ namespace model{
+    class Map{
+    public:
+        typedef multi_array<2, pCube> container_type;
+        static pMap create(pMapSetting setting){
+            // map doesn't need a pool
+            return pMap(new Map(setting));
         }
-    	// n_of_newcomers_ = 0;
+        MapModel(pMapSetting setting): setting_(setting),
+         cubes_(extents[setting.width][setting.height])
+        {
+            init_cubes();
+        }
+        pMap cycle(){
+            n_of_newcomers_ = 0;
+            Cube* cubes = cubes_.origin();
+            for(int i=--ms().size(), iend=-1; i!=iend; --i){
+                if(Cube* s = cubes[i]){
+                    if( !s->has_grounded() ) ++n_of_newcomers_;
+                    if( s->cycle_and_die() ){
+                        cubes[i] = NULL;
+                    }
+                }
+            }
+        	// n_of_newcomers_ = 0;
 
-        // for(container_type::reverse_iterator i=data_.rbegin(), iend=data_.rend();
-        //     i!=iend; ++i)
-        // {
-        //     if(Square* s = *i){
-        //      if( !s->has_grounded() ) ++n_of_newcomers_;
-        //         if( s->cycle_and_die() ){
-        //             *i = NULL;
-        //         }
-        //     }
-        // }
-    }
-private:
-    pMapSetting setting_;
-    container_type cubes_;
-};
+            // for(container_type::reverse_iterator i=data_.rbegin(), iend=data_.rend();
+            //     i!=iend; ++i)
+            // {
+            //     if(Square* s = *i){
+            //       if( !s->has_grounded() ) ++n_of_newcomers_;
+            //       if( s->cycle_and_die() ){
+            //         *i = NULL;
+            //       }
+            //     }
+            // }
+        }
+    private:
+        pMapSetting setting_;
+        container_type cubes_;
+    };
 
-class CubeModel{
-public:
-    static pCubeModel create(pMapModel p, int x, int y, int color_id){
-        // it shouldn't be here... just for demo we have a pool.
-        static boost::object_pool<CubeModel> pool;
-        return pCubeModel(pool.allocate()->init(p, x, y, color_id));
-    }
-};
+    class Cube{
+    public:
+        static pCube create(pMap p, int x, int y, int color_id){
+            // it shouldn't be here... just for demo we have a pool.
+            static boost::object_pool<Cube> pool;
+            return pCube(pool.allocate()->init(p, x, y, color_id));
+        }
+    };
+}}
 
-class MapPresenter{
-public:
-    MapPresenter(pMapSetting setting):
-        setting_(setting),
-        view_(MapView::create()),
-        model_(MapModel::create(setting))
-    {}
-private:
-    pMapSetting setting_;
-    pMapView view_;
-    pMapModel model_;
-};
+namespace psc{ namespace presenter{
+    class Map{
+    public:
+        Map(pMapSetting setting):
+            setting_(setting),
+            model_(model::Map::create(this, setting)),
+            view_(view::Map::create(this))
+        {
+            
+        }
+    private:
+        pMapSetting setting_;
+        model::pMap model_;
+        view::pMap view_;
+        Cubes cubes_;
+    };
 
-class CubePresenter{
-public:
-    CubePresenter(MapPresenter* map, int x, int y, int color_id):
-        map_(map),
-        view_(CubeView::create(map->view())),
-        model_(CubeModel::create(map->model(), x, y, color_id))
-    {}
-private:
-    MapPresenter* map_;
-    CubeView* view_;
-    CubeModel* model_;
-};
+    class Cube{
+    public:
+        Cube(pMap map, int x, int y, int color_id):
+            map_(map),
+            model_(model::Cube::create(map->model(), x, y, color_id)),
+            view_(view::Cube::create(map->view()), x, y, color_id)
+        {}
+    private:
+        pMap map_;
+        model::pCube model_;
+        view::pCube view_;
+    };
+}}
 
 #endif

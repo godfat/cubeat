@@ -33,4 +33,6 @@ int main(){
 
     cout << a.origin()[0] << endl;
     cout << a.origin()[10] << endl;
+    a.origin()[50] = -1;
+    cout << a.origin()[50] << endl;
 }

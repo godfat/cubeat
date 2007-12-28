@@ -5,8 +5,10 @@ end
 
 #####
 
-inputs = Dir.glob('**/*.erb')
-outputs = inputs.map{|o| o[0..-5]}
+# inputs = Dir.glob('**/*.erb')
+# outputs = inputs.map{|o| o[0..-5]}
+inputs = FileList['**/*.erb']
+outpus = inputs.ext
 
 require 'erb'
 require 'open-uri'
@@ -15,7 +17,7 @@ require 'lib/attr_builder'
 inputs.zip(outputs).each{ |input, output|
   file output => input do
     open output, 'w' do |o|
-      $__class__ = (output.gsub %r{.*/}, '')[0..-5]
+      $__class__ = (output.gsub %r{.*/}, '').ext # [0..-5]
       o << ERB.new(open(input).read).result
     end
   end

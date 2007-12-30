@@ -23,7 +23,6 @@ SpriteView::SpriteView(GUIView const* parent)
 SpriteView& SpriteView::init(ObjectView const* parent)
 {
     video::IVideoDriver* driver = smgr_->getVideoDriver();
-    driver->setTextureCreationFlag(video::ETCF_OPTIMIZED_FOR_QUALITY, true);
 
     SMaterial mat_;
 
@@ -33,8 +32,13 @@ SpriteView& SpriteView::init(ObjectView const* parent)
 
     mat_.MaterialTypeParam =
         video::pack_texureBlendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA, EMFN_MODULATE_1X);
+/*
+    mat_.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat_.MaterialTypeParam = 0.1f; */
 
-    mat_.DiffuseColor.set(255,255,255,255);
+    //still some problem with material settings. I'll fix that later.
+
+    mat_.DiffuseColor.set(255,255,255,255); 
 
     body_ = smgr_->addBillboardSceneNode(parent->body(), dimension2df(100,40), vector3df(0,0,5));
     body_->setScale(vector3df(10.0/5.0,1.0,1.0));
@@ -47,6 +51,13 @@ SpriteView& SpriteView::moveTo(int x, int y)
 {
     //body_->setPosition(vector3df(x-320.f+51.f, -y+240.f-21.f, body_->getPosition().Z));
     set<Pos2D>(vector2df(x-320.f+51.f, -y+240.f-21.f));
+    return *this;
+}
+
+SpriteView& SpriteView::setDepth(float d)
+{
+    vector2df pos2d = get<Pos2D>();
+    set<Pos3D>(vector3df(pos2d.X, pos2d.Y, d));
     return *this;
 }
 

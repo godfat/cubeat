@@ -124,7 +124,7 @@ int main()
     SpriteView cursor2; cursor2.init( &guiv );
 
     ButtonView something; 
-    something.init( &guiv ).moveTo(100,100).set<RGBDiffuse>(128);
+    something.init( &guiv ).moveTo(100,100).set<RGBDiffuse>(192);
 
     node2view.insert( std::make_pair( something.body(), &something ) );
     EventDispatcher::i().subscribe_obj_event(test, &input2.trig1(), &something);
@@ -152,7 +152,7 @@ int main()
 
         if( !init ) { 
             EventDispatcher::i().subscribe_timer( bind(step1, ref(anotherthing)), 1000 );
-            EventDispatcher::i().subscribe_timer( bind(glow, ref(something)), 1000, true );
+            EventDispatcher::i().subscribe_timer( bind(glow, ref(something)), 1500, true );
             init = true; 
         }
 

@@ -35,6 +35,13 @@ void Input::update_all()
         (*it)->update();
     MastEventReceiver::i().startEventProcess();
 }
+
+Input* Input::getInputByIndex(unsigned int i)
+{
+    if( i >= inputs_.size() ) return 0;
+    return inputs_[i];
+}
+
 //end of static functions
 
 Input::Input(char const* path)

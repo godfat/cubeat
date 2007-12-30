@@ -21,7 +21,6 @@ AnimatedSpriteView* AnimatedSpriteView::clone() const
 AnimatedSpriteView& AnimatedSpriteView::init(ObjectView const* parent)
 {
     video::IVideoDriver* driver = smgr_->getVideoDriver();
-    driver->setTextureCreationFlag(video::ETCF_OPTIMIZED_FOR_QUALITY, true);
 
     SMaterial mat_;
 

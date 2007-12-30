@@ -13,6 +13,7 @@ public:
     virtual SpriteView* clone() const;
     virtual SpriteView& init(ObjectView const*);
     virtual SpriteView& moveTo(int,int);
+    virtual SpriteView& setDepth(float);
     virtual SpriteView& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
 
     virtual ~SpriteView();

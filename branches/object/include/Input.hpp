@@ -27,6 +27,7 @@ class Input
 //static things here
 public:
     static void update_all();
+    static Input* getInputByIndex(unsigned int);
 
 private:
     typedef std::vector<Input*> InputHolder;

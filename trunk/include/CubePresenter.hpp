@@ -9,8 +9,8 @@ typedef MapSetting* pMapSetting;
 
 template <class MultiArray, class Fun>
 MultiArray& for_each(MultiArray& array, Fun fun){
-    MultiArray::element_type* data = array.origin();
-    for(int i=0, iend=array.size(); i!=iend; ++i)
+    typename MultiArray::element* data = array.data();
+    for(int i=0, iend=array.num_elements(); i!=iend; ++i)
         fun(data[i], i);
     return array;
 }
@@ -38,7 +38,7 @@ namespace psc{ namespace model{
             // map doesn't need a pool
             return pMap(new Map(setting));
         }
-        MapModel(pMapSetting setting): setting_(setting),
+        Map(pMapSetting setting): setting_(setting),
          cubes_(extents[setting.width][setting.height])
         {
             init_cubes();
@@ -71,23 +71,22 @@ namespace psc{ namespace model{
     private:
         Map& init_cubes(){
             typedef multi_array<int, 2> vector_2d;
-            using std::tr1::_1;
-            using std::tr1::_2;
+            using boost::lambda::_1;
+            using boost::lambda::_2;
     		vector_2d square_colors(ms().width(), ms().starting_line());
 
             int const one_color_amounts = std::ceil(static_cast<double>(ms().width())*ms().starting_line()/ms().color_amounts());
             for_each(square_colors, _1 = _2/one_color_amounts);
 
-            // while(!is_gooood(square_colors, ms().chain_amounts));
-            // {
-            //     int count = 0;
-            //     for(vector_2d<int>::iterator i=square_colors.begin(), iend=square_colors.end();
-            //         i!=iend; ++i, ++count)
-            //     {
-            //         insert(SF::Instance().Create<Square>(), count%ms().width, ms().height-1-count/ms().width, *i);
-            //     }
-            // }
+            while(!is_gooood(square_colors, ms().chain_amounts()));
+            for(int i=0, iend=square_colors.num_elements(); i!=iend; ++i)
+            {
+                insert(Cube::create(this, i%ms().width(), ms().height()-1-i/ms().width(), squares_colors[i]));
+            }
             return *this;
+        }
+        Map& insert(pCube cube){
+            cubes_[x][y] = cube;
         }
 
     private:
@@ -95,13 +94,21 @@ namespace psc{ namespace model{
         container_type cubes_;
     };
 
-    class Cube{
+    class Cube{<% @prefix = ' '*4 %>
+    <%= accessor :int, :x, :y %>
     public:
-        static pCube create(pMap p, int x, int y, int color_id){
+        static pCube create(pMap m, int x, int y, int color_id){
             // it shouldn't be here... just for demo we have a pool.
             static boost::object_pool<Cube> pool;
-            return pCube(pool.allocate()->init(p, x, y, color_id));
+            return pCube(pool.allocate()->init(m, x, y, color_id));
         }
+        Cube(){}
+        Cube* init(pMap m, int x, int y, int color_id){
+            color_ = Color::from_id(color_id);
+            return this;
+        }
+    private:
+        pColor color_;
     };
 }}
 

@@ -23,8 +23,10 @@ inputs.zip(outputs).each{ |input, output|
   file output => input do
     open output, 'w' do |o|
       # $__class__ = (output.gsub %r{.*/}, '')[0..-5]
-      $__class__ = output.pathmap('%f').ext
-      o << ERB.new(open(input).read).result
+      @class = output.pathmap('%f').ext
+      @indent = '    '
+      @prefix = ''
+      o << ERB.new(open(input).read).result(binding)
     end
   end
 }

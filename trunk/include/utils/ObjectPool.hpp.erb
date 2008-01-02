@@ -18,8 +18,8 @@ public:
 
 <% for_template_parameters_upto(3){ |args_list| %>
     template <%= template_parameters args_list %>
-    static element_type create(<%= forward_parameters i %>){
-        return element_type(SPool::Instance().construct(<%= arguments i %>), Deleter());
+    static element_type create(<%= forward_parameters args_list %>){
+        return element_type(SPool::Instance().construct(<%= arguments args_list %>), Deleter());
     }
 <% } %>
 

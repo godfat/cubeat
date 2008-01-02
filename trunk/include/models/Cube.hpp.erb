@@ -28,7 +28,7 @@ public:
 public:
     static pCube create(pMap m, int x, int y, int color_id){
         // it shouldn't be here... just for demo we have a pool.
-        static boost::object_pool<Cube> pool;
+        // static boost::object_pool<Cube> pool;
         return pCube(pool.allocate()->init(m, x, y, color_id));
     }
     Cube(){}

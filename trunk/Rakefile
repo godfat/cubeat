@@ -19,6 +19,7 @@ require 'erb'
 require 'open-uri'
 require 'lib/attr_builder'
 require 'lib/header_guard'
+require 'lib/template_forward_parameters'
 
 inputs.zip(outputs).each{ |input, output|
   file output => input do

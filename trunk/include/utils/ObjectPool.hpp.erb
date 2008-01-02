@@ -4,23 +4,55 @@
 #include <boost/pool/object_pool.hpp>
 #include <loki/Singleton.h>
 
-namespace psc{ namespace utils{
+namespace psc{
 
 template <class T>
 class ObjectPool{
 public:
-    typedef typename T::pointer_type pointer_type;
-    typedef Loki::SingletonHolder<T, Loki::CreateUsingNew, Loki::DeletableSingleton> pool_type;
+    typedef typename T::pointer_type element_type;
 
 public:
-    static pointer_type create(){
-        return pointer_type(pool_type::Instance().construct());
+    static element_type create(){
+        return element_type(SPool::Instance().construct(), Deleter());
     }
+
+<% for_template_parameters_upto(3){ |args_list| %>
+    template <%= template_parameters args_list %>
+    static element_type create(<%= forward_parameters i %>){
+        return element_type(SPool::Instance().construct(<%= arguments i %>), Deleter());
+    }
+<% } %>
+
     static void destroy_all(){
-        Loki::DeletableSingleton::GracefulDelete();
+        Loki::DeletableSingleton<pool_type>::GracefulDelete();
     }
+
+private:
+    typedef boost::object_pool<T> pool_type;
+    typedef Loki::SingletonHolder<pool_type, Loki::CreateUsingNew, Loki::DeletableSingleton> SPool;
+
+    static void destroy(T* t){
+        SPool::Instance().destroy(t);
+    }
+    static bool is_from(T* t){
+        return SPool::Instance().is_from(t);
+    }
+
+    friend class Deleter;
+    class Deleter{
+    public:
+        typedef void result_type;
+        typedef T* argument_type;
+
+    public:
+    // u.is_from(p)	bool    Returns true if p was allocated from u or may be returned as the result of a future allocation from u. Returns false if p was allocated from some other pool or may be returned as the result of a future allocation from some other pool. Otherwise, the return value is meaningless; note that this function may not be used to reliably test random pointer values.
+        void operator()(argument_type p){
+            if(ObjectPool<T>::is_from(p))
+                ObjectPool<T>::destroy(p);
+        }
+    };
 };
 
-}} // end of namespace
+} // end of namespace
 
 #endif

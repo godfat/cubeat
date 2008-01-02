@@ -7,6 +7,17 @@ typedef CubeModel* pCubeModel;
 typedef MapSetting* pMapSetting;
 ...
 
+1. map presenter is created.
+2. map model is inited.
+3. map view is inited.
+
+4. cube presenter list is created, passing map presenter to it.
+5. cube model is inited, getting map model.
+6. map model gets cube model.
+
+7. cube view is inited, getting map view.
+8. map view gets cube view.
+
 template <class MultiArray, class Fun>
 MultiArray& for_each(MultiArray& array, Fun fun){
     typename MultiArray::element* data = array.data();

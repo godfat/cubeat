@@ -1,6 +1,5 @@
 
-#ifndef _SHOOTING_CUBE_CUBE_PRESENTER_HPP_
-#define _SHOOTING_CUBE_CUBE_PRESENTER_HPP_
+<%= header_guard %>
 
 typedef MapModel* pMapModel;
 typedef CubeModel* pCubeModel;
@@ -34,26 +33,6 @@ namespace psc{
 }
 
 namespace psc{ namespace presenter{
-    class Map{
-    public:
-        typedef std::list<pCube> CubeList;
-    public:
-        Map(pMapSetting setting):
-            setting_(setting),
-            model_(model::Map::create(this, setting)),
-            view_(view::Map::create(this))
-        {}
-    public:
-        Map& operator<<(model::pCube mCube){
-            cubes_.push_back(Cube::create(mCube));
-        }
-
-    private:
-        pMapSetting setting_;
-        model::pMap model_;
-        view::pMap view_;
-        CubeList cubes_;
-    };
 
     class Cube{
     public:

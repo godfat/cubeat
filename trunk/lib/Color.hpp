@@ -1,13 +1,29 @@
 
 /*2007.11.9 
   Nothing changed.
-*/     
+*/
 
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
 
-class Color
-{
+namespace psc{
+
+class Color{
+public:
+    static Color from_id(int i){
+        int rgb;
+        switch(i){
+            case 0: rgb = blue;       break;
+            case 1: rgb = green;      break;
+            case 2: rgb = red;        break;
+            case 3: rgb = green_blue; break;
+            case 4: rgb = red_blue;   break;
+            case 5: rgb = red_green;  break;
+            case 6: rgb = 0;          break;
+            case 7: rgb = blue|green|red;
+        }
+        return Color(rgb);
+    }
 public:
     Color(): rgb_(0){}
     explicit Color(int rgb): rgb_(rgb){}
@@ -37,5 +53,7 @@ private:
 
 inline bool operator==(Color const& lhs, Color const& rhs){ return lhs.rgb() == rhs.rgb(); }
 inline bool operator!=(Color const& lhs, Color const& rhs){ return lhs.rgb() != rhs.rgb(); }
+
+} // end of namespace
 
 #endif

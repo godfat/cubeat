@@ -20,24 +20,29 @@ class Exploding;
 class Chain;
 
 namespace psc{ namespace model{
-    class Cube{<% @prefix = ' '*4 %>
-    <%= accessor :int, :x, :y %>
-    public:
-        static pCube create(pMap m, int x, int y, int color_id){
-            // it shouldn't be here... just for demo we have a pool.
-            static boost::object_pool<Cube> pool;
-            return pCube(pool.allocate()->init(m, x, y, color_id));
-        }
-        Cube(){}
-        Cube* init(pMap m, int x, int y, int color_id){
-            color_ = Color::from_id(color_id);
-            return this;
-        }
-    private:
-        pColor color_;
-    };
-}}
 
+class Cube{<%# @prefix = ' '*4 %>
+<%= accessor :int, :x, :y %>
+public:
+    typedef std::tr1::shared_ptr<Cube> pointer_type;
+public:
+    static pCube create(pMap m, int x, int y, int color_id){
+        // it shouldn't be here... just for demo we have a pool.
+        static boost::object_pool<Cube> pool;
+        return pCube(pool.allocate()->init(m, x, y, color_id));
+    }
+    Cube(){}
+    Cube* init(pMap m, int x, int y, int color_id){
+        color_ = Color::from_id(color_id);
+        return this;
+    }
+private:
+    Color color_;
+};
+
+typedef Cube::pointer_type pCube;
+
+}}
 
 /* class CubeModel{
 public:

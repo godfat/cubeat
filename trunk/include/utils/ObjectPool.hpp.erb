@@ -1,0 +1,26 @@
+
+<%= header_guard %>
+
+#include <boost/pool/object_pool.hpp>
+#include <loki/Singleton.h>
+
+namespace psc{ namespace utils{
+
+template <class T>
+class ObjectPool{
+public:
+    typedef typename T::pointer_type pointer_type;
+    typedef Loki::SingletonHolder<T, Loki::CreateUsingNew, Loki::DeletableSingleton> pool_type;
+
+public:
+    static pointer_type create(){
+        return pointer_type(pool_type::Instance().construct());
+    }
+    static void destroy_all(){
+        Loki::DeletableSingleton::GracefulDelete();
+    }
+};
+
+}} // end of namespace
+
+#endif

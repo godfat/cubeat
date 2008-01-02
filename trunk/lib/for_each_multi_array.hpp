@@ -1,6 +1,8 @@
 
-#ifndef __FOR_EACH_MULTI_ARRAY_HPP_
-#define __FOR_EACH_MULTI_ARRAY_HPP_
+#ifndef _FOR_EACH_MULTI_ARRAY_HPP_
+#define _FOR_EACH_MULTI_ARRAY_HPP_
+
+namespace psc{
 
 template <class MultiArray, class Fun>
 MultiArray& for_each(MultiArray& array, Fun fun){
@@ -9,5 +11,7 @@ MultiArray& for_each(MultiArray& array, Fun fun){
         fun(data[i], i);
     return array;
 }
+
+} // end of namespace
 
 #endif

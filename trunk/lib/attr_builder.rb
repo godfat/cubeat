@@ -16,7 +16,7 @@ def writer type, *pros
 end
 
 def _reader type, *pros
-  result = "public:\n"
+  result = "#{@prefix}public:\n"
   pros.each{ |p|
     # getter
     result << "#{@prefix}#{@indent}#{type} #{p}() const{ return #{p}_; }\n"
@@ -25,7 +25,7 @@ def _reader type, *pros
 end
 
 def _writer type, *pros
-  result = "public:\n"
+  result = "#{@prefix}public:\n"
   pros.each{ |p|
     # setter
     result << "#{@prefix}#{@indent}#{@class}& #{p}(#{type} const& new_#{p}){ #{p}_ = new_#{p}; return *this; }\n"
@@ -34,6 +34,6 @@ def _writer type, *pros
 end
 
 def _member type, *pros
-  result = "private:\n"
+  result = "#{@prefix}private:\n"
   result << "#{@prefix}#{@indent}#{type} #{pros.map{|p|"#{p}_"}.join(", ")};\n"
 end

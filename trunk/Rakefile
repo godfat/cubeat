@@ -12,7 +12,7 @@ outputs = inputs.ext
 
 desc 'erb preprocessing'
 task :preprocess => [:begin, outputs, :end].flatten
-task :begin do; puts "processing templates: #{inputs.inspect}"; end
+task :begin do; puts "processing templates: #{inputs.inspect}\n\n"; end
 task :end do; puts "processed output: #{outputs.inspect}"; end
 
 require 'erb'
@@ -24,7 +24,9 @@ inputs.zip(outputs).each{ |input, output|
   file output => input do
     open output, 'w' do |o|
       # $__class__ = (output.gsub %r{.*/}, '')[0..-5]
-      @class = output.pathmap('%f').ext
+      # @class = output.pathmap('%f').ext
+      @class = output.pathmap '%n'
+      @dir = output.pathmap('%-1d')
       @indent = '    '
       @prefix = ''
       o << ERB.new(open(input).read).result(binding)

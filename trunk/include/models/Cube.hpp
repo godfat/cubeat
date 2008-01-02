@@ -7,6 +7,8 @@
   2. MovieClip.hpp
 */         
 
+<%= header_guard %>
+
 #ifndef _SHOOTING_CUBE_CUBE_MODEL_HPP_
 #define _SHOOTING_CUBE_CUBE_MODEL_HPP_
 
@@ -19,6 +21,26 @@ class Dropping;
 class Dying;
 class Exploding;
 class Chain;
+
+namespace psc{ namespace model{
+    class Cube{<% @prefix = ' '*4 %>
+    <%= accessor :int, :x, :y %>
+    public:
+        static pCube create(pMap m, int x, int y, int color_id){
+            // it shouldn't be here... just for demo we have a pool.
+            static boost::object_pool<Cube> pool;
+            return pCube(pool.allocate()->init(m, x, y, color_id));
+        }
+        Cube(){}
+        Cube* init(pMap m, int x, int y, int color_id){
+            color_ = Color::from_id(color_id);
+            return this;
+        }
+    private:
+        pColor color_;
+    };
+}}
+
 
 class CubeModel{
 public:

@@ -45,7 +45,7 @@ public:
     ~MapM(){cout<<"~MapM"<<endl;}
 
 private:
-    void init(shared_ptr<MapP> owner){
+    void init(shared_ptr<MapP> const& owner){
         owner_ = owner;
         cout<<"MapM init"<<endl;
     }
@@ -60,4 +60,8 @@ void MapP::init(){ mapm_ = MapM::create(shared_from_this()); cout<<"MapP init"<<
 
 int main(){
     shared_ptr<MapP> mapp(MapP::create());
+    cout << "XD" << endl;
+    MapP::create();
+    // psc::ObjectPool<MapP>::destroy_all();
+    cout << "Orz" << endl;
 }

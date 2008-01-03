@@ -1,4 +1,34 @@
 
+// in all_fwd.hpp
+
+namespace psc{
+    
+namespace presenter{
+    class Map;
+    typedef shared_ptr<Map> pMap;
+    typedef weak_ptr<Map> wpMap;
+    ...
+    ...
+    ...
+}
+
+namespace model{
+    class Map;
+    typedef shared_ptr<Map> pMap;
+    typedef weak_ptr<Map> wpMap;
+    ...
+    ...
+    ...
+}
+
+...
+...
+...
+
+}
+
+
+
 <%= header_guard %>
 
 #include <boost/multi_array.hpp>
@@ -52,8 +82,8 @@ public:
 private:
     Map& init_cubes(){
         typedef multi_array<int, 2> vector_2d;
-        using boost::lambda::_1;
-        using boost::lambda::_2;
+        using boost::lambda::_1; // this would use in for_each for element
+        using boost::lambda::_2; // this would use in for_each for index
 		vector_2d square_colors(ms().width(), ms().starting_line());
 
         int const one_color_amounts = std::ceil(static_cast<double>(ms().width())*ms().starting_line()/ms().color_amounts());
@@ -62,7 +92,8 @@ private:
         while(!is_gooood(square_colors, ms().chain_amounts()));
         for(int i=0, iend=square_colors.num_elements(); i!=iend; ++i)
         {
-            insert(Cube::create(this, i%ms().width(), ms().height()-1-i/ms().width(), squares_colors[i]));
+            // insert(Cube::create(this, i%ms().width(), ms().height()-1-i/ms().width(), squares_colors[i]));
+            pCube = presenter_ -> make_cube();
         }
         return *this;
     }
@@ -71,6 +102,7 @@ private:
     }
 
 private:
+    presenter::pMap ; // should be weak_ptr;
     pMapSetting setting_;
     container_type cubes_;
 };

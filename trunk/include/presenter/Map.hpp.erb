@@ -1,23 +1,30 @@
 
 <%= header_guard %>
 
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
+    typedef std::tr1::shared_ptr<Map> pointer_type;
     typedef std::list<pCube> CubeList;
 
 public:
-    Map(pMapSetting setting):
-        setting_(setting),
-        model_(model::Map::create(this, setting)),
-        view_(view::Map::create(this))
-    {}
+    static pointer_type create(pMapSetting setting){ return ObjectPool<Map>::create(setting)->init(); }
+
+public:
+    Map(pMapSetting setting): setting_(setting) {}
 public:
     Map& operator<<(model::pCube mCube){
         cubes_.push_back(Cube::create(mCube));
+    }
+
+private:
+    pointer_type init(){
+        model_ = model::Map::create(shared_from_this(), setting_);
+        view_ = view::Map::create(shared_from_this());
+        return shared_from_this();
     }
 
 private:

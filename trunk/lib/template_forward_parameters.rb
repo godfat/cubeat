@@ -2,11 +2,12 @@
 require 'facets'
 require 'facets/enumerable/combos'
 
-def for_template_parameters_upto size
-  Array.new(size).map_with_index{ |not_important, i|
-    ([(["T"]*4).zip(
-    ['', 'const', 'volatile', 'const volatile'],
-    ['&']*4)]*(i+1)).
+def for_template_parameters_within range, modifiers = ['volatile', 'const volatile']
+  modifiers = ['', 'const'] + modifiers
+  range.to_a.map_with_index{ |size, i|
+    ([(["T"]*modifiers.size).zip(
+    modifiers,
+    ['&']*modifiers.size)]*size).
       map_with_index{ |args, arg_i|
         args.map{ |arg|
           # e.g., T0 const& a

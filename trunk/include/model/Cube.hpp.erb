@@ -26,16 +26,12 @@ class Cube{<%# @prefix = ' '*4 %>
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
 public:
-    static pCube create(pMap m, int x, int y, int color_id){
-        // it shouldn't be here... just for demo we have a pool.
-        // static boost::object_pool<Cube> pool;
-        return pCube(pool.allocate()->init(m, x, y, color_id));
+    static pCube create(pMap map, int x, int y, int color_id){
+        return ObjectPool<Cube>::create(map, x, y, color_id);
     }
-    Cube(){}
-    Cube* init(pMap m, int x, int y, int color_id){
-        color_ = Color::from_id(color_id);
-        return this;
-    }
+    Cube(pMap map, int x, int y, int color_id): x_(x), y_(y),
+        color_(Color::from_id(color_id)), map_(map)
+    {}
 private:
     Color color_;
 };

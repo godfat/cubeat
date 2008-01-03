@@ -6,6 +6,23 @@
 
 namespace psc{
 
+template <typename T, typename UserAllocator = boost::default_user_allocator_new_delete>
+class extended_object_pool: public boost::object_pool<T, UserAllocator>{
+    typedef typename boost::object_pool<T, UserAllocator>::element_type element_type;
+public:
+<% for_template_parameters_within(4..5, []){ |args_list| %>
+    template <%= template_parameters args_list %>
+    element_type * construct(<%= forward_parameters args_list %>){
+      element_type * const ret = this->malloc();
+      if (ret == 0)
+        return ret;
+      try { new (ret) element_type(<%= arguments args_list %>); }
+      catch (...) { this->free(ret); throw; }
+      return ret;
+    }
+<% } %>
+};
+
 template <class T>
 class ObjectPool{
 public:
@@ -16,7 +33,7 @@ public:
         return element_type(SPool::Instance().construct(), Deleter());
     }
 
-<% for_template_parameters_upto(3){ |args_list| %>
+<% for_template_parameters_within(1..5, []){ |args_list| %>
     template <%= template_parameters args_list %>
     static element_type create(<%= forward_parameters args_list %>){
         return element_type(SPool::Instance().construct(<%= arguments args_list %>), Deleter());
@@ -28,7 +45,7 @@ public:
     }
 
 private:
-    typedef boost::object_pool<T> pool_type;
+    typedef extended_object_pool<T> pool_type;
     typedef Loki::SingletonHolder<pool_type, Loki::CreateUsingNew, Loki::DeletableSingleton> SPool;
 
     static void destroy(T* t){

@@ -8,23 +8,17 @@ using namespace std;
 class Test/*: public tr1::enable_shared_from_this<Test> */{
 public:
     typedef tr1::shared_ptr<Test> pointer_type;
-    static pointer_type create(int i){
-        pointer_type result = psc::ObjectPool<Test>::create(i);
-        // result->init(i);
-        return result;
+    static pointer_type create(int i1, int i2, int i3, int i4, int i5){
+        return psc::ObjectPool<Test>::create(i1, i2, i3, i4, i5);
     }
-    Test(int i){init(i*2);}
-    Test(){cout << "c'tor" << endl;}
-    ~Test(){cout << "d'tor: " << i_ << endl;}
+    Test(int i1, int i2, int i3, int i4, int i5):
+        i1_(i1), i2_(i2), i3_(i3), i4_(i4), i5_(i5)
+    {cout << "c'tor: " << i1_ << i2_ << i3_ << i4_ << i5_ << endl;}
+    ~Test(){cout << "d'tor: " << i1_ << i2_ << i3_ << i4_ << i5_ << endl;}
     Test& go(){ cout << "go" << endl; return *this; }
 
 private:
-    void /* pointer_type */ init(int i){
-        i_ = i;
-        cout << "init: " << i_ << endl;
-        // return shared_from_this();
-    }
-    int i_;
+    int i1_, i2_, i3_, i4_, i5_;
 };
 
 typedef Test::pointer_type pTest;
@@ -48,13 +42,13 @@ c
 */
 
 int main(){
-    pTest t1 = Test::create(1);
+    pTest t1 = Test::create(1,2,3,4,5);
     cout << 'a' << endl;
     {
-        pTest t2 = Test::create(2);
+        pTest t2 = Test::create(2,3,4,5,6);
         cout << 'b' << endl;
     }
-    pTest t3 = Test::create(3);
+    pTest t3 = Test::create(3,4,5,6,7);
     t3->go().go().go();
     psc::ObjectPool<Test>::destroy_all();
     cout << 'c' << endl;

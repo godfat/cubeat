@@ -45,7 +45,7 @@ private:
         typedef T* argument_type;
 
     public:
-    // u.is_from(p)	bool    Returns true if p was allocated from u or may be returned as the result of a future allocation from u. Returns false if p was allocated from some other pool or may be returned as the result of a future allocation from some other pool. Otherwise, the return value is meaningless; note that this function may not be used to reliably test random pointer values.
+    // u.is_from(p)    bool    Returns true if p was allocated from u or may be returned as the result of a future allocation from u. Returns false if p was allocated from some other pool or may be returned as the result of a future allocation from some other pool. Otherwise, the return value is meaningless; note that this function may not be used to reliably test random pointer values.
         void operator()(argument_type p){
             if(ObjectPool<T>::is_from(p))
                 ObjectPool<T>::destroy(p);

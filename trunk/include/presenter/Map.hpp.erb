@@ -1,28 +1,31 @@
 
 <%= header_guard %>
 
+#include <tr1/memory>
+
 namespace psc{ namespace presenter{
 
-    class Map{
-    public:
-        typedef std::list<pCube> CubeList;
-    public:
-        Map(pMapSetting setting):
-            setting_(setting),
-            model_(model::Map::create(this, setting)),
-            view_(view::Map::create(this))
-        {}
-    public:
-        Map& operator<<(model::pCube mCube){
-            cubes_.push_back(Cube::create(mCube));
-        }
+class Map: public std::tr1::enable_shared_from_this<Map>{
+public:
+    typedef std::list<pCube> CubeList;
 
-    private:
-        pMapSetting setting_;
-        model::pMap model_;
-        view::pMap view_;
-        CubeList cubes_;
-    };
+public:
+    Map(pMapSetting setting):
+        setting_(setting),
+        model_(model::Map::create(this, setting)),
+        view_(view::Map::create(this))
+    {}
+public:
+    Map& operator<<(model::pCube mCube){
+        cubes_.push_back(Cube::create(mCube));
+    }
+
+private:
+    pMapSetting setting_;
+    model::pMap model_;
+    view::pMap view_;
+    CubeList cubes_;
+};
 
 }} // end of namespace
 

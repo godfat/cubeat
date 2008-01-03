@@ -8,8 +8,10 @@ namespace psc{
 
 template <typename T, typename UserAllocator = boost::default_user_allocator_new_delete>
 class extended_object_pool: public boost::object_pool<T, UserAllocator>{
-    typedef typename boost::object_pool<T, UserAllocator>::element_type element_type;
 public:
+    typedef typename boost::object_pool<T, UserAllocator>::element_type element_type;
+    using boost::object_pool<T, UserAllocator>::construct;
+
 <% for_template_parameters_within(4..5, []){ |args_list| %>
     template <%= template_parameters args_list %>
     element_type * construct(<%= forward_parameters args_list %>){

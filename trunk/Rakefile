@@ -5,6 +5,12 @@ end
 
 #####
 
+require 'rubygems'
+gem 'ludy', '>=0.1.1'
+require 'ludy/tasks/erb_cpp'
+PROJ = 'shooting_cubes'
+
+=begin
 # inputs = Dir.glob('**/*.erb')
 # outputs = inputs.map{|o| o[0..-5]}
 inputs = FileList['**/*.erb']
@@ -34,12 +40,13 @@ inputs.zip(outputs).each{ |input, output|
     end
   end
 }
+=end
 
 #####
 
 require 'rake/clean'
 require 'fileutils'
-CLEAN.include '*.o', outputs
+CLEAN.include '*.o'
 task :clobber => :clean do
   sh 'make clean' rescue nil
   File.delete 'Makefile' rescue nil

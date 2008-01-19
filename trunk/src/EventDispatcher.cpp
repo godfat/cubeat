@@ -23,6 +23,10 @@ using namespace scene;
 using namespace psc;
 using namespace ctrl;
 
+EventDispatcher::EventDispatcher()
+{
+}
+
 EventDispatcher&
 EventDispatcher::subscribe_btn_event(BtnCallback cb, Button const* btn, BSTATE state)
 {
@@ -33,7 +37,7 @@ EventDispatcher::subscribe_btn_event(BtnCallback cb, Button const* btn, BSTATE s
 EventDispatcher&
 EventDispatcher::subscribe_timer(TimerCallback cb, int duration, bool loop)
 {
-    irr::u32 now = IrrDevice::i()->getTimer()->getRealTime();
+    irr::u32 now = IrrDevice::i().d()->getTimer()->getRealTime();
     timers_.push_back( tie( cb, duration, now, loop ) );
     return *this;
 }
@@ -48,7 +52,7 @@ EventDispatcher::subscribe_obj_event(ObjCallback ocb, Button const* btn, view::p
 void EventDispatcher::dispatch_obj(){
     //Pick
     BOOST_FOREACH(ObjEvent& o, obj_listeners_){
-        ISceneManager* smgr = IrrDevice::i()->getSceneManager();
+        ISceneManager* smgr = IrrDevice::i().d()->getSceneManager();
         ISceneCollisionManager* colm = smgr->getSceneCollisionManager();
 
         Button const* btn = get<OE::BTN>(o);
@@ -75,7 +79,7 @@ void EventDispatcher::dispatch()
 
     dispatch_obj();
 
-    ITimer* irrTimer = IrrDevice::i()->getTimer();
+    ITimer* irrTimer = IrrDevice::i().d()->getTimer();
     for(Timers::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         irr::u32 now = irrTimer->getRealTime();
         if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {

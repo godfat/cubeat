@@ -12,12 +12,11 @@ using namespace accessor;
 using namespace psc;
 using namespace view;
 
-//Object::Object(Object const* parent)
-Object::Object()
-    :smgr_(IrrDevice::i()->getSceneManager()),
-     body_(0)
+Object::Object(std::string const& name)
+    :smgr_(IrrDevice::i().d()->getSceneManager()),
+     body_(0), name_(name)
 {
-    //init(parent);
+
 }
 
 Object* Object::clone() const
@@ -26,9 +25,15 @@ Object* Object::clone() const
     return obj;
 }
 
-void Object::init(pObject const parent)
+void Object::init(pObject const& parent)
 {
     body_ = smgr_->addEmptySceneNode(parent?parent->body():0);
+
+    /* DEBUG CODE */
+    body_->setDebugDataVisible(scene::EDS_BBOX_BUFFERS);
+    body_->setIsDebugObject(true);            //???????
+    body_->setPosition(vector3df(0,0,100));   //??????? ghostly blocking everything in the scene.
+    /* END OF DEBUG CODE */
 }
 
 Object& Object::moveTo(int x, int y, int z)

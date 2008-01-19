@@ -6,6 +6,7 @@
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 
+#include <boost/foreach.hpp>
 #include <boost/tr1/functional.hpp>
 #include <iostream>
 
@@ -25,17 +26,24 @@ Map* Map::clone() const
 
 void Map::init(pScene const& parent)
 {
-    //TODO: make these codes here looks better.
-    ctrl::Input* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input* input2 = ctrl::Input::getInputByIndex(1);
+    /* FIXME:
+       No, you can't put picking and node2view conversion here.
+       Too many restrictions. Better move to Player class or Scene class
+       when I got one. */
 
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Map::ownerHitCallback, this, _1, _2), //(this, x, y)
-             (index_ == 0 ) ? &input1->trig1() : &input2->trig1(), ctrl::BTN_PRESS );
-
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Map::enemyHitCallback, this, _1, _2), //(this, x, y)
-             (index_ == 0 ) ? &input2->trig1() : &input1->trig1(), ctrl::BTN_PRESS );
+    int i = 0;
+    BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
+        if( index_ == i ) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                bind(&Map::ownerHitCallback, this, _1, _2), //(this, x, y)
+                &it->trig1(), ctrl::BTN_PRESS );
+        } else {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                bind(&Map::enemyHitCallback, this, _1, _2), //(this, x, y)
+                &it->trig1(), ctrl::BTN_PRESS );
+        }
+        ++i;
+    }
 
     body_ = smgr_->addEmptySceneNode( parent?parent->body():0 );
     parent_ = parent;

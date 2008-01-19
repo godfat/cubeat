@@ -21,7 +21,7 @@ SceneObject* SceneObject::clone() const
 void SceneObject::init(pObject const& parent)
 {
     std::ostringstream oss;
-    oss << "rc/model/" << path_ << ".x";
+    oss << "rc/model/" << name_ << ".x";
     IMesh* mesh = smgr_->getMesh( oss.str().c_str() )->getMesh(0);
 
     body_ = smgr_->addMeshSceneNode( mesh, parent?parent->body():0 );

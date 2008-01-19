@@ -13,6 +13,7 @@ class Map;
 
 class Cube : public SceneObject
 {
+    typedef boost::function<void()> HitCallback;
     typedef std::tr1::shared_ptr<Map> pMap;
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
@@ -22,17 +23,22 @@ public:
         return p;
     }
 
-    Cube():SceneObject("test_cube"){}
+    Cube():SceneObject("test_cube"), owner_hit_(0), enemy_hit_(0){}
 
     virtual Cube* clone() const;
     virtual void ownerHit();
     virtual void enemyHit();
+    virtual Cube& setOwnerHit( HitCallback const& );
+    virtual Cube& setEnemyHit( HitCallback const& );
 
     virtual ~Cube(){}
 
 protected:
-    virtual void init(pMap&);
+    void init(pMap&);
 
+protected:
+    HitCallback owner_hit_;
+    HitCallback enemy_hit_;
 };
 
 typedef Cube::pointer_type pCube;

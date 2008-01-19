@@ -5,6 +5,9 @@
 #include "utils/ObjectPool.hpp"
 #include <boost/tr1/memory.hpp>
 
+/* TODO:
+   Somehow add a node2view conversion here? Not so sure. */
+
 namespace psc { namespace view {
 
 class Scene : public Object, public std::tr1::enable_shared_from_this<Scene>
@@ -34,6 +37,7 @@ protected:
 };
 
 typedef Scene::pointer_type pScene;
+typedef std::tr1::weak_ptr<Scene> wpScene;
 
 } //view
 } //psc

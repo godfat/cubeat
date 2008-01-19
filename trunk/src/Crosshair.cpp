@@ -10,8 +10,8 @@ Crosshair::Crosshair(Input const* input)
      topbound_(0), bottombound_(480), owner_(input)
 {
     //DO NOT DEREFERENCE or USE "input", "owner_" in the constructor.
-    bottombound_ = IrrDevice::i()->getVideoDriver()->getScreenSize().Height;
-    rightbound_ = IrrDevice::i()->getVideoDriver()->getScreenSize().Width;
+    bottombound_ = IrrDevice::i().d()->getVideoDriver()->getScreenSize().Height;
+    rightbound_ = IrrDevice::i().d()->getVideoDriver()->getScreenSize().Width;
 }
 
 void Crosshair::constrain()

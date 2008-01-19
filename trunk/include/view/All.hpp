@@ -6,6 +6,7 @@
 #include "view/AnimatedSprite.hpp"
 #include "view/Button.hpp"
 #include "view/Cube.hpp"
+#include "view/Game.hpp"
 #include "view/Map.hpp"
 #include "view/Menu.hpp"
 #include "view/Scene.hpp"

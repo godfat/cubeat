@@ -9,6 +9,11 @@
 #include <map>
 #include <vector>
 
+/* FIXME:
+   No, you can't put picking and node2view conversion here.
+   Too many restrictions. Better move to Player class or Scene class
+   when I got one. */
+
 namespace irr{
 namespace scene{
 class ISceneNode;
@@ -39,7 +44,7 @@ public:
     virtual Map& addCube(pCube);
 
 protected:
-    virtual void init(pScene const&);
+    void init(pScene const&);
     virtual void ownerHitCallback(int x, int y);
     virtual void enemyHitCallback(int x, int y);
 

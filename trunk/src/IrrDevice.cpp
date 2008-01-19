@@ -6,16 +6,20 @@
 #include "private/MastEventReceiver.hpp"
 
 using namespace irr;
-IrrlichtDevice* IrrDevice::device_ = 0;
 
-IrrDevice::IrrDevice(bool test)
+bool IrrDevice::inited_ = false;
+
+bool IrrDevice::init(bool test)
 {
+    if( inited_ ) return false;
+    inited_ = true;
     if( !test )
-        device_ = irr::createDevice( irr::video::EDT_NULL,
-                                     irr::core::dimension2d<irr::s32>(640,480),
-                                     32, false, false, false, &MastEventReceiver::i());
+        device_ = createDevice( irr::video::EDT_NULL,
+                                irr::core::dimension2d<irr::s32>(640,480),
+                                32, false, false, false, &MastEventReceiver::i());
     else
-        device_ = irr::createDevice( irr::video::EDT_OPENGL,
-                                     irr::core::dimension2d<irr::s32>(640,480),
-                                     32, false, false, false, &MastEventReceiver::i());
+        device_ = createDevice( irr::video::EDT_OPENGL,
+                                irr::core::dimension2d<irr::s32>(640,480),
+                                32, false, false, false, &MastEventReceiver::i());
+    return device_ ? true : false;
 }

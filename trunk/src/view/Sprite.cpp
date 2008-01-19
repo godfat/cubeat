@@ -2,10 +2,13 @@
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
 #include "view/Scene.hpp"
+#include "EventDispatcher.hpp"
+#include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "CustomAnimator.hpp"
-#include <iostream>
+
+#include <sstream>
 
 using namespace irr;
 using namespace core;
@@ -18,29 +21,43 @@ using namespace accessor;
 using namespace psc;
 using namespace view;
 using std::tr1::function;
-/*
-Sprite::Sprite(Scene const* parent)
-    :Object(parent)
+
+
+CallbackDelegate& CallbackDelegate::operator =(std::tr1::function<void(pSprite&)> const& cb)
 {
+    ctrl::EventDispatcher::i().subscribe_obj_event(cb, subscribed_btn_, owner_.lock());
+    return *this;
 }
-*/
+
+CallbackDelegate& CallbackDelegate::setButton(ctrl::Button const* btn)
+{
+    subscribed_btn_ = btn;
+    return *this;
+}
+
+void CallbackDelegate::setOwner(pSprite const& owner)
+{
+    owner_ = owner;
+}
+
+//still some problem with material settings. I'll fix that later.
 void Sprite::init(pObject const& parent)
 {
+    if( name_.size() < 1 ) {
+        Object::init(parent);
+        return;
+    }
+    std::ostringstream oss;
+    oss << "rc/texture/" << name_ << ".png";
+
     video::IVideoDriver* driver = smgr_->getVideoDriver();
 
     SMaterial mat_;
-
     mat_.setFlag(video::EMF_LIGHTING, true);
-    mat_.setTexture(0, driver->getTexture("rc/texture/title.png"));
-/*    mat_.MaterialType = video::EMT_ONETEXTURE_BLEND;
-
-    mat_.MaterialTypeParam =
-        video::pack_texureBlendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA, EMFN_MODULATE_1X); */
+    mat_.setTexture(0, driver->getTexture(oss.str().c_str()));
 
     mat_.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-    mat_.MaterialTypeParam = 0.1f;
-
-    //still some problem with material settings. I'll fix that later.
+    mat_.MaterialTypeParam = 0.01f;
 
     mat_.DiffuseColor.set(255,255,255,255);
 
@@ -48,6 +65,8 @@ void Sprite::init(pObject const& parent)
     body_->setScale(vector3df(10.0/5.0,1.0,1.0));
 
     body_->getMaterial(0) = mat_;
+
+    press_.setOwner( shared_from_this() );
 }
 
 Sprite& Sprite::moveTo(int x, int y)
@@ -75,6 +94,11 @@ Sprite* Sprite::clone() const
 {
     Sprite* obj = new Sprite(*this);
     return obj;
+}
+
+CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
+{
+    return press_.setButton(btn);
 }
 
 Sprite::~Sprite()

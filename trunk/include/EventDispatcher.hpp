@@ -61,7 +61,7 @@ private:
     enum blah { BCALLBACK = 0, BUTTON = 1, STATE = 2 };
     enum bleh { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3 };
     struct OE{enum{OBJ_CB, BTN, SPRITE};};
-    EventDispatcher(){}
+    EventDispatcher();
     EventDispatcher(EventDispatcher const&);
     void dispatch_obj();
 

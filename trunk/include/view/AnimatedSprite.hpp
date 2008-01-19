@@ -4,7 +4,9 @@
 
 /* ToDo:
    How to effectively and easily animate textures?
-   Currently: load a bunch of ITextures, and set them into
+
+   Currently:
+   load a bunch of ITextures, and set them into
    a TextureAnimator (which derives from CustomAnimator<Linear, GenericInt>)
 
    Should accept float number frame number ?        */
@@ -33,7 +35,7 @@ public:
         return p;
     }
 
-    AnimatedSprite(std::string const& name):name_(name){}
+    AnimatedSprite(std::string const& name):Sprite(name){}
 
     virtual AnimatedSprite* clone() const;
     virtual AnimatedSprite& addAnime(std::string const& anime_name, int total_frames);
@@ -49,7 +51,6 @@ protected:
 protected:
     typedef std::vector< irr::video::ITexture* > Animation2D;
     std::map< std::string, Animation2D > animations_;
-    std::string name_;
 };
 
 typedef AnimatedSprite::pointer_type pAnimatedSprite;

@@ -29,8 +29,8 @@ public:
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
-        smgr_ = IrrDevice::i()->getSceneManager();
-        startTime_ = IrrDevice::i()->getTimer()->getTime() + delayTime;
+        smgr_ = IrrDevice::i().d()->getSceneManager();
+        startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);
     };
 

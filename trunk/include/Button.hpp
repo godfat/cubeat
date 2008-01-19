@@ -28,7 +28,7 @@ public:
 
     bool& now() { return now_; }
 
-    void write_state_now_to_last() { last_ = now_; }
+    void write_state_now_to_last() { last_ = now_; now_ = false; }
     void update_state() {
         if( pressed() )       state_ = BTN_PRESS;
         else if( released() ) state_ = BTN_RELEASE;

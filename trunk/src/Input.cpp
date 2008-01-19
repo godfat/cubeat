@@ -1,5 +1,5 @@
 
-/* 
+/*
    Input Implementation
 */
 
@@ -11,6 +11,7 @@
 #include "private/Wiimote_IR_internal.hpp"
 #endif
 
+#include <boost/foreach.hpp>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -21,7 +22,7 @@ using namespace psc;
 using namespace ctrl;
 
 //static functions
-Input::InputHolder Input::inputs_;
+Input::InputList Input::inputs_;
 bool Input::keyboard_mouse_input_ = false;
 
 void Input::update_all()
@@ -34,8 +35,9 @@ void Input::update_all()
         std::cout<<"Toggle secondary input "<<(keyboard_mouse_input_?"on":"off")<<"\n";
     }
 
-    for( InputHolder::iterator it = inputs_.begin(); it != inputs_.end(); ++it )
-        (*it)->update();
+    BOOST_FOREACH( Input* it, inputs_ )
+        it->update();
+
     MastEventReceiver::i().startEventProcess();
 }
 

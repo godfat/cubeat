@@ -21,7 +21,7 @@ AnimatedSceneObject* AnimatedSceneObject::clone() const
 void AnimatedSceneObject::init(pObject const& parent)
 {
     std::ostringstream oss;
-    oss << "rc/model/" << path_ << ".x";
+    oss << "rc/model/" << name_ << ".x";
     IAnimatedMesh* mesh = smgr_->getMesh( oss.str().c_str() );
 
     body_ = smgr_->addAnimatedMeshSceneNode( mesh, parent?parent->body():0 );

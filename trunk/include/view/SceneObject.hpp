@@ -14,13 +14,13 @@ class SceneObject : public Object, public std::tr1::enable_shared_from_this<Scen
 {
 public:
     typedef std::tr1::shared_ptr< SceneObject > pointer_type;
-    static pointer_type create(std::string const& path, pObject const& parent) {
-        pointer_type p = psc::ObjectPool< SceneObject >::create(path);
+    static pointer_type create(std::string const& name, pObject const& parent) {
+        pointer_type p = psc::ObjectPool< SceneObject >::create(name);
         p->init(parent);
         return p;
     }
 
-    SceneObject(std::string const& path):path_(path){}
+    SceneObject(std::string const& name):Object(name){}
     
     virtual SceneObject* clone() const;
 
@@ -30,7 +30,7 @@ protected:
     void init(pObject const&);
 
 protected:
-    std::string path_;
+
 };
 
 typedef SceneObject::pointer_type pSceneObject;

@@ -1,5 +1,5 @@
 
-/* 
+/*
    Wiimote IR data calculation supplemental functions,
    internal use only. Adapted from Wiiuse lib 0.9 (wiiuse.net)
 */
@@ -49,7 +49,7 @@ void get_ir_dot_avg       (wiimote::ir::dot dots[4], float& x, float& y);
 void reorder_ir_dots      (wiimote::ir::dot dots[4]);
 float cal_ir_distance     (wiimote::ir::dot dots[4]);
 
-/* these codes must be somehow changed in the future. 
+/* these codes must be somehow changed in the future.
    I shouldn't have used global variable to go along with something
    that may very well has multiple instances. */
 
@@ -64,7 +64,7 @@ float ir_distance = 0.0f;
  *
  *	@param wm		Pointer to a wiimote_t structure.
  */
-bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z) 
+bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
 {
     wiimote::ir::dot* dot = wm.IR.Dot;
 	int i;
@@ -80,7 +80,7 @@ bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
 			ir_num_dots++;
 	}
 
-	switch (ir_num_dots) {        
+	switch (ir_num_dots) {
 		case 0:
 		{
 			ir_state = 0;
@@ -190,7 +190,7 @@ namespace {
  *	this will not do anything and the cursor
  *	position may be inaccurate.
  */
-void fix_rotated_ir_dots(wiimote::ir::dot dots[4], float ang) 
+void fix_rotated_ir_dots(wiimote::ir::dot dots[4], float ang)
 {
 	float s, c;
 	float x, y;
@@ -231,7 +231,7 @@ void fix_rotated_ir_dots(wiimote::ir::dot dots[4], float ang)
  *	@param x		[out] Average X
  *	@param y		[out] Average Y
  */
-void get_ir_dot_avg(wiimote::ir::dot dots[4], float& x, float& y) 
+void get_ir_dot_avg(wiimote::ir::dot dots[4], float& x, float& y)
 {
 	int vis = 0, i = 0;
 
@@ -256,7 +256,7 @@ void get_ir_dot_avg(wiimote::ir::dot dots[4], float& x, float& y)
  *
  *	@param dot		An array of 4 ir_dot_t objects.
  */
-void reorder_ir_dots(wiimote::ir::dot dots[4]) 
+void reorder_ir_dots(wiimote::ir::dot dots[4])
 {
 	int i, j, order;
 
@@ -286,7 +286,7 @@ void reorder_ir_dots(wiimote::ir::dot dots[4])
  *
  *	@param dot		An array of 4 ir_dot_t objects.
  */
-float cal_ir_distance(wiimote::ir::dot dots[4]) 
+float cal_ir_distance(wiimote::ir::dot dots[4])
 {
 	int i1, i2;
 	float xd, yd;

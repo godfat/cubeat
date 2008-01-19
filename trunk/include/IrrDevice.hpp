@@ -19,18 +19,15 @@
 class IrrDevice
 {
 public:
-    static bool init(bool test) {         //param init test.
-        if( device_ != 0 ) return true;
-        static IrrDevice singleton(test);
-        if( singleton.device_ == 0 ) return false;
-        return true;
+    static IrrDevice& i() {
+        static IrrDevice singleton;
+        return singleton;
     }
 
-    static irr::IrrlichtDevice* i() {
-        if( device_ != 0 ) return device_;
-        static IrrDevice singleton(false);
-        return singleton.device_;
-    }
+    irr::IrrlichtDevice* d() { return device_; }
+
+    bool init( bool test );
+    bool run() { return device_->run(); }
 
     ~IrrDevice() {
         printf("device released.\n");
@@ -38,10 +35,11 @@ public:
     }
 
 private:
-    IrrDevice( bool test );
+    IrrDevice():device_(0){}
     IrrDevice(IrrDevice const&);
 
-    static irr::IrrlichtDevice* device_;
+    irr::IrrlichtDevice* device_;
+    static bool inited_;
 };
 
 #endif

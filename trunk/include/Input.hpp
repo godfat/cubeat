@@ -27,18 +27,21 @@ namespace psc { namespace ctrl {
 class Input
 {
 //static things here
+    typedef std::vector<Input*> InputList;
 public:
     static void update_all();
     static Input* getInputByIndex(unsigned int);
+    static InputList& getInputs() { return inputs_; }
+    static int count() { return static_cast<int>(inputs_.size()); }
 
 private:
-    typedef std::vector<Input*> InputHolder;
-    static InputHolder inputs_;
+    static InputList inputs_;
     static bool keyboard_mouse_input_;
 
     static const int MAX_SETTINGS = 8;
     static const int CURSOR_SENSATIVITY = 5;
 
+//non-static below
 public:
     Input(char const*);
     ~Input();

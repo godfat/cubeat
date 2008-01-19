@@ -27,12 +27,24 @@ void Cube::init(pMap& parent)
     parent->addCube( std::tr1::static_pointer_cast<Cube>(shared_from_this()) );
 }
 
+Cube& Cube::setOwnerHit( HitCallback const& ownerhit )
+{
+    owner_hit_ = ownerhit;
+    return *this;
+}
+
+Cube& Cube::setEnemyHit( HitCallback const& enemyhit )
+{
+    enemy_hit_ = enemyhit;
+    return *this;
+}
+
 void Cube::ownerHit()
 {
-    std::cout << "HAHAHA.\n";
+    if (owner_hit_) owner_hit_();
 }
 
 void Cube::enemyHit()
 {
-    std::cout << "HEHEHE.\n";
+    if (enemy_hit_) enemy_hit_();
 }

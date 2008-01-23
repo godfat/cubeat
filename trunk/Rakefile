@@ -6,7 +6,7 @@ end
 #####
 
 require 'rubygems'
-gem 'ludy', '>=0.1.1'
+gem 'ludy', '>=0.1.3'
 require 'ludy/tasks/erb_cpp'
 PROJ = 'shooting_cubes'
 

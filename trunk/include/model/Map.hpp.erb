@@ -29,7 +29,7 @@ namespace model{
 
 
 
-<%= header_guard %>
+<% header_guard do %>
 
 #include <boost/multi_array.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -57,7 +57,7 @@ public:
     }
     pMap& cycle(){
         n_of_newcomers_ = 0;
-        for_each(cubes, bind(Map::do_cycle, this));
+        reverse_for_each(cubes, bind(Map::do_cycle, this));
         return *this;
     }
     pMapSetting& ms() const{ return *setting_; }
@@ -104,4 +104,4 @@ typedef Map::pointer_type pMap;
 
 }} // end of namespace
 
-#endif
+<% end %>

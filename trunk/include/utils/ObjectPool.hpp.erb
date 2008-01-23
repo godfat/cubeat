@@ -1,5 +1,5 @@
 
-<%= header_guard %>
+<% header_guard do %>
 
 #include <boost/pool/object_pool.hpp>
 #include <loki/Singleton.h>
@@ -74,4 +74,4 @@ private:
 
 } // end of namespace
 
-#endif
+<% end %>

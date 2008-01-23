@@ -1,13 +1,15 @@
 
+
+
 typedef multi_array<int, 2> vector_2d;
 
 class ChainChecker{
 public:
     static void until_no_chained_cubes(vector_2d<int>& square_colors, int chain_amounts){
-        while(not_ok(square_colors, chain_amounts));
+        while(shuffle_and_is_not_ok(square_colors, chain_amounts));
     }
 private:
-    static bool not_ok(vector_2d<int>& square_colors, int chain_amounts){
+    static bool shuffle_and_is_not_ok(vector_2d<int>& square_colors, int chain_amounts){
         std::random_shuffle(square_colors.begin(), square_colors.end());
 
         for(int y=0, yend=square_colors.height(); y!=yend; ++y)
@@ -15,6 +17,10 @@ private:
                 if(is_this_good_to_drink(square_colors, x, y, chain_amounts));
                 else return true;
         return false;
+    }
+    static bool is_this_good_to_drink(vector_2d const& square_colors, int x, int y, int chain_amounts){
+        ChainChecker c(square_colors, x, y, chain_amounts);
+        return c.no_left() && c.no_right() && c.no_up() && c.no_down();
     }
 private:
     friend bool is_this_good_to_drink(vector_2d const&, int, int, int);
@@ -59,9 +65,4 @@ private:
     size_type const chain_amounts_;
     int const tested_color_;
 };
-
-bool is_this_good_to_drink(vector_2d const& square_colors, int x, int y, int chain_amounts){
-    ChainChecker c(square_colors, x, y, chain_amounts);
-    return c.no_left() && c.no_right() && c.no_up() && c.no_down();
-}
 

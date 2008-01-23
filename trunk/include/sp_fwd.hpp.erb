@@ -1,0 +1,11 @@
+<%= header_guard %>
+
+#include <boost/tr1/tr1/memory>
+<%= Dir.glob('**/*.hpp').map{ |file| klass = file.pathmap '%n'
+"
+class #{klass};
+typedef std::tr1::shared_ptr<#{klass}> p#{klass};
+typedef std::tr1::weak_ptr<#{klass}> wp#{klass};"
+}.join "\n" %>
+
+#endif

@@ -36,6 +36,7 @@ namespace model{
 #include "presenter/Map.hpp"
 #include "model/Cube.hpp"
 #include "data/MapSetting.hpp"
+#include "utils/ChainChecker.hpp"
 
 namespace psc{ namespace model{
 
@@ -54,46 +55,38 @@ public:
     {
         init_cubes();
     }
-    pMap cycle(){
+    pMap& cycle(){
         n_of_newcomers_ = 0;
-        Cube* cubes = cubes_.origin();
-        for(int i=--ms().size(), iend=-1; i!=iend; --i){
-            if(Cube* s = cubes[i]){
-                if( !s->has_grounded() ) ++n_of_newcomers_;
-                if( s->cycle_and_die() ){
-                    cubes[i] = NULL;
-                }
-            }
-        }
-    	// n_of_newcomers_ = 0;
-
-        // for(container_type::reverse_iterator i=data_.rbegin(), iend=data_.rend();
-        //     i!=iend; ++i)
-        // {
-        //     if(Square* s = *i){
-        //       if( !s->has_grounded() ) ++n_of_newcomers_;
-        //       if( s->cycle_and_die() ){
-        //         *i = NULL;
-        //       }
-        //     }
-        // }
+        for_each(cubes, bind(Map::do_cycle, this));
+        return *this;
     }
     pMapSetting& ms() const{ return *setting_; }
 private:
+    void do_cycle(pCube c, int i){
+        if(c){
+            if( !c->has_grounded()  ) ++n_of_newcomers_;
+            if(  c->cycle_and_die() ) cubes_[i] = NULL;
+        }
+    }
+private:
     Map& init_cubes(){
-        typedef multi_array<int, 2> vector_2d;
-        using boost::lambda::_1; // this would use in for_each for element
-        using boost::lambda::_2; // this would use in for_each for index
+        using boost::lambda::_1; // this would be used in for_each for element
+        using boost::lambda::_2; // this would be used in for_each for index
 		vector_2d square_colors(ms().width(), ms().starting_line());
 
-        int const one_color_amounts = std::ceil(static_cast<double>(ms().width())*ms().starting_line()/ms().color_amounts());
+        int const one_color_amounts = std::ceil(
+            static_cast<double>(ms().width())*ms().starting_line()/ms().color_amounts()
+        );
         for_each(square_colors, _1 = _2/one_color_amounts);
 
-        while(!is_gooood(square_colors, ms().chain_amounts()));
+        ChainChecker::until_no_chained_cubes(square_colors, ms().chain_amounts());
+
         for(int i=0, iend=square_colors.num_elements(); i!=iend; ++i)
         {
             // insert(Cube::create(this, i%ms().width(), ms().height()-1-i/ms().width(), squares_colors[i]));
-            pCube = presenter_ -> make_cube();
+            insert(presenter_->make_cube(i%ms().width(), // x
+                                         ms().height()-1-i/ms().width()), // y
+                                         squares_colors[i]);
         }
         return *this;
     }
@@ -102,7 +95,7 @@ private:
     }
 
 private:
-    presenter::pMap ; // should be weak_ptr;
+    presenter::wpMap presenter_; // should be weak_ptr;
     pMapSetting setting_;
     container_type cubes_;
 };

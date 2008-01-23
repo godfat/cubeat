@@ -16,8 +16,9 @@ public:
 public:
     Map(pMapSetting setting): setting_(setting) {}
 public:
-    Map& operator<<(model::pCube mCube){
-        cubes_.push_back(Cube::create(mCube));
+    pCube make_cube(int x, int y){
+        Cube::create(x, y)
+        cubes_
     }
 
 private:

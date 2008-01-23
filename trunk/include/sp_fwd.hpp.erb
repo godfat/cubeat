@@ -1,11 +1,12 @@
 <%= header_guard %>
 
 #include <boost/tr1/tr1/memory>
-<%= Dir.glob('**/*.hpp').map{ |file| klass = file.pathmap '%n'
+<%= Dir.glob('**/*.hpp').select{ |file| ['model', 'view', 'presenter'].include? file.pathmap('%-1d') }.map{ |file| klass = file.pathmap '%n'; ns = file.pathmap '%-1d'
 "
-class #{klass};
-typedef std::tr1::shared_ptr<#{klass}> p#{klass};
-typedef std::tr1::weak_ptr<#{klass}> wp#{klass};"
+namespace #{ns}{
+  class #{klass};
+  typedef std::tr1::shared_ptr<#{klass}> p#{klass};
+  typedef std::tr1::weak_ptr<#{klass}> wp#{klass};}"
 }.join "\n" %>
 
 #endif

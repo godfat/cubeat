@@ -5,6 +5,7 @@
 
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
+#include "utils/Random.hpp"
 
 namespace psc{ namespace data{
 
@@ -13,7 +14,7 @@ public:
     static Color from_id(int i, int limit = 6){
         int rgb;
         switch(i){
-            case 0: rgb = from_id(random_id(limit)); break;
+            case 0: return from_id(random_id(limit)); break;
             case 1: rgb = blue;       break;
             case 2: rgb = green;      break;
             case 3: rgb = red;        break;
@@ -54,7 +55,7 @@ public:
 
 private:
     static int random_id(int limit){
-        return App::i().random(limit)+1;
+        return utils::Random::i().random(limit)+1;
     }
 
 private:

@@ -1,7 +1,10 @@
 
 <% header_guard do %>
 
+#include "all_fwd.hpp"
+#include "model/Cube.hpp"
 #include <boost/tr1/memory.hpp>
+#include <list>
 
 namespace psc{ namespace presenter{
 
@@ -11,10 +14,10 @@ public:
     typedef std::list<pCube> CubeList;
 
 public:
-    static pointer_type create(pMapSetting setting){ return ObjectPool<Map>::create(setting)->init(); }
+    static pointer_type create(data::pMapSetting setting){ return pointer_type(new Map(setting))->init(); }
 
 public:
-    Map(pMapSetting setting): setting_(setting) {}
+    Map(data::pMapSetting setting): setting_(setting){}
 
 public:
     pCube make_cube(int x, int y, int color_id = 0){
@@ -31,7 +34,7 @@ private:
     }
 
 private:
-    pMapSetting setting_;
+    data::pMapSetting setting_;
     model::pMap model_;
     view::pMap view_;
     CubeList cubes_;

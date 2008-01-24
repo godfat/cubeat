@@ -15,10 +15,12 @@ public:
 
 public:
     Map(pMapSetting setting): setting_(setting) {}
+
 public:
-    pCube make_cube(int x, int y, int color = 0){
-        Cube::create(x, y)
-        cubes_
+    pCube make_cube(int x, int y, int color_id = 0){
+        pCube cube = Cube::create(shared_from_this(), x, y, color_id);
+        cubes_.push_back(cube);
+        return cube;
     }
 
 private:

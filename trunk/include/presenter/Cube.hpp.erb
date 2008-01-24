@@ -12,35 +12,27 @@
 7. cube view is inited, getting map view.
 8. map view gets cube view.
 
-namespace psc{
-    namespace model{
-        class Map;
-        class Cube;
-    }
-    namespace presenter{
-        class Map;
-        class Cube;
-    }
-    namespace view{
-        class Map;
-        class Cube;
-    }
-}
+#include "all_fwd.hpp"
 
 namespace psc{ namespace presenter{
 
-    class Cube{
-    public:
-        Cube(pMap map, int x, int y, int color_id):
-            map_(map),
-            model_(model::Cube::create(map->model(), x, y, color_id)),
-            view_(view::Cube::create(map->view()), x, y, color_id)
-        {}
-    private:
-        pMap map_;
-        model::pCube model_;
-        view::pCube view_;
-    };
+class Cube{
+<%= reader 'model::pCube', :model %>
+<%= reader 'view::pCube', :view %>
+public:
+    Cube(wpMap map, int x, int y, int color_id):
+        map_(map),
+        model_(model::Cube::create(map->model(), x, y, color_id)),
+        view_(view::Cube::create(map->view()), x, y, color_id)
+    {}
+
+    int x() const{ return model()->x(); }
+    int y() const{ return model()->y(); }
+
+private:
+    wpMap map_;
+};
+
 }}
 
 <% end %>

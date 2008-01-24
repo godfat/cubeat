@@ -63,7 +63,7 @@ private:
         return *this;
     }
     Map& insert(pCube cube){
-        cubes_[cube->x()][cube->y()] = cube;
+        cubes_[cube->x()][cube->y()] = cube->model();
     }
 
 private:
@@ -71,8 +71,6 @@ private:
     pMapSetting setting_;
     container_type cubes_;
 };
-
-typedef Map::pointer_type pMap;
 
 }} // end of namespace
 

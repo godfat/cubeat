@@ -9,7 +9,7 @@
 
 <% header_guard do %>
 
-#include "Color.hpp"        // contain value
+#include "data/Color.hpp"
 
 class Map;
 class State;
@@ -25,18 +25,17 @@ class Cube{<%# @prefix = ' '*4 %>
 <%= accessor :int, :x, :y %>
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
+
 public:
-    static pCube create(pMap map, int x, int y, int color_id){
+    static pCube create(wpMap map, int x, int y, int color_id){
         return ObjectPool<Cube>::create(map, x, y, color_id);
     }
-    Cube(pMap map, int x, int y, int color_id): x_(x), y_(y),
+    Cube(wpMap map, int x, int y, int color_id): x_(x), y_(y),
         color_(Color::from_id(color_id)), map_(map)
     {}
 private:
     Color color_;
 };
-
-typedef Cube::pointer_type pCube;
 
 }}
 

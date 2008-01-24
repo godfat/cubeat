@@ -1,0 +1,26 @@
+
+#include "all_fwd.hpp"
+<% header_guard do %>
+namespace psc{ namespace model{ namespace state{
+
+class State{
+<% reader :wpCube, :owner %>
+public:
+    State(){}
+
+	State& init(wpCube const owner){ owner_ = owner; return this; }
+
+	virtual ~State(){}
+    virtual pState cycle() = 0;
+
+protected:
+    Map& map();
+    Map const& map() const;
+
+private:
+    wpCube owner_;
+};
+
+}}} // end of namespace
+
+<% end %>

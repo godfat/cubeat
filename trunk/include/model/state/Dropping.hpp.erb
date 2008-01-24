@@ -1,0 +1,14 @@
+
+<% header_guard do %>
+#include "model/state/State.hpp"
+namespace psc{ namespace model{ namespace state{
+
+class Dropping: public State{
+public:
+    virtual ~Dropping(){}
+    virtual pState cycle();
+};
+
+}}} // end of namespace
+
+<% end %>

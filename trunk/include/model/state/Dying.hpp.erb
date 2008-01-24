@@ -1,0 +1,17 @@
+
+<% header_guard do %>
+#include "model/state/State.hpp"
+namespace psc{ namespace model{ namespace state{
+
+class Dying: public State{
+public:
+    virtual ~Dying(){}
+    virtual pState cycle();
+
+private:
+	int dying_step_;
+};
+
+}}} // end of namespace
+
+<% end %>

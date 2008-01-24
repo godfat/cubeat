@@ -1,0 +1,31 @@
+
+<% header_guard do %>
+#include "model/state/State.hpp"
+namespace psc{ namespace model{ namespace state{
+
+class Waiting: public State{
+public:
+    virtual ~Waiting(){}
+    virtual pState cycle();
+
+    Waiting(): not_checked_(true), chain_property_checked_(false), delay_(0)
+    {}
+
+    // begin only used by Map::next_state
+	void checked(){ not_checked_ = false; }
+	void chain_property_checked(){ chain_property_checked_ = true; }
+    bool need_check() const;
+	bool need_check_chain_property() const;
+    // end
+
+	void uncheck(){ not_checked_ = true; }
+
+private:
+	bool chain_property_checked_;
+    bool not_checked_;
+    int delay_;
+};
+
+}}}
+
+<% end %>

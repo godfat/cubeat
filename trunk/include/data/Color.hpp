@@ -6,7 +6,7 @@
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
 
-namespace psc{
+namespace psc{ namespace data{
 
 class Color{
 public:
@@ -70,6 +70,6 @@ private:
 inline bool operator==(Color const& lhs, Color const& rhs){ return lhs.rgb() == rhs.rgb(); }
 inline bool operator!=(Color const& lhs, Color const& rhs){ return lhs.rgb() != rhs.rgb(); }
 
-} // end of namespace
+}} // end of namespace
 
 #endif

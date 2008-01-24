@@ -1,0 +1,23 @@
+
+<% header_guard do %>
+#include <boost/tr1/random.hpp>
+#include <ctime>
+namespace psc{ namespace utils{
+
+class Random{
+public:
+    static Random& i(){ static Random rnd; return rnd; }
+
+public:
+    int random(int max){
+        std::tr1::variate_generator<std::tr1::mt19937&, std::tr1::uniform_int<> > dice(engine_, std::tr1::uniform_int<>(0, max-1));
+        return dice();
+    }
+private:
+    Random(): engine_(std::time(0)^std::clock()){}
+    std::tr1::mt19937 engine_;
+
+};
+
+}} // end of namespace
+<% end %>

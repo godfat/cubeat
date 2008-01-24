@@ -1,0 +1,28 @@
+
+/*2007.11.9 
+  Most of the things remain unchanged.
+*/     
+
+<% header_guard do %>
+
+#include "model/state/State.hpp"
+
+namespace psc{ namespace model{ namespace state{
+
+class Exploding: public State{
+public:
+    virtual ~Exploding(){}
+    virtual pState cycle();
+
+private:
+    void explosion_setup(){}
+    void explosion_loop(){}
+    void explosion_cleanup(){}
+
+	bool explosion_started;
+	int exploding_step_;
+};
+
+}}} // end of namespace
+
+<% end %>

@@ -30,6 +30,7 @@ using namespace ctrl;
 
 using std::tr1::bind;
 using std::tr1::ref;
+using namespace std::tr1::placeholders;
 
 struct ViewTest1
 {
@@ -133,7 +134,7 @@ ViewTest1::ViewTest1()
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
     something = view::Button::create("title", guiv );
-    something->moveTo(100,100).setDepth(4.0f);
+    something->moveTo(100,100).setDepth(4.0f).set<RGBDiffuse>(200);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 

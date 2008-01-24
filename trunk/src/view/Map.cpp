@@ -17,6 +17,7 @@ using namespace scene;
 using namespace psc;
 using namespace view;
 using std::tr1::bind;
+using namespace std::tr1::placeholders;
 
 Map* Map::clone() const
 {

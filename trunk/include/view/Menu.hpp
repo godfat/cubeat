@@ -38,6 +38,10 @@ public:
     virtual Menu&   addSprite(std::string const& name,
                               std::tr1::function<void(pSprite&)> cb = 0,
                               std::string const& texture_name = "");
+    virtual Menu&   addSpriteText(std::string const& text,
+                                  std::tr1::function<void(pSprite&)> cb = 0,
+                                  std::string const& font_path = "/fonts/simhei.ttf",
+                                  int size = 12);
     virtual Menu&   deleteSprite(std::string const& name);
     virtual Sprite& getSprite(std::string const& name);    //non-const-getter
     virtual Menu&   setCallbackToSprite(std::string const& name,

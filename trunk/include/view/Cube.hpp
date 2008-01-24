@@ -13,7 +13,7 @@ class Map;
 
 class Cube : public SceneObject
 {
-    typedef boost::function<void()> HitCallback;
+    typedef std::tr1::function<void()> HitCallback;
     typedef std::tr1::shared_ptr<Map> pMap;
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;

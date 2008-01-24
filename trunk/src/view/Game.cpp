@@ -36,6 +36,12 @@ Game& Game::setGUI(pScene const& gui)     { gui_ = gui;     return *this;}
 
 void Game::redraw()
 {
+    int i = 0;
+    BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
+        cursors_[i]->moveTo(it->cursor().x(), it->cursor().y());
+        ++i;
+    }
+
     gui_->deactivate();
     world_->activate();
     smgr_->drawAll();
@@ -44,9 +50,5 @@ void Game::redraw()
     gui_->activate();
     smgr_->drawAll();
 
-    int i = 0;
-    BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
-        cursors_[i]->moveTo(it->cursor().x(), it->cursor().y());
-        ++i;
-    }
+    gui_->deactivate();
 }

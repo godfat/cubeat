@@ -6,6 +6,9 @@
    Inputs are temporarily declared in this scope,
    will be removed later. (when player class is out) */
 
+#include "presenter/Transitioner.hpp"
+#include "presenter/MainMenu.hpp"
+
 namespace irr {
 class ITimer;
 }
@@ -26,6 +29,8 @@ public:
 
     int run();
 
+    App& setLoading(int const& cent) { trans_->setLoadingBar(cent); return *this; }
+
     ~App();
 
 private:
@@ -37,6 +42,9 @@ private:
 private:
     unsigned int framerate_;
     unsigned int last_timetick_;
+
+    presenter::pTransitioner trans_;
+    presenter::pObject master_presenter_;
 
     irr::ITimer* timer_;
 

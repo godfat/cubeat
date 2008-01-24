@@ -1,5 +1,6 @@
 
 #include "view/Menu.hpp"
+#include "view/SpriteText.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 
@@ -32,6 +33,18 @@ Menu& Menu::addSprite(std::string const& name,
 
     sprites_.insert( std::make_pair(name, newobj) );
     if( cb ) setCallbackToSprite(name, cb);
+    return *this;
+}
+
+Menu& Menu::addSpriteText(std::string const& text, std::tr1::function<void(pSprite&)> cb,
+                          std::string const& font_path, int size)
+{
+    pSpriteText newobj = SpriteText::create(text,
+                                            static_pointer_cast<Menu>(shared_from_this()),
+                                            font_path, size);
+
+    sprites_.insert( std::make_pair(text, newobj) );
+    if( cb ) setCallbackToSprite(text, cb);
     return *this;
 }
 

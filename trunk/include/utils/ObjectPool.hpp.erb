@@ -4,7 +4,7 @@
 #include <boost/pool/object_pool.hpp>
 #include <loki/Singleton.h>
 
-namespace psc{
+namespace psc{ namespace utils{
 
 template <typename T, typename UserAllocator = boost::default_user_allocator_new_delete>
 class extended_object_pool: public boost::object_pool<T, UserAllocator>{
@@ -72,6 +72,6 @@ private:
     };
 };
 
-} // end of namespace
+}} // end of namespace
 
 <% end %>

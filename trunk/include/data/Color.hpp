@@ -10,20 +10,31 @@ namespace psc{
 
 class Color{
 public:
-    static Color from_id(int i){
+    static Color from_id(int i, int limit = 6){
         int rgb;
         switch(i){
-            case 0: rgb = blue;       break;
-            case 1: rgb = green;      break;
-            case 2: rgb = red;        break;
-            case 3: rgb = green_blue; break;
-            case 4: rgb = red_blue;   break;
-            case 5: rgb = red_green;  break;
-            case 6: rgb = 0;          break;
-            case 7: rgb = blue|green|red;
+            case 0: rgb = from_id(random_id(limit)); break;
+            case 1: rgb = blue;       break;
+            case 2: rgb = green;      break;
+            case 3: rgb = red;        break;
+            case 4: rgb = green_blue; break;
+            case 5: rgb = red_blue;   break;
+            case 6: rgb = red_green;  break;
+            case 7: rgb = 0;          break;
+            case 8: rgb = blue|green|red;
         }
+        /* i would like this:
+        int rgb = case i
+                    when 0; random_color
+                    when 1; blue
+                    when 2; green
+                    when 3: red
+                    ...
+                  end
+        */
         return Color(rgb);
     }
+
 public:
     Color(): rgb_(0){}
     explicit Color(int rgb): rgb_(rgb){}
@@ -40,6 +51,11 @@ public:
     Color& r(int new_r){ rgb_ &= green_blue; rgb_ |= new_r<<16; return *this; }
     Color& g(int new_g){ rgb_ &= red_blue; rgb_ |= new_g<<8; return *this; }
     Color& b(int new_b){ rgb_ &= red_green; rgb_ |= new_b; return *this; }
+
+private:
+    static int random_id(int limit){
+        return App::i().random(limit)+1;
+    }
 
 private:
     int rgb_;

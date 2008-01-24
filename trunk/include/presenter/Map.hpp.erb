@@ -16,7 +16,7 @@ public:
 public:
     Map(pMapSetting setting): setting_(setting) {}
 public:
-    pCube make_cube(int x, int y){
+    pCube make_cube(int x, int y, int color = 0){
         Cube::create(x, y)
         cubes_
     }

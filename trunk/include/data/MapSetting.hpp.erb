@@ -1,7 +1,7 @@
 
 <% header_guard do %>
 
-namespace psc{
+namespace psc{ namespace data{
 
 class MapSetting{<%# @prefix = ' '*4 %>
 <%= accessor :int, :frequency, :decay, :delay, :color_amounts, :chain_amounts, :starting_line, :cube_size %>
@@ -28,6 +28,6 @@ private:
     MapSetting& reset_size(){ size_ = width_ * height_; return *this; }
 };
 
-} // end of namespace
+}} // end of namespace
 
 <% end %>

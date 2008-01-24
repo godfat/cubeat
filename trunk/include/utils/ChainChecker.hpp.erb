@@ -2,7 +2,7 @@
 <% header_guard do %>
 #include "utils/vector_2d.hpp"
 
-namespace psc{
+namespace psc{ namespace utils{
 
 class ChainChecker{
 public:
@@ -10,7 +10,6 @@ public:
         while(has_chained_cubes(square_colors, chain_amounts)
             std::random_shuffle(square_colors.begin(), square_colors.end());
     }
-private:
     static bool has_chained_cubes(vector_2d& square_colors, int chain_amounts){
         for(int y=0, yend=square_colors.height(); y!=yend; ++y)
             for(int x=0, xend=square_colors.width(); x!=xend; ++x)
@@ -67,6 +66,6 @@ private:
     int const tested_color_;
 };
 
-}
+}}
 
 <% end %>

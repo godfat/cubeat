@@ -1,38 +1,11 @@
 
 // in all_fwd.hpp
 
-namespace psc{
-    
-namespace presenter{
-    class Map;
-    typedef shared_ptr<Map> pMap;
-    typedef weak_ptr<Map> wpMap;
-    ...
-    ...
-    ...
-}
-
-namespace model{
-    class Map;
-    typedef shared_ptr<Map> pMap;
-    typedef weak_ptr<Map> wpMap;
-    ...
-    ...
-    ...
-}
-
-...
-...
-...
-
-}
-
-
-
 <% header_guard do %>
 
 #include <boost/multi_array.hpp>
 #include <boost/lambda/lambda.hpp>
+
 #include "presenter/Map.hpp"
 #include "model/Cube.hpp"
 #include "data/MapSetting.hpp"
@@ -51,7 +24,7 @@ public:
         return pointer_type(new Map(setting));
     }
     Map(pMapSetting setting): setting_(setting),
-     cubes_(extents[setting.width][setting.height])
+        cubes_(extents[setting.width][setting.height])
     {
         init_cubes();
     }
@@ -83,15 +56,14 @@ private:
 
         for(int i=0, iend=square_colors.num_elements(); i!=iend; ++i)
         {
-            // insert(Cube::create(this, i%ms().width(), ms().height()-1-i/ms().width(), squares_colors[i]));
-            insert(presenter_->make_cube(i%ms().width(), // x
-                                         ms().height()-1-i/ms().width()), // y
-                                         squares_colors[i]);
+            insert(presenter_->make_cube( i%ms().width(), // x
+                                          ms().height()-1-i/ms().width(), // y
+                                          squares_colors[i] )->model());
         }
         return *this;
     }
     Map& insert(pCube cube){
-        cubes_[x][y] = cube;
+        cubes_[cube->x()][cube->y()] = cube;
     }
 
 private:

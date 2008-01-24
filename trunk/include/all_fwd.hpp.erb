@@ -2,7 +2,7 @@
 
 #include <boost/tr1/tr1/memory>
 namespace psc{
-<%= Dir.glob('**/*.hpp.erb').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter} }.map{ |path| path.pathmap '%{^include,}d/%f' }.map{ |file| klass = file.pathmap('%n').ext; namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
+<%= Dir.glob('**/*.*').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter} }.map{ |path| path.pathmap('%{^include,}d/%n').ext }.uniq.sort.map{ |file| klass = file.pathmap('%n'); namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
 "
   #{namespaces.join ' '}
   class #{klass};

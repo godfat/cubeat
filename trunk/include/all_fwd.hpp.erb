@@ -2,12 +2,12 @@
 
 #include <boost/tr1/tr1/memory>
 namespace psc{
-<%= Dir.glob('**/*.hpp').select{ |file| ['model', 'view', 'presenter', 'data'].include? file.pathmap('%-1d') }.map{ |file| klass = file.pathmap '%n'; ns = file.pathmap '%-1d'
+<%= Dir.glob('**/*.hpp.erb').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter} }.map{ |path| path.pathmap '%{^include,}d/%f' }.map{ |file| klass = file.pathmap('%n').ext; namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
 "
-namespace #{ns}{
+  #{namespaces.join ' '}
   class #{klass};
   typedef std::tr1::shared_ptr<#{klass}> p#{klass};
-  typedef std::tr1::weak_ptr<#{klass}> wp#{klass};}"
+  typedef std::tr1::weak_ptr<#{klass}> wp#{klass};#{'}'*namespaces.size}"
 }.join "\n" %>
 }
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="CIrrDeviceWin32.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="592" topLine="15" />
+	</File>
+	<File name="os.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2580" topLine="80" />
+	</File>
+</CodeBlocks_layout_file>

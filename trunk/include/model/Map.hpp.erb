@@ -1,74 +1,54 @@
 
 <% header_guard do %>
 
-#include <boost/multi_array.hpp>
-#include <boost/lambda/lambda.hpp>
-
 #include "presenter/Map.hpp"
 #include "model/Cube.hpp"
+
+#include "all_fwd.hpp"
+
 #include "data/MapSetting.hpp"
-#include "utils/ChainChecker.hpp"
+#include "utils/for_each_multi_array.hpp"
+
+#include <boost/multi_array.hpp>
+
+#include <boost/tr1/tr1/functional>
 
 namespace psc{ namespace model{
 
 class Map{
 public:
     typedef std::tr1::shared_ptr<Map> pointer_type;
-    typedef multi_array<pCube, 2> container_type;
+    typedef boost::multi_array<pCube, 2> container_type;
 
 public:
-    static pointer_type create(pMapSetting setting){
+    static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
         // map doesn't need a pool
-        return pointer_type(new Map(setting));
+        return pointer_type(new Map(owner, setting));
     }
-    Map(presenter::wpMap owner, pMapSetting setting):
+    Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
-        cubes_(extents[setting.width()][setting.height()])
+        cubes_(boost::extents[setting->width()][setting->height()])
     {
         init_cubes();
     }
-    pMap& cycle(){
+    Map& cycle(){
+        using namespace std::tr1::placeholders;
         n_of_newcomers_ = 0;
-        reverse_for_each(cubes, bind(Map::do_cycle, this));
+        utils::reverse_for_each(cubes_, std::tr1::bind(&Map::do_cycle, this, _1, _2));
         return *this;
     }
-    wpMapSetting ms() const{ return setting_; }
+    data::pMapSetting ms() const{ return setting_; }
+
 private:
-    void do_cycle(pCube c, int i){
-        if(c){
-            if( !c->has_grounded()  ) ++n_of_newcomers_;
-            if(  c->cycle_and_die() ) cubes_[i] = NULL;
-        }
-    }
-private:
-    Map& init_cubes(){
-        using boost::lambda::_1; // this would be used in for_each for element
-        using boost::lambda::_2; // this would be used in for_each for index
-		vector_2d square_colors(ms().width(), ms().starting_line());
-
-        int const one_color_amounts = std::ceil(
-            static_cast<double>(ms().width())*ms().starting_line()/ms().color_amounts()
-        );
-        for_each(square_colors, _1 = _2/one_color_amounts);
-
-        ChainChecker::until_no_chained_cubes(square_colors, ms().chain_amounts());
-
-        for(int i=0, iend=square_colors.num_elements(); i!=iend; ++i)
-        {
-            insert(presenter_->make_cube( i%ms().width(), // x
-                                          ms().height()-1-i/ms().width(), // y
-                                          squares_colors[i] )->model());
-        }
-        return *this;
-    }
-    Map& insert(pCube cube){
-        cubes_[cube->x()][cube->y()] = cube;
-    }
+    void do_cycle(pCube c, int i);
+    Map& init_cubes();
+    Map& insert(pCube cube);
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;
-    pMapSetting setting_;
+    data::pMapSetting setting_;
     container_type cubes_;
+    int n_of_newcomers_;
 };
 
 }} // end of namespace

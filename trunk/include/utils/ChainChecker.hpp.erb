@@ -1,30 +1,34 @@
 
 <% header_guard do %>
+
+#include <algorithm>
 #include "utils/vector_2d.hpp"
 
 namespace psc{ namespace utils{
 
 class ChainChecker{
+    enum{ width=0, height=1 };
+    typedef utils::vector_2d::index index;
 public:
     static void until_no_chained_cubes(vector_2d& square_colors, int chain_amounts){
-        while(has_chained_cubes(square_colors, chain_amounts)
+        while(has_chained_cubes(square_colors, chain_amounts))
             std::random_shuffle(square_colors.begin(), square_colors.end());
     }
     static bool has_chained_cubes(vector_2d& square_colors, int chain_amounts){
-        for(int y=0, yend=square_colors.height(); y!=yend; ++y)
-            for(int x=0, xend=square_colors.width(); x!=xend; ++x)
+        for(index y=0, yend=square_colors.index_bases()[height]; y!=yend; ++y)
+            for(index x=0, xend=square_colors.index_bases()[width]; x!=xend; ++x)
                 if(has_chain_here(square_colors, x, y, chain_amounts))
                     return true;
         return false;
     }
-    static bool has_chain_here(vector_2d const& square_colors, int x, int y, int chain_amounts)
+    static bool has_chain_here(vector_2d const& square_colors, index x, index y, int chain_amounts)
     {
         ChainChecker c(square_colors, x, y, chain_amounts);
         return c.has_left() || c.has_right() || c.has_up() || c.has_down();
     }
 private:
-    friend bool has_chain_here(vector_2d const&, int, int, int);
-    Checker(vector_2d const& square_colors, int x, int y, int chain_amounts):
+    friend bool has_chain_here(vector_2d const&, index, index, int);
+    ChainChecker(vector_2d const& square_colors, index x, index y, int chain_amounts):
     square_colors_(square_colors), x_(x), y_(y), chain_amounts_(chain_amounts),
     tested_color_(square_colors_[x_][y_])
     {}
@@ -37,23 +41,23 @@ private:
         return true;
     }
     bool has_right() const{
-        if( x_ > square_colors_.width() - chain_amounts_ ) return false;
+        if( x_ > square_colors_.index_bases()[width] - chain_amounts_ ) return false;
         for(size_type i=1; i<chain_amounts_-1; ++i)
             if( tested_color_ != square_colors_[x_+i][y_] )
                 return false;
         return true;
     }
     bool has_up() const{
-        if( y_ > square_colors_.height() - chain_amounts_ ) return false;
+        if( y_ > square_colors_.index_bases()[height] - chain_amounts_ ) return false;
         for(size_type i=1; i<chain_amounts_-1; ++i)
-            if( tested_color_ != square_colors_.[x_][y_+i] )
+            if( tested_color_ != square_colors_[x_][y_+i] )
                 return false;
         return true;
     }
     bool has_down() const{
         if( y_ < chain_amounts_-1 ) return false;
         for(size_type i=1; i<chain_amounts_-1; ++i)
-            if( tested_color_ != square_colors_.[x_][y_-i] )
+            if( tested_color_ != square_colors_[x_][y_-i] )
                 return false;
         return true;
     }

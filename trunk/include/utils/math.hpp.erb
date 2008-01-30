@@ -1,0 +1,12 @@
+
+<% header_guard do %>
+namespace psc{ namespace utils{
+
+inline int power2(int times){
+    int result = 1;
+    for(int i=0; i<times; ++i) result *= 2;
+    return result;
+}
+
+}} // end of namespace
+<% end %>

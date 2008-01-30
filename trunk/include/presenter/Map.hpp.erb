@@ -1,9 +1,12 @@
 
 <% header_guard do %>
 
+#include "model/Map.hpp"
+#include "presenter/Cube.hpp"
+
 #include "all_fwd.hpp"
-#include "model/Cube.hpp"
-#include <boost/tr1/memory.hpp>
+
+#include <boost/tr1/tr1/memory>
 #include <list>
 
 namespace psc{ namespace presenter{
@@ -20,22 +23,14 @@ public:
     Map(data::pMapSetting setting): setting_(setting){}
 
 public:
-    pCube make_cube(int x, int y, int color_id = 0){
-        pCube cube = Cube::create(shared_from_this(), x, y, color_id);
-        cubes_.push_back(cube);
-        return cube;
-    }
+    pCube make_cube(int x = 0, int y = 0, int color_id = 0);
 
 private:
-    pointer_type init(){
-        model_ = model::Map::create(shared_from_this(), setting_);
-        view_ = view::Map::create(shared_from_this());
-        return shared_from_this();
-    }
+    pointer_type init();
 
 private:
     data::pMapSetting setting_;
-    model::pMap model_;
+<%= reader 'model::pMap', :model %>
     view::pMap view_;
     CubeList cubes_;
 };

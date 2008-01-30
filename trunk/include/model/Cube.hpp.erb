@@ -9,15 +9,11 @@
 
 <% header_guard do %>
 
-#include "data/Color.hpp"
+#include "model/Map.hpp"
 
-class Map;
-class State;
-class Waiting;
-class Dropping;
-class Dying;
-class Exploding;
-class Chain;
+#include "all_fwd.hpp"
+#include "utils/ObjectPool.hpp"
+#include "data/Color.hpp"
 
 namespace psc{ namespace model{
 
@@ -27,11 +23,11 @@ public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
 
 public:
-    static pCube create(wpMap map, int x, int y, int color_id){
-        return ObjectPool<Cube>::create(map, x, y, color_id);
+    static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
+        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
     }
-    Cube(wpMap map, int x, int y, int color_id): x_(x), y_(y),
-        color_(Color::from_id(color_id)), map_(map)
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
+        map_(map), color_(data::Color::from_id(color_id)), cycled_(false)
     {}
 
     // begin only used by Map::cycle
@@ -41,23 +37,23 @@ public:
 
     // begin only used by Map::next_state
     void drop_a_block(){ ++y_; }
-    pWaiting is_waiting();
-    pDropping is_dropping();
+    state::pWaiting is_waiting();
+    state::pDropping is_dropping();
     void lose_chain();
     // end
 
     // begin only used by Map::square_can_lose_chain,
     //   which is used by Map::next_state
-    pDying const is_dying() const;
+    state::pDying const is_dying() const;
     // end
 
     // begin only used by OneFading::get_the_chain,
     //   which is used by OneFading::fade
-    pChain& chain(){ return chain_belonged_to_; }
+    data::pChain& chain(){ return chain_belonged_to_; }
     // end
 
     // begin only used by Map::squares_belong_to_the_chain_from_bottom_to_top
-    pChain const chain() const{ return chain_belonged_to_; }
+    data::pChain const chain() const{ return chain_belonged_to_; }
     // end
 
     // begin only used by OneFading::fade
@@ -79,19 +75,27 @@ public:
 	void be_garbage();
 	// end
 
-	bool is_garbage() const{ return is_garbage_; }
+    bool is_garbage() const; // { return is_garbage_; }
     void be_broken();
 	void restore();
 
 	//added
-	pExploding const is_exploding() const;
+	state::pExploding const is_exploding() const;
 	void go_exploding();
+
+	bool has_grounded(){ return has_grounded_; }
+	void set_grounded(){ has_grounded_ = true; }
 
 	int& lose_chain_delay() { return lose_chain_delay_; }
 	int const& lose_chain_delay() const{ return lose_chain_delay_; }
 
 private:
+    pMap map_;
     data::Color color_;
+    bool cycled_;
+    bool has_grounded_;
+    int lose_chain_delay_;
+    data::pChain chain_belonged_to_;
 };
 
 }}

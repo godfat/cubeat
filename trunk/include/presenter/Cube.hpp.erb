@@ -12,25 +12,34 @@
 // 7. cube view is inited, getting map view.
 // 8. map view gets cube view.
 
+#include "model/Cube.hpp"
+#include "presenter/Map.hpp"
+
 #include "all_fwd.hpp"
+#include "utils/ObjectPool.hpp"
+
+#include <boost/tr1/tr1/memory>
 
 namespace psc{ namespace presenter{
 
 class Cube{
-<%= reader 'model::pCube', :model %>
-<%= reader 'view::pCube', :view %>
 public:
-    Cube(wpMap map, int x, int y, int color_id):
-        map_(map),
-        model_(model::Cube::create(map->model(), x, y, color_id)),
-        view_(view::Cube::create(map->view()), x, y, color_id)
-    {}
+    typedef std::tr1::shared_ptr<Cube> pointer_type;
+
+public:
+    pCube static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
+        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
+    }
+public:
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
 
     int x() const{ return model()->x(); }
     int y() const{ return model()->y(); }
 
 private:
     wpMap map_;
+<%= reader 'model::pCube', :model %>
+<%= reader 'view::pCube', :view %>
 };
 
 }}

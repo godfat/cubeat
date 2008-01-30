@@ -2,7 +2,7 @@
 #ifndef _FOR_EACH_MULTI_ARRAY_HPP_
 #define _FOR_EACH_MULTI_ARRAY_HPP_
 
-namespace psc{
+namespace psc{ namespace utils{
 
 template <class MultiArray, class Fun>
 MultiArray& for_each(MultiArray& array, Fun fun){
@@ -20,6 +20,6 @@ MultiArray& reverse_for_each(MultiArray& array, Fun fun){
     return array;
 }
 
-} // end of namespace
+}} // end of namespace
 
 #endif

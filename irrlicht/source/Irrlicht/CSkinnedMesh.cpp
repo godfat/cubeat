@@ -11,6 +11,8 @@
 #include "os.h"
 
 
+
+
 namespace irr
 {
 namespace scene
@@ -21,7 +23,7 @@ namespace scene
 CSkinnedMesh::CSkinnedMesh()
 : SkinningBuffers(0), HasAnimation(0), PreparedForSkinning(0),
 	AnimationFrames(0.f), lastAnimatedFrame(0.f), lastSkinnedFrame(0.f),
-	BoneControlUsed(false), AnimateNormals(true), InterpolationMode(EIM_LINEAR)
+	BoneControlUsed(false), AnimateNormals(true), HardwareSkinning(0), InterpolationMode(EIM_LINEAR)
 {
 	#ifdef _DEBUG
 	setDebugName("CSkinnedMesh");
@@ -77,7 +79,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 //! blend: {0-old position, 1-New position}
 void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
-
 	if ( !HasAnimation  || lastAnimatedFrame==frame)
 		return;
 
@@ -89,7 +90,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
 		//To Bitplane: The joints can be animated here with no input from their parents, but for setAnimationMode extra checks are needed to their parents
-
 		SJoint *Joint = AllJoints[i];
 
 		const core::vector3df oldPosition = Joint->Animatedposition;
@@ -99,13 +99,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		core::vector3df position = oldPosition;
 		core::vector3df scale = oldScale;
 		core::quaternion rotation = oldRotation;
-
-		if (!BoneControlUsed)
-		{
-			Joint->positionHint=-1;
-			Joint->scaleHint=-1;
-			Joint->rotationHint=-1;
-		}
 
 		getFrameData(frame, Joint,
 				position, Joint->positionHint,
@@ -137,8 +130,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		buildAll_LocalAnimatedMatrices();
 		//-----------------
 	}
-
-	BoneControlUsed=false;
 }
 
 
@@ -155,18 +146,52 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 			 Joint->UseAnimationFrom->ScaleKeys.size() ||
 			 Joint->UseAnimationFrom->RotationKeys.size() ))
 		{
-			Joint->LocalAnimatedMatrix.makeIdentity();
-			Joint->LocalAnimatedMatrix.setTranslation(Joint->Animatedposition);
-			Joint->LocalAnimatedMatrix*=Joint->Animatedrotation.getMatrix();
+			Joint->LocalAnimatedMatrix=Joint->Animatedrotation.getMatrix();
+
+			// --- Joint->LocalAnimatedMatrix *= Joint->Animatedrotation.getMatrix() ---
+			f32 *m1 = Joint->LocalAnimatedMatrix.pointer();
+			core::vector3df &Pos = Joint->Animatedposition;
+			m1[0] += Pos.X*m1[3];
+			m1[1] += Pos.Y*m1[3];
+			m1[2] += Pos.Z*m1[3];
+			m1[4] += Pos.X*m1[7];
+			m1[5] += Pos.Y*m1[7];
+			m1[6] += Pos.Z*m1[7];
+			m1[8] += Pos.X*m1[11];
+			m1[9] += Pos.Y*m1[11];
+			m1[10] += Pos.Z*m1[11];
+			m1[12] += Pos.X*m1[15];
+			m1[13] += Pos.Y*m1[15];
+			m1[14] += Pos.Z*m1[15];
+			// -----------------------------------
 
 			Joint->GlobalSkinningSpace=false;
 
 			if (Joint->ScaleKeys.size())
 			{
-				//Joint->_LocalAnimatedMatrix.setScale(Joint->_Animatedscale);
+				/*
 				core::matrix4 scaleMatrix;
 				scaleMatrix.setScale(Joint->Animatedscale);
 				Joint->LocalAnimatedMatrix *= scaleMatrix;
+				*/
+
+				// -------- Joint->LocalAnimatedMatrix *= scaleMatrix -----------------
+				f32 *m1 = Joint->LocalAnimatedMatrix.pointer();
+				m1[0] *= Joint->Animatedscale.X;
+				m1[1] *= Joint->Animatedscale.X;
+				m1[2] *= Joint->Animatedscale.X;
+				m1[3] *= Joint->Animatedscale.X;
+				m1[4] *= Joint->Animatedscale.Y;
+				m1[5] *= Joint->Animatedscale.Y;
+				m1[6] *= Joint->Animatedscale.Y;
+				m1[7] *= Joint->Animatedscale.Y;
+				m1[8] *= Joint->Animatedscale.Z;
+				m1[9] *= Joint->Animatedscale.Z;
+				m1[10] *= Joint->Animatedscale.Z;
+				m1[11] *= Joint->Animatedscale.Z;
+				m1[12] *= Joint->Animatedscale.X;
+				// -----------------------------------
+
 			}
 		}
 		else
@@ -403,45 +428,44 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 //! Preforms a software skin on this mesh based of joint positions
 void CSkinnedMesh::skinMesh()
 {
-
 	if ( !HasAnimation)
 		return;
-
 
 	//----------------
 	// Temp!
 	buildAll_GlobalAnimatedMatrices();
 	//-----------------
 
-
-	//Software skin....
-
-	u32 i;
-
-
-
-
-	//rigid animation
-	for (i=0; i<AllJoints.size(); ++i)
+	if (!HardwareSkinning)
 	{
-		for (u32 j=0; j<AllJoints[i]->AttachedMeshes.size(); ++j)
+		//Software skin....
+		u32 i;
+
+		//rigid animation
+		for (i=0; i<AllJoints.size(); ++i)
 		{
-			SSkinMeshBuffer* Buffer=(*SkinningBuffers)[ AllJoints[i]->AttachedMeshes[j] ];
-			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
+			for (u32 j=0; j<AllJoints[i]->AttachedMeshes.size(); ++j)
+			{
+				SSkinMeshBuffer* Buffer=(*SkinningBuffers)[ AllJoints[i]->AttachedMeshes[j] ];
+				Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
+			}
 		}
+
+		//clear skinning helper array
+		for (i=0; i<Vertices_Moved.size(); ++i)
+			for (u32 j=0; j<Vertices_Moved[i].size(); ++j)
+				Vertices_Moved[i][j]=false;
+
+		//skin starting with the root joints
+		for (i=0; i<RootJoints.size(); ++i)
+			SkinJoint(RootJoints[i], 0);
+
+		for (i=0; i<SkinningBuffers->size(); ++i)
+			(*SkinningBuffers)[i]->setDirty();
+
 	}
-
-	//clear skinning helper array
-
-	for (i=0; i<Vertices_Moved.size(); ++i)
-		for (u32 j=0; j<Vertices_Moved[i].size(); ++j)
-			Vertices_Moved[i][j]=false;
-
-
-	//skin starting with the root joints
-	for (i=0; i<RootJoints.size(); ++i)
-		SkinJoint(RootJoints[i], 0);
 }
+
 
 void CSkinnedMesh::SkinJoint(SJoint *Joint, SJoint *ParentJoint)
 {
@@ -646,6 +670,38 @@ const core::array<CSkinnedMesh::SJoint*> &CSkinnedMesh::getAllJoints() const
 	return AllJoints;
 }
 
+
+
+
+//! (This feature is not implementated in irrlicht yet)
+bool CSkinnedMesh::setHardwareSkinning(bool on)
+{
+	if (HardwareSkinning!=on)
+	{
+
+		if (on)
+		{
+
+			//set mesh to static pose...
+			for (u32 i=0; i<AllJoints.size(); ++i)
+			{
+				SJoint *Joint=AllJoints[i];
+				for (u32 j=0; j<Joint->Weights.size(); ++j)
+				{
+					const u16 buffer_id=Joint->Weights[j].buffer_id;
+					const u32 vertex_id=Joint->Weights[j].vertex_id;
+					LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = Joint->Weights[j].StaticPos;
+					LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = Joint->Weights[j].StaticNormal;
+				}
+			}
+
+
+		}
+
+		HardwareSkinning=on;
+	}
+	return HardwareSkinning;
+}
 
 void CSkinnedMesh::CalculateGlobalMatrixes(SJoint *Joint,SJoint *ParentJoint)
 {
@@ -871,7 +927,6 @@ void CSkinnedMesh::finalize()
 
 	if (HasAnimation)
 	{
-
 		//--- optimize and check keyframes ---
 		for(i=0;i<AllJoints.size();++i)
 		{
@@ -1034,9 +1089,6 @@ void CSkinnedMesh::finalize()
 			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
 		}
 	}
-
-
-
 }
 
 
@@ -1120,6 +1172,16 @@ CSkinnedMesh::SWeight *CSkinnedMesh::createWeight(SJoint *joint)
 
 	return weight;
 }
+
+
+
+
+bool CSkinnedMesh::isStatic()
+{
+	return !HasAnimation;
+}
+
+
 
 
 void CSkinnedMesh::normalizeWeights()
@@ -1222,8 +1284,23 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 	lastAnimatedFrame=-1;
 	lastSkinnedFrame=-1;
 
-	BoneControlUsed=true;
+
 }
+
+void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes)
+{
+	for (u32 i=0;i<AllJoints.size();++i)
+	{
+		IBoneSceneNode* node=JointChildSceneNodes[i];
+		SJoint *joint=AllJoints[i];
+
+		joint->positionHint=node->positionHint;
+		joint->scaleHint=node->scaleHint;
+		joint->rotationHint=node->rotationHint;
+	}
+}
+
+
 
 
 void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
@@ -1363,6 +1440,12 @@ void CSkinnedMesh::calculateTangents(
 		binormal *= -1.0f;
 	}
 }
+
+
+
+
+
+
 
 
 } // end namespace scene

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "Irrlicht8.0.vcproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht8", "Irrlicht8.0.vcproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

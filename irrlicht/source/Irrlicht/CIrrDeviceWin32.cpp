@@ -18,12 +18,6 @@
 #include <winuser.h>
 #include "irrlicht.h"
 
-// >> add by zgock for Multilingual start
-#include <stdlib.h>
-#include <locale.h>
-#include <imm.h>
-//#pragma comment(lib, "imm32.lib")
-// << add by zgock for Multilingual end
 
 namespace irr
 {
@@ -89,10 +83,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	#define WHEEL_DELTA 120
 	#endif
 
-// >> add by uirou for IME Window start
-	static int mouse_capture = 0;
-// << add by uirou for IME Window end
-
 	irr::CIrrDeviceWin32* dev = 0;
 	irr::SEvent event;
 	SEnvMapper* envm = 0;
@@ -151,10 +141,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		mouse_capture++;
-		SetCapture(hWnd);
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_LBUTTONUP:
@@ -171,12 +157,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		if(--mouse_capture <= 0){
-		    mouse_capture = 0;
-		    ReleaseCapture();
-		}
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_RBUTTONDOWN:
@@ -189,10 +169,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		mouse_capture++;
-		SetCapture(hWnd);
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_RBUTTONUP:
@@ -209,12 +185,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		if(--mouse_capture <= 0){
-		    mouse_capture = 0;
-		    ReleaseCapture();
-		}
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_MBUTTONDOWN:
@@ -227,10 +197,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		mouse_capture++;
-		SetCapture(hWnd);
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_MBUTTONUP:
@@ -247,12 +213,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
 			dev->postEventFromUser(event);
-// >> add by uirou for IME Window start
-		if(--mouse_capture <= 0){
-		    mouse_capture = 0;
-		    ReleaseCapture();
-		}
-// << add by uirou for IME Window end
 		return 0;
 
 	case WM_MOUSEMOVE:
@@ -267,39 +227,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		return 0;
 
-// >> add by zgock for Multilingual start
-	case WM_IME_CHAR:
-		{
-			char* old_locale = setlocale(LC_ALL, NULL);
-
-			setlocale(LC_ALL,"");		// Use defalut locale
-			event.EventType = irr::EET_KEY_INPUT_EVENT;
-			event.KeyInput.PressedDown = true;
-			dev = getDeviceFromHWnd(hWnd);
-			unsigned char mbc[3];
-			wchar_t wc[2];
-// >> modified by uirou for Multilingual start
-			if(wParam > 255){
-				mbc[0] = wParam >> 8;
-				mbc[1] = wParam & 0xff;
-				mbc[2] = 0;
-			}else{
-				mbc[0] = wParam;
-				mbc[1] = mbc[2] = 0;
-			}
-// << modified by uirou for Multilingual end
-			int x = mbstowcs(wc, (char *)&mbc, MB_CUR_MAX );
-			event.KeyInput.Char = wc[0]; //KeyAsc >= 0 ? KeyAsc : 0;
-			event.KeyInput.Key = irr::KEY_ACCEPT;
-			event.KeyInput.Shift = 0;
-			event.KeyInput.Control = 0;
-			if (dev)	dev->postEventFromUser(event);
-
-			setlocale(LC_ALL, old_locale);
-
-			return	0;
-		}
-// << add by zgock for Multilingual end
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
@@ -397,7 +324,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 		wcex.hIconSm		= 0;
 
 		// if there is an icon, load it
-		wcex.hIcon = (HICON)LoadImage(hInstance, "irrlicht.ico", IMAGE_ICON, 0,0, LR_LOADFROMFILE);
+		wcex.hIcon = (HICON)LoadImage(hInstance, "irrlicht.ico", IMAGE_ICON, 0,0, LR_LOADFROMFILE); 
 
 		RegisterClassEx(&wcex);
 
@@ -470,10 +397,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 	em.irrDev = this;
 	em.hWnd = HWnd;
 	EnvMap.push_back(em);
-
-// >> add by uirou for IME Window start
-	GUIEnvironment->setDevice(this);
-// << add by uirou for IME Window end
 
 	// set this as active window
 	SetActiveWindow(HWnd);
@@ -573,7 +496,7 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 		VideoDriver = video::createSoftwareDriver2(windowSize, fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
-		#endif
+		#endif 
 		break;
 
 	case video::EDT_NULL:
@@ -623,7 +546,7 @@ bool CIrrDeviceWin32::run()
 void CIrrDeviceWin32::yield()
 {
 	Sleep(1);
-
+	
 }
 
 //! Pause execution and let other processes to run for a specified amount of time.
@@ -632,7 +555,7 @@ void CIrrDeviceWin32::sleep(u32 timeMs, bool pauseTimer)
 	bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
-
+	
 	Sleep(timeMs);
 
 	if (pauseTimer && !wasStopped)
@@ -817,7 +740,7 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 		// enumerate video modes.
 		DWORD i=0;
 		DEVMODE mode;
-		memset(&mode, 0, sizeof(mode));
+		memset(&mode, 0, sizeof(mode)); 
 		mode.dmSize = sizeof(mode);
 
 		while (EnumDisplaySettings(NULL, i, &mode))
@@ -1027,20 +950,6 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 	return dev;
 }
 
-// >> add by uirou for IME Window start
-void CIrrDeviceWin32::updateICSpot(short x, short y, short height){
-    HIMC hIMC = ImmGetContext(HWnd);
-    //LOGFONT lf;
-    COMPOSITIONFORM cf;
-
-    cf.dwStyle = CFS_POINT;
-    cf.ptCurrentPos.x = x;
-    cf.ptCurrentPos.y = y - height;
-    ImmSetCompositionWindow(hIMC, &cf);
-
-    ImmReleaseContext(HWnd, hIMC);
-}
-// << add by uirou for IME Window end
 
 } // end namespace
 

@@ -24,7 +24,7 @@ namespace video
 static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! constructor for usual textures
-COpenGLTexture::COpenGLTexture(IImage* image, const char* name, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
  : ITexture(name), Driver(driver), Image(0),
   TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
   PixelType(GL_UNSIGNED_BYTE), HasMipMaps(true), IsRenderTarget(false),
@@ -34,7 +34,7 @@ COpenGLTexture::COpenGLTexture(IImage* image, const char* name, COpenGLDriver* d
 	setDebugName("COpenGLTexture");
 	#endif
 
-	getImageData(image);
+	getImageData(origImage);
 
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	if (Image)
@@ -50,7 +50,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
                                 const char* name,
                                 COpenGLDriver* driver)
  : ITexture(name), ImageSize(size), Driver(driver), Image(0),
-  TextureName(0), InternalFormat(GL_RGB8), PixelFormat(GL_RGBA),
+  TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
   PixelType(GL_UNSIGNED_BYTE), HasMipMaps(false), IsRenderTarget(true),
   ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0)
 {

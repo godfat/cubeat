@@ -341,12 +341,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	if (framesPerSecond==0)
 		framesPerSecond=1;
 
-	s32 frameCount = *(s32*)pPtr;
-#ifdef __BIG_ENDIAN__
-	frameCount = os::Byteswap::byteswap(frameCount);
-#endif
-	pPtr += sizeof(s32);
-
+	pPtr += sizeof(s32); // frameCount
 
 	u16 jointCount = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -371,8 +366,6 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		pJoint->NumTranslationKeyframes = os::Byteswap::byteswap(pJoint->NumTranslationKeyframes);
 #endif
 		pPtr += sizeof(MS3DJoint);
-
-
 
 		ISkinnedMesh::SJoint *jnt = AnimatedMesh->createJoint();
 
@@ -400,18 +393,16 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		jnt->LocalMatrix.setTranslation(
 			core::vector3df(pJoint->Translation[0], pJoint->Translation[1], pJoint->Translation[2]) );
 
-
 		ParentNames.push_back( (c8*)pJoint->ParentName );
 
 		/*if (pJoint->NumRotationKeyframes ||
 			pJoint->NumTranslationKeyframes)
-			HasAnimation = true;*/
-
-
-
+			HasAnimation = true;
+		 */
 
 		// get rotation keyframes
-		for (j=0; j < pJoint->NumRotationKeyframes; ++j)
+		const u16 numRotationKeyframes = pJoint->NumRotationKeyframes;
+		for (j=0; j < numRotationKeyframes; ++j)
 		{
 			MS3DKeyframe* kf = (MS3DKeyframe*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -432,17 +423,11 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			tmpMatrix=jnt->LocalMatrix*tmpMatrix;
 
 			k->rotation  = core::quaternion(tmpMatrix);
-
-			//fix
-			//k->rotation  = core::vector3df
-			//	(kf->Parameter[0],//+pJoint->Rotation[0]*core::RADTODEG,
-			//	 kf->Parameter[1],//+pJoint->Rotation[1]*core::RADTODEG,
-			//	 kf->Parameter[2]);//+pJoint->Rotation[2]*core::RADTODEG);
-
 		}
 
 		// get translation keyframes
-		for (j=0; j<pJoint->NumTranslationKeyframes; ++j)
+		const u16 numTranslationKeyframes = pJoint->NumTranslationKeyframes;
+		for (j=0; j<numTranslationKeyframes; ++j)
 		{
 			MS3DKeyframe* kf = (MS3DKeyframe*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -459,8 +444,6 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 				(kf->Parameter[0]+pJoint->Translation[0],
 				 kf->Parameter[1]+pJoint->Translation[1],
 				 kf->Parameter[2]+pJoint->Translation[2]);
-
-
 		}
 	}
 
@@ -517,6 +500,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					break;
 				}
 			}
+
 			if (index == -1)
 			{
 				s32 boneid = vertices[triangles[i].VertexIndices[j]].BoneID;
@@ -584,23 +568,25 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 }
 
 
-core::stringc CMS3DMeshFileLoader::stripPathFromString(core::stringc string, bool returnPath)
+core::stringc CMS3DMeshFileLoader::stripPathFromString(const core::stringc& inString, bool returnPath) const
 {
-	s32 slashIndex=string.findLast('/'); // forward slash
-	s32 backSlash=string.findLast('\\'); // back slash
+	s32 slashIndex=inString.findLast('/'); // forward slash
+	s32 backSlash=inString.findLast('\\'); // back slash
 
 	if (backSlash>slashIndex) slashIndex=backSlash;
 
 	if (slashIndex==-1)//no slashes found
+	{
 		if (returnPath)
 			return core::stringc(); //no path to return
 		else
-			return string;
+			return inString;
+	}
 
 	if (returnPath)
-		return string.subString(0, slashIndex + 1);
+		return inString.subString(0, slashIndex + 1);
 	else
-		return string.subString(slashIndex+1, string.size() - (slashIndex+1));
+		return inString.subString(slashIndex+1, inString.size() - (slashIndex+1));
 }
 
 

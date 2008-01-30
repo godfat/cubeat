@@ -11,6 +11,51 @@
 #include "COpenGLDriver.h"
 #include "IMaterialRenderer.h"
 
+//Varmint: 2007/12/11
+#ifdef MACOSX
+	#define GL_COMBINE_EXT                    0x8570
+	#define GL_COMBINE_RGB_EXT                0x8571
+	#define GL_COMBINE_ALPHA_EXT              0x8572
+	#define GL_RGB_SCALE_EXT                  0x8573
+	#define GL_ADD_SIGNED_EXT                 0x8574
+	#define GL_INTERPOLATE_EXT                0x8575
+	#define GL_CONSTANT_EXT                   0x8576
+	#define GL_PRIMARY_COLOR_EXT              0x8577
+	#define GL_PREVIOUS_EXT                   0x8578
+	#define GL_SOURCE0_RGB_EXT                0x8580
+	#define GL_SOURCE1_RGB_EXT                0x8581
+	#define GL_SOURCE2_RGB_EXT                0x8582
+	#define GL_SOURCE3_RGB_EXT                0x8583
+	#define GL_SOURCE4_RGB_EXT                0x8584
+	#define GL_SOURCE5_RGB_EXT                0x8585
+	#define GL_SOURCE6_RGB_EXT                0x8586
+	#define GL_SOURCE7_RGB_EXT                0x8587
+	#define GL_SOURCE0_ALPHA_EXT              0x8588
+	#define GL_SOURCE1_ALPHA_EXT              0x8589
+	#define GL_SOURCE2_ALPHA_EXT              0x858A
+	#define GL_SOURCE3_ALPHA_EXT              0x858B
+	#define GL_SOURCE4_ALPHA_EXT              0x858C
+	#define GL_SOURCE5_ALPHA_EXT              0x858D
+	#define GL_SOURCE6_ALPHA_EXT              0x858E
+	#define GL_SOURCE7_ALPHA_EXT              0x858F
+	#define GL_OPERAND0_RGB_EXT               0x8590
+	#define GL_OPERAND1_RGB_EXT               0x8591
+	#define GL_OPERAND2_RGB_EXT               0x8592
+	#define GL_OPERAND3_RGB_EXT               0x8593
+	#define GL_OPERAND4_RGB_EXT               0x8594
+	#define GL_OPERAND5_RGB_EXT               0x8595
+	#define GL_OPERAND6_RGB_EXT               0x8596
+	#define GL_OPERAND7_RGB_EXT               0x8597
+	#define GL_OPERAND0_ALPHA_EXT             0x8598
+	#define GL_OPERAND1_ALPHA_EXT             0x8599
+	#define GL_OPERAND2_ALPHA_EXT             0x859A
+	#define GL_OPERAND3_ALPHA_EXT             0x859B
+	#define GL_OPERAND4_ALPHA_EXT             0x859C
+	#define GL_OPERAND5_ALPHA_EXT             0x859D
+	#define GL_OPERAND6_ALPHA_EXT             0x859E
+	#define GL_OPERAND7_ALPHA_EXT             0x859F
+#endif
+
 namespace irr
 {
 namespace video
@@ -93,11 +138,11 @@ public:
 
 			if ( getTexelAlpha ( srcFact ) + getTexelAlpha ( dstFact ) )
 			{
-// >> changed GL_COMBINE_ALPHA_EXT from GL_REPLACE to GL_MODULATE by arch.jslin 2007.12.24
+// >> modified
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
-// >> added this line to provide Arg1 for GL_COMBINE_ALPHA_EXT in GL_MODULATE mode. by arch.jslin
-                glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
+// >> add
+				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);               
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
 			}
 		}
@@ -112,48 +157,42 @@ public:
 		glDisable(GL_ALPHA_TEST);
 	}
 
-private:
+	private:
 
-	u32 getGLBlend ( E_BLEND_FACTOR factor ) const
-	{
-		u32 r = 0;
-		switch ( factor )
+		u32 getGLBlend ( E_BLEND_FACTOR factor ) const
 		{
-			case EBF_ZERO:			r = GL_ZERO; break;
-			case EBF_ONE:			r = GL_ONE; break;
-			case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
-			case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
-			case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
-			case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
-			case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
-			case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
-			case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
-			case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
-			case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
+			u32 r = 0;
+			switch ( factor )
+			{
+				case EBF_ZERO:			r = GL_ZERO; break;
+				case EBF_ONE:			r = GL_ONE; break;
+				case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
+				case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
+				case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
+				case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
+				case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
+				case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
+				case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
+				case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
+				case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
+			}
+			return r;
 		}
-		return r;
-	}
 
-	u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
-	{
-		u32 r;
-		switch ( factor )
+		u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
 		{
-			case EBF_SRC_ALPHA:		r = 1; break;
-			case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
-			case EBF_DST_ALPHA:		r = 1; break;
-			case EBF_ONE_MINUS_DST_ALPHA:	r = 1; break;
-			case EBF_SRC_ALPHA_SATURATE:	r = 1; break;
-			default:			r = 0; break;
+			u32 r;
+			switch ( factor )
+			{
+				case EBF_SRC_ALPHA:		r = 1; break;
+				case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
+				case EBF_DST_ALPHA:		r = 1; break;
+				case EBF_ONE_MINUS_DST_ALPHA:	r = 1; break;
+				case EBF_SRC_ALPHA_SATURATE:	r = 1; break;
+				default:			r = 0; break;
+			}
+			return r;
 		}
-		return r;
-	}
-
-    //! Returns if the material is transparent.
-	virtual bool isTransparent() const
-	{
-		return true;
-	}
 };
 
 
@@ -300,15 +339,10 @@ public:
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-//			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
-// >> changed by arch.jslin 2007.12.27
-            glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
 
-// >> changed by arch.jslin 2007.12.27
-			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE);
+			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
-// >> changed by arch.jslin 2007.12.27
-            glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);

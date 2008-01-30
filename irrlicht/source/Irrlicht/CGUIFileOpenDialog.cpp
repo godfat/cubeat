@@ -14,10 +14,6 @@
 #include "IGUIFontBitmap.h"
 #include "IFileList.h"
 #include "os.h"
-// >> add by zgock for Multilingual start
-#include "stdlib.h"
-#include "locale.h"
-// << add by zgock for Multilingual end
 
 namespace irr
 {
@@ -289,44 +285,17 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-// >> add by MadHyde for Multilingual start
-	char* old_locale = setlocale(LC_ALL, NULL);
-// << add by MadHyde for Multilingual end
-// >> add by zgock for Multilingual start
-	setlocale(LC_ALL,"");		// Use defalut locale
-// << add by zgock for Multilingual end
-
 	for (u32 i=0; i<FileList->getFileCount(); ++i)
 	{
-// >> modified by zgock for Multilingual start
-		c8 *d = (c8 *)FileList->getFileName(i);
-		wchar_t *ws = new wchar_t[strlen(d) + 1];
-		int len = mbstowcs(ws,d,strlen(d));
-		ws[len] = 0;
-		s = ws;
-		delete ws;
-//		s = FileList->getFileName(i);
-// << modified by zgock for Multilingual end
+		s = FileList->getFileName(i);
 		FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
 	}
 
 	if (FileNameText)
 	{
-// >> modified by zgock for Multilingual start
-		c8 *d = (c8 *)FileSystem->getWorkingDirectory();
-		wchar_t *ws = new wchar_t[strlen(d) + 1];
-		int len = mbstowcs(ws,d,strlen(d));
-		ws[len] = 0;
-		s = ws;
-		delete ws;
-//		s = FileSystem->getWorkingDirectory();
-// << modified by zgock for Multilingual end
+		s = FileSystem->getWorkingDirectory();
 		FileNameText->setText(s.c_str());
 	}
-
-// >> add by MadHyde for Multilingual start
-	setlocale(LC_ALL, old_locale);
-// << add by MadHyde for Multilingual end
 }
 
 

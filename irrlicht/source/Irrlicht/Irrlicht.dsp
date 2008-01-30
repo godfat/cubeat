@@ -826,6 +826,14 @@ SOURCE=.\CImageWriterTGA.cpp
 
 SOURCE=.\CImageWriterTGA.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\CImageWriterWAL.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CImageWriterWAL.h
+# End Source File
 # End Group
 # Begin Source File
 
@@ -2360,6 +2368,10 @@ SOURCE=.\changes.txt
 # Begin Source File
 
 SOURCE=.\glxext.h
+# End Source File
+# End Target
+
+SOURCE=.\CBurningShader_Raster_Reference.cpp
 # End Source File
 # End Target
 # End Project

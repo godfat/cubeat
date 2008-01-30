@@ -37,6 +37,9 @@ IImageLoader* createImageLoaderPCX();
 //! creates a loader which is able to load png images
 IImageLoader* createImageLoaderPNG();
 
+//! creates a loader which is able to load WAL images
+IImageLoader* createImageLoaderWAL();
+
 //! creates a loader which is able to load ppm/pgm/pbm images
 IImageLoader* createImageLoaderPPM();
 
@@ -101,6 +104,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 #endif
 #ifdef _IRR_COMPILE_WITH_PNG_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
+#endif
+#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderWAL());
 #endif
 #ifdef _IRR_COMPILE_WITH_PPM_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPPM());
@@ -208,6 +214,7 @@ bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 bool CNullDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
+	updateAllHardwareBuffers();
 	return true;
 }
 
@@ -306,7 +313,6 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 		return texture;
 
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
-	bool errorReported = false;
 
 	if (file)
 	{
@@ -321,12 +327,12 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 	}
 	else
 	{
-		errorReported = true;
-		os::Printer::log("Could not open file of texture", filename, ELL_ERROR);
+		os::Printer::log("Could not open file of texture", filename, ELL_WARNING);
+		return texture;
 	}
 
-	if (!texture && !errorReported)
-		os::Printer::log("Could not load texture", filename, ELL_ERROR);
+	if (!texture)
+		os::Printer::log("Could not load texture", filename, ELL_WARNING);
 
 	return texture;
 }
@@ -355,7 +361,7 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 	}
 
 	if (!texture)
-		os::Printer::log("Could not load texture", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
 
 	return texture;
 }
@@ -1141,7 +1147,7 @@ IImage* CNullDriver::createImageFromFile(const char* filename)
 		file->drop();
 	}
 	else
-		os::Printer::log("Could not open file of image", filename, ELL_ERROR);
+		os::Printer::log("Could not open file of image", filename, ELL_WARNING);
 
 	return image;
 }
@@ -1241,10 +1247,92 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 	if (!mb)
 		return;
 
-	drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+	//IVertexBuffer and IIndexBuffer later
+	SHWBufferLink *HWBuffer=getBufferLink(mb);
+
+	if (HWBuffer)
+		drawHardwareBuffer(HWBuffer);
+	else
+		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+
+}
+
+CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
+{
+	if (!isHardwareBufferRecommend(mb))
+		return 0;
+
+	//search for hardware links
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		SHWBufferLink *Link=HWBufferLinks[n];
+		if (Link->MeshBuffer==mb)
+		{
+			return Link;
+		}
+	}
+
+	return createHardwareBuffer(mb); //no hardware links, and mesh wants one, create it
+}
+
+//! Update all hardware buffers, remove unused ones
+void CNullDriver::updateAllHardwareBuffers()
+{
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		SHWBufferLink *Link=HWBufferLinks[n];
+
+		Link->LastUsed++;
+
+		if (Link->LastUsed>20000)
+		{
+			deleteHardwareBuffer(Link);
+		}
+	}
 }
 
 
+void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
+{
+	s32 n=HWBufferLinks.binary_search(HWBuffer);
+	if (n!=-1) HWBufferLinks.erase(n);
+
+	delete HWBuffer;
+}
+
+
+//! Remove hardware buffer
+void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer* mb)
+{
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		SHWBufferLink *Link=HWBufferLinks[n];
+		if (Link->MeshBuffer==mb)
+		{
+			deleteHardwareBuffer(Link);
+		}
+	}
+}
+
+
+//! Remove all hardware buffers
+void CNullDriver::removeAllHardwareBuffers()
+{
+	while (HWBufferLinks.size())
+		deleteHardwareBuffer(HWBufferLinks[0]);
+}
+
+
+bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
+{
+	if (mb->getHardwareMappingHint()==scene::EHM_NEVER)
+		return false;
+
+	if (mb->getVertexCount()<500) //todo: tweak and make user definable
+		return false;
+
+	return true;
+}
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.

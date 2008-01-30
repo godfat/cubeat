@@ -38,9 +38,6 @@
 					<Add library="oleaut32" />
 					<Add library="uuid" />
 					<Add library="opengl32" />
-					<Add library="..\..\..\..\freetype\freetype-2.3.5\objs\freetype.a" />
-					<Add library="imm32" />
-					<Add directory="..\..\..\..\freetype\freetype-2.3.5\objs" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -51,11 +48,8 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-fexpensive-optimizations" />
-					<Add option="-Os" />
-					<Add option="-O3" />
+					<Add option="-O2" />
 					<Add option="-W" />
-					<Add option="-fno-fast-math" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -77,9 +71,6 @@
 					<Add library="oleaut32" />
 					<Add library="uuid" />
 					<Add library="opengl32" />
-					<Add library="..\..\..\..\freetype\freetype-2.3.5\objs\freetype.a" />
-					<Add library="imm32" />
-					<Add directory="..\..\..\..\freetype\freetype-2.3.5\objs" />
 				</Linker>
 			</Target>
 			<Target title="Release - Fast FPU">
@@ -113,17 +104,13 @@
 					<Add library="oleaut32" />
 					<Add library="uuid" />
 					<Add library="opengl32" />
-					<Add library="..\..\..\..\freetype\freetype-2.3.5\objs\freetype.a" />
-					<Add library="imm32" />
-					<Add directory="..\..\..\..\freetype\freetype-2.3.5\objs" />
 				</Linker>
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;Release - Fast FPU;" />
+			<Add alias="All" targets="Debug;Release;Release - Fast FPU" />
 		</VirtualTargets>
 		<Unit filename="..\..\changes.txt" />
-		<Unit filename="..\..\include\CGUITTFont.h" />
 		<Unit filename="..\..\include\ECullingTypes.h" />
 		<Unit filename="..\..\include\EDebugSceneTypes.h" />
 		<Unit filename="..\..\include\EDriverTypes.h" />
@@ -230,85 +217,6 @@
 		<Unit filename="..\..\include\SceneParameters.h" />
 		<Unit filename="..\..\include\aabbox3d.h" />
 		<Unit filename="..\..\include\dimension2d.h" />
-		<Unit filename="..\..\include\freetype\config\ftconfig.h" />
-		<Unit filename="..\..\include\freetype\config\ftheader.h" />
-		<Unit filename="..\..\include\freetype\config\ftmodule.h" />
-		<Unit filename="..\..\include\freetype\config\ftoption.h" />
-		<Unit filename="..\..\include\freetype\config\ftstdlib.h" />
-		<Unit filename="..\..\include\freetype\freetype.h" />
-		<Unit filename="..\..\include\freetype\ftbbox.h" />
-		<Unit filename="..\..\include\freetype\ftbdf.h" />
-		<Unit filename="..\..\include\freetype\ftbitmap.h" />
-		<Unit filename="..\..\include\freetype\ftcache.h" />
-		<Unit filename="..\..\include\freetype\ftchapters.h" />
-		<Unit filename="..\..\include\freetype\fterrdef.h" />
-		<Unit filename="..\..\include\freetype\fterrors.h" />
-		<Unit filename="..\..\include\freetype\ftgasp.h" />
-		<Unit filename="..\..\include\freetype\ftglyph.h" />
-		<Unit filename="..\..\include\freetype\ftgxval.h" />
-		<Unit filename="..\..\include\freetype\ftgzip.h" />
-		<Unit filename="..\..\include\freetype\ftimage.h" />
-		<Unit filename="..\..\include\freetype\ftincrem.h" />
-		<Unit filename="..\..\include\freetype\ftlcdfil.h" />
-		<Unit filename="..\..\include\freetype\ftlist.h" />
-		<Unit filename="..\..\include\freetype\ftlzw.h" />
-		<Unit filename="..\..\include\freetype\ftmac.h" />
-		<Unit filename="..\..\include\freetype\ftmm.h" />
-		<Unit filename="..\..\include\freetype\ftmodapi.h" />
-		<Unit filename="..\..\include\freetype\ftmoderr.h" />
-		<Unit filename="..\..\include\freetype\ftotval.h" />
-		<Unit filename="..\..\include\freetype\ftoutln.h" />
-		<Unit filename="..\..\include\freetype\ftpfr.h" />
-		<Unit filename="..\..\include\freetype\ftrender.h" />
-		<Unit filename="..\..\include\freetype\ftsizes.h" />
-		<Unit filename="..\..\include\freetype\ftsnames.h" />
-		<Unit filename="..\..\include\freetype\ftstroke.h" />
-		<Unit filename="..\..\include\freetype\ftsynth.h" />
-		<Unit filename="..\..\include\freetype\ftsystem.h" />
-		<Unit filename="..\..\include\freetype\fttrigon.h" />
-		<Unit filename="..\..\include\freetype\fttypes.h" />
-		<Unit filename="..\..\include\freetype\ftwinfnt.h" />
-		<Unit filename="..\..\include\freetype\ftxf86.h" />
-		<Unit filename="..\..\include\freetype\internal\autohint.h" />
-		<Unit filename="..\..\include\freetype\internal\ftcalc.h" />
-		<Unit filename="..\..\include\freetype\internal\ftdebug.h" />
-		<Unit filename="..\..\include\freetype\internal\ftdriver.h" />
-		<Unit filename="..\..\include\freetype\internal\ftgloadr.h" />
-		<Unit filename="..\..\include\freetype\internal\ftmemory.h" />
-		<Unit filename="..\..\include\freetype\internal\ftobjs.h" />
-		<Unit filename="..\..\include\freetype\internal\ftrfork.h" />
-		<Unit filename="..\..\include\freetype\internal\ftserv.h" />
-		<Unit filename="..\..\include\freetype\internal\ftstream.h" />
-		<Unit filename="..\..\include\freetype\internal\fttrace.h" />
-		<Unit filename="..\..\include\freetype\internal\ftvalid.h" />
-		<Unit filename="..\..\include\freetype\internal\internal.h" />
-		<Unit filename="..\..\include\freetype\internal\pcftypes.h" />
-		<Unit filename="..\..\include\freetype\internal\psaux.h" />
-		<Unit filename="..\..\include\freetype\internal\pshints.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svbdf.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svgldict.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svgxval.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svkern.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svmm.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svotval.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svpfr.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svpostnm.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svpscmap.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svpsinfo.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svsfnt.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svttcmap.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svtteng.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svttglyf.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svwinfnt.h" />
-		<Unit filename="..\..\include\freetype\internal\services\svxf86nm.h" />
-		<Unit filename="..\..\include\freetype\internal\sfnt.h" />
-		<Unit filename="..\..\include\freetype\internal\t1types.h" />
-		<Unit filename="..\..\include\freetype\internal\tttypes.h" />
-		<Unit filename="..\..\include\freetype\t1tables.h" />
-		<Unit filename="..\..\include\freetype\ttnameid.h" />
-		<Unit filename="..\..\include\freetype\tttables.h" />
-		<Unit filename="..\..\include\freetype\tttags.h" />
-		<Unit filename="..\..\include\freetype\ttunpat.h" />
 		<Unit filename="..\..\include\heapsort.h" />
 		<Unit filename="..\..\include\irrAllocator.h" />
 		<Unit filename="..\..\include\irrArray.h" />
@@ -350,6 +258,7 @@
 		<Unit filename="CBillboardSceneNode.h" />
 		<Unit filename="CBoneSceneNode.cpp" />
 		<Unit filename="CBoneSceneNode.h" />
+		<Unit filename="CBurningShader_Raster_Reference.cpp" />
 		<Unit filename="CCSMLoader.cpp" />
 		<Unit filename="CCSMLoader.h" />
 		<Unit filename="CCameraFPSSceneNode.cpp" />
@@ -452,7 +361,6 @@
 		<Unit filename="CGUISpriteBank.h" />
 		<Unit filename="CGUIStaticText.cpp" />
 		<Unit filename="CGUIStaticText.h" />
-		<Unit filename="CGUITTFont.cpp" />
 		<Unit filename="CGUITabControl.cpp" />
 		<Unit filename="CGUITabControl.h" />
 		<Unit filename="CGUIToolBar.cpp" />
@@ -477,6 +385,8 @@
 		<Unit filename="CImageLoaderPSD.h" />
 		<Unit filename="CImageLoaderTGA.cpp" />
 		<Unit filename="CImageLoaderTGA.h" />
+		<Unit filename="CImageLoaderWAL.cpp" />
+		<Unit filename="CImageLoaderWAL.h" />
 		<Unit filename="CImageWriterBMP.cpp" />
 		<Unit filename="CImageWriterBMP.h" />
 		<Unit filename="CImageWriterJPG.cpp" />

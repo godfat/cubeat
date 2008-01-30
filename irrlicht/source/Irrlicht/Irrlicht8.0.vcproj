@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Irrlicht"
 	ProjectGUID="{E08E042A-6C45-411B-92BE-3CC31331019F}"
 	RootNamespace="Irrlicht"
@@ -145,10 +145,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
-				InlineFunctionExpansion="2"
+				Optimization="2"
+				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="false"
-				AdditionalIncludeDirectories="&quot;D:\c_libs\freetype\freetype-2.3.5\include&quot;;..\..\include;zlib"
+				AdditionalIncludeDirectories="..\..\include;zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;IRRLICHT_EXPORTS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -163,7 +163,6 @@
 				SuppressStartupBanner="true"
 				DebugInformationFormat="0"
 				CompileAs="0"
-				DisableSpecificWarnings="4819"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -179,11 +178,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib opengl32.lib imm32.lib freetype235MT.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib opengl32.lib"
 				OutputFile="..\..\bin\Win32-visualstudio\Irrlicht.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;D:\c_libs\freetype\freetype-2.3.5\objs&quot;"
 				IgnoreDefaultLibraryNames="libci.lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile="..\obj\IrrRelease\Irrlicht.pdb"
@@ -270,7 +268,6 @@
 				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"
-				DisableSpecificWarnings="4819"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -751,10 +748,6 @@
 				Name="gui"
 				>
 				<File
-					RelativePath="..\..\include\CGUITTFont.h"
-					>
-				</File>
-				<File
 					RelativePath=".\..\..\include\EGUIElementTypes.h"
 					>
 				</File>
@@ -1053,10 +1046,6 @@
 			</File>
 			<File
 				RelativePath="CGUIToolBar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CGUITTFont.cpp"
 				>
 			</File>
 			<File
@@ -1363,6 +1352,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CImageLoaderWAL.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderWAL.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CNullDriver.cpp"
 					>
 				</File>
@@ -1494,6 +1491,10 @@
 			<Filter
 				Name="Burning Video"
 				>
+				<File
+					RelativePath=".\CBurningShader_Raster_Reference.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\CDepthBuffer.cpp"
 					>

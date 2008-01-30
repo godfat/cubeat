@@ -97,12 +97,20 @@ namespace scene
 		//! Tranfers the joint data to the mesh
 		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
 
+		//! Tranfers the joint hints to the mesh
+		virtual void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
+
 		//! Creates an array of joints from this mesh
 		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes, IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager);
 
 
 		virtual void convertMeshToTangents();
 
+		//! Does the mesh have non animation
+		virtual bool isStatic();
+
+		//! (This feature is not implementated in irrlicht yet)
+		virtual bool setHardwareSkinning(bool on);
 
 
 
@@ -122,8 +130,6 @@ namespace scene
 
 		//! loaders should call this after populating the mesh
 		virtual void finalize();
-
-
 
 
 		virtual SSkinMeshBuffer *createBuffer();
@@ -182,6 +188,9 @@ private:
 		bool BoneControlUsed;
 
 		bool AnimateNormals;
+
+		bool HardwareSkinning;
+
 
 		E_INTERPOLATION_MODE InterpolationMode;
 

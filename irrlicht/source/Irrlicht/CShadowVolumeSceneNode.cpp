@@ -106,7 +106,6 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	// is used
 	createZPassVolume(faceCount, numEdges, light, svp, UseZFailMethod);
 
-
 	for (s32 i=0; i<numEdges; ++i)
 	{
 		core::vector3df &v1 = Vertices[Edges[2*i+0]];
@@ -127,6 +126,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 		}
 	}
 }
+
 
 void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 						const core::vector3df& light,
@@ -206,6 +206,7 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 	}
 }
 
+
 void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 						s32& numEdges,
 						core::vector3df light,
@@ -249,6 +250,7 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 	}
 }
 
+
 //! sets the mesh from which the shadow volume should be generated.
 void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 {
@@ -269,13 +271,12 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 	s32 totalVertices = 0;
 	s32 totalIndices = 0;
 	u32 bufcnt = mesh->getMeshBufferCount();
-	const IMeshBuffer* b;
 
 	for (i=0; i<bufcnt; ++i)
 	{
-		b = mesh->getMeshBuffer(i);
-		totalIndices += b->getIndexCount();
-		totalVertices += b->getVertexCount();
+		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
+		totalIndices += buf->getIndexCount();
+		totalVertices += buf->getVertexCount();
 	}
 
 	// allocate memory if necessary
@@ -304,49 +305,16 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 
 	for (i=0; i<bufcnt; ++i)
 	{
-		b = mesh->getMeshBuffer(i);
+		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
 
-		s32 idxcnt = b->getIndexCount();
-		s32 vtxnow = VertexCount;
-
-		const u16* idxp = b->getIndices();
-		const u16* idxpend = idxp + idxcnt;
-
+		const u16* idxp = buf->getIndices();
+		const u16* idxpend = idxp + buf->getIndexCount();
 		for (; idxp!=idxpend; ++idxp)
-			Indices[IndexCount++] = *idxp + vtxnow;
+			Indices[IndexCount++] = *idxp + VertexCount;
 
-		s32 vtxcnt = b->getVertexCount();
-
-		switch(b->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				const video::S3DVertex* vp = (video::S3DVertex*)b->getVertices();
-				const video::S3DVertex* const vpend = vp + vtxcnt;
-
-				for (; vp!=vpend; ++vp)
-					Vertices[VertexCount++] = (*vp).Pos;
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				const video::S3DVertex2TCoords* vp = (video::S3DVertex2TCoords*)b->getVertices();
-				const video::S3DVertex2TCoords* const vpend = vp + vtxcnt;
-
-				for (; vp!=vpend; ++vp)
-					Vertices[VertexCount++] = (*vp).Pos;
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				const video::S3DVertexTangents* vp = (video::S3DVertexTangents*)b->getVertices();
-				const video::S3DVertexTangents* const vpend = vp + vtxcnt;
-
-				for (; vp!=vpend; ++vp)
-					Vertices[VertexCount++] = (*vp).Pos;
-			}
-			break;
-		}
+		const u32 vtxcnt = buf->getVertexCount();
+		for (u32 j=0; j<vtxcnt; ++j)
+			Vertices[VertexCount++] = buf->getPosition(j);
 	}
 
 	// recalculate adjacency if necessary
@@ -378,17 +346,14 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 }
 
 
-
 //! pre render method
 void CShadowVolumeSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_SHADOW);
-		ISceneNode::OnRegisterSceneNode();
-	}
-}
 
+	ISceneNode::OnRegisterSceneNode();
+}
 
 
 //! renders the node.
@@ -405,7 +370,6 @@ void CShadowVolumeSceneNode::render()
 		driver->drawStencilShadowVolume(ShadowVolumes[i].vertices,
 			ShadowVolumes[i].count, UseZFailMethod);
 }
-
 
 
 //! returns the axis aligned bounding box of this node

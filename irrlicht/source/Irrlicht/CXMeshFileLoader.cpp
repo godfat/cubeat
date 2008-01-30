@@ -676,8 +676,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	const u32 nVertices = readInt();
 
 	// read vertices
-	mesh.Vertices.set_used(nVertices); //luke: change
-
+	mesh.Vertices.set_used(nVertices);
 	for (u32 n=0; n<nVertices; ++n)
 	{
 		readVector3(mesh.Vertices[n].Pos);
@@ -738,12 +737,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 	}
 
-	if (BinaryFormat && BinaryNumCount)
-	{
-		os::Printer::log("Binary X: Mesh: Integer count mismatch", ELL_WARNING);
-		return false;
-	}
-	else if (!checkForTwoFollowingSemicolons())
+	if (!checkForTwoFollowingSemicolons())
 	{
 		os::Printer::log("No finishing semicolon in Mesh Face Array found in x file", ELL_WARNING);
 		return false;
@@ -1420,8 +1414,6 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		{
 			ISkinnedMesh::SPositionKey *key=&animationDump.PositionKeys[n];
 
-			//key->position+=joint->LocalMatrix.getTranslation();
-
 			joint->PositionKeys.push_back(*key);
 		}
 
@@ -2062,33 +2054,11 @@ bool CXMeshFileLoader::readVector3(core::vector3df& vec)
 
 
 // read color without alpha value. Stops after second semicolon after blue value
-bool CXMeshFileLoader::readRGB(video::SColorf& color)
-{
-	color.r = readFloat();
-	color.g = readFloat();
-	color.b = readFloat();
-	color.a = 1.0f;
-	return checkForOneFollowingSemicolons();
-}
-
-
-// read color with alpha value. Stops after second semicolon after blue value
-bool CXMeshFileLoader::readRGBA(video::SColorf& color)
-{
-	color.r = readFloat();
-	color.g = readFloat();
-	color.b = readFloat();
-	color.a = readFloat();
-	return checkForOneFollowingSemicolons();
-}
-
-
-// read color without alpha value. Stops after second semicolon after blue value
 bool CXMeshFileLoader::readRGB(video::SColor& color)
 {
-	color.setRed( (u32)(readFloat()*255)) ;
-	color.setGreen( (u32)(readFloat()*255)) ;
-	color.setBlue( (u32)(readFloat()*255)) ;
+	color.setRed( (u32)(readFloat()*255.f)) ;
+	color.setGreen( (u32)(readFloat()*255.f)) ;
+	color.setBlue( (u32)(readFloat()*255.f)) ;
 	color.setAlpha( 255 );
 	return checkForOneFollowingSemicolons();
 }
@@ -2113,10 +2083,12 @@ core::stringc CXMeshFileLoader::stripPathFromString(core::stringc string, bool r
 	if (backSlash>slashIndex) slashIndex=backSlash;
 
 	if (slashIndex==-1)//no slashes found
+	{
 		if (returnPath)
 			return core::stringc(); //no path to return
 		else
 			return string;
+	}
 
 	if (returnPath)
 		return string.subString(0, slashIndex + 1);

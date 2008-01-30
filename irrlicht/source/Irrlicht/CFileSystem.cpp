@@ -268,7 +268,7 @@ bool CFileSystem::existFile(const c8* filename) const
 		if (UnZipFileSystems[i]->findFile(filename)!=-1)
 			return true;
 
-	FILE* f = fopen(filename, "rb");
+	FILE* f = fopen(filename, "r");
 	if (f) 
 	{
 		fclose(f);

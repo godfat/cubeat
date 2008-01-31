@@ -5,10 +5,13 @@
 
 #include "all_fwd.hpp"
 
+<%= debug_include %>
+
 using namespace psc;
 using namespace model;
 
-bool Cube::cycle_and_die(){
+bool <% debug_hook 'Cube::cycle_and_die' do %>(){
+<% end %>
     if( cycled_ )
         return false; // i am alive though killed, think of DYING NOW
 

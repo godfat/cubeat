@@ -6,7 +6,7 @@ end
 #####
 
 require 'rubygems'
-gem 'ludy', '>=0.1.4'
+gem 'ludy', '>=0.1.7'
 require 'ludy/tasks/preprocess_cpp'
 Project.name = 'shooting_cubes'
 

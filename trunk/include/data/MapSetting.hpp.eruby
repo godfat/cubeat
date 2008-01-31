@@ -21,15 +21,13 @@ public:
         width_ = new_width;
         return reset_size();
     }
-    MapSetting& height(int const& new_height){
+    MapSetting& <% debug_hook 'height' do %>(int const& new_height){
+<% end %>
         height_ = new_height;
         return reset_size();
     }
 private:
-    MapSetting& <% debug_hook 'reset_size' do %>(){
-<% end %>
-        size_ = width_ * height_; return *this;
-    }
+    MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };
 
 }} // end of namespace

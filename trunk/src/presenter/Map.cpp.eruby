@@ -7,16 +7,20 @@
 
 #include "all_fwd.hpp"
 
+<%= debug_include %>
+
 using namespace psc;
 using namespace presenter;
 
-Map::pointer_type Map::init(){
+pMap <% debug_hook 'Map::init' do %>(){
+<% end %>
     model_ = model::Map::create(shared_from_this(), setting_);
     // view_ = view::Map::create(shared_from_this());
     return shared_from_this();
 }
 
-pCube Map::make_cube(int x, int y, int color_id){
+pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
+<% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     cubes_.push_back(cube);
     return cube;

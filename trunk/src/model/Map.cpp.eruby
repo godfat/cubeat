@@ -35,14 +35,16 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     return *this;
 }
 
-void Map::do_cycle(pCube c, int i){
+void <% debug_hook 'Map::do_cycle' do %>(pCube c, int i){
+<% end %>
     if(c){
         if( !c->has_grounded()  ) ++n_of_newcomers_;
         if(  c->cycle_and_die() ) cubes_.origin()[i].reset();
     }
 }
 
-Map& Map::insert(pCube cube){
+Map& <% debug_hook 'Map::insert' do %>(pCube cube){
+<% end %>
     cubes_[cube->x()][cube->y()] = cube;
     return *this;
 }

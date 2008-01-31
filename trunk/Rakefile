@@ -6,9 +6,9 @@ end
 #####
 
 require 'rubygems'
-gem 'ludy', '>=0.1.3'
-require 'ludy/tasks/erb_cpp'
-PROJ = 'shooting_cubes'
+gem 'ludy', '>=0.1.4'
+require 'ludy/tasks/preprocess_cpp'
+Project.name = 'shooting_cubes'
 
 =begin
 # inputs = Dir.glob('**/*.erb')

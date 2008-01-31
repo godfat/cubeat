@@ -1,6 +1,8 @@
 
 <% header_guard do %>
-#include <boost/tr1/random.hpp>
+
+
+#include <boost/tr1/tr1/random>
 #include <ctime>
 namespace psc{ namespace utils{
 

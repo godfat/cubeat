@@ -9,6 +9,7 @@
 
 <% header_guard do %>
 
+
 #include "model/Map.hpp"
 
 #include "all_fwd.hpp"

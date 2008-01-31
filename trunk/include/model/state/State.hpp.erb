@@ -1,5 +1,6 @@
 
 #include "all_fwd.hpp"
+
 <% header_guard do %>
 namespace psc{ namespace model{ namespace state{
 
@@ -8,7 +9,7 @@ class State{
 public:
     State(){}
 
-	State& init(wpCube const owner){ owner_ = owner; return this; }
+	State& init(wpCube owner){ owner_ = owner; return *this; }
 
 	virtual ~State(){}
     virtual pState cycle() = 0;

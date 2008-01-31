@@ -62,8 +62,8 @@ public:
     // end
 
 	// begin only used by State::map
-    pMap map(){ return map_; }
-    pMap const map() const{ return map_; }
+    pMap map(){ return map_.lock(); }
+    pMap const map() const{ return map_.lock(); }
     // end
 
     // begin only used by Map.cpp => local function check_not_continue
@@ -90,12 +90,13 @@ public:
 	int const& lose_chain_delay() const{ return lose_chain_delay_; }
 
 private:
-    pMap map_;
+    wpMap map_;
     data::Color color_;
     bool cycled_;
     bool has_grounded_;
     int lose_chain_delay_;
     data::pChain chain_belonged_to_;
+    state::pState state_;
 };
 
 }}

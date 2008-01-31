@@ -8,6 +8,9 @@
 using namespace psc;
 using namespace presenter;
 
+int Cube::x() const{ return model()->x(); }
+int Cube::y() const{ return model()->y(); }
+
 Cube::Cube(wpMap map, int x, int y, int color_id):
     map_(map),
     model_(model::Cube::create(map.lock()->model(), x, y, color_id)),

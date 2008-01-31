@@ -3,6 +3,7 @@
 #include "view/Scene.hpp"
 #include "view/Sprite.hpp"
 #include "Input.hpp"
+#include "Accessors.hpp"
 #include "IrrDevice.hpp"
 
 #include <boost/foreach.hpp>
@@ -11,6 +12,7 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 using namespace video;
+using namespace accessor;
 
 using namespace psc;
 using namespace view;
@@ -29,6 +31,10 @@ void Game::init(pScene const& world, pScene const& gui)
     gui_   = gui;
     for( int i=0; i < ctrl::Input::count(); ++i )
         cursors_.push_back( Sprite::create("title",gui_) );
+
+    //temporary code
+    cursors_[0]->set<Size2D>(dimension2df(100,40));
+    cursors_[1]->set<Size2D>(dimension2df(100,40));
 }
 
 Game& Game::setWorld(pScene const& world) { world_ = world; return *this;}
@@ -43,12 +49,10 @@ void Game::redraw()
     }
 
     gui_->deactivate();
-    world_->activate();
-    smgr_->drawAll();
+    world_->activate().redraw();
 
     world_->deactivate();
-    gui_->activate();
-    smgr_->drawAll();
+    gui_->activate().redraw();
 
     gui_->deactivate();
 }

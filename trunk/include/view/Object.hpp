@@ -7,7 +7,7 @@
 
 #include "CustomAnimator.hpp"
 #include "utils/ObjectPool.hpp"
-
+#include "all_fwd.hpp"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/functional.hpp>
 #include <string>
@@ -35,6 +35,7 @@ public:
     Object(std::string const& name = "");
 
     virtual Object* clone() const;
+    virtual pScene  scene();
     virtual Object& moveTo(int,int,int);
 
     virtual irr::scene::ISceneNode* body() const;
@@ -90,11 +91,10 @@ protected:
     irr::scene::ISceneManager* smgr_;
     irr::scene::ISceneNode*    body_;
 
+    wpScene scene_;
+
     std::string name_;
 };
-
-typedef Object::pointer_type pObject;
-typedef Object::wpointer_type wpObject;
 
 } //view
 } //psc

@@ -18,7 +18,7 @@
 #include "view/Sprite.hpp"
 
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -52,8 +52,6 @@ protected:
     typedef std::vector< irr::video::ITexture* > Animation2D;
     std::map< std::string, Animation2D > animations_;
 };
-
-typedef AnimatedSprite::pointer_type pAnimatedSprite;
 
 } //view
 } //psc

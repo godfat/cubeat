@@ -4,7 +4,7 @@
 
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace irr {
 namespace video {
@@ -13,12 +13,6 @@ class IVideoDriver;
 }
 
 namespace psc { namespace view {
-
-class Scene;
-typedef std::tr1::shared_ptr<Scene> pScene;
-
-class Sprite;
-typedef std::tr1::shared_ptr<Sprite> pSprite;
 
 class Game : public Object, public std::tr1::enable_shared_from_this<Game>
 {
@@ -49,8 +43,6 @@ protected:
     pScene gui_;
     std::vector < pSprite > cursors_;
 };
-
-typedef Game::pointer_type pGame;
 
 }  //view
 }  //psc

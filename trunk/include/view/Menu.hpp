@@ -4,7 +4,7 @@
 
 #include "view/Sprite.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 #include <map>
 #include <string>
@@ -59,8 +59,6 @@ protected:
     SpriteList sprites_;
 
 };
-
-typedef Menu::pointer_type pMenu;
 
 } //view
 } //psc

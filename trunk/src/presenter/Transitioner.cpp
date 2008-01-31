@@ -7,6 +7,8 @@
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
 
+#include <iostream>
+
 using namespace irr;
 using namespace core;
 using namespace scene;
@@ -47,8 +49,6 @@ Transitioner::setLoadingBar(int const& percent)
 
 void Transitioner::cycle()
 {
-    //temp code, currently I can't think how to make it better.
-    transition_scene_->activate();
-    IrrDevice::i().d()->getSceneManager()->drawAll();
+    transition_scene_->activate().redraw();
     transition_scene_->deactivate();
 }

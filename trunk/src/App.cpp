@@ -30,13 +30,13 @@ void func3(App&);
 void func1(App& app)
 {
     app.setLoading(50);
-    EventDispatcher::i().subscribe_timer(bind(&func2, ref(app)), 500);
+    EventDispatcher::i().subscribe_timer(bind(&func2, ref(app)), 300);
 }
 
 void func2(App& app)
 {
     app.setLoading(80);
-    EventDispatcher::i().subscribe_timer(bind(&func3, ref(app)), 700);
+    EventDispatcher::i().subscribe_timer(bind(&func3, ref(app)), 400);
 }
 
 void func3(App& app)
@@ -65,7 +65,7 @@ App::App()
     master_presenter_ = presenter::MainMenu::create();
 
     //call to hahaha code
-    EventDispatcher::i().subscribe_timer(bind(&func1, ref(*this)), 1000);
+    EventDispatcher::i().subscribe_timer(bind(&func1, ref(*this)), 450);
 }
 
 App::~App()
@@ -73,6 +73,12 @@ App::~App()
     //these are temporarily here.
     delete input1_;
     delete input2_;
+}
+
+App& App::setLoading(int const& cent)
+{
+    trans_->setLoadingBar(cent);
+    return *this;
 }
 
 bool App::update_block()

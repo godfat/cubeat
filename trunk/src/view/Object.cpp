@@ -1,6 +1,7 @@
 
 #include "IrrDevice.hpp"
 #include "view/Object.hpp"
+#include "view/Scene.hpp"
 
 #include "Accessors.hpp"
 
@@ -34,6 +35,8 @@ void Object::init(pObject const& parent)
     body_->setIsDebugObject(true);            //???????
     body_->setPosition(vector3df(0,0,100));   //??????? ghostly blocking everything in the scene.
     /* END OF DEBUG CODE */
+    if( parent )
+        scene_ = parent->scene();
 }
 
 Object& Object::moveTo(int x, int y, int z)
@@ -41,6 +44,11 @@ Object& Object::moveTo(int x, int y, int z)
     //body_->setPosition(vector3df(x,y,z));
     set<Pos3D>(vector3df(x,y,z));
     return *this;
+}
+
+pScene Object::scene()
+{
+    return scene_.lock();
 }
 
 ISceneNode* Object::body() const

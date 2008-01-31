@@ -4,7 +4,7 @@
 
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 #include <string>
 
@@ -21,7 +21,7 @@ public:
     }
 
     SceneObject(std::string const& name):Object(name){}
-    
+
     virtual SceneObject* clone() const;
 
     virtual ~SceneObject(){}
@@ -32,8 +32,6 @@ protected:
 protected:
 
 };
-
-typedef SceneObject::pointer_type pSceneObject;
 
 } //view
 } //psc

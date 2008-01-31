@@ -4,7 +4,7 @@
 
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 #include <map>
 #include <vector>
@@ -22,14 +22,8 @@ class ISceneNode;
 
 namespace psc { namespace view {
 
-class Scene;
-class Cube;
-
 class Map : public Object, public std::tr1::enable_shared_from_this<Map>
 {
-    typedef std::tr1::weak_ptr<Scene> wpScene;
-    typedef std::tr1::shared_ptr<Scene> pScene;
-    typedef std::tr1::shared_ptr<Cube> pCube;
 public:
     typedef std::tr1::shared_ptr< Map > pointer_type;
     static pointer_type create(int const& index, pScene const& parent) {
@@ -55,8 +49,6 @@ protected:
     std::vector< pCube > cubes_;
     wpScene parent_;
 };
-
-typedef Map::pointer_type pMap;
 
 } //view
 } //psc

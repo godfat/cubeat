@@ -3,7 +3,7 @@
 
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 /* TODO:
    Somehow add a node2view conversion here? Not so sure. */
@@ -24,6 +24,7 @@ public:
     virtual Scene& setTo2DView(int w, int h);
     virtual Scene& setTo3DView(float FoV);
     virtual Scene& activate();
+    virtual Scene& redraw();
     virtual Scene& deactivate();
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual ~Scene();
@@ -35,9 +36,6 @@ protected:
     irr::scene::ICameraSceneNode* camera_;
     irr::scene::ILightSceneNode* light_;
 };
-
-typedef Scene::pointer_type pScene;
-typedef std::tr1::weak_ptr<Scene> wpScene;
 
 } //view
 } //psc

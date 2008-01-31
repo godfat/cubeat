@@ -19,16 +19,20 @@ Scene::Scene(Object const* parent)
 */
 void Scene::init(pObject const& parent)
 {
-    camera_ =
-        smgr_->addCameraSceneNode(parent?parent->body():0); 
+    camera_ = smgr_->addCameraSceneNode(parent?parent->body():0);
+    camera_->setIsDebugObject(true);
 
 	light_ =
 		smgr_->addLightSceneNode(0, core::vector3df(0.0,0.0,-1.0), video::SColorf(1.0f, 1.0f, 1.0f), 100.0f);
+    light_->setIsDebugObject(true);
     light_->setRotation(vector3df(0.f, 0.f, 0.f));
     light_->getLightData().Type = video::ELT_DIRECTIONAL;
     light_->getLightData().CastShadows = false;
 
     body_ = smgr_->addEmptySceneNode(camera_);
+    body_->setIsDebugObject(true);
+
+    scene_ = shared_from_this();
 }
 
 Scene& Scene::setTo2DView(int w, int h)
@@ -52,7 +56,7 @@ Scene& Scene::setTo3DView(float FoV)
     camera_->setFOV( FoV );
     camera_->setAspectRatio( (float)driver->getScreenSize().Width / driver->getScreenSize().Height );
     camera_->setIsOrthogonal(false);
-    
+
     return *this;
 }
 
@@ -61,6 +65,12 @@ Scene& Scene::activate()
     smgr_->setActiveCamera( camera_ );
     light_->setVisible( true );
     set<Visible>(true);
+    return *this;
+}
+
+Scene& Scene::redraw()
+{
+    smgr_->drawAll();
     return *this;
 }
 

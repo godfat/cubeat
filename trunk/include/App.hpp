@@ -29,7 +29,7 @@ public:
 
     int run();
 
-    App& setLoading(int const& cent) { trans_->setLoadingBar(cent); return *this; }
+    App& setLoading(int const& cent);
 
     ~App();
 

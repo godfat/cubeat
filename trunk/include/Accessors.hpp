@@ -4,6 +4,24 @@
 #include "Accessor_proto.hpp"
 #include "ISceneNode.h"
 
+template<class T>
+void Accessor<T>::scaleWrap(irr::scene::ISceneNode const* node, irr::core::vector3df& out){
+    irr::scene::ISceneNode* parent = node->getParent();
+    while( parent ) {
+        out *= parent->getScale();
+        parent = parent->getParent();
+    }
+}
+
+template<class T>
+void Accessor<T>::scaleUnwrap(irr::scene::ISceneNode* node, irr::core::vector3df& out){
+    irr::scene::ISceneNode* parent = node->getParent();
+    while( parent ) {
+        out /= parent->getScale();
+        parent = parent->getParent();
+    }
+}
+
 namespace irr {
 namespace scene {
 
@@ -19,13 +37,16 @@ namespace accessor {
     };
 
     struct Pos2D : Accessor<core::vector2df>{
-        static void set(ISceneNode* node, value_type const& val ) {
-            f32 z = node->getPosition().Z;
-            node->setPosition(core::vector3df(val.X, val.Y, z));
+        static void set(ISceneNode* node, value_type const& val )
+        {
+            core::vector3df pos(val.X, val.Y, node->getPosition().Z);
+            scaleUnwrap( node, pos );
+            node->setPosition( pos );
         }
         static void get(ISceneNode const* node, value_type& out) {
             core::vector3df pos;
             Pos3D::get(node, pos);
+            scaleWrap( node, pos);
             out = value_type(pos.X, pos.Y);
         }
     };
@@ -147,14 +168,27 @@ namespace accessor {
         }
     };
 
+    /* Size2D is no longer suitable for billboard type, need to rewrite. */
+
     struct Size2D : Accessor<core::dimension2df>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( node->getType() != ESNT_BILLBOARD ) return;
-            static_cast<IBillboardSceneNode*>(node)->setSize( val );
+            if( node->getType() == ESNT_BILLBOARD )
+                static_cast<IBillboardSceneNode*>(node)->setSize( val );
+            else {
+                core::vector3df scale(val.Width/100.0f, val.Height/100.0f, 1);
+                scaleUnwrap( node, scale );
+                node->setScale( scale );
+            }
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( node->getType() != ESNT_BILLBOARD ) return;
-            out = static_cast<IBillboardSceneNode*>(node)->getSize();
+            if( node->getType() == ESNT_BILLBOARD )
+                out = static_cast<IBillboardSceneNode*>(node)->getSize();
+            else {
+                core::vector3df scale = node->getScale();
+                scaleWrap( node, scale );
+                core::dimension2df size2d(scale.X*100.0f, scale.Y*100.0f);
+                out = size2d;
+            }
         }
     };
 }   //accessor

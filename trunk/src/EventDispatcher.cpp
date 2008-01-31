@@ -7,9 +7,11 @@
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
+#include "view/Scene.hpp"
 
 #include <boost/foreach.hpp>
 #include <algorithm>
+#include <iostream>
 
 using std::tr1::tie;
 using std::tr1::get;
@@ -56,16 +58,25 @@ void EventDispatcher::dispatch_obj(){
         ISceneCollisionManager* colm = smgr->getSceneCollisionManager();
 
         Button const* btn = get<OE::BTN>(o);
+        if( btn->state() != BTN_PRESS ) continue; //to improve efficiency
+
+        view::pSprite& sv = get<OE::SPRITE>(o);
+
+        //activate the correct scene here to make sure the picking is in the corresponding scene.
+        sv->scene()->activate();
+
         ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(
             btn->owner()->cursor().x(),
             btn->owner()->cursor().y()), 1, true);
 
-        view::pSprite& sv = get<OE::SPRITE>(o);
-        if( picked == sv->body() && btn->state() == BTN_PRESS ) {
+        sv->scene()->deactivate(); //as soon as the picking is done we deactivate it.
+
+        if( picked == sv->body() ) {
             get<OE::OBJ_CB>(o)(sv);
+            std::cout << "dispatcher trace: " << picked << "\n";
+            break; //add break to improve efficiency
         }
     }
-
     //Need to extend to other button state: Release, Up, Down
 }
 

@@ -2,7 +2,7 @@
 #define _SHOOTING_CUBES_VIEW_SPRITETEXT_
 
 #include "view/Sprite.hpp"
-
+#include "all_fwd.hpp"
 #include <string>
 
 namespace psc { namespace view {
@@ -32,9 +32,6 @@ protected:
               int size, pObject const& parent);
 
 };
-
-typedef SpriteText::pointer_type pSpriteText;
-typedef std::tr1::weak_ptr<SpriteText> wpSpriteText;
 
 } //view
 } //psc

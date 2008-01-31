@@ -40,33 +40,41 @@ void CallbackDelegate::setOwner(pSprite const& owner)
     owner_ = owner;
 }
 
-//still some problem with material settings. I'll fix that later.
-void Sprite::init(pObject const& parent)
+/*
+    TODO:
+    still some problem with material settings(alpha). I'll fix that later.
+*/
+
+pSprite Sprite::init(pObject const& parent)
 {
     if( name_.size() < 1 ) {
         Object::init(parent);
-        return;
+        return shared_from_this();
     }
     std::ostringstream oss;
     oss << "rc/texture/" << name_ << ".png";
 
     video::IVideoDriver* driver = smgr_->getVideoDriver();
 
-    SMaterial mat_;
-    mat_.setFlag(video::EMF_LIGHTING, true);
-    mat_.setTexture(0, driver->getTexture(oss.str().c_str()));
+    SMaterial mat;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setTexture(0, driver->getTexture(oss.str().c_str()));
 
-    mat_.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-    mat_.MaterialTypeParam = 0.01f;
+    mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat.MaterialTypeParam = 0.01f;
 
-    mat_.DiffuseColor.set(255,255,255,255);
+    mat.DiffuseColor.set(255,255,255,255);
 
-    body_ = smgr_->addBillboardSceneNode(parent->body(), dimension2df(100,40), vector3df(0,0,5));
-    body_->setScale(vector3df(10.0/5.0,1.0,1.0));
+    IMesh* mesh = smgr_->getMesh( "rc/model/plane.x" )->getMesh(0);
+    body_ = smgr_->addMeshSceneNode( mesh, parent->body(), -1, vector3df(0,0,5) );
+    body_->setName( name_.c_str() );
 
-    body_->getMaterial(0) = mat_;
+    body_->getMaterial(0) = mat;
 
     press_.setOwner( shared_from_this() );
+    scene_ = parent->scene();
+
+    return shared_from_this();
 }
 
 Sprite& Sprite::moveTo(int x, int y)

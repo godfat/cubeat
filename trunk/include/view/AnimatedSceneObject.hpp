@@ -5,7 +5,7 @@
 #include "view/SceneObject.hpp"
 
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace psc { namespace view {
 
@@ -27,8 +27,6 @@ protected:
     void init(pObject const&);
 
 };
-
-typedef AnimatedSceneObject::pointer_type pAnimatedSceneObject;
 
 }  //view
 }  //psc

@@ -14,16 +14,9 @@
 #include "presenter/Object.hpp"
 
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace psc {
-
-namespace view {
-class Scene;
-class Menu;
-typedef std::tr1::shared_ptr<Scene> pScene;
-typedef std::tr1::shared_ptr<Menu> pMenu;
-}
 
 namespace presenter {
 
@@ -31,7 +24,6 @@ class Transitioner : public Object, public std::tr1::enable_shared_from_this<Obj
 {
 public:
     typedef std::tr1::shared_ptr< Transitioner > pointer_type;
-    typedef std::tr1::weak_ptr< Transitioner > wpointer_type;
     static pointer_type create() {
         pointer_type p = psc::ObjectPool< Transitioner >::create();
         p->init();
@@ -50,10 +42,6 @@ protected:
     view::pMenu loading_menu_;
 
 };
-
-typedef Transitioner::pointer_type pTransitioner;
-typedef Transitioner::wpointer_type wpTransitioner;
-
 } //presenter
 } //psc
 

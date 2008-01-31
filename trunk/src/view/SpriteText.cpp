@@ -36,6 +36,7 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
 
     mat_.DiffuseColor.set(255,255,255,255);
 */
+#ifdef _IRR_WINDOWS_
 //<MLtest>
 	gui::CGUITTFont* ttfont;
     c8 tmp[512];
@@ -50,12 +51,15 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
     ttfont->grab();
 //</MLtest>
     body_ = smgr_->addTextSceneNode(ttfont,
+#else
+    body_ = smgr_->addTextSceneNode(smgr_->getGUIEnvironment()->getBuiltInFont(),
+#endif
                                     temp.c_str(),
                                     video::SColor(255,100,100,100), parent->body());
 
     body_->setScale(vector3df(10.0/5.0,1.0,1.0));
 
     //body_->getMaterial(0) = mat_;
-
     press_.setOwner( shared_from_this() );
+    scene_ = parent->scene();
 }

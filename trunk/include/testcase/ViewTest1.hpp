@@ -134,12 +134,12 @@ ViewTest1::ViewTest1()
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
     something = view::Button::create("title", guiv );
-    something->moveTo(100,100).setDepth(4.0f).set<RGBDiffuse>(200);
+    something->moveTo(100,100).setDepth(4.0f).set<RGBDiffuse>(200).set<Size2D>(dimension2df(100,40));
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 
     anotherthing = view::Sprite::create("title", guiv );
-    anotherthing->moveTo(0,0);
+    anotherthing->moveTo(0,0).set<Size2D>(dimension2df(100,40));
 
     girl = view::AnimatedSprite::create("test", guiv );
     girl->addAnime("stand",3).addAnime("hit",5).moveTo(400,300).
@@ -152,12 +152,13 @@ ViewTest1::ViewTest1()
 
     //test menu
     menu = view::Menu::create("title", guiv );
-    menu->moveTo(520, 50).setDepth(8.0f);
+    menu->moveTo(520, 50).setDepth(8.0f).set<Size2D>(dimension2df(100,40));
+
     menu->addSprite("item1",test_,"title").addSprite("item2",test2_,"title").
           addSprite("item3",test3_,"title");
-    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vector2df(0, -50));
-    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vector2df(0, -150));
-    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vector2df(0, -250));
+    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vector2df(0, -50)).set<Size2D>(dimension2df(100,40));
+    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vector2df(0, -150)).set<Size2D>(dimension2df(100,40));
+    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vector2df(0, -250)).set<Size2D>(dimension2df(100,40));
 
     EventDispatcher::i().subscribe_timer(
         bind(&ViewTest1::step1, this, ref(anotherthing)), 1000 );

@@ -4,7 +4,7 @@
 #include "view/Sprite.hpp"
 
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace psc {
 
@@ -33,8 +33,6 @@ protected:
 private:
 
 };
-
-typedef Button::pointer_type pButton;
 
 }  //view
 }  //psc

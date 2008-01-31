@@ -33,8 +33,9 @@ void AnimatedSprite::init(pObject const& parent)
 
     mat_.DiffuseColor.set(255,255,255,255);
 
-    body_ = smgr_->addBillboardSceneNode(parent->body(), dimension2df(50,50), vector3df(0,0,5));
-    //body_->setScale(vector3df(10.0/5.0,1.0,1.0));
+    IMesh* mesh = smgr_->getMesh( "rc/model/plane.x" )->getMesh(0);
+    body_ = smgr_->addMeshSceneNode( mesh, parent->body(), -1, vector3df(0,0,5) );
+    body_->setName( name_.c_str() );
 
     body_->getMaterial(0) = mat_;
 }

@@ -64,33 +64,35 @@ Map& Map::addCube(pCube cube)
 void Map::ownerHitCallback(int x, int y)
 {
     //set to correct camera before ray picking
-    ICameraSceneNode* tempcam = smgr_->getActiveCamera();
-    smgr_->setActiveCamera( parent_.lock()->camera() );
+    parent_.lock()->activate();
 
     //Pick
     ISceneCollisionManager* colm = smgr_->getSceneCollisionManager();
     ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(x, y), 1, true);
 
-    if( pCube test = node2view_[picked] ) {
-        test->ownerHit();
-    }
+    std::cout << "Map Space trace: " << (picked?picked->getName():"0") << " is " << (picked?(picked->isVisible()?"visible":"invisible"):"none") << std::endl;
 
-    smgr_->setActiveCamera( tempcam );
+    if( picked )
+        if( pCube test = node2view_[picked] )
+            test->ownerHit();
+
+    parent_.lock()->deactivate();
 }
 
 void Map::enemyHitCallback(int x, int y)
 {
     //set to correct camera before ray picking
-    ICameraSceneNode* tempcam = smgr_->getActiveCamera();
-    smgr_->setActiveCamera( parent_.lock()->camera() );
+    parent_.lock()->activate();
 
     //Pick
     ISceneCollisionManager* colm = smgr_->getSceneCollisionManager();
     ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(x, y), 1, true);
 
-    if( pCube test = node2view_[picked] ) {
-        test->enemyHit();
-    }
+    std::cout << "Map Space trace: " << (picked?picked->getName():"0") << " is " << (picked?(picked->isVisible()?"visible":"invisible"):"none") << std::endl;
 
-    smgr_->setActiveCamera( tempcam );
+    if( picked )
+        if( pCube test = node2view_[picked] )
+            test->enemyHit();
+
+    parent_.lock()->deactivate();
 }

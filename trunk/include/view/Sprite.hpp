@@ -3,7 +3,7 @@
 
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace psc {
 
@@ -19,14 +19,14 @@ class Sprite;
    This thing should be "upgrade" to Object level.
    It's quite critical to the view hierarchy.     */
 
-class CallbackDelegate {
-    typedef std::tr1::shared_ptr<Sprite> pSprite;
-    typedef std::tr1::weak_ptr<Sprite> wpSprite;
+class CallbackDelegate
+{
 public:
     CallbackDelegate(){}
     CallbackDelegate& operator=(std::tr1::function<void(pSprite&)> const&);
     CallbackDelegate& setButton(ctrl::Button const*);
     void setOwner(pSprite const&);
+
 private:
     ctrl::Button const* subscribed_btn_;
     wpSprite owner_;
@@ -37,9 +37,7 @@ class Sprite : public Object, public std::tr1::enable_shared_from_this<Sprite>
 public:
     typedef std::tr1::shared_ptr< Sprite > pointer_type;
     static pointer_type create(std::string const& name, pObject const& parent) {
-        pointer_type p = psc::ObjectPool< Sprite >::create(name);
-        p->init(parent);
-        return p;
+        return ObjectPool< Sprite >::create(name)->init(parent);
     }
 
     Sprite(std::string const& name):Object(name){}
@@ -57,18 +55,14 @@ public:
     virtual ~Sprite();
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&);
 
 protected:
     CallbackDelegate press_;
   /*CallbackDelegate release_;
     CallbackDelegate up_;
     CallbackDelegate down_; */ //draft, dont use just yet
-
 };
-
-typedef Sprite::pointer_type pSprite;
-typedef std::tr1::weak_ptr<Sprite> wpSprite;
 
 } //view
 } //psc

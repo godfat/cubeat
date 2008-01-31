@@ -5,16 +5,13 @@
 #include "view/SceneObject.hpp"
 
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/memory.hpp>
+#include "all_fwd.hpp"
 
 namespace psc { namespace view {
-
-class Map;
 
 class Cube : public SceneObject
 {
     typedef std::tr1::function<void()> HitCallback;
-    typedef std::tr1::shared_ptr<Map> pMap;
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
     static pointer_type create(pMap& map) {
@@ -40,8 +37,6 @@ protected:
     HitCallback owner_hit_;
     HitCallback enemy_hit_;
 };
-
-typedef Cube::pointer_type pCube;
 
 } //view
 } //psc

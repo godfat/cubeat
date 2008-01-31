@@ -10,7 +10,7 @@ namespace psc{ namespace data{
 
 class Chain{
 public:
-    pChain create(){
+    static pChain create(){
         return ObjectPool<Chain>::create();
     }
 public:

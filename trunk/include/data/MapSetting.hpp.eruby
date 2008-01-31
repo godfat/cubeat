@@ -1,5 +1,6 @@
 
 <% header_guard do %>
+<%= debug_include %>
 
 namespace psc{ namespace data{
 
@@ -15,7 +16,8 @@ public:
         width_(6), height_(11), dropping_creatable_(true)
     { reset_size(); }
 
-    MapSetting& width(int const& new_width){
+    MapSetting& <% debug_hook 'width' do %>(int const& new_width){
+<% end %>
         width_ = new_width;
         return reset_size();
     }
@@ -24,7 +26,10 @@ public:
         return reset_size();
     }
 private:
-    MapSetting& reset_size(){ size_ = width_ * height_; return *this; }
+    MapSetting& <% debug_hook 'reset_size' do %>(){
+<% end %>
+        size_ = width_ * height_; return *this;
+    }
 };
 
 }} // end of namespace

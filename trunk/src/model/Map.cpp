@@ -8,10 +8,13 @@
 
 #include <boost/lambda/lambda.hpp>
 
+<%= debug_include %>
+
 using namespace psc;
 using namespace model;
 
-Map& Map::init_cubes(){
+Map& <% debug_hook 'Map::init_cubes' do %>(){
+<% end %>
     using boost::lambda::_1; // this would be used in for_each for element
     using boost::lambda::_2; // this would be used in for_each for index
     utils::vector_2d cube_colors(boost::extents[ms()->width()][ms()->starting_line()]);

@@ -2,8 +2,8 @@
 <% header_guard do %>
 
 
-#include <algorithm>
 #include "utils/vector_2d.hpp"
+#include <algorithm>
 
 namespace psc{ namespace utils{
 

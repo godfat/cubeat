@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 #include <boost/pool/object_pool.hpp>
 #include <loki/Singleton.h>
 

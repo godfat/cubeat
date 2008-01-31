@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 namespace psc{ namespace data{
 
 class MapSetting{<%# @prefix = ' '*4 %>

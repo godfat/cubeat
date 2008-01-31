@@ -3,7 +3,6 @@
 
 <% header_guard do %>
 
-
 namespace psc{ namespace model{ namespace state{
 
 class State{

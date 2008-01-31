@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 #include "utils/vector_2d.hpp"
 #include <algorithm>
 

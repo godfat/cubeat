@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 #include "presenter/Map.hpp"
 #include "model/Cube.hpp"
 

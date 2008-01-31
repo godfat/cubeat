@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 #include "all_fwd.hpp"
 #include "utils/math.hpp"
 #include "utils/ObjectPool.hpp"

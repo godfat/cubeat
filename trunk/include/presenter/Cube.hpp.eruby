@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 // 1. map presenter is created.
 // 2. map model is inited.
 // 3. map view is inited.

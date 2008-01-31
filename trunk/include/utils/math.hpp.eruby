@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-
 namespace psc{ namespace utils{
 
 inline int power2(int times){

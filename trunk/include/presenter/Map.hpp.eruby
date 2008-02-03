@@ -24,6 +24,7 @@ public:
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
+    Map& cycle();
 
 private:
     pointer_type init();

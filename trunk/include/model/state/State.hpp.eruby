@@ -1,12 +1,13 @@
 
 #include "all_fwd.hpp"
+#include <boost/tr1/tr1/memory>
 
 <% header_guard do %>
 
 namespace psc{ namespace model{ namespace state{
 
-class State{
-<% reader :wpCube, :owner %>
+class State: public std::tr1::enable_shared_from_this<State>{
+<%= reader :wpCube, :owner %>
 public:
     State(){}
 
@@ -18,9 +19,6 @@ public:
 protected:
     Map& map();
     Map const& map() const;
-
-private:
-    wpCube owner_;
 };
 
 }}} // end of namespace

@@ -25,3 +25,10 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     cubes_.push_back(cube);
     return cube;
 }
+
+Map& <% debug_hook 'Map::cycle' do %>(){
+<% end %>
+    model()->cycle();
+    // view()->cycle();
+    return *this;
+}

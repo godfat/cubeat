@@ -10,6 +10,7 @@
 <% header_guard do %>
 
 #include "model/Map.hpp"
+#include "model/state/Waiting.hpp"
 
 #include "all_fwd.hpp"
 #include "utils/ObjectPool.hpp"
@@ -27,7 +28,8 @@ public:
         return utils::ObjectPool<Cube>::create(map, x, y, color_id);
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
-        map_(map), color_(data::Color::from_id(color_id)), cycled_(false)
+        map_(map), color_(data::Color::from_id(color_id)), cycled_(false),
+        state_(state::Waiting::create())
     {}
 
     // begin only used by Map::cycle

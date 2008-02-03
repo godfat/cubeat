@@ -9,7 +9,8 @@
 using namespace psc;
 
 int main(){
-    presenter::Map::create(data::pMapSetting(new data::MapSetting));
+    presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
+    map->cycle();
 }
 
 #endif

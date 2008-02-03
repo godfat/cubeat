@@ -2,12 +2,20 @@
 <% header_guard do %>
 
 #include "model/state/State.hpp"
+#include "utils/ObjectPool.hpp"
+#include "all_fwd.hpp"
+
 namespace psc{ namespace model{ namespace state{
 
 class Waiting: public State{
 public:
+    typedef pWaiting pointer_type;
+    static pState create(){
+        return utils::ObjectPool<Waiting>::create();
+    }
+public:
     virtual ~Waiting(){}
-    virtual pState cycle();
+    virtual pState cycle(){ return shared_from_this(); }
 
     Waiting(): not_checked_(true), chain_property_checked_(false), delay_(0)
     {}
@@ -22,8 +30,8 @@ public:
 	void uncheck(){ not_checked_ = true; }
 
 private:
-	bool chain_property_checked_;
     bool not_checked_;
+	bool chain_property_checked_;
     int delay_;
 };
 

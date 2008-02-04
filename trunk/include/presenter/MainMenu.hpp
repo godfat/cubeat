@@ -18,7 +18,7 @@ class MainMenu : public Object, public std::tr1::enable_shared_from_this<MainMen
 public:
     typedef std::tr1::shared_ptr< MainMenu > pointer_type;
     static pointer_type create() {
-        pointer_type p = psc::ObjectPool< MainMenu >::create();
+        pointer_type p = utils::ObjectPool< MainMenu >::create();
         p->init();
         return p;
     }

@@ -5,6 +5,12 @@
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+namespace irr {
+namespace scene {
+class IMesh;
+}
+}
+
 namespace psc {
 
 namespace ctrl {
@@ -36,15 +42,19 @@ class Sprite : public Object, public std::tr1::enable_shared_from_this<Sprite>
 {
 public:
     typedef std::tr1::shared_ptr< Sprite > pointer_type;
-    static pointer_type create(std::string const& name, pObject const& parent) {
-        return ObjectPool< Sprite >::create(name)->init(parent);
+    static pointer_type create(std::string const& name,
+                               pObject const& parent,
+                               bool const& center = false)
+    {
+        return utils::ObjectPool< Sprite >::create(name, center)->init(parent);
     }
 
-    Sprite(std::string const& name):Object(name){}
+    Sprite(std::string const& name, bool const& center);
 
     virtual Sprite* clone() const;
-    virtual Sprite& moveTo(int,int);
+    virtual Sprite& setCenterAligned(bool const&);
     virtual Sprite& setDepth(float);
+    virtual Sprite& moveTo(int,int);
     virtual Sprite& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
 
     CallbackDelegate& onPress(ctrl::Button const*);
@@ -62,6 +72,11 @@ protected:
   /*CallbackDelegate release_;
     CallbackDelegate up_;
     CallbackDelegate down_; */ //draft, dont use just yet
+
+    bool center_;
+
+    irr::scene::IMesh* center_aligned_plane_;
+    irr::scene::IMesh* upperleft_aligned_plane_;
 };
 
 } //view

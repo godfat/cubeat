@@ -3,6 +3,7 @@
 #include "view/Scene.hpp"
 #include "view/Menu.hpp"
 #include "view/Sprite.hpp"
+#include "data/Color.hpp"
 
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
@@ -43,7 +44,6 @@ void MainMenu::init()
     temp->moveTo(240, 100).set<Size2D>(dimension2df(150,60));
     temp2->moveTo(340, 100).set<Size2D>(dimension2df(150,60));
 
-    //how do you implement placeholders like this?
     std::tr1::function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     std::tr1::function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
@@ -52,35 +52,26 @@ void MainMenu::init()
 
     temp2->set<Visible>(false);
 
-    srand(time(0));
     for(int i=0, ran=0; i < 50; ++i, ran+=50) { //640, 1120, 1760, 2240
         std::ostringstream oss;
-        oss << "cubes/cube-";
-        switch( rand()%4 ) {
-            case 0:
-                oss << "r-"; break;
-            case 1:
-                oss << "g-"; break;
-            case 2:
-                oss << "b-"; break;
-            case 3:
-                oss << "y-"; break;
-        }
-        oss << rand()%4+1;
-        view::pSprite temp = view::Sprite::create(oss.str(), mainmenu_scene_);
-        temp->set<Size2D>(dimension2df(80,80)).tween<Linear, Rotation>(vector3df(0, 0, 360), 3000);
+        oss << "cubes/cube" << utils::Random::i().random(4)+1;
+        data::Color col = data::Color::from_id(0, 4);
+
+        view::pSprite temp = view::Sprite::create(oss.str(), mainmenu_scene_, true);
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() ).set<Size2D>(dimension2df(80,80));
+        temp->tween<Linear, Rotation>(vector3df(0, 0, 360), 3000);
 
         if( ran < 640 ) {
-            temp->moveTo( ran - 40, 0 );
+            temp->moveTo( ran + 40, 0 );
         }
         else if( ran < 1120 ) {
-            temp->moveTo( 580, ran - 580 );
+            temp->moveTo( 620, ran - 620 );
         }
         else if( ran < 1760 ) {
             temp->moveTo( 640 - (ran-1120), 450 );
         }
         else {
-            temp->moveTo( -40, 480 - (ran-1760) );
+            temp->moveTo( 40, 480 - (ran-1760) );
         }
         deco_cubes_.push_back( temp );
     }

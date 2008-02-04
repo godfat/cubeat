@@ -40,6 +40,15 @@ void CallbackDelegate::setOwner(pSprite const& owner)
     owner_ = owner;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+
+Sprite::Sprite(std::string const& name, bool const& center)
+    :Object(name), center_(center), center_aligned_plane_(0), upperleft_aligned_plane_(0)
+{
+    center_aligned_plane_ = smgr_->getMesh( "rc/model/plane_centered.x" );
+    upperleft_aligned_plane_ = smgr_->getMesh( "rc/model/plane_orig.x" );
+}
+
 /*
     TODO:
     still some problem with material settings(alpha). I'll fix that later.
@@ -65,8 +74,8 @@ pSprite Sprite::init(pObject const& parent)
 
     mat.DiffuseColor.set(255,255,255,255);
 
-    IMesh* mesh = smgr_->getMesh( "rc/model/plane.x" )->getMesh(0);
-    body_ = smgr_->addMeshSceneNode( mesh, parent->body(), -1, vector3df(0,0,5) );
+    body_ = smgr_->addMeshSceneNode( center_ ? center_aligned_plane_ : upperleft_aligned_plane_,
+                                     parent->body(), -1, vector3df(0,0,5) );
     body_->setName( name_.c_str() );
 
     body_->getMaterial(0) = mat;
@@ -77,13 +86,6 @@ pSprite Sprite::init(pObject const& parent)
     return shared_from_this();
 }
 
-Sprite& Sprite::moveTo(int x, int y)
-{
-    //body_->setPosition(vector3df(x-320.f+51.f, -y+240.f-21.f, body_->getPosition().Z));
-    set<Pos2D>(vector2df(x-320.f+51.f, -y+240.f-21.f));
-    return *this;
-}
-
 Sprite& Sprite::setDepth(float d)
 {
     vector2df pos2d = get<Pos2D>();
@@ -91,9 +93,27 @@ Sprite& Sprite::setDepth(float d)
     return *this;
 }
 
+Sprite& Sprite::setCenterAligned(bool const& center)
+{
+    if( center_ == center ) return *this;
+    center_ = center;
+    if( center_ )
+        static_cast<IMeshSceneNode*>(body_)->setMesh( center_aligned_plane_ );
+    else
+        static_cast<IMeshSceneNode*>(body_)->setMesh( upperleft_aligned_plane_ );
+    return *this;
+}
+
+Sprite& Sprite::moveTo(int x, int y)
+{
+    //body_->setPosition(vector3df(x-320.f+51.f, -y+240.f-21.f, body_->getPosition().Z));
+    set<Pos2D>(vector2df(x, -y));
+    return *this;
+}
+
 Sprite& Sprite::moveTween(int x, int y, int delay_ms, function<void()> cb, int delay)
 {
-    vector2df newpos = vector2df(x-320.f+51.f, -y+240.f-21.f);
+    vector2df newpos = vector2df(x, -y);
     tween<Linear, Pos2D>(newpos, delay_ms, false, cb, delay);
     return *this;
 }

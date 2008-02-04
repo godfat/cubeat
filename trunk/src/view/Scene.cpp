@@ -44,6 +44,8 @@ Scene& Scene::setTo2DView(int w, int h)
     ortho.buildProjectionMatrixOrthoLH( static_cast<f32>(w), static_cast<f32>(h), 0, 100);
     camera_->setProjectionMatrix( ortho );
     camera_->setIsOrthogonal(true);
+
+    body_->setPosition(vector3df(-320, 240, 0)); //should support arbitary size of screen.
     return *this;
 }
 

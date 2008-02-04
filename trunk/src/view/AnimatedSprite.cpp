@@ -14,6 +14,7 @@ using namespace easing;
 
 using namespace psc;
 using namespace view;
+using std::tr1::static_pointer_cast;
 
 AnimatedSprite* AnimatedSprite::clone() const
 {
@@ -21,7 +22,7 @@ AnimatedSprite* AnimatedSprite::clone() const
     return obj;
 }
 
-void AnimatedSprite::init(pObject const& parent)
+pAnimatedSprite AnimatedSprite::init(pObject const& parent)
 {
     SMaterial mat_;
 
@@ -33,11 +34,16 @@ void AnimatedSprite::init(pObject const& parent)
 
     mat_.DiffuseColor.set(255,255,255,255);
 
-    IMesh* mesh = smgr_->getMesh( "rc/model/plane.x" )->getMesh(0);
-    body_ = smgr_->addMeshSceneNode( mesh, parent->body(), -1, vector3df(0,0,5) );
+    body_ = smgr_->addMeshSceneNode( center_ ? center_aligned_plane_ : upperleft_aligned_plane_,
+                                     parent->body(), -1, vector3df(0,0,5) );
     body_->setName( name_.c_str() );
 
     body_->getMaterial(0) = mat_;
+
+    press_.setOwner( static_pointer_cast<AnimatedSprite>(shared_from_this()) );
+    scene_ = parent->scene();
+
+    return static_pointer_cast<AnimatedSprite>(shared_from_this());
 }
 
 AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int total_frames)

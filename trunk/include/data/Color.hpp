@@ -1,5 +1,5 @@
 
-/*2007.11.9 
+/*2007.11.9
   Nothing changed.
 */
 
@@ -18,11 +18,12 @@ public:
             case 1: rgb = blue;       break;
             case 2: rgb = green;      break;
             case 3: rgb = red;        break;
-            case 4: rgb = green_blue; break;
+            case 4: rgb = red_green;  break;
             case 5: rgb = red_blue;   break;
-            case 6: rgb = red_green;  break;
+            case 6: rgb = green_blue; break;
             case 7: rgb = 0;          break;
-            case 8: rgb = blue|green|red;
+            case 8: rgb = blue|green|red; break;
+            default: rgb = 0;
         }
         /* i would like this:
         int rgb = case i

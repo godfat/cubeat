@@ -18,7 +18,7 @@ class Menu : public Object, public std::tr1::enable_shared_from_this<Menu>
 public:
     typedef std::tr1::shared_ptr< Menu > pointer_type;
     static pointer_type create() {
-        pointer_type p = psc::ObjectPool< Menu >::create();
+        pointer_type p = utils::ObjectPool< Menu >::create();
         p->init();
         return p;
     }

@@ -27,7 +27,7 @@ public:
     typedef std::tr1::shared_ptr< Object > pointer_type;
     typedef std::tr1::weak_ptr< Object > wpointer_type;
     static pointer_type create(pointer_type const parent = pointer_type()) {
-        pointer_type p = psc::ObjectPool< Object >::create("");
+        pointer_type p = utils::ObjectPool< Object >::create("");
         p->init(parent);
         return p;
     }

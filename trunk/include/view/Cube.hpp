@@ -15,7 +15,7 @@ class Cube : public SceneObject
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
     static pointer_type create(pMap& map) {
-        pointer_type p = psc::ObjectPool<Cube>::create();
+        pointer_type p = utils::ObjectPool<Cube>::create();
         p->init(map);
         return p;
     }

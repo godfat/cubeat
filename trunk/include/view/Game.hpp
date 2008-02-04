@@ -19,7 +19,7 @@ class Game : public Object, public std::tr1::enable_shared_from_this<Game>
 public:
     typedef std::tr1::shared_ptr< Game > pointer_type;
     static pointer_type create(pScene const& world, pScene const& gui) {
-        pointer_type p = psc::ObjectPool< Game >::create();
+        pointer_type p = utils::ObjectPool< Game >::create();
         p->init(world, gui);
         return p;
     }

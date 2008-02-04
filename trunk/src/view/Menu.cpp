@@ -37,11 +37,11 @@ Menu& Menu::addSprite(std::string const& name,
 }
 
 Menu& Menu::addSpriteText(std::string const& text, std::tr1::function<void(pSprite&)> cb,
-                          std::string const& font_path, int size)
+                          std::string const& font_path, int size, data::Color const& color)
 {
     pSpriteText newobj = SpriteText::create(text,
                                             static_pointer_cast<Menu>(shared_from_this()),
-                                            font_path, size);
+                                            font_path, size, false, color);
 
     sprites_.insert( std::make_pair(text, newobj) );
     if( cb ) setCallbackToSprite(text, cb);

@@ -69,20 +69,39 @@ namespace accessor {
         }
     };
 
-    struct RGBDiffuse : Accessor<s32>{
+    struct ColorDiffuse : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( !node->getMaterialCount() ) return;
-            node->getMaterial(0).DiffuseColor.setRed(val%256);
-            node->getMaterial(0).DiffuseColor.setGreen(val%256);
-            node->getMaterial(0).DiffuseColor.setBlue(val%256);
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.set( val );
+            else if( node->getType() == ESNT_TEXT )
+                static_cast<ITextSceneNode*>(node)->setTextColor( val );
         }
-        static void get(ISceneNode* node, value_type& out) {
-            if( !node->getMaterialCount() ) return;
-            out = node->getMaterial(0).DiffuseColor.getAverage();
+        static void get(ISceneNode* node, value_type& out ) {
+            return; //currently not used, and is not quite useful, hence no impl.
         }
     };
 
-    struct RGBEmissive : Accessor<s32>{
+    struct GradientDiffuse : Accessor<s32>{
+        static void set(ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() ) {
+                node->getMaterial(0).DiffuseColor.setRed(val%256);
+                node->getMaterial(0).DiffuseColor.setGreen(val%256);
+                node->getMaterial(0).DiffuseColor.setBlue(val%256);
+            }
+            else if( node->getType() == ESNT_TEXT ) {
+                static_cast<ITextSceneNode*>(node)->
+                    setTextColor(video::SColor(255,val%256,val%256,val%256));
+            }
+        }
+        static void get(ISceneNode* node, value_type& out) {
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.getAverage();
+            else if( node->getType() == ESNT_TEXT )
+                out = static_cast<ITextSceneNode*>(node)->getTextColor().getAverage();
+        }
+    };
+
+    struct GradientEmissive : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
             if( !node->getMaterialCount() ) return;
             node->getMaterial(0).EmissiveColor.setRed(val%256);
@@ -97,45 +116,61 @@ namespace accessor {
 
     struct Red : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( !node->getMaterialCount() ) return;
-            node->getMaterial(0).DiffuseColor.setRed(val);
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.setRed(val);
+            else if( node->getType() == ESNT_TEXT )
+                static_cast<ITextSceneNode*>(node)->getTextColor().setRed(val);
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( !node->getMaterialCount() ) return;
-            out = node->getMaterial(0).DiffuseColor.getRed();
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.getRed();
+            else if( node->getType() == ESNT_TEXT )
+                out = static_cast<ITextSceneNode*>(node)->getTextColor().getRed();
         }
     };
 
     struct Green : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( !node->getMaterialCount() ) return;
-            node->getMaterial(0).DiffuseColor.setGreen(val);
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.setGreen(val);
+            else if( node->getType() == ESNT_TEXT )
+                static_cast<ITextSceneNode*>(node)->getTextColor().setGreen(val);
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( !node->getMaterialCount() ) return;
-            out = node->getMaterial(0).DiffuseColor.getGreen();
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.getGreen();
+            else if( node->getType() == ESNT_TEXT )
+                out = static_cast<ITextSceneNode*>(node)->getTextColor().getGreen();
         }
     };
 
     struct Blue : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( !node->getMaterialCount() ) return;
-            node->getMaterial(0).DiffuseColor.setBlue(val);
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.setBlue(val);
+            else if( node->getType() == ESNT_TEXT )
+                static_cast<ITextSceneNode*>(node)->getTextColor().setBlue(val);
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( !node->getMaterialCount() ) return;
-            out = node->getMaterial(0).DiffuseColor.getBlue();
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.getBlue();
+            else if( node->getType() == ESNT_TEXT )
+                out = static_cast<ITextSceneNode*>(node)->getTextColor().getBlue();
         }
     };
 
     struct Alpha : Accessor<s32>{
         static void set(ISceneNode* node, value_type const& val ) {
-            if( !node->getMaterialCount() ) return;
-            node->getMaterial(0).DiffuseColor.setAlpha(val);
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.setAlpha(val);
+            else if( node->getType() == ESNT_TEXT )
+                static_cast<ITextSceneNode*>(node)->getTextColor().setAlpha(val);
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( !node->getMaterialCount() ) return;
-            out = node->getMaterial(0).DiffuseColor.getAlpha();
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.getAlpha();
+            else if( node->getType() == ESNT_TEXT )
+                out = static_cast<ITextSceneNode*>(node)->getTextColor().getAlpha();
         }
     };
 
@@ -168,8 +203,6 @@ namespace accessor {
         }
     };
 
-    /* Size2D is no longer suitable for billboard type, need to rewrite. */
-
     struct Size2D : Accessor<core::dimension2df>{
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getType() == ESNT_BILLBOARD )
@@ -191,6 +224,7 @@ namespace accessor {
             }
         }
     };
+
 }   //accessor
 }   //scene
 }   //irr

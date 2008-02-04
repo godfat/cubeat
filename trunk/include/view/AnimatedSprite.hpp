@@ -29,13 +29,15 @@ class AnimatedSprite : public Sprite
 {
 public:
     typedef std::tr1::shared_ptr< AnimatedSprite > pointer_type;
-    static pointer_type create(std::string const& name, pObject const& parent) {
-        pointer_type p = psc::ObjectPool< AnimatedSprite >::create(name);
-        p->init(parent);
-        return p;
+    static pointer_type create(std::string const& name,
+                               pObject const& parent,
+                               bool const& center = false)
+    {
+        return utils::ObjectPool< AnimatedSprite >::create(name, center)->init(parent);
     }
 
-    AnimatedSprite(std::string const& name):Sprite(name){}
+    AnimatedSprite(std::string const& name, bool const& center)
+        :Sprite(name, center){}
 
     virtual AnimatedSprite* clone() const;
     virtual AnimatedSprite& addAnime(std::string const& anime_name, int total_frames);
@@ -46,7 +48,7 @@ public:
     virtual ~AnimatedSprite();
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&);
 
 protected:
     typedef std::vector< irr::video::ITexture* > Animation2D;

@@ -15,7 +15,7 @@ class Scene : public Object, public std::tr1::enable_shared_from_this<Scene>
 public:
     typedef std::tr1::shared_ptr< Scene > pointer_type;
     static pointer_type create(pObject const parent = pointer_type()) {
-        pointer_type p = psc::ObjectPool< Scene >::create();
+        pointer_type p = utils::ObjectPool< Scene >::create();
         p->init(parent);
         return p;
     }

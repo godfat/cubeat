@@ -54,16 +54,16 @@ App::App()
         return;
     }
     timer_ = IrrDevice::i().d()->getTimer();
-    trans_ = presenter::Transitioner::create();
-    setLoading(10);
 
     //these are temporarily here.
     input1_ = new Input("config/input_setting_1p.yml");
     input2_ = new Input("config/input_setting_2p.yml");
+
+    trans_            = presenter::Transitioner::create();
+    master_presenter_ = presenter::MainMenu::create();
     ViewTest1::i();
 
-    master_presenter_ = presenter::MainMenu::create();
-
+    setLoading(10);
     //call to hahaha code
     EventDispatcher::i().subscribe_timer(bind(&func1, ref(*this)), 450);
 }
@@ -95,6 +95,8 @@ int App::run()
 {
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
 
+    int lastFPS = -1;
+
     while( IrrDevice::i().run() )
         if( IrrDevice::i().d()->isWindowActive() && !update_block() )
         {
@@ -106,6 +108,15 @@ int App::run()
             master_presenter_->cycle();
             trans_->cycle();
             driver->endScene();
+
+            //FPS for debug
+            int fps = driver->getFPS();
+            if( fps != lastFPS ) {
+                core::stringw str(L"FPS: ");
+                str += fps;
+                IrrDevice::i().d()->setWindowCaption( str.c_str() );
+                lastFPS = fps;
+            }
         }
 
     return 0;

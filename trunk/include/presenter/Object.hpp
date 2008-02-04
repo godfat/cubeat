@@ -11,7 +11,7 @@ class Object
 public:
     typedef std::tr1::shared_ptr< Object > pointer_type;
     static pointer_type create() {
-        pointer_type p = psc::ObjectPool< Object >::create();
+        pointer_type p = utils::ObjectPool< Object >::create();
         p->init();
         return p;
     }

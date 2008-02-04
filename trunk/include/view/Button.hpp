@@ -16,13 +16,18 @@ class Button : public Sprite
 {
 public:
     typedef std::tr1::shared_ptr< Button > pointer_type;
-    static pointer_type create(std::string const& name, pObject const& parent) {
-        pointer_type p = psc::ObjectPool< Button >::create(name);
+    static pointer_type create(std::string const& name,
+                               pObject const& parent,
+                               bool const& center = false)
+    {
+        pointer_type p = utils::ObjectPool< Button >::create(name, center);
         p->init(parent);
         return p;
     }
 
-    Button(std::string const& name):Sprite(name){}
+    Button(std::string const& name, bool const& center)
+        :Sprite(name, center){}
+
     virtual Button* clone() const;
 
     virtual ~Button();

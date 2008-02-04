@@ -25,7 +25,7 @@ class Transitioner : public Object, public std::tr1::enable_shared_from_this<Obj
 public:
     typedef std::tr1::shared_ptr< Transitioner > pointer_type;
     static pointer_type create() {
-        pointer_type p = psc::ObjectPool< Transitioner >::create();
+        pointer_type p = utils::ObjectPool< Transitioner >::create();
         p->init();
         return p;
     }

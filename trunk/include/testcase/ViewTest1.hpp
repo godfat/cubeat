@@ -123,7 +123,7 @@ ViewTest1::ViewTest1()
     //added callback setting test
     c = view::Cube::create( map1 );
     c->setEnemyHit( bind(&ViewTest1::cube_enemy_hit, this) ).
-       moveTo(10,0,0).set<RGBDiffuse>(127);
+       moveTo(10,0,0).set<GradientDiffuse>(127);
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube2->moveTo(5,5,50).set<Scale>(vector3df(0.3f, 0.3f, 0.3f))
@@ -134,7 +134,7 @@ ViewTest1::ViewTest1()
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
     something = view::Button::create("title", guiv );
-    something->moveTo(100,100).setDepth(4.0f).set<RGBDiffuse>(200).set<Size2D>(dimension2df(100,40));
+    something->moveTo(100,100).setDepth(4.0f).set<GradientDiffuse>(200).set<Size2D>(dimension2df(100,40));
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 

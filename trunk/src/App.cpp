@@ -11,6 +11,9 @@
 /* Testcase */
 #include "testcase/ViewTest1.hpp"
 
+/* Testcase for AVIVideo class functionality */
+#include "testcase/AVITest.hpp"
+
 #include <iostream>
 
 using namespace irr;
@@ -59,6 +62,7 @@ App::App()
     input1_ = new Input("config/input_setting_1p.yml");
     input2_ = new Input("config/input_setting_2p.yml");
 
+    AVITest::i();
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::MainMenu::create();
     ViewTest1::i();
@@ -98,12 +102,13 @@ int App::run()
     int lastFPS = -1;
 
     while( IrrDevice::i().run() )
-        if( IrrDevice::i().d()->isWindowActive() && !update_block() )
+        if( IrrDevice::i().d()->isWindowActive() /*&& !update_block()*/ )
         {
             Input::update_all();
             EventDispatcher::i().dispatch();
 
             driver->beginScene(true, true, video::SColor(0,64,64,64));
+            AVITest::i().cycle();
             ViewTest1::i().cycle();
             master_presenter_->cycle();
             trans_->cycle();

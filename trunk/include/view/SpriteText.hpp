@@ -6,15 +6,6 @@
 #include "all_fwd.hpp"
 #include <string>
 
-namespace irr {
-namespace video {
-class ITexture;
-}
-namespace scene {
-class ICameraSceneNode;
-}
-}
-
 namespace psc { namespace view {
 
 class SpriteText : public Sprite

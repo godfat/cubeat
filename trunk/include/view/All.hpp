@@ -12,6 +12,8 @@
 #include "view/Scene.hpp"
 #include "view/SceneObject.hpp"
 #include "view/Sprite.hpp"
+#include "view/SpriteText.hpp"
+#include "view/SpriteMovie.hpp"
 #include "view/SFX.hpp"
 
 #endif

@@ -22,8 +22,11 @@ AnimatedSprite* AnimatedSprite::clone() const
     return obj;
 }
 
-pAnimatedSprite AnimatedSprite::init(pObject const& parent)
+pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int const& h)
 {
+    size_.Width  = w;
+    size_.Height = h;
+
     SMaterial mat_;
 
     mat_.setFlag(video::EMF_LIGHTING, true);
@@ -34,10 +37,7 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent)
 
     mat_.DiffuseColor.set(255,255,255,255);
 
-    body_ = smgr_->addMeshSceneNode( center_ ? center_aligned_plane_ : upperleft_aligned_plane_,
-                                     parent->body(), -1, vector3df(0,0,5) );
-    body_->setName( name_.c_str() );
-
+    setupMeshBase(parent);
     body_->getMaterial(0) = mat_;
 
     press_.setOwner( static_pointer_cast<AnimatedSprite>(shared_from_this()) );

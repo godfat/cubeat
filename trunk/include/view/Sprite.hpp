@@ -44,9 +44,11 @@ public:
     typedef std::tr1::shared_ptr< Sprite > pointer_type;
     static pointer_type create(std::string const& name,
                                pObject const& parent,
+                               int const& w = 100,
+                               int const& h = 100,
                                bool const& center = false)
     {
-        return utils::ObjectPool< Sprite >::create(name, center)->init(parent);
+        return utils::ObjectPool< Sprite >::create(name, center)->init(parent, w, h);
     }
 
     Sprite(std::string const& name, bool const& center);
@@ -65,7 +67,8 @@ public:
     virtual ~Sprite();
 
 protected:
-    pointer_type init(pObject const&);
+    pointer_type init(pObject const&, int const&, int const&);
+    void setupMeshBase(pObject const&);
 
 protected:
     CallbackDelegate press_;
@@ -75,8 +78,10 @@ protected:
 
     bool center_;
 
+    irr::core::dimension2df size_;
     irr::scene::IMesh* center_aligned_plane_;
     irr::scene::IMesh* upperleft_aligned_plane_;
+    irr::scene::IMesh* thismesh_;
 };
 
 } //view

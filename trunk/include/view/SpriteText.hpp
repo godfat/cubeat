@@ -37,6 +37,7 @@ protected:
               int size, data::Color const& color, pObject const& parent);
 
 protected:
+    irr::video::ITexture* font_texture_;
 
 };
 

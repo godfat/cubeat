@@ -2,11 +2,9 @@
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
 #include "Accessors.hpp"
+#include "test/TTFontTest.hpp"
 
-#ifdef _IRR_WINDOWS_
-#include <windows.h>
-#endif
-
+#include <sstream>
 #include <algorithm> //for the ugly copy
 
 using namespace irr;
@@ -26,28 +24,36 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
         return;
     }
 
+    std::ostringstream oss;
+    oss << "rc/fonts/" << font_path << ".ttf";
+
     SColor col( color.rgb() );
     col.setAlpha( 255 );
-#ifdef _IRR_WINDOWS_
-//<MLtest>
-	gui::CGUITTFont* ttfont;
-    c8 tmp[512];
-    GetWindowsDirectory(tmp,511);
-    strcat(tmp, "/");
-	strcat(tmp, font_path.c_str());
-	ttfont = (gui::CGUITTFont *)smgr_->getGUIEnvironment()->getFont(tmp,size);
+
+//	gui::CGUITTFont* ttfont;
+    gui::TTFontTest* ttfont;
+	ttfont = (gui::TTFontTest *)smgr_->getGUIEnvironment()->getFont(oss.str().c_str(),size);
     ttfont->AntiAlias = true;
     ttfont->TransParency = true;
     std::wstring temp(text.length(),L' ');             //so hard to convert between wchar and char @@
     std::copy(text.begin(), text.end(), temp.begin()); //so hard to convert between wchar and char @@
-    ttfont->grab();
 
-//</MLtest>
-    body_ = smgr_->addTextSceneNode(ttfont,
-#else
-    body_ = smgr_->addTextSceneNode(smgr_->getGUIEnvironment()->getFont("rc/fonts/fontlucida.png"),
-#endif
-                                    temp.c_str(), col, parent->body());
+    font_texture_ = ttfont->getTextureFromText(temp.c_str(), "test_texture");
+    dimension2di size_int = ttfont->getDimension(temp.c_str());
+    size_.Width = size_int.Width;
+    size_.Height= size_int.Height;
+
+    SMaterial mat;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setTexture(0, font_texture_);
+
+    mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat.MaterialTypeParam = 0.01f;
+
+    mat.DiffuseColor.set(200,200,200,200);
+
+    setupMeshBase(parent);
+    body_->getMaterial(0) = mat;
 
     press_.setOwner( shared_from_this() );
     scene_ = parent->scene();
@@ -56,14 +62,14 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
 SpriteText& SpriteText::setCenterAligned(bool const& center)
 {
     if( center_ == center ) return *this;
-    center_ = center;
-    if( center_ )
-        static_cast<ITextSceneNode*>(body_)->setCenter( true, true );
-    else
-        static_cast<ITextSceneNode*>(body_)->setCenter( false, false );
+    Sprite::setCenterAligned(center);
+    body_->setMaterialTexture(0, font_texture_);
+    body_->getMaterial(0).MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
+    body_->getMaterial(0).MaterialTypeParam = 0.01f;
     return *this;
 }
 
 SpriteText::~SpriteText()
 {
+    thismesh_->drop();
 }

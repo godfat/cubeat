@@ -16,6 +16,7 @@ AVIVideo::AVIVideo(std::string const& path)
      file_ok_(false), frame_duration_(0), num_of_frames_(0), start_frame_(0),
      now_frame_(-1), width_(0), height_(0), last_tick_(0), texture_(0)
 {
+    timer_ = IrrDevice::i().d()->getTimer();
     if( !open(path) )
         std::cerr << "AVI file open failed.\n";
 }
@@ -87,21 +88,20 @@ void AVIVideo::setCurrentFrame(int frame)
 
 void AVIVideo::stop()
 {
-    next_tick_ = GetTickCount();
     paused_ = true;
 }
 
 void AVIVideo::play()
 {
     paused_ = false;
-    last_tick_ += GetTickCount() - next_tick_;
+    last_tick_ = timer_->getTime();
 }
 
 void AVIVideo::restart()
 {
     now_frame_ = start_frame_;
     updated_ = true;
-    last_tick_ = GetTickCount();
+    last_tick_ = timer_->getTime();
 }
 
 bool AVIVideo::isPlaying()
@@ -137,10 +137,6 @@ bool AVIVideo::open(std::string const& path)
     AVIFileInfo(avi_file_, &avi_info, sizeof(AVIFILEINFO));
     setFPS((int)((float)avi_info.dwRate / avi_info.dwScale + 0.5f));
 
-    u32 w,h;
-    for(w = 1; w < avi_info.dwWidth; w <<= 1);
-    for(h = 1; h < avi_info.dwHeight; h <<= 1);
-
     width_ = avi_info.dwWidth;
     height_= avi_info.dwHeight;
 
@@ -157,6 +153,10 @@ bool AVIVideo::open(std::string const& path)
     frame_obj_ = AVIStreamGetFrameOpen(vstream_, &bitmap_);
     if(bitmap_.biSizeImage == 0)
         bitmap_.biSizeImage = bitmap_.biHeight * bitmap_.biWidth * 3;
+
+    u32 w,h;
+    for(w = 1; w < avi_info.dwWidth; w <<= 1);
+    for(h = 1; h < avi_info.dwHeight; h <<= 1);
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     texture_ = driver->addTexture(dimension2di(w,h), "AVI_Texture", ECF_A8R8G8B8);
@@ -185,7 +185,7 @@ void AVIVideo::initBitmapStruct(int bitsPerPixel)
 bool AVIVideo::nextFrame()
 {
     updated_ = false;
-    if( next_tick_ <= GetTickCount() ) {
+    if( last_tick_ + frame_duration_ <= timer_->getTime() ) {
         if( now_frame_ < start_frame_ ) restart();
         else {
             ++now_frame_;
@@ -195,7 +195,7 @@ bool AVIVideo::nextFrame()
             if( loop_ ) restart();
             else return false;
         }
-        next_tick_ = last_tick_ + now_frame_ * (int)frame_duration_;
+        last_tick_ += frame_duration_;
     }
     return true;
 }

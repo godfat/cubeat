@@ -26,10 +26,12 @@ Menu* Menu::clone() const
 
 Menu& Menu::addSprite(std::string const& name,
                       std::tr1::function<void(pSprite&)> cb,
+                      int const& w,
+                      int const& h,
                       std::string const& texture_name)
 {
     pSprite newobj = Sprite::create(texture_name.size() ? texture_name : name,
-                                    static_pointer_cast<Menu>(shared_from_this()));
+                                    static_pointer_cast<Menu>(shared_from_this()), w, h);
 
     sprites_.insert( std::make_pair(name, newobj) );
     if( cb ) setCallbackToSprite(name, cb);
@@ -37,11 +39,12 @@ Menu& Menu::addSprite(std::string const& name,
 }
 
 Menu& Menu::addSpriteText(std::string const& text, std::tr1::function<void(pSprite&)> cb,
-                          std::string const& font_path, int size, data::Color const& color)
+                          std::string const& font_path, int size, bool const& center,
+                          data::Color const& color)
 {
     pSpriteText newobj = SpriteText::create(text,
                                             static_pointer_cast<Menu>(shared_from_this()),
-                                            font_path, size, false, color);
+                                            font_path, size, center, color);
 
     sprites_.insert( std::make_pair(text, newobj) );
     if( cb ) setCallbackToSprite(text, cb);
@@ -72,7 +75,8 @@ Sprite& Menu::getSprite(std::string const& name)
     return *this;
 }
 
-void Menu::init(pObject const& parent)
+pMenu Menu::init(pObject const& parent, int const& w, int const& h)
 {
-    Sprite::init(parent);
+    Sprite::init(parent, w, h);
+    return static_pointer_cast<Menu>(shared_from_this());
 }

@@ -15,9 +15,11 @@ public:
     typedef std::tr1::shared_ptr< SpriteMovie > pointer_type;
     static pointer_type create(std::string const& path,
                                pObject const&     parent,
+                               int const& w = 100,
+                               int const& h = 100,
                                bool const& center = false)
     {
-        return utils::ObjectPool< SpriteMovie >::create(path, center)->init(parent);
+        return utils::ObjectPool< SpriteMovie >::create(path, center)->init(parent, w, h);
     }
 
     SpriteMovie(std::string const& name, bool const& center)
@@ -28,7 +30,7 @@ public:
     virtual ~SpriteMovie();
 
 protected:
-    pointer_type init(pObject const& parent);
+    pointer_type init(pObject const& parent, int const& ,int const&);
 
 protected:
     AVIVideo* avi;

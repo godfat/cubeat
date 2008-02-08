@@ -16,6 +16,7 @@ typedef dimension2d<int> dimension2di;
 namespace video {
 class ITexture;
 }
+class ITimer;
 }
 
 class AVIVideo
@@ -54,9 +55,10 @@ private:
     int          start_frame_;
     int          now_frame_;
     int          width_, height_;
-    unsigned int fps_, last_tick_, next_tick_;
+    unsigned int fps_, last_tick_;
 
     irr::video::ITexture* texture_;
+    irr::ITimer* timer_;
 
     PAVIFILE         avi_file_;
     PGETFRAME        frame_obj_;

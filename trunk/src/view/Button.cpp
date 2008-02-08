@@ -15,9 +15,10 @@ using namespace scene;
 using namespace psc;
 using namespace view;
 
-void Button::init(pObject const& parent)
+pButton Button::init(pObject const& parent, int const& w, int const& h)
 {
-    Sprite::init(parent);
+    Sprite::init(parent, w, h);
+    return std::tr1::static_pointer_cast<Button>(shared_from_this());
 }
 
 Button* Button::clone() const

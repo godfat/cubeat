@@ -1,6 +1,7 @@
 
 #include "IrrDevice.hpp"
 #include "view/Scene.hpp"
+#include "utils/Random.hpp"
 #include "Accessors.hpp"
 
 using namespace irr;
@@ -35,8 +36,11 @@ void Scene::init(pObject const& parent)
     scene_ = shared_from_this();
 }
 
-Scene& Scene::setTo2DView(int w, int h)
+Scene& Scene::setTo2DView()
 {
+    video::IVideoDriver* driver = smgr_->getVideoDriver();
+    f32 w = (float)driver->getScreenSize().Width;
+    f32 h = (float)driver->getScreenSize().Height;
     camera_->setPosition( vector3df(10000,0,0) );
     camera_->setTarget( vector3df(10000,0,100) );
 
@@ -45,7 +49,7 @@ Scene& Scene::setTo2DView(int w, int h)
     camera_->setProjectionMatrix( ortho );
     camera_->setIsOrthogonal(true);
 
-    body_->setPosition(vector3df(-320, 240, 0)); //should support arbitary size of screen.
+    body_->setPosition(vector3df(-w/2, h/2, 0));
     return *this;
 }
 
@@ -65,6 +69,7 @@ Scene& Scene::setTo3DView(float FoV)
 Scene& Scene::activate()
 {
     smgr_->setActiveCamera( camera_ );
+    camera_->setVisible( true );
     light_->setVisible( true );
     set<Visible>(true);
     return *this;
@@ -78,6 +83,8 @@ Scene& Scene::redraw()
 
 Scene& Scene::deactivate()
 {
+    smgr_->setActiveCamera( 0 );
+    camera_->setVisible( false );
     light_->setVisible( false );
     set<Visible>(false);
     return *this;

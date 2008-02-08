@@ -2,7 +2,7 @@
 #define _SHOOTING_CUBES_ACCESSORS_
 
 #include "Accessor_proto.hpp"
-#include "ISceneNode.h"
+#include "IrrDevice.hpp"
 
 template<class T>
 void Accessor<T>::scaleWrap(irr::scene::ISceneNode const* node, irr::core::vector3df& out){
@@ -40,13 +40,11 @@ namespace accessor {
         static void set(ISceneNode* node, value_type const& val )
         {
             core::vector3df pos(val.X, val.Y, node->getPosition().Z);
-            scaleUnwrap( node, pos );
             node->setPosition( pos );
         }
         static void get(ISceneNode const* node, value_type& out) {
             core::vector3df pos;
             Pos3D::get(node, pos);
-            scaleWrap( node, pos);
             out = value_type(pos.X, pos.Y);
         }
     };
@@ -88,16 +86,10 @@ namespace accessor {
                 node->getMaterial(0).DiffuseColor.setGreen(val%256);
                 node->getMaterial(0).DiffuseColor.setBlue(val%256);
             }
-            else if( node->getType() == ESNT_TEXT ) {
-                static_cast<ITextSceneNode*>(node)->
-                    setTextColor(video::SColor(255,val%256,val%256,val%256));
-            }
         }
         static void get(ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getAverage();
-            else if( node->getType() == ESNT_TEXT )
-                out = static_cast<ITextSceneNode*>(node)->getTextColor().getAverage();
         }
     };
 
@@ -118,14 +110,10 @@ namespace accessor {
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setRed(val);
-            else if( node->getType() == ESNT_TEXT )
-                static_cast<ITextSceneNode*>(node)->getTextColor().setRed(val);
         }
         static void get(ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getRed();
-            else if( node->getType() == ESNT_TEXT )
-                out = static_cast<ITextSceneNode*>(node)->getTextColor().getRed();
         }
     };
 
@@ -133,14 +121,10 @@ namespace accessor {
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setGreen(val);
-            else if( node->getType() == ESNT_TEXT )
-                static_cast<ITextSceneNode*>(node)->getTextColor().setGreen(val);
         }
         static void get(ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getGreen();
-            else if( node->getType() == ESNT_TEXT )
-                out = static_cast<ITextSceneNode*>(node)->getTextColor().getGreen();
         }
     };
 
@@ -148,14 +132,10 @@ namespace accessor {
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setBlue(val);
-            else if( node->getType() == ESNT_TEXT )
-                static_cast<ITextSceneNode*>(node)->getTextColor().setBlue(val);
         }
         static void get(ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getBlue();
-            else if( node->getType() == ESNT_TEXT )
-                out = static_cast<ITextSceneNode*>(node)->getTextColor().getBlue();
         }
     };
 
@@ -163,14 +143,10 @@ namespace accessor {
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setAlpha(val);
-            else if( node->getType() == ESNT_TEXT )
-                static_cast<ITextSceneNode*>(node)->getTextColor().setAlpha(val);
         }
         static void get(ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getAlpha();
-            else if( node->getType() == ESNT_TEXT )
-                out = static_cast<ITextSceneNode*>(node)->getTextColor().getAlpha();
         }
     };
 
@@ -203,24 +179,28 @@ namespace accessor {
         }
     };
 
-    struct Size2D : Accessor<core::dimension2df>{
+    struct Size2D : Accessor<core::vector2df>{
         static void set(ISceneNode* node, value_type const& val ) {
             if( node->getType() == ESNT_BILLBOARD )
-                static_cast<IBillboardSceneNode*>(node)->setSize( val );
+                static_cast<IBillboardSceneNode*>(node)->setSize( core::dimension2df(val.X, val.Y) );
             else {
-                core::vector3df scale(val.Width/100.0f, val.Height/100.0f, 1);
-                scaleUnwrap( node, scale );
-                node->setScale( scale );
+                core::aabbox3df box = static_cast<IMeshSceneNode*>(node)->getMesh()->getBoundingBox();
+                core::vector2df ori;
+                ori.X = (box.MaxEdge.X - box.MinEdge.X);
+                ori.Y = (box.MaxEdge.Y - box.MinEdge.Y);
+                IMeshManipulator* mani = IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
+                mani->scaleMesh( static_cast<IMeshSceneNode*>(node)->getMesh(), core::vector3df(val.X / ori.X, val.Y / ori.Y, 1));
             }
         }
         static void get(ISceneNode* node, value_type& out) {
-            if( node->getType() == ESNT_BILLBOARD )
-                out = static_cast<IBillboardSceneNode*>(node)->getSize();
+            if( node->getType() == ESNT_BILLBOARD ) {
+                core::dimension2df size = static_cast<IBillboardSceneNode*>(node)->getSize();
+                out.X = size.Width; out.Y = size.Height;
+            }
             else {
-                core::vector3df scale = node->getScale();
-                scaleWrap( node, scale );
-                core::dimension2df size2d(scale.X*100.0f, scale.Y*100.0f);
-                out = size2d;
+                core::aabbox3df box = static_cast<IMeshSceneNode*>(node)->getMesh()->getBoundingBox();
+                out.X = (box.MaxEdge.X - box.MinEdge.X);
+                out.Y = (box.MaxEdge.Y - box.MinEdge.Y);
             }
         }
     };

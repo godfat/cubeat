@@ -18,11 +18,11 @@ public:
     typedef std::tr1::shared_ptr< Button > pointer_type;
     static pointer_type create(std::string const& name,
                                pObject const& parent,
+                               int const& w = 100,
+                               int const& h = 100,
                                bool const& center = false)
     {
-        pointer_type p = utils::ObjectPool< Button >::create(name, center);
-        p->init(parent);
-        return p;
+        return utils::ObjectPool< Button >::create(name, center)->init(parent, w, h);
     }
 
     Button(std::string const& name, bool const& center)
@@ -33,7 +33,7 @@ public:
     virtual ~Button();
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&, int const&, int const&);
 
 private:
 

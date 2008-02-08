@@ -45,7 +45,6 @@ void CallbackDelegate::setOwner(pSprite const& owner)
 Sprite::Sprite(std::string const& name, bool const& center)
     :Object(name), center_(center), center_aligned_plane_(0), upperleft_aligned_plane_(0)
 {
-    center_aligned_plane_ = smgr_->getMesh( "rc/model/plane_centered.x" );
     upperleft_aligned_plane_ = smgr_->getMesh( "rc/model/plane_orig.x" );
 }
 
@@ -54,7 +53,7 @@ Sprite::Sprite(std::string const& name, bool const& center)
     still some problem with material settings(alpha). I'll fix that later.
 */
 
-pSprite Sprite::init(pObject const& parent)
+pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 {
     if( name_.size() < 1 ) {
         Object::init(parent);
@@ -65,6 +64,9 @@ pSprite Sprite::init(pObject const& parent)
 
     video::IVideoDriver* driver = smgr_->getVideoDriver();
 
+    size_.Width  = w;
+    size_.Height = h;
+
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
@@ -74,16 +76,28 @@ pSprite Sprite::init(pObject const& parent)
 
     mat.DiffuseColor.set(255,255,255,255);
 
-    body_ = smgr_->addMeshSceneNode( center_ ? center_aligned_plane_ : upperleft_aligned_plane_,
-                                     parent->body(), -1, vector3df(0,0,5) );
-    body_->setName( name_.c_str() );
-
+    setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
     press_.setOwner( shared_from_this() );
     scene_ = parent->scene();
 
     return shared_from_this();
+}
+
+void Sprite::setupMeshBase(pObject const& parent)
+{
+    IMeshManipulator* mani = smgr_->getMeshManipulator();
+    thismesh_ = mani->createMeshCopy( upperleft_aligned_plane_ );
+    mani->scaleMesh( thismesh_, vector3df(size_.Width / 100, size_.Height / 100, 1) );
+
+    if( center_ ) {
+        matrix4 mat; mat.setTranslation( vector3df(-size_.Width/2, size_.Height/2, 0) );
+        mani->transformMesh( thismesh_, mat );
+    }
+
+    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,5) );
+    body_->setName( name_.c_str() );
 }
 
 Sprite& Sprite::setDepth(float d)
@@ -97,10 +111,13 @@ Sprite& Sprite::setCenterAligned(bool const& center)
 {
     if( center_ == center ) return *this;
     center_ = center;
+    matrix4 mat;
     if( center_ )
-        static_cast<IMeshSceneNode*>(body_)->setMesh( center_aligned_plane_ );
+        mat.setTranslation( vector3df(-size_.Width/2, size_.Height/2, 0) );
     else
-        static_cast<IMeshSceneNode*>(body_)->setMesh( upperleft_aligned_plane_ );
+        mat.setTranslation( vector3df(+size_.Width/2, -size_.Height/2, 0) );
+    IMeshManipulator* mani = smgr_->getMeshManipulator();
+    mani->transformMesh( thismesh_, mat );
     return *this;
 }
 

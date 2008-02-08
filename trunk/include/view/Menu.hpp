@@ -20,18 +20,20 @@ class Menu : public Sprite
 {
 public:
     typedef std::tr1::shared_ptr< Menu > pointer_type;
-    static pointer_type create(pObject const& parent, bool const& center = false) {
-        pointer_type p = utils::ObjectPool< Menu >::create(center);
-        p->init(parent);
-        return p;
+    static pointer_type create(pObject const& parent,
+                               int const& w = 100,
+                               int const& h = 100,
+                               bool const& center = false)
+    {
+        return utils::ObjectPool< Menu >::create(center)->init(parent, w, h);
     }
     static pointer_type create(std::string const& name,
                                pObject const& parent,
+                               int const& w = 100,
+                               int const& h = 100,
                                bool const& center = false)
     {
-        pointer_type p = utils::ObjectPool< Menu >::create(name, center);
-        p->init(parent);
-        return p;
+        return utils::ObjectPool< Menu >::create(name, center)->init(parent, w, h);
     }
 
     Menu(bool const& center):Sprite("", center){}
@@ -42,12 +44,17 @@ public:
 
     virtual Menu&   addSprite(std::string const& name,
                               std::tr1::function<void(pSprite&)> cb = 0,
+                              int const& w = 100,
+                              int const& h = 100,
                               std::string const& texture_name = "");
+
     virtual Menu&   addSpriteText(std::string const& text,
                                   std::tr1::function<void(pSprite&)> cb = 0,
                                   std::string const& font_path = "/fonts/simhei.ttf",
                                   int size = 12,
+                                  bool const& center = false,
                                   data::Color const& color = data::Color(0,0,0) );
+
     virtual Menu&   deleteSprite(std::string const& name);
     virtual Sprite& getSprite(std::string const& name);    //non-const-getter
     virtual Menu&   setCallbackToSprite(std::string const& name,
@@ -56,7 +63,7 @@ public:
     virtual ~Menu(){}
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&, int const&, int const&);
 
 protected:
     typedef std::pair< std::string, pSprite > SpriteListItem;

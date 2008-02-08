@@ -110,8 +110,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d);
-			return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d, node);
+			return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -160,8 +160,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-            if (t < d/2) return OCubic<T>::calculate(t*2, b, c/2, d);
-			return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d);
+            if (t < d/2) return OCubic<T>::calculate(t*2, b, c/2, d, node);
+			return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -210,8 +210,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d);
-			return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d, node);
+			return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -260,8 +260,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d);
-			return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d, node);
+			return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -361,8 +361,8 @@ namespace easing {
     {
     public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d);
-			return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d, node);
+			return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -413,8 +413,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d);
-			return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d, node);
+			return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -463,8 +463,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d);
-			return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d);
+			if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d, node);
+			return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
     };
 
@@ -496,7 +496,7 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c - OBounce<T>::calculate(d-t, T(), c, d) + b;
+			return c - OBounce<T>::calculate(d-t, T(), c, d, node) + b;
 		}
     };
 
@@ -508,8 +508,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d) * .5 + b;
-			else return OBounce<T>::calculate(t*2-d, T(), c, d) * .5 + c*.5 + b;
+			if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d, node) * .5 + b;
+			else return OBounce<T>::calculate(t*2-d, T(), c, d, node) * .5 + c*.5 + b;
 		}
     };
 
@@ -521,8 +521,8 @@ namespace easing {
     {
 	public:
         static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-            if (t < d/2) return OBounce<T>::calculate(t*2, b, c/2, d);
-			return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d);
+            if (t < d/2) return OBounce<T>::calculate(t*2, b, c/2, d, node);
+			return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
 	};
 

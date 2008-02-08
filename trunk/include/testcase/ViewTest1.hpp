@@ -106,7 +106,7 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
 
     guiv = view::Scene::create();
-    guiv->setTo2DView(640,480);
+    guiv->setTo2DView();
 
     worldv = view::Scene::create();
     worldv->setTo3DView( PI/3.0f );
@@ -133,32 +133,30 @@ ViewTest1::ViewTest1()
     testcube3->moveTo(-5,-5,60).set<Scale>(vector3df(0.3f, 0.3f, 0.3f))
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
-    something = view::Button::create("title", guiv );
-    something->moveTo(100,100).setDepth(4.0f).set<GradientDiffuse>(200).set<Size2D>(dimension2df(100,40));
+    something = view::Button::create("title", guiv, 100, 40);
+    something->moveTo(100,100).setDepth(4.0f).set<GradientDiffuse>(200);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 
-    anotherthing = view::Sprite::create("title", guiv );
-    anotherthing->moveTo(0,0).set<Size2D>(dimension2df(100,40));
+    anotherthing = view::Sprite::create("title", guiv, 100, 40);
+    anotherthing->moveTo(0,0);
 
-    girl = view::AnimatedSprite::create("test", guiv );
-    girl->addAnime("stand",3).addAnime("hit",5).moveTo(400,300).
-          set<Size2D>(dimension2df(128,192));
+    girl = view::AnimatedSprite::create("test", guiv, 128, 192);
+    girl->addAnime("stand",3).addAnime("hit",5).moveTo(400,300);
     girl->playAnime("stand", 1000, true);
 
-    a = view::AnimatedSprite::create( "test", guiv );
-    a->addAnime("hit",5).playAnime("hit",876,true).moveTo(150,350).
-       set<Size2D>(dimension2df(128,192));
+    a = view::AnimatedSprite::create( "test", guiv, 128, 192);
+    a->addAnime("hit",5).playAnime("hit",876,true).moveTo(150,350);
 
     //test menu
-    menu = view::Menu::create("title", guiv );
-    menu->moveTo(520, 50).setDepth(8.0f).set<Size2D>(dimension2df(100,40));
+    menu = view::Menu::create("title", guiv, 100, 40);
+    menu->moveTo(520, 50).setDepth(8.0f);
 
-    menu->addSprite("item1",test_,"title").addSprite("item2",test2_,"title").
-          addSprite("item3",test3_,"title");
-    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vector2df(0, -50)).set<Size2D>(dimension2df(100,40));
-    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vector2df(0, -150)).set<Size2D>(dimension2df(100,40));
-    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vector2df(0, -250)).set<Size2D>(dimension2df(100,40));
+    menu->addSprite("item1",test_,100,40,"title").addSprite("item2",test2_,100,40,"title").
+          addSprite("item3",test3_,100,40,"title");
+    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vector2df(0, -50));
+    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vector2df(0, -150));
+    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vector2df(0, -250));
 
     EventDispatcher::i().subscribe_timer(
         bind(&ViewTest1::step1, this, ref(anotherthing)), 1000 );

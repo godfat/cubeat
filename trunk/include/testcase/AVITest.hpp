@@ -34,6 +34,7 @@ public:
         EventDispatcher::i().subscribe_timer( bind(&AVIVideo::restart, &avi), 5500);
         EventDispatcher::i().subscribe_timer( bind(&AVIVideo::stop, &avi), 7500);
         EventDispatcher::i().subscribe_timer( bind(&AVIVideo::play, &avi), 8500);
+        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::setCurrentFrame, &avi, 200), 10000);
     }
 #endif
 

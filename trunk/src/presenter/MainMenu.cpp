@@ -33,22 +33,22 @@ using namespace std::tr1::placeholders;
 void MainMenu::init()
 {
     mainmenu_scene_ = view::Scene::create();
-    mainmenu_scene_->setTo2DView(640,480);
+    mainmenu_scene_->setTo2DView();
 
-    view::pMenu temp = view::Menu::create("title", mainmenu_scene_);
-    view::pMenu temp2= view::Menu::create("title", mainmenu_scene_);
+    view::pMenu temp = view::Menu::create("title", mainmenu_scene_, 150, 60);
+    view::pMenu temp2= view::Menu::create("title", mainmenu_scene_, 150, 60);
 
     menus_.insert( std::make_pair("testmenu1", temp) );
     menus_.insert( std::make_pair("testmenu2", temp2) );
 
-    temp->moveTo(240, 100).set<Size2D>(dimension2df(150,60));
-    temp2->moveTo(340, 100).set<Size2D>(dimension2df(150,60));
+    temp->moveTo(240, 100);
+    temp2->moveTo(340, 100);
 
     std::tr1::function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     std::tr1::function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSprite("title", click1_1).getSprite("title").set<Pos2D>(vector2df(0, -50)).set<Size2D>(dimension2df(100,40));
-    temp2->addSprite("title", click2_1).getSprite("title").set<Pos2D>(vector2df(0, -50)).set<Size2D>(dimension2df(100,40));
+    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, -50));
+    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, -50));
 
     temp2->set<Visible>(false);
 
@@ -57,8 +57,8 @@ void MainMenu::init()
         oss << "cubes/cube" << utils::Random::i().random(4)+1;
         data::Color col = data::Color::from_id(0, 4);
 
-        view::pSprite temp = view::Sprite::create(oss.str(), mainmenu_scene_, true);
-        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() ).set<Size2D>(dimension2df(80,80));
+        view::pSprite temp = view::Sprite::create(oss.str(), mainmenu_scene_, 80, 80, true);
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() );
         temp->tween<Linear, Rotation>(vector3df(0, 0, 360), 3000);
 
         if( ran < 640 ) {

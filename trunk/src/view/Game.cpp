@@ -30,11 +30,7 @@ void Game::init(pScene const& world, pScene const& gui)
     world_ = world;
     gui_   = gui;
     for( int i=0; i < ctrl::Input::count(); ++i )
-        cursors_.push_back( Sprite::create("title",gui_) );
-
-    //temporary code
-    cursors_[0]->set<Size2D>(dimension2df(100,40));
-    cursors_[1]->set<Size2D>(dimension2df(100,40));
+        cursors_.push_back( Sprite::create("title",gui_,100,40) );
 }
 
 Game& Game::setWorld(pScene const& world) { world_ = world; return *this;}

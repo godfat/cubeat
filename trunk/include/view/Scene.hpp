@@ -21,7 +21,7 @@ public:
     }
 
     virtual Scene* clone() const;
-    virtual Scene& setTo2DView(int w, int h);
+    virtual Scene& setTo2DView();
     virtual Scene& setTo3DView(float FoV);
     virtual Scene& activate();
     virtual Scene& redraw();

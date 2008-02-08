@@ -39,6 +39,10 @@ public:
     }
     data::pMapSetting ms() const{ return setting_; }
 
+    // begin used by Dropping::cycle, Waiting::cycle
+    state::pState next_state(pCube);
+    // end
+
 private:
     void do_cycle(pCube c, int i);
     Map& init_cubes();

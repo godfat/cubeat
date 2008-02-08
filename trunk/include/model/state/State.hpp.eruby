@@ -7,7 +7,6 @@
 namespace psc{ namespace model{ namespace state{
 
 class State: public std::tr1::enable_shared_from_this<State>{
-<%= reader :wpCube, :owner %>
 public:
     State(){}
 
@@ -19,6 +18,10 @@ public:
 protected:
     Map& map();
     Map const& map() const;
+    pCube owner(){ return owner_.lock(); }
+
+private:
+    wpCube owner_;
 };
 
 }}} // end of namespace

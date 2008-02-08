@@ -1,6 +1,9 @@
 
 #include "model/Map.hpp"
 #include "model/Cube.hpp"
+#include "model/state/Waiting.hpp"
+#include "model/state/Dropping.hpp"
+#include "model/state/Dying.hpp"
 
 #include "utils/ChainChecker.hpp"
 #include "utils/for_each_multi_array.hpp"
@@ -47,4 +50,50 @@ Map& <% debug_hook 'Map::insert' do %>(pCube cube){
 <% end %>
     cubes_[cube->x()][cube->y()] = cube;
     return *this;
+}
+
+// used by Dropping::cycle, Waiting::cycle
+state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
+<% end %>
+    if( state::pWaiting waiting = that->is_waiting() ){
+
+		if( waiting->need_check() ){
+            pOneFading one_fading = make_OneFading(that);
+
+            if( one_fading != NULL ){
+                one_fading->fade(that);
+                return state::Dying::create()->init(that)->init2();
+            }
+            waiting->checked();
+			that->set_grounded(); //once grounded, always grounded
+        }
+		if( waiting->need_check_chain_property() ){
+			if( cube_can_lose_chain(that) ) { 
+	            that->lose_chain();
+				if( !that->is_garbage() )
+				    that->hide_outline();
+			}
+			waiting->chain_property_checked();
+		}
+    }
+
+    if( is_below_empty(that) ){
+        data_.at(that->x(), that->y()) = NULL;
+        that->drop_a_block();
+        data_.at(that->x(), that->y()) = that;
+        if( that->is_dropping() )
+            return NULL;
+        else
+            return state::Dropping::create(that);
+    }
+    else{
+        if( that->is_waiting() )
+            return NULL;
+		else {
+			// Sound::i().cube_dropped();
+            return state::Waiting::create(that);
+		}
+    }
+    // throw "impossible flow";
+    return NULL;
 }

@@ -1,0 +1,26 @@
+
+#include "model/state/Waiting.hpp"
+
+using namespace psc;
+using namespace model;
+using namespace state;
+
+pState <% debug_hook 'Waiting::cycle' do %>(){
+<% end %>
+    ++delay_;
+	if( !need_check_chain_property() )
+	    ++owner()->lose_chain_delay();
+
+    pState result = map().next_state(owner());
+
+    if(result) return shared_from_this();
+    else       return result;
+}
+bool <% debug_hook 'Waiting::need_check' do %>() const{
+<% end %>
+    return not_checked_ && delay_ >= map().ms().delay;
+}
+bool <% debug_hook 'Waiting::need_check_chain_property' do %>() const{
+<% end %>
+	return !chain_property_checked_ && owner()->lose_chain_delay() >= map().ms().frequency(); 
+}

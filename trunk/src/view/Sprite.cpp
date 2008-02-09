@@ -69,6 +69,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
 
     mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -78,6 +79,8 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
+
+    body_->setDebugDataVisible(EDS_BBOX);
 
     press_.setOwner( shared_from_this() );
     scene_ = parent->scene();
@@ -96,8 +99,22 @@ void Sprite::setupMeshBase(pObject const& parent)
         mani->transformMesh( thismesh_, mat );
     }
 
-    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,5) );
+    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,-50) );
     body_->setName( name_.c_str() );
+}
+
+void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
+{
+    //texture ratio adjustment because the texture is sized at power of 2.
+    //have to do this for hand made texture like Movie Texture or Text Texture.
+    float x = 1, y = 1;
+    while( x < w ){x*=2;} float tex_coord_ratio_x = w / x;
+    while( y < h ){y*=2;} float tex_coord_ratio_y = h / y;
+
+    S3DVertex* ptr = (S3DVertex*)thismesh_->getMeshBuffer(0)->getVertices();
+    ptr[0].TCoords.Y = tex_coord_ratio_y;
+    ptr[1].TCoords.X = tex_coord_ratio_x; ptr[1].TCoords.Y = tex_coord_ratio_y;
+    ptr[3].TCoords.X = tex_coord_ratio_x;
 }
 
 Sprite& Sprite::setDepth(float d)

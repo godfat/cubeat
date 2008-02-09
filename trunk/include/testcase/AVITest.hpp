@@ -3,16 +3,12 @@
 
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
-
-#ifdef WIN32
-#include "private/AVIVideo.hpp"
-#endif
+#include "view/SpriteMovie.hpp"
 
 using namespace irr;
 using namespace core;
 using namespace scene;
 using namespace video;
-using namespace gui;
 
 using namespace psc;
 using namespace ctrl;
@@ -25,31 +21,33 @@ public:
         return singleton;
     }
 #ifdef WIN32
-    AVITest() : avi("E:/portfolio/ndssp/ndssp_op.avi") {
-        IGUIEnvironment* guienv = IrrDevice::i().d()->getGUIEnvironment();
-        image = guienv->addImage( avi.getTexture(), position2di(0, 0), false );
+    AVITest() {
+        scene = view::Scene::create(view::pObject(), "AVITest");
+        scene->setTo2DView();
 
-        avi.stop();
-        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::play, &avi), 3000);
-        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::restart, &avi), 5500);
-        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::stop, &avi), 7500);
-        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::play, &avi), 8500);
-        EventDispatcher::i().subscribe_timer( bind(&AVIVideo::setCurrentFrame, &avi, 200), 10000);
+        movie = view::SpriteMovie::create("E:/portfolio/ndssp/ndssp_op.avi", scene, 640, 480);
+        movie->stop().moveTo(320, 240).setCenterAligned(true);
+        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::play, movie.get()), 6000);
+        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::restart, movie.get()), 8500);
+        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::stop, movie.get()), 10500);
+        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::play, movie.get()), 11500);
+        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::setCurrentFrame, movie.get(), 200), 13000);
     }
 #endif
 
     void cycle() {
 #ifdef WIN32
-        avi.redraw();
-        IrrDevice::i().d()->getGUIEnvironment()->drawAll();
+        movie->redraw();
+        scene->activate().redraw();
+        scene->deactivate();
 #endif
     }
 
 private:
 #ifdef WIN32
-    AVIVideo avi;
+    view::pSpriteMovie movie;
 #endif
-    IGUIImage* image;
+    view::pScene scene;
 };
 
 #endif // _SHOOTING_CUBES_AVI_TEST_

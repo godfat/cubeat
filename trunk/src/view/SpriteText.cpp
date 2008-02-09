@@ -45,15 +45,18 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
 
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setTexture(0, font_texture_);
 
     mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 
-    mat.DiffuseColor.set(200,200,200,200);
+    mat.DiffuseColor.set(255,255,255,255);
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
+
+    adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
 
     press_.setOwner( shared_from_this() );
     scene_ = parent->scene();

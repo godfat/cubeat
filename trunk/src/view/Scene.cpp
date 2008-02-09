@@ -4,6 +4,8 @@
 #include "utils/Random.hpp"
 #include "Accessors.hpp"
 
+#include <iostream>
+
 using namespace irr;
 using namespace core;
 using namespace scene;
@@ -12,13 +14,7 @@ using namespace accessor;
 using namespace psc;
 using namespace view;
 
-/*
-Scene::Scene(Object const* parent)
-    :Object(parent)
-{
-}
-*/
-void Scene::init(pObject const& parent)
+void Scene::init(pObject const& parent, std::string const& name)
 {
     camera_ = smgr_->addCameraSceneNode(parent?parent->body():0);
     camera_->setIsDebugObject(true);
@@ -32,8 +28,10 @@ void Scene::init(pObject const& parent)
 
     body_ = smgr_->addEmptySceneNode(camera_);
     body_->setIsDebugObject(true);
+    body_->setName( name.c_str() );
 
     scene_ = shared_from_this();
+    deactivate();
 }
 
 Scene& Scene::setTo2DView()
@@ -45,11 +43,11 @@ Scene& Scene::setTo2DView()
     camera_->setTarget( vector3df(10000,0,100) );
 
     matrix4 ortho;
-    ortho.buildProjectionMatrixOrthoLH( static_cast<f32>(w), static_cast<f32>(h), 0, 100);
+    ortho.buildProjectionMatrixOrthoLH( static_cast<f32>(w), static_cast<f32>(h), 0, 10000);
     camera_->setProjectionMatrix( ortho );
     camera_->setIsOrthogonal(true);
 
-    body_->setPosition(vector3df(-w/2, h/2, 0));
+    body_->setPosition(vector3df(-w/2, h/2, 500));
     return *this;
 }
 
@@ -63,6 +61,7 @@ Scene& Scene::setTo3DView(float FoV)
     camera_->setAspectRatio( (float)driver->getScreenSize().Width / driver->getScreenSize().Height );
     camera_->setIsOrthogonal(false);
 
+    body_->setPosition(vector3df(0,0,0));
     return *this;
 }
 
@@ -103,4 +102,5 @@ ICameraSceneNode* Scene::camera() const
 
 Scene::~Scene()
 {
+    std::cout << body_->getName() << " scene died.\n";
 }

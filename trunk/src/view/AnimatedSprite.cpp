@@ -30,6 +30,7 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     SMaterial mat_;
 
     mat_.setFlag(video::EMF_LIGHTING, true);
+    mat_.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat_.MaterialType = video::EMT_ONETEXTURE_BLEND;
 
     mat_.MaterialTypeParam =

@@ -5,6 +5,8 @@
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+#include <string>
+
 /* TODO:
    Somehow add a node2view conversion here? Not so sure. */
 
@@ -14,9 +16,10 @@ class Scene : public Object, public std::tr1::enable_shared_from_this<Scene>
 {
 public:
     typedef std::tr1::shared_ptr< Scene > pointer_type;
-    static pointer_type create(pObject const parent = pointer_type()) {
+    static pointer_type create(pObject const parent = pointer_type(),
+                               std::string const& name = "unnamed") {
         pointer_type p = utils::ObjectPool< Scene >::create();
-        p->init(parent);
+        p->init(parent, name);
         return p;
     }
 
@@ -30,7 +33,7 @@ public:
     virtual ~Scene();
 
 protected:
-    void init(pObject const& parent);
+    void init(pObject const&, std::string const&);
 
 protected:
     irr::scene::ICameraSceneNode* camera_;

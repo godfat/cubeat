@@ -6,8 +6,7 @@
    Inputs are temporarily declared in this scope,
    will be removed later. (when player class is out) */
 
-#include "presenter/Transitioner.hpp"
-#include "presenter/MainMenu.hpp"
+#include "all_fwd.hpp"
 
 namespace irr {
 class ITimer;
@@ -29,7 +28,8 @@ public:
 
     int run();
 
-    App& setLoading(int const& cent);
+    void setLoading(int const& cent);
+    void launchMainMenu();
 
     ~App();
 

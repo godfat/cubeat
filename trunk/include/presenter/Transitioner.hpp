@@ -20,7 +20,7 @@ namespace psc {
 
 namespace presenter {
 
-class Transitioner : public Object, public std::tr1::enable_shared_from_this<Object>
+class Transitioner : public Object, public std::tr1::enable_shared_from_this<Transitioner>
 {
 public:
     typedef std::tr1::shared_ptr< Transitioner > pointer_type;

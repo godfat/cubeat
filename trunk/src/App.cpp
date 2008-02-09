@@ -4,15 +4,15 @@
    will be removed later. (when player class is out) */
 
 #include "App.hpp"
+#include "presenter/Transitioner.hpp"
+#include "presenter/MainMenu.hpp"
+#include "presenter/OpeningSequence.hpp"
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
 #include "IrrDevice.hpp"
 
 /* Testcase */
 #include "testcase/ViewTest1.hpp"
-
-/* Testcase for AVIVideo class functionality */
-#include "testcase/AVITest.hpp"
 
 #include <iostream>
 
@@ -25,28 +25,6 @@ using namespace psc;
 using namespace ctrl;
 using std::tr1::bind;
 using std::tr1::ref;
-
-/* hahaha code, will make you hahaha, must be deleted */
-void func2(App&);
-void func3(App&);
-
-void func1(App& app)
-{
-    app.setLoading(50);
-    EventDispatcher::i().subscribe_timer(bind(&func2, ref(app)), 300);
-}
-
-void func2(App& app)
-{
-    app.setLoading(80);
-    EventDispatcher::i().subscribe_timer(bind(&func3, ref(app)), 400);
-}
-
-void func3(App& app)
-{
-    app.setLoading(100);
-}
-/* end of hahaha code */
 
 App::App()
 :framerate_(60), last_timetick_(0)
@@ -62,14 +40,8 @@ App::App()
     input1_ = new Input("config/input_setting_1p.yml");
     input2_ = new Input("config/input_setting_2p.yml");
 
-    AVITest::i();
     trans_            = presenter::Transitioner::create();
-    master_presenter_ = presenter::MainMenu::create();
-    ViewTest1::i();
-
-    setLoading(10);
-    //call to hahaha code
-    EventDispatcher::i().subscribe_timer(bind(&func1, ref(*this)), 450);
+    master_presenter_ = presenter::OpeningSequence::create();
 }
 
 App::~App()
@@ -79,10 +51,15 @@ App::~App()
     delete input2_;
 }
 
-App& App::setLoading(int const& cent)
+void App::setLoading(int const& cent)
 {
     trans_->setLoadingBar(cent);
-    return *this;
+}
+
+void App::launchMainMenu()
+{
+    master_presenter_ = presenter::MainMenu::create();
+    std::cout << "MainMenu launched.\n";
 }
 
 bool App::update_block()
@@ -107,10 +84,9 @@ int App::run()
             Input::update_all();
             EventDispatcher::i().dispatch();
 
-            driver->beginScene(true, true, video::SColor(0,64,64,64));
-            AVITest::i().cycle();
-            ViewTest1::i().cycle();
+            driver->beginScene(true, true, video::SColor(0,0,0,0));
             master_presenter_->cycle();
+            driver->clearZBuffer();  //clear z-buffer to overlay the whole scene
             trans_->cycle();
             driver->endScene();
 

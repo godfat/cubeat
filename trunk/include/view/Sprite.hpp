@@ -69,6 +69,7 @@ public:
 protected:
     pointer_type init(pObject const&, int const&, int const&);
     void setupMeshBase(pObject const&);
+    void adjust_texcoord_for_hand_made_texture(int const&, int const&);
 
 protected:
     CallbackDelegate press_;

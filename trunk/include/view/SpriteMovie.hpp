@@ -23,9 +23,17 @@ public:
     }
 
     SpriteMovie(std::string const& name, bool const& center)
-        : Sprite(name, center), avi(0) {}
+        : Sprite(name, center) { avi = 0; }
 
     virtual SpriteMovie* clone() const { return 0; }
+    virtual SpriteMovie& redraw();
+    virtual SpriteMovie& play();
+    virtual SpriteMovie& stop();
+    virtual SpriteMovie& restart();
+    virtual SpriteMovie& setFPS(int const&);
+    virtual SpriteMovie& setCurrentFrame(int const&);
+    virtual int getCurrentFrame() const;
+    virtual bool isEnd() const;
 
     virtual ~SpriteMovie();
 

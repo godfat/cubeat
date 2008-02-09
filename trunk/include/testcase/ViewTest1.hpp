@@ -105,10 +105,10 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&)> test2_ = bind(&ViewTest1::test2, this, _1);
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
 
-    guiv = view::Scene::create();
+    guiv = view::Scene::create(view::pObject(), "ViewTest_GUI");
     guiv->setTo2DView();
 
-    worldv = view::Scene::create();
+    worldv = view::Scene::create(view::pObject(), "ViewTest_WORLD");
     worldv->setTo3DView( PI/3.0f );
 
     game = view::Game::create( worldv, guiv );
@@ -134,7 +134,7 @@ ViewTest1::ViewTest1()
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
     something = view::Button::create("title", guiv, 100, 40);
-    something->moveTo(100,100).setDepth(4.0f).set<GradientDiffuse>(200);
+    something->moveTo(100,100).set<GradientDiffuse>(200);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 
@@ -150,7 +150,7 @@ ViewTest1::ViewTest1()
 
     //test menu
     menu = view::Menu::create("title", guiv, 100, 40);
-    menu->moveTo(520, 50).setDepth(8.0f);
+    menu->moveTo(520, 50);
 
     menu->addSprite("item1",test_,100,40,"title").addSprite("item2",test2_,100,40,"title").
           addSprite("item3",test3_,100,40,"title");

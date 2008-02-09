@@ -12,7 +12,7 @@ using namespace core;
 using namespace video;
 
 AVIVideo::AVIVideo(std::string const& path)
-    :loop_(false), is_playing_(false), paused_(false), updated_(false),
+    :loop_(false), is_end_(false), paused_(false), updated_(false),
      file_ok_(false), frame_duration_(0), num_of_frames_(0), start_frame_(0),
      now_frame_(-1), width_(0), height_(0), last_tick_(0), texture_(0)
 {
@@ -28,10 +28,10 @@ AVIVideo::~AVIVideo()
 
 void AVIVideo::redraw()
 {
-    if( !file_ok_ || paused_ ) { is_playing_ = false; return; }
+    if( !file_ok_ || paused_ ) return;
 
-    is_playing_ = nextFrame();
-    if( !is_playing_ || !updated_ ) return;
+    is_end_ = nextFrame();
+    if( is_end_ || !updated_ ) return;
 
     unsigned char* pixels_out = (unsigned char*)texture_->lock();
     if( !pixels_out ) { texture_->unlock(); return; }
@@ -104,9 +104,9 @@ void AVIVideo::restart()
     last_tick_ = timer_->getTime();
 }
 
-bool AVIVideo::isPlaying()
+bool AVIVideo::isEnd() const
 {
-    return is_playing_;
+    return is_end_;
 }
 
 ITexture *AVIVideo::getTexture() const
@@ -165,7 +165,7 @@ bool AVIVideo::open(std::string const& path)
         return false;
     }
     file_ok_ = true;
-    is_playing_ = nextFrame();
+    is_end_ = nextFrame();
     return true;
 }
 
@@ -173,8 +173,15 @@ void AVIVideo::initBitmapStruct(int bitsPerPixel)
 {
     bitmap_.biSize = sizeof(BITMAPINFOHEADER);
     bitmap_.biBitCount = bitsPerPixel;
+    bitmap_.biClrImportant = 0;
+    bitmap_.biClrUsed = 0;
     bitmap_.biCompression = BI_RGB;
     bitmap_.biPlanes = 1;
+    bitmap_.biWidth = width_;
+    bitmap_.biHeight = height_;
+    bitmap_.biXPelsPerMeter = 0;
+    bitmap_.biYPelsPerMeter = 0;
+    bitmap_.biSizeImage = (((bitmap_.biWidth * 3) + 3) & 0xfffc) * bitmap_.biHeight;
     if (bitmap_.biBitCount > 24)      bitmap_.biBitCount = 32;
     else if (bitmap_.biBitCount > 16) bitmap_.biBitCount = 24;
     else if (bitmap_.biBitCount > 8)  bitmap_.biBitCount = 16;
@@ -193,11 +200,11 @@ bool AVIVideo::nextFrame()
         }
         if( now_frame_ >= num_of_frames_ ) {
             if( loop_ ) restart();
-            else return false;
+            else return true;
         }
         last_tick_ += frame_duration_;
     }
-    return true;
+    return false;
 }
 
 void AVIVideo::close()

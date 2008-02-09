@@ -7,6 +7,7 @@
 
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
+#include "App.hpp"
 
 #include <boost/tr1/functional.hpp>
 #include <utility>
@@ -28,15 +29,20 @@ using std::tr1::bind;
 using std::tr1::ref;
 using namespace std::tr1::placeholders;
 
-/* MainMenu has bug */
-
 void MainMenu::init()
 {
-    mainmenu_scene_ = view::Scene::create();
+    App::i().setLoading(1);
+    mainmenu_scene_ = view::Scene::create(view::pObject(), "MainMenu");
     mainmenu_scene_->setTo2DView();
+
+    App::i().setLoading(10);
+    std::cout << "Loading...\n";
 
     view::pMenu temp = view::Menu::create("title", mainmenu_scene_, 150, 60);
     view::pMenu temp2= view::Menu::create("title", mainmenu_scene_, 150, 60);
+
+    App::i().setLoading(20);
+    std::cout << "Loading...\n";
 
     menus_.insert( std::make_pair("testmenu1", temp) );
     menus_.insert( std::make_pair("testmenu2", temp2) );
@@ -51,6 +57,9 @@ void MainMenu::init()
     temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, -50));
 
     temp2->set<Visible>(false);
+
+    App::i().setLoading(30);
+    std::cout << "Loading...\n";
 
     for(int i=0, ran=0; i < 50; ++i, ran+=50) { //640, 1120, 1760, 2240
         std::ostringstream oss;
@@ -74,7 +83,9 @@ void MainMenu::init()
             temp->moveTo( 40, 480 - (ran-1760) );
         }
         deco_cubes_.push_back( temp );
+        App::i().setLoading(31 + i);
     }
+    App::i().setLoading(100);
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)
@@ -107,5 +118,6 @@ MainMenu& MainMenu::cubeRearrange()
 void MainMenu::cycle()
 {
     mainmenu_scene_->activate().redraw();
-    mainmenu_scene_->deactivate();
+    if( mainmenu_scene_.use_count() )
+        mainmenu_scene_->deactivate();
 }

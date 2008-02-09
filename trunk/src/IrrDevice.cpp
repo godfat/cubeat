@@ -14,12 +14,12 @@ bool IrrDevice::init(bool test)
     if( inited_ ) return false;
     inited_ = true;
     if( !test )
-        device_ = createDevice( irr::video::EDT_NULL,
-                                irr::core::dimension2d<irr::s32>(640,480),
+        device_ = createDevice( video::EDT_NULL,
+                                core::dimension2d<s32>(640,480),
                                 32, false, false, false, &MastEventReceiver::i());
     else
-        device_ = createDevice( irr::video::EDT_OPENGL,
-                                irr::core::dimension2d<irr::s32>(640,480),
+        device_ = createDevice( video::EDT_OPENGL,
+                                core::dimension2d<s32>(640,480),
                                 32, false, false, false, &MastEventReceiver::i());
     return device_ ? true : false;
 }

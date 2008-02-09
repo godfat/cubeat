@@ -2,6 +2,10 @@
 #ifndef _SHOOTING_CUBES_GAME_VIEW_
 #define _SHOOTING_CUBES_GAME_VIEW_
 
+/* TODO:
+   Inputs are temporarily declared in this scope,
+   will be removed later. (when player class is out) */
+
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
@@ -41,6 +45,8 @@ protected:
 
     pScene world_;
     pScene gui_;
+
+    //these are temporarily here.
     std::vector < pSprite > cursors_;
 };
 

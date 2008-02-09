@@ -32,7 +32,7 @@ public:
     void stop();
     void play();
     void restart();
-    bool isPlaying();
+    bool isEnd() const;
     int  getCurrentFrame() const;
     irr::video::ITexture*   getTexture() const;
     irr::core::dimension2di getSize() const;
@@ -45,7 +45,7 @@ private:
 
 private:
     bool loop_;
-    bool is_playing_;
+    bool is_end_;
     bool paused_;
     bool updated_;
     bool file_ok_;

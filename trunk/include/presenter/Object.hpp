@@ -23,7 +23,6 @@ protected:
 
 protected:
 
-
 };
 
 } //presenter

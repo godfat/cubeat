@@ -80,8 +80,6 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
-    body_->setDebugDataVisible(EDS_BBOX);
-
     press_.setOwner( shared_from_this() );
     scene_ = parent->scene();
 

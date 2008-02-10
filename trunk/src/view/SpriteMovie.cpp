@@ -1,10 +1,8 @@
 
 #include "view/SpriteMovie.hpp"
-#ifdef WIN32
 #include "private/AVIVideo.hpp"
 #include "IrrDevice.hpp"
 
-#include <iostream>
 #include <sstream>
 
 using namespace irr;
@@ -60,7 +58,4 @@ SpriteMovie::~SpriteMovie()
 {
     if( avi )
         delete avi;
-    std::cout << "Did SpriteMovie died properly?\n";
 }
-
-#endif //WIN32

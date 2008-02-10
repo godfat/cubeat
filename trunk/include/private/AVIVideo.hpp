@@ -5,6 +5,8 @@
 #ifdef WIN32
 #include <windows.h>
 #include <vfw.h>
+#endif
+
 #include <string>
 
 namespace irr {
@@ -60,11 +62,13 @@ private:
     irr::video::ITexture* texture_;
     irr::ITimer* timer_;
 
+#ifdef WIN32
     PAVIFILE         avi_file_;
     PGETFRAME        frame_obj_;
     PAVISTREAM       vstream_;
     BITMAPINFOHEADER bitmap_;
+#endif // WIN32
 };
 
-#endif // WIN32
+
 #endif // _SHOOTING_CUBES_PRIVATE_AVI_VIDEO_WIN32_ONLY_

@@ -5,8 +5,6 @@
 
 #include <iostream>
 
-#ifdef WIN32
-
 using namespace irr;
 using namespace core;
 using namespace video;
@@ -36,6 +34,7 @@ void AVIVideo::redraw()
     unsigned char* pixels_out = (unsigned char*)texture_->lock();
     if( !pixels_out ) { texture_->unlock(); return; }
 
+#ifdef WIN32
     unsigned char* pixels_in = (unsigned char*)
                                AVIStreamGetFrame( frame_obj_, now_frame_ ) +
                                sizeof(BITMAPINFOHEADER);
@@ -59,6 +58,7 @@ void AVIVideo::redraw()
         yi -= pitch_i;
         yo += pitch_o;
     }
+#endif //WIN32
 
     texture_->unlock();
 }
@@ -123,6 +123,7 @@ dimension2di AVIVideo::getSize() const
 
 bool AVIVideo::open(std::string const& path)
 {
+#ifdef WIN32
     AVIFILEINFO      avi_info;
     HRESULT          hr;
 //    PAVISTREAM       astream;             //not used for non-sound streaming
@@ -157,6 +158,7 @@ bool AVIVideo::open(std::string const& path)
     u32 w,h;
     for(w = 1; w < avi_info.dwWidth; w <<= 1);
     for(h = 1; h < avi_info.dwHeight; h <<= 1);
+#endif //WIN32
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     texture_ = driver->addTexture(dimension2di(w,h), "AVI_Texture", ECF_A8R8G8B8);
@@ -171,6 +173,7 @@ bool AVIVideo::open(std::string const& path)
 
 void AVIVideo::initBitmapStruct(int bitsPerPixel)
 {
+#ifdef WIN32
     bitmap_.biSize = sizeof(BITMAPINFOHEADER);
     bitmap_.biBitCount = bitsPerPixel;
     bitmap_.biClrImportant = 0;
@@ -187,6 +190,7 @@ void AVIVideo::initBitmapStruct(int bitsPerPixel)
     else if (bitmap_.biBitCount > 8)  bitmap_.biBitCount = 16;
     else if (bitmap_.biBitCount > 4)  bitmap_.biBitCount =  8;
     else if (bitmap_.biBitCount > 0)  bitmap_.biBitCount =  4;
+#endif //WIN32
 }
 
 bool AVIVideo::nextFrame()
@@ -209,10 +213,10 @@ bool AVIVideo::nextFrame()
 
 void AVIVideo::close()
 {
+#ifdef WIN32
     if( file_ok_ && frame_obj_ ) AVIStreamGetFrameClose( frame_obj_ );
     if( file_ok_ && vstream_ )   AVIStreamRelease( vstream_ );
     if( avi_file_ )              AVIFileRelease( avi_file_ );
     AVIFileExit();
-}
-
 #endif //WIN32
+}

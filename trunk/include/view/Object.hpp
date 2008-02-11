@@ -8,7 +8,6 @@
 #include "CustomAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
-#include <boost/tr1/memory.hpp>
 #include <boost/tr1/functional.hpp>
 #include <string>
 
@@ -25,7 +24,6 @@ class Object
 {
 public:
     typedef std::tr1::shared_ptr< Object > pointer_type;
-    typedef std::tr1::weak_ptr< Object > wpointer_type;
     static pointer_type create(pointer_type const parent = pointer_type()) {
         pointer_type p = utils::ObjectPool< Object >::create("");
         p->init(parent);
@@ -58,7 +56,7 @@ public:
                   typename Accessor::value_type const& end,
                   int                           const& duration,
                   bool                          const& loop = true,
-                  std::tr1::function<void()>           cb = 0,
+                  std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
         irr::scene::ISceneNodeAnimator* anim =
@@ -73,7 +71,7 @@ public:
     Object& tween(typename Accessor::value_type const& end,
                   int                           const& duration,
                   bool                          const& loop = true,
-                  std::tr1::function<void()>           cb = 0,
+                  std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
         typename Accessor::value_type start = typename Accessor::value_type();

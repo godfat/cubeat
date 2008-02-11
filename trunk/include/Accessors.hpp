@@ -39,13 +39,13 @@ namespace accessor {
     struct Pos2D : Accessor<core::vector2df>{
         static void set(ISceneNode* node, value_type const& val )
         {
-            core::vector3df pos(val.X, val.Y, node->getPosition().Z);
+            core::vector3df pos(val.X, -val.Y, node->getPosition().Z);
             node->setPosition( pos );
         }
         static void get(ISceneNode const* node, value_type& out) {
             core::vector3df pos;
             Pos3D::get(node, pos);
-            out = value_type(pos.X, pos.Y);
+            out = value_type(pos.X, -pos.Y);
         }
     };
 

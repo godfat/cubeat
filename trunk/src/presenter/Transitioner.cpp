@@ -29,8 +29,8 @@ void Transitioner::init()
     loading_menu_ = view::Menu::create("loading", transition_scene_, 640, 480);
     loading_menu_->set<GradientDiffuse>(0);
     loading_menu_->addSprite("loading_bar", 0, 600, 20)
-                  .addSpriteText("what this font", 0, "Star Jedi", 48, true, data::Color(255,255,255))
-                  .addSpriteText("looks like", 0, "Star Jedi", 36, true, data::Color(128,128,128));
+                  .addSpriteText("what this font", "Star Jedi", 0, 48, true, data::Color(255,255,255))
+                  .addSpriteText("looks like", "Star Jedi", 0, 36, true, data::Color(128,128,128));
     loading_menu_->getSprite("loading_bar").moveTo(20, 440)
                   .set<GradientDiffuse>(128);
     loading_menu_->getSprite("what this font").moveTo(320, 100)

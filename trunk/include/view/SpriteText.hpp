@@ -14,7 +14,7 @@ public:
     typedef std::tr1::shared_ptr< SpriteText > pointer_type;
     static pointer_type create(std::string const& text,
                                pObject const&     parent,
-                               std::string const& font_path = "fonts/simhei.ttf",
+                               std::string const& font_path,
                                int                size = 12,
                                bool const&        center = false,
                                data::Color const& color = data::Color(0,0,0) )

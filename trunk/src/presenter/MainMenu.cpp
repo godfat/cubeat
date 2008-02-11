@@ -10,6 +10,9 @@
 #include "App.hpp"
 
 #include <boost/tr1/functional.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/function.hpp>
 #include <utility>
 #include <cstdlib>
 #include <ctime>
@@ -27,7 +30,10 @@ using namespace easing;
 
 using std::tr1::bind;
 using std::tr1::ref;
+using std::tr1::function;
 using namespace std::tr1::placeholders;
+
+namespace BLL = boost::lambda;
 
 void MainMenu::init()
 {
@@ -41,15 +47,18 @@ void MainMenu::init()
     menus_.insert( std::make_pair("testmenu1", temp) );
     menus_.insert( std::make_pair("testmenu2", temp2) );
 
-    temp->moveTo(240, 100);
-    temp2->moveTo(340, 100);
+    temp->moveTo(-200, 100);
+    temp2->moveTo(-200, 100).set<Red>(0);
 
-    std::tr1::function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
-    std::tr1::function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
+    function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
+    function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, -50));
-    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, -50));
+    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, 50));
+    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, 50));
 
+    temp->set<Alpha>(0);
+    temp->set<Visible>(false);
+    temp2->set<Alpha>(0);
     temp2->set<Visible>(false);
 
     for(int i=0, ran=0; i < 50; ++i, ran+=50) { //640, 1120, 1760, 2240
@@ -76,27 +85,39 @@ void MainMenu::init()
         deco_cubes_.push_back( temp );
     }
     App::i().setLoading(100);
+    showMenu("testmenu1");
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)
 {
+    if( animating_ ) return;
+    animating_ = true;
     showMenu("testmenu2").hideMenu("testmenu1");
 }
 
 void MainMenu::menu2_1_click(view::pSprite& sprite)
 {
+    if( animating_ ) return;
+    animating_ = true;
     showMenu("testmenu1").hideMenu("testmenu2");
 }
 
 MainMenu& MainMenu::showMenu(std::string const& name)
 {
-    menus_[name]->set<Visible>(true);
+    view::pMenu sprite = menus_[name];
+    boost::function<void()> lamb = (BLL::var(animating_) = false);
+    sprite->tween<OSine, Pos2D>(vector2df(300, 100), 1000, false, lamb );
+    sprite->tweenAll<Linear, Alpha>(255, 777, false);
+    sprite->set<Visible>(true);
     return *this;
 }
 
 MainMenu& MainMenu::hideMenu(std::string const& name)
 {
-    menus_[name]->set<Visible>(false);
+    view::pMenu sprite = menus_[name];
+    function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
+    sprite->tween<ISine, Pos2D>(vector2df(-200, 100), 1000, false, endcall);
+    sprite->tweenAll<Linear, Alpha>(0, 777, false);
     return *this;
 }
 

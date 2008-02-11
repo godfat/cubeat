@@ -21,8 +21,9 @@ protected:
 public:
 
 	//! constructor
-    CustomAnimator(T const& start, T const& end, u32 duration, bool loop = true,
-                   EndCallback cb = 0, u32 delayTime = 0)
+    CustomAnimator(T const& start, T const& end, u32 const& duration,
+                   bool const& loop = true, EndCallback const& cb = 0,
+                   u32 const& delayTime = 0)
         : start_(start), end_(end), length_(0.0f), duration_(duration),
           loop_(loop), cb_(cb)
     {

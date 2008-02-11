@@ -4,8 +4,6 @@
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 
-#include <boost/foreach.hpp>
-
 /* TODO:
    Fix relative position problem. This is important. */
 
@@ -38,8 +36,8 @@ Menu& Menu::addSprite(std::string const& name,
     return *this;
 }
 
-Menu& Menu::addSpriteText(std::string const& text, std::tr1::function<void(pSprite&)> cb,
-                          std::string const& font_path, int size, bool const& center,
+Menu& Menu::addSpriteText(std::string const& text, std::string const& font_path,
+                          std::tr1::function<void(pSprite&)> cb, int size, bool const& center,
                           data::Color const& color)
 {
     pSpriteText newobj = SpriteText::create(text,

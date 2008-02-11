@@ -23,6 +23,8 @@ public:
         return p;
     }
 
+    MainMenu(): animating_(false){}
+
     virtual void cycle();
 
 protected:
@@ -39,6 +41,7 @@ protected:
     std::map<std::string, view::pMenu> menus_;
     std::vector<view::pSprite> deco_cubes_;
 
+    bool animating_;
 };
 
 } //presenter

@@ -118,7 +118,7 @@ void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
 Sprite& Sprite::setDepth(float d)
 {
     vector2df pos2d = get<Pos2D>();
-    set<Pos3D>(vector3df(pos2d.X, pos2d.Y, d));
+    set<Pos3D>(vector3df(pos2d.X, -pos2d.Y, d));
     return *this;
 }
 
@@ -139,7 +139,7 @@ Sprite& Sprite::setCenterAligned(bool const& center)
 Sprite& Sprite::moveTo(int x, int y)
 {
     //body_->setPosition(vector3df(x-320.f+51.f, -y+240.f-21.f, body_->getPosition().Z));
-    set<Pos2D>(vector2df(x, -y));
+    set<Pos2D>(vector2df(x, y));
     return *this;
 }
 

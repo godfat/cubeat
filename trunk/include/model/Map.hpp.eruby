@@ -10,8 +10,8 @@
 #include "utils/for_each_multi_array.hpp"
 
 #include <boost/multi_array.hpp>
-
 #include <boost/tr1/tr1/functional>
+#include <set>
 
 namespace psc{ namespace model{
 
@@ -19,6 +19,7 @@ class Map{
 public:
     typedef std::tr1::shared_ptr<Map> pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
+    typedef std::set<Cube> clist_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
@@ -47,6 +48,17 @@ private:
     void do_cycle(pCube c, int i);
     Map& init_cubes();
     Map& insert(pCube cube);
+
+    void make_row(pCube that, clist_type&, clist_type&);
+    void make_column(pCube that, clist_type&, clist_type&);
+    void make_clist(clist_type&, clist_type&, clist_type&);
+    pOneFading make_OneFading(pCube);
+    bool is_below_empty(cpCube) const;
+    void cycle_cubes();
+    void update_chains();
+    void refresh_cubes();
+    bool cube_can_lose_chain(cpCube) const;
+    void insert_garbage(pCube that, int x, int y);        //added
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

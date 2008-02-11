@@ -8,7 +8,9 @@ namespace psc{
   #{namespaces.join ' '}
   class #{klass};
   typedef std::tr1::shared_ptr<#{klass}> p#{klass};
-  typedef std::tr1::weak_ptr<#{klass}> wp#{klass};#{'}'*namespaces.size}"
+  typedef std::tr1::weak_ptr<#{klass}> wp#{klass};
+  typedef std::tr1::shared_ptr<#{klass} const> cp#{klass};
+  typedef std::tr1::weak_ptr<#{klass} const> cwp#{klass};#{'}'*namespaces.size}"
 }.join "\n" %>
 }
 

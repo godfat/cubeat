@@ -16,18 +16,18 @@
 namespace psc{ namespace model{
 
 class OneFading{
-    typedef Map::slist_type slist_type;
+    typedef Map::clist_type clist_type;
 public:
     // begin only used by Map::next_state
-    OneFading(Map& map, slist_type const& list):
+    OneFading(Map& map, clist_type const& list):
         map_(map), list_(list)
     {}
-    slist_type::size_type size() const{ return list_.size(); }
-    void fade(Square* that_would_be_killed_by_map){
+    clist_type::size_type size() const{ return list_.size(); }
+    void fade(pCube that_would_be_killed_by_map){
 
-        Chain* chain = get_the_chain();
+        pChain chain = get_the_chain();
 
-        for(slist_type::iterator i=list_.begin(), iend=list_.end();
+        for(clist_type::iterator i=set_.begin(), iend=set_.end();
             i!=iend; ++i)
         {
             map_.squares_belong_to_the_chain_from_bottom_to_top(*i, chain);
@@ -36,16 +36,15 @@ public:
                 (**i).cycled();
             }
         }
-		// map_.squares_belong_to_the_chain_from_bottom_to_top(*--i, chain);
     }
     // end
 
 private:
     Chain* get_the_chain(){
-        pChain chain(NULL);
+        pChain chain;
 
         //this for loop will get the first Chain it finds in this column or row
-        for(slist_type::iterator i=list_.begin(), iend=list_.end();
+        for(clist_type::iterator i=list_.begin(), iend=list_.end();
             i != iend; ++i)
         {
             if( (**i).chain() ) {
@@ -69,7 +68,7 @@ private:
 
 private:
     Map& map_;
-    slist_type list_;
+    clist_type list_;
 };
 
 }} // end of namespace

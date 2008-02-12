@@ -42,6 +42,7 @@ App::App()
 
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
+    temp_presenter_   = presenter::pObject();
 }
 
 App::~App()
@@ -58,7 +59,7 @@ void App::setLoading(int const& cent)
 
 void App::launchMainMenu()
 {
-    master_presenter_ = presenter::MainMenu::create();
+    temp_presenter_ = presenter::MainMenu::create();
     std::cout << "MainMenu launched.\n";
 }
 
@@ -97,6 +98,11 @@ int App::run()
                 str += fps;
                 IrrDevice::i().d()->setWindowCaption( str.c_str() );
                 lastFPS = fps;
+            }
+            if( temp_presenter_ ) { //hand over master presenter here "safely."
+                master_presenter_ = temp_presenter_;
+                temp_presenter_.reset();
+                temp_presenter_ = presenter::pObject();
             }
         }
 

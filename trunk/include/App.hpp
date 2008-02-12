@@ -45,6 +45,7 @@ private:
 
     presenter::pTransitioner trans_;
     presenter::pObject master_presenter_;
+    presenter::pObject temp_presenter_;
 
     irr::ITimer* timer_;
 

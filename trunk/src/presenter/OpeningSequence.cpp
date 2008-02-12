@@ -52,8 +52,7 @@ void OpeningSequence::cycle()
 {
     movie_->redraw();
     scene_->activate().redraw();
-    if( scene_.use_count() )
-        scene_->deactivate();
+    scene_->deactivate();
 
     if( !deletion_scheduled_ && movie_->isEnd() ) {
         std::cout << "OpeningSequence deletion scheduled.\n";

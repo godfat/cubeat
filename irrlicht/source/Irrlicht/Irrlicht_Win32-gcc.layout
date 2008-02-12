@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
+	<File name="..\..\include\IMeshBuffer.h" open="0" top="0" tabpos="0">
+		<Cursor position="406" topLine="0" />
+	</File>
 	<File name="CIrrDeviceWin32.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="592" topLine="15" />
+		<Cursor position="26943" topLine="1014" />
+	</File>
+	<File name="CSceneManager.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="31179" topLine="1163" />
 	</File>
 	<File name="os.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="2580" topLine="80" />

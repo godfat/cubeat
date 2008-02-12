@@ -9,6 +9,7 @@
 #include "SMaterial.h"
 #include "aabbox3d.h"
 #include "S3DVertex.h"
+#include "EHardwareBufferFlags.h"
 
 namespace irr
 {
@@ -54,8 +55,6 @@ namespace scene
 		EPT_POINT_SPRITES
 	};
 
-
-
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
 	class IMeshBuffer : public virtual IReferenceCounted
@@ -76,11 +75,11 @@ namespace scene
 
 		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
 		//! type is used can be determined with getVertexType().
-		virtual const void* getVertices() const = 0; 
+		virtual const void* getVertices() const = 0;
 
 		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
 		//! type is used can be determined with getVertexType().
-		virtual void* getVertices() = 0; 
+		virtual void* getVertices() = 0;
 
 		//! returns amount of vertices
 		virtual u32 getVertexCount() const = 0;
@@ -103,11 +102,36 @@ namespace scene
 		//! recalculates the bounding box. should be called if the mesh changed.
 		virtual void recalculateBoundingBox() = 0;
 
+		//! returns position of vertex i
+		virtual const core::vector3df& getPosition(u32 i) const = 0;
+
+		//! returns position of vertex i
+		virtual core::vector3df& getPosition(u32 i) = 0;
+
+		//! returns normal of vertex i
+		virtual const core::vector3df& getNormal(u32 i) const = 0;
+
+		//! returns normal of vertex i
+		virtual core::vector3df& getNormal(u32 i) = 0;
+
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
 
 		//! append the meshbuffer to the current buffer
 		virtual void append(const IMeshBuffer* const other) = 0;
+
+		//! get the current hardware mapping hint
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const = 0;
+
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty() = 0;
+
+		virtual const u32 getChangedID() const = 0;
+
+		u32 HardwareHint;
 	};
 
 } // end namespace scene

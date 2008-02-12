@@ -7,9 +7,6 @@
 
 #include "IGUIElement.h"
 #include "SColor.h"
-// >> Add by MadHyde for IME Window start
-#include "IrrlichtDevice.h"
-// << Add by MadHyde for IME Window end
 
 namespace irr
 {
@@ -24,10 +21,7 @@ namespace gui
 
 		//! constructor
 		IGUIEditBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-// >> Modified by MadHyde for IME Window start
-			: IGUIElement(EGUIET_EDIT_BOX, environment, parent, id, rectangle), dev(NULL) {};
-//			: IGUIElement(EGUIET_EDIT_BOX, environment, parent, id, rectangle) {}
-// << Modified by MadHyde for IME Window end
+			: IGUIElement(EGUIET_EDIT_BOX, environment, parent, id, rectangle) {}
 
 		//! destructor
 		virtual ~IGUIEditBox() {};
@@ -110,16 +104,6 @@ namespace gui
 
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const = 0;
-
-// >> Add by uirou for IME Window start
-		//virtual void setDevice(irr::CIrrDeviceLinux* device) = 0;
-		virtual void setDevice(irr::IrrlichtDevice* device) { dev = device; };
-
-	protected:
-
-		irr::IrrlichtDevice* dev;
-// << Add by uirou for IME Window end
-
 	};
 
 

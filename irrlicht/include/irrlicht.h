@@ -68,9 +68,6 @@
 #include "IGUIFileOpenDialog.h"
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
-// >> Add by zgock for Multilingual start
-#include "CGUITTFont.h"
-// << Add by zgock for Multilingual end
 #include "IGUIImage.h"
 #include "IGUIInOutFader.h"
 #include "IGUIListBox.h"

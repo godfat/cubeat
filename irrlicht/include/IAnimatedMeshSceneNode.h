@@ -9,13 +9,12 @@
 #include "IBoneSceneNode.h"
 #include "IAnimatedMeshMD2.h"
 #include "IAnimatedMeshMD3.h"
-#include "IShadowVolumeSceneNode.h"
 
 namespace irr
 {
 namespace scene
 {
-
+	class IShadowVolumeSceneNode;
 
 	enum E_JOINT_UPDATE_ON_RENDER
 	{
@@ -124,6 +123,10 @@ namespace scene
 
 		//! same as getJointNode(const c8* jointName), but based on id
 		virtual IBoneSceneNode* getJointNode(u32 jointID) = 0;
+
+		//! Gets joint count.
+		//! \return Returns amount of joints in the mesh.
+		virtual u32 getJointCount() const = 0;
 
 		//! Redundant command, please use getJointNode (only for backwards compatibility)
 		virtual ISceneNode* getMS3DJointNode(const c8* jointName) = 0;

@@ -218,8 +218,7 @@ namespace video
 		//! Gets the texture transformation matrix for level i
 		core::matrix4& getTextureMatrix(u32 i)
 		{
-			if (i<MATERIAL_MAX_TEXTURES)
-				return TextureLayer[i].getTextureMatrix();
+			return TextureLayer[i].getTextureMatrix();
 		}
 
 		//! Gets the immutable texture transformation matrix for level i
@@ -242,10 +241,7 @@ namespace video
 		//! Gets the i-th texture
 		ITexture* getTexture(u32 i) const
 		{
-			if (i>=MATERIAL_MAX_TEXTURES)
-				return 0;
-			else
-				return TextureLayer[i].Texture;
+			return i < MATERIAL_MAX_TEXTURES ? TextureLayer[i].Texture : 0;
 		}
 
 		//! Sets the i-th texture

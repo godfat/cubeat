@@ -191,7 +191,7 @@ Note that the engine will run in D3D REF for this, which is a lot slower than HA
 #endif
 
 //! Define one of the three setting for Burning's Video Software Rasterizer
-/** So if we were marketing guys we could says Irrlicht has 4 Software-Rasterizers.
+/** So if we were marketing guys we could say Irrlicht has 4 Software-Rasterizers.
 	In a Nutshell:
 		All Burnings Rasterizers use 32 Bit Backbuffer, 32Bit Texture & 32 Bit Z or WBuffer,
 		16 Bit/32 Bit can be adjusted on a global flag.
@@ -279,6 +279,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_PSD_LOADER_
 //! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files
 #define _IRR_COMPILE_WITH_TGA_LOADER_
+//! Define _IRR_COMPILE_WITH_WAL_LOADER_ if you want to load .wal files
+#define _IRR_COMPILE_WITH_WAL_LOADER_
 
 //! Define _IRR_COMPILE_WITH_BMP_WRITER_ if you want to write .bmp files
 #define _IRR_COMPILE_WITH_BMP_WRITER_

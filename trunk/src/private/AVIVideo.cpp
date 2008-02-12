@@ -154,11 +154,12 @@ bool AVIVideo::open(std::string const& path)
     frame_obj_ = AVIStreamGetFrameOpen(vstream_, &bitmap_);
     if(bitmap_.biSizeImage == 0)
         bitmap_.biSizeImage = bitmap_.biHeight * bitmap_.biWidth * 3;
-
-    u32 w,h;
+#endif //WIN32
+    u32 w=1,h=1;
+#ifdef WIN32
     for(w = 1; w < avi_info.dwWidth; w <<= 1);
     for(h = 1; h < avi_info.dwHeight; h <<= 1);
-#endif //WIN32
+#endif
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     texture_ = driver->addTexture(dimension2di(w,h), "AVI_Texture", ECF_A8R8G8B8);

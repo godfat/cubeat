@@ -21,10 +21,10 @@ namespace scene
 CTextSceneNode::CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font, scene::ISceneCollisionManager* coll,
 			const core::vector3df& position, const wchar_t* text,
-			video::SColor color)
+			video::SColor color, const bool& hcenter, const bool& vcenter)
 	: ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
-		Font(font), Coll(coll)
-	
+		Font(font), Coll(coll), HCenter(hcenter), VCenter(vcenter)
+
 {
 	#ifdef _DEBUG
 	setDebugName("CTextSceneNode");
@@ -46,9 +46,10 @@ CTextSceneNode::~CTextSceneNode()
 void CTextSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
+	{
 		SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
-
-	ISceneNode::OnRegisterSceneNode();
+		ISceneNode::OnRegisterSceneNode();
+	}
 }
 
 //! renders the node.
@@ -57,11 +58,11 @@ void CTextSceneNode::render()
 	if (!Font || !Coll)
 		return;
 
-	core::position2d<s32> pos = Coll->getScreenCoordinatesFrom3DPosition(getAbsolutePosition(), 
+	core::position2d<s32> pos = Coll->getScreenCoordinatesFrom3DPosition(getAbsolutePosition(),
 		SceneManager->getActiveCamera());
 
 	core::rect<s32> r(pos, core::dimension2d<s32>(1,1));
-	Font->draw(Text.c_str(), r, Color, true, true);
+	Font->draw(Text.c_str(), r, Color, HCenter, VCenter);
 }
 
 
@@ -84,12 +85,27 @@ void CTextSceneNode::setTextColor(video::SColor color)
 	Color = color;
 }
 
+// >> add by arch_jslin 2008.02.02
+//! gets the color of the text
+video::SColor& CTextSceneNode::getTextColor()
+{
+	return Color;
+}
+
+// >> add by arch_jslin 2008.02.03
+//! sets the center alignment of the text
+void CTextSceneNode::setCenter(const bool& hcenter, const bool& vcenter)
+{
+    HCenter = hcenter;
+    VCenter = vcenter;
+}
+
 
 //!--------------------------------- CBillboardTextSceneNode ----------------------------------------------
 
 
 //! constructor
-CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
+CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	gui::IGUIFont* font,const wchar_t* text,
 	const core::vector3df& position, const core::dimension2d<f32>& size,
 	video::SColor shade_top,video::SColor shade_bottom )
@@ -100,11 +116,11 @@ CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManag
 	setDebugName("CBillboardTextSceneNode");
 	#endif
 
-	Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	Material.MaterialTypeParam = 1.f / 255.f;
+	Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	Material.MaterialTypeParam = 0.5f;
 	Material.BackfaceCulling = false;
 	Material.Lighting = false;
-	Material.ZBuffer = true;
+	Material.ZBuffer = false;
 	Material.ZWriteEnable = false;
 
 	if (font)
@@ -199,7 +215,7 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		tex[1] = (s.LowerRightCorner.Y * dim[1]) + 0.5f*dim[1];
 		tex[2] = (s.UpperLeftCorner.Y  * dim[1]) - 0.5f*dim[1];
 		tex[3] = (s.UpperLeftCorner.X  * dim[0]) - 0.5f*dim[0];
-		
+
 		buf->Vertices[firstVert+0].TCoords.set(tex[0], tex[1]);
 		buf->Vertices[firstVert+1].TCoords.set(tex[0], tex[2]);
 		buf->Vertices[firstVert+2].TCoords.set(tex[3], tex[2]);
@@ -218,7 +234,7 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		buf->Indices[firstInd+5] = firstVert+2;
 
 		wchar_t *tp = 0;
-		if (i>0) 
+		if (i>0)
 			tp = &Text[i-1];
 
 		info.Width = (f32)s.getWidth();
@@ -333,7 +349,7 @@ void CBillboardTextSceneNode::render()
 	core::matrix4 mat;
 	driver->setTransform(video::ETS_WORLD, mat);
 
-	
+
 
 	u32 i;
 	for ( i = 0; i < Mesh->getMeshBufferCount(); ++i )
@@ -409,6 +425,13 @@ const core::dimension2d<f32>& CBillboardTextSceneNode::getSize()
 void CBillboardTextSceneNode::setTextColor(video::SColor color)
 {
 	Color = color;
+}
+
+// >> add by arch_jslin 2008.02.02
+//! gets the color of the text
+video::SColor& CBillboardTextSceneNode::getTextColor()
+{
+	return Color;
 }
 
 

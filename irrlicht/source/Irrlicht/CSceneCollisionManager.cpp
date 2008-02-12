@@ -63,7 +63,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
 	ISceneNode* best = 0;
 	f32 dist = 9999999999.0f;
 
-	getPickedNodeBB(SceneManager->getRootSceneNode(), ray, 
+	getPickedNodeBB(SceneManager->getRootSceneNode(), ray,
 		idBitMask, bNoDebugObjects, dist, best);
 
 	return best;
@@ -124,9 +124,11 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
          }
       }
 
-      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+// >> condition added by arch_jslin 2008.01.29
+      if( current->isVisible() )
+          getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
    }
-} 
+}
 
 
 
@@ -552,7 +554,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	core::matrix4 scaleMatrix;
 	scaleMatrix.setScale(
-		core::vector3df(1.0f / colData.eRadius.X, 
+		core::vector3df(1.0f / colData.eRadius.X,
 						1.0f / colData.eRadius.Y,
 						1.0f / colData.eRadius.Z)
 					);

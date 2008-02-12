@@ -25,7 +25,8 @@ namespace scene
 		CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font, scene::ISceneCollisionManager* coll,
 			const core::vector3df& position = core::vector3df(0,0,0), const wchar_t* text=0,
-			video::SColor color=video::SColor(100,0,0,0));
+			video::SColor color=video::SColor(100,0,0,0),
+			const bool& hcenter = false, const bool& vcenter = false);
 
 		//! destructor
 		virtual ~CTextSceneNode();
@@ -43,7 +44,15 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-		
+
+// >> add by arch_jslin 2008.02.02
+        //! gets the color of the text
+        virtual video::SColor& getTextColor();
+
+// >> add by arch_jslin 2008.02.03
+        //! sets the center alignment of the text
+        virtual void setCenter(const bool& hcenter, const bool& vcenter);
+
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
 
@@ -54,13 +63,14 @@ namespace scene
 		gui::IGUIFont* Font;
 		scene::ISceneCollisionManager* Coll;
 		core::aabbox3d<f32> Box;
+		bool HCenter, VCenter;
 	};
 
 	class CBillboardTextSceneNode : public ITextSceneNode
 	{
 	public:
 
-		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
+		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font,const wchar_t* text,
 			const core::vector3df& position, const core::dimension2d<f32>& size,
 			video::SColor shade_top, video::SColor shade_bottom);
@@ -81,7 +91,14 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-		
+
+// >> add by arch_jslin 2008.02.02
+        virtual video::SColor& getTextColor();
+
+// >> add by arch_jslin 2008.02.03
+        //! sets the center alignment of the text (not implemented)
+        virtual void setCenter(const bool& hcenter, const bool& vcenter){}
+
 		//! sets the size of the billboard
 		virtual void setSize(const core::dimension2d<f32>& size);
 
@@ -89,7 +106,7 @@ namespace scene
 		virtual const core::dimension2d<f32>& getSize();
 
 		virtual video::SMaterial& getMaterial(u32 i);
-		
+
 		//! returns amount of materials used by this scene node.
 		virtual u32 getMaterialCount() const;
 

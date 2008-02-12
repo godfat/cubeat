@@ -278,6 +278,7 @@ namespace scene
 		{
 			if (animator)
 			{
+// >> changed to push front by arch.jslin 2007.12.10
 				Animators.push_front(animator);
 				animator->grab();
 			}

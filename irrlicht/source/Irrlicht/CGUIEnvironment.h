@@ -13,6 +13,9 @@
 #include "irrArray.h"
 #include "IFileSystem.h"
 #include "IOSOperator.h"
+// >> add by zgock for Multilingual start
+#include "CGUITTFont.h"
+// << add by zgock for Multilingual end
 
 namespace irr
 {
@@ -72,6 +75,11 @@ public:
 
 	//! returns the font
 	virtual IGUIFont* getFont(const c8* filename);
+
+// >> add by zgock for Multilingual start
+	//! returns the font
+	virtual IGUIFont* getFont(const c8* filename,u32 fontsize);
+// << add by zgock for Multilingual end
 
 	//! returns the sprite bank
 	virtual IGUISpriteBank* getSpriteBank(const c8* filename);
@@ -251,6 +259,35 @@ private:
 		}
 	};
 
+// >> add by zgock for Multilingual start
+	struct STTFace
+	{
+		core::stringc Filename;
+		CGUITTFace* Face;
+
+		bool operator < (const STTFace& other) const
+		{
+			return (Filename < other.Filename);
+		}
+	};
+
+	struct STTFont
+	{
+		core::stringc Filename;
+		u32 size;
+		CGUITTFont* Font;
+
+		bool operator < (const STTFont& other) const
+		{
+			if (Filename != other.Filename){
+				return (Filename < other.Filename);
+			} else {
+				return (size < other.size);
+			}
+		}
+	};
+// << add by zgock for Multilingual end
+
 	struct SSpriteBank
 	{
 		core::stringc Filename;
@@ -274,6 +311,10 @@ private:
 	core::array<IGUIElementFactory*> GUIElementFactoryList;
 
 	core::array<SFont> Fonts;
+// >> add by zgock for Multilingual start
+	core::array<STTFace> Faces;
+	core::array<STTFont> TTFonts;
+// << add by zgock for Multilingual end
 	core::array<SSpriteBank> Banks;
 	video::IVideoDriver* Driver;
 	IGUIElement* Hovered;

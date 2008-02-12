@@ -85,7 +85,9 @@ namespace os
 		GetSystemInfo(&sysinfo);
 		s32 affinityCount = 0;
 
-		// count the processors that can be used by this process
+/* >> enable HiRes Timer, unless QueryPerformanceFrequency says "no". by arch.jslin 2007.12.15
+
+        // count the processors that can be used by this process
 		if (GetProcessAffinityMask( GetCurrentProcess(), &affinity, &sysaffinity ))
 		{
 			for (u32 i=0; i<32; ++i)
@@ -102,7 +104,8 @@ namespace os
 		else
 		{
 			HighPerformanceTimerSupport = false;
-		}
+		} */
+        HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
 		initVirtualTimer();
 	}
 

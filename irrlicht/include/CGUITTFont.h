@@ -104,9 +104,10 @@ public:
 	bool TransParency;
 	bool attached;
 
-private:
-	s32  getWidthFromCharacter(const wchar_t c) const;
-    u32  getGlyphIndex(const wchar_t c) const;
+// changed from private to protected by arch_jslin 2008.02.06
+protected:
+	virtual s32  getWidthFromCharacter(const wchar_t c) const;
+    virtual u32  getGlyphIndex(const wchar_t c) const;
 	video::IVideoDriver* Driver;
 	mutable core::array< CGUITTGlyph > Glyphs;
 	CGUITTFace *tt_face;

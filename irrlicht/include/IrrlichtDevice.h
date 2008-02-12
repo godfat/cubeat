@@ -175,6 +175,12 @@ while(device->run())
 		//! Sets if the window should be resizeable in windowed mode.
 		/** The default is false. This method only works in windowed mode. */
 		virtual void setResizeAble(bool resize=false) = 0;
+
+// >> Add by uirou for IME Window start
+		virtual void focusIn(){};
+		virtual void focusOut(){};
+		virtual void updateICSpot(short x, short y, short height){};
+// << Add by uirou for IME Window end
 	};
 
 } // end namespace irr

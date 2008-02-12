@@ -48,8 +48,11 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-O2" />
-					<Add option="-W" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-fno-fast-math" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -71,6 +74,8 @@
 					<Add library="oleaut32" />
 					<Add library="uuid" />
 					<Add library="opengl32" />
+					<Add library="..\..\..\..\freetype\freetype-2.3.5\objs\freetype.a" />
+					<Add library="imm32" />
 				</Linker>
 			</Target>
 			<Target title="Release - Fast FPU">
@@ -108,19 +113,43 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;Release - Fast FPU" />
+			<Add alias="All" targets="Debug;Release;Release - Fast FPU;" />
 		</VirtualTargets>
 		<Unit filename="..\..\changes.txt" />
+		<Unit filename="..\..\include\CGUITTFont.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\CMeshBuffer.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\ECullingTypes.h" />
 		<Unit filename="..\..\include\EDebugSceneTypes.h" />
+		<Unit filename="..\..\include\EDriverFeatures.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\EDriverTypes.h" />
 		<Unit filename="..\..\include\EGUIElementTypes.h" />
+		<Unit filename="..\..\include\EHardwareBufferFlags.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\EMaterialFlags.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\EMaterialTypes.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\EMeshWriterEnums.h" />
 		<Unit filename="..\..\include\EMessageBoxFlags.h" />
 		<Unit filename="..\..\include\ESceneNodeAnimatorTypes.h" />
 		<Unit filename="..\..\include\ESceneNodeTypes.h" />
+		<Unit filename="..\..\include\ETerrainElements.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IAnimatedMesh.h" />
 		<Unit filename="..\..\include\IAnimatedMeshMD2.h" />
+		<Unit filename="..\..\include\IAnimatedMeshMD3.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IAnimatedMeshSceneNode.h" />
 		<Unit filename="..\..\include\IAttributeExchangingObject.h" />
 		<Unit filename="..\..\include\IAttributes.h" />
@@ -134,7 +163,13 @@
 		<Unit filename="..\..\include\IFileSystem.h" />
 		<Unit filename="..\..\include\IGPUProgrammingServices.h" />
 		<Unit filename="..\..\include\IGUIButton.h" />
+		<Unit filename="..\..\include\IGUICheckBox.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IGUICheckbox.h" />
+		<Unit filename="..\..\include\IGUIColorSelectDialog.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IGUIComboBox.h" />
 		<Unit filename="..\..\include\IGUIContextMenu.h" />
 		<Unit filename="..\..\include\IGUIEditBox.h" />
@@ -143,6 +178,9 @@
 		<Unit filename="..\..\include\IGUIEnvironment.h" />
 		<Unit filename="..\..\include\IGUIFileOpenDialog.h" />
 		<Unit filename="..\..\include\IGUIFont.h" />
+		<Unit filename="..\..\include\IGUIFontBitmap.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IGUIImage.h" />
 		<Unit filename="..\..\include\IGUIInOutFader.h" />
 		<Unit filename="..\..\include\IGUIListBox.h" />
@@ -157,6 +195,9 @@
 		<Unit filename="..\..\include\IGUIWindow.h" />
 		<Unit filename="..\..\include\IImage.h" />
 		<Unit filename="..\..\include\IImageLoader.h" />
+		<Unit filename="..\..\include\IImageWriter.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\ILightSceneNode.h" />
 		<Unit filename="..\..\include\ILogger.h" />
 		<Unit filename="..\..\include\IMaterialRenderer.h" />
@@ -171,10 +212,46 @@
 		<Unit filename="..\..\include\IMetaTriangleSelector.h" />
 		<Unit filename="..\..\include\IOSOperator.h" />
 		<Unit filename="..\..\include\IParticleAffector.h" />
+		<Unit filename="..\..\include\IParticleAnimatedMeshSceneNodeEmitter.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleAttractionAffector.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleBoxEmitter.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleCylinderEmitter.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IParticleEmitter.h" />
+		<Unit filename="..\..\include\IParticleFadeOutAffector.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleGravityAffector.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleMeshEmitter.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleRingEmitter.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleRotationAffector.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\IParticleSphereEmitter.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IParticleSystemSceneNode.h" />
 		<Unit filename="..\..\include\IQ3LevelMesh.h" />
+		<Unit filename="..\..\include\IQ3Shader.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IReadFile.H" />
+		<Unit filename="..\..\include\IReadFile.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IReferenceCounted.h" />
 		<Unit filename="..\..\include\ISceneCollisionManager.h" />
 		<Unit filename="..\..\include\ISceneManager.h" />
@@ -184,6 +261,9 @@
 		<Unit filename="..\..\include\ISceneNodeAnimatorFactory.h" />
 		<Unit filename="..\..\include\ISceneNodeFactory.h" />
 		<Unit filename="..\..\include\ISceneNodeMeshLoader.h" />
+		<Unit filename="..\..\include\ISceneUserDataSerializer.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\IShaderConstantSetCallBack.h" />
 		<Unit filename="..\..\include\IShadowVolumeSceneNode.h" />
 		<Unit filename="..\..\include\ISkinnedMesh.h" />
@@ -208,15 +288,270 @@
 		<Unit filename="..\..\include\SKeyMap.h" />
 		<Unit filename="..\..\include\SLight.h" />
 		<Unit filename="..\..\include\SMaterial.h" />
+		<Unit filename="..\..\include\SMaterialLayer.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\SMesh.h" />
 		<Unit filename="..\..\include\SMeshBuffer.h" />
 		<Unit filename="..\..\include\SMeshBufferLightMap.h" />
 		<Unit filename="..\..\include\SMeshBufferTangents.h" />
 		<Unit filename="..\..\include\SParticle.h" />
+		<Unit filename="..\..\include\SSharedMeshBuffer.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\SSkinMeshBuffer.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\SViewFrustum.h" />
 		<Unit filename="..\..\include\SceneParameters.h" />
 		<Unit filename="..\..\include\aabbox3d.h" />
+		<Unit filename="..\..\include\coreutil.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\dimension2d.h" />
+		<Unit filename="..\..\include\fast_atof.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\config\ftconfig.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\config\ftheader.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\config\ftmodule.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\config\ftoption.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\config\ftstdlib.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\freetype.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftbbox.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftbdf.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftbitmap.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftcache.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftchapters.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\fterrdef.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\fterrors.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftgasp.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftglyph.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftgxval.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftgzip.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftimage.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftincrem.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftlcdfil.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftlist.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftlzw.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftmac.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftmm.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftmodapi.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftmoderr.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftotval.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftoutln.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftpfr.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftrender.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftsizes.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftsnames.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftstroke.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftsynth.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftsystem.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\fttrigon.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\fttypes.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftwinfnt.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ftxf86.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\autohint.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftcalc.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftdebug.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftdriver.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftgloadr.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftmemory.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftobjs.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftrfork.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftserv.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftstream.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\fttrace.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\ftvalid.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\internal.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\pcftypes.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\psaux.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\pshints.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svbdf.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svgldict.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svgxval.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svkern.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svmm.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svotval.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svpfr.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svpostnm.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svpscmap.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svpsinfo.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svsfnt.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svttcmap.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svtteng.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svttglyf.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svwinfnt.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\services\svxf86nm.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\sfnt.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\t1types.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\internal\tttypes.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\t1tables.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ttnameid.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\tttables.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\tttags.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\freetype\ttunpat.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="..\..\include\ft2build.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="..\..\include\heapsort.h" />
 		<Unit filename="..\..\include\irrAllocator.h" />
 		<Unit filename="..\..\include\irrArray.h" />
@@ -361,6 +696,9 @@
 		<Unit filename="CGUISpriteBank.h" />
 		<Unit filename="CGUIStaticText.cpp" />
 		<Unit filename="CGUIStaticText.h" />
+		<Unit filename="CGUITTFont.cpp">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="CGUITabControl.cpp" />
 		<Unit filename="CGUITabControl.h" />
 		<Unit filename="CGUIToolBar.cpp" />

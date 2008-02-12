@@ -55,8 +55,8 @@ namespace irr
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
-		//! \return Returns a pointer to a list with all video modes
-		//! supported by the gfx adapter.
+		//! \return Returns a pointer to a list with all video modes supported
+		//! by the gfx adapter.
 		video::IVideoModeList* getVideoModeList();
 
 		//! Notifies the device, that it has been resized
@@ -228,6 +228,10 @@ namespace irr
 
 		//! returns the win32 cursor control
 		CCursorControl* getWin32CursorControl();
+
+// >> Add by uirou for IME Window start
+		virtual void updateICSpot(short x, short y, short height);
+// << Add by uirou for IME Window end
 
 	private:
 

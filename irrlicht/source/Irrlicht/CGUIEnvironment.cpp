@@ -33,6 +33,10 @@
 #include "CGUIMenu.h"
 #include "CGUIToolBar.h"
 
+// >> add by uirou for IME Window start
+#include "IrrCompileConfig.h"
+// << add by uirou for IME Window end
+
 #include "CDefaultGUIElementFactory.h"
 #include "IWriteFile.h"
 #include "IXMLWriter.h"
@@ -141,6 +145,14 @@ CGUIEnvironment::~CGUIEnvironment()
 
 	for (i=0; i<Fonts.size(); ++i)
 		Fonts[i].Font->drop();
+
+// >> add by zgock for Multilingual start
+	for (i=0; i<TTFonts.size(); ++i)
+		TTFonts[i].Font->drop();
+
+	for (i=0; i<Faces.size(); ++i)
+		Faces[i].Face->drop();
+// << add by zgock for Multilingual end
 
 	// remove all factories
 	for (i=0; i<GUIElementFactoryList.size(); ++i)
@@ -1141,6 +1153,10 @@ IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text,
 	IGUIEditBox* d = new CGUIEditBox(text, border, this,
 			parent ? parent : this, id, rectangle);
 
+// >> add by uirou for IME Window start
+	d->setDevice(dev);
+// << add by uirou for IME Window end
+
 	d->drop();
 	return d;
 }
@@ -1263,7 +1279,13 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 	else
 		f.Filename = filename;
 
+// >> add by uirou for Multilingual start
+#ifndef LINUX
+// << add by uirou for Multilingual end
 	f.Filename.make_lower();
+// >> add by uirou for Multilingual start
+#endif
+// << add by uirou for Multilingual end
 
 	s32 index = Fonts.binary_search(f);
 	if (index != -1)
@@ -1358,6 +1380,65 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 	return ifont;
 }
 
+// >> add by zgock for Multilingual start
+//! returns the font
+IGUIFont* CGUIEnvironment::getFont(const c8* filename,u32 fontsize)
+{
+	// search existing font
+
+	STTFace f;
+	STTFont tf;
+
+	if (!filename)
+		filename = "";
+	else
+		f.Filename = filename;
+
+// >> add by uirou for Multilingual start
+#ifndef LINUX
+// << add by uirou for Multilingual end
+	f.Filename.make_lower();
+// >> add by uirou for Multilingual start
+#endif
+// << add by uirou for Multilingual end
+
+	s32 index = Faces.binary_search(f);
+	if (index == -1){
+		f.Face = new CGUITTFace();
+		if (f.Face->load(f.Filename.c_str())){
+			Faces.push_back(f);
+			index = Faces.binary_search(f);
+		} else {
+			f.Face->drop();
+			return	0;
+		}
+	}
+	STTFace *face = &Faces[index];
+
+	tf.Filename = face->Filename;
+	tf.size = fontsize;
+	index = TTFonts.binary_search(tf);
+	if (index != -1){
+		return TTFonts[index].Font;
+	}
+
+    // not existing yet. try to load font.
+
+	CGUITTFont* font = new CGUITTFont(this);
+	if (!font->attach(face->Face,fontsize))
+	{
+		font->drop();
+		return 0;
+	}
+
+	// add to fonts.
+
+	tf.Font = font;
+	TTFonts.push_back(tf);
+
+	return font;
+}
+// << add by zgock for Multilingual end
 
 IGUISpriteBank* CGUIEnvironment::getSpriteBank(const c8* filename)
 {

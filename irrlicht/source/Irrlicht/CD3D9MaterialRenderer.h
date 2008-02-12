@@ -102,9 +102,7 @@ public:
 			unpack_texureBlendFunc ( srcFact, dstFact, modulate, material.MaterialTypeParam );
 
 			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO) 
-			{
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-			}
 			else
 			{
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -139,7 +137,7 @@ public:
 		u32 getD3DBlend ( E_BLEND_FACTOR factor ) const
 		{
 			u32 r = 0;
-			switch ( factor )
+		switch ( factor )
 			{
 				case EBF_ZERO:					r = D3DBLEND_ZERO; break;
 				case EBF_ONE:					r = D3DBLEND_ONE; break;
@@ -159,7 +157,7 @@ public:
 		u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
 		{
 			u32 r = 0;
-			switch ( factor )
+		switch ( factor )
 			{
 				case EBF_SRC_ALPHA:				r = 1; break;
 				case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
@@ -181,8 +179,6 @@ public:
 			}
 			return r;
 		}
-
-		bool transparent;
 
 };
 

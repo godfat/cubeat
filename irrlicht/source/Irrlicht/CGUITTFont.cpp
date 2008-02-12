@@ -352,7 +352,7 @@ u32 CGUITTFont::getGlyphIndex(const wchar_t c) const
 	olen = sizeof(omb) - olen;
 	ft_char = 0;
 
-	// UTF-8 to unicode... 
+	// UTF-8 to unicode...
 	if((omb[0] & 0x80) == 0){ // 1byte
 	    ft_char = omb[0];
 	}else if((omb[0] & 0xe0) == 0xc0){ // 2bytes
@@ -388,7 +388,7 @@ u32 CGUITTFont::getGlyphIndex(const wchar_t c) const
 // >> Add by uirou for Multilingual start
 #endif
 // << Add by uirou for Multilingual end
-	if (idx && !Glyphs[idx - 1].cached)	
+	if (idx && !Glyphs[idx - 1].cached)
         Glyphs[idx - 1].cache(idx);
 
 	return idx;
@@ -477,7 +477,7 @@ void CGUITTFont::draw(const wchar_t* text, const core::rect<s32>& position, vide
 	}
 
 	u32 n;
-	
+
 	while(*text)
 	{
 		n = getGlyphIndex(*text);
@@ -584,7 +584,7 @@ scene::ISceneNode*
 CGUITTFont::createBillboard(const wchar_t* text,scene::ISceneManager *scene,scene::ISceneNode *parent,s32 id)
 {
 	scene::ISceneNode *node = scene->addEmptySceneNode(parent,id);
-	
+
 	core::dimension2d<s32> textDimension;
 	textDimension = getDimension(text);
 	core::vector3df offset = core::vector3df(0.0f,0.0f,0.0f);

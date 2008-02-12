@@ -3736,3 +3736,2204 @@
 	"IImagePresenter.h"
 	<windows.h>
 
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\c3dsmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"C3DSMeshFileLoader.h"
+	"os.h"
+	"SMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrcompileconfig.h
+	<stdio.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\c3dsmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"SMesh.h"
+	"IMeshManipulator.h"
+	"matrix4.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshloader.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ireferencecounted.h
+	"irrTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrtypes.h
+	"IrrCompileConfig.h"
+	<wchar.h>
+	"assert.h"
+	<stdlib.h>
+	<crtdbg.h>
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ifilesystem.h
+	"IReferenceCounted.h"
+	"IXMLReader.h"
+	"irrString.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ixmlreader.h
+	"IReferenceCounted.h"
+	"irrXML.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrxml.h
+	<stdio.h>
+	"IrrCompileConfig.h"
+	<irrXML.h>
+	<string>
+	<irrXML.h>
+	<irrXML.h>
+	<irrXML.h>
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrstring.h
+	"irrTypes.h"
+	"irrAllocator.h"
+	"irrMath.h"
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrallocator.h
+	"irrTypes.h"
+	<new>
+	<memory.h>
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrmath.h
+	"IrrCompileConfig.h"
+	"irrTypes.h"
+	<math.h>
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ivideodriver.h
+	"rect.h"
+	"SColor.h"
+	"ITexture.h"
+	"irrArray.h"
+	"matrix4.h"
+	"plane3d.h"
+	"dimension2d.h"
+	"position2d.h"
+	"SMaterial.h"
+	"IMeshBuffer.h"
+	"triangle3d.h"
+	"EDriverTypes.h"
+	"EDriverFeatures.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\rect.h
+	"irrTypes.h"
+	"dimension2d.h"
+	"position2d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\dimension2d.h
+	"irrTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\position2d.h
+	"irrTypes.h"
+	"dimension2d.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\scolor.h
+	"irrTypes.h"
+	"irrMath.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\itexture.h
+	"IReferenceCounted.h"
+	"IImage.h"
+	"dimension2d.h"
+	"EDriverTypes.h"
+	"irrString.h"
+	"matrix4.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iimage.h
+	"IReferenceCounted.h"
+	"position2d.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\edrivertypes.h
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\matrix4.h
+	"irrTypes.h"
+	"vector3d.h"
+	"vector2d.h"
+	"plane3d.h"
+	"aabbox3d.h"
+	"rect.h"
+	"irrString.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\vector3d.h
+	"irrMath.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\vector2d.h
+	"irrMath.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\plane3d.h
+	"irrMath.h"
+	"vector3d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\aabbox3d.h
+	"irrMath.h"
+	"plane3d.h"
+	"line3d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\line3d.h
+	"irrTypes.h"
+	"vector3d.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrarray.h
+	"irrTypes.h"
+	"heapsort.h"
+	"irrAllocator.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\heapsort.h
+	"irrTypes.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smaterial.h
+	"SColor.h"
+	"matrix4.h"
+	"irrArray.h"
+	"EMaterialTypes.h"
+	"EMaterialFlags.h"
+	"SMaterialLayer.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ematerialtypes.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ematerialflags.h
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smateriallayer.h
+	"matrix4.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshbuffer.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"aabbox3d.h"
+	"S3DVertex.h"
+	"EHardwareBufferFlags.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\s3dvertex.h
+	"vector3d.h"
+	"vector2d.h"
+	"SColor.h"
+
+1202805982 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ehardwarebufferflags.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\triangle3d.h
+	"vector3d.h"
+	"line3d.h"
+	"plane3d.h"
+	"aabbox3d.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\edriverfeatures.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smesh.h
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"aabbox3d.h"
+	"irrArray.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imesh.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshmanipulator.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"IAnimatedMesh.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ianimatedmesh.h
+	"aabbox3d.h"
+	"IMesh.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\os.h
+	"IrrCompileConfig.h"
+	"irrTypes.h"
+	"ILogger.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ilogger.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smeshbuffer.h
+	"CMeshBuffer.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\cmeshbuffer.h
+	"irrArray.h"
+	"IMeshBuffer.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sanimatedmesh.h
+	"IAnimatedMesh.h"
+	"IMesh.h"
+	"aabbox3d.h"
+	"irrArray.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ireadfile.h
+	"IReferenceCounted.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshmd2.cpp
+	"IrrCompileConfig.h"
+	"CAnimatedMeshMD2.h"
+	"os.h"
+	"SColor.h"
+	"IReadFile.h"
+	"irrMath.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshmd2.h
+	"IAnimatedMeshMD2.h"
+	"IMesh.h"
+	"CMeshBuffer.h"
+	"IReadFile.h"
+	"S3DVertex.h"
+	"irrArray.h"
+	"irrString.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ianimatedmeshmd2.h
+	"IAnimatedMesh.h"
+
+1201760458 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshmd3.cpp
+	"IrrCompileConfig.h"
+	"CAnimatedMeshMD3.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshmd3.h
+	"IAnimatedMeshMD3.h"
+	"IReadFile.h"
+	"IFileSystem.h"
+	"irrArray.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ianimatedmeshmd3.h
+	"IAnimatedMesh.h"
+	"IQ3Shader.h"
+	"quaternion.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iq3shader.h
+	"irrArray.h"
+	"fast_atof.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"coreutil.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\fast_atof.h
+	<stdlib.h>
+	"irrMath.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\coreutil.h
+	"irrString.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\quaternion.h
+	"irrTypes.h"
+	"irrMath.h"
+	"matrix4.h"
+	"vector3d.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshscenenode.cpp
+	"CAnimatedMeshSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"os.h"
+	"CShadowVolumeSceneNode.h"
+	"IAnimatedMeshMD3.h"
+	"CSkinnedMesh.h"
+	"IDummyTransformationSceneNode.h"
+	"IBoneSceneNode.h"
+	"IMaterialRenderer.h"
+	"IMesh.h"
+	"IMeshCache.h"
+	"IAnimatedMesh.h"
+	"quaternion.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\canimatedmeshscenenode.h
+	"IAnimatedMeshSceneNode.h"
+	"IAnimatedMesh.h"
+	"matrix4.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ianimatedmeshscenenode.h
+	"ISceneNode.h"
+	"IBoneSceneNode.h"
+	"IAnimatedMeshMD2.h"
+	"IAnimatedMeshMD3.h"
+
+1197230690 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenenode.h
+	"IReferenceCounted.h"
+	"ESceneNodeTypes.h"
+	"ECullingTypes.h"
+	"EDebugSceneTypes.h"
+	"ISceneManager.h"
+	"ISceneNodeAnimator.h"
+	"ITriangleSelector.h"
+	"SMaterial.h"
+	"irrString.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"irrList.h"
+	"IAttributes.h"
+	"IAttributeExchangingObject.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\escenenodetypes.h
+	"irrTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ecullingtypes.h
+	"irrTypes.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\edebugscenetypes.h
+
+1196761416 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenemanager.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"vector3d.h"
+	"dimension2d.h"
+	"SColor.h"
+	"ETerrainElements.h"
+	"ESceneNodeTypes.h"
+	"EMeshWriterEnums.h"
+	"SceneParameters.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\eterrainelements.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\emeshwriterenums.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sceneparameters.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenenodeanimator.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"ESceneNodeAnimatorTypes.h"
+	"IAttributeExchangingObject.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\escenenodeanimatortypes.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iattributeexchangingobject.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\itriangleselector.h
+	"IReferenceCounted.h"
+	"triangle3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"line3d.h"
+
+1195871668 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrlist.h
+	"irrTypes.h"
+
+1201675510 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iattributes.h
+	"IReferenceCounted.h"
+	"SColor.h"
+	"vector3d.h"
+	"vector2d.h"
+	"line2d.h"
+	"line3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"rect.h"
+	"matrix4.h"
+	"quaternion.h"
+	"plane3d.h"
+	"triangle3d.h"
+	"line2d.h"
+	"line3d.h"
+	"irrString.h"
+	"irrArray.h"
+	"IXMLReader.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\line2d.h
+	"irrTypes.h"
+	"vector2d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ibonescenenode.h
+	"ISceneNode.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cshadowvolumescenenode.h
+	"IShadowVolumeSceneNode.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ishadowvolumescenenode.h
+	"ISceneNode.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cskinnedmesh.h
+	"S3DVertex.h"
+	"irrString.h"
+	"matrix4.h"
+	"SMeshBuffer.h"
+	<quaternion.h>
+	"ISkinnedMesh.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iskinnedmesh.h
+	"irrArray.h"
+	"IBoneSceneNode.h"
+	"IAnimatedMesh.h"
+	"SSkinMeshBuffer.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sskinmeshbuffer.h
+	"IMeshBuffer.h"
+	"S3DVertex.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\idummytransformationscenenode.h
+	"ISceneNode.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imaterialrenderer.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"S3DVertex.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshcache.h
+	"IReferenceCounted.h"
+	"irrString.h"
+
+1201676769 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cattributes.cpp
+	"CAttributes.h"
+	"CAttributeImpl.h"
+	"ITexture.h"
+	"IXMLWriter.h"
+	"IVideoDriver.h"
+
+1201677025 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cattributes.h
+	"IAttributes.h"
+
+1201676289 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cattributeimpl.h
+	"CAttributes.h"
+	"fast_atof.h"
+	"ITexture.h"
+	"IVideoDriver.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ixmlwriter.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"irrString.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cb3dmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CB3DMeshFileLoader.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1201760457 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cb3dmeshfileloader.h
+	"IrrCompileConfig.h"
+	"IMeshLoader.h"
+	"ISceneManager.h"
+	"CSkinnedMesh.h"
+	"IReadFile.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbspmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CBSPMeshFileLoader.h"
+	"CQ3LevelMesh.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbspmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cq3levelmesh.h
+	"IQ3LevelMesh.h"
+	"IReadFile.h"
+	"IFileSystem.h"
+	"SMesh.h"
+	"SMeshBufferLightMap.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"ISceneManager.h"
+	"os.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iq3levelmesh.h
+	"IAnimatedMesh.h"
+	"IQ3Shader.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smeshbufferlightmap.h
+	"CMeshBuffer.h"
+
+1201702449 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbillboardscenenode.cpp
+	"CBillboardSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"os.h"
+
+1201678858 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbillboardscenenode.h
+	"IBillboardSceneNode.h"
+	"S3DVertex.h"
+
+1201678957 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ibillboardscenenode.h
+	"ISceneNode.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\icamerascenenode.h
+	"ISceneNode.h"
+	"IEventReceiver.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ieventreceiver.h
+	"ILogger.h"
+	"position2d.h"
+	"Keycodes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\keycodes.h
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbonescenenode.cpp
+	"CBoneSceneNode.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cbonescenenode.h
+	"IBoneSceneNode.h"
+	"irrString.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cburningshader_raster_reference.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1201760456 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\iburningshader.h
+	"SoftwareDriver2_compile_config.h"
+	"IReferenceCounted.h"
+	"irrMath.h"
+	"IImage.h"
+	"S2DVertex.h"
+	"rect.h"
+	"IDepthBuffer.h"
+	"S4DVertex.h"
+	"irrArray.h"
+	"SLight.h"
+	"SMaterial.h"
+
+1201760456 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\softwaredriver2_compile_config.h
+	"IrrCompileConfig.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\s2dvertex.h
+	"vector2d.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\idepthbuffer.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+	"S4DVertex.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\s4dvertex.h
+	"SoftwareDriver2_compile_config.h"
+	"SoftwareDriver2_helper.h"
+	"irrAllocator.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\softwaredriver2_helper.h
+	"SoftwareDriver2_compile_config.h"
+	"irrMath.h"
+	"CSoftwareTexture2.h"
+	"SMaterial.h"
+
+1201760457 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\csoftwaretexture2.h
+	"SoftwareDriver2_compile_config.h"
+	"ITexture.h"
+	"CImage.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimage.h
+	"IImage.h"
+	"rect.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\slight.h
+	"SColor.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccsmloader.cpp
+	"IrrCompileConfig.h"
+	"CCSMLoader.h"
+	"os.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+	"ISceneManager.h"
+	"IAttributes.h"
+	"SMesh.h"
+	"IVideoDriver.h"
+	"SAnimatedMesh.h"
+	"SMeshBufferLightMap.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccsmloader.h
+	"irrArray.h"
+	"IMesh.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"IMeshLoader.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccamerafpsscenenode.cpp
+	"CCameraFPSSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"os.h"
+	"Keycodes.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccamerafpsscenenode.h
+	"ICursorControl.h"
+	"CCameraSceneNode.h"
+	"vector2d.h"
+	"SKeyMap.h"
+	"irrArray.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\icursorcontrol.h
+	"IReferenceCounted.h"
+	"position2d.h"
+	"rect.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccamerascenenode.h
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sviewfrustum.h
+	"plane3d.h"
+	"vector3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"IVideoDriver.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\skeymap.h
+	"Keycodes.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccameramayascenenode.cpp
+	"CCameraMayaSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccameramayascenenode.h
+	"CCameraSceneNode.h"
+	"vector2d.h"
+
+1201760456 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccamerascenenode.cpp
+	"CCameraSceneNode.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolladafileloader.cpp
+	"IrrCompileConfig.h"
+	"CColladaFileLoader.h"
+	"os.h"
+	"IXMLReader.h"
+	"IDummyTransformationSceneNode.h"
+	"SAnimatedMesh.h"
+	"fast_atof.h"
+	"quaternion.h"
+	"ILightSceneNode.h"
+	"ICameraSceneNode.h"
+	"IMeshManipulator.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"IMeshCache.h"
+	"IMeshSceneNode.h"
+	"SMeshBufferLightMap.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolladafileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"ISceneManager.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ilightscenenode.h
+	"ISceneNode.h"
+	"SLight.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshscenenode.h
+	"ISceneNode.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolladameshwriter.cpp
+	"CColladaMeshWriter.h"
+	"os.h"
+	"IFileSystem.h"
+	"IWriteFile.h"
+	"IXMLWriter.h"
+	"IMesh.h"
+	"IAttributes.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolladameshwriter.h
+	"IMeshWriter.h"
+	"S3DVertex.h"
+	"IVideoDriver.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imeshwriter.h
+	"IReferenceCounted.h"
+	"EMeshWriterEnums.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iwritefile.h
+	"IReferenceCounted.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolorconverter.cpp
+	"CColorConverter.h"
+	"SColor.h"
+	"os.h"
+	"irrString.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccolorconverter.h
+	"irrTypes.h"
+	"IImage.h"
+
+1201760456 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccubescenenode.cpp
+	"CCubeSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"os.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ccubescenenode.h
+	"ISceneNode.h"
+	"SMeshBuffer.h"
+
+1201760458 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8driver.cpp
+	"IrrCompileConfig.h"
+	"CD3D8Driver.h"
+	"os.h"
+	"S3DVertex.h"
+	"CD3D8Texture.h"
+	"CImage.h"
+	"CD3D8MaterialRenderer.h"
+	"CD3D8ShaderMaterialRenderer.h"
+	"CD3D8NormalMapRenderer.h"
+	"CD3D8ParallaxMapRenderer.h"
+
+1201760456 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8driver.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	<xtl.h>
+	"CNullDriver.h"
+	"IMaterialRendererServices.h"
+	<d3d8.h>
+
+1201760456 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cnulldriver.h
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"IImagePresenter.h"
+	"IGPUProgrammingServices.h"
+	"irrArray.h"
+	"irrString.h"
+	"IAttributes.h"
+	"IMeshBuffer.h"
+	"CFPSCounter.h"
+	"S3DVertex.h"
+	"SLight.h"
+	"SExposedVideoData.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\iimagepresenter.h
+	"IImage.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\igpuprogrammingservices.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfpscounter.h
+	"irrTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sexposedvideodata.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imaterialrendererservices.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"S3DVertex.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8texture.h
+	"IrrCompileConfig.h"
+	"ITexture.h"
+	"IImage.h"
+	<d3d8.h>
+
+1196250888 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8materialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"IMaterialRenderer.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8shadermaterialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	<d3dx8core.h>
+	"IMaterialRenderer.h"
+	"S3DVertex.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8normalmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"CD3D8ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1202803977 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ishaderconstantsetcallback.h
+	"IReferenceCounted.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8parallaxmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"CD3D8ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8normalmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D8NormalMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8parallaxmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D8ParallaxMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+
+1201760456 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8shadermaterialrenderer.cpp
+	"CD3D8ShaderMaterialRenderer.h"
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	<d3dx8core.h>
+	"IShaderConstantSetCallBack.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	<stdio.h>
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d8texture.cpp
+	"IrrCompileConfig.h"
+	"CD3D8Texture.h"
+	"CD3D8Driver.h"
+	"os.h"
+	<d3dx8tex.h>
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9driver.cpp
+	"CD3D9Driver.h"
+	"os.h"
+	"S3DVertex.h"
+	"CD3D9Texture.h"
+	"CImage.h"
+	"CD3D9MaterialRenderer.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"CD3D9NormalMapRenderer.h"
+	"CD3D9ParallaxMapRenderer.h"
+	"CD3D9HLSLMaterialRenderer.h"
+	<float.h>
+
+1201760457 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9driver.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	"CNullDriver.h"
+	"IMaterialRendererServices.h"
+	<d3d9.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9texture.h
+	"IrrCompileConfig.h"
+	"ITexture.h"
+	"IImage.h"
+	<d3d9.h>
+
+1196250898 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9materialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d9.h>
+	"IMaterialRenderer.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9shadermaterialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d9.h>
+	<d3dx9shader.h>
+	"IMaterialRenderer.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9normalmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d9.h>
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9parallaxmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d9.h>
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9hlslmaterialrenderer.h
+	"IrrCompileConfig.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"IGPUProgrammingServices.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9hlslmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9HLSLMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+	"IVideoDriver.h"
+	"os.h"
+	"irrString.h"
+	<stdio.h>
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9normalmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9NormalMapRenderer.h"
+	"IVideoDriver.h"
+	"IMaterialRendererServices.h"
+	"os.h"
+	"SLight.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9parallaxmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9ParallaxMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+	"CReadFile.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\creadfile.h
+	<stdio.h>
+	"IReadFile.h"
+	"irrString.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9shadermaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"irrString.h"
+	<stdio.h>
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cd3d9texture.cpp
+	"IrrCompileConfig.h"
+	"CD3D9Texture.h"
+	"CD3D9Driver.h"
+	"os.h"
+	<d3dx9tex.h>
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdmfloader.cpp
+	"IrrCompileConfig.h"
+	"CDMFLoader.h"
+	"ISceneManager.h"
+	"IAttributes.h"
+	"SAnimatedMesh.h"
+	"SMeshBufferLightMap.h"
+	"irrString.h"
+	"irrMath.h"
+	"dmfsupport.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdmfloader.h
+	"IMeshLoader.h"
+	"IReadFile.h"
+	"SMesh.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"SAnimatedMesh.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\dmfsupport.h
+	"irrString.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultguielementfactory.cpp
+	"CDefaultGUIElementFactory.h"
+	"IGUIEnvironment.h"
+	"IGUIButton.h"
+	"IGUICheckBox.h"
+	"IGUIComboBox.h"
+	"IGUIContextMenu.h"
+	"IGUIEditBox.h"
+	"IGUISpinBox.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIInOutFader.h"
+	"IGUIImage.h"
+	"IGUIListBox.h"
+	"IGUIMeshViewer.h"
+	"IGUIScrollBar.h"
+	"IGUIStaticText.h"
+	"IGUITabControl.h"
+	"IGUIToolbar.h"
+	"IGUIWindow.h"
+	<string.h>
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultguielementfactory.h
+	"IrrCompileConfig.h"
+	"IGUIElementFactory.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguielementfactory.h
+	"IReferenceCounted.h"
+	"EGUIElementTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\eguielementtypes.h
+
+1196585626 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguienvironment.h
+	"IReferenceCounted.h"
+	"IGUISkin.h"
+	"rect.h"
+	"EMessageBoxFlags.h"
+	"IEventReceiver.h"
+	"IXMLReader.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguiskin.h
+	"IAttributeExchangingObject.h"
+	"SColor.h"
+	"rect.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\emessageboxflags.h
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguibutton.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguielement.h
+	"IAttributeExchangingObject.h"
+	"irrList.h"
+	"rect.h"
+	"irrString.h"
+	"IEventReceiver.h"
+	"EGUIElementTypes.h"
+	"IAttributes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguicheckbox.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguicombobox.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguicontextmenu.h
+	"IGUIElement.h"
+
+1196585821 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguieditbox.h
+	"IGUIElement.h"
+	"SColor.h"
+	"IrrlichtDevice.h"
+
+1196585881 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrlichtdevice.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+	"IVideoDriver.h"
+	"EDriverTypes.h"
+	"IEventReceiver.h"
+	"ICursorControl.h"
+	"IVideoModeList.h"
+	"ITimer.h"
+	"IOSOperator.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ivideomodelist.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\itimer.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iosoperator.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguispinbox.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguifileopendialog.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguicolorselectdialog.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguiinoutfader.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguiimage.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguilistbox.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguimeshviewer.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguiscrollbar.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguistatictext.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguitabcontrol.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguitoolbar.h
+	"IGUIElement.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguiwindow.h
+	"IGUIElement.h"
+	"EMessageBoxFlags.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultscenenodeanimatorfactory.cpp
+	"CDefaultSceneNodeAnimatorFactory.h"
+	"ISceneNodeAnimatorCollisionResponse.h"
+	"ISceneManager.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultscenenodeanimatorfactory.h
+	"ISceneNodeAnimatorFactory.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenenodeanimatorfactory.h
+	"IReferenceCounted.h"
+	"ESceneNodeAnimatorTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenenodeanimatorcollisionresponse.h
+	"ISceneNode.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultscenenodefactory.cpp
+	"CDefaultSceneNodeFactory.h"
+	"ISceneManager.h"
+	"ITextSceneNode.h"
+	"ITerrainSceneNode.h"
+	"IDummyTransformationSceneNode.h"
+	"ICameraSceneNode.h"
+	"IBillboardSceneNode.h"
+	"IAnimatedMeshSceneNode.h"
+	"IParticleSystemSceneNode.h"
+	"ILightSceneNode.h"
+	"IMeshSceneNode.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdefaultscenenodefactory.h
+	"ISceneNodeFactory.h"
+	"irrArray.h"
+	"irrString.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenenodefactory.h
+	"IReferenceCounted.h"
+	"ESceneNodeTypes.h"
+
+1202042307 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\itextscenenode.h
+	"ISceneNode.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iterrainscenenode.h
+	"ETerrainElements.h"
+	"ISceneNode.h"
+	"SMeshBufferLightMap.h"
+	"irrArray.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlesystemscenenode.h
+	"ISceneNode.h"
+	"IParticleAnimatedMeshSceneNodeEmitter.h"
+	"IParticleBoxEmitter.h"
+	"IParticleCylinderEmitter.h"
+	"IParticleMeshEmitter.h"
+	"IParticleRingEmitter.h"
+	"IParticleSphereEmitter.h"
+	"IParticleAttractionAffector.h"
+	"IParticleFadeOutAffector.h"
+	"IParticleGravityAffector.h"
+	"IParticleRotationAffector.h"
+	"dimension2d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleanimatedmeshscenenodeemitter.h
+	"IParticleEmitter.h"
+	"IAnimatedMeshSceneNode.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleemitter.h
+	"IAttributeExchangingObject.h"
+	"SParticle.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sparticle.h
+	"vector3d.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleboxemitter.h
+	"IParticleEmitter.h"
+	"aabbox3d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlecylinderemitter.h
+	"IParticleEmitter.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlemeshemitter.h
+	"IParticleEmitter.h"
+	"IMesh.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleringemitter.h
+	"IParticleEmitter.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlesphereemitter.h
+	"IParticleEmitter.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleattractionaffector.h
+	"IParticleAffector.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticleaffector.h
+	"IAttributeExchangingObject.h"
+	"SParticle.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlefadeoutaffector.h
+	"IParticleAffector.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlegravityaffector.h
+	"IParticleAffector.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iparticlerotationaffector.h
+	"IParticleAffector.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdepthbuffer.cpp
+	"IrrCompileConfig.h"
+	"SoftwareDriver2_compile_config.h"
+	"CDepthBuffer.h"
+
+1201760458 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdepthbuffer.h
+	"IDepthBuffer.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdummytransformationscenenode.cpp
+	"CDummyTransformationSceneNode.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cdummytransformationscenenode.h
+	"IDummyTransformationSceneNode.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cemptyscenenode.cpp
+	"CEmptySceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cemptyscenenode.h
+	"ISceneNode.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfpscounter.cpp
+	"CFPSCounter.h"
+	"irrMath.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfilelist.cpp
+	"CFileList.h"
+	"IrrCompileConfig.h"
+	"irrArray.h"
+	<stdlib.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<sys/types.h>
+	<dirent.h>
+	<sys/stat.h>
+	<unistd.h>
+	<io.h>
+	<direct.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfilelist.h
+	"IFileList.h"
+	"irrString.h"
+	"irrArray.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ifilelist.h
+	"IReferenceCounted.h"
+
+1201760457 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfilesystem.cpp
+	"CFileSystem.h"
+	"IReadFile.h"
+	"IWriteFile.h"
+	"CZipReader.h"
+	"CPakReader.h"
+	"CFileList.h"
+	"CXMLReader.h"
+	"CXMLWriter.h"
+	"stdio.h"
+	"os.h"
+	"IrrCompileConfig.h"
+	"CAttributes.h"
+	"CMemoryReadFile.h"
+	<direct.h>
+	<unistd.h>
+	<limits.h>
+	<stdlib.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cfilesystem.h
+	"IFileSystem.h"
+	"irrArray.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\czipreader.h
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cpakreader.h
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cxmlreader.h
+	"IXMLReader.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cxmlwriter.h
+	<wchar.h>
+	"IXMLWriter.h"
+	"IWriteFile.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cmemoryreadfile.h
+	"IReadFile.h"
+	"irrString.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguibutton.cpp
+	"CGUIButton.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguibutton.h
+	"IrrCompileConfig.h"
+	"IGUIButton.h"
+	"IGUISpriteBank.h"
+	"SColor.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguispritebank.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"SColor.h"
+	"rect.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguifont.h
+	"IReferenceCounted.h"
+	"SColor.h"
+	"rect.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicheckbox.cpp
+	"CGUICheckBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"os.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicheckbox.h
+	"IrrCompileConfig.h"
+	"IGUICheckBox.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicolorselectdialog.cpp
+	"CGUIColorSelectDialog.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIStaticText.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"IFileList.h"
+	"os.h"
+	"SoftwareDriver2_helper.h"
+	"CImage.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicolorselectdialog.h
+	"IrrCompileConfig.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIButton.h"
+	"IGUIEditBox.h"
+	"IGUIScrollBar.h"
+	"IGUIImage.h"
+	"irrArray.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicombobox.cpp
+	"CGUIComboBox.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IGUIButton.h"
+	"CGUIListBox.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicombobox.h
+	"IrrCompileConfig.h"
+	"IGUIComboBox.h"
+	"irrString.h"
+	"irrArray.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguilistbox.h
+	"IrrCompileConfig.h"
+	"IGUIListBox.h"
+	"irrArray.h"
+
+1195871668 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicontextmenu.cpp
+	"CGUIContextMenu.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"os.h"
+
+1195871668 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguicontextmenu.h
+	"IrrCompileConfig.h"
+	"IGUIContextMenu.h"
+	"irrString.h"
+	"irrArray.h"
+	"IGUIFont.h"
+
+1196584291 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguieditbox.cpp
+	"CGUIEditBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+	"os.h"
+	"Keycodes.h"
+	<stdlib.h>
+	<locale.h>
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguieditbox.h
+	"IrrCompileConfig.h"
+	"IGUIEditBox.h"
+	"irrArray.h"
+	"IOSOperator.h"
+
+1196583600 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguienvironment.cpp
+	"CGUIEnvironment.h"
+	"IVideoDriver.h"
+	"CGUISkin.h"
+	"CGUIButton.h"
+	"CGUIWindow.h"
+	"CGUIScrollBar.h"
+	"CGUIFont.h"
+	"CGUISpriteBank.h"
+	"CGUIImage.h"
+	"CGUIMeshViewer.h"
+	"CGUICheckBox.h"
+	"CGUIListBox.h"
+	"CGUIFileOpenDialog.h"
+	"CGUIColorSelectDialog.h"
+	"CGUIStaticText.h"
+	"CGUIEditBox.h"
+	"CGUISpinBox.h"
+	"CGUIInOutFader.h"
+	"CGUIMessageBox.h"
+	"CGUIModalScreen.h"
+	"CGUITabControl.h"
+	"CGUIContextMenu.h"
+	"CGUIComboBox.h"
+	"CGUIMenu.h"
+	"CGUIToolBar.h"
+	"IrrCompileConfig.h"
+	"CDefaultGUIElementFactory.h"
+	"IWriteFile.h"
+	"IXMLWriter.h"
+	"BuiltInFont.h"
+	"os.h"
+
+1196583731 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguienvironment.h
+	"IrrCompileConfig.h"
+	"IGUIEnvironment.h"
+	"IGUIElement.h"
+	"irrArray.h"
+	"IFileSystem.h"
+	"IOSOperator.h"
+	"CGUITTFont.h"
+
+1202284275 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\cguittfont.h
+	<ft2build.h>
+	<freetype/freetype.h>
+	<irrlicht.h>
+	<langinfo.h>
+	<iconv.h>
+
+1143178528 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\ft2build.h
+	<freetype/config/ftheader.h>
+
+1168312856 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\freetype\config\ftheader.h
+
+1183388760 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\freetype\freetype.h
+	<ft2build.h>
+
+1196585716 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrlicht.h
+	"IrrCompileConfig.h"
+	"aabbox3d.h"
+	"coreutil.h"
+	"irrArray.h"
+	"irrMap.h"
+	"irrMath.h"
+	"irrString.h"
+	"irrTypes.h"
+	"SColor.h"
+	"SLight.h"
+	"dimension2d.h"
+	"EDriverTypes.h"
+	"IAttributes.h"
+	"IAttributeExchangingObject.h"
+	"IAnimatedMesh.h"
+	"IAnimatedMeshMD2.h"
+	"IAnimatedMeshMD3.h"
+	"IQ3LevelMesh.h"
+	"IAnimatedMeshSceneNode.h"
+	"IBillboardSceneNode.h"
+	"IBoneSceneNode.h"
+	"ICameraSceneNode.h"
+	"IDummyTransformationSceneNode.h"
+	"IEventReceiver.h"
+	"IFileList.h"
+	"IFileSystem.h"
+	"IGPUProgrammingServices.h"
+	"IGUIButton.h"
+	"IGUICheckBox.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIComboBox.h"
+	"IGUIContextMenu.h"
+	"IGUIEditBox.h"
+	"IGUIElement.h"
+	"IGUIElementFactory.h"
+	"IGUIEnvironment.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"CGUITTFont.h"
+	"IGUIImage.h"
+	"IGUIInOutFader.h"
+	"IGUIListBox.h"
+	"IGUIMeshViewer.h"
+	"IGUIScrollBar.h"
+	"IGUISkin.h"
+	"IGUISpinBox.h"
+	"IGUISpriteBank.h"
+	"IGUIStaticText.h"
+	"IGUITabControl.h"
+	"IGUIToolbar.h"
+	"IGUIWindow.h"
+	"IImage.h"
+	"ILightSceneNode.h"
+	"ILogger.h"
+	"IMaterialRenderer.h"
+	"IMaterialRendererServices.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IMeshCache.h"
+	"IMeshSceneNode.h"
+	"IMeshManipulator.h"
+	"IMeshWriter.h"
+	"IMetaTriangleSelector.h"
+	"IReadFile.h"
+	"IrrlichtDevice.h"
+	"ISceneManager.h"
+	"ISceneNode.h"
+	"ISceneUserDataSerializer.h"
+	"ITriangleSelector.h"
+	"ISceneNodeAnimator.h"
+	"ISceneCollisionManager.h"
+	"ISceneNodeFactory.h"
+	"ISceneNodeAnimatorFactory.h"
+	"ISceneNodeAnimatorCollisionResponse.h"
+	"IShaderConstantSetCallBack.h"
+	"IParticleSystemSceneNode.h"
+	"ISkinnedMesh.h"
+	"ITerrainSceneNode.h"
+	"ITextSceneNode.h"
+	"ITexture.h"
+	"IReferenceCounted.h"
+	"IVideoDriver.h"
+	"IVideoModeList.h"
+	"IWriteFile.h"
+	"IXMLReader.h"
+	"IXMLWriter.h"
+	"Keycodes.h"
+	"line2d.h"
+	"line3d.h"
+	"irrList.h"
+	"matrix4.h"
+	"plane3d.h"
+	"vector2d.h"
+	"vector3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"quaternion.h"
+	"rect.h"
+	"S3DVertex.h"
+	"SAnimatedMesh.h"
+	"SExposedVideoData.h"
+	"SKeyMap.h"
+	"SMaterial.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"SMeshBufferLightMap.h"
+	"SMeshBufferTangents.h"
+	"SViewFrustum.h"
+	"SIrrCreationParameters.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\irrmap.h
+	"irrTypes.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iguifontbitmap.h
+	"IGUIFont.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\imetatriangleselector.h
+	"ITriangleSelector.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\isceneuserdataserializer.h
+	"IReferenceCounted.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iscenecollisionmanager.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"line3d.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\smeshbuffertangents.h
+	"CMeshBuffer.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\sirrcreationparameters.h
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiskin.h
+	"IrrCompileConfig.h"
+	"IGUISkin.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiwindow.h
+	"IrrCompileConfig.h"
+	"IGUIWindow.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiscrollbar.h
+	"IrrCompileConfig.h"
+	"IGUIScrollBar.h"
+	"IGUIButton.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguifont.h
+	"IrrCompileConfig.h"
+	"IGUIFontBitmap.h"
+	"irrString.h"
+	"irrMap.h"
+	"IXMLReader.h"
+	"IReadFile.h"
+	"irrArray.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguispritebank.h
+	"IrrCompileConfig.h"
+	"IGUISpriteBank.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiimage.h
+	"IrrCompileConfig.h"
+	"IGUIImage.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimeshviewer.h
+	"IrrCompileConfig.h"
+	"IGUIMeshViewer.h"
+	"SMaterial.h"
+	"vector3d.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguifileopendialog.h
+	"IrrCompileConfig.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIButton.h"
+	"IGUIListBox.h"
+	"IFileSystem.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguistatictext.h
+	"IrrCompileConfig.h"
+	"IGUIStaticText.h"
+	"irrArray.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguispinbox.h
+	"IrrCompileConfig.h"
+	"IGUISpinBox.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiinoutfader.h
+	"IrrCompileConfig.h"
+	"IGUIInOutFader.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimessagebox.h
+	"IrrCompileConfig.h"
+	"CGUIWindow.h"
+	"IGUIStaticText.h"
+	"irrArray.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimodalscreen.h
+	"IrrCompileConfig.h"
+	"IGUIElement.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguitabcontrol.h
+	"IrrCompileConfig.h"
+	"IGUITabControl.h"
+	"irrArray.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimenu.h
+	"IrrCompileConfig.h"
+	"CGUIContextMenu.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguitoolbar.h
+	"IrrCompileConfig.h"
+	"IGUIToolbar.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\builtinfont.h
+	"IrrCompileConfig.h"
+
+1196583901 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguifileopendialog.cpp
+	"CGUIFileOpenDialog.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIStaticText.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"IFileList.h"
+	"os.h"
+	"stdlib.h"
+	"locale.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguifont.cpp
+	"CGUIFont.h"
+	"os.h"
+	"IGUIEnvironment.h"
+	"IXMLReader.h"
+	"IReadFile.h"
+	"IVideoDriver.h"
+	"IGUISpriteBank.h"
+	"CImage.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiimage.cpp
+	"CGUIImage.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiinoutfader.cpp
+	"CGUIInOutFader.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguilistbox.cpp
+	"CGUIListBox.h"
+	"CGUIListBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"CGUIScrollBar.h"
+	"os.h"
+
+1195871668 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimenu.cpp
+	"CGUIMenu.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"os.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimeshviewer.cpp
+	"CGUIMeshViewer.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IAnimatedMesh.h"
+	"IMesh.h"
+	"irrMath.h"
+	"os.h"
+	"IGUISkin.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimessagebox.cpp
+	"CGUIMessageBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguimodalscreen.cpp
+	"CGUIModalScreen.h"
+	"IGUIEnvironment.h"
+	"os.h"
+	"IVideoDriver.h"
+	"IGUISkin.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiscrollbar.cpp
+	"CGUIScrollBar.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"CGUIButton.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"os.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiskin.cpp
+	"CGUISkin.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"IVideoDriver.h"
+	"IAttributes.h"
+	"SoftwareDriver2_helper.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguispinbox.cpp
+	"CGUISpinBox.h"
+	"CGUIEditBox.h"
+	"CGUIButton.h"
+	"IGUIEnvironment.h"
+	"IEventReceiver.h"
+	"fast_atof.h"
+	<float.h>
+	<wchar.h>
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguispritebank.cpp
+	"CGUISpriteBank.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"ITexture.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguistatictext.cpp
+	"CGUIStaticText.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+
+1202284285 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguittfont.cpp
+	"irrlicht.h"
+	"CGUITTFont.h"
+	"os.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguitabcontrol.cpp
+	"CGUITabControl.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+	"os.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguitoolbar.cpp
+	"CGUIToolBar.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+	"CGUIButton.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cguiwindow.cpp
+	"CGUIWindow.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+
+1201760458 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cgeometrycreator.cpp
+	"CGeometryCreator.h"
+	"SAnimatedMesh.h"
+	"SMeshBuffer.h"
+	"SMesh.h"
+	"IVideoDriver.h"
+	"CImage.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cgeometrycreator.h
+	"IMesh.h"
+	"IImage.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimage.cpp
+	"CImage.h"
+	"irrString.h"
+	"SoftwareDriver2_helper.h"
+	"CColorConverter.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderbmp.cpp
+	"CImageLoaderBMP.h"
+	"IReadFile.h"
+	"SColor.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderbmp.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iimageloader.h
+	"IReferenceCounted.h"
+	"IImage.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderjpg.cpp
+	"CImageLoaderJPG.h"
+	"IReadFile.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderjpg.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	<stdio.h>
+	<jpeglib.h>
+	"jpeglib/jpeglib.h"
+	<setjmp.h>
+
+1195256310 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\jpeglib\jpeglib.h
+	"jconfig.h"
+	"jmorecfg.h"
+	"jpegint.h"
+	"jerror.h"
+
+1195256310 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\jpeglib\jconfig.h
+
+1195256310 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\jpeglib\jmorecfg.h
+
+1195256310 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\jpeglib\jpegint.h
+
+1195256310 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\jpeglib\jerror.h
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpcx.cpp
+	"CImageLoaderPCX.h"
+	"IReadFile.h"
+	"SColor.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpcx.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpng.cpp
+	"CImageLoaderPNG.h"
+	<png.h>
+	"libpng/png.h"
+	"CImage.h"
+	"CReadFile.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpng.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1195256302 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\libpng\png.h
+	"zlib.h"
+	"pngconf.h"
+	<crtdbg.h>
+
+1195256304 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\zlib\zlib.h
+	"zconf.h"
+
+1195256304 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\zlib\zconf.h
+	<windows.h>
+	<sys/types.h>
+	<unistd.h>
+	<unixio.h>
+
+1195256302 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\libpng\pngconf.h
+	"pngusr.h"
+	"config.h"
+	<windows.h>
+	<stdio.h>
+	<stdio.h>
+	<sys/types.h>
+	<setjmp.h>
+	<strings.h>
+	<string.h>
+	<stdlib.h>
+	<fp.h>
+	<math.h>
+	<m68881.h>
+	<mem.h>
+	<alloc.h>
+	<malloc.h>
+	<time.h>
+	<dos.h>
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderppm.cpp
+	"CImageLoaderPPM.h"
+	"IReadFile.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"fast_atof.h"
+	"coreutil.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderppm.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrString.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpsd.cpp
+	"CImageLoaderPSD.h"
+	"IReadFile.h"
+	"os.h"
+	"CImage.h"
+	"irrString.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderpsd.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloadertga.cpp
+	"CImageLoaderTGA.h"
+	"IReadFile.h"
+	"os.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloadertga.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1201760458 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderwal.cpp
+	"CImageLoaderWAL.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"dimension2d.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+	"irrString.h"
+
+1201760457 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimageloaderwal.h
+	"IImageLoader.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterbmp.cpp
+	"CImageWriterBMP.h"
+	"CImageLoaderBMP.h"
+	"IWriteFile.h"
+	"CColorConverter.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterbmp.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256322 d:\c_libs\irr\irrlicht-1.4-psc(source only)\include\iimagewriter.h
+	"IReferenceCounted.h"
+
+1195256316 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterjpg.cpp
+	"CImageWriterJPG.h"
+	"CColorConverter.h"
+	"IWriteFile.h"
+	"CImage.h"
+	"CColorConverter.h"
+	"irrString.h"
+	<stdio.h>
+	<jpeglib.h>
+	<jerror.h>
+	"jpeglib/jpeglib.h"
+	"jpeglib/jerror.h"
+	<setjmp.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterjpg.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpcx.cpp
+	"CImageWriterPCX.h"
+	"CImageLoaderPCX.h"
+	"IWriteFile.h"
+	"os.h"
+	"irrString.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpcx.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpng.cpp
+	"CImageWriterPNG.h"
+	"CImageLoaderPNG.h"
+	"CColorConverter.h"
+	"IWriteFile.h"
+	"irrString.h"
+	"os.h"
+	<png.h>
+	"libpng/png.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpng.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterppm.cpp
+	"CImageWriterPPM.h"
+	"IWriteFile.h"
+	"IImage.h"
+	"dimension2d.h"
+	"irrString.h"
+
+1195256312 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterppm.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpsd.cpp
+	"CImageWriterPSD.h"
+	"CImageLoaderPSD.h"
+	"IWriteFile.h"
+	"os.h"
+	"irrString.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewriterpsd.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256314 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewritertga.cpp
+	"CImageWriterTGA.h"
+	"CImageLoaderTGA.h"
+	"IWriteFile.h"
+	"CColorConverter.h"
+	"irrString.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cimagewritertga.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cirrdevicelinux.cpp
+	"CIrrDeviceLinux.h"
+	<stdio.h>
+	<stdlib.h>
+	<sys/utsname.h>
+	<time.h>
+	"IEventReceiver.h"
+	"os.h"
+	"CTimer.h"
+	"irrString.h"
+	"Keycodes.h"
+	"COSOperator.h"
+	"CColorConverter.h"
+	"SIrrCreationParameters.h"
+	<X11/XKBlib.h>
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cirrdevicelinux.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"ICursorControl.h"
+	<GL/gl.h>
+	<GL/glx.h>
+	"glxext.h"
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/extensions/xf86vmode.h>
+	<X11/extensions/Xrandr.h>
+	<X11/keysym.h>
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cirrdevicestub.h
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"CVideoModeList.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cvideomodelist.h
+	"IVideoModeList.h"
+	"dimension2d.h"
+	"irrArray.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\glxext.h
+	<windows.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\ctimer.h
+	"ITimer.h"
+	"os.h"
+
+1195256314 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cosoperator.h
+	"IOSOperator.h"
+	"irrString.h"
+
+1195256312 source:d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\cirrdevicestub.cpp
+	"CIrrDeviceStub.h"
+	"ISceneManager.h"
+	"IEventReceiver.h"
+	"IFileSystem.h"
+	"IGUIEnvironment.h"
+	"os.h"
+	"IrrCompileConfig.h"
+	"CTimer.h"
+	"CLogger.h"
+	"irrString.h"
+
+1195256316 d:\c_libs\irr\irrlicht-1.4-psc(source only)\source\irrlicht\clogger.h
+	"ILogger.h"
+	"os.h"
+	"irrString.h"
+	"IEventReceiver.h"
+

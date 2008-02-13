@@ -17,7 +17,8 @@ public:
     virtual ~Waiting(){}
     virtual pState cycle();
 
-    Waiting(): not_checked_(true), chain_property_checked_(false), delay_(0)
+    Waiting(wpCube owner): State(owner), not_checked_(true),
+                           chain_property_checked_(false), delay_(0)
     {}
 
     // begin only used by Map::next_state

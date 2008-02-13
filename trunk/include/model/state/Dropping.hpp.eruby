@@ -6,6 +6,12 @@ namespace psc{ namespace model{ namespace state{
 
 class Dropping: public State{
 public:
+    typedef pDropping pointer_type;
+    static pDropping create(wpCube owner){
+        return utils::ObjectPool<Dropping>::create(owner);
+    }
+public:
+    Dropping(wpCube owner): State(owner){}
     virtual ~Dropping(){}
     virtual pState cycle();
 };

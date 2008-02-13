@@ -1,11 +1,4 @@
 
-/*2007.11.9 
-  Most of the things remain unchanged, only did some clean up here.
-  
-  These included file is going to be heavily modified:
-  1. Sound.hpp
-*/          
-
 <% header_guard do %>
 
 #include "utils/math.hpp"
@@ -20,7 +13,7 @@ namespace psc{ namespace model{
 class Chain{
 public:
     typedef std::tr1::shared_ptr<Chain> pointer_type;
-    static create(){ return utils::ObjectPool<Chain>::create(); }
+    static pChain create(){ return utils::ObjectPool<Chain>::create(); }
 
 public:
     Chain(): owner_amounts_(0){}

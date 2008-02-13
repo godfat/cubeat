@@ -12,6 +12,7 @@
 #include <boost/multi_array.hpp>
 #include <boost/tr1/tr1/functional>
 #include <set>
+#include <vector>
 
 namespace psc{ namespace model{
 
@@ -19,7 +20,7 @@ class Map{
 public:
     typedef std::tr1::shared_ptr<Map> pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
-    typedef std::set<Cube> clist_type;
+    typedef std::set<pCube> clist_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
@@ -44,6 +45,31 @@ public:
     state::pState next_state(pCube);
     // end
 
+    // begin only used by OneFading::fade
+    void cubes_belong_to_the_chain_from_bottom_to_top(pCube, pChain);
+    // end
+
+    // begin only used by OneFading::get_the_chain
+    //   which is used by OneFading::fade
+    void push_chain(pChain chain){ chains_.push_back(chain); }
+    // end
+
+    // begin only local to some private method...
+    bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that);
+    void process_chaining(
+        std::vector<pCube> const& row_or_column,
+        clist_type& not_traveled,
+        clist_type& result)
+    {
+            for(std::vector<pCube>::const_iterator i=row_or_column.begin(), iend=row_or_column.end();
+                i!=iend; ++i)
+            {
+                not_traveled.insert(*i);
+                result.insert(*i);
+            }
+    }
+    // end
+
 private:
     void do_cycle(pCube c, int i);
     Map& init_cubes();
@@ -65,6 +91,8 @@ private:
     data::pMapSetting setting_;
     container_type cubes_;
     int n_of_newcomers_;
+    // someday make it to be std::list
+    std::vector<pChain> chains_;
 };
 
 }} // end of namespace

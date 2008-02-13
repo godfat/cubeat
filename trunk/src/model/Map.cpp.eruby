@@ -1,6 +1,7 @@
 
 #include "model/Map.hpp"
 #include "model/Cube.hpp"
+#include "model/OneFading.hpp"
 #include "model/state/Waiting.hpp"
 #include "model/state/Dropping.hpp"
 #include "model/state/Dying.hpp"
@@ -60,9 +61,9 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
 		if( waiting->need_check() ){
             pOneFading one_fading = make_OneFading(that);
 
-            if( one_fading != NULL ){
+            if( one_fading ){
                 one_fading->fade(that);
-                return state::Dying::create()->init(that)->init2();
+                return state::Dying::create(that);
             }
             waiting->checked();
 			that->set_grounded(); //once grounded, always grounded
@@ -71,29 +72,133 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
 			if( cube_can_lose_chain(that) ) { 
 	            that->lose_chain();
 				if( !that->is_garbage() )
-				    that->hide_outline();
+				    ;// that->hide_outline();
 			}
 			waiting->chain_property_checked();
 		}
     }
 
     if( is_below_empty(that) ){
-        data_.at(that->x(), that->y()) = NULL;
+        cubes_[that->x()][that->y()].reset();
         that->drop_a_block();
-        data_.at(that->x(), that->y()) = that;
+        cubes_[that->x()][that->y()] = that;
         if( that->is_dropping() )
-            return NULL;
+            return state::pState();
         else
             return state::Dropping::create(that);
     }
     else{
         if( that->is_waiting() )
-            return NULL;
+            return state::pState();
 		else {
 			// Sound::i().cube_dropped();
             return state::Waiting::create(that);
 		}
     }
     // throw "impossible flow";
-    return NULL;
+    return state::pState();
+}
+
+void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCube that, pChain chain){
+<% end %>
+    for(int x=that->x(), y=that->y();
+		cubes_[x][y].use_count() != 0 &&
+		cubes_[x][y]->is_waiting() &&
+        cubes_[x][y]->chain() == chain    
+		; --y)
+    {
+        cubes_[x][y]->lose_chain_delay() = 0;
+    }
+
+	for(int x=that->x(), y=that->y();
+        cubes_[x][y].use_count() != 0 &&
+        cubes_[x][y]->is_waiting() &&    //added: important
+		cubes_[x][y]->chain().use_count() == 0    //added: important
+		; --y)
+    {
+        cubes_[x][y]->chain(chain);
+		// cubes_[x][y]->show_outline();
+        cubes_[x][y]->lose_chain_delay() = 0;
+        chain->inc_one_owner();
+    }
+}
+
+void <% debug_hook 'Map::make_row' do %>(pCube that, clist_type& not_traveled, clist_type& result){
+<% end %>
+    std::vector<pCube> row;
+
+    for(int i=that->x(); i>=0; --i) // include self
+        if( check_not_continue( row, that, cubes_[i][that->y()] ) )
+            break;
+
+    for(int i=that->x()+1; i<ms()->width(); ++i) // exclude self
+        if( check_not_continue( row, that, cubes_[i][that->y()] ) )
+            break;
+
+    // Debugger::i().trace(row.size());
+
+    if(static_cast<int>(row.size()) >= ms()->chain_amounts())
+        process_chaining(row, not_traveled, result);
+}
+
+void <% debug_hook 'Map::make_column' do %>(pCube that, clist_type& not_traveled, clist_type& result){
+<% end %>
+    std::vector<pCube> column;
+
+    for(int i=that->y(); i>=0; --i) // include self
+        if( check_not_continue( column, that, cubes_[that->x()][i] ) )
+            break;
+
+    for(int i=that->y()+1; i<ms()->height(); ++i) // exclude self
+        if( check_not_continue( column, that, cubes_[that->x()][i] ) )
+            break;
+
+    // Debugger::i().trace(column.size());
+
+    if(static_cast<int>(column.size()) >= ms()->chain_amounts())
+        process_chaining(column, not_traveled, result);
+}
+
+void <% debug_hook 'Map::make_clist' do %>(clist_type& traveled, clist_type& not_traveled, clist_type& result){
+<% end %>
+    if(not_traveled.size()){
+        clist_type::iterator node = not_traveled.begin();
+        pCube s = *node;
+
+        if( traveled.count(s) == 0 ){
+            make_row(s, not_traveled, result);
+            make_column(s, not_traveled, result);
+            traveled.insert(s);
+        }
+
+        not_traveled.erase(node);
+
+        make_clist(traveled, not_traveled, result);
+    }
+}
+
+pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
+<% end %>
+    clist_type traveled, not_traveled, result;
+    not_traveled.insert(that);
+    make_clist(traveled, not_traveled, result);
+    // Debugger::i().trace(result.size());
+    return result.size() ? OneFading::create(*this, result) : pOneFading();
+}
+
+bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
+<% end %>
+    if( that->y()+1 >= ms()->height() ) return false;
+    else return cubes_[that->x()][that->y()+1].use_count() == 0;
+    // throw "impossible flow!";
+    return false;
+}
+
+bool <% debug_hook 'Map::check_not_continue' do %>(std::vector<pCube>& list, pCube that, pCube ya_that){
+<% end %>
+    if( ya_that.use_count() == 0 )   return true;
+    else if( *ya_that != *that )     return true;
+    else if( ya_that->is_waiting() ) list.push_back(ya_that);
+    else                             return true;
+    return false;
 }

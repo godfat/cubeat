@@ -1,7 +1,11 @@
 
 #include "model/Cube.hpp"
-
+#include "model/Chain.hpp"
 #include "model/state/State.hpp"
+#include "model/state/Waiting.hpp"
+#include "model/state/Exploding.hpp"
+#include "model/state/Dropping.hpp"
+#include "model/state/Dying.hpp"
 
 #include "all_fwd.hpp"
 
@@ -9,6 +13,8 @@
 
 using namespace psc;
 using namespace model;
+using namespace state;
+using std::tr1::dynamic_pointer_cast;
 
 bool <% debug_hook 'Cube::cycle_and_die' do %>(){
 <% end %>
@@ -28,3 +34,18 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
         return true; // i am dead
     }
 }
+
+// begin only used by Map::next_state
+pWaiting Cube::is_waiting(){ return dynamic_pointer_cast<Waiting>(state_); }
+pDropping Cube::is_dropping(){ return dynamic_pointer_cast<Dropping>(state_); }
+pDying Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
+pExploding Cube::is_exploding() const{ return dynamic_pointer_cast<Exploding>(state_); }
+
+void <% debug_hook 'Cube::lose_chain' do %>(){
+<% end %>
+	if(chain_belonged_to_) {
+		chain_belonged_to_->dec_one_owner();
+		chain_belonged_to_.reset();
+	}
+}
+// end

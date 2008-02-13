@@ -1,6 +1,7 @@
 
 task :default do
-  sh 'rake --tasks'
+  Rake.application.options.show_task_pattern = /./
+  Rake.application.display_tasks_and_comments
 end
 
 #####
@@ -9,38 +10,6 @@ require 'rubygems'
 gem 'ludy', '>=0.1.7'
 require 'ludy/tasks/preprocess_cpp'
 Project.name = 'shooting_cubes'
-
-=begin
-# inputs = Dir.glob('**/*.erb')
-# outputs = inputs.map{|o| o[0..-5]}
-inputs = FileList['**/*.erb']
-outputs = inputs.ext
-
-desc 'erb preprocessing'
-task :preprocess => [:begin, outputs, :end].flatten
-task :begin do; puts "processing templates: #{inputs.inspect}\n\n"; end
-task :end do; puts "processed output: #{outputs.inspect}"; end
-
-require 'erb'
-require 'open-uri'
-require 'lib/attr_builder'
-require 'lib/header_guard'
-require 'lib/template_forward_parameters'
-
-inputs.zip(outputs).each{ |input, output|
-  file output => input do
-    open output, 'w' do |o|
-      # $__class__ = (output.gsub %r{.*/}, '')[0..-5]
-      # @class = output.pathmap('%f').ext
-      @class = output.pathmap '%n'
-      @dir = output.pathmap('%-1d')
-      @indent = '    '
-      @prefix = ''
-      o << ERB.new(open(input).read).result(binding)
-    end
-  end
-}
-=end
 
 #####
 
@@ -57,9 +26,12 @@ end
 
 #####
 
-desc 'preprocess and build'
-task :build => :preprocess do
+file :Makefile do
   sh 'cmake .'
+end
+
+desc 'preprocess and build'
+task :build => [:preprocess, :Makefile] do
   sh 'make'
 end
 

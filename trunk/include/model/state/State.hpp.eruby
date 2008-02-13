@@ -8,9 +8,7 @@ namespace psc{ namespace model{ namespace state{
 
 class State: public std::tr1::enable_shared_from_this<State>{
 public:
-    State(){}
-
-	State& init(wpCube owner){ owner_ = owner; return *this; }
+    State(wpCube owner): owner_(owner){}
 
 	virtual ~State(){}
     virtual pState cycle() = 0;

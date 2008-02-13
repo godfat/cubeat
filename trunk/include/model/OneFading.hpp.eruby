@@ -12,11 +12,19 @@
 #include "model/Chain.hpp"
 #include "model/Cube.hpp"
 #include "model/Map.hpp"
+#include "utils/ObjectPool.hpp"
+
+#include <boost/tr1/tr1/memory>
 
 namespace psc{ namespace model{
 
 class OneFading{
     typedef Map::clist_type clist_type;
+public:
+    typedef std::tr1::shared_ptr<OneFading> pointer_type;
+    static pointer_type create(Map& map, clist_type const& list){
+        return utils::ObjectPool<OneFading>::create(map, list);
+    }
 public:
     // begin only used by Map::next_state
     OneFading(Map& map, clist_type const& list):
@@ -27,10 +35,10 @@ public:
 
         pChain chain = get_the_chain();
 
-        for(clist_type::iterator i=set_.begin(), iend=set_.end();
+        for(clist_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
-            map_.squares_belong_to_the_chain_from_bottom_to_top(*i, chain);
+            map_.cubes_belong_to_the_chain_from_bottom_to_top(*i, chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
                 (**i).cycled();
@@ -40,7 +48,7 @@ public:
     // end
 
 private:
-    Chain* get_the_chain(){
+    pChain get_the_chain(){
         pChain chain;
 
         //this for loop will get the first Chain it finds in this column or row

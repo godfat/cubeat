@@ -6,6 +6,13 @@ namespace psc{ namespace model{ namespace state{
 
 class Dying: public State{
 public:
+    typedef pDying pointer_type;
+    static pState create(wpCube owner){
+        return utils::ObjectPool<Dying>::create(owner);
+    }
+
+public:
+    Dying(wpCube owner): State(owner){}
     virtual ~Dying(){}
     virtual pState cycle();
 

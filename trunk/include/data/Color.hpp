@@ -56,7 +56,7 @@ public:
 
 private:
     static int random_id(int limit){
-        return utils::Random::i().random(limit)+1;
+        return utils::random(limit)+1;
     }
 
 private:

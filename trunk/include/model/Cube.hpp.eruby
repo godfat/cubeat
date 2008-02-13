@@ -18,18 +18,17 @@
 
 namespace psc{ namespace model{
 
-class Cube{<%# @prefix = ' '*4 %>
+class Cube: public std::tr1::enable_shared_from_this<Cube>{
 <%= accessor :int, :x, :y %>
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
 
 public:
     static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
+        return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
-        map_(map), color_(data::Color::from_id(color_id)), cycled_(false),
-        state_(state::Waiting::create())
+        map_(map), color_(data::Color::from_id(color_id)), cycled_(false)
     {}
 
     // begin only used by Map::cycle
@@ -46,16 +45,16 @@ public:
 
     // begin only used by Map::square_can_lose_chain,
     //   which is used by Map::next_state
-    state::pDying const is_dying() const;
+    state::pDying is_dying() const;
     // end
 
     // begin only used by OneFading::get_the_chain,
     //   which is used by OneFading::fade
-    data::pChain& chain(){ return chain_belonged_to_; }
+    void chain(pChain chain){ chain_belonged_to_ = chain; }
     // end
 
     // begin only used by Map::squares_belong_to_the_chain_from_bottom_to_top
-    data::pChain const chain() const{ return chain_belonged_to_; }
+    pChain chain() const{ return chain_belonged_to_; }
     // end
 
     // begin only used by OneFading::fade
@@ -69,7 +68,7 @@ public:
     // end
 
     // begin only used by Map.cpp => local function check_not_continue
-    friend inline bool operator!=(pCube const lhs, pCube const rhs){ return lhs->color_ != rhs->color_; }
+    friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_ != rhs.color_; }
     // end
 
 	// begin only used by Map::insert_garbage,
@@ -82,7 +81,7 @@ public:
 	void restore();
 
 	//added
-	state::pExploding const is_exploding() const;
+	state::pExploding is_exploding() const;
 	void go_exploding();
 
 	bool has_grounded(){ return has_grounded_; }
@@ -92,12 +91,19 @@ public:
 	int const& lose_chain_delay() const{ return lose_chain_delay_; }
 
 private:
+    pCube init(){
+        pCube result = shared_from_this();
+        state_ = state::Waiting::create(result);
+        return result;
+    }
+
+private:
     wpMap map_;
     data::Color color_;
     bool cycled_;
     bool has_grounded_;
     int lose_chain_delay_;
-    data::pChain chain_belonged_to_;
+    pChain chain_belonged_to_;
     state::pState state_;
 };
 

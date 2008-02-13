@@ -20,5 +20,9 @@ private:
 
 };
 
+inline int random(int max){
+    return Random::i().random(max);
+}
+
 }} // end of namespace
 <% end %>

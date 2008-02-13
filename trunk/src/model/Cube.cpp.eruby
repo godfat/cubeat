@@ -38,8 +38,8 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
 // begin only used by Map::next_state
 pWaiting Cube::is_waiting(){ return dynamic_pointer_cast<Waiting>(state_); }
 pDropping Cube::is_dropping(){ return dynamic_pointer_cast<Dropping>(state_); }
-pDying Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
-pExploding Cube::is_exploding() const{ return dynamic_pointer_cast<Exploding>(state_); }
+pDying const Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
+pExploding const Cube::is_exploding() const{ return dynamic_pointer_cast<Exploding>(state_); }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
@@ -49,3 +49,9 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 	}
 }
 // end
+
+// only used by OneFading::fade
+void <% debug_hook 'Cube::go_dying' do %>(){
+<% end %>
+    state_ = state::Dying::create(shared_from_this());
+}

@@ -1,0 +1,10 @@
+
+#include "model/state/State.hpp"
+#include "model/Cube.hpp"
+
+using namespace psc;
+using namespace model;
+using namespace state;
+
+pMap State::map(){ return owner()->map(); }
+pMap const State::map() const{ return owner()->map(); }

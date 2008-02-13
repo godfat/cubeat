@@ -14,9 +14,9 @@ public:
     virtual pState cycle() = 0;
 
 protected:
-    Map& map();
-    Map const& map() const;
-    pCube owner(){ return owner_.lock(); }
+    pMap map();
+    pMap const map() const;
+    pCube const owner() const{ return owner_.lock(); }
 
 private:
     wpCube owner_;

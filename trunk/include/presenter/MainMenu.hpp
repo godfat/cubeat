@@ -9,6 +9,14 @@
 #include <string>
 #include <vector>
 
+namespace irr {
+namespace core {
+template <class T>
+class vector2d;
+typedef vector2d<float> vector2df;
+}
+}
+
 namespace psc {
 
 namespace presenter {
@@ -18,9 +26,7 @@ class MainMenu : public Object, public std::tr1::enable_shared_from_this<MainMen
 public:
     typedef std::tr1::shared_ptr< MainMenu > pointer_type;
     static pointer_type create() {
-        pointer_type p = utils::ObjectPool< MainMenu >::create();
-        p->init();
-        return p;
+        return utils::ObjectPool< MainMenu >::create()->init();
     }
 
     MainMenu(): animating_(false){}
@@ -28,13 +34,18 @@ public:
     virtual void cycle();
 
 protected:
-    void init();
+    pointer_type init();
+
     MainMenu& showMenu(std::string const&);
     MainMenu& hideMenu(std::string const&);
     MainMenu& cubeRearrange();
 
     void menu1_1_click(view::pSprite&);
     void menu2_1_click(view::pSprite&);
+
+    void initDecorator();
+    void initDecoInner_(irr::core::vector2df const&, irr::core::vector2df const&, int const&,
+                        int const&, int const&, int const&,std::vector<std::string> const&);
 
 protected:
     view::pScene mainmenu_scene_;

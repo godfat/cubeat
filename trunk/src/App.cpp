@@ -102,7 +102,6 @@ int App::run()
             if( temp_presenter_ ) { //hand over master presenter here "safely."
                 master_presenter_ = temp_presenter_;
                 temp_presenter_.reset();
-                temp_presenter_ = presenter::pObject();
             }
         }
 

@@ -13,6 +13,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/lexical_cast.hpp>
 #include <utility>
 #include <cstdlib>
 #include <ctime>
@@ -35,7 +36,7 @@ using namespace std::tr1::placeholders;
 
 namespace BLL = boost::lambda;
 
-void MainMenu::init()
+pMainMenu MainMenu::init()
 {
     App::i().setLoading(1);
     mainmenu_scene_ = view::Scene::create(view::pObject(), "MainMenu");
@@ -61,31 +62,78 @@ void MainMenu::init()
     temp2->set<Alpha>(0);
     temp2->set<Visible>(false);
 
-    for(int i=0, ran=0; i < 50; ++i, ran+=50) { //640, 1120, 1760, 2240
-        std::ostringstream oss;
-        oss << "cubes/cube" << utils::Random::i().random(4)+1;
-        data::Color col = data::Color::from_id(0, 4);
-
-        view::pSprite temp = view::Sprite::create(oss.str(), mainmenu_scene_, 80, 80, true);
-        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() );
-        temp->tween<Linear, Rotation>(vector3df(0, 0, 360), 3000);
-
-        if( ran < 640 ) {
-            temp->moveTo( ran + 40, 0 );
-        }
-        else if( ran < 1120 ) {
-            temp->moveTo( 620, ran - 620 );
-        }
-        else if( ran < 1760 ) {
-            temp->moveTo( 640 - (ran-1120), 450 );
-        }
-        else {
-            temp->moveTo( 40, 480 - (ran-1760) );
-        }
-        deco_cubes_.push_back( temp );
-    }
+    initDecorator();
     App::i().setLoading(100);
     showMenu("testmenu1");
+
+    return shared_from_this();
+}
+
+void MainMenu::initDecorator()
+{
+    int const w = 640;
+    int const h = 480;
+    int const outgoing = 80;
+    int const contract = 30;
+    vector2df start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
+    vector2df start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
+    vector2df start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
+    vector2df start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
+    int const bias = 30;
+    int const num_in_w = 12;
+    int const num_in_h = 9;
+    int const color_num= 4;
+    int const time_w = 10000;
+    int const time_h = 7500;
+    std::vector<std::string> paths;
+
+    for(int i=1; i <= 4; ++i)
+        paths.push_back( std::string("cubes/cube") +
+            std::string( boost::lexical_cast<std::string>(i) ) );
+
+    initDecoInner_( start1, end1, num_in_w, color_num, time_w, bias, paths );
+    std::cout << "MainMenu deco: top line done.\n";
+    initDecoInner_( start2, end2, num_in_h, color_num, time_h, bias, paths );
+    std::cout << "MainMenu deco: right line done.\n";
+    initDecoInner_( start3, end3, num_in_w, color_num, time_w, bias, paths );
+    std::cout << "MainMenu deco: bottom line done.\n";
+    initDecoInner_( start4, end4, num_in_h, color_num, time_h, bias, paths );
+    std::cout << "MainMenu deco: left line done.\n";
+}
+
+void MainMenu::initDecoInner_(vector2df const& from, vector2df const& dest, int const& num,
+                             int const& color_num, int const& time, int const& bias,
+                             std::vector<std::string> const& paths)
+{
+    int const length = (dest - from).getLength();
+    int const gap = length / num;
+
+    for(int i=0, range=0; i < num; ++i, range += gap)
+    {
+        data::Color col = data::Color::from_id(0, color_num);
+        int rand_bias   = utils::random( bias ) - bias/2;
+        vector3df from3d( from.X + rand_bias, -from.Y + rand_bias, 400 );
+        vector3df dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -400 );
+        view::pSprite temp = view::Sprite::create( paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
+
+        float scale = utils::random(50)/100.0f + 1;
+        float rot_duration = 3000 + utils::random(2000);
+        float delay = utils::random( rot_duration );
+        float time_position = range * time / length;
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
+             .set<Scale>(vector3df(scale, scale, 1))
+             .tween<Linear, Rotation>(vector3df(0, 0, 360), rot_duration, true, 0, -delay )
+             .tween<Linear, Pos3D>(from3d, dest3d, time, true, 0, -time_position );
+
+        if( col.r() > 0 )
+            temp->tween<Linear, Red>(  col.r()>>2, col.r(), time, true, 0, -time_position );
+        if( col.g() > 0 )
+            temp->tween<Linear, Green>(col.g()>>2, col.g(), time, true, 0, -time_position );
+        if( col.b() > 0 )
+            temp->tween<Linear, Blue>( col.b()>>2, col.b(), time, true, 0, -time_position );
+
+        deco_cubes_.push_back( temp );
+    }
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)

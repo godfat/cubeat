@@ -37,17 +37,19 @@ void Scene::init(pObject const& parent, std::string const& name)
 Scene& Scene::setTo2DView()
 {
     video::IVideoDriver* driver = smgr_->getVideoDriver();
-    f32 w = (float)driver->getScreenSize().Width;
-    f32 h = (float)driver->getScreenSize().Height;
+    float w = (float)driver->getScreenSize().Width;
+    float h = (float)driver->getScreenSize().Height;
     camera_->setPosition( vector3df(10000,0,0) );
     camera_->setTarget( vector3df(10000,0,100) );
+    float const bloat = 200.0f; //size bloat in case items are culled when they are near the edge
 
     matrix4 ortho;
-    ortho.buildProjectionMatrixOrthoLH( static_cast<f32>(w), static_cast<f32>(h), 0, 10000);
+    ortho.buildProjectionMatrixOrthoLH( w+bloat, h+bloat, 0, 10000);
     camera_->setProjectionMatrix( ortho );
     camera_->setIsOrthogonal(true);
 
-    body_->setPosition(vector3df(-w/2, h/2, 500));
+    body_->setScale(vector3df( (w+bloat)/w, (h+bloat)/h, 1 ));
+    body_->setPosition(vector3df(-(w+bloat)/2, (h+bloat)/2, 500));  //default depth at 500..
     return *this;
 }
 

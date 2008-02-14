@@ -23,7 +23,7 @@ public:
 	//! constructor
     CustomAnimator(T const& start, T const& end, u32 const& duration,
                    bool const& loop = true, EndCallback const& cb = 0,
-                   u32 const& delayTime = 0)
+                   s32 const& delayTime = 0)
         : start_(start), end_(end), length_(0.0f), duration_(duration),
           loop_(loop), cb_(cb)
     {
@@ -41,9 +41,9 @@ public:
 	//! animates a scene node
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
 	    if ( !node ) return;
-        if ( timeMs < startTime_ ) return;
+        if ( static_cast<s32>(timeMs) < startTime_ ) return;
 
-	    u32 t = (timeMs-startTime_);
+	    u32 t = timeMs - startTime_;
 	    T pos = start_;
 
         f32 dur = static_cast<f32>( duration_ );
@@ -99,7 +99,7 @@ protected:
     f32 length_;
 	T distance_;
   //f32 timeFactor_;
-	u32 startTime_;
+	s32 startTime_;
 	u32 duration_;
 	bool loop_;
 

@@ -98,6 +98,7 @@ void Sprite::setupMeshBase(pObject const& parent)
     }
 
     body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,-50) );
+    body_->setAutomaticCulling(EAC_OFF);
     body_->setName( name_.c_str() );
 }
 

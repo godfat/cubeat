@@ -6,18 +6,17 @@
 
 #include "all_fwd.hpp"
 
-#include <boost/tr1/tr1/memory>
 #include <list>
 
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
-    typedef std::tr1::shared_ptr<Map> pointer_type;
+    typedef pMap pointer_type;
     typedef std::list<pCube> CubeList;
 
 public:
-    static pointer_type create(data::pMapSetting setting){ return pointer_type(new Map(setting))->init(); }
+    static pMap create(data::pMapSetting setting){ return pMap(new Map(setting))->init(); }
 
 public:
     Map(data::pMapSetting setting): setting_(setting){}
@@ -27,7 +26,7 @@ public:
     Map& cycle();
 
 private:
-    pointer_type init();
+    pMap init();
 
 private:
     data::pMapSetting setting_;

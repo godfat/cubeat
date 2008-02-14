@@ -1,0 +1,30 @@
+
+#include "model/state/Exploding.hpp"
+#include "model/Cube.hpp"
+#include "model/Map.hpp"
+
+<%= debug_include %>
+
+using namespace psc;
+using namespace model;
+using namespace state;
+
+pState <% debug_hook 'Exploding::cycle' do %>(){
+<% end %>
+	if( exploding_step_ < map()->ms()->decay() ){
+		if( !explosion_started_ ){
+			owner()->explosion_setup();
+			explosion_started_ = true;
+		}
+		else{
+			owner()->explosion_loop(exploding_step_);
+		}
+
+		++exploding_step_;
+		return shared_from_this();
+	}
+	else{
+		owner()->explosion_cleanup();
+		return pState(); // really dead
+	}
+}

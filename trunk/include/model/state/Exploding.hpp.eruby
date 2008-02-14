@@ -1,25 +1,26 @@
 
-/*2007.11.9 
-  Most of the things remain unchanged.
-*/     
-
 <% header_guard do %>
 
 #include "model/state/State.hpp"
+#include "utils/ObjectPool.hpp"
+#include "all_fwd.hpp"
 
 namespace psc{ namespace model{ namespace state{
 
 class Exploding: public State{
 public:
+    typedef pExploding pointer_type;
+
+public:
+    static pExploding create(pCube owner){ return utils::ObjectPool<Exploding>::create(owner); }
+ 
+public:
+    Exploding(wpCube owner): State(owner), explosion_started_(false), exploding_step_(0){}
     virtual ~Exploding(){}
     virtual pState cycle();
 
 private:
-    void explosion_setup(){}
-    void explosion_loop(){}
-    void explosion_cleanup(){}
-
-	bool explosion_started;
+	bool explosion_started_;
 	int exploding_step_;
 };
 

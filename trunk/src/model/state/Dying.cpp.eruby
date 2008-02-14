@@ -1,0 +1,24 @@
+
+#include "model/state/Dying.hpp"
+#include "model/Map.hpp"
+
+#include "all_fwd.hpp"
+
+<%= debug_include %>
+
+using namespace psc;
+using namespace model;
+using namespace state;
+
+pState <% debug_hook 'Dying::cycle' do %>(){
+<% end %>
+	if( dying_step_ < map()->ms()->decay() ) {
+		// int alpha = 255.0 * (map()->ms()->decay() - dying_step_) / map()->ms()->decay();
+		// owner()->set_alpha( alpha );
+        ++dying_step_;
+		return shared_from_this();
+	}
+	else {
+		return pState(); // really dead
+	}
+}

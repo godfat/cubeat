@@ -202,3 +202,15 @@ bool <% debug_hook 'Map::check_not_continue' do %>(std::vector<pCube>& list, pCu
     else                             return true;
     return false;
 }
+
+bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
+<% end %>
+	for( int x = that->x(), y = that->y()+1; y<ms()->height(); ++y )
+	    if( cubes_[x][y].use_count() == 0 ||
+	        cubes_[x][y]->is_dying() || cubes_[x][y]->is_exploding() ) 
+	    {
+	        // when it's empty, dying or exploding, the square ontop can't lose chain
+	        return false;
+	    }
+	return true;
+}

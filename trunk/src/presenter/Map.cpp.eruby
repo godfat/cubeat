@@ -14,9 +14,11 @@ using namespace presenter;
 
 pMap <% debug_hook 'Map::init' do %>(){
 <% end %>
-    model_ = model::Map::create(shared_from_this(), setting_);
-    // view_ = view::Map::create(shared_from_this());
-    return shared_from_this();
+    pMap self = shared_from_this();
+    model_ = model::Map::create(self, setting_);
+    model_->init_cubes(); // beware! this need refer model_!
+    // view_ = view::Map::create(self);
+    return self;
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

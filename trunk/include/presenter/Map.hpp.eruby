@@ -8,6 +8,8 @@
 
 #include <list>
 
+<%= debug_include %>
+
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
@@ -24,6 +26,7 @@ public:
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
     Map& cycle();
+    <% debug_hook '~Map' do %>(){<%end%>}
 
 private:
     pMap init();

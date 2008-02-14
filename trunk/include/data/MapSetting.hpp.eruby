@@ -26,6 +26,8 @@ public:
         height_ = new_height;
         return reset_size();
     }
+
+    <% debug_hook '~MapSetting' do %>(){<%end%>}
 private:
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };

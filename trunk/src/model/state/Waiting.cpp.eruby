@@ -24,5 +24,5 @@ bool <% debug_hook 'Waiting::need_check' do %>() const{
 }
 bool <% debug_hook 'Waiting::need_check_chain_property' do %>() const{
 <% end %>
-	return !chain_property_checked_ && owner()->lose_chain_delay() >= map()->ms()->frequency(); 
+	return !chain_property_checked_ && owner()->lose_chain_delay() >= map()->ms()->frequency();
 }

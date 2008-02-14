@@ -20,6 +20,8 @@
 
 #include <boost/tr1/tr1/memory>
 
+<%= debug_include %>
+
 namespace psc{ namespace presenter{
 
 class Cube{
@@ -32,6 +34,7 @@ public:
     }
 public:
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
+    <% debug_hook '~Cube' do %>(){<%end%>}
 
     int x() const;
     int y() const;

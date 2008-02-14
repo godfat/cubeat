@@ -27,19 +27,22 @@ public:
         // map doesn't need a pool
         return pointer_type(new Map(owner, setting));
     }
+
+public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
         cubes_(boost::extents[setting->width()][setting->height()])
-    {
-        init_cubes();
-    }
+    {}
+    Map& init_cubes();
+    <% debug_hook '~Map' do %>(){<%end%>}
+
     Map& cycle(){
         using namespace std::tr1::placeholders;
         n_of_newcomers_ = 0;
         utils::reverse_for_each(cubes_, std::tr1::bind(&Map::do_cycle, this, _1, _2));
         return *this;
     }
-    data::pMapSetting ms() const{ return setting_; }
+    data::pMapSetting const <% debug_hook 'ms' do %>() const{ <% end %> return setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
@@ -72,7 +75,6 @@ public:
 
 private:
     void do_cycle(pCube c, int i);
-    Map& init_cubes();
     Map& insert(pCube cube);
 
     void make_row(pCube that, clist_type&, clist_type&);
@@ -84,7 +86,7 @@ private:
     void update_chains();
     void refresh_cubes();
     bool cube_can_lose_chain(cpCube) const;
-    void insert_garbage(pCube that, int x, int y);        //added
+    void insert_garbage(pCube that, int x, int y); // added
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

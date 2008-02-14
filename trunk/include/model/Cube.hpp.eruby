@@ -16,6 +16,8 @@
 #include "utils/ObjectPool.hpp"
 #include "data/Color.hpp"
 
+<%= debug_include %>
+
 namespace psc{ namespace model{
 
 class Cube: public std::tr1::enable_shared_from_this<Cube>{
@@ -32,6 +34,7 @@ public:
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
         lose_chain_delay_(0)
     {}
+    <% debug_hook '~Cube' do %>(){<%end%>}
 
     // begin only used by Map::cycle
     bool cycle_and_die();
@@ -83,29 +86,30 @@ public:
 	void restore();
 
 	// graphical issues, call body to resolve
-	void set_alpha(int alpha)     {}
+	void set_alpha(int /*alpha*/)     {}
 	void hide_outline()           {}
 	void show_outline()           {}
 	void explosion_setup()        {}
-	void explosion_loop(int step) {}
+	void explosion_loop(int /*step*/) {}
 	void explosion_cleanup()      {}
 	// end
 
-	//added
+	// added
 	state::pExploding const is_exploding() const;
 	void go_exploding();
 
 	bool has_grounded(){ return has_grounded_; }
 	void set_grounded(){ has_grounded_ = true; }
 
-	int& lose_chain_delay() { return lose_chain_delay_; }
-	int const& lose_chain_delay() const{ return lose_chain_delay_; }
+	int& <% debug_hook 'lose_chain_delay' do %>(){ <% end %> return lose_chain_delay_; }
+	int const& <% debug_hook 'lose_chain_delay' do %>() const{ <% end %> return lose_chain_delay_; }
 
 private:
-    pCube init(){
-        pCube result = shared_from_this();
-        state_ = state::Waiting::create(result);
-        return result;
+    pCube <% debug_hook 'init' do %>(){
+<% end %>
+        pCube self = shared_from_this();
+        state_ = state::Waiting::create(self);
+        return self;
     }
 
 private:

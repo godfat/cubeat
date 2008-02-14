@@ -66,13 +66,13 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
                 return state::Dying::create(that);
             }
             waiting->checked();
-			that->set_grounded(); //once grounded, always grounded
+			that->set_grounded(); // once grounded, always grounded
         }
 		if( waiting->need_check_chain_property() ){
 			if( cube_can_lose_chain(that) ) { 
 	            that->lose_chain();
 				if( !that->is_garbage() )
-				    ;// that->hide_outline();
+				    that->hide_outline();
 			}
 			waiting->chain_property_checked();
 		}
@@ -112,12 +112,12 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
 
 	for(int x=that->x(), y=that->y();
         cubes_[x][y].use_count() != 0 &&
-        cubes_[x][y]->is_waiting() &&    //added: important
-		cubes_[x][y]->chain().use_count() == 0    //added: important
+        cubes_[x][y]->is_waiting() && // added: important
+		cubes_[x][y]->chain().use_count() == 0 // added: important
 		; --y)
     {
         cubes_[x][y]->chain(chain);
-		// cubes_[x][y]->show_outline();
+		cubes_[x][y]->show_outline();
         cubes_[x][y]->lose_chain_delay() = 0;
         chain->inc_one_owner();
     }
@@ -135,8 +135,6 @@ void <% debug_hook 'Map::make_row' do %>(pCube that, clist_type& not_traveled, c
         if( check_not_continue( row, that, cubes_[i][that->y()] ) )
             break;
 
-    // Debugger::i().trace(row.size());
-
     if(static_cast<int>(row.size()) >= ms()->chain_amounts())
         process_chaining(row, not_traveled, result);
 }
@@ -152,8 +150,6 @@ void <% debug_hook 'Map::make_column' do %>(pCube that, clist_type& not_traveled
     for(int i=that->y()+1; i<ms()->height(); ++i) // exclude self
         if( check_not_continue( column, that, cubes_[that->x()][i] ) )
             break;
-
-    // Debugger::i().trace(column.size());
 
     if(static_cast<int>(column.size()) >= ms()->chain_amounts())
         process_chaining(column, not_traveled, result);
@@ -182,7 +178,6 @@ pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
     clist_type traveled, not_traveled, result;
     not_traveled.insert(that);
     make_clist(traveled, not_traveled, result);
-    // Debugger::i().trace(result.size());
     return result.size() ? OneFading::create(*this, result) : pOneFading();
 }
 

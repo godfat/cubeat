@@ -2,14 +2,16 @@
 <% header_guard do %>
 
 #include "model/state/State.hpp"
+#include "utils/ObjectPool.hpp"
+
 namespace psc{ namespace model{ namespace state{
 
 class Dropping: public State{
 public:
     typedef pDropping pointer_type;
-    static pDropping create(wpCube owner){
-        return utils::ObjectPool<Dropping>::create(owner);
-    }
+
+public:
+    static pDropping create(wpCube owner){ return utils::ObjectPool<Dropping>::create(owner); }
 public:
     Dropping(wpCube owner): State(owner){}
     virtual ~Dropping(){}

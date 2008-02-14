@@ -1,0 +1,24 @@
+
+#include "model/state/Dropping.hpp"
+#include "model/Cube.hpp"
+#include "model/Map.hpp" // for next_state
+
+<%= debug_include %>
+
+using namespace psc;
+using namespace model;
+using namespace state;
+
+pState <% debug_hook 'Dropping::cycle' do %>(){
+<% end %>
+    // owner()->drop_a_frame();
+    // if( owner()->is_not_reached() )
+        // return shared_from_this();
+
+    // owner()->addjust();
+    pState state = map()->next_state(owner());
+    if( state.use_count() == 0 )
+        return shared_from_this();
+    else
+        return state;
+}

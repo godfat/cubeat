@@ -78,9 +78,18 @@ public:
 	void be_garbage();
 	// end
 
-    bool is_garbage() const; // { return is_garbage_; }
+    bool is_garbage() const{ return is_garbage_; }
     void be_broken();
 	void restore();
+
+	// graphical issues, call body to resolve
+	void set_alpha(int alpha)     {}
+	void hide_outline()           {}
+	void show_outline()           {}
+	void explosion_setup()        {}
+	void explosion_loop(int step) {}
+	void explosion_cleanup()      {}
+	// end
 
 	//added
 	state::pExploding const is_exploding() const;

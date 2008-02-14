@@ -12,7 +12,7 @@ public:
     typedef pExploding pointer_type;
 
 public:
-    static pExploding create(pCube owner){ return utils::ObjectPool<Exploding>::create(owner); }
+    static pExploding create(wpCube owner){ return utils::ObjectPool<Exploding>::create(owner); }
  
 public:
     Exploding(wpCube owner): State(owner), explosion_started_(false), exploding_step_(0){}

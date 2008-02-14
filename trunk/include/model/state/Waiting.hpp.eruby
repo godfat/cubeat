@@ -10,16 +10,16 @@ namespace psc{ namespace model{ namespace state{
 class Waiting: public State{
 public:
     typedef pWaiting pointer_type;
-    static pState create(wpCube owner){
-        return utils::ObjectPool<Waiting>::create(owner);
-    }
-public:
-    virtual ~Waiting(){}
-    virtual pState cycle();
 
+public:
+    static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner); }
+public:
     Waiting(wpCube owner): State(owner), not_checked_(true),
                            chain_property_checked_(false), delay_(0)
     {}
+
+    virtual ~Waiting(){}
+    virtual pState cycle();
 
     // begin only used by Map::next_state
 	void checked(){ not_checked_ = false; }

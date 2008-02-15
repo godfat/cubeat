@@ -42,7 +42,7 @@ public:
     // end
 
     // begin only used by Map::next_state
-    void drop_a_block(){ ++y_; }
+    void <% debug_hook 'drop_a_block' do %>(){ <%end%> --y_; }
     state::pWaiting is_waiting();
     state::pDropping is_dropping();
     void lose_chain();

@@ -22,19 +22,21 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
     using boost::lambda::_1; // this would be used in for_each for element
     using boost::lambda::_2; // this would be used in for_each for index
-    utils::vector_2d cube_colors(boost::extents[ms()->width()][ms()->starting_line()]);
+    int width = ms()->width(); //, height = ms()->height();
+    utils::vector_2d cube_colors(boost::extents[width][ms()->starting_line()]);
 
     int const one_color_amounts = std::ceil(
-        static_cast<double>(ms()->width())*ms()->starting_line()/ms()->color_amounts()
+        static_cast<double>(width)*ms()->starting_line()/ms()->color_amounts()
     );
-    utils::for_each(cube_colors, _1 = _2/one_color_amounts);
+    utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
+    // utils::for_each(cube_colors, (std::cout << _1 << " ", _2));
 
     utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
     {
-        insert(owner_.lock()->make_cube( i%ms()->width(), // x
-                                         ms()->height()-1-i/ms()->width(), // y
+        insert(owner_.lock()->make_cube( i%width, // x
+                                         i/width, // y
                                          cube_colors.origin()[i] )->model());
     }
     return *this;
@@ -105,8 +107,8 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
     for(int x=that->x(), y=that->y();
 		cubes_[x][y].use_count() != 0 &&
 		cubes_[x][y]->is_waiting() &&
-        cubes_[x][y]->chain() == chain    
-		; --y)
+        cubes_[x][y]->chain() == chain
+		; ++y)
     {
         cubes_[x][y]->lose_chain_delay() = 0;
     }
@@ -115,7 +117,7 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
         cubes_[x][y].use_count() != 0 &&
         cubes_[x][y]->is_waiting() && // added: important
 		cubes_[x][y]->chain().use_count() == 0 // added: important
-		; --y)
+		; ++y)
     {
         cubes_[x][y]->chain(chain);
 		cubes_[x][y]->show_outline();
@@ -132,7 +134,7 @@ void <% debug_hook 'Map::make_row' do %>(pCube that, clist_type& not_traveled, c
         if( check_not_continue( row, that, cubes_[i][that->y()] ) )
             break;
 
-    for(int i=that->x()+1; i<ms()->width(); ++i) // exclude self
+    for(int i=that->x()+1, iend=ms()->width(); i!=iend; ++i) // exclude self
         if( check_not_continue( row, that, cubes_[i][that->y()] ) )
             break;
 
@@ -148,7 +150,7 @@ void <% debug_hook 'Map::make_column' do %>(pCube that, clist_type& not_traveled
         if( check_not_continue( column, that, cubes_[that->x()][i] ) )
             break;
 
-    for(int i=that->y()+1; i<ms()->height(); ++i) // exclude self
+    for(int i=that->y()+1, iend=ms()->height(); i!=iend; ++i) // exclude self
         if( check_not_continue( column, that, cubes_[that->x()][i] ) )
             break;
 
@@ -184,8 +186,8 @@ pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 
 bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 <% end %>
-    if( that->y()+1 >= ms()->height() ) return false;
-    else return cubes_[that->x()][that->y()+1].use_count() == 0;
+    if( that->y()-1 < 0 ) return false;
+    else return cubes_[that->x()][that->y()-1].use_count() == 0;
     // throw "impossible flow!";
     return false;
 }
@@ -201,7 +203,7 @@ bool <% debug_hook 'Map::check_not_continue' do %>(std::vector<pCube>& list, pCu
 
 bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 <% end %>
-	for( int x = that->x(), y = that->y()+1; y<ms()->height(); ++y )
+	for( int x = that->x(), y = that->y()-1; y >= 0; --y )
 	    if( cubes_[x][y].use_count() == 0 ||
 	        cubes_[x][y]->is_dying() || cubes_[x][y]->is_exploding() ) 
 	    {

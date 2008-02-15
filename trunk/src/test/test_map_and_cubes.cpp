@@ -5,23 +5,32 @@
 #ifdef _SHOOTING_CUBES_TEST_
 #include "all_fwd.hpp"
 #include "presenter/Map.hpp"
-#include <iostream>
+#include <cstdio>
+
+#include <cstdlib> // for srand
+#include <ctime> // for time, clock
 
 using namespace psc;
 
 void preview(presenter::pMap map){
-    using std::cout; using std::endl;
     presenter::Map::preview_type p = map->preview();
-    for(int y=0; y<11; ++y)
+    for(int y=10; y>=0; --y){
         for(int x=0; x<6; ++x)
-            cout << p[x][y] << ' ';
-    cout << endl;
+            std::printf("%2d", p[x][y]);
+        std::printf("\n");
+    }
+    std::printf("\n");
 }
 
 int main(){
+    std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+
     presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
+    std::cerr << "\n\n\nend creation\n\n\n";
+    preview(map);
     preview(map);
     map->cycle();
+    std::cerr << "\n\n\nend cycle\n\n\n";
     preview(map);
 }
 

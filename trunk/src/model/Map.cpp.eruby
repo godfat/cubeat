@@ -1,4 +1,5 @@
 
+#include "presenter/Map.hpp"
 #include "model/Map.hpp"
 #include "model/Cube.hpp"
 #include "model/OneFading.hpp"
@@ -208,4 +209,15 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	        return false;
 	    }
 	return true;
+}
+
+Map::preview_type <% debug_hook 'Map::preview' do %>() const{
+<% end %>
+    int width = ms()->width(), height = ms()->height();
+    preview_type result(boost::extents[width][height]);
+    for(int y=0; y<height; ++y)
+        for(int x=0; x<width; ++x)
+            if(cubes_[x][y])
+                result[x][y] = cubes_[x][y]->color_id();
+    return result;
 }

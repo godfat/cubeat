@@ -15,6 +15,7 @@ namespace psc{ namespace presenter{
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
+    typedef model::Map::preview_type preview_type;
     typedef std::list<pCube> CubeList;
 
 public:
@@ -27,6 +28,8 @@ public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
     Map& cycle();
     <% debug_hook '~Map' do %>(){<%end%>}
+    // model::Map::container_type const& cubes() const{ return model_.cubes(); }
+    preview_type preview() const{ return model_->preview(); }
 
 private:
     pMap init();

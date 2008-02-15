@@ -6,24 +6,30 @@
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
 #include "utils/Random.hpp"
+#include <algorithm> // for find
+#include <iterator> // for distance
 
 namespace psc{ namespace data{
 
 class Color{
+    // index 0 is dummy..
+    static int const id2rgb[];
+
 public:
     static Color from_id(int i, int limit = 6){
         int rgb;
         switch(i){
-            case 0: return from_id(random_id(limit)); break;
-            case 1: rgb = blue;       break;
-            case 2: rgb = green;      break;
-            case 3: rgb = red;        break;
-            case 4: rgb = red_green;  break;
-            case 5: rgb = red_blue;   break;
-            case 6: rgb = green_blue; break;
-            case 7: rgb = 0;          break;
-            case 8: rgb = blue|green|red; break;
-            default: rgb = 0;
+            case  0: return from_id(random_id(limit)); break;
+            default: rgb = id2rgb[i];
+            // case 1: rgb = blue;       break;
+            // case 2: rgb = green;      break;
+            // case 3: rgb = red;        break;
+            // case 4: rgb = red_green;  break;
+            // case 5: rgb = red_blue;   break;
+            // case 6: rgb = green_blue; break;
+            // case 7: rgb = 0;          break;
+            // case 8: rgb = blue|green|red; break;
+            // default: rgb = 0;
         }
         /* i would like this:
         int rgb = case i
@@ -35,6 +41,10 @@ public:
                   end
         */
         return Color(rgb);
+    }
+
+    static int for_id(Color const& color){
+        return std::distance(id2rgb, std::find(id2rgb+1, id2rgb+8, color.rgb()));
     }
 
 public:

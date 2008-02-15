@@ -76,6 +76,10 @@ public:
     friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_ != rhs.color_; }
     // end
 
+    // begin only used by model::Map::preview
+    int color_id() const{ return data::Color::for_id(color_); }
+    // end
+
 	// begin only used by Map::insert_garbage,
 	//   which is used by Map::cycle_creation_garbage
 	void be_garbage();

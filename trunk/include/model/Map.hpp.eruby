@@ -1,7 +1,6 @@
 
 <% header_guard do %>
 
-#include "presenter/Map.hpp"
 #include "model/Cube.hpp"
 
 #include "all_fwd.hpp"
@@ -20,6 +19,7 @@ class Map{
 public:
     typedef std::tr1::shared_ptr<Map> pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
+    typedef boost::multi_array<int, 2> preview_type;
     typedef std::set<pCube> clist_type;
 
 public:
@@ -42,7 +42,7 @@ public:
         utils::reverse_for_each(cubes_, std::tr1::bind(&Map::do_cycle, this, _1, _2));
         return *this;
     }
-    data::pMapSetting const <% debug_hook 'ms' do %>() const{ <% end %> return setting_; }
+    data::pMapSetting const& <% debug_hook 'ms' do %>() const{ <% end %> return setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
@@ -56,6 +56,24 @@ public:
     //   which is used by OneFading::fade
     void push_chain(pChain chain){ chains_.push_back(chain); }
     // end
+
+    // container_type const& cubes() const{ return cubes_; }
+    preview_type preview() const;
+
+private:
+    void do_cycle(pCube c, int i);
+    Map& insert(pCube cube);
+
+    void make_row(pCube that, clist_type&, clist_type&);
+    void make_column(pCube that, clist_type&, clist_type&);
+    void make_clist(clist_type&, clist_type&, clist_type&);
+    pOneFading make_OneFading(pCube);
+    bool is_below_empty(cpCube) const;
+    void cycle_cubes();
+    void update_chains();
+    void refresh_cubes();
+    bool cube_can_lose_chain(cpCube) const;
+    void insert_garbage(pCube that, int x, int y); // added
 
     // begin only local to some private method...
     bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that);
@@ -72,21 +90,6 @@ public:
             }
     }
     // end
-
-private:
-    void do_cycle(pCube c, int i);
-    Map& insert(pCube cube);
-
-    void make_row(pCube that, clist_type&, clist_type&);
-    void make_column(pCube that, clist_type&, clist_type&);
-    void make_clist(clist_type&, clist_type&, clist_type&);
-    pOneFading make_OneFading(pCube);
-    bool is_below_empty(cpCube) const;
-    void cycle_cubes();
-    void update_chains();
-    void refresh_cubes();
-    bool cube_can_lose_chain(cpCube) const;
-    void insert_garbage(pCube that, int x, int y); // added
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

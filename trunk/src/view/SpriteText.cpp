@@ -2,7 +2,7 @@
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
 #include "Accessors.hpp"
-#include "test/TTFontTest.hpp"
+#include "utils/TTFont.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
@@ -31,8 +31,8 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
     col.setAlpha( 255 );
 
 //	gui::CGUITTFont* ttfont;
-    gui::TTFontTest* ttfont;
-	ttfont = (gui::TTFontTest *)smgr_->getGUIEnvironment()->getFont(oss.str().c_str(),size);
+    utils::TTFont* ttfont;
+	ttfont = (utils::TTFont *)smgr_->getGUIEnvironment()->getFont(oss.str().c_str(),size);
     ttfont->AntiAlias = true;
     ttfont->TransParency = true;
     std::wstring temp(text.length(),L' ');             //so hard to convert between wchar and char @@

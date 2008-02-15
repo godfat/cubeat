@@ -1,12 +1,15 @@
 
-#include "test/TTFontTest.hpp"
+#include "utils/TTFont.hpp"
 
 using namespace irr;
 using namespace core;
 using namespace gui;
 using namespace video;
 
-ITexture* TTFontTest::getTextureFromText(const wchar_t* text, const c8* name)
+using namespace psc;
+using namespace utils;
+
+ITexture* TTFont::getTextureFromText(const wchar_t* text, const c8* name)
 {
     if( !AntiAlias ) AntiAlias = true;      //force this texture to be 32bit anti-aliased
     dimension2di size = getDimension(text);

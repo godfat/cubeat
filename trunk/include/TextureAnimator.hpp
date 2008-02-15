@@ -36,7 +36,7 @@ public:
 
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
         if ( !node ) return;
-        if ( timeMs < this->startTime_ ) return;
+        if ( static_cast<s32>(timeMs) < this->startTime_ ) return;
         if ( animation_.size() < 1 ) return;
 
         u32 t = ( timeMs - this->startTime_ );

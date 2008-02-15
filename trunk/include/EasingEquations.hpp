@@ -6,6 +6,10 @@
  * C++ Port by Johnson Lin(a.k.a arch.jslin) to combine with
  * Irrlicht Animator system
  *
+ * last updated: 2008.2.16
+ * fixed some calculation which might invoke undefined behavior in C++.
+ * (In Java and Flash this is not a problem, but in C++ IT IS A PROBLEM.)
+ *
  * I left out a few complicated equations intentionally, because
  * the functions' signatures were not the same (more than t,b,c,d).
  * I'll try to add those back in the future if I have enough time.
@@ -74,7 +78,7 @@ namespace easing {
     class Linear
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>( c*t/d + b );
         }
     };
@@ -86,8 +90,9 @@ namespace easing {
     class IQuad
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*(t/=d)*t + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+			return c*t*t + b;
 		}
     };
 
@@ -98,8 +103,10 @@ namespace easing {
     class OQuad
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return -c *(t/=d)*(t-2) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+            t*=(t-2);
+			return -c *t + b;
 		}
     };
 
@@ -110,9 +117,10 @@ namespace easing {
     class IOQuad
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t + b;
-			return -c/2 * ((--t)*(t-2) - 1) + b;
+			--t;
+			return -c/2 * (t*(t-2) - 1) + b;
 		}
     };
 
@@ -123,7 +131,7 @@ namespace easing {
     class OIQuad
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d, node);
 			return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -136,8 +144,9 @@ namespace easing {
     class ICubic
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*(t/=d)*t*t + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+			return c*t*t*t + b;
 		}
     };
 
@@ -148,8 +157,9 @@ namespace easing {
     class OCubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*((t=t/d-1)*t*t + 1) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t=(t/d)-1;
+			return c*(t*t*t + 1) + b;
 		}
     };
 
@@ -160,9 +170,10 @@ namespace easing {
     class IOCubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t + b;
-			return c/2*((t-=2)*t*t + 2) + b;
+			t-=2;
+			return c/2*(t*t*t + 2) + b;
 		}
     };
 
@@ -173,7 +184,7 @@ namespace easing {
     class OICubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OCubic<T>::calculate(t*2, b, c/2, d, node);
 			return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -186,8 +197,9 @@ namespace easing {
     class IQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*(t/=d)*t*t*t + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+			return c*t*t*t*t + b;
 		}
     };
 
@@ -198,8 +210,9 @@ namespace easing {
     class OQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return -c * ((t=t/d-1)*t*t*t - 1) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t=(t/d)-1;
+			return -c * (t*t*t*t - 1) + b;
 		}
     };
 
@@ -210,9 +223,10 @@ namespace easing {
     class IOQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
-			return -c/2 * ((t-=2)*t*t*t - 2) + b;
+			t-=2;
+			return -c/2 * (t*t*t*t - 2) + b;
 		}
     };
 
@@ -223,7 +237,7 @@ namespace easing {
     class OIQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d, node);
 			return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -236,8 +250,9 @@ namespace easing {
     class IQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*(t/=d)*t*t*t*t + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+			return c*t*t*t*t*t + b;
 		}
     };
 
@@ -248,8 +263,9 @@ namespace easing {
     class OQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c*((t=t/d-1)*t*t*t*t + 1) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t=(t/d)-1;
+			return c*(t*t*t*t*t + 1) + b;
 		}
     };
 
@@ -260,9 +276,10 @@ namespace easing {
     class IOQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
-			return c/2*((t-=2)*t*t*t*t + 2) + b;
+			t-=2;
+			return c/2*(t*t*t*t*t + 2) + b;
 		}
     };
 
@@ -273,7 +290,7 @@ namespace easing {
     class OIQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d, node);
 			return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -286,59 +303,63 @@ namespace easing {
     class ISine
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return -c * cosf(t/d * (irr::core::PI/2)) + c + b;
 		}
     };
 
+    //Added by arch_jslin
 	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine circle
+	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
 	 */
     template<class T>
     class SineCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>(c * (-cosf(t/d * (irr::core::PI*2))+1)/2 + b);
 		}
     };
 
+    //Added by arch_jslin
 	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine circle
+	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
 	 */
     template<class T>
     class SineCircX
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b;
 		}
     };
 
+    //Added by arch_jslin
 	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine circle
+	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
 	 */
     template<class T>
     class SineCircY
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b;
 		}
     };
 
+    //Added by arch_jslin
 	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine circle
+	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
 	 */
     template<class T>
     class SineCircZ
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b;
 		}
     };
@@ -350,7 +371,7 @@ namespace easing {
     class OSine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			return c * sinf(t/d * (irr::core::PI/2)) + b;
 		}
     };
@@ -362,7 +383,7 @@ namespace easing {
     class IOSine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			return -c/2 * (cosf(irr::core::PI*t/d) - 1) + b;
 		}
     };
@@ -374,7 +395,7 @@ namespace easing {
     class OISine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d, node);
 			return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -387,7 +408,7 @@ namespace easing {
     class IExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b - c * 0.001f;
 		}
     };
@@ -399,7 +420,7 @@ namespace easing {
     class OExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			return (t==d) ? b+c : c * 1.001f * (-pow(2, -10 * t/d) + 1) + b;
 		}
     };
@@ -411,7 +432,7 @@ namespace easing {
     class IOExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t==0) return b;
 			if (t==d) return b+c;
 			if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b - c * 0.0005f;
@@ -426,7 +447,7 @@ namespace easing {
     class OIExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d, node);
 			return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -439,8 +460,9 @@ namespace easing {
     class ICirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return -c * (sqrt(1 - (t/=d)*t) - 1) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t/=d;
+			return -c * (sqrt(1 - t*t) - 1) + b;
 		}
     };
 
@@ -451,8 +473,9 @@ namespace easing {
     class OCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			return c * sqrt(1 - (t=t/d-1)*t) + b;
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+            t=(t/d)-1;
+			return c * sqrt(1 - t*t) + b;
 		}
     };
 
@@ -463,9 +486,10 @@ namespace easing {
     class IOCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
-			return c/2 * (sqrt(1 - (t-=2)*t) + 1) + b;
+			t-=2;
+			return c/2 * (sqrt(1 - t*t) + 1) + b;
 		}
     };
 
@@ -476,9 +500,171 @@ namespace easing {
     class OICirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d, node);
 			return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+		}
+    };
+
+//helper function
+template <class T>
+inline irr::f32 length(T const& t) { return abs(t); }
+template <>
+inline irr::f32 length<irr::core::vector2df>(irr::core::vector2df const& t) { return t.getLength(); }
+template <>
+inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { return t.getLength(); }
+
+	/**
+	 * Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
+     * @param a		Amplitude.
+     * @param p		Period.
+	 */
+    template<class T>
+    class IElastic
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), irr::f32 p=.0f) //additional param.
+        {
+			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
+			irr::f32 s = .0f;
+			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			if( la==.0f || la < lc ) { a=c; s=p/4; }
+			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+			t-=1;
+			return -(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
+		}
+    };
+
+	/**
+	 * Easing equation function for an elastic (exponentially decaying sine wave) easing out: decelerating from zero velocity.
+     * @param a		Amplitude.
+     * @param p		Period.
+	 */
+    template<class T>
+    class OElastic
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), irr::f32 p=.0f) //additional param.
+        {
+			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
+			irr::f32 s = .0f;
+			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			if( la==.0f || la < lc ) { a=c; s=p/4; }
+			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+			return (a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p ) + c + b);
+		}
+    };
+
+	/**
+	 * EEasing equation function for an elastic (exponentially decaying sine wave) easing in/out: acceleration until halfway, then deceleration.
+     * @param a		Amplitude.
+     * @param p		Period.
+	 */
+    template<class T>
+    class IOElastic
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), irr::f32 p=.0f) //additional param.
+        {
+			if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if(p==.0f) p=d*(.3*1.5);
+			irr::f32 s = .0f;
+			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			if ( length(a)==.0f || length(a) < length(c) ) { a=c; s=p/4; }
+			else s = p/(2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+			t-=1;
+			if (t < 1) return -.5*(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
+			return a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )*.5 + c + b;
+		}
+    };
+
+	/**
+	 * Easing equation function for an elastic (exponentially decaying sine wave) easing out/in: deceleration until halfway, then acceleration.
+     * @param a		Amplitude.
+     * @param p		Period.
+	 */
+    template<class T>
+    class OIElastic
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           T const& a = T(), irr::f32 const& p=.0f) //additional param.
+        {
+			if (t < d/2) return OElastic<T>::calculate(t*2, b, c/2, d, node, a, p);
+			return IElastic<T>::calculate((t*2)-d, b+c/2, c/2, d, node, a, p);
+		}
+    };
+
+	/**
+	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in: accelerating from zero velocity.
+     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+	 */
+    template<class T>
+    class IBack
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           irr::f32 s=.0f) //additional param.
+        {
+			if (s==.0f) s = 1.70158f;
+			t/=d;
+			return c*t*t*((s+1)*t - s) + b;
+		}
+    };
+
+	/**
+	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out: decelerating from zero velocity.
+     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+	 */
+    template<class T>
+    class OBack
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           irr::f32 s=.0f) //additional param.
+        {
+			if (s==.0f) s = 1.70158f;
+			t=(t/d)-1;
+			return c*(t*t*((s+1)*t + s) + 1) + b;
+		}
+    };
+
+	/**
+	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out: acceleration until halfway, then deceleration.
+     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+	 */
+    template<class T>
+    class IOBack
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           irr::f32 s=.0f) //additional param.
+        {
+			if (s==.0f) s = 1.70158f;
+			s*=1.525;
+			if ((t/=d/2) < 1) return c/2*(t*t*((s+1)*t - s)) + b;
+			t-=2;
+			return c/2*(t*t*((s+1)*t + s) + 2) + b;
+		}
+    };
+
+	/**
+	 *  Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out/in: deceleration until halfway, then acceleration.
+	 */
+    template<class T>
+    class OIBack
+    {
+	public:
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
+                           irr::f32 s=.0f) //additional param.
+        {
+			if (t < d/2) return OBack<T>::calculate(t*2, b, c/2, d, node, s);
+			return IBack<T>::calculate((t*2)-d, b+c/2, c/2, d, node, s);
 		}
     };
 
@@ -489,15 +675,18 @@ namespace easing {
     class OBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
-			if ((t/=d) < (1/2.75)) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+			if ((t/=d) < (1/2.75f)) {
 				return c*(7.5625f*t*t) + b;
 			} else if (t < (2/2.75f)) {
-				return c*(7.5625f*(t-=(1.5f/2.75f))*t + .75f) + b;
+			    t-=(1.5f/2.75f);
+				return c*(7.5625f*t*t + .75f) + b;
 			} else if (t < (2.5f/2.75f)) {
-				return c*(7.5625f*(t-=(2.25f/2.75f))*t + .9375f) + b;
+			    t-=(2.25f/2.75f);
+				return c*(7.5625f*t*t + .9375f) + b;
 			} else {
-				return c*(7.5625f*(t-=(2.625f/2.75f))*t + .984375f) + b;
+			    t-=(2.625f/2.75f);
+				return c*(7.5625f*t*t + .984375f) + b;
 			}
 		}
     };
@@ -509,7 +698,7 @@ namespace easing {
     class IBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			return c - OBounce<T>::calculate(d-t, T(), c, d, node) + b;
 		}
     };
@@ -521,7 +710,7 @@ namespace easing {
     class IOBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d, node) * .5 + b;
 			else return OBounce<T>::calculate(t*2-d, T(), c, d, node) * .5 + c*.5 + b;
 		}
@@ -534,7 +723,7 @@ namespace easing {
     class OIBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node) {
+        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OBounce<T>::calculate(t*2, b, c/2, d, node);
 			return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}

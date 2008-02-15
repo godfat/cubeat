@@ -154,7 +154,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> f = (BLL::var(animating_) = false);
-    sprite->tween<OSine, Pos2D>(vector2df(300, 100), 1000, false, f );
+    sprite->tween<OIBack, Pos2D>(vector2df(300, 100), 1000, false, f );
     sprite->tweenAll<Linear, Alpha>(255, 777, false);
     sprite->set<Visible>(true);
     return *this;
@@ -164,7 +164,7 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    sprite->tween<ISine, Pos2D>(vector2df(-200, 100), 1000, false, endcall);
+    sprite->tween<IOBack, Pos2D>(vector2df(-200, 100), 1000, false, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 777, false);
     return *this;
 }

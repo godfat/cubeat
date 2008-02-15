@@ -28,9 +28,14 @@ int main(){
     presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
     std::cerr << "\n\n\nend creation\n\n\n";
     preview(map);
-    preview(map);
     map->cycle();
     std::cerr << "\n\n\nend cycle\n\n\n";
+    preview(map);
+    map->cycle();
+    preview(map);
+    map->cycle();
+    preview(map);
+    map->cycle();
     preview(map);
 }
 

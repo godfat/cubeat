@@ -4,6 +4,8 @@
 #include "model/state/State.hpp"
 #include "utils/ObjectPool.hpp"
 
+<%= debug_include %>
+
 namespace psc{ namespace model{ namespace state{
 
 class Dropping: public State{
@@ -14,7 +16,7 @@ public:
     static pDropping create(wpCube owner){ return utils::ObjectPool<Dropping>::create(owner); }
 public:
     Dropping(wpCube owner): State(owner){}
-    virtual ~Dropping(){}
+    virtual <% debug_hook '~Dropping' do %>(){<%end%>}
     virtual pState cycle();
 };
 

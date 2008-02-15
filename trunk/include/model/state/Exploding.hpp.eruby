@@ -5,6 +5,8 @@
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+<%= debug_include %>
+
 namespace psc{ namespace model{ namespace state{
 
 class Exploding: public State{
@@ -16,7 +18,7 @@ public:
  
 public:
     Exploding(wpCube owner): State(owner), explosion_started_(false), exploding_step_(0){}
-    virtual ~Exploding(){}
+    virtual <% debug_hook '~Exploding' do %>(){<%end%>}
     virtual pState cycle();
 
 private:

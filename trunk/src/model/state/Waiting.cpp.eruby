@@ -15,8 +15,8 @@ pState <% debug_hook 'Waiting::cycle' do %>(){
 
     pState result = map()->next_state(owner());
 
-    if(result) return shared_from_this();
-    else       return result;
+    if(result.use_count() == 0) return shared_from_this();
+    else                        return result;
 }
 bool <% debug_hook 'Waiting::need_check' do %>() const{
 <% end %>

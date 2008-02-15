@@ -4,6 +4,8 @@
 #include "model/state/State.hpp"
 #include "utils/ObjectPool.hpp"
 
+<%= debug_include %>
+
 namespace psc{ namespace model{ namespace state{
 
 class Dying: public State{
@@ -15,7 +17,7 @@ public:
 
 public:
     Dying(wpCube owner): State(owner), dying_step_(0){}
-    virtual ~Dying(){}
+    virtual <% debug_hook '~Dying' do %>(){<%end%>}
     virtual pState cycle();
 
 private:

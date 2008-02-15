@@ -31,7 +31,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
     // utils::for_each(cube_colors, (std::cout << _1 << " ", _2));
 
-    utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
+    // utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
     {
@@ -82,7 +82,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
     }
 
     if( is_below_empty(that) ){
-        cubes_[that->x()][that->y()].reset();
+        // cubes_[that->x()][that->y()].reset();
         that->drop_a_block();
         cubes_[that->x()][that->y()] = that;
         if( that->is_dropping() )

@@ -5,6 +5,8 @@
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+<%= debug_include %>
+
 namespace psc{ namespace model{ namespace state{
 
 class Waiting: public State{
@@ -18,7 +20,7 @@ public:
                            chain_property_checked_(false), delay_(0)
     {}
 
-    virtual ~Waiting(){}
+    virtual <% debug_hook '~Waiting' do %>(){<%end%>}
     virtual pState cycle();
 
     // begin only used by Map::next_state

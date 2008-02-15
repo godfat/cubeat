@@ -16,6 +16,8 @@
 
 #include <boost/tr1/tr1/memory>
 
+<%= debug_include %>
+
 namespace psc{ namespace model{
 
 class OneFading{
@@ -27,9 +29,9 @@ public:
     }
 public:
     // begin only used by Map::next_state
-    OneFading(Map& map, clist_type const& list):
+    <% debug_hook 'OneFading' do %>(Map& map, clist_type const& list):
         map_(map), list_(list)
-    {}
+    {<%end%>}
     clist_type::size_type size() const{ return list_.size(); }
     void fade(pCube that_would_be_killed_by_map){
 

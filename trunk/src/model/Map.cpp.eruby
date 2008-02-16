@@ -91,7 +91,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
     }
 
     if( is_below_empty(that) ){
-        // cubes_[that->x()][that->y()].reset();
+        cubes_[that->x()][that->y()].reset();
         that->drop_a_block();
         cubes_[that->x()][that->y()] = that;
         if( that->is_dropping() )

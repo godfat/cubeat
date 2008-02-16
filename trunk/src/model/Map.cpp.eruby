@@ -17,6 +17,7 @@
 
 using namespace psc;
 using namespace model;
+using namespace std::tr1::placeholders;
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
@@ -29,9 +30,8 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
         static_cast<double>(width)*ms()->starting_line()/ms()->color_amounts()
     );
     utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
-    // utils::for_each(cube_colors, (std::cout << _1 << " ", _2));
 
-    // utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
+    utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
     {
@@ -42,12 +42,21 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     return *this;
 }
 
-void <% debug_hook 'Map::do_cycle' do %>(pCube c, int i){
+void <% debug_hook 'Map::refresh_cubes' do %>(){
 <% end %>
-    if(c){
-        if( !c->has_grounded()  ) ++n_of_newcomers_;
-        if(  c->cycle_and_die() ) cubes_.origin()[i].reset();
-    }
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Cube::refresh, _1));
+}
+
+void <% debug_hook 'Map::cycle_cubes' do %>(){
+<% end %>
+    n_of_newcomers_ = 0;
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2));
+}
+
+void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
+<% end %>
+    if( !c->has_grounded()  ) ++n_of_newcomers_;
+    if(  c->cycle_and_die() ) cubes_.origin()[i].reset();
 }
 
 Map& <% debug_hook 'Map::insert' do %>(pCube cube){

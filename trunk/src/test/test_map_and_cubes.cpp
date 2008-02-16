@@ -31,12 +31,10 @@ int main(){
     map->cycle();
     std::cerr << "\n\n\nend cycle\n\n\n";
     preview(map);
-    map->cycle();
-    preview(map);
-    map->cycle();
-    preview(map);
-    map->cycle();
-    preview(map);
+    for(int i=0; i<25; ++i){
+        map->cycle();
+        preview(map);
+    }
 }
 
 #endif

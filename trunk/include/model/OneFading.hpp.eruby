@@ -33,8 +33,9 @@ public:
         map_(map), list_(list)
     {<%end%>}
     clist_type::size_type size() const{ return list_.size(); }
-    void fade(pCube that_would_be_killed_by_map){
 
+    void <% debug_hook 'fade' do %>(pCube that_would_be_killed_by_map){
+<% end %>
         pChain chain = get_the_chain();
 
         for(clist_type::iterator i=list_.begin(), iend=list_.end();

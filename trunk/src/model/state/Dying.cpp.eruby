@@ -12,13 +12,13 @@ using namespace state;
 
 pState <% debug_hook 'Dying::cycle' do %>(){
 <% end %>
-	if( dying_step_ < map()->ms()->decay() ) {
+	if( dying_step_ < map()->ms()->decay() ){
 		int alpha = 255.0 * (map()->ms()->decay() - dying_step_) / map()->ms()->decay();
 		owner()->set_alpha( alpha );
         ++dying_step_;
 		return shared_from_this();
 	}
-	else {
+	else{
 		return pState(); // really dead
 	}
 }

@@ -6,7 +6,6 @@
 #include "all_fwd.hpp"
 
 #include "data/MapSetting.hpp"
-#include "utils/for_each_multi_array.hpp"
 
 #include <boost/multi_array.hpp>
 #include <boost/tr1/tr1/functional>
@@ -37,9 +36,14 @@ public:
     <% debug_hook '~Map' do %>(){<%end%>}
 
     Map& cycle(){
-        using namespace std::tr1::placeholders;
-        n_of_newcomers_ = 0;
-        utils::reverse_for_each(cubes_, std::tr1::bind(&Map::do_cycle, this, _1, _2));
+        refresh_cubes(); // make cube to cycle
+    	// update_chains();
+        cycle_cubes();
+    	// cycle_creation_garbage(); // added
+    	if(ms()->dropping_creatable()){
+    	    // cycle_creation(); // added
+    		// cycle_warning(); // added
+        }
         return *this;
     }
     data::pMapSetting const& <% debug_hook 'ms' do %>() const{ <% end %> return setting_; }
@@ -61,17 +65,17 @@ public:
     preview_type preview() const;
 
 private:
-    void do_cycle(pCube c, int i);
     Map& insert(pCube cube);
+    void cycle_cubes();
+    void cycle_a_cube(pCube c, int i);
+    void refresh_cubes();
 
     void make_row(pCube that, clist_type&, clist_type&);
     void make_column(pCube that, clist_type&, clist_type&);
     void make_clist(clist_type&, clist_type&, clist_type&);
     pOneFading make_OneFading(pCube);
     bool is_below_empty(cpCube) const;
-    void cycle_cubes();
     void update_chains();
-    void refresh_cubes();
     bool cube_can_lose_chain(cpCube) const;
     void insert_garbage(pCube that, int x, int y); // added
 

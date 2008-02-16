@@ -2,12 +2,7 @@
 <% header_guard do %>
 
 #include "utils/vector_2d.hpp"
-#include <algorithm>
-
-// debug
-#include "utils/for_each_multi_array.hpp"
-#include <iostream>
-#include <boost/lambda/lambda.hpp>
+#include <algorithm> // for random_shuffle
 
 namespace psc{ namespace utils{
 
@@ -16,6 +11,7 @@ class ChainChecker{
     typedef utils::vector_2d::index index;
 public:
     static void until_no_chained_cubes(vector_2d& cube_colors, int chain_amounts){
+        // this should implement some timeout mech
         while(has_chained_cubes(cube_colors, chain_amounts))
             std::random_shuffle(cube_colors.origin(),
                                 cube_colors.origin() + cube_colors.num_elements());
@@ -37,7 +33,7 @@ private:
 
     ChainChecker(vector_2d const& cube_colors, index x, index y, int chain_amounts):
         cube_colors_(cube_colors), x_(x), y_(y), chain_amounts_(chain_amounts),
-        tested_color_(cube_colors_[x_][y_])
+        tested_color_(cube_colors[x_][y_])
     {}
 
     bool has_left() const{

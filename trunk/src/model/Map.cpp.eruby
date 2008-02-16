@@ -35,9 +35,8 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
 
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
     {
-        insert(owner_.lock()->make_cube( i%width, // x
-                                         i/width, // y
-                                         cube_colors.origin()[i] )->model());
+        int x = i%width, y = i/width;
+        insert( owner_.lock()->make_cube(x, y, cube_colors[x][y])->model() );
     }
     return *this;
 }

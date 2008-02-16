@@ -7,6 +7,7 @@
 
 #include "CustomAnimator.hpp"
 #include "utils/ObjectPool.hpp"
+#include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"
 #include <boost/tr1/functional.hpp>
 #include <string>

@@ -9,10 +9,10 @@
 using namespace irr;
 using namespace core;
 using namespace scene;
-using namespace accessor;
 
 using namespace psc;
 using namespace view;
+using namespace accessor;
 
 void Scene::init(pObject const& parent, std::string const& name)
 {

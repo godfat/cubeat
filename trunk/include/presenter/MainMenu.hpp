@@ -4,18 +4,11 @@
 #include "presenter/Object.hpp"
 
 #include "utils/ObjectPool.hpp"
+#include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"
 #include <map>
 #include <string>
 #include <vector>
-
-namespace irr {
-namespace core {
-template <class T>
-class vector2d;
-typedef vector2d<float> vector2df;
-}
-}
 
 namespace psc {
 
@@ -44,8 +37,8 @@ protected:
     void menu2_1_click(view::pSprite&);
 
     void initDecorator();
-    void initDecoInner_(irr::core::vector2df const&, irr::core::vector2df const&, int const&,
-                        int const&, int const&, int const&,std::vector<std::string> const&);
+    void initDecoInner_(vec2 const&, vec2 const&, int const&, int const&,
+                        int const&, int const&,std::vector<std::string> const&);
 
 protected:
     view::pScene mainmenu_scene_;

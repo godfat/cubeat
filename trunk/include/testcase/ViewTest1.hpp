@@ -8,7 +8,6 @@
    But that's for test's sake, if you don't want to test,
    simply exclude this file from App.cpp */
 
-#include "IrrDevice.hpp"
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
 #include "Accessors.hpp"
@@ -19,14 +18,10 @@
 #include <boost/tr1/functional.hpp>
 #include <iostream>
 
-using namespace irr;
-using namespace core;
-using namespace scene;
-using namespace accessor;
-using namespace easing;
-
 using namespace psc;
 using namespace ctrl;
+using namespace accessor;
+using namespace easing;
 
 using std::tr1::bind;
 using std::tr1::ref;
@@ -126,11 +121,11 @@ ViewTest1::ViewTest1()
        moveTo(10,0,0).set<GradientDiffuse>(127);
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
-    testcube2->moveTo(5,5,50).set<Scale>(vector3df(0.3f, 0.3f, 0.3f))
+    testcube2->moveTo(5,5,50).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                              .tween<Linear, Frame>(4801.0f,9600.0f,1500);
 
     testcube3 = view::AnimatedSceneObject::create("ex_move", worldv);
-    testcube3->moveTo(-5,-5,60).set<Scale>(vector3df(0.3f, 0.3f, 0.3f))
+    testcube3->moveTo(-5,-5,60).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                                .tween<Linear, Frame>(0.0f,9600.0f,3000);
 
     something = view::Button::create("title", guiv, 100, 40);
@@ -154,9 +149,9 @@ ViewTest1::ViewTest1()
 
     menu->addSprite("item1",test_,100,40,"title").addSprite("item2",test2_,100,40,"title").
           addSprite("item3",test3_,100,40,"title");
-    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vector2df(0, -50));
-    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vector2df(0, -150));
-    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vector2df(0, -250));
+    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vec2(0, -50));
+    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vec2(0, -150));
+    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vec2(0, -250));
 
     EventDispatcher::i().subscribe_timer(
         bind(&ViewTest1::step1, this, ref(anotherthing)), 1000 );

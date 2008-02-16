@@ -10,10 +10,10 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 using namespace video;
-using namespace easing;
 
 using namespace psc;
 using namespace view;
+using namespace easing;
 using std::tr1::static_pointer_cast;
 
 AnimatedSprite* AnimatedSprite::clone() const
@@ -66,8 +66,8 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
 }
 
 AnimatedSprite&
-AnimatedSprite::playAnime(std::string const& anime_name, u32 duration, bool loop,
-                              std::tr1::function<void()> cb, u32 delayTime)
+AnimatedSprite::playAnime(std::string const& anime_name, int duration, bool loop,
+                          std::tr1::function<void()> cb, int delayTime)
 {
     ISceneNodeAnimator* animator =
         new TextureAnimator<SineCirc>( animations_[anime_name], duration, loop, cb, delayTime );

@@ -9,14 +9,10 @@
 
 #include <iostream>
 
-using namespace irr;
-using namespace core;
-using namespace scene;
-using namespace accessor;
-using namespace easing;
-
 using namespace psc;
 using namespace presenter;
+using namespace accessor;
+using namespace easing;
 
 using std::tr1::bind;
 using std::tr1::ref;

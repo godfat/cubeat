@@ -16,10 +16,10 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 using namespace video;
-using namespace accessor;
 
 using namespace psc;
 using namespace view;
+using namespace accessor;
 
 void Game::init(pScene const& world, pScene const& gui)
 {

@@ -15,18 +15,12 @@
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 #include <utility>
-#include <cstdlib>
-#include <ctime>
 #include <sstream>
 #include <iostream>
 
-using namespace irr;
-using namespace core;
-using namespace scene;
-using namespace accessor;
-
 using namespace psc;
 using namespace presenter;
+using namespace accessor;
 using namespace easing;
 
 using std::tr1::bind;
@@ -54,8 +48,8 @@ pMainMenu MainMenu::init()
     function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, 50));
-    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vector2df(0, 50));
+    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vec2(0, 50));
+    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vec2(0, 50));
 
     temp->set<Alpha>(0);
     temp->set<Visible>(false);
@@ -75,10 +69,10 @@ void MainMenu::initDecorator()
     int const h = 480;
     int const outgoing = 80;
     int const contract = 30;
-    vector2df start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
-    vector2df start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
-    vector2df start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
-    vector2df start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
+    vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
+    vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
+    vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
+    vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
     int const bias = 30;
     int const num_in_w = 12;
     int const num_in_h = 9;
@@ -101,7 +95,7 @@ void MainMenu::initDecorator()
     std::cout << "MainMenu deco: left line done.\n";
 }
 
-void MainMenu::initDecoInner_(vector2df const& from, vector2df const& dest, int const& num,
+void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num,
                              int const& color_num, int const& time, int const& bias,
                              std::vector<std::string> const& paths)
 {
@@ -112,8 +106,8 @@ void MainMenu::initDecoInner_(vector2df const& from, vector2df const& dest, int 
     {
         data::Color col = data::Color::from_id(0, color_num);
         int rand_bias   = utils::random( bias ) - bias/2;
-        vector3df from3d( from.X + rand_bias, -from.Y + rand_bias, 400 );
-        vector3df dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -400 );
+        vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 400 );
+        vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -400 );
         view::pSprite temp = view::Sprite::create( paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
 
         float scale = utils::random(50)/100.0f + 1;
@@ -121,8 +115,8 @@ void MainMenu::initDecoInner_(vector2df const& from, vector2df const& dest, int 
         float delay = utils::random( rot_duration );
         float time_position = range * time / length;
         temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
-             .set<Scale>(vector3df(scale, scale, 1))
-             .tween<Linear, Rotation>(vector3df(0, 0, 360), rot_duration, true, 0, -delay )
+             .set<Scale>(vec3(scale, scale, 1))
+             .tween<Linear, Rotation>(vec3(0, 0, 360), rot_duration, true, 0, -delay )
              .tween<Linear, Pos3D>(from3d, dest3d, time, true, 0, -time_position );
 
         if( col.r() > 0 )
@@ -154,7 +148,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> f = (BLL::var(animating_) = false);
-    sprite->tween<OIBack, Pos2D>(vector2df(300, 100), 1000, false, f );
+    sprite->tween<OElastic, Pos2D>(vec2(300, 100), 1000, false, f );
     sprite->tweenAll<Linear, Alpha>(255, 777, false);
     sprite->set<Visible>(true);
     return *this;
@@ -164,7 +158,7 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    sprite->tween<IOBack, Pos2D>(vector2df(-200, 100), 1000, false, endcall);
+    sprite->tween<ICirc, Pos2D>(vec2(-200, 100), 1000, false, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 777, false);
     return *this;
 }

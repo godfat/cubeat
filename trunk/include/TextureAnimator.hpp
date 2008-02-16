@@ -24,7 +24,7 @@ class TextureAnimator : public CustomAnimator<Eq, Accessor<s32> >
 
 public:
     TextureAnimator(Animation2D const& anime, u32 duration, bool loop = true,
-                    std::tr1::function<void()> cb = 0, u32 delayTime = 0)
+                    std::tr1::function<void()> cb = 0, s32 delayTime = 0)
         :TextureAnimatorBase(0, static_cast<int>(anime.size()), duration, loop, cb, delayTime),
          animation_(anime)
     {

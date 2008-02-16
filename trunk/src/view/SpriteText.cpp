@@ -1,7 +1,6 @@
 
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
-#include "Accessors.hpp"
 #include "utils/TTFont.hpp"
 
 #include <sstream>
@@ -11,7 +10,6 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 using namespace video;
-using namespace accessor;
 
 using namespace psc;
 using namespace view;

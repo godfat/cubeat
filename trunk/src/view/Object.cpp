@@ -8,10 +8,10 @@
 using namespace irr;
 using namespace core;
 using namespace scene;
-using namespace accessor;
 
 using namespace psc;
 using namespace view;
+using namespace accessor;
 
 Object::Object(std::string const& name)
     :smgr_(IrrDevice::i().d()->getSceneManager()),

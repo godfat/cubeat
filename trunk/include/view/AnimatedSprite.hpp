@@ -44,8 +44,8 @@ public:
     virtual AnimatedSprite* clone() const;
     virtual AnimatedSprite& addAnime(std::string const& anime_name, int total_frames);
     virtual AnimatedSprite&
-        playAnime(std::string const& anime_name, irr::u32 duration, bool loop = false,
-                  std::tr1::function<void()> cb = 0, irr::u32 delayTime = 0);
+        playAnime(std::string const& anime_name, int duration, bool loop = false,
+                  std::tr1::function<void()> cb = 0, int delayTime = 0);
 
     virtual ~AnimatedSprite();
 

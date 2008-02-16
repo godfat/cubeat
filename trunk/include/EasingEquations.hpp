@@ -57,8 +57,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <irrlicht.h>
+#include "ISceneNode.h"
+#include "data/BasicViewTypes.hpp"
 
+namespace psc {
 namespace easing {
 
     // ==================================================================================================================================
@@ -78,7 +80,7 @@ namespace easing {
     class Linear
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>( c*t/d + b );
         }
     };
@@ -90,7 +92,7 @@ namespace easing {
     class IQuad
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
 			return c*t*t + b;
 		}
@@ -103,7 +105,7 @@ namespace easing {
     class OQuad
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
             t*=(t-2);
 			return -c *t + b;
@@ -117,7 +119,7 @@ namespace easing {
     class IOQuad
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t + b;
 			--t;
 			return -c/2 * (t*(t-2) - 1) + b;
@@ -131,7 +133,7 @@ namespace easing {
     class OIQuad
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d, node);
 			return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -144,7 +146,7 @@ namespace easing {
     class ICubic
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
 			return c*t*t*t + b;
 		}
@@ -157,7 +159,7 @@ namespace easing {
     class OCubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
 			return c*(t*t*t + 1) + b;
 		}
@@ -170,7 +172,7 @@ namespace easing {
     class IOCubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t + b;
 			t-=2;
 			return c/2*(t*t*t + 2) + b;
@@ -184,7 +186,7 @@ namespace easing {
     class OICubic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OCubic<T>::calculate(t*2, b, c/2, d, node);
 			return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -197,7 +199,7 @@ namespace easing {
     class IQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
 			return c*t*t*t*t + b;
 		}
@@ -210,7 +212,7 @@ namespace easing {
     class OQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
 			return -c * (t*t*t*t - 1) + b;
 		}
@@ -223,7 +225,7 @@ namespace easing {
     class IOQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
 			t-=2;
 			return -c/2 * (t*t*t*t - 2) + b;
@@ -237,7 +239,7 @@ namespace easing {
     class OIQuart
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d, node);
 			return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -250,7 +252,7 @@ namespace easing {
     class IQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
 			return c*t*t*t*t*t + b;
 		}
@@ -263,7 +265,7 @@ namespace easing {
     class OQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
 			return c*(t*t*t*t*t + 1) + b;
 		}
@@ -276,7 +278,7 @@ namespace easing {
     class IOQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
 			t-=2;
 			return c/2*(t*t*t*t*t + 2) + b;
@@ -290,7 +292,7 @@ namespace easing {
     class OIQuint
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d, node);
 			return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -303,7 +305,7 @@ namespace easing {
     class ISine
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return -c * cosf(t/d * (irr::core::PI/2)) + c + b;
 		}
     };
@@ -317,7 +319,7 @@ namespace easing {
     class SineCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>(c * (-cosf(t/d * (irr::core::PI*2))+1)/2 + b);
 		}
     };
@@ -331,7 +333,7 @@ namespace easing {
     class SineCircX
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b;
 		}
     };
@@ -345,7 +347,7 @@ namespace easing {
     class SineCircY
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b;
 		}
     };
@@ -359,7 +361,7 @@ namespace easing {
     class SineCircZ
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b;
 		}
     };
@@ -371,7 +373,7 @@ namespace easing {
     class OSine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			return c * sinf(t/d * (irr::core::PI/2)) + b;
 		}
     };
@@ -383,7 +385,7 @@ namespace easing {
     class IOSine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			return -c/2 * (cosf(irr::core::PI*t/d) - 1) + b;
 		}
     };
@@ -395,7 +397,7 @@ namespace easing {
     class OISine
     {
     public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d, node);
 			return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -408,7 +410,7 @@ namespace easing {
     class IExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b - c * 0.001f;
 		}
     };
@@ -420,7 +422,7 @@ namespace easing {
     class OExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			return (t==d) ? b+c : c * 1.001f * (-pow(2, -10 * t/d) + 1) + b;
 		}
     };
@@ -432,7 +434,7 @@ namespace easing {
     class IOExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t==0) return b;
 			if (t==d) return b+c;
 			if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b - c * 0.0005f;
@@ -447,7 +449,7 @@ namespace easing {
     class OIExpo
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d, node);
 			return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -460,7 +462,7 @@ namespace easing {
     class ICirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
 			return -c * (sqrt(1 - t*t) - 1) + b;
 		}
@@ -473,7 +475,7 @@ namespace easing {
     class OCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
 			return c * sqrt(1 - t*t) + b;
 		}
@@ -486,7 +488,7 @@ namespace easing {
     class IOCirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d/2) < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
 			t-=2;
 			return c/2 * (sqrt(1 - t*t) + 1) + b;
@@ -500,7 +502,7 @@ namespace easing {
     class OICirc
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d, node);
 			return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
@@ -508,11 +510,11 @@ namespace easing {
 
 //helper function
 template <class T>
-inline irr::f32 length(T const& t) { return abs(t); }
+inline float length(T const& t) { return abs(t); }
 template <>
-inline irr::f32 length<irr::core::vector2df>(irr::core::vector2df const& t) { return t.getLength(); }
+inline float length<vec2>(vec2 const& t) { return t.getLength(); }
 template <>
-inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { return t.getLength(); }
+inline float length<vec3>(vec3 const& t) { return t.getLength(); }
 
 	/**
 	 * Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
@@ -523,12 +525,12 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IElastic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           T a = T(), irr::f32 p=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), float p=.0f) //additional param.
         {
 			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
-			irr::f32 s = .0f;
-			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			float s = .0f;
+			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
 			if( la==.0f || la < lc ) { a=c; s=p/4; }
 			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
 			t-=1;
@@ -545,12 +547,12 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OElastic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           T a = T(), irr::f32 p=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), float p=.0f) //additional param.
         {
 			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
-			irr::f32 s = .0f;
-			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			float s = .0f;
+			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
 			if( la==.0f || la < lc ) { a=c; s=p/4; }
 			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
 			return (a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p ) + c + b);
@@ -566,12 +568,12 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IOElastic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           T a = T(), irr::f32 p=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), float p=.0f) //additional param.
         {
 			if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if(p==.0f) p=d*(.3*1.5);
-			irr::f32 s = .0f;
-			irr::f32 la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+			float s = .0f;
+			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
 			if ( length(a)==.0f || length(a) < length(c) ) { a=c; s=p/4; }
 			else s = p/(2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
 			t-=1;
@@ -589,8 +591,8 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OIElastic
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           T const& a = T(), irr::f32 const& p=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T const& a = T(), float const& p=.0f) //additional param.
         {
 			if (t < d/2) return OElastic<T>::calculate(t*2, b, c/2, d, node, a, p);
 			return IElastic<T>::calculate((t*2)-d, b+c/2, c/2, d, node, a, p);
@@ -606,8 +608,8 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IBack
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           irr::f32 s=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
         {
 			if (s==.0f) s = 1.70158f;
 			t/=d;
@@ -624,8 +626,8 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OBack
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           irr::f32 s=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
         {
 			if (s==.0f) s = 1.70158f;
 			t=(t/d)-1;
@@ -642,8 +644,8 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IOBack
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           irr::f32 s=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
         {
 			if (s==.0f) s = 1.70158f;
 			s*=1.525;
@@ -660,8 +662,8 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OIBack
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0,
-                           irr::f32 s=.0f) //additional param.
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
         {
 			if (t < d/2) return OBack<T>::calculate(t*2, b, c/2, d, node, s);
 			return IBack<T>::calculate((t*2)-d, b+c/2, c/2, d, node, s);
@@ -675,7 +677,7 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if ((t/=d) < (1/2.75f)) {
 				return c*(7.5625f*t*t) + b;
 			} else if (t < (2/2.75f)) {
@@ -698,7 +700,7 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			return c - OBounce<T>::calculate(d-t, T(), c, d, node) + b;
 		}
     };
@@ -710,7 +712,7 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class IOBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
 			if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d, node) * .5 + b;
 			else return OBounce<T>::calculate(t*2-d, T(), c, d, node) * .5 + c*.5 + b;
 		}
@@ -723,12 +725,13 @@ inline irr::f32 length<irr::core::vector3df>(irr::core::vector3df const& t) { re
     class OIBounce
     {
 	public:
-        static T calculate(irr::f32 t, T const& b, T const& c, irr::f32 const& d, irr::scene::ISceneNode* node=0) {
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OBounce<T>::calculate(t*2, b, c/2, d, node);
 			return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
 		}
 	};
 
 } //easing
+} //psc
 
 #endif //_SHOOTING_CUBES_EASING_EQUATIONS_

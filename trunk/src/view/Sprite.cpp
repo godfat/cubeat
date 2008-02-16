@@ -15,11 +15,10 @@ using namespace core;
 using namespace scene;
 using namespace video;
 
-using namespace easing;
-using namespace accessor;
-
 using namespace psc;
 using namespace view;
+using namespace easing;
+using namespace accessor;
 using std::tr1::function;
 
 
@@ -47,11 +46,6 @@ Sprite::Sprite(std::string const& name, bool const& center)
 {
     upperleft_aligned_plane_ = smgr_->getMesh( "rc/model/plane_orig.x" );
 }
-
-/*
-    TODO:
-    still some problem with material settings(alpha). I'll fix that later.
-*/
 
 pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 {

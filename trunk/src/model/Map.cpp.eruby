@@ -1,4 +1,6 @@
 
+#include "model/pirate/MapUtils.hpp"
+
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
 #include "model/Cube.hpp"
@@ -17,6 +19,7 @@
 
 using namespace psc;
 using namespace model;
+using namespace pirate;
 using namespace std::tr1::placeholders;
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
@@ -197,15 +200,6 @@ bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
     if( that->y()-1 < 0 ) return false;
     else return cubes_[that->x()][that->y()-1].use_count() == 0;
     // throw "impossible flow!";
-    return false;
-}
-
-bool <% debug_hook 'Map::check_not_continue' do %>(std::vector<pCube>& list, pCube that, pCube ya_that){
-<% end %>
-    if( ya_that.use_count() == 0 )   return true;
-    else if( *ya_that != *that )     return true;
-    else if( ya_that->is_waiting() ) list.push_back(ya_that);
-    else                             return true;
     return false;
 }
 

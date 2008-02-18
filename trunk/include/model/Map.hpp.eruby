@@ -79,22 +79,6 @@ private:
     bool cube_can_lose_chain(cpCube) const;
     void insert_garbage(pCube that, int x, int y); // added
 
-    // begin only local to some private method...
-    bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that);
-    void process_chaining(
-        std::vector<pCube> const& row_or_column,
-        clist_type& not_traveled,
-        clist_type& result)
-    {
-            for(std::vector<pCube>::const_iterator i=row_or_column.begin(), iend=row_or_column.end();
-                i!=iend; ++i)
-            {
-                not_traveled.insert(*i);
-                result.insert(*i);
-            }
-    }
-    // end
-
 private:
     presenter::wpMap owner_; // should be weak_ptr;
     data::pMapSetting setting_;

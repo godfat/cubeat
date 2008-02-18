@@ -1,0 +1,35 @@
+
+<% header_guard do %>
+
+#include "model/Map.hpp"
+#include "model/Cube.hpp"
+#include <vector>
+
+// pirate here for private...
+namespace psc{ namespace model{ namespace pirate{
+
+bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that){
+    if( ya_that.use_count() == 0 )   return true;
+    else if( *ya_that != *that )     return true;
+    else if( ya_that->is_waiting() ) list.push_back(ya_that);
+    else                             return true;
+    return false;
+}
+
+
+void process_chaining(
+    std::vector<pCube> const& row_or_column,
+    Map::clist_type& not_traveled,
+    Map::clist_type& result)
+{
+        for(std::vector<pCube>::const_iterator i=row_or_column.begin(), iend=row_or_column.end();
+            i!=iend; ++i)
+        {
+            not_traveled.insert(*i);
+            result.insert(*i);
+        }
+}
+
+}}}
+
+<% end %>

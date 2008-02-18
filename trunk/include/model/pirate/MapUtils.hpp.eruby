@@ -16,7 +16,6 @@ bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that){
     return false;
 }
 
-
 void process_chaining(
     std::vector<pCube> const& row_or_column,
     Map::clist_type& not_traveled,

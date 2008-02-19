@@ -36,29 +36,19 @@ pMainMenu MainMenu::init()
     mainmenu_scene_ = view::Scene::create(view::pObject(), "MainMenu");
     mainmenu_scene_->setTo2DView();
 
-    view::pMenu temp = view::Menu::create("title", mainmenu_scene_, 150, 60);
-    view::pMenu temp2= view::Menu::create("title", mainmenu_scene_, 150, 60);
+    view::pMenu temp = view::Menu::create("cubeat_800x200", mainmenu_scene_, 400, 100, true);
 
-    menus_.insert( std::make_pair("testmenu1", temp) );
-    menus_.insert( std::make_pair("testmenu2", temp2) );
-
-    temp->moveTo(-200, 100);
-    temp2->moveTo(-200, 100).set<Red>(0);
+    menus_.insert( std::make_pair("start_menu", temp) );
+    temp->moveTo(320, 200).setDepth(-200);
 
     function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSprite("title", click1_1, 100, 40).getSprite("title").set<Pos2D>(vec2(0, 50));
-    temp2->addSprite("title", click2_1, 100, 40).getSprite("title").set<Pos2D>(vec2(0, 50));
-
-    temp->set<Alpha>(0);
-    temp->set<Visible>(false);
-    temp2->set<Alpha>(0);
-    temp2->set<Visible>(false);
+    temp->addSpriteText("push start button", "Star Jedi", click1_1, 24, true)
+         .getSprite("push start button").set<Pos2D>(vec2(0, 100)).tween<SineCirc, Alpha>(0, 2000);
 
     initDecorator();
     App::i().setLoading(100);
-    showMenu("testmenu1");
 
     return shared_from_this();
 }
@@ -106,14 +96,14 @@ void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num
     {
         data::Color col = data::Color::from_id(0, color_num);
         int rand_bias   = utils::random( bias ) - bias/2;
-        vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 400 );
-        vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -400 );
+        vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 100 );
+        vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -100 );
         view::pSprite temp = view::Sprite::create( paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
 
         float scale = utils::random(50)/100.0f + 1;
         float rot_duration = 3000 + utils::random(2000);
         float delay = utils::random( rot_duration );
-        float time_position = range * time / length;
+        float time_position = time * range / length;
         temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
              .set<Scale>(vec3(scale, scale, 1))
              .tween<Linear, Rotation>(vec3(0, 0, 360), rot_duration, true, 0, -delay )
@@ -134,22 +124,20 @@ void MainMenu::menu1_1_click(view::pSprite& sprite)
 {
     if( animating_ ) return;
     animating_ = true;
-    showMenu("testmenu2").hideMenu("testmenu1");
 }
 
 void MainMenu::menu2_1_click(view::pSprite& sprite)
 {
     if( animating_ ) return;
     animating_ = true;
-    showMenu("testmenu1").hideMenu("testmenu2");
 }
 
 MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> f = (BLL::var(animating_) = false);
-    sprite->tween<OElastic, Pos2D>(vec2(300, 100), 1000, false, f );
-    sprite->tweenAll<Linear, Alpha>(255, 777, false);
+    sprite->tween<OCirc, Pos2D>(vec2(320, 200), 2000, false, f );
+    sprite->tweenAll<Linear, Alpha>(255, 1000, false);
     sprite->set<Visible>(true);
     return *this;
 }
@@ -158,8 +146,8 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    sprite->tween<ICirc, Pos2D>(vec2(-200, 100), 1000, false, endcall);
-    sprite->tweenAll<Linear, Alpha>(0, 777, false);
+    sprite->tween<ICirc, Pos2D>(vec2(-200, 200), 2000, false, endcall);
+    sprite->tweenAll<Linear, Alpha>(0, 1000, false);
     return *this;
 }
 

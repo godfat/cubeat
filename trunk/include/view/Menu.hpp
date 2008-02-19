@@ -47,6 +47,7 @@ public:
                               std::tr1::function<void(pSprite&)> cb = 0,
                               int const& w = 100,
                               int const& h = 100,
+                              bool const& center = false,
                               std::string const& texture_name = "");
 
     virtual Menu&   addSpriteText(std::string const& text,

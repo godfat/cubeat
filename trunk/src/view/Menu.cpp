@@ -26,10 +26,11 @@ Menu& Menu::addSprite(std::string const& name,
                       std::tr1::function<void(pSprite&)> cb,
                       int const& w,
                       int const& h,
+                      bool const& center,
                       std::string const& texture_name)
 {
     pSprite newobj = Sprite::create(texture_name.size() ? texture_name : name,
-                                    static_pointer_cast<Menu>(shared_from_this()), w, h);
+                                    static_pointer_cast<Menu>(shared_from_this()), w, h, center);
 
     sprites_.insert( std::make_pair(name, newobj) );
     if( cb ) setCallbackToSprite(name, cb);

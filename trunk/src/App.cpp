@@ -3,6 +3,7 @@
    Inputs are temporarily declared in this scope,
    will be removed later. (when player class is out) */
 
+#include "Conf.hpp"
 #include "App.hpp"
 #include "presenter/Transitioner.hpp"
 #include "presenter/MainMenu.hpp"
@@ -12,7 +13,7 @@
 #include "IrrDevice.hpp"
 
 /* Testcase */
-#include "testcase/ViewTest1.hpp"
+//#include "testcase/ViewTest1.hpp"
 
 #include <iostream>
 
@@ -27,7 +28,7 @@ using std::tr1::bind;
 using std::tr1::ref;
 
 App::App()
-:framerate_(60), last_timetick_(0)
+    : framerate_( Conf::i().FRAMERATE ), last_timetick_(0)
 {
     std::cout << "App constructed.\n";
     if( !IrrDevice::i().init(true) ) {
@@ -37,8 +38,8 @@ App::App()
     timer_ = IrrDevice::i().d()->getTimer();
 
     //these are temporarily here.
-    input1_ = new Input("config/input_setting_1p.yml");
-    input2_ = new Input("config/input_setting_2p.yml");
+    input1_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player1.zzml");
+    input2_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player2.zzml");
 
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();

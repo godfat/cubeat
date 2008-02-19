@@ -3,6 +3,7 @@
 
 #include "presenter/Object.hpp"
 #include "utils/ObjectPool.hpp"
+#include "utils/dictionary.hpp"
 #include "all_fwd.hpp"
 
 namespace psc {
@@ -30,6 +31,8 @@ protected:
     view::pScene scene_;
     view::pSpriteMovie movie_;
     bool deletion_scheduled_;
+
+    utils::map_any config;
 };
 
 } //presenter

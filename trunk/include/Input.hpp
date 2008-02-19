@@ -16,7 +16,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
 
 #ifdef _USE_WIIMOTE_
 #include <wiimote.h>
@@ -38,12 +37,9 @@ private:
     static InputList inputs_;
     static bool keyboard_mouse_input_;
 
-    static const int MAX_SETTINGS = 8;
-    static const int CURSOR_SENSATIVITY = 5;
-
 //non-static below
 public:
-    Input(char const*);
+    Input(std::string const& path);
     ~Input();
 
     Crosshair const& cursor() const { return cursor_; }
@@ -73,8 +69,16 @@ private:
     Button haste_;
     Button pause_;
 
-    typedef std::pair<std::string, int> ItemKey;
-    std::map<ItemKey::first_type, ItemKey::second_type> keymap;
+    int cursor_key_;
+    int trig1_key_;
+    int trig2_key_;
+    int wep1_key_;
+    int wep2_key_;
+    int wep3_key_;
+    int haste_key_;
+    int pause_key_;
+
+    int CURSOR_SENSATIVITY;
 
 #ifdef _USE_WIIMOTE_
     wiimote wiimote_;

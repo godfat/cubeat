@@ -76,6 +76,8 @@ bool operator==(any const& a, any const& b);
    * added common container interfaces like clear(), size(), empty() etc,
      but not fully tested.
 
+   * need a toString or toFile function. (this is hard if you want a pretty format)
+
 */
 
 namespace psc {

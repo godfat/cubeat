@@ -4,7 +4,7 @@
 */
 
 #include "Input.hpp"
-
+#include "utils/dictionary.hpp"
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
@@ -19,6 +19,7 @@
 using namespace irr;
 
 using namespace psc;
+using namespace utils;
 using namespace ctrl;
 
 //static functions
@@ -49,24 +50,21 @@ Input* Input::getInputByIndex(unsigned int i)
 
 //end of static functions
 
-Input::Input(char const* path)
+Input::Input(std::string const& path)
     :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
      haste_(this), pause_(this)
 {
-    std::ifstream infile;
-    infile.open( path );
-    if( infile.fail() || infile.eof() ) {  //non-existing file exception
-        std::cout << "No such file: " << path << ", Input setup ignored.\n";
-        return;
-    }
+    map_any keymap = map_any::construct( fetchConfig(path) );
+    cursor_key_ = keymap.I("cursor");
+    trig1_key_  = keymap.I("trig1");
+    trig2_key_  = keymap.I("trig2");
+    wep1_key_   = keymap.I("wep1");
+    wep2_key_   = keymap.I("wep2");
+    wep3_key_   = keymap.I("wep3");
+    haste_key_  = keymap.I("haste");
+    pause_key_  = keymap.I("pause");
 
-    ItemKey itemkey[MAX_SETTINGS];
-    for(int i=0; i<MAX_SETTINGS; ++i) {
-        infile >> itemkey[i].first >> std::hex >> itemkey[i].second;
-        itemkey[i].first.erase( itemkey[i].first.length()-1, 1 );
-        keymap.insert(itemkey[i]);
-    }
-    infile.close();
+    CURSOR_SENSATIVITY = keymap.I("speed");
 
 #ifdef _USE_WIIMOTE_
     //connect and init wiimote
@@ -111,17 +109,17 @@ void Input::update()
 
 void Input::cursor_by_keyboard_mouse()
 {
-    if( keymap["cursor"] == 0 ) {     //A Special Case Which Is Not EKEY_CODE: 0x00 means "mouse"
+    if( cursor_key_ == 0 ) {     //A Special Case Which Is Not EKEY_CODE: 0x00 means "mouse"
         cursor_.x() = MastEventReceiver::i().mouseX();
         cursor_.y() = MastEventReceiver::i().mouseY();
     }
-    else if( keymap["cursor"] == 1 ) {//A Special Case Which Is Not EKEY_CODE: 0x01 means "wasd"
+    else if( cursor_key_ == 1 ) {//A Special Case Which Is Not EKEY_CODE: 0x01 means "wasd"
         cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_D)) -
                         static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_A))) * CURSOR_SENSATIVITY;
         cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_S)) -
                         static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_W))) * CURSOR_SENSATIVITY;
     }
-    else if( keymap["cursor"] == 2 ) {//A Special Case Which Is Not EKEY_CODE: 0x02 means "use arrow"
+    else if( cursor_key_ == 2 ) {//A Special Case Which Is Not EKEY_CODE: 0x02 means "use arrow"
         cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_RIGHT)) -
                         static_cast<int>(MastEventReceiver::i().keyDown(KEY_LEFT ))) * CURSOR_SENSATIVITY;
         cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_DOWN )) -
@@ -131,13 +129,13 @@ void Input::cursor_by_keyboard_mouse()
 
 void Input::buttons_by_keyboard_mouse()
 {
-    trig1_.now() = MastEventReceiver::i().keyDown(keymap["trig1"]);
-    trig2_.now() = MastEventReceiver::i().keyDown(keymap["trig2"]);
-    wep1_.now() = MastEventReceiver::i().keyDown(keymap["wep1"]);
-    wep2_.now() = MastEventReceiver::i().keyDown(keymap["wep2"]);
-    wep3_.now() = MastEventReceiver::i().keyDown(keymap["wep3"]);
-    haste_.now() = MastEventReceiver::i().keyDown(keymap["haste"]);
-    pause_.now() = MastEventReceiver::i().keyDown(keymap["pause"]);
+    trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
+    trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
+    wep1_.now() = MastEventReceiver::i().keyDown( wep1_key_ );
+    wep2_.now() = MastEventReceiver::i().keyDown( wep2_key_ );
+    wep3_.now() = MastEventReceiver::i().keyDown( wep3_key_ );
+    haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+    pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
 }
 
 void Input::write_state_now_to_last()

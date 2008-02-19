@@ -1,0 +1,5 @@
+movie_path : 'E:/portfolio/ndssp/ndssp_op.avi',
+startframe : 0,
+
+#in milliseconds
+fade_period: 2000

@@ -1,0 +1,4 @@
+bits        : 32,
+fullscreen  : 0,
+vsync       : 0
+

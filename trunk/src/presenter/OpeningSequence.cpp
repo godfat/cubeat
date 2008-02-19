@@ -6,6 +6,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "App.hpp"
+#include "Conf.hpp"
 
 #include <iostream>
 
@@ -21,6 +22,8 @@ using std::tr1::function;
 OpeningSequence::OpeningSequence()
     :deletion_scheduled_(false)
 {
+    config = utils::map_any::construct(
+        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"opening.zzml" ) );
 }
 
 OpeningSequence::~OpeningSequence()
@@ -32,8 +35,9 @@ pOpeningSequence OpeningSequence::init()
 {
     scene_ = view::Scene::create(view::pObject(), "OpeningSequence");
     scene_->setTo2DView();
-    movie_ = view::SpriteMovie::create("E:/portfolio/ndssp/ndssp_op.avi", scene_, 640, 480);
-    movie_->setCurrentFrame(900); //temp
+    movie_ = view::SpriteMovie::create(config.S("movie_path"), scene_,
+                                       Conf::i().SCREEN_W, Conf::i().SCREEN_H);
+    movie_->setCurrentFrame( config.I("startframe") ); //temp
     return shared_from_this();
 }
 
@@ -53,7 +57,7 @@ void OpeningSequence::cycle()
     if( !deletion_scheduled_ && movie_->isEnd() ) {
         std::cout << "OpeningSequence deletion scheduled.\n";
         function<void()> endcall = bind(&OpeningSequence::end, this);
-        movie_->tween<Linear, GradientDiffuse>(0, 2000, false, endcall);
+        movie_->tween<Linear, GradientDiffuse>(0, config.I("fade_period"), false, endcall);
         deletion_scheduled_ = true;
     }
 }

@@ -1,0 +1,6 @@
+
+1. make tags, modify square to store tag
+2. make chain display
+3. modify score getting
+4. modify garbage square
+5. more if i can do it

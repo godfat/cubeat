@@ -1,5 +1,5 @@
 
-// g++ rice_yml.cpp -o rice_yml -I/opt/local/lib/ruby/1.8/i686-darwin9.1.0/ -I/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.0/ -L/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.0/rice/ -lrice -lruby -std=c++98 -Wall -w
+// g++ rice_yml.cpp -o rice_yml -I/opt/local/lib/ruby/1.8/i686-darwin9.1.0/ -I/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/ -L/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/rice/ -lrice -lruby -std=c++98 -Wall -w
 
 #include <ruby.h>
 #include <rice/Hash.hpp>
@@ -56,4 +56,5 @@ int main(){
     Hash h(protect(rb_eval_string, "YAML.load(File.read('database.yml'))"));
     extract_hash(h);
     std::cout << std::endl;
+    std::cout << static_cast<Hash>(h[String("development")])[String("adapter")] << std::endl;
 }

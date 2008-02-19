@@ -2,9 +2,12 @@
 // g++ rice_yml.cpp -o rice_yml -I/opt/local/lib/ruby/1.8/i686-darwin9.1.0/ -I/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/ -L/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/rice/ -lrice -lruby -std=c++98 -Wall -w
 
 #include <ruby.h>
+
 #include <rice/Hash.hpp>
 #include <rice/Array.hpp>
+
 #include <iostream>
+#include <string>
 
 using Rice::Object;
 using Rice::Class;

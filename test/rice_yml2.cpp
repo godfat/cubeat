@@ -38,9 +38,8 @@ public:
     }
 private:
     void extract_array(Array const& obj, int depth) const{
-        for(Array::const_iterator i=obj.begin(), iend=obj.end(); i!=iend; ++i){
+        for(Array::const_iterator i=obj.begin(), iend=obj.end(); i!=iend; ++i)
             extract(*i, depth);
-        }
     }
     void extract_hash(Hash const& obj, int depth) const{
         for(Hash::const_iterator i=obj.begin(), iend=obj.end(); i!=iend; ++i){

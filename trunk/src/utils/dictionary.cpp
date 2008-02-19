@@ -18,8 +18,8 @@ namespace utils {
 //////////////////////// Helper & Common Func /////////////////////////
 
 inline bool skip_it( char const& ch ) {
-	if( ch == ' ' || ch == ',' || ch == ':' ) return true;
-	return false;
+    if( ch == ' ' || ch == ',' || ch == ':' ) return true;
+    return false;
 }
 
 inline bool is_number( char const& ch ) {
@@ -98,29 +98,29 @@ inline T read_number_at( std::string const& str, int& i) {
 map_any map_any::construct(std::string const& str)
 {
     map_any map;
-	int i = 0;
-	while( i < (int)str.length() ) {
+    int i = 0;
+    while( i < (int)str.length() ) {
 
-	    if( skip_it( str[i] ) ) { ++i; continue; }
+        if( skip_it( str[i] ) ) { ++i; continue; }
 
-		any key;                         //we don't know what type the key is.
+        any key;                         //we don't know what type the key is.
 
-	    if( is_string( str[i] ) ) {
-		    key = read_string_at(str, i);
-		}
+        if( is_string( str[i] ) ) {
+            key = read_string_at(str, i);
+        }
         //parse key: when key is a number
-		else if( is_number( str[i] ) ) {
-			key = read_number_at<int>(str, i);
-		}
-		else { /*parse error*/
-		    std::cerr << "An exception raised when parsing key at position "
-		              << i << ", element: " << str[i] << "\n";
-			break;
-		}
+        else if( is_number( str[i] ) ) {
+            key = read_number_at<int>(str, i);
+        }
+        else { /*parse error*/
+            std::cerr << "An exception raised when parsing key at position "
+                      << i << ", element: " << str[i] << "\n";
+            break;
+        }
 
         //skip anything we don't want between key:value
-		while ( skip_it( str[i] ) )
-		    ++i;
+        while ( skip_it( str[i] ) )
+            ++i;
 
         if( is_number( str[i] ) ) {
             try {
@@ -129,56 +129,56 @@ map_any map_any::construct(std::string const& str)
             catch(bad_lexical_cast&) {
                 map[ key ] = read_number_at<double>(str, i);
             }
-		}
-		else if( is_string( str[i] ) ) {
-		    map[ key ] = read_string_at(str, i);
-		}
-		else if( is_vector( str[i] ) ) {
-			map[ key ] = read_container_at<vector_any>(str, i, '[',']');
-		}
-		else if( is_map( str[i] ) ) {
+        }
+        else if( is_string( str[i] ) ) {
+            map[ key ] = read_string_at(str, i);
+        }
+        else if( is_vector( str[i] ) ) {
+            map[ key ] = read_container_at<vector_any>(str, i, '[',']');
+        }
+        else if( is_map( str[i] ) ) {
             map[ key ] = read_container_at<map_any>(str, i, '{','}');
-		}
-		else { /*parse error*/
-		    std::cerr << "An Exception Raised when parsing value at position "
-		              << i << ", element: " << str[i] << "\n";
-			break;
-		}
-	}
+        }
+        else { /*parse error*/
+            std::cerr << "An Exception Raised when parsing value at position "
+                      << i << ", element: " << str[i] << "\n";
+            break;
+        }
+    }
     return map;
 }
 
 vector_any vector_any::construct(std::string const& str)
 {
     vector_any vec;
-	int i = 0;
+    int i = 0;
     while( i < (int)str.length() ) {
 
-   	    if( skip_it( str[i] ) ) { ++i; continue; }
+        if( skip_it( str[i] ) ) { ++i; continue; }
 
         if( is_number( str[i] ) ) {
-			try {
+            try {
                 vec.push_back( read_number_at<int>(str, i) );
             }
             catch(bad_lexical_cast&) {
                 vec.push_back( read_number_at<double>(str, i) );
             }
-		}
-		else if ( is_string( str[i] ) ) {
-			vec.push_back( read_string_at(str, i) );
-		}
-		else if ( is_vector( str[i] ) ) {
-			vec.push_back( read_container_at<vector_any>(str, i, '[',']') );
-		}
-		else if( is_map( str[i] ) ) {
-			vec.push_back( read_container_at<map_any>(str, i, '{','}') );
-		}
-		else { /*parse error*/
-		    std::cerr << "An exception raised when parsing list. element: "
-		              << str[i] << " pos: " << i << "\n";
-			break;
-		}
-	}
+        }
+        else if ( is_string( str[i] ) ) {
+            vec.push_back( read_string_at(str, i) );
+        }
+        else if ( is_vector( str[i] ) ) {
+            vec.push_back( read_container_at<vector_any>(str, i, '[',']') );
+        }
+        else if( is_map( str[i] ) ) {
+            vec.push_back( read_container_at<map_any>(str, i, '{','}') );
+        }
+        else { /*parse error*/
+            std::cerr << "An exception raised when parsing list. element: "
+                      << str[i] << " pos: " << i << "\n";
+            break;
+        }
+    }
     return vec;
 }
 

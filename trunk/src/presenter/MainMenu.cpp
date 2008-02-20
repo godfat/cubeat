@@ -44,8 +44,8 @@ pMainMenu MainMenu::init()
     function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSpriteText("push start button", "Star Jedi", click1_1, 24, true)
-         .getSprite("push start button").set<Pos2D>(vec2(0, 100)).tween<SineCirc, Alpha>(0, 2000);
+    temp->addSpriteText("text1", "push start button", "Star Jedi", click1_1, 24, true)
+         .getSprite("text1").set<Pos2D>(vec2(0, 100)).tween<SineCirc, Alpha>(0, 2000);
 
     initDecorator();
     App::i().setLoading(100);

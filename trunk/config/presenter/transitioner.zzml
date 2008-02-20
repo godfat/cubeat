@@ -1,0 +1,29 @@
+background:
+{
+    fade_period: 2000
+},
+
+bar_setting:
+{
+    width: 600,
+   height: 20,
+        x: 20,
+        y: 440,
+    fade_period: 1000
+},
+
+text1:
+{
+    text: '... loading ...',
+    font: 'Star Jedi',
+    size: 48,
+    fade_period: 1000
+},
+
+text2:
+{
+    text: '... please wait ...',
+    font: 'Star Jedi',
+    size: 32,
+    fade_period: 1000
+}

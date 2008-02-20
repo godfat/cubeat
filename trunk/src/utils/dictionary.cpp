@@ -53,7 +53,7 @@ inline std::string read_string_at( std::string const& str, int& i ) {
     //if we find the first token is an alphabet, we assume there's no quotation.
     else if( all( str.substr(i, 1), is_alpha() ) ) {
         from = i;                          //there's no quotation to skip
-        to = str.find_first_of(",:]}",from);
+        to = str.find_first_of(" ,:]}",from);
         i = to;                            //there's no quotation to skip
     }
     return str.substr( from, to-from );
@@ -197,7 +197,6 @@ std::string fetchConfig(std::string const& path)
     std::string in;
     while( getline(infile, in) ) {
         trim(in);
-        replace_all(in, " ", "");
         if( in[0] != '#' )
             str += in;
     }

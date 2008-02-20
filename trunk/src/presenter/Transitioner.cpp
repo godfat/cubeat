@@ -19,18 +19,30 @@ using std::tr1::function;
 
 void Transitioner::init()
 {
+    config = utils::map_any::construct(
+        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"transitioner.zzml" ) );
+
+    utils::map_any& bar = config.M("bar_setting");
+    utils::map_any& text1= config.M("text1");
+    utils::map_any& text2= config.M("text2");
+
     transition_scene_ = view::Scene::create(view::pObject(), "Transitioner");
     transition_scene_->setTo2DView();
 
-    loading_menu_ = view::Menu::create("loading", transition_scene_, 640, 480);
+    loading_menu_ = view::Menu::create("loading", transition_scene_,
+                                       Conf::i().SCREEN_W, Conf::i().SCREEN_H);
     loading_menu_->set<GradientDiffuse>(0);
-    loading_menu_->addSprite("loading_bar", 0, 600, 20)
-                  .addSpriteText("text1", "... loading ...", "Star Jedi", 0, 60, true)
-                  .addSpriteText("text2", "... please wait ...", "Star Jedi", 0, 36, true);
-    loading_menu_->getSprite("loading_bar").moveTo(20, 440)
+    loading_menu_->addSprite("loading_bar", 0, bar.I("width"), bar.I("height") )
+                  .addSpriteText("text1", text1.S("text"), text1.S("font"),
+                                 0, text1.I("size"), true)
+                  .addSpriteText("text2", text2.S("text"), text2.S("font"),
+                                 0, text2.I("size"), true);
+    loading_menu_->getSprite("loading_bar").moveTo( bar.I("x"), bar.I("y") )
                   .set<GradientDiffuse>(128);
-    loading_menu_->getSprite("text1").moveTo(320, 204);
-    loading_menu_->getSprite("text2").moveTo(320, 276);
+    loading_menu_->getSprite("text1")
+                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - text1.I("size") );
+    loading_menu_->getSprite("text2")
+                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + text2.I("size") );
 
     loading_menu_->set<Visible>(false);
 }
@@ -43,10 +55,13 @@ Transitioner::setLoadingBar(int const& percent)
 
     if( percent > 99 ) {
         function<void()> endcall = bind(&view::Object::set<Visible>, loading_menu_.get(), false);
-        loading_menu_->tween<Linear, Alpha>(0, 2000, false, endcall);
-        loading_menu_->getSprite("loading_bar").tween<Linear, Alpha>(0, 1000, false);
-        loading_menu_->getSprite("text1").tween<Linear, Alpha>(0, 1000, false);
-        loading_menu_->getSprite("text2").tween<Linear, Alpha>(0, 1000, false);
+        loading_menu_->tween<Linear, Alpha>(0, config.M("background").I("fade_period"), false, endcall);
+        loading_menu_->getSprite("loading_bar")
+                      .tween<Linear, Alpha>(0, config.M("bar_setting").I("fade_period"), false);
+        loading_menu_->getSprite("text1")
+                      .tween<Linear, Alpha>(0, config.M("text1").I("fade_period"), false);
+        loading_menu_->getSprite("text2")
+                      .tween<Linear, Alpha>(0, config.M("text2").I("fade_period"), false);
     }
     return *this;
 }

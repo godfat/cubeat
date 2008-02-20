@@ -35,6 +35,14 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
     }
 }
 
+void <% debug_hook 'Cube::be_garbage' do %>(){
+<% end %>
+    is_garbage_ = true;
+	hp_ = 3;
+    color_ = data::Color::random_rgb_color();
+	// show_outline();
+}
+
 // begin only used by Map::next_state
 pWaiting Cube::is_waiting(){ return dynamic_pointer_cast<Waiting>(state_); }
 pDropping Cube::is_dropping(){ return dynamic_pointer_cast<Dropping>(state_); }

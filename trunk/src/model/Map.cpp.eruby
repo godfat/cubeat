@@ -14,6 +14,7 @@
 #include "utils/vector_2d.hpp"
 
 #include <boost/lambda/lambda.hpp>
+#include <algorithm>
 
 <%= debug_include %>
 
@@ -41,7 +42,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
     {
         int x = i%width, y = i/width;
-        insert( owner->make_cube(x, y, cube_colors[x][y])->model() );
+        insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
     }
     return *this;
 }
@@ -63,10 +64,15 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
     if(  c->cycle_and_die() ) cubes_.origin()[i].reset(), owner_.lock()->release(c);
 }
 
-Map& <% debug_hook 'Map::insert' do %>(pCube cube){
+Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
 <% end %>
     cubes_[cube->x()][cube->y()] = cube;
     return *this;
+}
+Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
+<% end %>
+    cube->be_garbage();
+    return insert_cube(cube);
 }
 
 // used by Dropping::cycle, Waiting::cycle
@@ -219,25 +225,59 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 
 void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
-    // for(std::vector<Chain*>::iterator i=chains_.begin();
-    //     i != chains_.end(); ++i)
-    // {
-    //     // when the Chain's rear is not zero we notify to add a new combo
-    //     if( (**i).last_step_amounts() != 0 ){
-    //     // damage_factor to score adjustment (1.00 ~ 2.00)
-    //         score_ += (**i).score_step() * ms().damage_factor;
-    //         (**i).step_one();
-    //     }
-    // 
-    //     // when the Chain's all dead then we fire up the attack and make this one null
-    //     if( (**i).owner_amounts() == 0 ){
-    //         // damage_factor to score adjustment (1.00 ~ 2.00)
-    //         SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
-    //         (**i).suicide();
-    //         i = chains_.erase(i);
-    //         --i;
-    //     }
+    for(chain_list_type::iterator i=chains_.begin();
+        i != chains_.end(); ++i)
+    {
+        // when the Chain's rear is not zero we notify to add a new combo
+        if( (**i).last_step_amounts() != 0 ){
+        // damage_factor to score adjustment (1.00 ~ 2.00)
+            score_ += (**i).score_step() * ms()->damage_factor();
+            (**i).step_one();
+        }
+
+        // when the Chain's all dead then we fire up the attack and make this one null
+        if( (**i).owner_amounts() == 0 ){
+            // damage_factor to score adjustment (1.00 ~ 2.00)
+            // SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
+            // (**i).suicide();
+            i = chains_.erase(i);
+            --i;
+        }
+    }
+}
+
+void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
+<% end %>
+    // no garbage no working
+	if( garbage_left_ < 1 || ( n_of_newcomers_ > 0 && garbage_switch_ == false ) ) {
+		garbage_switch_ = false;
+        return;
+	}
+
+	garbage_switch_ = true;
+
+    std::vector<int> is_empty;
+
+	// check empty columns
+	for( int xx=0, width=ms()->width(); xx < width; ++xx )
+		if( !cubes_[xx][0] && !cubes_[xx][1] )
+			is_empty.push_back( xx );
+
+	// shuffle the array
+    // for( int unsigned i=0; i < is_empty.size(); ++i ){
+    //  int rand = utils::random( is_empty.size() );
+    //  std::swap( is_empty[i], is_empty[rand] );
     // }
+    std::random_shuffle(is_empty.begin(), is_empty.end());
+
+	// drop them according to the empty column
+    presenter::pMap owner = owner_.lock();
+    int top = ms()->height()-1;
+	for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
+        int x = is_empty[i];
+		insert_garbage(owner->make_cube(x, top)->model());
+		--garbage_left_;
+	}
 }
 
 Map::preview_type <% debug_hook 'Map::preview' do %>() const{

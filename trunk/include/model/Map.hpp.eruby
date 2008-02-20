@@ -38,9 +38,9 @@ public:
 
     Map& cycle(){
         refresh_cubes(); // make cube to cycle
-    	// update_chains();
+    	update_chains();
         cycle_cubes();
-    	// cycle_creation_garbage(); // added
+    	cycle_creation_garbage(); // added
     	if(ms()->dropping_creatable()){
     	    // cycle_creation(); // added
     		// cycle_warning(); // added
@@ -62,14 +62,20 @@ public:
     void push_chain(pChain chain){ chains_.push_back(chain); }
     // end
 
+    // only used by Game::make_garbage
+    void <% debug_hook 'add_garbage' do %>(int amounts){ <%end%> garbage_left_ += amounts; }
+    // end
+
     // container_type const& cubes() const{ return cubes_; }
     preview_type preview() const;
 
 private:
-    Map& insert(pCube cube);
+    Map& insert_cube(pCube cube);
+    Map& insert_garbage(pCube cube);
     void cycle_cubes();
     void cycle_a_cube(pCube c, int i);
     void refresh_cubes();
+    void cycle_creation_garbage();
 
     void make_row(pCube that, cube_list_type&, cube_list_type&);
     void make_column(pCube that, cube_list_type&, cube_list_type&);
@@ -84,9 +90,10 @@ private:
     presenter::wpMap owner_; // should be weak_ptr;
     data::pMapSetting setting_;
     container_type cubes_;
-    int n_of_newcomers_;
+    int n_of_newcomers_, garbage_left_, score_;
     // someday make it to be std::list
     std::vector<pChain> chains_;
+    bool garbage_switch_;
 };
 
 }} // end of namespace

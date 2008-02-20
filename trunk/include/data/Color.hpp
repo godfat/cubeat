@@ -46,6 +46,9 @@ public:
     static int for_id(Color const& color){
         return std::distance(id2rgb, std::find(id2rgb+1, id2rgb+8, color.rgb()));
     }
+    static Color random_rgb_color(){
+        return Color(utils::random(white+1));
+    }
 
 public:
     Color(): rgb_(0){}
@@ -75,7 +78,8 @@ private:
         blue=0xff, green=blue<<8, red=green<<8,
         green_blue = green|blue,
         red_blue = red|blue,
-        red_green = red|green
+        red_green = red|green,
+        white = red|green|blue
     };
 };
 

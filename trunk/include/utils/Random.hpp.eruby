@@ -12,13 +12,12 @@ public:
 public:
     int random(int max){
         if( max == 0) return 0;
-        std::tr1::variate_generator<std::tr1::mt19937, std::tr1::uniform_int<> > dice(engine_, std::tr1::uniform_int<>(0, max-1));
-        return dice();
+        dice_.distribution() = std::tr1::uniform_int<>(0, max-1);
+        return dice_();
     }
 private:
-    Random(): engine_(std::time(0)^std::clock()){}
-    std::tr1::mt19937 engine_;
-
+    Random(): dice_(std::tr1::mt19937(std::time(0)^std::clock()), std::tr1::uniform_int<>()){}
+    std::tr1::variate_generator<std::tr1::mt19937, std::tr1::uniform_int<> > dice_;
 };
 
 inline int random(int max){

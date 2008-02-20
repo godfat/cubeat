@@ -91,7 +91,7 @@ void Sprite::setupMeshBase(pObject const& parent)
         mani->transformMesh( thismesh_, mat );
     }
 
-    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,-50) );
+    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,0) );
     body_->setAutomaticCulling(EAC_OFF);
     body_->setName( name_.c_str() );
 }

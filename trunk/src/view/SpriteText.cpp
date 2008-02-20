@@ -49,7 +49,7 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
     mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 
-    mat.DiffuseColor.set(255,255,255,255);
+    mat.DiffuseColor = col;
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;

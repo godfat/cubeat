@@ -37,16 +37,16 @@ Menu& Menu::addSprite(std::string const& name,
     return *this;
 }
 
-Menu& Menu::addSpriteText(std::string const& text, std::string const& font_path,
-                          std::tr1::function<void(pSprite&)> cb, int size, bool const& center,
-                          data::Color const& color)
+Menu& Menu::addSpriteText(std::string const& name, std::string const& text,
+                          std::string const& font_path, std::tr1::function<void(pSprite&)> cb,
+                          int size, bool const& center, data::Color const& color)
 {
     pSpriteText newobj = SpriteText::create(text,
                                             static_pointer_cast<Menu>(shared_from_this()),
                                             font_path, size, center, color);
 
-    sprites_.insert( std::make_pair(text, newobj) );
-    if( cb ) setCallbackToSprite(text, cb);
+    sprites_.insert( std::make_pair(name, newobj) );
+    if( cb ) setCallbackToSprite(name, cb);
     return *this;
 }
 

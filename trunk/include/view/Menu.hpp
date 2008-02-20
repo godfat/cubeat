@@ -50,12 +50,13 @@ public:
                               bool const& center = false,
                               std::string const& texture_name = "");
 
-    virtual Menu&   addSpriteText(std::string const& text,
+    virtual Menu&   addSpriteText(std::string const& name,
+                                  std::string const& text,
                                   std::string const& font_path,
                                   std::tr1::function<void(pSprite&)> cb = 0,
                                   int size = 12,
                                   bool const& center = false,
-                                  data::Color const& color = data::Color(0,0,0) );
+                                  data::Color const& color = data::Color(255,255,255) );
 
     virtual Menu&   deleteSprite(std::string const& name);
     virtual Sprite& getSprite(std::string const& name);    //non-const-getter

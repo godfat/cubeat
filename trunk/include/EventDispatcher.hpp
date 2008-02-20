@@ -11,6 +11,7 @@
 */
 
 #include "Button.hpp"
+#include "all_fwd.hpp"
 
 #include <tr1/memory>
 #include <tr1/tuple>
@@ -24,11 +25,6 @@ using std::tr1::tuple;
 using std::tr1::tuple_element;
 
 namespace psc {
-
-namespace view {
-class Sprite;
-typedef std::tr1::shared_ptr<Sprite> pSprite;
-}
 
 namespace ctrl {
 

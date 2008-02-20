@@ -14,6 +14,7 @@
 #include "presenter/Object.hpp"
 
 #include "utils/ObjectPool.hpp"
+#include "utils/dictionary.hpp"
 #include "all_fwd.hpp"
 
 namespace psc {
@@ -41,6 +42,7 @@ protected:
     view::pScene transition_scene_;
     view::pMenu loading_menu_;
 
+    utils::map_any config;
 };
 } //presenter
 } //psc

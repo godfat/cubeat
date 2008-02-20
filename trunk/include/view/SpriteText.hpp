@@ -17,7 +17,7 @@ public:
                                std::string const& font_path,
                                int                size = 12,
                                bool const&        center = false,
-                               data::Color const& color = data::Color(0,0,0) )
+                               data::Color const& color = data::Color(255,255,255) )
     {
         pointer_type p = utils::ObjectPool< SpriteText >::create("", center);
         p->init(text, font_path, size, color, parent);

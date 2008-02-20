@@ -14,7 +14,7 @@
 #include "model/Map.hpp"
 #include "utils/ObjectPool.hpp"
 
-#include <boost/tr1/tr1/memory>
+#include <tr1/memory>
 
 <%= debug_include %>
 

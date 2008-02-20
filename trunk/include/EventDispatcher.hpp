@@ -12,9 +12,9 @@
 
 #include "Button.hpp"
 
-#include <boost/tr1/memory.hpp>
-#include <boost/tr1/tuple.hpp>
-#include <boost/tr1/functional.hpp>
+#include <tr1/memory>
+#include <tr1/tuple>
+#include <tr1/functional>
 #include <map>
 #include <ctime>
 #include <vector>

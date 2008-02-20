@@ -9,7 +9,7 @@
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"
-#include <boost/tr1/functional.hpp>
+#include <tr1/functional>
 #include <string>
 
 namespace irr{

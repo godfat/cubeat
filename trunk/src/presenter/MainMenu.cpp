@@ -9,7 +9,7 @@
 #include "Accessors.hpp"
 #include "App.hpp"
 
-#include <boost/tr1/functional.hpp>
+#include <tr1/functional>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/function.hpp>

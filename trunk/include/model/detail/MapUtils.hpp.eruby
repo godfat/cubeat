@@ -5,8 +5,7 @@
 #include "model/Cube.hpp"
 #include <vector>
 
-// pirate here for private...
-namespace psc{ namespace model{ namespace pirate{
+namespace psc{ namespace model{ namespace detail{
 
 bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that){
     if( ya_that.use_count() == 0 )   return true;

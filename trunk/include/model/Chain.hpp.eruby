@@ -3,7 +3,7 @@
 
 #include "utils/math.hpp"
 #include "utils/ObjectPool.hpp"
-#include <boost/tr1/tr1/memory>
+#include <tr1/memory>
 #include <vector>
 
 // #include "Sound.hpp"

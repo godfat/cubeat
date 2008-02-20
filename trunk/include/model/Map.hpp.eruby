@@ -8,7 +8,7 @@
 #include "data/MapSetting.hpp"
 
 #include <boost/multi_array.hpp>
-#include <boost/tr1/tr1/functional>
+#include <tr1/functional>
 #include <set>
 #include <vector>
 

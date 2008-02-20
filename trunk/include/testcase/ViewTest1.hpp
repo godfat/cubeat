@@ -15,7 +15,7 @@
 #include "utils/ObjectPool.hpp"
 #include "view/All.hpp"
 
-#include <boost/tr1/functional.hpp>
+#include <tr1/functional>
 #include <iostream>
 
 using namespace psc;

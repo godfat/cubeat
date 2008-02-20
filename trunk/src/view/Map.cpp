@@ -7,7 +7,7 @@
 #include "IrrDevice.hpp"
 
 #include <boost/foreach.hpp>
-#include <boost/tr1/functional.hpp>
+#include <tr1/functional>
 #include <iostream>
 
 using namespace irr;

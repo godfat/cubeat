@@ -1,5 +1,5 @@
 
-#include "model/pirate/MapUtils.hpp"
+#include "model/detail/MapUtils.hpp"
 
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
@@ -19,7 +19,8 @@
 
 using namespace psc;
 using namespace model;
-using namespace pirate;
+using detail::check_not_continue;
+using detail::process_chaining;
 using namespace std::tr1::placeholders;
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
@@ -217,25 +218,26 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 }
 
 void <% debug_hook 'Map::update_chains' do %>(){
-    for(std::vector<Chain*>::iterator i=chains_.begin();
-        i != chains_.end(); ++i)
-    {
-        // when the Chain's rear is not zero we notify to add a new combo
-		if( (**i).last_step_amounts() != 0 ){
-		    // damage_factor to score adjustment (1.00 ~ 2.00)
-			score_ += (**i).score_step() * ms().damage_factor;
-			(**i).step_one();
-		}
-
-        // when the Chain's all dead then we fire up the attack and make this one null
-		if( (**i).owner_amounts() == 0 ){
-		    // damage_factor to score adjustment (1.00 ~ 2.00)
-			SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
-            (**i).suicide();
-            i = chains_.erase(i);
-            --i;
-		}
-	}
+<% end %>
+    // for(std::vector<Chain*>::iterator i=chains_.begin();
+    //     i != chains_.end(); ++i)
+    // {
+    //     // when the Chain's rear is not zero we notify to add a new combo
+    //     if( (**i).last_step_amounts() != 0 ){
+    //     // damage_factor to score adjustment (1.00 ~ 2.00)
+    //         score_ += (**i).score_step() * ms().damage_factor;
+    //         (**i).step_one();
+    //     }
+    // 
+    //     // when the Chain's all dead then we fire up the attack and make this one null
+    //     if( (**i).owner_amounts() == 0 ){
+    //         // damage_factor to score adjustment (1.00 ~ 2.00)
+    //         SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
+    //         (**i).suicide();
+    //         i = chains_.erase(i);
+    //         --i;
+    //     }
+    // }
 }
 
 Map::preview_type <% debug_hook 'Map::preview' do %>() const{

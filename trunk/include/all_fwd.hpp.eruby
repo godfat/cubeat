@@ -1,6 +1,6 @@
 <% header_guard do %>
 
-#include <boost/tr1/tr1/memory>
+#include <tr1/memory>
 namespace psc{
 <%= Dir.glob('include/**/*.*').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter} }.map{ |path| path.pathmap('%{^include,}d/%n').ext }.uniq.sort.map{ |file| klass = file.pathmap('%n'); namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
 "

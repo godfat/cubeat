@@ -4,20 +4,21 @@ PROJECT (shooting-cubes)
 SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i }.join("\n") %>)
 
 SET (CMAKE_VERBOSE_MAKEFILE on)
+SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
 
 FIND_PACKAGE (boost REQUIRED)
 
-INCLUDE_DIRECTORIES (/opt/local/include
-                     ../irrlicht/include
-                     ./lib
-                     ./include)
+INCLUDE_DIRECTORIES (../irrlicht/include
+                     lib
+                     include)
 
-LINK_DIRECTORIES (../irrlicht/source/Irrlicht/MacOSX/build/Release)
+LINK_DIRECTORIES (../irrlicht/source/Irrlicht/MacOSX/build/Release
+                  /opt/local/lib)
 
-LINK_LIBRARIES (Irrlicht)
+LINK_LIBRARIES (Irrlicht freetype)
 
 ADD_EXECUTABLE (bin/shooting-cubes ${SOURCES})
 
-SET (CMAKE_CXX_FLAGS "-std=c++98 -W -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -DBOOST_HAS_GCC_TR1")
+SET (CMAKE_CXX_FLAGS "-std=c++98 -W -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -DBOOST_HAS_TR1 -D_SHOOTING_CUBES_TEST_")
 
-SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -framework AppKit -framework Foundation -framework OpenGL -L/opt/local/lib -lfreetype")
+SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -framework AppKit -framework Foundation -framework OpenGL")

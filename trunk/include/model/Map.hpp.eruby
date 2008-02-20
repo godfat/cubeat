@@ -19,7 +19,8 @@ public:
     typedef std::tr1::shared_ptr<Map> pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
     typedef boost::multi_array<int, 2> preview_type;
-    typedef std::set<pCube> clist_type;
+    typedef std::set<pCube> cube_list_type;
+    typedef std::vector<pChain> chain_list_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
@@ -70,9 +71,9 @@ private:
     void cycle_a_cube(pCube c, int i);
     void refresh_cubes();
 
-    void make_row(pCube that, clist_type&, clist_type&);
-    void make_column(pCube that, clist_type&, clist_type&);
-    void make_clist(clist_type&, clist_type&, clist_type&);
+    void make_row(pCube that, cube_list_type&, cube_list_type&);
+    void make_column(pCube that, cube_list_type&, cube_list_type&);
+    void make_clist(cube_list_type&, cube_list_type&, cube_list_type&);
     pOneFading make_OneFading(pCube);
     bool is_below_empty(cpCube) const;
     void update_chains();

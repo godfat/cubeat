@@ -21,24 +21,24 @@
 namespace psc{ namespace model{
 
 class OneFading{
-    typedef Map::clist_type clist_type;
+    typedef Map::cube_list_type cube_list_type;
 public:
     typedef std::tr1::shared_ptr<OneFading> pointer_type;
-    static pointer_type create(Map& map, clist_type const& list){
+    static pointer_type create(Map& map, cube_list_type const& list){
         return utils::ObjectPool<OneFading>::create(map, list);
     }
 public:
     // begin only used by Map::next_state
-    <% debug_hook 'OneFading' do %>(Map& map, clist_type const& list):
+    <% debug_hook 'OneFading' do %>(Map& map, cube_list_type const& list):
         map_(map), list_(list)
     {<%end%>}
-    clist_type::size_type size() const{ return list_.size(); }
+    cube_list_type::size_type size() const{ return list_.size(); }
 
     void <% debug_hook 'fade' do %>(pCube that_would_be_killed_by_map){
 <% end %>
         pChain chain = get_the_chain();
 
-        for(clist_type::iterator i=list_.begin(), iend=list_.end();
+        for(cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
             map_.cubes_belong_to_the_chain_from_bottom_to_top(*i, chain);
@@ -55,7 +55,7 @@ private:
         pChain chain;
 
         //this for loop will get the first Chain it finds in this column or row
-        for(clist_type::iterator i=list_.begin(), iend=list_.end();
+        for(cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i != iend; ++i)
         {
             if( (**i).chain() ) {
@@ -79,7 +79,7 @@ private:
 
 private:
     Map& map_;
-    clist_type list_;
+    cube_list_type list_;
 };
 
 }} // end of namespace

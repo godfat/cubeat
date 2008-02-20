@@ -34,7 +34,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     );
     utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
 
-    utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
+    // utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
     presenter::pMap owner = owner_.lock();
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
@@ -59,7 +59,7 @@ void <% debug_hook 'Map::cycle_cubes' do %>(){
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
 <% end %>
     if( !c->has_grounded()  ) ++n_of_newcomers_;
-    if(  c->cycle_and_die() ) cubes_.origin()[i].reset();
+    if(  c->cycle_and_die() ) cubes_.origin()[i].reset(), owner_.lock()->release(c);
 }
 
 Map& <% debug_hook 'Map::insert' do %>(pCube cube){
@@ -105,7 +105,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
     else{
         if( that->is_waiting() )
             return state::pState();
-		else {
+		else{
 			// Sound::i().cube_dropped();
             return state::Waiting::create(that);
 		}
@@ -138,7 +138,7 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
     }
 }
 
-void <% debug_hook 'Map::make_row' do %>(pCube that, clist_type& not_traveled, clist_type& result){
+void <% debug_hook 'Map::make_row' do %>(pCube that, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     std::vector<pCube> row;
 
@@ -154,7 +154,7 @@ void <% debug_hook 'Map::make_row' do %>(pCube that, clist_type& not_traveled, c
         process_chaining(row, not_traveled, result);
 }
 
-void <% debug_hook 'Map::make_column' do %>(pCube that, clist_type& not_traveled, clist_type& result){
+void <% debug_hook 'Map::make_column' do %>(pCube that, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     std::vector<pCube> column;
 
@@ -170,10 +170,10 @@ void <% debug_hook 'Map::make_column' do %>(pCube that, clist_type& not_traveled
         process_chaining(column, not_traveled, result);
 }
 
-void <% debug_hook 'Map::make_clist' do %>(clist_type& traveled, clist_type& not_traveled, clist_type& result){
+void <% debug_hook 'Map::make_clist' do %>(cube_list_type& traveled, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     if(not_traveled.size()){
-        clist_type::iterator node = not_traveled.begin();
+        cube_list_type::iterator node = not_traveled.begin();
         pCube s = *node;
 
         if( traveled.count(s) == 0 ){
@@ -190,7 +190,7 @@ void <% debug_hook 'Map::make_clist' do %>(clist_type& traveled, clist_type& not
 
 pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 <% end %>
-    clist_type traveled, not_traveled, result;
+    cube_list_type traveled, not_traveled, result;
     not_traveled.insert(that);
     make_clist(traveled, not_traveled, result);
     return result.size() ? OneFading::create(*this, result) : pOneFading();
@@ -214,6 +214,28 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	        return false;
 	    }
 	return true;
+}
+
+void <% debug_hook 'Map::update_chains' do %>(){
+    for(std::vector<Chain*>::iterator i=chains_.begin();
+        i != chains_.end(); ++i)
+    {
+        // when the Chain's rear is not zero we notify to add a new combo
+		if( (**i).last_step_amounts() != 0 ){
+		    // damage_factor to score adjustment (1.00 ~ 2.00)
+			score_ += (**i).score_step() * ms().damage_factor;
+			(**i).step_one();
+		}
+
+        // when the Chain's all dead then we fire up the attack and make this one null
+		if( (**i).owner_amounts() == 0 ){
+		    // damage_factor to score adjustment (1.00 ~ 2.00)
+			SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
+            (**i).suicide();
+            i = chains_.erase(i);
+            --i;
+		}
+	}
 }
 
 Map::preview_type <% debug_hook 'Map::preview' do %>() const{

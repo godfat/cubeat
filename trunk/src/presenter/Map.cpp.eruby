@@ -25,6 +25,7 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 <% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     // cubes_.push_back(cube);
+    cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;
 }
 

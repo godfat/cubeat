@@ -33,6 +33,7 @@ int main(){
     preview(map);
     for(int i=0; i<25; ++i)
         map->cycle();
+    preview(map);
 }
 
 #endif

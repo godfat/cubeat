@@ -6,7 +6,7 @@
 
 #include "all_fwd.hpp"
 
-#include <list>
+#include <map>
 
 <%= debug_include %>
 
@@ -16,7 +16,7 @@ class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
     typedef model::Map::preview_type preview_type;
-    typedef std::list<pCube> CubeList;
+    typedef std::map<model::wpCube, pCube> container_type;
 
 public:
     static pMap create(data::pMapSetting setting){ return pMap(new Map(setting))->init(); }
@@ -29,6 +29,7 @@ public:
     Map& cycle();
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }
+    void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
     preview_type preview() const{ return model_->preview(); }
 
 private:
@@ -38,7 +39,7 @@ private:
     data::pMapSetting setting_;
 <%= reader 'model::pMap', :model %>
     view::pMap view_;
-    CubeList cubes_;
+    container_type cubes_;
 };
 
 }} // end of namespace

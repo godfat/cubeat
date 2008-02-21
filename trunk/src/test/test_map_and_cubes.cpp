@@ -13,7 +13,7 @@
 using namespace psc;
 
 void display(presenter::pMap map){
-    presenter::Map::color_map_type p = map->preview();
+    presenter::Map::color_map_type p = map->color_map();
     for(int y=10; y>=0; --y){
         for(int x=0; x<6; ++x)
             std::printf("%2d", p[x][y]);

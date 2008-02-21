@@ -12,6 +12,8 @@
 #include <set>
 #include <vector>
 
+#include <ctime>
+
 namespace psc{ namespace model{
 
 class Map{
@@ -42,10 +44,10 @@ public:
         refresh_cubes(); // make cube to cycle
     	update_chains();
         cycle_cubes();
-    	cycle_creation_garbage(); // added
+    	cycle_creation_garbage();
     	if(ms()->dropping_creatable()){
-    	    cycle_creation(); // added
-    		// cycle_warning(); // added
+    	    cycle_creation();
+    		cycle_warning();
         }
         return *this;
     }
@@ -80,6 +82,7 @@ private:
     void cycle_a_cube(pCube, int index);
     void cycle_creation();
     void cycle_creation_garbage();
+    void cycle_warning();
     void fill_preview_queue();
     void fill1(std::vector<int>&, int&);
     void fill2(std::vector<int>&, int&);
@@ -91,6 +94,8 @@ private:
     bool is_below_empty(cpCube) const;
     void update_chains();
     bool cube_can_lose_chain(cpCube) const;
+    bool check_column_full() const;
+    
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;
@@ -101,6 +106,8 @@ private:
     chain_list_type chains_;
     preview_list_type cubes_preview_;
     bool garbage_switch_;
+    std::time_t lose_warning_step_;
+    int counting_num_, creation_step_;
 };
 
 }} // end of namespace

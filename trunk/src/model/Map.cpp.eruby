@@ -45,7 +45,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
         insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
     }
 
-	fill_preview_queue(); //added
+	fill_preview_queue(); // added
 
     return *this;
 }
@@ -248,7 +248,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
         if( (**i).owner_amounts() == 0 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
             // SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
-            // (**i).suicide();
             i = chains_.erase(i);
             --i;
         }
@@ -268,15 +267,11 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     std::vector<int> is_empty;
 
 	// check empty columns
-	for( int xx=0, width=ms()->width(); xx < width; ++xx )
-		if( !cubes_[xx][0] && !cubes_[xx][1] )
-			is_empty.push_back( xx );
+	for( int x=0, width=ms()->width(); x < width; ++x )
+		if( !cubes_[x][0] && !cubes_[x][1] )
+			is_empty.push_back( x );
 
 	// shuffle the array
-    // for( int unsigned i=0; i < is_empty.size(); ++i ){
-    //  int rand = utils::random( is_empty.size() );
-    //  std::swap( is_empty[i], is_empty[rand] );
-    // }
     std::random_shuffle(is_empty.begin(), is_empty.end());
 
 	// drop them according to the empty column
@@ -303,8 +298,6 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 			is_empty.push_back( x );
 
 	if( is_empty.size() == 0 ) return;
-	// and find one column in this array to drop randomly
-	// int x = is_empty[ SG::Instance().random( is_empty.size() ) ];
 
     for(std::vector<int>::const_iterator i=is_empty.begin(), iend=is_empty.end();
         i!=iend; ++i)
@@ -373,4 +366,45 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
             if(cubes_[x][y])
                 result[x][y] = cubes_[x][y]->color_id();
     return result;
+}
+
+// added: split warning check from cycle_creation:
+void <% debug_hook 'Map::cycle_warning' do %>(){
+<% end %>
+    if( ++creation_step_ > ms()->chain_decay() ){
+		if( check_column_full() ){ // warning!!!
+			if( lose_warning_step_ == 0 ){
+				counting_num_ = 4;
+                lose_warning_step_ = std::time(0);
+            }
+			if( counting_num_ >= 0 ){
+				// SG::Instance().yell_warning(this, counting_num );
+				--counting_num_;
+				// Sound::i().countdown();
+			}
+			else ;// SG::Instance().game_over(this);
+        }
+        else{
+            // SG::Instance().no_warning(this);
+            lose_warning_step_ = 0;
+        }
+		creation_step_ = 0;
+	}
+}
+
+bool <% debug_hook 'Map::check_column_full' do %>() const{
+<% end %>
+	int counter = 0;
+	for( int x=0, width = ms()->width(); x < width; ++x ){
+		if( cubes_[x][width-2] && cubes_[x][width-2]->is_waiting() ){
+			++counter;
+			// warning_strip_[xx]->Show(CKSHOW);
+		}
+		else ;// warning_strip_[xx]->Show(CKHIDE);
+	}
+
+	if( counter > 0 )
+		return true;
+	else 
+		return false;
 }

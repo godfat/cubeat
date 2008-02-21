@@ -12,8 +12,8 @@ using namespace state;
 
 pState <% debug_hook 'Dying::cycle' do %>(){
 <% end %>
-	if( dying_step_ < map()->ms()->cube_decay() ){
-		int alpha = 255.0 * (map()->ms()->cube_decay() - dying_step_) / map()->ms()->cube_decay();
+	if( dying_step_ < map()->ms()->cube_dying_time() ){
+		int alpha = 255.0 * (map()->ms()->cube_dying_time() - dying_step_) / map()->ms()->cube_dying_time();
 		owner()->set_alpha( alpha );
         ++dying_step_;
 		return shared_from_this();

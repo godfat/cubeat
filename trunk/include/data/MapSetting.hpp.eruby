@@ -5,14 +5,16 @@
 namespace psc{ namespace data{
 
 class MapSetting{<%# @prefix = ' '*4 %>
-<%= accessor :int, :chain_decay, :cube_decay, :delay, :color_amounts, :chain_amounts, :starting_line, :cube_size %>
-<%= accessor :double, :speed, :damage_factor %>
+<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_time, :grounded_check_delay, :warning_check_delay %>
+<%= accessor :double, :cube_size, :speed, :damage_factor %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable %>
 public:
     MapSetting():
-        chain_decay_(100), cube_decay_(22), delay_(3), color_amounts_(4), chain_amounts_(3),
-        starting_line_(4), cube_size_(50), speed_(0.75), damage_factor_(1.00),
+        color_amounts_(4), chain_amounts_(3), starting_line_(4),
+        chaining_duration_(100), cube_dying_time_(22), grounded_check_delay_(3),
+        warning_check_delay_(100),
+        cube_size_(50.0), speed_(0.75), damage_factor_(1.00),
         width_(6), height_(11), dropping_creatable_(true)
     { reset_size(); }
 

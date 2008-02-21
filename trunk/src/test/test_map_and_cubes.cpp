@@ -12,8 +12,8 @@
 
 using namespace psc;
 
-void preview(presenter::pMap map){
-    presenter::Map::preview_type p = map->preview();
+void display(presenter::pMap map){
+    presenter::Map::color_map_type p = map->preview();
     for(int y=10; y>=0; --y){
         for(int x=0; x<6; ++x)
             std::printf("%2d", p[x][y]);
@@ -27,13 +27,13 @@ int main(){
 
     presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
     std::cerr << "\n\n\nend creation\n\n\n";
-    preview(map);
+    display(map);
     map->cycle();
     std::cerr << "\n\n\nend cycle\n\n\n";
-    preview(map);
+    display(map);
     for(int i=0; i<25; ++i)
         map->cycle();
-    preview(map);
+    display(map);
 }
 
 #endif

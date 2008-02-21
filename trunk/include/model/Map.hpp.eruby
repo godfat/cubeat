@@ -67,7 +67,7 @@ public:
     // end
 
     // container_type const& cubes() const{ return cubes_; }
-    preview_type preview() const;
+    color_map_type color_map() const;
 
 private:
     Map& insert_cube(pCube cube);

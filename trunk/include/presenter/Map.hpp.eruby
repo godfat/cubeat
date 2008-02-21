@@ -15,7 +15,7 @@ namespace psc{ namespace presenter{
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
-    typedef model::Map::preview_type preview_type;
+    typedef model::Map::color_map_type color_map_type;
     typedef std::map<model::wpCube, pCube> container_type;
 
 public:
@@ -30,7 +30,7 @@ public:
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }
     void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
-    preview_type preview() const{ return model_->preview(); }
+    color_map_type color_map() const{ return model_->color_map(); }
 
 private:
     pMap init();

@@ -1,0 +1,41 @@
+title:
+{
+    path: 'cubeat_800x200',
+   width: 400,
+  height: 100,
+       x: 320,
+       y: 200,
+   depth: -200
+},
+
+text:
+{
+    text: 'push start button',
+    font: 'Star Jedi',
+    size: 24,
+       x: 0,
+       y: 100,
+    glow_period: 2000
+},
+
+decorator:
+{
+     path: 'cubes/cube',
+    width: 640,
+   height: 480,
+ outgoing: 80,
+ contract: 30,
+     bias: 30,
+ num_in_w: 12,
+ num_in_h: 9,
+color_num: 4,
+   time_w: 10000,
+   time_h: 7500
+},
+
+misc:
+{
+    size_random_percent: 50,
+    rotation_duration_ms: 3000,
+    rotation_random_ms: 2000
+}

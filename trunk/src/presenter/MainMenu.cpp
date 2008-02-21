@@ -8,6 +8,7 @@
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "App.hpp"
+#include "Conf.hpp"
 
 #include <tr1/functional>
 #include <boost/lambda/lambda.hpp>
@@ -33,19 +34,28 @@ namespace BLL = boost::lambda;
 pMainMenu MainMenu::init()
 {
     App::i().setLoading(1);
+
+    config = utils::map_any::construct(
+        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"mainmenu.zzml" ) );
+
+    utils::map_any title = config.M("title");
+    utils::map_any text = config.M("text");
+
     mainmenu_scene_ = view::Scene::create(view::pObject(), "MainMenu");
     mainmenu_scene_->setTo2DView();
 
-    view::pMenu temp = view::Menu::create("cubeat_800x200", mainmenu_scene_, 400, 100, true);
+    view::pMenu temp = view::Menu::create(title.S("path"), mainmenu_scene_,
+                                          title.I("width"), title.I("height"), true);
 
     menus_.insert( std::make_pair("start_menu", temp) );
-    temp->moveTo(320, 200).setDepth(-200);
+    temp->moveTo( title.I("x"), title.I("y") ).setDepth( title.I("depth") );
 
     function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
     function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
 
-    temp->addSpriteText("text1", "push start button", "Star Jedi", click1_1, 24, true)
-         .getSprite("text1").set<Pos2D>(vec2(0, 100)).tween<SineCirc, Alpha>(0, 2000);
+    temp->addSpriteText("text", text.S("text"), text.S("font"), click1_1, text.I("size"), true)
+         .getSprite("text").set<Pos2D>( vec2(text.I("x"), text.I("y")) )
+         .tween<SineCirc, Alpha>(0, text.I("glow_period"));
 
     initDecorator();
     App::i().setLoading(100);
@@ -55,24 +65,26 @@ pMainMenu MainMenu::init()
 
 void MainMenu::initDecorator()
 {
-    int const w = 640;
-    int const h = 480;
-    int const outgoing = 80;
-    int const contract = 30;
+    utils::map_any deco = config.M("decorator");
+
+    int const w = deco.I("width");
+    int const h = deco.I("height");
+    int const outgoing = deco.I("outgoing");
+    int const contract = deco.I("contract");
     vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
     vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
     vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
     vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
-    int const bias = 30;
-    int const num_in_w = 12;
-    int const num_in_h = 9;
-    int const color_num= 4;
-    int const time_w = 10000;
-    int const time_h = 7500;
+    int const bias = deco.I("bias");
+    int const num_in_w = deco.I("num_in_w");
+    int const num_in_h = deco.I("num_in_h");
+    int const color_num= deco.I("color_num");
+    int const time_w = deco.I("time_w");
+    int const time_h = deco.I("time_h");
     std::vector<std::string> paths;
 
     for(int i=1; i <= 4; ++i)
-        paths.push_back( std::string("cubes/cube") +
+        paths.push_back( deco.S("path") +
             std::string( boost::lexical_cast<std::string>(i) ) );
 
     initDecoInner_( start1, end1, num_in_w, color_num, time_w, bias, paths );
@@ -89,6 +101,11 @@ void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num
                              int const& color_num, int const& time, int const& bias,
                              std::vector<std::string> const& paths)
 {
+    utils::map_any misc = config.M("misc");
+    int const size_random = misc.I("size_random_percent");
+    int const rot_dur = misc.I("rotation_duration_ms");
+    int const rot_rand= misc.I("rotation_random_ms");
+
     int const length = (dest - from).getLength();
     int const gap = length / num;
 
@@ -98,10 +115,11 @@ void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num
         int rand_bias   = utils::random( bias ) - bias/2;
         vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 100 );
         vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -100 );
-        view::pSprite temp = view::Sprite::create( paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
+        view::pSprite temp = view::Sprite::create(
+            paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
 
-        float scale = utils::random(50)/100.0f + 1;
-        float rot_duration = 3000 + utils::random(2000);
+        float scale = utils::random( size_random )/100.0f + 1;
+        float rot_duration = rot_dur + utils::random( rot_rand );
         float delay = utils::random( rot_duration );
         float time_position = time * range / length;
         temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )

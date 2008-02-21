@@ -4,6 +4,7 @@
 #include "presenter/Object.hpp"
 
 #include "utils/ObjectPool.hpp"
+#include "utils/dictionary.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"
 #include <map>
@@ -46,6 +47,8 @@ protected:
     std::vector<view::pSprite> deco_cubes_;
 
     bool animating_;
+
+    utils::map_any config;
 };
 
 } //presenter

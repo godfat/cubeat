@@ -21,14 +21,14 @@
 namespace psc{ namespace model{
 
 class Cube: public std::tr1::enable_shared_from_this<Cube>{
-<%= accessor :int, :x, :y %>
 public:
-    typedef std::tr1::shared_ptr<Cube> pointer_type;
+    typedef pCube pointer_type;
 
 public:
     static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
         return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
+    // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
         map_(map), color_(data::Color::from_id(color_id)), cycled_(false),
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
@@ -76,7 +76,7 @@ public:
     friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_ != rhs.color_; }
     // end
 
-    // begin only used by model::Map::preview
+    // begin only used by model::Map::color_map
     int color_id() const{ return data::Color::for_id(color_); }
     // end
 
@@ -117,6 +117,7 @@ private:
     }
 
 private:
+<%= accessor :int, :x, :y %>
     wpMap map_;
     data::Color color_;
     pChain chain_belonged_to_;

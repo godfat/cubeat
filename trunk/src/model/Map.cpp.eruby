@@ -44,6 +44,9 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
         int x = i%width, y = i/width;
         insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
     }
+
+	fill_preview_queue(); //added
+
     return *this;
 }
 
@@ -73,6 +76,12 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
 <% end %>
     cube->be_garbage();
     return insert_cube(cube);
+}
+
+Map& <% debug_hook 'Map::insert_preview' do %>(pCube cube){
+<% end %>
+    cubes_preview_.push_back(cube);
+    return *this;
 }
 
 // used by Dropping::cycle, Waiting::cycle
@@ -275,15 +284,90 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     int top = ms()->height()-1;
 	for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
         int x = is_empty[i];
-		insert_garbage(owner->make_cube(x, top)->model());
+		insert_garbage( owner->make_cube(x, top)->model() );
 		--garbage_left_;
 	}
 }
 
-Map::preview_type <% debug_hook 'Map::preview' do %>() const{
+void <% debug_hook 'Map::cycle_creation' do %>(){
+<% end %>
+    if( garbage_left_ > 0 || n_of_newcomers_ > 0 || garbage_switch_ == true )
+		return;
+
+	// we must check which column's top is empty when drop squares
+	// so we setup an array of columns which its top is empty
+    int top = ms()->height()-1;
+	std::vector<int> is_empty;
+	for( int x=0, width = ms()->width(); x < width; ++x )
+		if( !cubes_[x][top] && !cubes_[x][top-1] )
+			is_empty.push_back( x );
+
+	if( is_empty.size() == 0 ) return;
+	// and find one column in this array to drop randomly
+	// int x = is_empty[ SG::Instance().random( is_empty.size() ) ];
+
+    for(std::vector<int>::const_iterator i=is_empty.begin(), iend=is_empty.end();
+        i!=iend; ++i)
+    {
+        int x = *i;
+        cubes_preview_[x]->x(x).y(top);
+        insert_cube(cubes_preview_[x]);
+    }
+
+    fill_preview_queue();
+
+    // if( SG::Instance().game_mode() == 1 ) // if single
+    //  garbage_left_ += SG::Instance().random(3);
+}
+
+void <% debug_hook 'Map::fill_preview_queue' do %>(){
+<% end %>
+	cubes_preview_.clear();
+    int width = ms()->width();
+	std::vector<int> preview_set( width ); // color set
+	int count = 0;
+	if( utils::random(2) ){
+		preview_set[0] = preview_set[1] = utils::random( ms()->color_amounts() )+1;
+		count = 1;
+	} else preview_set[0] = utils::random( ms()->color_amounts() )+1;
+
+    for( int cend = width-1; count != cend; ){
+		if( count == cend-1 ) fill1( preview_set, count );
+		else{
+			if( utils::random(2) ) fill2( preview_set, count );
+			else                   fill1( preview_set, count );
+		}
+	}
+
+    presenter::pMap owner = owner_.lock();
+	for( int x=0; x != width ; ++x )
+        cubes_preview_.push_back( owner->make_cube_preview(preview_set[x])->model() );
+}
+
+void <% debug_hook 'Map::fill1' do %>(std::vector<int>& preview_set, int& count){
+<% end %>
+	++count; // add length 1 here
+	int temp, color_amounts = ms()->color_amounts();
+	do{
+		temp = utils::random( color_amounts )+1; 
+	}while( temp == preview_set[ count-1 ] );
+    preview_set[ count ] = temp;
+}
+
+void <% debug_hook 'Map::fill2' do %>(std::vector<int>& preview_set, int& count){
+<% end %>
+    count += 2; // add length 2 here
+    int temp, color_amounts = ms()->color_amounts();
+	do{
+		temp = utils::random( color_amounts )+1;
+	}while( temp == preview_set[ count-2 ] );
+	preview_set[ count-1 ] = preview_set[ count ] = temp;
+}
+
+Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 <% end %>
     int width = ms()->width(), height = ms()->height();
-    preview_type result(boost::extents[width][height]);
+    color_map_type result(boost::extents[width][height]);
     for(int y=0; y<height; ++y)
         for(int x=0; x<width; ++x)
             if(cubes_[x][y])

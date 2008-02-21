@@ -24,9 +24,13 @@ pMap <% debug_hook 'Map::init' do %>(){
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 <% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
-    // cubes_.push_back(cube);
     cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;
+}
+
+pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
+<% end %>
+    return make_cube(-1, -1, color_id);
 }
 
 Map& <% debug_hook 'Map::cycle' do %>(){

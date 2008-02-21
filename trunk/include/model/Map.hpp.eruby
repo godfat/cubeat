@@ -16,11 +16,13 @@ namespace psc{ namespace model{
 
 class Map{
 public:
-    typedef std::tr1::shared_ptr<Map> pointer_type;
+    typedef pMap pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
-    typedef boost::multi_array<int, 2> preview_type;
     typedef std::set<pCube> cube_list_type;
     typedef std::vector<pChain> chain_list_type;
+    typedef std::vector<pCube> preview_list_type;
+
+    typedef boost::multi_array<int, 2> color_map_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
@@ -42,7 +44,7 @@ public:
         cycle_cubes();
     	cycle_creation_garbage(); // added
     	if(ms()->dropping_creatable()){
-    	    // cycle_creation(); // added
+    	    cycle_creation(); // added
     		// cycle_warning(); // added
         }
         return *this;
@@ -72,10 +74,15 @@ public:
 private:
     Map& insert_cube(pCube cube);
     Map& insert_garbage(pCube cube);
-    void cycle_cubes();
-    void cycle_a_cube(pCube c, int i);
+    Map& insert_preview(pCube cube);
     void refresh_cubes();
+    void cycle_cubes();
+    void cycle_a_cube(pCube, int index);
+    void cycle_creation();
     void cycle_creation_garbage();
+    void fill_preview_queue();
+    void fill1(std::vector<int>&, int&);
+    void fill2(std::vector<int>&, int&);
 
     void make_row(pCube that, cube_list_type&, cube_list_type&);
     void make_column(pCube that, cube_list_type&, cube_list_type&);
@@ -84,7 +91,6 @@ private:
     bool is_below_empty(cpCube) const;
     void update_chains();
     bool cube_can_lose_chain(cpCube) const;
-    void insert_garbage(pCube that, int x, int y); // added
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;
@@ -92,7 +98,8 @@ private:
     container_type cubes_;
     int n_of_newcomers_, garbage_left_, score_;
     // someday make it to be std::list
-    std::vector<pChain> chains_;
+    chain_list_type chains_;
+    preview_list_type cubes_preview_;
     bool garbage_switch_;
 };
 

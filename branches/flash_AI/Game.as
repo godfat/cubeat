@@ -5,7 +5,7 @@ class Game{
         body_ = _root.createEmptyMovieClip("game", depth_);
         setting_ = new MapSetting();            //changed to class member
         maps_.push( new Map(this, setting_, 0, 0) );
-        maps_.push( new Map(this, setting_, setting_.Size*(setting_.Width+1), 0) );
+        maps_.push( new Map(this, setting_, setting_.Size*(setting_.Width+1), 9999) );
 
         maps_[0].move_info_board(300, 0);
         maps_[1].move_info_board(300, 400);

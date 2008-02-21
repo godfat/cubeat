@@ -29,14 +29,17 @@ class Map{
 		
 		cloneMapSetting.Damage_Factor = this.Damage_Factor;
 		
-		var cloneMap: Map = new Map(game_, cloneMapSetting, 9999, 9999);
+		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+1), 0);
 		//var clonedata_ = new Array(set_.Height);
 		//for(var i=0; i<set_.Height; ++i) clonedata_[i] = new Array(set_.Width);
 		
-		
 		for(var y = 0; y < set_.Height; ++y)
-            for(var x = 0; x < set_.Width; ++x)
-                cloneMap.data_[y][x] = this.data_[y][x];
+            for(var x = 0; x < set_.Width; ++x) {
+				if( data_[y][x] != null )
+                    cloneMap.data_[y][x] = new Square(cloneMap, x, y, data_[y][x].color_num );
+				else cloneMap.data_[y][x] = null;
+			}
+
 		return cloneMap;		
 	}
 
@@ -267,6 +270,7 @@ class Map{
         }
         else if( ya_that.state instanceof Waiting ){
             array.push(ya_that);
+			//trace("make_push (" + ya_that.x + "," + ya_that.y + ")")
             return false;
         }
         else{

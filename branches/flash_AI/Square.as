@@ -4,6 +4,9 @@ import flash.geom.Transform;
 
 class Square
 {
+	public function clone_square(): Square{
+		
+	}
 	public function Square(map: Map, x: Number, y: Number, color:Number)
 	{
         map_ = map;
@@ -23,6 +26,7 @@ class Square
         color_ = new ColorTransform();
 		
 		choose_color( color );   //separated
+		color_num = color;
         
 		trans_.colorTransform = color_;
         map_.setup(x, y, this);
@@ -43,6 +47,8 @@ class Square
 		debug_tag4 = body_.createTextField("___tag"+depth, map_.next_depth(), 2, 20, 60, 18);
 		debug_tag5 = body_.createTextField("____tag"+depth, map_.next_depth(), 2, 30, 60, 18);
     }
+	
+	public var color_num:Number;
 
 	//added
 	public function i_am_hit(dmg: Number): Void {

@@ -371,6 +371,16 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
+/*
+    EventDispatcher::i().subscribe_timer(cycle_warning, 1500);
+    if( ! check_column_full() )
+        counting_num_ = 4, return;
+
+    switch(counting_num_){
+        case -1: game over; break;
+        default: --counting_num_; break;
+    }
+*/
     if( ++warning_check_step_ > ms()->warning_check_delay() ){
 		if( check_column_full() ){ // warning!!!
 			if( lose_warning_step_ == 0 ){
@@ -403,8 +413,5 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
 		else ;// warning_strip_[xx]->Show(CKHIDE);
 	}
 
-	if( counter > 0 )
-		return true;
-	else 
-		return false;
+    return counter > 0;
 }

@@ -5,6 +5,8 @@
 #ifdef _SHOOTING_CUBES_TEST_
 #include "all_fwd.hpp"
 #include "presenter/Map.hpp"
+#include "EventDispatcher.hpp"
+#include "IrrDevice.hpp"
 #include <cstdio>
 
 #include <cstdlib> // for srand
@@ -22,6 +24,10 @@ void display(presenter::pMap map){
     std::printf("\n");
 }
 
+void echo(){
+    std::cout << "XD" << std::endl;
+}
+
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
 
@@ -34,14 +40,21 @@ int main(){
     for(int i=0; i<25; ++i)
         map->cycle();
     display(map);
-
+    
+    for(int i=0; i<25; ++i)
+        map->cycle();
+    display(map);
+    
     for(int i=0; i<25; ++i)
         map->cycle();
     display(map);
 
-    for(int i=0; i<25; ++i)
-        map->cycle();
-    display(map);
+    IrrDevice::i().init(true);
+    psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, true);
+    while(true){
+        usleep(10000);
+        psc::ctrl::EventDispatcher::i().dispatch();
+    }
 }
 
 #endif

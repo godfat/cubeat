@@ -39,8 +39,8 @@ EventDispatcher::subscribe_btn_event(BtnCallback cb, Button const* btn, BSTATE s
 EventDispatcher&
 EventDispatcher::subscribe_timer(TimerCallback cb, int duration, bool loop)
 {
-    irr::u32 now = IrrDevice::i().d()->getTimer()->getRealTime();
-    timers_.push_back( tie( cb, duration, now, loop ) );
+    const int zero = 0;
+    newly_created_timers_.push_back( tie( cb, duration, zero, loop ) );
     return *this;
 }
 
@@ -88,9 +88,8 @@ void EventDispatcher::dispatch_btn(){
     }
 }
 void EventDispatcher::dispatch_timer(){
-    ITimer* irrTimer = IrrDevice::i().d()->getTimer();
-    for(Timers::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
-        irr::u32 now = irrTimer->getRealTime();
+    irr::u32 now = IrrDevice::i().d()->getTimer()->getRealTime();
+    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
             get<TCALLBACK>(*t)();
             get<LASTTIME>(*t) = now;
@@ -100,7 +99,7 @@ void EventDispatcher::dispatch_timer(){
         }
     }
 
-    cleanup_timer();
+    cleanup_timer_and_init_newly_created_timer();
 }
 
 void EventDispatcher::dispatch()
@@ -110,10 +109,22 @@ void EventDispatcher::dispatch()
     dispatch_timer();
 }
 
-void EventDispatcher::cleanup_timer()
+void EventDispatcher::cleanup_timer_and_init_newly_created_timer()
 {
-    BOOST_FOREACH(Timers::iterator t, timers_to_be_deleted) {
+    // clean up
+    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted) {
         timers_.erase(t);
     }
     timers_to_be_deleted.clear();
+
+    // init newly created
+    std::time_t init_time = std::time(0);
+    BOOST_FOREACH(Timer& timer, newly_created_timers_){
+        get<LASTTIME>(timer) = init_time;
+    }
+
+    timers_.insert(timers_.end(),
+                   newly_created_timers_.begin(),
+                   newly_created_timers_.end());
+    newly_created_timers_.clear();
 }

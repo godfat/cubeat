@@ -21,9 +21,6 @@
 #include <vector>
 #include <list>
 
-using std::tr1::tuple;
-using std::tr1::tuple_element;
-
 namespace psc {
 
 namespace ctrl {
@@ -32,13 +29,13 @@ class EventDispatcher
 {
     typedef std::tr1::function<void(int x, int y)>               BtnCallback;
     typedef std::tr1::function<void()>                           TimerCallback;
-    typedef tuple<BtnCallback, Button const*, BSTATE>            BtnEvent;
-    typedef tuple<TimerCallback, std::time_t, std::time_t, bool> Timer;
+    typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE>  BtnEvent;
+    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool>    Timer;
     typedef std::vector< BtnEvent >                              BtnListener;
-    typedef std::list< Timer >                                   Timers;
-    typedef std::vector< Timers::iterator >                      TimerRemoval;
+    typedef std::list<Timer>                                     TimerList;
+    typedef std::vector< TimerList::iterator >                   TimerRemoval;
     typedef std::tr1::function<void( view::pSprite& )>           ObjCallback;
-    typedef tuple<ObjCallback, Button const*, view::pSprite>     ObjEvent;
+    typedef std::tr1::tuple<ObjCallback, Button const*, view::pSprite>        ObjEvent;
     typedef std::list<ObjEvent>                                  ObjListener;
 
 public:
@@ -54,18 +51,18 @@ public:
     void dispatch();
 
 private:
-    enum blah { BCALLBACK = 0, BUTTON = 1, STATE = 2 };
-    enum bleh { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3 };
+    enum { BCALLBACK = 0, BUTTON = 1, STATE = 2 };
+    enum { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3 };
+    enum { TIMER_TIME, TIMER };
     struct OE{enum{OBJ_CB, BTN, SPRITE};};
     EventDispatcher();
-    EventDispatcher(EventDispatcher const&);
     void dispatch_btn();
     void dispatch_obj();
     void dispatch_timer();
-    void cleanup_timer();
+    void cleanup_timer_and_init_newly_created_timer();
 
     BtnListener  btn_listeners_;
-    Timers       timers_;
+    TimerList    timers_, newly_created_timers_;
     TimerRemoval timers_to_be_deleted;
     ObjListener  obj_listeners_;
 };

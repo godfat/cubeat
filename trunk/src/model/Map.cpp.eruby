@@ -257,7 +257,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
 void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
     // no garbage no working
-	if( garbage_left_ < 1 || ( n_of_newcomers_ > 0 && garbage_switch_ == false ) ) {
+	if( garbage_left_ <= 0 || ( n_of_newcomers_ > 0 && garbage_switch_ == false ) ){
+    // if( garbage_left_ <= 0 || n_of_newcomers_ > 0 ){
 		garbage_switch_ = false;
         return;
 	}
@@ -373,13 +374,14 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
 /*
     EventDispatcher::i().subscribe_timer(cycle_warning, 1500);
-    if( ! check_column_full() )
-        counting_num_ = 4, return;
+    if( check_column_full() )
+        switch(counting_num_){
+            case -1: game over; break;
+            default: --counting_num_, yell warning, count down; break;
+        }
 
-    switch(counting_num_){
-        case -1: game over; break;
-        default: --counting_num_; break;
-    }
+    else
+        counting_num_ = 4, no warning;
 */
     if( ++warning_check_step_ > ms()->warning_check_delay() ){
 		if( check_column_full() ){ // warning!!!

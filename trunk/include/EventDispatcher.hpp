@@ -59,9 +59,10 @@ private:
     struct OE{enum{OBJ_CB, BTN, SPRITE};};
     EventDispatcher();
     EventDispatcher(EventDispatcher const&);
+    void dispatch_btn();
     void dispatch_obj();
-
-    void cleanup();
+    void dispatch_timer();
+    void cleanup_timer();
 
     BtnListener  btn_listeners_;
     Timers       timers_;

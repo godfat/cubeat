@@ -80,16 +80,14 @@ void EventDispatcher::dispatch_obj(){
     //Need to extend to other button state: Release, Up, Down
 }
 
-void EventDispatcher::dispatch()
-{
+void EventDispatcher::dispatch_btn(){
     BOOST_FOREACH(BtnEvent& b, btn_listeners_) {
         Button const* btn = get<BUTTON>(b);
         if( btn->state() != get<STATE>(b) ) continue;
         get<BCALLBACK>(b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
     }
-
-    dispatch_obj();
-
+}
+void EventDispatcher::dispatch_timer(){
     ITimer* irrTimer = IrrDevice::i().d()->getTimer();
     for(Timers::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         irr::u32 now = irrTimer->getRealTime();
@@ -102,10 +100,17 @@ void EventDispatcher::dispatch()
         }
     }
 
-    cleanup();
+    cleanup_timer();
 }
 
-void EventDispatcher::cleanup()
+void EventDispatcher::dispatch()
+{
+    dispatch_btn();
+    dispatch_obj();
+    dispatch_timer();
+}
+
+void EventDispatcher::cleanup_timer()
 {
     BOOST_FOREACH(Timers::iterator t, timers_to_be_deleted) {
         timers_.erase(t);

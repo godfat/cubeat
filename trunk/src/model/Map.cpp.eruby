@@ -405,8 +405,8 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 bool <% debug_hook 'Map::check_column_full' do %>() const{
 <% end %>
 	int counter = 0;
-	for( int x=0, width = ms()->width(); x < width; ++x ){
-		if( cubes_[x][width-2] && cubes_[x][width-2]->is_waiting() ){
+	for( int x=0, width = ms()->width(), y = ms()->height()-2; x < width; ++x ){
+		if( cubes_[x][y] && cubes_[x][y]->is_waiting() ){
 			++counter;
 			// warning_strip_[xx]->Show(CKSHOW);
 		}

@@ -107,7 +107,7 @@ private:
     preview_list_type cubes_preview_;
     bool garbage_switch_;
     std::time_t lose_warning_step_;
-    int counting_num_, creation_step_;
+    int counting_num_, warning_check_step_;
 };
 
 }} // end of namespace

@@ -371,7 +371,7 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
-    if( ++creation_step_ > ms()->warning_check_delay() ){
+    if( ++warning_check_step_ > ms()->warning_check_delay() ){
 		if( check_column_full() ){ // warning!!!
 			if( lose_warning_step_ == 0 ){
 				counting_num_ = 4;
@@ -388,7 +388,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             // SG::Instance().no_warning(this);
             lose_warning_step_ = 0;
         }
-		creation_step_ = 0;
+		warning_check_step_ = 0;
 	}
 }
 

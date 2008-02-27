@@ -4,8 +4,74 @@ import flash.geom.Transform;
 
 class Square
 {
-	public function clone_square(): Square{
+	public function clone(clone_map: Map): Square{
+		var clone_square = new Square(clone_map, x_, y_, color_num);
+		//var depth: Number = map_.next_depth();
+        //clone_square.body_ = map_.body.attachMovie("Square", "Square"+clone_square.depth, clone_square.depth, {_x: x*map_.Size, _y: y*map_.Size});
+        //clone_square.body_.self = clone_square;
 		
+		//changed a lot, but I think Controller shouldn't be made like this.....
+       /* body_.onPress = function()
+		{
+			self.i_am_hit();
+        } */
+
+        //trans_ = new Transform(body_.inner);
+        //color_ = new ColorTransform();
+		
+		//choose_color( color );   //separated
+		//color_num = color;
+        
+		//trans_.colorTransform = color_;
+        //map_.setup(x, y, this);
+        //state_ = map_.next_state(this);
+		if(this.state_ instanceof Waiting){
+			clone_square.state_ = new Waiting(clone_map);
+		}else if(this.state_ instanceof Dropping){
+			clone_square.state_ = new Dropping(clone_map);
+		}else{
+			clone_square.state_ = null;
+		}
+		clone_square.cycled = false;
+		//Gray.redOffset = 128;
+		//Gray.greenOffset = 128;
+		//Gray.blueOffset = 128;
+		clone_square.set_hp(this.hp_);
+		clone_square.is_garbage_ = this.is_garbage_;
+		clone_square.is_broken_ = this.is_broken_;
+
+        clone_square.debug_tag  = this.body_.createTextField("tag"+clone_square.depth, clone_map.next_depth(), 18, 0, 18, 18);
+		clone_square.debug_tag2 = this.body_.createTextField("_tag"+clone_square.depth, clone_map.next_depth(), 2, 10, 60, 18);
+		clone_square.debug_tag4 = this.body_.createTextField("___tag"+clone_square.depth, clone_map.next_depth(), 2, 20, 60, 18);
+		clone_square.debug_tag5 = this.body_.createTextField("____tag"+clone_square.depth, clone_map.next_depth(), 2, 30, 60, 18);
+		
+		clone_square.tag_ = this.tag_;
+		
+		return clone_square;
+		
+		//private function real_y_position(): Number{ return y_*map_.Size; }
+		//public var color_num: Number;
+		//private var x_: Number;
+    	//private var y_: Number;
+    	//private var body_: MovieClip;
+    	//private var state_: State;
+    	//private var map_: Map;
+    	//private var trans_: Transform;
+    	//private var color_: ColorTransform;
+		//private var tag_: Tag = null;
+		//private var debug_tag: TextField;
+		//private var debug_tag2: TextField;
+		//private var debug_tag3: TextField;
+		//private var debug_tag4: TextField;
+		//private var debug_tag5: TextField;
+		//added
+		//public var cycled:Boolean;
+		//private var hp_: Number;
+		//private var is_garbage_: Boolean;
+		//public function set_hp(hp: Number): Void { hp_ = hp; }
+		//public function dec_hp(dmg: Number): Void { hp_ -= dmg; }
+		// dummy
+		//private var self: Square;
 	}
 	public function Square(map: Map, x: Number, y: Number, color:Number)
 	{
@@ -48,8 +114,6 @@ class Square
 		debug_tag5 = body_.createTextField("____tag"+depth, map_.next_depth(), 2, 30, 60, 18);
     }
 	
-	public var color_num:Number;
-
 	//added
 	public function i_am_hit(dmg: Number): Void {
 		if( map_.id() == Player.active_player() ) {
@@ -173,8 +237,8 @@ class Square
 	}
 
     private function real_y_position(): Number{ return y_*map_.Size; }
-
-    private var x_: Number;
+	public var color_num: Number;
+	private var x_: Number;
     private var y_: Number;
     private var body_: MovieClip;
     private var state_: State;

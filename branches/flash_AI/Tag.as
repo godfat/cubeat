@@ -26,7 +26,7 @@ class Tag{
 	public function attack_factor(): Number { 
 		var num: Number = 0;
 		for(var i=0; i < chainlist_.length; ++i ) {
-//			(方塊消除數目-3)*連鎖數目倍數+2^(連鎖數目-2) 
+//			(方塊消除數目-3)*連鎖段數+2^(連鎖段數-2) 
 			if( chainlist_[i] < 3 ) break;
 			if( i == 0 )
 				num += (chainlist_[i] - 3)*(i+1);

@@ -36,7 +36,7 @@ class Map{
 		for(var y = 0; y < set_.Height; ++y)
             for(var x = 0; x < set_.Width; ++x) {
 				if( data_[y][x] != null )
-                    cloneMap.data_[y][x] = new Square(cloneMap, x, y, data_[y][x].color_num );
+                    cloneMap.data_[y][x] = this.data_[y][x].clone(cloneMap);
 				else cloneMap.data_[y][x] = null;
 			}
 

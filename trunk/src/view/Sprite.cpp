@@ -140,7 +140,7 @@ Sprite& Sprite::moveTo(int x, int y)
 
 Sprite& Sprite::moveTween(int x, int y, int delay_ms, function<void()> cb, int delay)
 {
-    vector2df newpos = vector2df(x, -y);
+    vector2df newpos = vector2df(x, y);
     tween<Linear, Pos2D>(newpos, delay_ms, false, cb, delay);
     return *this;
 }

@@ -19,6 +19,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "IrrDevice.hpp"
+
 using namespace psc;
 using namespace presenter;
 using namespace accessor;
@@ -97,11 +99,39 @@ void MainMenu::initDecorator()
     std::cout << "MainMenu deco: left line done.\n";
 }
 
+//helper
+void color_offset(data::Color& col, utils::vector_any& offset)
+{
+    int const blue = 0xff;
+    int const green = blue<<8;
+    int const red = green<<8;
+    int const yellow = red|green;
+    switch ( col.rgb() ) {
+        case red:
+            col.r( col.r() + offset.V(0).I(0) );
+            col.g( col.g() + offset.V(0).I(1) );
+            col.b( col.b() + offset.V(0).I(2) ); break;
+        case green:
+            col.r( col.r() + offset.V(1).I(0) );
+            col.g( col.g() + offset.V(1).I(1) );
+            col.b( col.b() + offset.V(1).I(2) ); break;
+        case blue:
+            col.r( col.r() + offset.V(2).I(0) );
+            col.g( col.g() + offset.V(2).I(1) );
+            col.b( col.b() + offset.V(2).I(2) ); break;
+        case yellow:
+            col.r( col.r() + offset.V(3).I(0) );
+            col.g( col.g() + offset.V(3).I(1) );
+            col.b( col.b() + offset.V(3).I(2) ); break;
+    }
+}
+
 void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num,
                              int const& color_num, int const& time, int const& bias,
                              std::vector<std::string> const& paths)
 {
-    utils::map_any misc = config.M("misc");
+    utils::map_any    misc = config.M("misc");
+    utils::vector_any offset = misc.V("color_offset");
     int const size_random = misc.I("size_random_percent");
     int const rot_dur = misc.I("rotation_duration_ms");
     int const rot_rand= misc.I("rotation_random_ms");
@@ -112,11 +142,13 @@ void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num
     for(int i=0, range=0; i < num; ++i, range += gap)
     {
         data::Color col = data::Color::from_id(0, color_num);
+        color_offset( col, offset );
+
         int rand_bias   = utils::random( bias ) - bias/2;
         vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 100 );
         vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -100 );
         view::pSprite temp = view::Sprite::create(
-            paths[ utils::random(4) ], mainmenu_scene_, 100, 100, true);
+            paths[ utils::random(1) ], mainmenu_scene_, 100, 100, true);
 
         float scale = utils::random( size_random )/100.0f + 1;
         float rot_duration = rot_dur + utils::random( rot_rand );
@@ -128,11 +160,11 @@ void MainMenu::initDecoInner_(vec2 const& from, vec2 const& dest, int const& num
              .tween<Linear, Pos3D>(from3d, dest3d, time, true, 0, -time_position );
 
         if( col.r() > 0 )
-            temp->tween<Linear, Red>(  col.r()>>2, col.r(), time, true, 0, -time_position );
+            temp->tween<IOCubic, Red>(  col.r()>>2, col.r(), time, true, 0, -time_position );
         if( col.g() > 0 )
-            temp->tween<Linear, Green>(col.g()>>2, col.g(), time, true, 0, -time_position );
+            temp->tween<IOCubic, Green>(col.g()>>2, col.g(), time, true, 0, -time_position );
         if( col.b() > 0 )
-            temp->tween<Linear, Blue>( col.b()>>2, col.b(), time, true, 0, -time_position );
+            temp->tween<IOCubic, Blue>( col.b()>>2, col.b(), time, true, 0, -time_position );
 
         deco_cubes_.push_back( temp );
     }

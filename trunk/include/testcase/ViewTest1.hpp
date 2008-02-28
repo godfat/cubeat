@@ -32,8 +32,8 @@ struct ViewTest1
     void step4_alt_timer(view::pSprite& sprite)
     {
         std::tr1::function<void()> next_step = bind(&ViewTest1::step1, this, ref(sprite));
-        EventDispatcher::i().subscribe_timer( bind( &view::Sprite::moveTween,
-            sprite.get(), 0, 0, 3000, next_step, 0), 2000);
+        EventDispatcher::i().subscribe_timer(
+            bind( &view::Sprite::moveTween, sprite.get(), 0, 0, 3000, next_step, 0), 2000);
     }
 
     void step4(view::pSprite& sprite) {
@@ -147,11 +147,11 @@ ViewTest1::ViewTest1()
     menu = view::Menu::create("title", guiv, 100, 40);
     menu->moveTo(520, 50);
 
-    menu->addSprite("item1",test_,100,40,"title").addSprite("item2",test2_,100,40,"title").
-          addSprite("item3",test3_,100,40,"title");
-    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vec2(0, -50));
-    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vec2(0, -150));
-    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vec2(0, -250));
+    menu->addSprite("item1",test_,100,40,false,"title").addSprite("item2",test2_,100,40,false,"title").
+          addSprite("item3",test3_,100,40,false,"title");
+    menu->getSprite("item1").set<Green>(0).set<Pos2D>(vec2(0, 50));
+    menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vec2(0, 150));
+    menu->getSprite("item3").set<Red>(0).set<Pos2D>(vec2(0, 250));
 
     EventDispatcher::i().subscribe_timer(
         bind(&ViewTest1::step1, this, ref(anotherthing)), 1000 );

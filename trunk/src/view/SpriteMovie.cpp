@@ -21,20 +21,20 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
 
     avi = new AVIVideo(name_.c_str());
 
-    SMaterial mat_;
+    SMaterial mat;
 
-    mat_.setFlag(video::EMF_LIGHTING, true);
-    mat_.setFlag(video::EMF_ZWRITE_ENABLE, false);
-    mat_.setTexture(0, avi->getTexture());
-    mat_.MaterialType = video::EMT_ONETEXTURE_BLEND;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.setTexture(0, avi->getTexture());
+    mat.MaterialType = video::EMT_ONETEXTURE_BLEND;
 
-    mat_.MaterialTypeParam =
+    mat.MaterialTypeParam =
         video::pack_texureBlendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA, EMFN_MODULATE_1X);
 
-    mat_.DiffuseColor.set(255,255,255,255);
+    mat.DiffuseColor.set(255,255,255,255);
 
     setupMeshBase(parent);
-    body_->getMaterial(0) = mat_;
+    body_->getMaterial(0) = mat;
 
     dimension2di avi_actual_size = avi->getSize();
     adjust_texcoord_for_hand_made_texture( avi_actual_size.Width, avi_actual_size.Height );

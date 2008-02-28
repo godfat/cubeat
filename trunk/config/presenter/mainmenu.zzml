@@ -37,5 +37,11 @@ misc:
 {
     size_random_percent: 50,
     rotation_duration_ms: 3000,
-    rotation_random_ms: 2000
+    rotation_random_ms: 2000,
+
+    #color offset test: r/g/b/y cubes' red, green, blue offset ( +255 ~ -256 )
+    color_offset: [[ 0 ,30, 30],
+                   [20,-50, 20],
+                   [90, 90,  0],
+                   [ 0,  0, 50]]
 }

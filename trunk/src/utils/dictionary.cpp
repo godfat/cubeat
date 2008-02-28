@@ -78,7 +78,7 @@ template <class T> //Note: input index will be increased
 inline T read_number_at( std::string const& str, int& i) {
     int from = i;
     T ret = 0;
-    int to = str.find_first_of(",:]}",from);
+    int to = str.find_first_of(" ,:]}",from);
     (to == -1) ? to = str.length() : to;
     std::string sub = str.substr( from, to-from );
 

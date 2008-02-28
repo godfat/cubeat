@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <tr1/functional>
 
 namespace psc {
 
@@ -38,8 +39,9 @@ protected:
     void menu2_1_click(view::pSprite&);
 
     void initDecorator();
-    void initDecoInner_(vec2 const&, vec2 const&, int const&, int const&,
-                        int const&, int const&,std::vector<std::string> const&);
+    void initDecoInner_(int, vec2 const&, vec2 const&, int const&,
+                        int const&, std::vector<std::string> const&,
+                        int const&, std::tr1::function<void()> const&);
 
 protected:
     view::pScene mainmenu_scene_;

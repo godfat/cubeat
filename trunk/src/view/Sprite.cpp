@@ -69,7 +69,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 
-    mat.DiffuseColor.set(255,255,255,255);
+    mat.DiffuseColor.set(255, 255, 255, 255);
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;

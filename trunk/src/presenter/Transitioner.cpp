@@ -22,9 +22,10 @@ void Transitioner::init()
     config = utils::map_any::construct(
         utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"transitioner.zzml" ) );
 
-    utils::map_any& bar = config.M("bar_setting");
     utils::map_any& text1= config.M("text1");
     utils::map_any& text2= config.M("text2");
+    int const b_text_size = Conf::i().SCREEN_W/20;
+    int const m_text_size = Conf::i().SCREEN_W/30;
 
     transition_scene_ = view::Scene::create(view::pObject(), "Transitioner");
     transition_scene_->setTo2DView();
@@ -32,17 +33,17 @@ void Transitioner::init()
     loading_menu_ = view::Menu::create("loading", transition_scene_,
                                        Conf::i().SCREEN_W, Conf::i().SCREEN_H);
     loading_menu_->set<GradientDiffuse>(0);
-    loading_menu_->addSprite("loading_bar", 0, bar.I("width"), bar.I("height") )
+    loading_menu_->addSprite("loading_bar", 0, Conf::i().SCREEN_W - 40, Conf::i().SCREEN_H / 20 )
                   .addSpriteText("text1", text1.S("text"), text1.S("font"),
-                                 0, text1.I("size"), true)
+                                 0, b_text_size, true)
                   .addSpriteText("text2", text2.S("text"), text2.S("font"),
-                                 0, text2.I("size"), true);
-    loading_menu_->getSprite("loading_bar").moveTo( bar.I("x"), bar.I("y") )
+                                 0, m_text_size, true);
+    loading_menu_->getSprite("loading_bar").moveTo( 20, Conf::i().SCREEN_H / 10 * 9 )
                   .set<GradientDiffuse>(128);
     loading_menu_->getSprite("text1")
-                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - text1.I("size") );
+                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - b_text_size );
     loading_menu_->getSprite("text2")
-                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + text2.I("size") );
+                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + m_text_size );
 
     loading_menu_->set<Visible>(false);
 }

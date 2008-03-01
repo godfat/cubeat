@@ -49,8 +49,8 @@ pMainMenu MainMenu::init()
     int const width = title.I("orig_w") * (Conf::i().SCREEN_W/1280.0f); //1280 is best screen size.
     int const height= title.I("orig_h") * (Conf::i().SCREEN_W/1280.0f); //1280 is best screen size.
 
-    view::pMenu temp = view::Menu::create(title.S("path"), mainmenu_scene_,
-                                          width, height, true);
+    view::pMenu temp =
+        view::Menu::create(title.S("path"), mainmenu_scene_, width, height, true);
 
     menus_.insert( std::make_pair("start_menu", temp) );
     temp->moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - temp->get<Size2D>().Y/3 )
@@ -64,8 +64,6 @@ pMainMenu MainMenu::init()
          .tween<SineCirc, Alpha>(0, text.I("glow_period"));
 
     ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), 30 );
-    //initDecorator();
-    //App::i().setLoading(100);
 
     return shared_from_this();
 }
@@ -89,7 +87,6 @@ void MainMenu::initDecorator()
 
     int const time_w = 10000;            //1280 768 is best factor
     int const time_h = time_w * (w/h);   //1280 768 is best factor
-    std::vector<std::string> paths;
 
     int const color_num = deco.I("color_num");
     for(int i=0; i < color_num * 4; ++i) {
@@ -105,13 +102,13 @@ void MainMenu::initDecorator()
     }
 
     function<void()> step4 =
-        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, paths,100, function<void()>());
+        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
     function<void()> step3 =
-        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, paths, 75, step4);
+        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
     function<void()> step2 =
-        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, paths, 50, step3);
+        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
     function<void()> step1 =
-        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, paths, 25, step2);
+        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
 
     ctrl::EventDispatcher::i().subscribe_timer(step1, 0);
 }
@@ -144,8 +141,8 @@ void color_offset(data::Color& col, utils::vector_any& offset)
 }
 
 void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
-                              int const& num, int const& time, std::vector<std::string> const& paths,
-                              int const& load_stat, function<void()> const& cb)
+                              int const& num, int const& time, int const& load_stat,
+                              function<void()> const& cb)
 {
     utils::map_any    deco = config.M("decorator");
     utils::vector_any offset = deco.V("color_offset");
@@ -193,7 +190,7 @@ void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
     }
     App::i().setLoading(load_stat);
     if( cb )
-        ctrl::EventDispatcher::i().subscribe_timer(cb, 0);
+        ctrl::EventDispatcher::i().subscribe_timer(cb, 10);
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)
@@ -229,6 +226,7 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 
 MainMenu& MainMenu::cubeRearrange()
 {
+
     return *this;
 }
 

@@ -13,7 +13,7 @@
 #include "IrrDevice.hpp"
 
 /* Testcase */
-//#include "testcase/ViewTest1.hpp"
+#include "testcase/ViewTest1.hpp"
 
 #include <iostream>
 
@@ -44,6 +44,7 @@ App::App()
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
+    ViewTest1::i();
 }
 
 App::~App()
@@ -90,6 +91,8 @@ int App::run()
             master_presenter_->cycle();
             driver->clearZBuffer();  //clear z-buffer to overlay the whole scene
             trans_->cycle();
+            driver->clearZBuffer();
+            ViewTest1::i().cycle();
             driver->endScene();
 
             //FPS for debug

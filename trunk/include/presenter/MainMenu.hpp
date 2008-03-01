@@ -39,8 +39,7 @@ protected:
     void menu2_1_click(view::pSprite&);
 
     void initDecorator();
-    void initDecoInner_(int, vec2 const&, vec2 const&, int const&,
-                        int const&, std::vector<std::string> const&,
+    void initDecoInner_(int, vec2 const&, vec2 const&, int const&, int const&,
                         int const&, std::tr1::function<void()> const&);
 
 protected:
@@ -51,6 +50,7 @@ protected:
     bool animating_;
 
     utils::map_any config;
+    std::vector<std::string> paths;
 };
 
 } //presenter

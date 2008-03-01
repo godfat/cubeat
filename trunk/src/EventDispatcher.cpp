@@ -51,12 +51,12 @@ EventDispatcher::subscribe_obj_event(ObjCallback ocb, Button const* btn, view::p
     return *this;
 }
 
-void EventDispatcher::dispatch_obj(){
-    //Pick
-    BOOST_FOREACH(ObjEvent& o, obj_listeners_){
-        ISceneManager* smgr = IrrDevice::i().d()->getSceneManager();
-        ISceneCollisionManager* colm = smgr->getSceneCollisionManager();
+void EventDispatcher::dispatch_obj()
+{
+    ISceneManager* smgr = IrrDevice::i().d()->getSceneManager();
+    ISceneCollisionManager* colm = smgr->getSceneCollisionManager();
 
+    BOOST_FOREACH(ObjEvent& o, obj_listeners_) {
         Button const* btn = get<OE::BTN>(o);
         if( btn->state() != BTN_PRESS ) continue; //to improve efficiency
 
@@ -87,6 +87,7 @@ void EventDispatcher::dispatch_btn(){
         get<BCALLBACK>(b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
     }
 }
+
 void EventDispatcher::dispatch_timer(){
 
     cleanup_timer_and_init_newly_created_timer();

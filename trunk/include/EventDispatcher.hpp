@@ -31,7 +31,7 @@ class EventDispatcher
     typedef std::tr1::function<void()>                           TimerCallback;
     typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE>  BtnEvent;
     typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool>    Timer;
-    typedef std::vector< BtnEvent >                              BtnListener;
+    typedef std::list< BtnEvent >                                BtnListener;
     typedef std::list<Timer>                                     TimerList;
     typedef std::vector< TimerList::iterator >                   TimerRemoval;
     typedef std::tr1::function<void( view::pSprite& )>           ObjCallback;

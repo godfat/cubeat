@@ -131,11 +131,11 @@ namespace accessor {
 
     struct Frame : Accessor<float>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getType() != irr::scene::ESNT_ANIMATED_MESH )
+            if( node->getType() == irr::scene::ESNT_ANIMATED_MESH )
                 static_cast<irr::scene::IAnimatedMeshSceneNode*>(node)->setCurrentFrame( val );
         }
         static void get(irr::scene::ISceneNode const* node, value_type& out) {
-            if( node->getType() != irr::scene::ESNT_ANIMATED_MESH )
+            if( node->getType() == irr::scene::ESNT_ANIMATED_MESH )
                 out = static_cast<irr::scene::IAnimatedMeshSceneNode const*>(node)->getFrameNr();
         }
     };

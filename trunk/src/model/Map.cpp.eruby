@@ -130,6 +130,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
     return state::pState();
 }
 
+// resolve the chain on the cube
 void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCube that, pChain chain){
 <% end %>
     for(int x=that->x(), y=that->y();
@@ -141,6 +142,7 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
         cubes_[x][y]->lose_chain_delay() = 0;
     }
 
+    // start chainging
 	for(int x=that->x(), y=that->y();
         cubes_[x][y].use_count() != 0 &&
         cubes_[x][y]->is_waiting() && // added: important
@@ -154,6 +156,9 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
     }
 }
 
+// create a row of chaining cubes,
+// not_traveled indicates that cubes we need to search;
+// result indicates that cubes were successfully built
 void <% debug_hook 'Map::make_row' do %>(pCube that, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     std::vector<pCube> row;
@@ -170,6 +175,7 @@ void <% debug_hook 'Map::make_row' do %>(pCube that, cube_list_type& not_travele
         process_chaining(row, not_traveled, result);
 }
 
+// same as make_row, but column instead.
 void <% debug_hook 'Map::make_column' do %>(pCube that, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     std::vector<pCube> column;
@@ -186,16 +192,20 @@ void <% debug_hook 'Map::make_column' do %>(pCube that, cube_list_type& not_trav
         process_chaining(column, not_traveled, result);
 }
 
+// create a cube list that we need for one fading.
+// traveld indicates that the cubes we traveled through the process;
+// not_traveled indicates that the cubes we should travel through the process;
+// result would contain the cubes we need to build one fading.
 void <% debug_hook 'Map::make_clist' do %>(cube_list_type& traveled, cube_list_type& not_traveled, cube_list_type& result){
 <% end %>
     if(not_traveled.size()){
         cube_list_type::iterator node = not_traveled.begin();
-        pCube s = *node;
+        pCube cube = *node;
 
-        if( traveled.count(s) == 0 ){
-            make_row(s, not_traveled, result);
-            make_column(s, not_traveled, result);
-            traveled.insert(s);
+        if( traveled.count(cube) == 0 ){
+            make_row(cube, not_traveled, result);
+            make_column(cube, not_traveled, result);
+            traveled.insert(cube);
         }
 
         not_traveled.erase(node);
@@ -204,6 +214,8 @@ void <% debug_hook 'Map::make_clist' do %>(cube_list_type& traveled, cube_list_t
     }
 }
 
+// create a one fading through that cube,
+// find the cubes in this one fading with make_clist
 pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 <% end %>
     cube_list_type traveled, not_traveled, result;
@@ -214,12 +226,13 @@ pOneFading <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 
 bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 <% end %>
-    if( that->y()-1 < 0 ) return false;
+    if( that->y() == 0 ) return false;
     else return cubes_[that->x()][that->y()-1].use_count() == 0;
     // throw "impossible flow!";
     return false;
 }
 
+// all cubes share the same column with that lose the chain
 bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 <% end %>
 	for( int x = that->x(), y = that->y()-1; y >= 0; --y )

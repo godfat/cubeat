@@ -339,10 +339,10 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 	} else preview_set[0] = utils::random( ms()->color_amounts() )+1;
 
     for( int cend = width-1; count != cend; ){
-		if( count == cend-1 ) fill1( preview_set, count );
+		if( count == cend-1 ) fill_preview1( preview_set, count );
 		else{
-			if( utils::random(2) ) fill2( preview_set, count );
-			else                   fill1( preview_set, count );
+			if( utils::random(2) ) fill_preview2( preview_set, count );
+			else                   fill_preview1( preview_set, count );
 		}
 	}
 
@@ -351,7 +351,7 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
         cubes_preview_.push_back( owner->make_cube_preview(preview_set[x])->model() );
 }
 
-void <% debug_hook 'Map::fill1' do %>(std::vector<int>& preview_set, int& count){
+void <% debug_hook 'Map::fill_preview1' do %>(std::vector<int>& preview_set, int& count){
 <% end %>
 	++count; // add length 1 here
 	int temp, color_amounts = ms()->color_amounts();
@@ -361,7 +361,7 @@ void <% debug_hook 'Map::fill1' do %>(std::vector<int>& preview_set, int& count)
     preview_set[ count ] = temp;
 }
 
-void <% debug_hook 'Map::fill2' do %>(std::vector<int>& preview_set, int& count){
+void <% debug_hook 'Map::fill_preview2' do %>(std::vector<int>& preview_set, int& count){
 <% end %>
     count += 2; // add length 2 here
     int temp, color_amounts = ms()->color_amounts();

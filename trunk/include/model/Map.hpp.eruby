@@ -74,9 +74,9 @@ public:
     color_map_type color_map() const;
 
 private:
-    Map& insert_cube(pCube cube);
-    Map& insert_garbage(pCube cube);
-    Map& insert_preview(pCube cube);
+    Map& insert_cube(pCube);
+    Map& insert_garbage(pCube);
+    Map& insert_preview(pCube);
     void refresh_cubes();
     void cycle_cubes();
     void cycle_a_cube(pCube, int index);
@@ -84,8 +84,8 @@ private:
     void cycle_creation_garbage();
     void cycle_warning();
     void fill_preview_queue();
-    void fill1(std::vector<int>&, int&);
-    void fill2(std::vector<int>&, int&);
+    void fill_preview1(std::vector<int>&, int&);
+    void fill_preview2(std::vector<int>&, int&);
 
     void make_row(pCube that, cube_list_type&, cube_list_type&);
     void make_column(pCube that, cube_list_type&, cube_list_type&);

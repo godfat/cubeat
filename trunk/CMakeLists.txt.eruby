@@ -1,24 +1,34 @@
 
 PROJECT (shooting-cubes)
 
-SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i }.join("\n") %>)
+SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \
+                    .join("\n") %>)
 
 SET (CMAKE_VERBOSE_MAKEFILE on)
 SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
 
 FIND_PACKAGE (boost REQUIRED)
 
-INCLUDE_DIRECTORIES (../irrlicht/include
+INCLUDE_DIRECTORIES (include
                      lib
-                     include)
+                     ../irrlicht/include)
 
-LINK_DIRECTORIES (../irrlicht/source/Irrlicht/MacOSX/build/Release
+LINK_DIRECTORIES (lib
+                  ../irrlicht/source/Irrlicht/MacOSX/build/Release
                   /opt/local/lib)
 
 LINK_LIBRARIES (Irrlicht freetype)
 
-ADD_EXECUTABLE (bin/shooting-cubes ${SOURCES})
+ADD_LIBRARY (shooting-cubes SHARED ${SOURCES})
+SET (LIBRARY_OUTPUT_PATH bin)
+ADD_EXECUTABLE (bin/shooting-cubes main.cpp)
+ADD_EXECUTABLE (bin/test-map-cubes src/test/test_map_and_cubes_main.cpp)
+TARGET_LINK_LIBRARIES (bin/shooting-cubes shooting-cubes)
+TARGET_LINK_LIBRARIES (bin/test-map-cubes shooting-cubes)
 
-SET (CMAKE_CXX_FLAGS "-std=c++98 -W -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -DBOOST_HAS_TR1 -D_SHOOTING_CUBES_TEST_")
+ADD_DEFINITIONS (-DBOOST_HAS_TR1)
 
-SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -framework AppKit -framework Foundation -framework OpenGL")
+SET (CMAKE_CXX_LINK_FLAGS "-framework AppKit -framework Foundation -framework OpenGL")
+# SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} ${CMAKE_CXX_LINK_FLAGS}")
+
+SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math ${CMAKE_CXX_LINK_FLAGS}")

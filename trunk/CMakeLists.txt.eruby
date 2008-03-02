@@ -1,34 +1,49 @@
 
+# misc option
+SET (CMAKE_VERBOSE_MAKEFILE on)
+
 PROJECT (shooting-cubes)
 
+# compiler option
+SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
+
+# setup cxx flags
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    SET (cxx_flag "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math")
+    IF(APPLE)
+        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework OpenGL")
+    ENDIF(APPLE)
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+SET (CMAKE_CXX_FLAGS "${cxx_flag}")
+ADD_DEFINITIONS (-DBOOST_HAS_TR1)
+
+# setup needed library
+FIND_PACKAGE (Boost REQUIRED)
+
+# setup include path
+INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS})
+
+# setup linking path
+IF(APPLE)
+    SET(irrlicht_lib_path "../irrlicht/source/Irrlicht/MacOSX/build/Release")
+ELSE(APPLE)
+    SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
+ENDIF(APPLE)
+LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib)
+
+# setup linking
+LINK_LIBRARIES (Irrlicht freetype)
+
+# setup source codes
 SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \
                     .join("\n") %>)
 
-SET (CMAKE_VERBOSE_MAKEFILE on)
-SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
-
-FIND_PACKAGE (boost REQUIRED)
-
-INCLUDE_DIRECTORIES (include
-                     lib
-                     ../irrlicht/include)
-
-LINK_DIRECTORIES (lib
-                  ../irrlicht/source/Irrlicht/MacOSX/build/Release
-                  /opt/local/lib)
-
-LINK_LIBRARIES (Irrlicht freetype)
-
+# build target
 ADD_LIBRARY (shooting-cubes SHARED ${SOURCES})
 SET (LIBRARY_OUTPUT_PATH bin)
-ADD_EXECUTABLE (bin/shooting-cubes main.cpp)
-ADD_EXECUTABLE (bin/test-map-cubes src/test/test_map_and_cubes_main.cpp)
+
+ADD_EXECUTABLE        (bin/shooting-cubes main.cpp)
 TARGET_LINK_LIBRARIES (bin/shooting-cubes shooting-cubes)
+
+ADD_EXECUTABLE        (bin/test-map-cubes src/test/test_map_and_cubes_main.cpp)
 TARGET_LINK_LIBRARIES (bin/test-map-cubes shooting-cubes)
-
-ADD_DEFINITIONS (-DBOOST_HAS_TR1)
-
-# SET (CMAKE_CXX_LINK_FLAGS "-framework AppKit -framework Foundation -framework OpenGL")
-# SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} ${CMAKE_CXX_LINK_FLAGS}")
-
-SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -fvisibility=default -framework AppKit -framework Foundation -framework OpenGL")

@@ -28,7 +28,7 @@ TARGET_LINK_LIBRARIES (bin/test-map-cubes shooting-cubes)
 
 ADD_DEFINITIONS (-DBOOST_HAS_TR1)
 
-SET (CMAKE_CXX_LINK_FLAGS "-framework AppKit -framework Foundation -framework OpenGL")
+# SET (CMAKE_CXX_LINK_FLAGS "-framework AppKit -framework Foundation -framework OpenGL")
 # SET (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} ${CMAKE_CXX_LINK_FLAGS}")
 
-SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math ${CMAKE_CXX_LINK_FLAGS}")
+SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math -fvisibility=default -framework AppKit -framework Foundation -framework OpenGL")

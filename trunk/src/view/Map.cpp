@@ -38,16 +38,16 @@ pMap Map::init(pScene const& parent)
         if( index_ == i ) {
             ctrl::EventDispatcher::i().subscribe_btn_event(
                 bind(&Map::ownerHitCallback, this, _1, _2), //(this, x, y)
-                &it->trig1(), ctrl::BTN_PRESS );
+                &it->trig1(), ctrl::BTN_PRESS, shared_from_this() );
         } else {
             ctrl::EventDispatcher::i().subscribe_btn_event(
                 bind(&Map::enemyHitCallback, this, _1, _2), //(this, x, y)
-                &it->trig1(), ctrl::BTN_PRESS );
+                &it->trig1(), ctrl::BTN_PRESS, shared_from_this() );
         }
         ++i;
     }
 
-    body_ = smgr_->addEmptySceneNode( parent?parent->body():0 );
+    body_ = smgr_->addEmptySceneNode( parent->body() );
     parent_ = parent;
 
     return shared_from_this();
@@ -73,7 +73,7 @@ void Map::ownerHitCallback(int x, int y)
     std::cout << "Map Space trace: " << (picked?picked->getName():"0") << " is " << (picked?(picked->isVisible()?"visible":"invisible"):"none") << std::endl;
 
     if( picked )
-        if( pCube test = node2view_[picked] )
+        if( pCube test = node2view_[picked].lock() )
             test->ownerHit();
 }
 
@@ -86,6 +86,11 @@ void Map::enemyHitCallback(int x, int y)
     std::cout << "Map Space trace: " << (picked?picked->getName():"0") << " is " << (picked?(picked->isVisible()?"visible":"invisible"):"none") << std::endl;
 
     if( picked )
-        if( pCube test = node2view_[picked] )
+        if( pCube test = node2view_[picked].lock() )
             test->enemyHit();
+}
+
+Map::~Map()
+{
+    std::cout << "Map: " << this << " died.\n";
 }

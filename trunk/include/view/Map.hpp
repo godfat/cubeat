@@ -34,17 +34,18 @@ public:
 
     virtual Map* clone() const;
     virtual Map& addCube(pCube);
+    virtual ~Map();
 
 protected:
     pointer_type init(pScene const&);
-    virtual void ownerHitCallback(int x, int y);
-    virtual void enemyHitCallback(int x, int y);
+    void ownerHitCallback(int x, int y);
+    void enemyHitCallback(int x, int y);
 
 protected:
     int index_;
 
-    std::map< irr::scene::ISceneNode*, pCube > node2view_;
-    std::vector< pCube > cubes_;
+    std::map< irr::scene::ISceneNode*, wpCube > node2view_;
+    std::vector< wpCube > cubes_;
     wpScene parent_;
 };
 

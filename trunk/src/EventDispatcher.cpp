@@ -31,23 +31,23 @@ EventDispatcher::EventDispatcher()
 {
 }
 
-EventDispatcher&
-EventDispatcher::subscribe_btn_event(BtnCallback cb, Button const* btn, BSTATE state)
+EventDispatcher& EventDispatcher::subscribe_btn_event
+    (BtnCallback const& cb, Button const* btn, BSTATE const& state, view::pObject const& obj)
 {
-    btn_listeners_.push_back( tie( cb, btn, state ) );
+    btn_listeners_.push_back( tie( cb, btn, state, obj ) );
     return *this;
 }
 
-EventDispatcher&
-EventDispatcher::subscribe_timer(TimerCallback cb, int duration, bool loop)
+EventDispatcher& EventDispatcher::subscribe_timer
+    (TimerCallback const& cb, int const& duration, bool loop)
 {
     const int zero = 0;
     newly_created_timers_.push_back( tie( cb, duration, zero, loop ) );
     return *this;
 }
 
-EventDispatcher&
-EventDispatcher::subscribe_obj_event(ObjCallback ocb, Button const* btn, view::pSprite const& obj)
+EventDispatcher& EventDispatcher::subscribe_obj_event
+    (ObjCallback const& ocb, Button const* btn, view::pSprite const& obj)
 {   //SceneListenerPair::first = const wpScene, SceneListenerPair::second = ObjListener
     view::wpScene scene = obj->scene();
     if( scene_listeners_.find( scene ) != scene_listeners_.end() )
@@ -101,11 +101,16 @@ void EventDispatcher::dispatch_obj()
 }
 
 void EventDispatcher::dispatch_btn(){
-    BOOST_FOREACH(BtnEvent& b, btn_listeners_) {
-        Button const* btn = get<BUTTON>(b);
-        if( btn->state() != get<STATE>(b) ) continue;
-        get<BCALLBACK>(b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
+    for(BtnListener::iterator b = btn_listeners_.begin(), bend = btn_listeners_.end();
+        b != bend; ++b) {
+        if( view::pObject obj = get<SUBSCRIBER>(*b).lock() ) {
+            Button const* btn = get<BUTTON>(*b);
+            if( btn->state() != get<STATE>(*b) ) continue;
+            get<BCALLBACK>(*b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
+        }
+        else btn_events_to_be_deleted_.push_back(b);
     }
+    cleanup_btn_event();
 }
 
 void EventDispatcher::dispatch_timer(){
@@ -162,4 +167,12 @@ void EventDispatcher::cleanup_obj_event()
         scene_listeners_.erase(s);
     }
     scene_expired_.clear();
+}
+
+void EventDispatcher::cleanup_btn_event()
+{
+    BOOST_FOREACH(BtnListener::iterator b, btn_events_to_be_deleted_) {
+        btn_listeners_.erase(b);
+    }
+    btn_events_to_be_deleted_.clear();
 }

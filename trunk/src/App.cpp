@@ -44,6 +44,8 @@ App::App()
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
+
+    std::cout << view::Map::create(1, view::Scene::create("Test") ).get() << "\n";
     ViewTest1::i();
 }
 

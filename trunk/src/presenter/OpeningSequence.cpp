@@ -7,7 +7,6 @@
 #include "EasingEquations.hpp"
 #include "App.hpp"
 #include "Conf.hpp"
-#include "Input.hpp"
 
 #include <iostream>
 

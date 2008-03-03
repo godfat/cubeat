@@ -27,9 +27,7 @@ class Map : public Object, public std::tr1::enable_shared_from_this<Map>
 public:
     typedef std::tr1::shared_ptr< Map > pointer_type;
     static pointer_type create(int const& index, pScene const& parent) {
-        pointer_type p = utils::ObjectPool< Map >::create(index);
-        p->init(parent);
-        return p;
+        return utils::ObjectPool< Map >::create(index)->init(parent);
     }
 
     Map(int index):index_(index){}
@@ -38,7 +36,7 @@ public:
     virtual Map& addCube(pCube);
 
 protected:
-    void init(pScene const&);
+    pointer_type init(pScene const&);
     virtual void ownerHitCallback(int x, int y);
     virtual void enemyHitCallback(int x, int y);
 

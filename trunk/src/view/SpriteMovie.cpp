@@ -16,13 +16,14 @@ using std::tr1::static_pointer_cast;
 
 pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h)
 {
+    setupSceneAndManager(parent);
+
     size_.Width = w;
     size_.Height = h;
 
     avi = new AVIVideo(name_.c_str());
 
     SMaterial mat;
-
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setTexture(0, avi->getTexture());
@@ -40,7 +41,6 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     adjust_texcoord_for_hand_made_texture( avi_actual_size.Width, avi_actual_size.Height );
 
     press_.setOwner( static_pointer_cast<SpriteMovie>(shared_from_this()) );
-    scene_ = parent->scene();
 
     return static_pointer_cast<SpriteMovie>(shared_from_this());
 }

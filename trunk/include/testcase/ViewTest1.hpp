@@ -100,11 +100,11 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&)> test2_ = bind(&ViewTest1::test2, this, _1);
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
 
-    guiv = view::Scene::create(view::pObject(), "ViewTest_GUI");
+    guiv = view::Scene::create("ViewTest_GUI");
     guiv->setTo2DView();
 
-    worldv = view::Scene::create(view::pObject(), "ViewTest_WORLD");
-    worldv->setTo3DView( PI/3.0f );
+    worldv = view::Scene::create("ViewTest_WORLD");
+    worldv->setTo3DView();
 
     game = view::Game::create( worldv, guiv );
 

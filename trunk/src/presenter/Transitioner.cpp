@@ -27,11 +27,12 @@ void Transitioner::init()
     int const b_text_size = Conf::i().SCREEN_W/20;
     int const m_text_size = Conf::i().SCREEN_W/30;
 
-    transition_scene_ = view::Scene::create(view::pObject(), "Transitioner");
+    transition_scene_ = view::Scene::create("Transitioner");
     transition_scene_->setTo2DView();
 
     loading_menu_ = view::Menu::create("loading", transition_scene_,
                                        Conf::i().SCREEN_W, Conf::i().SCREEN_H);
+
     loading_menu_->set<GradientDiffuse>(0);
     loading_menu_->addSprite("loading_bar", 0, Conf::i().SCREEN_W - 40, Conf::i().SCREEN_H / 20 )
                   .addSpriteText("text1", text1.S("text"), text1.S("font"),
@@ -69,6 +70,5 @@ Transitioner::setLoadingBar(int const& percent)
 
 void Transitioner::cycle()
 {
-    transition_scene_->activate().redraw();
-    transition_scene_->deactivate();
+    transition_scene_->redraw();
 }

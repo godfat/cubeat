@@ -16,24 +16,26 @@ class Scene : public Object, public std::tr1::enable_shared_from_this<Scene>
 {
 public:
     typedef std::tr1::shared_ptr< Scene > pointer_type;
-    static pointer_type create(pObject const parent = pointer_type(),
-                               std::string const& name = "unnamed") {
+    static pointer_type create(std::string const& name = "unnamed_scene") {
         pointer_type p = utils::ObjectPool< Scene >::create();
-        p->init(parent, name);
+        p->init(name);
         return p;
     }
 
+    Scene();
+
     virtual Scene* clone() const;
     virtual Scene& setTo2DView();
-    virtual Scene& setTo3DView(float FoV);
+    virtual Scene& setTo3DView(float FoV = PI/3.0f);
     virtual Scene& activate();
     virtual Scene& redraw();
     virtual Scene& deactivate();
     virtual irr::scene::ICameraSceneNode* camera() const;
+    virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
     virtual ~Scene();
 
 protected:
-    void init(pObject const&, std::string const&);
+    void init(std::string const&);
 
 protected:
     irr::scene::ICameraSceneNode* camera_;

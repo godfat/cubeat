@@ -12,10 +12,10 @@ using namespace scene;
 using namespace psc;
 using namespace view;
 using namespace accessor;
+using std::tr1::dynamic_pointer_cast;
 
 Object::Object(std::string const& name)
-    :smgr_(IrrDevice::i().d()->getSceneManager()),
-     body_(0), name_(name)
+    :smgr_(0), body_(0), name_(name)
 {
 
 }
@@ -26,17 +26,19 @@ Object* Object::clone() const
     return obj;
 }
 
+void Object::setupSceneAndManager(pObject const& parent)
+{
+    if( pScene p = dynamic_pointer_cast<Scene>( parent ) )
+        scene_ = p;
+    else scene_ = parent->scene();
+    smgr_ = scene()->smgr_;
+}
+
 void Object::init(pObject const& parent)
 {
-    body_ = smgr_->addEmptySceneNode(parent?parent->body():0);
-
-    /* DEBUG CODE */
-    body_->setDebugDataVisible(scene::EDS_BBOX_BUFFERS);
-    body_->setIsDebugObject(true);            //???????
-    body_->setPosition(vector3df(0,0,100));   //??????? ghostly blocking everything in the scene.
-    /* END OF DEBUG CODE */
-    if( parent )
-        scene_ = parent->scene();
+    setupSceneAndManager(parent);
+    body_ = smgr_->addEmptySceneNode( parent->body() );
+    body_->setIsDebugObject(true);
 }
 
 Object& Object::moveTo(int x, int y, int z)
@@ -46,7 +48,7 @@ Object& Object::moveTo(int x, int y, int z)
     return *this;
 }
 
-pScene Object::scene()
+pScene Object::scene() const
 {
     return scene_.lock();
 }
@@ -58,4 +60,5 @@ ISceneNode* Object::body() const
 
 Object::~Object()
 {
+    if( body_ ) body_->remove();
 }

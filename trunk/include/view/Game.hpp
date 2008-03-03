@@ -23,9 +23,7 @@ class Game : public Object, public std::tr1::enable_shared_from_this<Game>
 public:
     typedef std::tr1::shared_ptr< Game > pointer_type;
     static pointer_type create(pScene const& world, pScene const& gui) {
-        pointer_type p = utils::ObjectPool< Game >::create();
-        p->init(world, gui);
-        return p;
+        return utils::ObjectPool< Game >::create()->init(world, gui);
     }
 
     //virtual pointer_type clone() const;
@@ -38,11 +36,9 @@ public:
     virtual ~Game(){}
 
 protected:
-    void init(pScene const& world, pScene const& gui);
+    pointer_type init(pScene const& world, pScene const& gui);
 
 protected:
-    irr::video::IVideoDriver* driver_;
-
     pScene world_;
     pScene gui_;
 

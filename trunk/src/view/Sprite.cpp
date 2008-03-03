@@ -1,7 +1,6 @@
 
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
-#include "view/Scene.hpp"
 #include "EventDispatcher.hpp"
 #include "Button.hpp"
 #include "Accessors.hpp"
@@ -42,9 +41,14 @@ void CallbackDelegate::setOwner(pSprite const& owner)
 ////////////////////////////////////////////////////////////////////////////////////
 
 Sprite::Sprite(std::string const& name, bool const& center)
-    :Object(name), center_(center), center_aligned_plane_(0), upperleft_aligned_plane_(0)
+    :Object(name), center_(center), center_aligned_plane_(0),
+     upperleft_aligned_plane_(0), thismesh_(0)
 {
-    upperleft_aligned_plane_ = smgr_->getMesh( "rc/model/plane_orig.x" );
+    upperleft_aligned_plane_ =
+        IrrDevice::i().d()->getSceneManager()->getMesh( "rc/model/plane_orig.x" );
+    //we don't specify different smgr_ for different scene here,
+    //because smgr_ is not yet defined at this stage, however the resource
+    //will be shared across different SceneManagers.
 }
 
 pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
@@ -53,6 +57,8 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
         Object::init(parent);
         return shared_from_this();
     }
+    setupSceneAndManager(parent);
+
     std::ostringstream oss;
     oss << "rc/texture/" << name_ << ".png";
 
@@ -75,7 +81,6 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     body_->getMaterial(0) = mat;
 
     press_.setOwner( shared_from_this() );
-    scene_ = parent->scene();
 
     return shared_from_this();
 }
@@ -158,4 +163,6 @@ CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
 
 Sprite::~Sprite()
 {
+    if( thismesh_ )
+        thismesh_->drop();
 }

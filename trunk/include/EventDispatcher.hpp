@@ -6,8 +6,7 @@
    on_release, on_blahblah.
 
    TODO:
-   * un-subscribe events
-   * and some other things.
+   * currently none?
 */
 
 #include "Button.hpp"
@@ -27,16 +26,23 @@ namespace ctrl {
 
 class EventDispatcher
 {
-    typedef std::tr1::function<void(int x, int y)>               BtnCallback;
-    typedef std::tr1::function<void()>                           TimerCallback;
-    typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE>  BtnEvent;
-    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool>    Timer;
-    typedef std::list< BtnEvent >                                BtnListener;
-    typedef std::list<Timer>                                     TimerList;
-    typedef std::vector< TimerList::iterator >                   TimerRemoval;
-    typedef std::tr1::function<void( view::pSprite& )>           ObjCallback;
-    typedef std::tr1::tuple<ObjCallback, Button const*, view::pSprite>        ObjEvent;
-    typedef std::list<ObjEvent>                                  ObjListener;
+    typedef std::tr1::function<void(int x, int y)>                         BtnCallback;
+    typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE>            BtnEvent;
+    typedef std::list<BtnEvent>                                            BtnListener;
+
+    typedef std::tr1::function<void()>                                     TimerCallback;
+    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool> Timer;
+    typedef std::list<Timer>                                               TimerList;
+    typedef std::list< TimerList::iterator >                               TimerRemoval;
+
+    typedef std::tr1::function<void( view::pSprite& )>                     ObjCallback;
+    typedef std::tr1::tuple<ObjCallback, Button const*, view::wpSprite>    ObjEvent;
+    typedef std::list<ObjEvent>                                            ObjListener;
+    typedef std::pair<view::wpScene const, ObjListener::iterator>          ObjEventRemovalPair;
+    typedef std::map <view::wpScene, ObjListener::iterator>                ObjEventRemoval;
+    typedef std::pair<view::wpScene const, ObjListener>                    SceneListenerPair;
+    typedef std::map <view::wpScene, ObjListener>                          SceneListener;
+    typedef std::list<SceneListener::key_type>                             SceneListenerRemoval;
 
 public:
     static EventDispatcher& i() {
@@ -46,7 +52,7 @@ public:
 
     EventDispatcher& subscribe_btn_event(BtnCallback, Button const*, BSTATE);
     EventDispatcher& subscribe_timer(TimerCallback, int, bool loop = false);
-    EventDispatcher& subscribe_obj_event(ObjCallback, Button const*, view::pSprite);
+    EventDispatcher& subscribe_obj_event(ObjCallback, Button const*, view::pSprite const&);
 
     void dispatch();
 
@@ -60,11 +66,14 @@ private:
     void dispatch_obj();
     void dispatch_timer();
     void cleanup_timer_and_init_newly_created_timer();
+    void cleanup_obj_event();
 
-    BtnListener  btn_listeners_;
-    TimerList    timers_, newly_created_timers_;
-    TimerRemoval timers_to_be_deleted;
-    ObjListener  obj_listeners_;
+    BtnListener          btn_listeners_;
+    TimerList            timers_, newly_created_timers_;
+    TimerRemoval         timers_to_be_deleted_;
+    SceneListener        scene_listeners_;
+    ObjEventRemoval      obj_events_to_be_deleted_;
+    SceneListenerRemoval scene_expired_;
 };
 
 }  //ctrl

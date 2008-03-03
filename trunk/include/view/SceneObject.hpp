@@ -15,9 +15,7 @@ class SceneObject : public Object, public std::tr1::enable_shared_from_this<Scen
 public:
     typedef std::tr1::shared_ptr< SceneObject > pointer_type;
     static pointer_type create(std::string const& name, pObject const& parent) {
-        pointer_type p = utils::ObjectPool< SceneObject >::create(name);
-        p->init(parent);
-        return p;
+        return utils::ObjectPool< SceneObject >::create(name)->init(parent);
     }
 
     SceneObject(std::string const& name):Object(name){}
@@ -27,7 +25,7 @@ public:
     virtual ~SceneObject(){}
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&);
 
 protected:
 

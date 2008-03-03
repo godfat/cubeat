@@ -1,8 +1,9 @@
 
 #include "IrrDevice.hpp"
 #include "view/Scene.hpp"
-#include "utils/Random.hpp"
 #include "Accessors.hpp"
+#include "EventDispatcher.hpp"
+#include "Conf.hpp"
 
 #include <iostream>
 
@@ -14,9 +15,14 @@ using namespace psc;
 using namespace view;
 using namespace accessor;
 
-void Scene::init(pObject const& parent, std::string const& name)
+Scene::Scene()
 {
-    camera_ = smgr_->addCameraSceneNode(parent?parent->body():0);
+    smgr_ = IrrDevice::i().d()->getSceneManager()->createNewSceneManager( false );
+}
+
+void Scene::init(std::string const& name)
+{
+    camera_ = smgr_->addCameraSceneNode(0);
     camera_->setIsDebugObject(true);
 
 	light_ =
@@ -30,18 +36,18 @@ void Scene::init(pObject const& parent, std::string const& name)
     body_->setIsDebugObject(true);
     body_->setName( name.c_str() );
 
+    std::cout << name << "'s collision manager: " << smgr_->getSceneCollisionManager() << "\n";
+
     scene_ = shared_from_this();
-    deactivate();
 }
 
 Scene& Scene::setTo2DView()
 {
-    video::IVideoDriver* driver = smgr_->getVideoDriver();
-    float w = (float)driver->getScreenSize().Width;
-    float h = (float)driver->getScreenSize().Height;
+    float w = (float)Conf::i().SCREEN_W;
+    float h = (float)Conf::i().SCREEN_H;
     camera_->setPosition( vector3df(10000,0,0) );
     camera_->setTarget( vector3df(10000,0,100) );
-    float const bloat = 200.0f; //size bloat in case items are culled when they are near the edge
+    float const bloat = 0.0f;    //not useful??? set to 0 for now...
 
     matrix4 ortho;
     ortho.buildProjectionMatrixOrthoLH( w+bloat, h+bloat, 0, 10000);
@@ -55,12 +61,10 @@ Scene& Scene::setTo2DView()
 
 Scene& Scene::setTo3DView(float FoV)
 {
-    video::IVideoDriver* driver = smgr_->getVideoDriver();
-
     camera_->setPosition( vector3df(0,0,0) );
     camera_->setTarget( vector3df(0,0,100) );
     camera_->setFOV( FoV );
-    camera_->setAspectRatio( (float)driver->getScreenSize().Width / driver->getScreenSize().Height );
+    camera_->setAspectRatio( (float)Conf::i().SCREEN_W / Conf::i().SCREEN_H );
     camera_->setIsOrthogonal(false);
 
     body_->setPosition(vector3df(0,0,0));
@@ -69,9 +73,6 @@ Scene& Scene::setTo3DView(float FoV)
 
 Scene& Scene::activate()
 {
-    smgr_->setActiveCamera( camera_ );
-    camera_->setVisible( true );
-    light_->setVisible( true );
     set<Visible>(true);
     return *this;
 }
@@ -84,9 +85,6 @@ Scene& Scene::redraw()
 
 Scene& Scene::deactivate()
 {
-    smgr_->setActiveCamera( 0 );
-    camera_->setVisible( false );
-    light_->setVisible( false );
     set<Visible>(false);
     return *this;
 }
@@ -102,7 +100,14 @@ ICameraSceneNode* Scene::camera() const
     return camera_;
 }
 
+ISceneCollisionManager* Scene::getCollisionMgr() const
+{
+    return smgr_->getSceneCollisionManager();
+}
+
 Scene::~Scene()
 {
     std::cout << body_->getName() << " scene died.\n";
+    smgr_->drop();
+    body_ = 0;
 }

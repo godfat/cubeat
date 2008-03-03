@@ -21,16 +21,15 @@ protected:
 public:
 
 	//! constructor
-    CustomAnimator(T const& start, T const& end, u32 const& duration,
+    CustomAnimator(ISceneManager* smgr, T const& start, T const& end, u32 const& duration,
                    bool const& loop = true, EndCallback const& cb = 0,
                    s32 const& delayTime = 0)
-        : start_(start), end_(end), length_(0.0f), duration_(duration),
+        : smgr_(smgr), start_(start), end_(end), length_(0.0f), duration_(duration),
           loop_(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
-        smgr_ = IrrDevice::i().d()->getSceneManager();
         startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime;
 	    recalculateImidiateValues(end);
     };

@@ -25,12 +25,13 @@ Map* Map::clone() const
     return obj;
 }
 
-void Map::init(pScene const& parent)
+pMap Map::init(pScene const& parent)
 {
-    /* FIXME:
+    /* TODO-FIXME:
        No, you can't put picking and node2view conversion here.
        Too many restrictions. Better move to Player class or Scene class
        when I got one. */
+    setupSceneAndManager(parent);
 
     int i = 0;
     BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
@@ -48,6 +49,8 @@ void Map::init(pScene const& parent)
 
     body_ = smgr_->addEmptySceneNode( parent?parent->body():0 );
     parent_ = parent;
+
+    return shared_from_this();
 }
 
 Map& Map::addCube(pCube cube)
@@ -63,9 +66,6 @@ Map& Map::addCube(pCube cube)
 
 void Map::ownerHitCallback(int x, int y)
 {
-    //set to correct camera before ray picking
-    parent_.lock()->activate();
-
     //Pick
     ISceneCollisionManager* colm = smgr_->getSceneCollisionManager();
     ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(x, y), 1, true);
@@ -75,15 +75,10 @@ void Map::ownerHitCallback(int x, int y)
     if( picked )
         if( pCube test = node2view_[picked] )
             test->ownerHit();
-
-    parent_.lock()->deactivate();
 }
 
 void Map::enemyHitCallback(int x, int y)
 {
-    //set to correct camera before ray picking
-    parent_.lock()->activate();
-
     //Pick
     ISceneCollisionManager* colm = smgr_->getSceneCollisionManager();
     ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(position2di(x, y), 1, true);
@@ -93,6 +88,4 @@ void Map::enemyHitCallback(int x, int y)
     if( picked )
         if( pCube test = node2view_[picked] )
             test->enemyHit();
-
-    parent_.lock()->deactivate();
 }

@@ -15,9 +15,7 @@ class Cube : public SceneObject
 public:
     typedef std::tr1::shared_ptr<Cube> pointer_type;
     static pointer_type create(pMap& map) {
-        pointer_type p = utils::ObjectPool<Cube>::create();
-        p->init(map);
-        return p;
+        return utils::ObjectPool<Cube>::create()->init(map);
     }
 
     Cube():SceneObject("test_cube"), owner_hit_(0), enemy_hit_(0){}
@@ -31,7 +29,7 @@ public:
     virtual ~Cube(){}
 
 protected:
-    void init(pMap&);
+    pointer_type init(pMap&);
 
 protected:
     HitCallback owner_hit_;

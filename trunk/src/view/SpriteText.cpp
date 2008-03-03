@@ -1,6 +1,5 @@
 
 #include "view/SpriteText.hpp"
-#include "view/Scene.hpp"
 #include "utils/TTFont.hpp"
 
 #include <sstream>
@@ -14,32 +13,16 @@ using namespace video;
 using namespace psc;
 using namespace view;
 
-void SpriteText::init(std::string const& text, std::string const& font_path,
-                      int size, data::Color const& color, pObject const& parent)
+pSpriteText
+SpriteText::init(std::string const& text, std::string const& font_path,
+                 int const& size, data::Color const& color, pObject const& parent)
 {
     if( text.size() < 1 ) {
         Object::init(parent);
-        return;
+        return std::tr1::static_pointer_cast<SpriteText>( shared_from_this() );
     }
-
-    std::ostringstream oss;
-    oss << "rc/fonts/" << font_path << ".ttf";
-
-    SColor col( color.rgb() );
-    col.setAlpha( 255 );
-
-//	gui::CGUITTFont* ttfont;
-    utils::TTFont* ttfont;
-	ttfont = (utils::TTFont *)smgr_->getGUIEnvironment()->getFont(oss.str().c_str(),size);
-    ttfont->AntiAlias = true;
-    ttfont->TransParency = true;
-    std::wstring temp(text.length(),L' ');             //so hard to convert between wchar and char @@
-    std::copy(text.begin(), text.end(), temp.begin()); //so hard to convert between wchar and char @@
-
-    font_texture_ = ttfont->getTextureFromText(temp.c_str(), "test_texture");
-    dimension2di size_int = ttfont->getDimension(temp.c_str());
-    size_.Width = size_int.Width;
-    size_.Height= size_int.Height;
+    setupSceneAndManager(parent);
+    createText( text, font_path, size );
 
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
@@ -49,6 +32,8 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
     mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 
+    SColor col( color.rgb() );
+    col.setAlpha( 255 );
     mat.DiffuseColor = col;
 
     setupMeshBase(parent);
@@ -57,7 +42,29 @@ void SpriteText::init(std::string const& text, std::string const& font_path,
     adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
 
     press_.setOwner( shared_from_this() );
-    scene_ = parent->scene();
+    return std::tr1::static_pointer_cast<SpriteText>( shared_from_this() );
+}
+
+void SpriteText::createText(std::string const& text, std::string const& font_path, int const& size)
+{
+    gui::IGUIEnvironment* gui = IrrDevice::i().d()->getGUIEnvironment();
+    //This is rather stupid. we have multiple SceneManager, but only on GUIEnvironment,
+    //so smgr_->getGUIEnvironment() is NULL !? ...well, guess I have to live with that.
+
+    std::ostringstream oss;
+    oss << "rc/fonts/" << font_path << ".ttf";
+
+    utils::TTFont* ttfont;
+	ttfont = (utils::TTFont *)gui->getFont(oss.str().c_str(),size);
+    ttfont->AntiAlias = true;
+    ttfont->TransParency = true;
+    std::wstring temp(text.length(),L' ');             //so hard to convert between wchar and char @@
+    std::copy(text.begin(), text.end(), temp.begin()); //so hard to convert between wchar and char @@
+
+    font_texture_ = ttfont->getTextureFromText(temp.c_str(), (text+"_font").c_str());
+    dimension2di size_int = ttfont->getDimension(temp.c_str());
+    size_.Width = size_int.Width;
+    size_.Height= size_int.Height;
 }
 
 SpriteText& SpriteText::setCenterAligned(bool const& center)
@@ -72,5 +79,4 @@ SpriteText& SpriteText::setCenterAligned(bool const& center)
 
 SpriteText::~SpriteText()
 {
-    thismesh_->drop();
 }

@@ -14,9 +14,7 @@ class AnimatedSceneObject : public SceneObject
 public:
     typedef std::tr1::shared_ptr< AnimatedSceneObject > pointer_type;
     static pointer_type create(std::string const& path, pObject const& parent) {
-        pointer_type p = utils::ObjectPool< AnimatedSceneObject >::create(path);
-        p->init(parent);
-        return p;
+        return utils::ObjectPool< AnimatedSceneObject >::create(path)->init(parent);
     }
 
     AnimatedSceneObject(std::string const& path):SceneObject(path){}
@@ -24,7 +22,7 @@ public:
     virtual AnimatedSceneObject* clone() const;
 
 protected:
-    void init(pObject const&);
+    pointer_type init(pObject const&);
 
 };
 

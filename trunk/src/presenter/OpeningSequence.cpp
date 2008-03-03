@@ -7,6 +7,7 @@
 #include "EasingEquations.hpp"
 #include "App.hpp"
 #include "Conf.hpp"
+#include "Input.hpp"
 
 #include <iostream>
 
@@ -18,6 +19,7 @@ using namespace easing;
 using std::tr1::bind;
 using std::tr1::ref;
 using std::tr1::function;
+using namespace std::tr1::placeholders;
 
 OpeningSequence::OpeningSequence()
     :deletion_scheduled_(false)
@@ -33,11 +35,12 @@ OpeningSequence::~OpeningSequence()
 
 pOpeningSequence OpeningSequence::init()
 {
-    scene_ = view::Scene::create(view::pObject(), "OpeningSequence");
+    scene_ = view::Scene::create("OpeningSequence");
     scene_->setTo2DView();
     movie_ = view::SpriteMovie::create(config.S("movie_path"), scene_,
                                        Conf::i().SCREEN_W, Conf::i().SCREEN_H);
     movie_->setCurrentFrame( config.I("startframe") ); //temp
+
     return shared_from_this();
 }
 
@@ -51,8 +54,7 @@ void OpeningSequence::end()
 void OpeningSequence::cycle()
 {
     movie_->redraw();
-    scene_->activate().redraw();
-    scene_->deactivate();
+    scene_->redraw();
 
     if( !deletion_scheduled_ && movie_->isEnd() ) {
         std::cout << "OpeningSequence deletion scheduled.\n";

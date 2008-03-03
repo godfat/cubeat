@@ -19,9 +19,8 @@ public:
                                bool const&        center = false,
                                data::Color const& color = data::Color(255,255,255) )
     {
-        pointer_type p = utils::ObjectPool< SpriteText >::create("", center);
-        p->init(text, font_path, size, color, parent);
-        return p;
+        return utils::ObjectPool< SpriteText >::create("", center)
+                   ->init(text, font_path, size, color, parent);
     }
 
     SpriteText(std::string const& name, bool const& center)
@@ -33,8 +32,9 @@ public:
     virtual ~SpriteText();
 
 protected:
-    void init(std::string const& text, std::string const& font_path,
-              int size, data::Color const& color, pObject const& parent);
+    pointer_type init(std::string const& text, std::string const& font_path,
+                      int const& size, data::Color const& color, pObject const& parent);
+    void createText(std::string const& text, std::string const& font_path, int const& size);
 
 protected:
     irr::video::ITexture* font_texture_;

@@ -20,11 +20,12 @@ Cube* Cube::clone() const
     return obj;
 }
 
-void Cube::init(pMap& parent)
+pCube Cube::init(pMap& parent)
 {
     SceneObject::init(parent);
 
     parent->addCube( std::tr1::static_pointer_cast<Cube>(shared_from_this()) );
+    return std::tr1::static_pointer_cast<Cube>( shared_from_this() );
 }
 
 Cube& Cube::setOwnerHit( HitCallback const& ownerhit )

@@ -25,7 +25,8 @@ class Object
 {
 public:
     typedef std::tr1::shared_ptr< Object > pointer_type;
-    static pointer_type create(pointer_type const parent = pointer_type()) {
+
+    static pointer_type create(pointer_type const& parent) {
         pointer_type p = utils::ObjectPool< Object >::create("");
         p->init(parent);
         return p;
@@ -34,7 +35,7 @@ public:
     Object(std::string const& name = "");
 
     virtual Object* clone() const;
-    virtual pScene  scene();
+    virtual pScene  scene() const;
     virtual Object& moveTo(int,int,int);
 
     virtual irr::scene::ISceneNode* body() const;
@@ -62,7 +63,7 @@ public:
     {
         irr::scene::ISceneNodeAnimator* anim =
             new irr::scene::CustomAnimator<Eq, Accessor>
-                (start, end, duration, loop, cb, delay);
+                (smgr_, start, end, duration, loop, cb, delay);
         body_->addAnimator( anim );
         anim->drop();
         return *this;
@@ -84,7 +85,8 @@ public:
     virtual ~Object();
 
 protected:
-    void init(pointer_type const& parent = pointer_type());
+    void setupSceneAndManager(pointer_type const& parent);
+    void init(pointer_type const& parent);
 
 protected:
     irr::scene::ISceneManager* smgr_;

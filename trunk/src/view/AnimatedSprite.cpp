@@ -24,26 +24,23 @@ AnimatedSprite* AnimatedSprite::clone() const
 
 pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int const& h)
 {
+    setupSceneAndManager(parent);
+
     size_.Width  = w;
     size_.Height = h;
 
-    SMaterial mat_;
+    SMaterial mat;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat.MaterialTypeParam = 0.01f;
 
-    mat_.setFlag(video::EMF_LIGHTING, true);
-    mat_.setFlag(video::EMF_ZWRITE_ENABLE, false);
-    mat_.MaterialType = video::EMT_ONETEXTURE_BLEND;
-
-    mat_.MaterialTypeParam =
-        video::pack_texureBlendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA, EMFN_MODULATE_1X);
-
-    mat_.DiffuseColor.set(255,255,255,255);
+    mat.DiffuseColor.set(255,255,255,255);
 
     setupMeshBase(parent);
-    body_->getMaterial(0) = mat_;
+    body_->getMaterial(0) = mat;
 
     press_.setOwner( static_pointer_cast<AnimatedSprite>(shared_from_this()) );
-    scene_ = parent->scene();
-
     return static_pointer_cast<AnimatedSprite>(shared_from_this());
 }
 
@@ -70,7 +67,7 @@ AnimatedSprite::playAnime(std::string const& anime_name, int duration, bool loop
                           std::tr1::function<void()> cb, int delayTime)
 {
     ISceneNodeAnimator* animator =
-        new TextureAnimator<SineCirc>( animations_[anime_name], duration, loop, cb, delayTime );
+        new TextureAnimator<SineCirc>( smgr_, animations_[anime_name], duration, loop, cb, delayTime );
     body_->addAnimator( animator );
     animator->drop();
 

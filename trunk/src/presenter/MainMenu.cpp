@@ -43,7 +43,7 @@ pMainMenu MainMenu::init()
     utils::map_any text = config.M("text");
     int const m_text_size = Conf::i().SCREEN_W/30;
 
-    mainmenu_scene_ = view::Scene::create(view::pObject(), "MainMenu");
+    mainmenu_scene_ = view::Scene::create("MainMenu");
     mainmenu_scene_->setTo2DView();
 
     int const width = title.I("orig_w") * (Conf::i().SCREEN_W/1280.0f); //1280 is best screen size.
@@ -232,6 +232,5 @@ MainMenu& MainMenu::cubeRearrange()
 
 void MainMenu::cycle()
 {
-    mainmenu_scene_->activate().redraw();
-    mainmenu_scene_->deactivate();
+    mainmenu_scene_->redraw();
 }

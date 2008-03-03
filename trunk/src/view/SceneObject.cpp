@@ -18,11 +18,14 @@ SceneObject* SceneObject::clone() const
     return obj;
 }
 
-void SceneObject::init(pObject const& parent)
+pSceneObject SceneObject::init(pObject const& parent)
 {
+    setupSceneAndManager(parent);
+
     std::ostringstream oss;
     oss << "rc/model/" << name_ << ".x";
     IMesh* mesh = smgr_->getMesh( oss.str().c_str() )->getMesh(0);
+    body_ = smgr_->addMeshSceneNode( mesh, parent->body() );
 
-    body_ = smgr_->addMeshSceneNode( mesh, parent?parent->body():0 );
+    return shared_from_this();
 }

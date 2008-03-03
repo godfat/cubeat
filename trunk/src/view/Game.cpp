@@ -21,10 +21,8 @@ using namespace psc;
 using namespace view;
 using namespace accessor;
 
-void Game::init(pScene const& world, pScene const& gui)
+pGame Game::init(pScene const& world, pScene const& gui)
 {
-    Object::init();
-    driver_ = smgr_->getVideoDriver();
     world_ = world;
     gui_   = gui;
 
@@ -35,10 +33,12 @@ void Game::init(pScene const& world, pScene const& gui)
     //set them to debug true so we won't stupidly picked the cursor sprite.
     cursors_[0]->setDepth(-500).body()->setIsDebugObject(true);
     cursors_[1]->setDepth(-500).body()->setIsDebugObject(true);
+
+    return shared_from_this();
 }
 
-Game& Game::setWorld(pScene const& world) { world_ = world; return *this;}
-Game& Game::setGUI(pScene const& gui)     { gui_ = gui;     return *this;}
+Game& Game::setWorld(pScene const& world) { world_ = world; return *this; }
+Game& Game::setGUI(pScene const& gui)     { gui_ = gui;     return *this; }
 
 void Game::redraw()
 {
@@ -49,11 +49,6 @@ void Game::redraw()
         ++i;
     }
 
-    gui_->deactivate();
-    world_->activate().redraw();
-
-    world_->deactivate();
-    gui_->activate().redraw();
-
-    gui_->deactivate();
+    world_->redraw();
+    gui_->redraw();
 }

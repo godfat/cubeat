@@ -23,9 +23,9 @@ class TextureAnimator : public CustomAnimator<Eq, Accessor<s32> >
     typedef typename TextureAnimatorBase::T    Primitive;
 
 public:
-    TextureAnimator(Animation2D const& anime, u32 duration, bool loop = true,
+    TextureAnimator(ISceneManager* smgr, Animation2D const& anime, u32 duration, bool loop = true,
                     std::tr1::function<void()> cb = 0, s32 delayTime = 0)
-        :TextureAnimatorBase(0, static_cast<int>(anime.size()), duration, loop, cb, delayTime),
+        :TextureAnimatorBase(smgr, 0, static_cast<int>(anime.size()), duration, loop, cb, delayTime),
          animation_(anime)
     {
         if( anime.size() < 1 )

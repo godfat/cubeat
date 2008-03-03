@@ -26,13 +26,14 @@ namespace ctrl {
 
 class EventDispatcher
 {
+    typedef std::tr1::weak_ptr<void> wpvoid;
     typedef std::tr1::function<void(int x, int y)>                         BtnCallback;
-    typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE, view::wpObject> BtnEvent;
+    typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE, wpvoid>    BtnEvent;
     typedef std::list<BtnEvent>                                            BtnListener;
     typedef std::list< BtnListener::iterator >                             BtnEventRemoval;
 
     typedef std::tr1::function<void()>                                     TimerCallback;
-    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool> Timer;
+    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, bool, wpvoid> Timer;
     typedef std::list<Timer>                                               TimerList;
     typedef std::list< TimerList::iterator >                               TimerRemoval;
 
@@ -52,17 +53,17 @@ public:
     }
 
     EventDispatcher&
-    subscribe_btn_event(BtnCallback const&, Button const*, BSTATE const&, view::pObject const&);
+    subscribe_btn_event(BtnCallback const&, wpvoid const&, Button const*, BSTATE const&);
     EventDispatcher&
-    subscribe_timer(TimerCallback const&, int const&, bool loop = false);
+    subscribe_timer(TimerCallback const&, wpvoid const&, int const&, bool loop = false);
     EventDispatcher&
-    subscribe_obj_event(ObjCallback const&, Button const*, view::pSprite const&);
+    subscribe_obj_event(ObjCallback const&, view::pSprite const&, Button const*);
 
     void dispatch();
 
 private:
-    enum { BCALLBACK = 0, BUTTON = 1, STATE = 2, SUBSCRIBER = 3 };
-    enum { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3 };
+    enum { BCALLBACK = 0, BUTTON = 1, STATE = 2, BCALLEE = 3 };
+    enum { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3, TCALLEE = 4 };
     enum { TIMER_TIME, TIMER };
     struct OE{enum{OBJ_CB, BTN, SPRITE};};
     EventDispatcher();

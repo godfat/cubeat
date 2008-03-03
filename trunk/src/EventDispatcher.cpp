@@ -32,22 +32,22 @@ EventDispatcher::EventDispatcher()
 }
 
 EventDispatcher& EventDispatcher::subscribe_btn_event
-    (BtnCallback const& cb, Button const* btn, BSTATE const& state, view::pObject const& obj)
+    (BtnCallback const& cb, wpvoid const& obj, Button const* btn, BSTATE const& state)
 {
     btn_listeners_.push_back( tie( cb, btn, state, obj ) );
     return *this;
 }
 
 EventDispatcher& EventDispatcher::subscribe_timer
-    (TimerCallback const& cb, int const& duration, bool loop)
+    (TimerCallback const& cb, wpvoid const& obj, int const& duration, bool loop)
 {
     const int zero = 0;
-    newly_created_timers_.push_back( tie( cb, duration, zero, loop ) );
+    newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
     return *this;
 }
 
 EventDispatcher& EventDispatcher::subscribe_obj_event
-    (ObjCallback const& ocb, Button const* btn, view::pSprite const& obj)
+    (ObjCallback const& ocb, view::pSprite const& obj, Button const* btn)
 {   //SceneListenerPair::first = const wpScene, SceneListenerPair::second = ObjListener
     view::wpScene scene = obj->scene();
     if( scene_listeners_.find( scene ) != scene_listeners_.end() )
@@ -103,7 +103,7 @@ void EventDispatcher::dispatch_obj()
 void EventDispatcher::dispatch_btn(){
     for(BtnListener::iterator b = btn_listeners_.begin(), bend = btn_listeners_.end();
         b != bend; ++b) {
-        if( view::pObject obj = get<SUBSCRIBER>(*b).lock() ) {
+        if( get<BCALLEE>(*b).lock() ) {
             Button const* btn = get<BUTTON>(*b);
             if( btn->state() != get<STATE>(*b) ) continue;
             get<BCALLBACK>(*b)( btn->owner()->cursor().x(), btn->owner()->cursor().y() );
@@ -119,13 +119,16 @@ void EventDispatcher::dispatch_timer(){
 
     irr::u32 now = IrrDevice::i().d()->getTimer()->getRealTime();
     for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
-        if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
-            get<TCALLBACK>(*t)();
-            get<LASTTIME>(*t) = now;
-            if( get<LOOP>(*t) == false ) {
-                timers_to_be_deleted_.push_back(t);
+        if( get<TCALLEE>(*t).lock() ) {
+            if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
+                get<TCALLBACK>(*t)();
+                get<LASTTIME>(*t) = now;
+                if( get<LOOP>(*t) == false ) {
+                    timers_to_be_deleted_.push_back(t);
+                }
             }
         }
+        else timers_to_be_deleted_.push_back(t);
     }
 }
 

@@ -23,7 +23,7 @@ using std::tr1::function;
 
 CallbackDelegate& CallbackDelegate::operator =(std::tr1::function<void(pSprite&)> const& cb)
 {
-    ctrl::EventDispatcher::i().subscribe_obj_event(cb, subscribed_btn_, owner_.lock());
+    ctrl::EventDispatcher::i().subscribe_obj_event(cb, owner_.lock(), subscribed_btn_);
     return *this;
 }
 

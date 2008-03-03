@@ -46,7 +46,6 @@ App::App()
     temp_presenter_   = presenter::pObject();
 
     std::cout << view::Map::create(1, view::Scene::create("Test") ).get() << "\n";
-    ViewTest1::i();
 }
 
 App::~App()
@@ -80,8 +79,10 @@ bool App::update_block()
 int App::run()
 {
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
-
     int lastFPS = -1;
+
+    std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);
+    viewtest->init();
 
     while( IrrDevice::i().run() )
         if( IrrDevice::i().d()->isWindowActive() /*&& !update_block()*/ )
@@ -94,7 +95,7 @@ int App::run()
             driver->clearZBuffer();  //clear z-buffer to overlay the whole scene
             trans_->cycle();
             driver->clearZBuffer();
-            ViewTest1::i().cycle();
+            viewtest->cycle();
             driver->endScene();
 
             //FPS for debug

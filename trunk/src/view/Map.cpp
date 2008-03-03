@@ -37,12 +37,12 @@ pMap Map::init(pScene const& parent)
     BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
         if( index_ == i ) {
             ctrl::EventDispatcher::i().subscribe_btn_event(
-                bind(&Map::ownerHitCallback, this, _1, _2), //(this, x, y)
-                &it->trig1(), ctrl::BTN_PRESS, shared_from_this() );
+                bind(&Map::ownerHitCallback, this, _1, _2), shared_from_this(),
+                &it->trig1(), ctrl::BTN_PRESS);
         } else {
             ctrl::EventDispatcher::i().subscribe_btn_event(
-                bind(&Map::enemyHitCallback, this, _1, _2), //(this, x, y)
-                &it->trig1(), ctrl::BTN_PRESS, shared_from_this() );
+                bind(&Map::enemyHitCallback, this, _1, _2), shared_from_this(),
+                &it->trig1(), ctrl::BTN_PRESS);
         }
         ++i;
     }

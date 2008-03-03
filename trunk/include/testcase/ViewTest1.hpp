@@ -27,13 +27,13 @@ using std::tr1::bind;
 using std::tr1::ref;
 using namespace std::tr1::placeholders;
 
-struct ViewTest1
+struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
 {
     void step4_alt_timer(view::pSprite& sprite)
     {
         std::tr1::function<void()> next_step = bind(&ViewTest1::step1, this, ref(sprite));
         EventDispatcher::i().subscribe_timer(
-            bind( &view::Sprite::moveTween, sprite.get(), 0, 0, 3000, next_step, 0), 2000);
+            bind( &view::Sprite::moveTween, sprite.get(), 0, 0, 3000, next_step, 0), shared_from_this(), 2000);
     }
 
     void step4(view::pSprite& sprite) {
@@ -67,15 +67,11 @@ struct ViewTest1
         std::cout << "HAHAHA.\n";
     }
 
+    void init();
     void cycle();
-
-    static ViewTest1& i() {
-        static ViewTest1 test;
-        return test;
-    }
+    ViewTest1();
 
 private:
-    ViewTest1();
     ViewTest1(ViewTest1 const&);
 
     view::pScene               guiv;
@@ -152,12 +148,15 @@ ViewTest1::ViewTest1()
     menu->getSprite("item1").set<Green>(0).set<Pos2D>(vec2(0, 50));
     menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vec2(0, 150));
     menu->getSprite("item3").set<Red>(0).set<Pos2D>(vec2(0, 250));
+}
+
+void ViewTest1::init()
+{
+    EventDispatcher::i().subscribe_timer(
+        bind(&ViewTest1::step1, this, ref(anotherthing)), shared_from_this(), 1000 );
 
     EventDispatcher::i().subscribe_timer(
-        bind(&ViewTest1::step1, this, ref(anotherthing)), 1000 );
-
-    EventDispatcher::i().subscribe_timer(
-        bind(&ViewTest1::glow, this, ref(something)), 600, true );
+        bind(&ViewTest1::glow, this, ref(something)), shared_from_this(), 600, true );
 }
 
 void ViewTest1::cycle()

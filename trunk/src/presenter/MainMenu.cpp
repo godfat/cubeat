@@ -63,7 +63,7 @@ pMainMenu MainMenu::init()
          .getSprite("text").set<Pos2D>( vec2( 0, height ) )
          .tween<SineCirc, Alpha>(0, text.I("glow_period"));
 
-    ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), 30 );
+    ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
 
     return shared_from_this();
 }
@@ -110,7 +110,7 @@ void MainMenu::initDecorator()
     function<void()> step1 =
         bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
 
-    ctrl::EventDispatcher::i().subscribe_timer(step1, 0);
+    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
 }
 
 //helper
@@ -190,7 +190,7 @@ void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
     }
     App::i().setLoading(load_stat);
     if( cb )
-        ctrl::EventDispatcher::i().subscribe_timer(cb, 10);
+        ctrl::EventDispatcher::i().subscribe_timer(cb, shared_from_this(), 10);
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)

@@ -1,4 +1,7 @@
 
+#ifndef _SHOOTING_CUBES_DETAIL_MT_APP_RUN_
+#define _SHOOTING_CUBES_DETAIL_MT_APP_RUN_
+
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
@@ -61,3 +64,5 @@ int App::run(Tester tester)
 }
 
 } // end of namespace psc
+
+#endif

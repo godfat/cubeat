@@ -117,7 +117,7 @@ void EventDispatcher::dispatch_timer(){
 
     cleanup_timer_and_init_newly_created_timer();
 
-    irr::u32 now = IrrDevice::i().d()->getTimer()->getRealTime();
+    irr::u32 now = IrrDevice::i().d()->getTimer()->getTime();
     for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         if( get<TCALLEE>(*t).lock() ) {
             if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
@@ -148,7 +148,7 @@ void EventDispatcher::cleanup_timer_and_init_newly_created_timer()
     timers_to_be_deleted_.clear();
 
     // init newly created
-    std::time_t init_time = IrrDevice::i().d()->getTimer()->getRealTime();
+    std::time_t init_time = IrrDevice::i().d()->getTimer()->getTime();
     BOOST_FOREACH(Timer& timer, newly_created_timers_){
         get<LASTTIME>(timer) = init_time;
     }

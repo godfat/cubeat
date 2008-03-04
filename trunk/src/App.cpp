@@ -44,8 +44,6 @@ App::App()
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
-
-    std::cout << view::Map::create(1, view::Scene::create("Test") ).get() << "\n";
 }
 
 App::~App()
@@ -68,7 +66,7 @@ void App::launchMainMenu()
 
 bool App::update_block()
 {
-    u32 now_time = timer_->getRealTime();
+    u32 now_time = timer_->getTime();
     if( now_time - last_timetick_ <= 1000/framerate_ ) {
         return true;
     }
@@ -84,9 +82,11 @@ int App::run()
     std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);
     viewtest->init();
 
-    while( IrrDevice::i().run() )
+    while( IrrDevice::i().run() ) {
         if( IrrDevice::i().d()->isWindowActive() /*&& !update_block()*/ )
         {
+            if( IrrDevice::i().d()->getTimer()->isStopped() )
+                IrrDevice::i().d()->getTimer()->start();
             Input::update_all();
             EventDispatcher::i().dispatch();
 
@@ -111,6 +111,10 @@ int App::run()
                 temp_presenter_.reset();
             }
         }
+        else
+            if( !IrrDevice::i().d()->getTimer()->isStopped() )
+                IrrDevice::i().d()->getTimer()->stop();
+    }
 
     return 0;
 }

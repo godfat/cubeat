@@ -45,5 +45,8 @@ SET (LIBRARY_OUTPUT_PATH bin)
 ADD_EXECUTABLE        (bin/shooting-cubes main.cpp)
 TARGET_LINK_LIBRARIES (bin/shooting-cubes shooting-cubes)
 
-ADD_EXECUTABLE        (bin/test-map-cubes src/test/test_map_and_cubes_main.cpp)
+ADD_EXECUTABLE        (bin/test-map-cubes src/test/test_map_cubes_main.cpp)
 TARGET_LINK_LIBRARIES (bin/test-map-cubes shooting-cubes)
+
+ADD_EXECUTABLE        (bin/test-map-views src/test/test_map_views_main.cpp)
+TARGET_LINK_LIBRARIES (bin/test-map-views shooting-cubes)

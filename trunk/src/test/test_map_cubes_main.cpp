@@ -48,10 +48,10 @@ int main(){
         map->cycle();
     display(map);
 
-    IrrDevice::i().init(true);
-    psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, true);
-    while(true){
-        usleep(10000);
-        psc::ctrl::EventDispatcher::i().dispatch();
-    }
+    // IrrDevice::i().init(true);
+    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, true);
+    // while(true){
+    //     usleep(10000);
+    //     psc::ctrl::EventDispatcher::i().dispatch();
+    // }
 }

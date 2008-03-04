@@ -9,13 +9,11 @@
 #include "presenter/MainMenu.hpp"
 #include "presenter/OpeningSequence.hpp"
 #include "Input.hpp"
-#include "EventDispatcher.hpp"
+// #include "EventDispatcher.hpp"
 #include "IrrDevice.hpp"
 
-/* Testcase */
-#include "testcase/ViewTest1.hpp"
-
 #include <iostream>
+#include <tr1/functional>
 
 using namespace irr;
 using namespace core;
@@ -30,9 +28,9 @@ using std::tr1::ref;
 App::App()
     : framerate_( Conf::i().FRAMERATE ), last_timetick_(0)
 {
-    std::cout << "App constructed.\n";
+    std::cout << "App constructed." << std::endl;
     if( !IrrDevice::i().init(true) ) {
-        std::cout << "Graphic engine initialization failed. Halting...\n";
+        std::cout << "Graphic engine initialization failed. Halting..." << std::endl;
         return;
     }
     timer_ = IrrDevice::i().d()->getTimer();
@@ -73,49 +71,3 @@ bool App::update_block()
     last_timetick_ = now_time;
     return false;
 }
-
-int App::run()
-{
-    IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
-    int lastFPS = -1;
-
-    std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);
-    viewtest->init();
-
-    while( IrrDevice::i().run() ) {
-        if( IrrDevice::i().d()->isWindowActive() /*&& !update_block()*/ )
-        {
-            if( IrrDevice::i().d()->getTimer()->isStopped() )
-                IrrDevice::i().d()->getTimer()->start();
-            Input::update_all();
-            EventDispatcher::i().dispatch();
-
-            driver->beginScene(true, true, video::SColor(0,0,0,0));
-            master_presenter_->cycle();
-            driver->clearZBuffer();  //clear z-buffer to overlay the whole scene
-            trans_->cycle();
-            driver->clearZBuffer();
-            viewtest->cycle();
-            driver->endScene();
-
-            //FPS for debug
-            int fps = driver->getFPS();
-            if( fps != lastFPS ) {
-                core::stringw str(L"FPS: ");
-                str += fps;
-                IrrDevice::i().d()->setWindowCaption( str.c_str() );
-                lastFPS = fps;
-            }
-            if( temp_presenter_ ) { //hand over master presenter here "safely."
-                master_presenter_ = temp_presenter_;
-                temp_presenter_.reset();
-            }
-        }
-        else
-            if( !IrrDevice::i().d()->getTimer()->isStopped() )
-                IrrDevice::i().d()->getTimer()->stop();
-    }
-
-    return 0;
-}
-

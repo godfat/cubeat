@@ -39,7 +39,7 @@ EventDispatcher& EventDispatcher::subscribe_btn_event
 }
 
 EventDispatcher& EventDispatcher::subscribe_timer
-    (TimerCallback const& cb, wpvoid const& obj, int const& duration, bool loop)
+    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int loop)
 {
     const int zero = 0;
     newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
@@ -123,9 +123,10 @@ void EventDispatcher::dispatch_timer(){
             if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {
                 get<TCALLBACK>(*t)();
                 get<LASTTIME>(*t) = now;
-                if( get<LOOP>(*t) == false ) {
+                int& looptimes = get<LOOP>(*t);
+                if( looptimes == 0 ) {
                     timers_to_be_deleted_.push_back(t);
-                }
+                } else if( looptimes > 0 ) looptimes -= 1;
             }
         }
         else timers_to_be_deleted_.push_back(t);

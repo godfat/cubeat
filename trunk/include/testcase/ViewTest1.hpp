@@ -156,7 +156,7 @@ void ViewTest1::init()
         bind(&ViewTest1::step1, this, ref(anotherthing)), shared_from_this(), 1000 );
 
     EventDispatcher::i().subscribe_timer(
-        bind(&ViewTest1::glow, this, ref(something)), shared_from_this(), 600, true );
+        bind(&ViewTest1::glow, this, ref(something)), shared_from_this(), 600, -1 );
 }
 
 void ViewTest1::cycle()

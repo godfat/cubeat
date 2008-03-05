@@ -95,7 +95,6 @@ private:
     void update_chains();
     bool cube_can_lose_chain(cpCube) const;
     bool check_column_full() const;
-    
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

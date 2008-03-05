@@ -53,12 +53,12 @@ public:
     state::pDying const is_dying() const;
     // end
 
-    // begin only used by OneFading::get_the_chain,
-    //   which is used by OneFading::fade
-    void chain(pChain chain){ chain_belonged_to_ = chain; }
+    // begin only used by Map::cubes_belong_to_the_chain_from_bottom_to_top
+    void chain(pChain chain){ chain_belonged_to_ = chain; show_outline(); }
     // end
 
-    // begin only used by Map::squares_belong_to_the_chain_from_bottom_to_top
+    // begin only used by OneFading::get_the_chain,
+    //   which is used by OneFading::fade
     pChain const chain() const{ return chain_belonged_to_; }
     // end
 

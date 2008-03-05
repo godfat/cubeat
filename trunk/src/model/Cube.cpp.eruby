@@ -55,6 +55,8 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 		chain_belonged_to_->dec_one_owner();
 		chain_belonged_to_.reset();
 	}
+	if( !is_garbage() )
+	    hide_outline();
 }
 // end
 

@@ -9,7 +9,6 @@
 #include "presenter/MainMenu.hpp"
 #include "presenter/OpeningSequence.hpp"
 #include "Input.hpp"
-// #include "EventDispatcher.hpp"
 #include "IrrDevice.hpp"
 
 #include <iostream>

@@ -5,7 +5,7 @@
    We might need a queue and loop-finite-times features to tween interface
    will be implemented when needed. */
 
-#include "CustomAnimator.hpp"
+#include "view/detail/CustomAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"
@@ -57,7 +57,7 @@ public:
     Object& tween(typename Accessor::value_type const& start,
                   typename Accessor::value_type const& end,
                   int                           const& duration,
-                  bool                          const& loop = true,
+                  int                           const& loop = 0,
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
@@ -72,7 +72,7 @@ public:
     template <template <class> class Eq, class Accessor>
     Object& tween(typename Accessor::value_type const& end,
                   int                           const& duration,
-                  bool                          const& loop = true,
+                  int                           const& loop = 0,
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {

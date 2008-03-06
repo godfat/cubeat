@@ -1,6 +1,6 @@
 
 #include "view/AnimatedSprite.hpp"
-#include "TextureAnimator.hpp"
+#include "view/detail/TextureAnimator.hpp"
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
 
@@ -63,8 +63,8 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
 }
 
 AnimatedSprite&
-AnimatedSprite::playAnime(std::string const& anime_name, int duration, bool loop,
-                          std::tr1::function<void()> cb, int delayTime)
+AnimatedSprite::playAnime(std::string const& anime_name, int const& duration, int const& loop,
+                          std::tr1::function<void()> cb, int const& delayTime)
 {
     ISceneNodeAnimator* animator =
         new TextureAnimator<SineCirc>( smgr_, animations_[anime_name], duration, loop, cb, delayTime );

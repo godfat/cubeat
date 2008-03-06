@@ -61,7 +61,7 @@ pMainMenu MainMenu::init()
 
     temp->addSpriteText("text", text.S("text"), text.S("font"), click1_1, m_text_size, true)
          .getSprite("text").set<Pos2D>( vec2( 0, height ) )
-         .tween<SineCirc, Alpha>(0, text.I("glow_period"));
+         .tween<SineCirc, Alpha>(0, text.I("glow_period"), -1);
 
     ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
 
@@ -174,17 +174,17 @@ void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
         temp->//set<ColorDiffuse>( 0xff000000 | col.rgb() )
               set<GradientDiffuse>(255)
              .set<Scale>(vec3(scale, scale, 1))
-             .tween<Linear, Rotation>(vec3(0, 0, 360), rot_duration, true, 0, -delay )
-             .tween<Linear, Pos3D>(from3d, dest3d, time, true, 0, -time_position );
+             .tween<Linear, Rotation>(vec3(0, 0, 360), rot_duration, -1, 0, -delay )
+             .tween<Linear, Pos3D>(from3d, dest3d, time, -1, 0, -time_position );
 
-        temp->tween<IOCubic, GradientDiffuse>(128, 255, time, true, 0, -time_position );
+        temp->tween<IOCubic, GradientDiffuse>(128, 255, time, -1, 0, -time_position );
 
 //        if( col.r() > 0 )
-//            temp->tween<IOCubic, Red>(  col.r()>>2, col.r(), time, true, 0, -time_position );
+//            temp->tween<IOCubic, Red>(  col.r()>>2, col.r(), time, -1, 0, -time_position );
 //        if( col.g() > 0 )
-//            temp->tween<IOCubic, Green>(col.g()>>2, col.g(), time, true, 0, -time_position );
+//            temp->tween<IOCubic, Green>(col.g()>>2, col.g(), time, -1, 0, -time_position );
 //        if( col.b() > 0 )
-//            temp->tween<IOCubic, Blue>( col.b()>>2, col.b(), time, true, 0, -time_position );
+//            temp->tween<IOCubic, Blue>( col.b()>>2, col.b(), time, -1, 0, -time_position );
 
         deco_cubes_.push_back( temp );
     }
@@ -209,8 +209,8 @@ MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> f = (BLL::var(animating_) = false);
-    sprite->tween<OCirc, Pos2D>(vec2(320, 200), 2000, false, f );
-    sprite->tweenAll<Linear, Alpha>(255, 1000, false);
+    sprite->tween<OCirc, Pos2D>(vec2(320, 200), 2000, 0, f );
+    sprite->tweenAll<Linear, Alpha>(255, 1000);
     sprite->set<Visible>(true);
     return *this;
 }
@@ -219,8 +219,8 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    sprite->tween<ICirc, Pos2D>(vec2(-200, 200), 2000, false, endcall);
-    sprite->tweenAll<Linear, Alpha>(0, 1000, false);
+    sprite->tween<ICirc, Pos2D>(vec2(-200, 200), 2000, 0, endcall);
+    sprite->tweenAll<Linear, Alpha>(0, 1000);
     return *this;
 }
 

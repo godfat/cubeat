@@ -2,7 +2,7 @@
 #ifndef _SHOOTING_CUBES_MENU_VIEW_
 #define _SHOOTING_CUBES_MENU_VIEW_
 
-#include "CustomAnimator.hpp"
+#include "view/detail/CustomAnimator.hpp"
 #include "view/Sprite.hpp"
 #include "data/Color.hpp"
 #include "utils/ObjectPool.hpp"
@@ -68,7 +68,7 @@ public:
     Menu& tweenAll(typename Accessor::value_type const& start,
                    typename Accessor::value_type const& end,
                    int                           const& duration,
-                   bool                          const& loop = true,
+                   int                           const& loop = 0,
                    std::tr1::function<void()>    const& cb = 0,
                    int                           const& delay = 0)
     {
@@ -83,7 +83,7 @@ public:
     template <template <class> class Eq, class Accessor>
     Menu& tweenAll(typename Accessor::value_type const& end,
                    int                           const& duration,
-                   bool                          const& loop = true,
+                   int                           const& loop = 0,
                    std::tr1::function<void()>    const& cb = 0,
                    int                           const& delay = 0)
     {

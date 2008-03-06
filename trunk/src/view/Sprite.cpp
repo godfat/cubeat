@@ -5,7 +5,6 @@
 #include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
-#include "CustomAnimator.hpp"
 
 #include <sstream>
 
@@ -143,10 +142,10 @@ Sprite& Sprite::moveTo(int x, int y)
     return *this;
 }
 
-Sprite& Sprite::moveTween(int x, int y, int delay_ms, function<void()> cb, int delay)
+Sprite& Sprite::moveTween(int x, int y, int duration, function<void()> cb, int delay)
 {
     vector2df newpos = vector2df(x, y);
-    tween<Linear, Pos2D>(newpos, delay_ms, false, cb, delay);
+    tween<Linear, Pos2D>(newpos, duration, 0, cb, delay);
     return *this;
 }
 

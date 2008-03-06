@@ -49,7 +49,7 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         sprite->moveTween( 540, 0, 4000, bind(&ViewTest1::step2, this, ref(sprite)) );
     }
     void glow(view::pButton& button) {
-        button->tween<SineCirc, Alpha>(0, 300, false);
+        button->tween<SineCirc, Alpha>(0, 300);
     }
     void test(view::pSprite&) {
         std::cout << "test...." << std::endl;
@@ -118,11 +118,11 @@ ViewTest1::ViewTest1()
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube2->moveTo(5,5,50).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
-                             .tween<Linear, Frame>(4801.0f,9600.0f,1500);
+                             .tween<Linear, Frame>(4801.0f,9600.0f,1500, -1);
 
     testcube3 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube3->moveTo(-5,-5,60).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
-                               .tween<Linear, Frame>(0.0f,9600.0f,3000);
+                               .tween<Linear, Frame>(0.0f,9600.0f,3000, -1);
 
     something = view::Button::create("title", guiv, 100, 40);
     something->moveTo(100,100).set<GradientDiffuse>(200);
@@ -134,10 +134,10 @@ ViewTest1::ViewTest1()
 
     girl = view::AnimatedSprite::create("test", guiv, 128, 192);
     girl->addAnime("stand",3).addAnime("hit",5).moveTo(400,300);
-    girl->playAnime("stand", 1000, true);
+    girl->playAnime("stand", 1000, -1);
 
     a = view::AnimatedSprite::create( "test", guiv, 128, 192);
-    a->addAnime("hit",5).playAnime("hit",876,true).moveTo(150,350);
+    a->addAnime("hit",5).playAnime("hit",876,-1).moveTo(150,350);
 
     //test menu
     menu = view::Menu::create("title", guiv, 100, 40);

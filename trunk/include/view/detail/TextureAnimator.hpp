@@ -23,8 +23,9 @@ class TextureAnimator : public CustomAnimator<Eq, Accessor<s32> >
     typedef typename TextureAnimatorBase::T    Primitive;
 
 public:
-    TextureAnimator(ISceneManager* smgr, Animation2D const& anime, u32 duration, bool loop = true,
-                    std::tr1::function<void()> cb = 0, s32 delayTime = 0)
+    TextureAnimator(ISceneManager* smgr, Animation2D const& anime, u32 duration,
+                    int const& loop = 0, std::tr1::function<void()> cb = 0,
+                    s32 delayTime = 0)
         :TextureAnimatorBase(smgr, 0, static_cast<int>(anime.size()), duration, loop, cb, delayTime),
          animation_(anime)
     {
@@ -42,23 +43,26 @@ public:
         u32 t = ( timeMs - this->startTime_ );
         Primitive pos = this->start_;
 
-        f32 dur = static_cast<f32>( this->duration_ );
-        if ( !this->loop_ && t >= this->duration_ ) {
-            pos = Eq<Primitive>::calculate(dur, pos, this->distance_, dur, node);
-            if( pos >= static_cast<s32>( animation_.size() ) )
-                pos = static_cast<s32>( animation_.size() ) - 1; //size bound safe guard
+        f32 dur  = static_cast<f32>( this->duration_ );
+        f32 time = static_cast<f32>( t % this->duration_ );
+        pos = Eq<Primitive>::calculate(time, pos, this->distance_, dur, node);
+        if( pos >= this->end_ )
+            pos = this->end_ - 1; //size bound safe guard
+        node->setMaterialTexture(0, animation_[pos]);
 
-            node->setMaterialTexture(0, animation_[pos]);
-            if( this->cb_ ) this->cb_();
-            this->smgr_->addToAnimatorDeletionQueue(this, node);
-        }
-        else {
-            f32 time = static_cast<f32>( t % this->duration_ );
-            pos = Eq<Primitive>::calculate(time, pos, this->distance_, dur, node);
-            if( pos >= static_cast<s32>( animation_.size() ) )
-                pos = static_cast<s32>( animation_.size() ) - 1; //size bound safe guard
-
-            node->setMaterialTexture(0, animation_[pos]);
+        if( t >= this->duration_ ) {
+            /* we can add periodic callback here.
+            if( this->periodic_cb() ) this->periodic_callback(); */
+            this->startTime_ = timeMs; //or should be += this->duration_ ?
+            if( this->loop_ == 0 ) {
+                pos = Eq<Primitive>::calculate(dur, pos, this->distance_, dur, node);
+                if( pos >= this->end_ )
+                    pos = this->end_ - 1; //size bound safe guard
+                node->setMaterialTexture(0, animation_[pos]);
+                if( this->cb_ ) this->cb_();
+                this->smgr_->addToAnimatorDeletionQueue(this, node);
+            }
+            else if( this->loop_ > 0 ) this->loop_ -= 1;
         }
     }
 

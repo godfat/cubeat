@@ -58,7 +58,7 @@ void OpeningSequence::cycle()
     if( !deletion_scheduled_ && movie_->isEnd() ) {
         std::cout << "OpeningSequence deletion scheduled.\n";
         function<void()> endcall = bind(&OpeningSequence::end, this);
-        movie_->tween<Linear, GradientDiffuse>(0, config.I("fade_period"), false, endcall);
+        movie_->tween<Linear, GradientDiffuse>(0, config.I("fade_period"), 0, endcall);
         deletion_scheduled_ = true;
     }
 }

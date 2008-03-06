@@ -1,8 +1,4 @@
 
-/* Make all constants changable through a outer text file,
-   there will be hundreds of them, so had better be faster ...
-   need to provide a "constant variable interface." */
-
 /* Testcase */
 #include "testcase/ViewTest1.hpp"
 #include <tr1/memory>

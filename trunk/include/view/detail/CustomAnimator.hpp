@@ -22,7 +22,7 @@ public:
 
 	//! constructor
     CustomAnimator(ISceneManager* smgr, T const& start, T const& end, u32 const& duration,
-                   bool const& loop = true, EndCallback const& cb = 0,
+                   int const& loop = 0, EndCallback const& cb = 0,
                    s32 const& delayTime = 0)
         : smgr_(smgr), start_(start), end_(end), length_(0.0f), duration_(duration),
           loop_(loop), cb_(cb)
@@ -45,17 +45,22 @@ public:
 	    u32 t = timeMs - startTime_;
 	    T pos = start_;
 
-        f32 dur = static_cast<f32>( duration_ );
-        if ( !loop_ && t >= duration_ ) {
-            pos = Eq<T>::calculate(dur, pos, distance_, dur, node);
-            Accessor::set(node, pos);
-            if( cb_ ) cb_();
-            smgr_->addToAnimatorDeletionQueue(this, node);
-        }
-        else {
-            f32 time = static_cast<f32>( t % duration_ );
-            pos = Eq<T>::calculate(time, pos, distance_, dur, node);
-            Accessor::set(node, pos);
+        f32 dur  = static_cast<f32>( duration_ );
+        f32 time = static_cast<f32>( t % duration_ );
+        pos = Eq<T>::calculate(time, pos, distance_, dur, node);
+        Accessor::set(node, pos);
+
+        if( t >= duration_ ) {
+            /* we can add periodic callback here.
+            if( periodic_cb ) periodic_callback(); */
+            startTime_ = timeMs; //or should be += duration_ ?
+            if( loop_ == 0 ) {
+                pos = Eq<T>::calculate(dur, pos, distance_, dur, node);
+                Accessor::set(node, pos);
+                if( cb_ ) cb_();
+                smgr_->addToAnimatorDeletionQueue(this, node);
+            }
+            else if( loop_ > 0 ) loop_ -= 1;
         }
     }
 
@@ -100,7 +105,7 @@ protected:
   //f32 timeFactor_;
 	s32 startTime_;
 	u32 duration_;
-	bool loop_;
+	int loop_;
 
     EndCallback cb_;
 };

@@ -9,7 +9,7 @@ using namespace psc;
 using namespace model;
 using namespace state;
 
-pState <% debug_hook 'Exploding::cycle' do %>(){
+void <% debug_hook 'Exploding::cycle' do %>(){
 <% end %>
 	if( exploding_step_ < map()->ms()->cube_dying_time() ){
 		if( !explosion_started_ ){
@@ -21,10 +21,10 @@ pState <% debug_hook 'Exploding::cycle' do %>(){
 		}
 
 		++exploding_step_;
-		return shared_from_this();
+		// return shared_from_this();
 	}
 	else{
 		owner()->explosion_cleanup();
-		return pState(); // really dead
+		// return pState(); // really dead
 	}
 }

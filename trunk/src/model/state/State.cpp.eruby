@@ -1,10 +1,20 @@
 
 #include "model/state/State.hpp"
 #include "model/Cube.hpp"
+<%= debug_include %>
 
 using namespace psc;
 using namespace model;
 using namespace state;
 
-pMap State::map(){ return owner()->map(); }
-pMap const State::map() const{ return owner()->map(); }
+pMap <% debug_hook 'State::map' do %>(){ <%end%> return owner()->map(); }
+pMap const <% debug_hook 'State::map() const' do %>{ <%end%> return owner()->map(); }
+
+void <% debug_hook 'State::next_state' do %>(){
+<% end %>
+    pState result = map()->next_state(owner());
+    if(result) switch_state(result);
+    else init();
+}
+
+void <% debug_hook 'State::switch_state' do %>(pState state){ <% end %> owner()->state_ = state; }

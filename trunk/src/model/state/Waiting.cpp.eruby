@@ -7,17 +7,14 @@ using namespace psc;
 using namespace model;
 using namespace state;
 
-pState <% debug_hook 'Waiting::cycle' do %>(){
+void <% debug_hook 'Waiting::cycle' do %>(){
 <% end %>
     ++delay_;
-	if( !need_check_chain_property() )
-	    ++owner()->lose_chain_delay();
-
-    pState result = map()->next_state(owner());
-
-    if(result.use_count() == 0) return shared_from_this();
-    else                        return result;
+	if( !need_check_chain_property() ) ++owner()->lose_chain_delay();
+    if(pState result = map()->next_state(owner()))
+        switch_state(result);
 }
+
 bool <% debug_hook 'Waiting::need_check' do %>() const{
 <% end %>
     return not_checked_ && delay_ >= map()->ms()->grounded_check_delay();

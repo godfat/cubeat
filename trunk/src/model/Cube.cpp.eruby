@@ -21,18 +21,20 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
     if( cycled_ )
         return false; // i am alive though killed, think of DYING NOW
 
-    state::pState next_state = state_->cycle();
-    if(next_state){
-        if(next_state != state_){
-            // state_->suicide();
-            state_ = next_state;
-        }
-        return false; // i am alive
-    }
-    else{
-        // this->suicide();
-        return true; // i am dead
-    }
+    // state::pState next_state = state_->cycle();
+    if(state_) state_->cycle();
+    return is_dead();
+    // if(next_state){
+    //     if(next_state != state_){
+    //         // state_->suicide();
+    //         state_ = next_state;
+    //     }
+    //     return false; // i am alive
+    // }
+    // else{
+    //     // this->suicide();
+    //     return true; // i am dead
+    // }
 }
 
 void <% debug_hook 'Cube::be_garbage' do %>(){

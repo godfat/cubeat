@@ -19,7 +19,7 @@ public:
 public:
     Exploding(wpCube owner): State(owner), explosion_started_(false), exploding_step_(0){}
     virtual <% debug_hook '~Exploding' do %>(){<%end%>}
-    virtual pState cycle();
+    virtual void cycle();
 
 private:
 	bool explosion_started_;

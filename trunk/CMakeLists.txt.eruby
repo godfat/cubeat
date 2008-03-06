@@ -1,6 +1,6 @@
 
 # misc option
-SET (CMAKE_VERBOSE_MAKEFILE on)
+# SET (CMAKE_VERBOSE_MAKEFILE on)
 
 PROJECT (shooting-cubes)
 

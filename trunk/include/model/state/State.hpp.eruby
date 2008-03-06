@@ -9,14 +9,18 @@ namespace psc{ namespace model{ namespace state{
 class State: public std::tr1::enable_shared_from_this<State>{
 public:
     State(wpCube owner): owner_(owner){}
-
 	virtual ~State(){}
-    virtual pState cycle() = 0;
+
+    virtual void cycle(){}
+    virtual void next_state();
 
 protected:
+    virtual pState init(){return shared_from_this();}
+
     pMap map();
     pMap const map() const;
     pCube const owner() const{ return owner_.lock(); }
+    void switch_state(pState state);
 
 private:
     wpCube owner_;

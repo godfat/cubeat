@@ -35,7 +35,10 @@ public:
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
-        cubes_(boost::extents[setting->width()][setting->height()])
+        cubes_(boost::extents[setting->width()][setting->height()]),
+        n_of_newcomers_(0), garbage_left_(0), score_(0),
+        garbage_switch_(false), lose_warning_step_(0),
+        counting_num_(0), warning_check_step_(0)
     {}
     Map& init_cubes();
     <% debug_hook '~Map' do %>(){<%end%>}

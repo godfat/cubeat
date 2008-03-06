@@ -21,7 +21,7 @@ public:
     {}
 
     virtual <% debug_hook '~Waiting' do %>(){<%end%>}
-    virtual pState cycle();
+    virtual void cycle();
 
     // begin only used by Map::next_state
 	void checked(){ not_checked_ = false; }

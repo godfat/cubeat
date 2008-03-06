@@ -6,11 +6,13 @@
 #include "presenter/Map.hpp"
 #include "EventDispatcher.hpp"
 #include "IrrDevice.hpp"
-#include <cstdio>
 
+#include <cstdio>
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
+
 #include <tr1/memory>
+#include <tr1/functional>
 #include <iostream>
 
 using namespace psc;
@@ -43,22 +45,25 @@ int main(){
     map->cycle();
     std::cerr << "\n\n\nend cycle\n\n\n";
     display(map);
-    for(int i=0; i<25; ++i)
-        map->cycle();
-    display(map);
-    
-    for(int i=0; i<25; ++i)
-        map->cycle();
-    display(map);
-    
-    for(int i=0; i<25; ++i)
-        map->cycle();
-    display(map);
+    // for(int i=0; i<25; ++i)
+    //     map->cycle();
+    // display(map);
+    // 
+    // for(int i=0; i<25; ++i)
+    //     map->cycle();
+    // display(map);
+    // 
+    // for(int i=0; i<25; ++i)
+    //     map->cycle();
+    // display(map);
 
     IrrDevice::i().init(true);
-    psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, -1);
-    psc::ctrl::EventDispatcher::i().subscribe_timer(echo2, 500, -1);
+    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, -1);
+    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo2, 500, -1);
+    psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&display, std::tr1::ref(map)), 500, -1);
+    psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&std::exit, 0), 10000);
     while(IrrDevice::i().d()->run()){
+        map->cycle();
 #ifdef WIN32
         Sleep(10);
 #else

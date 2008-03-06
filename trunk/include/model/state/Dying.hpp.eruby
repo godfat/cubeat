@@ -3,6 +3,9 @@
 
 #include "model/state/State.hpp"
 #include "utils/ObjectPool.hpp"
+#include "EventDispatcher.hpp"
+
+#include <tr1/functional>
 
 <%= debug_include %>
 
@@ -13,12 +16,22 @@ public:
     typedef pDying pointer_type;
 
 public:
-    static pState create(wpCube owner){ return utils::ObjectPool<Dying>::create(owner); }
+    static pState create(wpCube owner){
+        return utils::ObjectPool<Dying>::create(owner)->init();
+    }
 
 public:
     Dying(wpCube owner): State(owner), dying_step_(0){}
     virtual <% debug_hook '~Dying' do %>(){<%end%>}
-    virtual pState cycle();
+    virtual void next_state();
+
+protected:
+    virtual pState init(){ // covariant return type... invalid for shared_ptr?
+        pDying result = std::tr1::static_pointer_cast<Dying>(shared_from_this());
+        ctrl::EventDispatcher::i().subscribe_timer(
+            std::tr1::bind(&Dying::next_state, result), result, 100);
+        return result;
+    }
 
 private:
 	int dying_step_;

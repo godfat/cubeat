@@ -21,6 +21,7 @@
 namespace psc{ namespace model{
 
 class Cube: public std::tr1::enable_shared_from_this<Cube>{
+    friend class state::State;
 public:
     typedef pCube pointer_type;
 
@@ -120,6 +121,7 @@ private:
         state_ = state::Waiting::create(self);
         return self;
     }
+    bool is_dead() const{ return state_.use_count() == 0; }
 
 private:
 <%= accessor :int, :x, :y %>

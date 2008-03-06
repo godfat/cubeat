@@ -55,7 +55,7 @@ public:
             if( periodic_cb ) periodic_callback(); */
             startTime_ = timeMs; //or should be += duration_ ?
             if( loop_ == 0 ) {
-                pos = Eq<T>::calculate(dur, pos, distance_, dur, node);
+                pos = Eq<T>::calculate(1, start_, distance_, 1, node);
                 Accessor::set(node, pos);
                 if( cb_ ) cb_();
                 smgr_->addToAnimatorDeletionQueue(this, node);

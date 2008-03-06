@@ -55,7 +55,7 @@ public:
             if( this->periodic_cb() ) this->periodic_callback(); */
             this->startTime_ = timeMs; //or should be += this->duration_ ?
             if( this->loop_ == 0 ) {
-                pos = Eq<Primitive>::calculate(dur, pos, this->distance_, dur, node);
+                pos = Eq<Primitive>::calculate(1, this->start_, this->distance_, 1, node);
                 if( pos >= this->end_ )
                     pos = this->end_ - 1; //size bound safe guard
                 node->setMaterialTexture(0, animation_[pos]);

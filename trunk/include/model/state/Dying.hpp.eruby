@@ -29,7 +29,7 @@ protected:
     virtual pState init(){ // covariant return type... invalid for shared_ptr?
         pDying result = std::tr1::static_pointer_cast<Dying>(shared_from_this());
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&Dying::next_state, result), result, 100);
+            std::tr1::bind(&Dying::next_state, result.get()), result, 100);
         return result;
     }
 

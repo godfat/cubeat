@@ -19,7 +19,7 @@ public:
     static pState create(wpCube owner){
         pDropping result = utils::ObjectPool<Dropping>::create(owner);
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&State::next_state, result), result, 1);
+            std::tr1::bind(&State::next_state, result.get()), result, 1);
         return result->init();
     }
 
@@ -31,7 +31,7 @@ protected:
     virtual pState init(){
         pState result = shared_from_this();
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&State::next_state, result), result, 500);
+            std::tr1::bind(&State::next_state, result.get()), result, 500);
         return result;
     }
 };

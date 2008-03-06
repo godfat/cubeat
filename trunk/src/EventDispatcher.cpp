@@ -27,6 +27,10 @@ using namespace scene;
 using namespace psc;
 using namespace ctrl;
 
+void free_func_do_nothing_deleter(void*){ std::cerr << "EventDispatcher: deleter: do nothing.\n"; }
+
+EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
+
 EventDispatcher::EventDispatcher()
 {
 }
@@ -44,6 +48,13 @@ EventDispatcher& EventDispatcher::subscribe_timer
     const int zero = 0;
     newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
     return *this;
+}
+
+EventDispatcher& EventDispatcher::subscribe_timer
+    (TimerCallback const& cb, int const& duration, int loop)
+{
+    if(!self_) self_ = pvoid(&EventDispatcher::i(), &free_func_do_nothing_deleter);
+    return subscribe_timer(cb, self_, duration, loop);
 }
 
 EventDispatcher& EventDispatcher::subscribe_obj_event

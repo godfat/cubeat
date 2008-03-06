@@ -1,4 +1,6 @@
 
+
+#define NDEBUG
 // compile me by:
 // g++ -I /opt/local/include/ -I include/ -I lib/ -DBOOST_HAS_GCC_TR1 -D _SHOOTING_CUBES_TEST_ src/test/test_map_and_cubes.cpp src/model/Map.cpp src/model/Cube.cpp src/presenter/Cube.cpp src/presenter/Map.cpp -W -Wall -std=c++98 -o test
 
@@ -27,6 +29,10 @@ void echo(){
     std::cout << "XD" << std::endl;
 }
 
+void echo2(){
+    std::cout << "Orz...." << std::endl;
+}
+
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
 
@@ -48,10 +54,15 @@ int main(){
         map->cycle();
     display(map);
 
-    // IrrDevice::i().init(true);
-    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, true);
-    // while(true){
-    //     usleep(10000);
-    //     psc::ctrl::EventDispatcher::i().dispatch();
-    // }
+    IrrDevice::i().init(true);
+    psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, -1);
+    psc::ctrl::EventDispatcher::i().subscribe_timer(echo2, 500, -1);
+    while(IrrDevice::i().d()->run()){
+#ifdef WIN32
+        Sleep(10);
+#elif
+        usleep(10000);
+#endif
+        psc::ctrl::EventDispatcher::i().dispatch();
+    }
 }

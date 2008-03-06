@@ -26,7 +26,9 @@ namespace ctrl {
 
 class EventDispatcher
 {
+    typedef std::tr1::shared_ptr<void>                                     pvoid;
     typedef std::tr1::weak_ptr<void>                                       wpvoid;
+
     typedef std::tr1::function<void(int x, int y)>                         BtnCallback;
     typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE, wpvoid>    BtnEvent;
     typedef std::list<BtnEvent>                                            BtnListener;
@@ -57,6 +59,8 @@ public:
     EventDispatcher&
     subscribe_timer(TimerCallback const&, wpvoid const&, int const&, int loop = 0);
     EventDispatcher&
+    subscribe_timer(TimerCallback const&, int const&, int loop = 0);
+    EventDispatcher&
     subscribe_obj_event(ObjCallback const&, view::pSprite const&, Button const*);
 
     void dispatch();
@@ -81,6 +85,8 @@ private:
     SceneListener        scene_listeners_;
     ObjEventRemoval      obj_events_to_be_deleted_;
     SceneListenerRemoval scene_expired_;
+
+    static pvoid self_; //point to &EventDispatcher::i()
 };
 
 }  //ctrl

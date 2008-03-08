@@ -2,26 +2,31 @@
 #ifndef _SHOOTING_CUBES_ACCESSOR_PROTO_
 #define _SHOOTING_CUBES_ACCESSOR_PROTO_
 
+#include "ESceneNodeAnimatorTypes.h"
+
 namespace irr{
-
-namespace core{
-template<class T>
-class vector3d;
-typedef vector3d<float> vector3df;
-}
-
 namespace scene{
 class ISceneNode;
-}
-}
+} //scene
+} //irr
 
-template <class T>
+namespace psc{
+namespace accessor{
+
+struct AT{
+    enum{POS3D = irr::scene::ESNAT_UNKNOWN+1,
+         POS2D, ROTATION, SCALE, COLOR_DIFFUSE, GRADIENT_DIFFUSE, GRADIENT_EMISSIVE,
+         R, G, B, A, RE, GE, BE, AE, FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
+};
+
+template <class T, int U = AT::UNKNOWN>
 struct Accessor {
     typedef T value_type;
+    enum { TYPE = U };
     static void set(irr::scene::ISceneNode* node, value_type const& val ){}
     static void get(irr::scene::ISceneNode const* node, value_type& out){}
-    static inline void scaleWrap(irr::scene::ISceneNode const* node, irr::core::vector3df& out);
-    static inline void scaleUnwrap(irr::scene::ISceneNode* node, irr::core::vector3df& out);
 };
+} //accessor
+} //psc
 
 #endif

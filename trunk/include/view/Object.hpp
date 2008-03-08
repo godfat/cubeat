@@ -6,6 +6,7 @@
    will be implemented when needed. */
 
 #include "view/detail/CustomAnimator.hpp"
+#include "view/detail/WaypointAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"

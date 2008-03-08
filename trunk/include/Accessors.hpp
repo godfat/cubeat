@@ -8,7 +8,7 @@
 namespace psc {
 namespace accessor {
 
-    struct Pos3D : Accessor<vec3>{
+    struct Pos3D : Accessor<vec3, AT::POS3D>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setPosition(val);
         }
@@ -17,7 +17,7 @@ namespace accessor {
         }
     };
 
-    struct Pos2D : Accessor<vec2>{
+    struct Pos2D : Accessor<vec2, AT::POS2D>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             vec3 pos(val.X, -val.Y, node->getPosition().Z);
             node->setPosition( pos );
@@ -29,7 +29,7 @@ namespace accessor {
         }
     };
 
-    struct Rotation : Accessor<vec3>{
+    struct Rotation : Accessor<vec3, AT::ROTATION>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setRotation(val);
         }
@@ -38,7 +38,7 @@ namespace accessor {
         }
     };
 
-    struct Scale : Accessor<vec3>{
+    struct Scale : Accessor<vec3, AT::SCALE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setScale(val);
         }
@@ -47,7 +47,7 @@ namespace accessor {
         }
     };
 
-    struct ColorDiffuse : Accessor<int>{
+    struct ColorDiffuse : Accessor<int, AT::COLOR_DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.set( val );
@@ -57,7 +57,7 @@ namespace accessor {
         }
     };
 
-    struct GradientDiffuse : Accessor<int>{
+    struct GradientDiffuse : Accessor<int, AT::GRADIENT_DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() ) {
                 node->getMaterial(0).DiffuseColor.setRed(val%256);
@@ -71,7 +71,7 @@ namespace accessor {
         }
     };
 
-    struct GradientEmissive : Accessor<int>{
+    struct GradientEmissive : Accessor<int, AT::GRADIENT_EMISSIVE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() ) {
                 node->getMaterial(0).EmissiveColor.setRed(val%256);
@@ -85,7 +85,7 @@ namespace accessor {
         }
     };
 
-    struct Red : Accessor<int>{
+    struct Red : Accessor<int, AT::R>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setRed(val);
@@ -96,7 +96,7 @@ namespace accessor {
         }
     };
 
-    struct Green : Accessor<int>{
+    struct Green : Accessor<int, AT::G>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setGreen(val);
@@ -107,7 +107,7 @@ namespace accessor {
         }
     };
 
-    struct Blue : Accessor<int>{
+    struct Blue : Accessor<int, AT::B>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setBlue(val);
@@ -118,7 +118,7 @@ namespace accessor {
         }
     };
 
-    struct Alpha : Accessor<int>{
+    struct Alpha : Accessor<int, AT::A>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.setAlpha(val);
@@ -129,7 +129,7 @@ namespace accessor {
         }
     };
 
-    struct Frame : Accessor<float>{
+    struct Frame : Accessor<float, AT::FRAME>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getType() == irr::scene::ESNT_ANIMATED_MESH )
                 static_cast<irr::scene::IAnimatedMeshSceneNode*>(node)->setCurrentFrame( val );
@@ -140,7 +140,7 @@ namespace accessor {
         }
     };
 
-    struct Visible : Accessor<bool>{
+    struct Visible : Accessor<bool, AT::VISIBLE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setVisible(val);
         }
@@ -149,7 +149,7 @@ namespace accessor {
         }
     };
 
-    struct GroupID : Accessor<int>{
+    struct GroupID : Accessor<int, AT::ID>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setID(val);
         }
@@ -158,7 +158,7 @@ namespace accessor {
         }
     };
 
-    struct Size2D : Accessor<vec2>{
+    struct Size2D : Accessor<vec2, AT::SIZE2D>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getType() == irr::scene::ESNT_BILLBOARD )
                 static_cast<irr::scene::IBillboardSceneNode*>(node)->setSize(

@@ -14,6 +14,7 @@
 
 #include "model/Cube.hpp"
 #include "presenter/Map.hpp"
+#include "presenter/detail/DummyView.hpp"
 
 #include "all_fwd.hpp"
 #include "utils/ObjectPool.hpp"
@@ -24,17 +25,19 @@
 
 namespace psc{ namespace presenter{
 
-class Cube{
+template <class ViewImp = detail::DummyView>
+class TCube{
 public:
-    typedef std::tr1::shared_ptr<Cube> pointer_type;
+    typedef TCube<ViewImp> this_type;
+    typedef std::tr1::shared_ptr<this_type> pointer_type;
 
 public:
-    pCube static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
+    pointer_type static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
+        return utils::ObjectPool<this_type>::create(map, x, y, color_id);
     }
 public:
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
-    <% debug_hook '~Cube' do %>(){<%end%>}
+    TCube(wpMap map, int x = 0, int y = 0, int color_id = 0);
+    <% debug_hook '~TCube' do %>(){<%end%>}
 
     int x() const;
     int y() const;
@@ -42,8 +45,13 @@ public:
 private:
     wpMap map_;
 <%= reader 'model::pCube', :model %>
-<%= reader 'view::pCube', :view %>
 };
+
+template <class T>
+<% debug_hook 'TCube<T>::TCube' do %>(wpMap map, int x, int y, int color_id):
+    map_(map),
+    model_(model::Cube::create(map.lock()->model(), x, y, color_id))
+{<%end%>}
 
 }}
 

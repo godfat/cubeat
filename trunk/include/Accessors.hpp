@@ -8,7 +8,7 @@
 namespace psc {
 namespace accessor {
 
-    struct Pos3D : Accessor<vec3, AT::POS3D>{
+    struct Pos3D : Accessor<vec3, AT::POSITION>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             node->setPosition(val);
         }
@@ -17,7 +17,7 @@ namespace accessor {
         }
     };
 
-    struct Pos2D : Accessor<vec2, AT::POS2D>{
+    struct Pos2D : Accessor<vec2, AT::POSITION>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             vec3 pos(val.X, -val.Y, node->getPosition().Z);
             node->setPosition( pos );
@@ -47,17 +47,35 @@ namespace accessor {
         }
     };
 
-    struct ColorDiffuse : Accessor<int, AT::COLOR_DIFFUSE>{
+    struct ColorDiffuse : Accessor<unsigned int, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() )
                 node->getMaterial(0).DiffuseColor.set( val );
         }
         static void get(irr::scene::ISceneNode* node, value_type& out ) {
-            return; //currently not used, and is not quite useful, hence no impl.
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.color;
         }
     };
 
-    struct GradientDiffuse : Accessor<int, AT::GRADIENT_DIFFUSE>{
+    struct ColorDiffuseVec3 : Accessor<vec3, AT::DIFFUSE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() ) {
+                node->getMaterial(0).DiffuseColor.setRed(static_cast<int>(val.X)%256);
+                node->getMaterial(0).DiffuseColor.setGreen(static_cast<int>(val.Y)%256);
+                node->getMaterial(0).DiffuseColor.setBlue(static_cast<int>(val.Z)%256);
+            }
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out ) {
+            if( node->getMaterialCount() ) {
+                out.X = static_cast<float>(node->getMaterial(0).DiffuseColor.getRed());
+                out.Y = static_cast<float>(node->getMaterial(0).DiffuseColor.getGreen());
+                out.Z = static_cast<float>(node->getMaterial(0).DiffuseColor.getBlue());
+            }
+        }
+    };
+
+    struct GradientDiffuse : Accessor<int, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() ) {
                 node->getMaterial(0).DiffuseColor.setRed(val%256);
@@ -71,7 +89,7 @@ namespace accessor {
         }
     };
 
-    struct GradientEmissive : Accessor<int, AT::GRADIENT_EMISSIVE>{
+    struct GradientEmissive : Accessor<int, AT::EMISSIVE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() ) {
                 node->getMaterial(0).EmissiveColor.setRed(val%256);

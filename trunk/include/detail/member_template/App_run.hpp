@@ -25,10 +25,11 @@ int App::run(Tester tester)
     int lastFPS = -1;
 
     while( IrrDevice::i().run() ) {
-        if( IrrDevice::i().d()->isWindowActive() /*&& !update_block()*/ )
+        if( IrrDevice::i().d()->isWindowActive() )
         {
             if( IrrDevice::i().d()->getTimer()->isStopped() )
                 IrrDevice::i().d()->getTimer()->start();
+            //if( update_block() ) continue;
             Input::update_all();
             EventDispatcher::i().dispatch();
 

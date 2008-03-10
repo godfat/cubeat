@@ -51,7 +51,6 @@ ITexture* TTFont::getTextureFromText(const wchar_t* text, const c8* name)
                     ++pixel_i;
                 }
             }
-            Glyphs[n].tex->unlock();
         }
         offset.X += getWidthFromCharacter(*text) + GlobalKerningWidth;
         ++text;

@@ -31,9 +31,10 @@ public:
         :WaypointAnimatorBase(smgr, 0, 0, duration, loop, cb, delayTime),
          waypoints_(points), now_waypoint_index_(waypoints_.size()/2)
     {
-        if( points.size() < 2 )
+        if( points.size() < 2 ) {
             std::cout << "WaypointAnimator: no point to go! (you at least need 2 points!)\n";
-
+            return;
+        }
         calculateDistances();
     }
 
@@ -42,7 +43,10 @@ public:
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
         if ( !node ) return;
         if ( static_cast<s32>(timeMs) < this->startTime_ ) return;
-        if ( waypoints_.size() < 2 ) return;
+        if ( waypoints_.size() < 2 ) {
+            this->smgr_->addToAnimatorDeletionQueue(this, node);
+            return;
+        }
 
         if( timeMs - this->startTime_ >= this->duration_ ) {
             /* we can add periodic callback here.
@@ -92,25 +96,32 @@ protected:
         if( pos <= this->start_ )    now_waypoint_index_ = 0;
         else if( pos >= this->end_ ) now_waypoint_index_ = waypoints_.size() - 2;
         else {
-            while( pos > range_list_[now_waypoint_index_ + 1] ||
-                   pos <= range_list_[now_waypoint_index_] ) {
-                if( pos > range_list_[now_waypoint_index_ + 1] ) {
-                    lowerb = now_waypoint_index_;
-                    now_waypoint_index_ = (upperb + lowerb)/2;
-                }
-                else if( pos <= range_list_[now_waypoint_index_] ) {
-                    upperb = now_waypoint_index_;
-                    now_waypoint_index_ = (upperb + lowerb)/2;
-                }
+            bool too_small = pos >  range_list_[now_waypoint_index_ + 1],
+                 too_big   = pos <= range_list_[now_waypoint_index_];
+            if( too_small ) {
+                ++now_waypoint_index_;
+                lowerb = now_waypoint_index_;
+                too_small = pos >  range_list_[now_waypoint_index_ + 1];
+            }
+            else if( too_big ) {
+                --now_waypoint_index_;
+                upperb = now_waypoint_index_;
+                too_big   = pos <= range_list_[now_waypoint_index_];
+            }
+            while( too_small || too_big ) {
+                if( too_small )    lowerb = now_waypoint_index_;
+                else if( too_big ) upperb = now_waypoint_index_;
+                now_waypoint_index_ = (upperb + lowerb)/2;
+                if( lowerb == upperb ) break;
+                too_small = pos >  range_list_[now_waypoint_index_ + 1];
+                too_big   = pos <= range_list_[now_waypoint_index_];
             }
         }
         float const& temp           = pos - range_list_[now_waypoint_index_];
         float const& dist_to_next   = range_list_[now_waypoint_index_+1] - range_list_[now_waypoint_index_];
         WaypointType const& start   = waypoints_[now_waypoint_index_];
         WaypointType const& waytogo = waypoints_[now_waypoint_index_+1] - start;
-        WaypointType const& realpos =
-            psc::easing::Linear< WaypointType >::calculate(temp, start, waytogo, dist_to_next, node);
-        Acc::set(node, realpos);
+        Acc::set(node, waytogo*temp/dist_to_next + start);
     }
 
 protected:

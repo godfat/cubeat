@@ -27,6 +27,7 @@ using namespace easing;
 
 using std::tr1::bind;
 using std::tr1::ref;
+using std::tr1::cref;
 using std::tr1::function;
 using namespace std::tr1::placeholders;
 
@@ -61,7 +62,7 @@ pMainMenu MainMenu::init()
 
     temp->addSpriteText("text", text.S("text"), text.S("font"), click1_1, m_text_size, true)
          .getSprite("text").set<Pos2D>( vec2( 0, height ) )
-         .tween<SineCirc, Alpha>(0, text.I("glow_period"), -1);
+         .tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1);
 
     ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
 
@@ -75,10 +76,10 @@ void MainMenu::initDecorator()
     int const w = Conf::i().SCREEN_W;
     int const h = Conf::i().SCREEN_H;
     int const size = w * deco.F("size_factor");
-    int const num_w = (w/size)*1.5;
-    int const num_h = (h/size)*1.5 + 1;
+    int const num_w = (w/size)*2;
+    int const num_h = (h/size)*2 + 3;
     int const outgoing = size * 1.41f;
-    int const contract = size / 3;
+    int const contract = size / 4;
 
     vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
     vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
@@ -100,17 +101,37 @@ void MainMenu::initDecorator()
         paths.push_back( deco.S("path") + name +
             std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
     }
+    std::vector<vec3> waypoints;
+    waypoints.push_back( vec3(w-contract, -(contract), 100) );
+    waypoints.push_back( vec3(w-contract, -(h-contract), 0) );
+    waypoints.push_back( vec3(contract, -(h-contract), -100) );
+    waypoints.push_back( vec3(contract, outgoing, -200) );
 
-    function<void()> step4 =
-        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
-    function<void()> step3 =
-        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
-    function<void()> step2 =
-        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
-    function<void()> step1 =
-        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
+    int capacity = (num_w + num_h - 6)*2;
+    for(int i=0; i < capacity; ++i ) {
+        int rand_size = size * (utils::random(33)/100.0f + 1);
+        view::Object::WAYTYPE wt = view::Object::START;
+        view::pSprite temp = view::Sprite::create(
+            paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
 
-    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
+        temp->moveTo(contract, contract).setDepth(200)
+             .tween<Linear, Pos3D>(waypoints, 20000, wt, -1, 0, -(float)i/capacity*20000)
+             .tween<Linear, Rotation>(vec3(0, 0, 360), utils::random(2000)+3000, -1, 0);
+
+        deco_cubes_.push_back( temp );
+    }
+
+//    function<void()> const& step4 =
+//        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
+//    function<void()> const& step3 =
+//        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
+//    function<void()> const& step2 =
+//        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
+//    function<void()> const& step1 =
+//        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
+//
+//    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
+    App::i().setLoading(100);
 }
 
 //helper
@@ -154,7 +175,6 @@ void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
 
     int const length = (dest - from).getLength();
     int const gap = length / num;
-    base_size *= ( 1 + (size_random/100.0f) );
 
     for(int i=0, range=0; i < num; ++i, range += gap)
     {
@@ -208,7 +228,7 @@ void MainMenu::menu2_1_click(view::pSprite& sprite)
 MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
-    boost::function<void()> f = (BLL::var(animating_) = false);
+    boost::function<void()> const& f = (BLL::var(animating_) = false);
     sprite->tween<OCirc, Pos2D>(vec2(320, 200), 2000, 0, f );
     sprite->tweenAll<Linear, Alpha>(255, 1000);
     sprite->set<Visible>(true);
@@ -218,7 +238,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
 MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
-    function<void()> endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
+    function<void()> const& endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
     sprite->tween<ICirc, Pos2D>(vec2(-200, 200), 2000, 0, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 1000);
     return *this;

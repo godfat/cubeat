@@ -108,7 +108,7 @@ void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
     while( x < w ){x*=2;} float tex_coord_ratio_x = w / x;
     while( y < h ){y*=2;} float tex_coord_ratio_y = h / y;
 
-    S3DVertex* ptr = (S3DVertex*)thismesh_->getMeshBuffer(0)->getVertices();
+    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
     ptr[0].TCoords.Y = tex_coord_ratio_y;
     ptr[1].TCoords.X = tex_coord_ratio_x; ptr[1].TCoords.Y = tex_coord_ratio_y;
     ptr[3].TCoords.X = tex_coord_ratio_x;

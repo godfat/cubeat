@@ -12,6 +12,7 @@
 #include "all_fwd.hpp"
 #include <tr1/functional>
 #include <string>
+#include <vector>
 
 namespace irr{
 namespace scene{
@@ -57,11 +58,12 @@ public:
     template <template <class> class Eq, class Accessor>
     Object& tween(typename Accessor::value_type const& start,
                   typename Accessor::value_type const& end,
-                  int                           const& duration,
+                  unsigned int                  const& duration,
                   int                           const& loop = 0,
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
+        if( !duration ) return *this;
         irr::scene::ISceneNodeAnimator* anim =
             new irr::scene::CustomAnimator<Eq, Accessor>
                 (smgr_, start, end, duration, loop, cb, delay);
@@ -72,14 +74,43 @@ public:
 
     template <template <class> class Eq, class Accessor>
     Object& tween(typename Accessor::value_type const& end,
-                  int                           const& duration,
+                  unsigned int                  const& duration,
                   int                           const& loop = 0,
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
+        if( !duration ) return *this;
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
         tween<Eq, Accessor>(start, end, duration, loop, cb, delay);
+        return *this;
+    }
+
+    enum WAYTYPE{NONE = 0, START = 1, END = 2};
+
+    template <template <class> class Eq, class Accessor>
+    Object& tween(std::vector
+                  <typename Accessor::value_type> const& waypoints,
+                  unsigned int                    const& duration,
+                  WAYTYPE                         const& wayType = NONE,
+                  int                             const& loop = 0,
+                  std::tr1::function<void()>      const& cb = 0,
+                  int                             const& delay = 0)
+    {
+        if( !duration ) return *this;
+        std::vector<typename Accessor::value_type> internal_waypoints;
+        internal_waypoints.reserve(waypoints.size()+2);
+        typename Accessor::value_type current = typename Accessor::value_type();
+        Accessor::get(body_, current);
+        if( wayType & START ) internal_waypoints.push_back( current );
+        internal_waypoints.insert(internal_waypoints.end(), waypoints.begin(), waypoints.end());
+        if( wayType & END ) internal_waypoints.push_back( current );
+
+        irr::scene::ISceneNodeAnimator* anim =
+            new irr::scene::WaypointAnimator<Eq, Accessor>
+                (smgr_, internal_waypoints, duration, loop, cb, delay);
+        body_->addAnimator( anim );
+        anim->drop();
         return *this;
     }
 

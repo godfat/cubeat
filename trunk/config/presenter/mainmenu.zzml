@@ -20,7 +20,7 @@ decorator:
     color_num: 4,
 
 #size formula of cube decorations on the mainmenu: screen width(pixel) * size_factor
-    size_factor: 0.1,
+    size_factor: 0.133,
     size_random_percent: 33,
     rotation_duration_ms: 3000,
     rotation_random_ms: 2000,

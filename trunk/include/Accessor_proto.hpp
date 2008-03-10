@@ -14,9 +14,9 @@ namespace psc{
 namespace accessor{
 
 struct AT{
-    enum{POS3D = irr::scene::ESNAT_UNKNOWN+1,
-         POS2D, ROTATION, SCALE, COLOR_DIFFUSE, GRADIENT_DIFFUSE, GRADIENT_EMISSIVE,
-         R, G, B, A, RE, GE, BE, AE, FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
+    enum{POSITION = irr::scene::ESNAT_UNKNOWN+1,
+         ROTATION, SCALE, DIFFUSE, EMISSIVE, R, G, B, A, RE, GE, BE, AE,
+         FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
 };
 
 template <class T, int U = AT::UNKNOWN>

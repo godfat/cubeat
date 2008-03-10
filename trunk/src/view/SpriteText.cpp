@@ -48,7 +48,7 @@ SpriteText::init(std::string const& text, std::string const& font_path,
 void SpriteText::createText(std::string const& text, std::string const& font_path, int const& size)
 {
     gui::IGUIEnvironment* gui = IrrDevice::i().d()->getGUIEnvironment();
-    //This is rather stupid. we have multiple SceneManager, but only on GUIEnvironment,
+    //This is rather stupid. we have multiple SceneManager, but only one GUIEnvironment,
     //so smgr_->getGUIEnvironment() is NULL !? ...well, guess I have to live with that.
 
     std::ostringstream oss;

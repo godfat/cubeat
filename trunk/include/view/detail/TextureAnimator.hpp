@@ -32,8 +32,10 @@ public:
         :TextureAnimatorBase(smgr, 0, static_cast<int>(anime.size()), duration, loop, cb, delayTime),
          animation_(anime)
     {
-        if( anime.size() < 1 )
+        if( anime.size() < 1 ) {
             std::cout << "Cannot construct animation with no frame, Error!\n";
+            return;
+        }
     }
 
     virtual ~TextureAnimator(){}
@@ -41,7 +43,10 @@ public:
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
         if ( !node ) return;
         if ( static_cast<s32>(timeMs) < this->startTime_ ) return;
-        if ( animation_.size() < 1 ) return;
+        if ( animation_.size() < 1 ) {
+            this->smgr_->addToAnimatorDeletionQueue(this, node);
+            return;
+        }
 
         if( timeMs - this->startTime_ >= this->duration_ ) {
             /* we can add periodic callback here.

@@ -63,9 +63,10 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
 }
 
 AnimatedSprite&
-AnimatedSprite::playAnime(std::string const& anime_name, int const& duration, int const& loop,
+AnimatedSprite::playAnime(std::string const& anime_name, unsigned int const& duration, int const& loop,
                           std::tr1::function<void()> cb, int const& delayTime)
 {
+    if( !duration ) return *this;
     ISceneNodeAnimator* animator =
         new TextureAnimator<SineCirc>( smgr_, animations_[anime_name], duration, loop, cb, delayTime );
     body_->addAnimator( animator );

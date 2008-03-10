@@ -67,11 +67,12 @@ public:
     template <template <class> class Eq, class Accessor>
     Menu& tweenAll(typename Accessor::value_type const& start,
                    typename Accessor::value_type const& end,
-                   int                           const& duration,
+                   unsigned int                  const& duration,
                    int                           const& loop = 0,
                    std::tr1::function<void()>    const& cb = 0,
                    int                           const& delay = 0)
     {
+        if( !duration ) return *this;
         Object::tween<Eq, Accessor>( start, end, duration, loop, cb, delay );
         BOOST_FOREACH( SpriteListItem& it, sprites_ )
             it.second->tween<Eq, Accessor>( start, end, duration, loop, cb, delay );
@@ -82,11 +83,12 @@ public:
     //Important Note: Use for material-related tweening only
     template <template <class> class Eq, class Accessor>
     Menu& tweenAll(typename Accessor::value_type const& end,
-                   int                           const& duration,
+                   unsigned int                  const& duration,
                    int                           const& loop = 0,
                    std::tr1::function<void()>    const& cb = 0,
                    int                           const& delay = 0)
     {
+        if( !duration ) return *this;
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
         Object::tween<Eq, Accessor>(start, end, duration, loop, cb, delay);

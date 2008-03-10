@@ -1,28 +1,47 @@
 
 <% header_guard do %>
 
-#include "presenter/TCube.hpp"
+// 1. map presenter is created.
+// 2. map model is inited.
+// 3. map view is inited.
+// 
+// 4. cube presenter list is created, passing map presenter to it.
+// 5. cube model is inited, getting map model.
+// 6. map model gets cube model.
+// 
+// 7. cube view is inited, getting map view.
+// 8. map view gets cube view.
+
+#include "all_fwd.hpp"
 #include "utils/ObjectPool.hpp"
 
-#include "presenter/detail/ViewStdout.hpp"
+#include <tr1/memory>
+
+<%= debug_include %>
 
 namespace psc{ namespace presenter{
 
-// select your view
-namespace{ typedef detail::ViewStdout View; }
-
-class Cube: public TCube<View>{
+class Cube{
 public:
-    typedef std::tr1::shared_ptr<Cube> pointer_type;
+    typedef Cube this_type;
+    typedef std::tr1::shared_ptr<this_type> pointer_type;
 
 public:
     pointer_type static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
+        return utils::ObjectPool<this_type>::create(map, x, y, color_id);
     }
-
 public:
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): TCube<View>(map, x, y, color_id){}
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
+    <% debug_hook '~Cube' do %>(){<%end%>}
+
+    int x() const;
+    int y() const;
+
+private:
+    wpMap map_;
+<%= reader 'model::pCube', :model %>
 };
+
 }}
 
 <% end %>

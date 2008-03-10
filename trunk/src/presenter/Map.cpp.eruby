@@ -1,7 +1,6 @@
 
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
-// #include "view/Map.hpp"
 
 #include "presenter/Cube.hpp"
 

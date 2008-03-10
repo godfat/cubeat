@@ -9,5 +9,6 @@
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+    psc::App::i();
     return psc::App::i().run(&std::tr1::bind(&TestMapViews::cycle, &TestMapViews()));
 }

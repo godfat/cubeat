@@ -1,0 +1,28 @@
+
+<% header_guard do %>
+
+#include "presenter/TCube.hpp"
+#include "presenter/Map.hpp"
+#include "model/Cube.hpp"
+
+#include "all_fwd.hpp"
+
+<%= debug_include %>
+
+namespace psc{ namespace presenter{
+
+template <class T>
+int <% debug_hook 'TCube<T>::x' do %>() const{ <%end%> return model()->x(); }
+
+template <class T>
+int <% debug_hook 'TCube<T>::y' do %>() const{ <%end%> return model()->y(); }
+
+template <class T>
+<% debug_hook 'TCube<T>::TCube' do %>(wpMap map, int x, int y, int color_id):
+    map_(map),
+    model_(model::Cube::create(map.lock()->model(), x, y, color_id))
+{<%end%>}
+
+}}
+
+<% end %>

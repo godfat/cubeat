@@ -2,6 +2,7 @@
 #include "model/detail/MapUtils.hpp"
 
 #include "presenter/Map.hpp"
+#include "presenter/Cube.hpp"
 #include "model/Map.hpp"
 #include "model/Cube.hpp"
 #include "model/OneFading.hpp"

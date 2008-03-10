@@ -2,7 +2,7 @@
 
 #include <tr1/memory>
 namespace psc{
-<%= Dir.glob('include/**/*.*').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter} }.map{ |path| path.pathmap('%{^include,}d/%n').ext }.uniq.sort.map{ |file| klass = file.pathmap('%n'); namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
+<%= Dir.glob('include/**/*.*').select{ |file| [/model/, /view/, /presenter/, /data/].find{ |filter| file =~ filter && (not file =~ /T[A-Z][A-z]*\.(c|h)pp(\.eruby)?$/) && (not file =~ /detail/ ) } }.map{ |path| path.pathmap('%{^include,}d/%n').ext }.uniq.sort.map{ |file| klass = file.pathmap('%n'); namespaces = file.pathmap('%d').split('/')[1..-1].map{ |ns| "namespace #{ns}{" }
 "
   #{namespaces.join ' '}
   class #{klass};

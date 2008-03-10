@@ -1,0 +1,28 @@
+
+<% header_guard do %>
+
+#include "presenter/TCube.hpp"
+#include "utils/ObjectPool.hpp"
+
+#include "presenter/detail/ViewStdout.hpp"
+
+namespace psc{ namespace presenter{
+
+// select your view
+namespace{ typedef detail::ViewStdout View; }
+
+class Cube: public TCube<View>{
+public:
+    typedef std::tr1::shared_ptr<Cube> pointer_type;
+
+public:
+    pointer_type static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
+        return utils::ObjectPool<Cube>::create(map, x, y, color_id);
+    }
+
+public:
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): TCube<View>(map, x, y, color_id){}
+};
+}}
+
+<% end %>

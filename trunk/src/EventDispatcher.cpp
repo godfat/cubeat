@@ -128,7 +128,7 @@ void EventDispatcher::dispatch_timer(){
 
     cleanup_timer_and_init_newly_created_timer();
 
-    irr::u32 now = IrrDevice::i().d()->getTimer()->getTime();
+    std::time_t now = IrrDevice::i().d()->getTimer()->getTime();
     for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
         if( get<TCALLEE>(*t).lock() ) {
             if( now - get<LASTTIME>(*t) >= get<DURATION>(*t) ) {

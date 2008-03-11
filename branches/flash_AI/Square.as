@@ -5,7 +5,7 @@ import flash.geom.Transform;
 class Square
 {
 	public function clone(clone_map: Map): Square{
-		var clone_square = new Square(clone_map, x_, y_, color_num);
+		var clone_square = new Square(clone_map, x_, y_, color_num, true);
 		//var depth: Number = map_.next_depth();
         //clone_square.body_ = map_.body.attachMovie("Square", "Square"+clone_square.depth, clone_square.depth, {_x: x*map_.Size, _y: y*map_.Size});
         //clone_square.body_.self = clone_square;
@@ -40,11 +40,10 @@ class Square
 		clone_square.is_garbage_ = this.is_garbage_;
 		clone_square.is_broken_ = this.is_broken_;
 
-        clone_square.debug_tag  = this.body_.createTextField("tag"+clone_square.depth, clone_map.next_depth(), 18, 0, 18, 18);
-		clone_square.debug_tag2 = this.body_.createTextField("_tag"+clone_square.depth, clone_map.next_depth(), 2, 10, 60, 18);
-		clone_square.debug_tag4 = this.body_.createTextField("___tag"+clone_square.depth, clone_map.next_depth(), 2, 20, 60, 18);
-		clone_square.debug_tag5 = this.body_.createTextField("____tag"+clone_square.depth, clone_map.next_depth(), 2, 30, 60, 18);
-		
+        //clone_square.debug_tag  = this.body_.createTextField("tag"+clone_square.depth, clone_map.next_depth(), 18, 0, 18, 18);
+		//clone_square.debug_tag2 = this.body_.createTextField("_tag"+clone_square.depth, clone_map.next_depth(), 2, 10, 60, 18);
+		//clone_square.debug_tag4 = this.body_.createTextField("___tag"+clone_square.depth, clone_map.next_depth(), 2, 20, 60, 18);
+		//clone_square.debug_tag5 = this.body_.createTextField("____tag"+clone_square.depth, clone_map.next_depth(), 2, 30, 60, 18);
 		clone_square.tag_ = this.tag_;
 		
 		return clone_square;
@@ -79,9 +78,8 @@ class Square
         x_ = x;
         y_ = y;
         var depth: Number = map_.next_depth();
-        body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
-        body_.self = this;
-		
+		body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
+		body_.self = this;
 		//changed a lot, but I think Controller shouldn't be made like this.....
        /* body_.onPress = function()
 		{

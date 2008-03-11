@@ -29,7 +29,7 @@ class Map{
 		
 		cloneMapSetting.Damage_Factor = this.Damage_Factor;
 		
-		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+1), 0);
+		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+9), 0);
 		//var clonedata_ = new Array(set_.Height);
 		//for(var i=0; i<set_.Height; ++i) clonedata_[i] = new Array(set_.Width);
 		

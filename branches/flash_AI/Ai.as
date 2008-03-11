@@ -3,6 +3,7 @@ class Ai{
 	public function Ai(game: Game, map: Map){
 		game_ = game;
 		map_ = map;
+		travel_limit = 9;
 		best_amass_point = 0;
 		best_chain_point = 0;
 		best_amass_step_x = -1;
@@ -16,58 +17,13 @@ class Ai{
 		test_shoot_y = -1;
 		trace("Hi,I am Ai!");
 	}
-	public function starter(){
-		trace("travel start");
-	}
+	
 	private function first_shoot(brain_map: Map, sx: Number, sy: Number, ts: Boolean){
 		if(ts == true){
 			trace("test shoot(" + sx + "," + sy + ")");
 			del_block(brain_map, sx, sy, true);
 			this.test_shoot = false;
 		}
-	}
-	
-	public function full_process(map: Map){
-		trace("travel start");
-		reset_best_step();
-		var unchanged_map: Map = set_brain_map(map);
-		//first_shoot(unchanged_map, test_shoot_x, test_shoot_y, test_shoot);
-		//trace_map_state(unchanged_map);
-		//trace_map_rgb(unchanged_map);
-		//trace_map_cycled(unchanged_map);
-		//trace(unchanged_map.num_of_chains());
-		//combo_counter(unchanged_map, 4, 10);
-		if(count_square_Num(unchanged_map)>=20){
-			for(var h = unchanged_map.Height-1; h > 0; --h){
-				for(var w = unchanged_map.Width-1; w >= 0 ; --w){
-					if(unchanged_map.lookup(w,h)!= null){
-						var temp_map: Map = set_brain_map(map);
-						del_block(temp_map, w, h, true);
-						combo_counter(temp_map, w, h);
-					}
-				}
-			}
-			trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
-			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(99);
-		}else if(count_square_Num(unchanged_map) >= 10 && count_square_Num(unchanged_map) < 20){
-			amass_counter(unchanged_map,this.best_amass_step_x, this.best_amass_step_y);
-			for(var h = unchanged_map.Height-1; h > 0; --h){
-				for(var w = unchanged_map.Width-1; w >= 0 ; --w){
-					if(unchanged_map.lookup(w,h)!= null){
-						var temp_map: Map = set_brain_map(map);
-						del_block(temp_map, w, h, true);
-						//trace_map_rgb(temp_map);
-						amass_counter(temp_map, w, h);
-					}
-				}
-			}
-			if(this.best_amass_step_x != -1){
-				trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
-				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(99);
-			}
-		}
-		trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
-		trace("Best amass step(" + best_amass_step_x + "," + best_amass_step_y + ")");
 	}
 	
 	private function count_square_Num(brain_map: Map): Number{
@@ -81,9 +37,56 @@ class Ai{
 		}
 		return count;
 	}
-	public function chain_travel(map: Map){}
-	public function amass_travel(map: Map){}
-	public function dropping_travel(map: Map){}
+	public function combo_travel(map: Map){
+		if(count_square_Num(map)>=45){
+			for(var h = map.Height-1; h > this.travel_limit; --h){
+				for(var w = map.Width-1; w >= 0 ; --w){
+					if(map.lookup(w,h)!= null){
+						var temp_map: Map = set_brain_map(map);
+						del_block(temp_map, w, h, true);
+						combo_counter(temp_map, w, h);
+						delete temp_map;
+					}
+				}
+			}
+			trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
+			trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
+			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(99);
+			this.best_chain_step_x = -1;
+			this.best_chain_step_y = -1;
+		}
+	}
+	public function amass_travel(map: Map){
+		if(count_square_Num(map) >=20 && count_square_Num(map) < 45){
+			amass_counter(map,this.best_amass_step_x, this.best_amass_step_y);
+			for(var h = map.Height-1; h > this.travel_limit; --h){
+				for(var w = map.Width-1; w >= 0 ; --w){
+					if(map.lookup(w,h)!= null){
+						var temp_map: Map = set_brain_map(map);
+						del_block(temp_map, w, h, true);
+						amass_counter(temp_map, w, h);
+						delete temp_map;
+					}
+				}
+			}
+			trace("Best amass step(" + best_amass_step_x + "," + best_amass_step_y + ")");
+			if(this.best_amass_step_x != -1){
+				trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
+				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(99);
+				this.best_amass_step_x = -1;
+				this.best_amass_step_y = -1;
+			}
+		}
+	}
+	public function dropping_travel(map: Map){
+		if(Dropping_checker(map) != null){
+			var del_arr = Dropping_checker(map);
+			for(var del_i = 0; del_i < del_arr.length; ++del_i){
+				del_arr[del_i].i_am_hit(99);
+				trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
+			}
+		}
+	}
 	
 	//clone true map to think
 	private function set_brain_map (true_map: Map): Map{
@@ -103,7 +106,7 @@ class Ai{
 				this.best_amass_step_x = ac_x;
 				this.best_amass_step_y = ac_y;
 			}
-			trace("amass point" + ac_x + "," + ac_y + "):" + get_point);
+			trace("amass point(" + ac_x + "," + ac_y + "):" + get_point);
 		}
 	}
 	
@@ -112,7 +115,7 @@ class Ai{
 		var square_count: Array = new Array();
 		var chain_count: Number = 0;
 		var get_point: Number = 0;
-		while(contact_checker(brain_map,3) != null && chain_count < 10){
+		while(contact_checker(brain_map,3) != null){
 			//use Array to save contace_checker
 			var chain_arr: Array = new Array();
 			chain_arr = contact_checker(brain_map,3);
@@ -140,7 +143,7 @@ class Ai{
 		}
 		//trace("Final_chain_count = " + chain_count);
 		//trace("All_square_count  = " + square_count);
-		trace("chain point" + cc_x + "," + cc_y + "):" + get_point);
+		trace("chain point(" + cc_x + "," + cc_y + "):" + get_point);
 		//trace_map_state(brain_map);
 		//trace_map_rgb(brain_map);
 	}
@@ -182,16 +185,17 @@ class Ai{
 			return temp_arr;
 		}
 	}
-	
-	private function Dropping_checker(brain_map: Map): Array{
-		var temp_map: Map = set_brain_map(brain_map);
+	//return cube arrry if dorpping cubes will make incorrect chain
+	//maybe we can use tag of true map to check what kind the dorpping cube is 
+	private function Dropping_checker(true_map: Map): Array{
+		var temp_map: Map = set_brain_map(true_map);
 		var check_arr: Array = new Array();
 		var dropping_arr: Array = new Array();
 		var del_arr: Array = new Array();
-		for(var h = brain_map.Height-1; h > 0; --h){
-			for(var w = brain_map.Width-1; w >= 0 ; --w){
-				if(brain_map.lookup(w, h).state instanceof Dropping){
-					dropping_arr.push(brain_map.lookup(w, h));
+		for(var h = true_map.Height-1; h > 0; --h){
+			for(var w = true_map.Width-1; w >= 0 ; --w){
+				if(true_map.lookup(w, h).state instanceof Dropping){
+					dropping_arr.push(true_map.lookup(w, h));
 					check_arr.push(temp_map.lookup(w,h));
 				}
 			}
@@ -204,6 +208,7 @@ class Ai{
 			}
 		}
 		if(contact_checker(temp_map, 3) == null){
+			delete temp_map;
 			return null;
 		}else{
 			for(var check_i = 0; check_i < check_arr.length; ++check_i){
@@ -213,6 +218,7 @@ class Ai{
 					del_arr.push(dropping_arr[check_i]);
 				}
 			}
+			delete temp_map;
 			return del_arr;
 		}
 	}
@@ -233,6 +239,7 @@ class Ai{
 			}
 		}
 	}
+	
 	private function del_block(brain_map: Map, x: Number, y: Number, need_move: Boolean){
 		var temp_map: Map = brain_map;
 		var del_x = x;
@@ -356,8 +363,9 @@ class Ai{
 		this.best_amass_point = 0;
 	}
 	
-	private var shoot_x: Array ;
-	private var shoot_y: Array ;
+	private var travel_limit: Number;
+	private var shoot_x: Array;
+	private var shoot_y: Array;
 	private var best_amass_step_x: Number;
 	private var best_amass_step_y: Number;
 	private var best_chain_step_x: Number;

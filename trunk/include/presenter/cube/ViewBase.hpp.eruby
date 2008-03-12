@@ -1,0 +1,16 @@
+
+<% header_guard do %>
+
+namespace psc{ namespace presenter{ namespace cube{
+
+class ViewBase{
+<%= accessor :int, :x, :y, :color_id %>
+public:
+    ViewBase(int x, int y, int color_id): x_(x), y_(y), color_id_(color_id){}
+    virtual void drop_a_block(){}
+    virtual void cycle(){}
+};
+
+}}} // end of namespaces
+
+<% end %>

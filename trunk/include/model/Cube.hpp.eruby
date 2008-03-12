@@ -31,9 +31,8 @@ public:
     }
     // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
-        map_(map), color_(data::Color::from_id(color_id)), cycled_(false),
-        has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
-        lose_chain_delay_(0)
+        color_id_(color_id), map_(map), cycled_(false), has_grounded_(false),
+        is_broken_(false), is_garbage_(false), hp_(1), lose_chain_delay_(0)
     {}
     <% debug_hook '~Cube' do %>(){<%end%>}
 
@@ -43,7 +42,7 @@ public:
     // end
 
     // begin only used by Map::next_state
-    void <% debug_hook 'drop_a_block' do %>(){ <%end%> --y_; }
+    void drop_a_block();
     state::pWaiting is_waiting();
     state::pDropping is_dropping();
     void lose_chain();
@@ -74,11 +73,11 @@ public:
     // end
 
     // begin only used by Map.cpp => local function check_not_continue
-    friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_ != rhs.color_; }
+    friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_id_ != rhs.color_id_; }
     // end
 
     // begin only used by model::Map::color_map
-    int color_id() const{ return data::Color::for_id(color_); }
+    // int color_id() const{ return data::Color::for_id(color_); }
     // end
 
 	// begin only used by Map::insert_garbage,
@@ -124,9 +123,9 @@ private:
     bool is_dead() const{ return state_.use_count() == 0; }
 
 private:
-<%= accessor :int, :x, :y %>
+<%= accessor :int, :x, :y, :color_id %>
     wpMap map_;
-    data::Color color_;
+    // data::Color color_;
     pChain chain_belonged_to_;
     state::pState state_;
     bool cycled_, has_grounded_, is_broken_, is_garbage_;

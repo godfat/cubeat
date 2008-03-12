@@ -41,7 +41,7 @@ void <% debug_hook 'Cube::be_garbage' do %>(){
 <% end %>
     is_garbage_ = true;
 	hp_ = 3;
-    color_ = data::Color::random_rgb_color();
+    color_id_ = -1; // = data::Color::random_rgb_color();
 	// show_outline();
 }
 
@@ -50,6 +50,12 @@ pWaiting Cube::is_waiting(){ return dynamic_pointer_cast<Waiting>(state_); }
 pDropping Cube::is_dropping(){ return dynamic_pointer_cast<Dropping>(state_); }
 pDying const Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
 pExploding const Cube::is_exploding() const{ return dynamic_pointer_cast<Exploding>(state_); }
+
+void <% debug_hook 'Cube::drop_a_block' do %>(){
+<% end %>
+    --y_;
+    // owner()->drop_a_block();
+}
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>

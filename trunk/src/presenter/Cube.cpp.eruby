@@ -12,6 +12,7 @@ using namespace presenter;
 
 int <% debug_hook 'Cube::x' do %>() const{ <%end%> return model()->x(); }
 int <% debug_hook 'Cube::y' do %>() const{ <%end%> return model()->y(); }
+int <% debug_hook 'Cube::color_id' do %>() const{ <%end%> return model()->color_id(); }
 
 <% debug_hook 'Cube::Cube' do %>(wpMap map, int x, int y, int color_id):
     map_(map),

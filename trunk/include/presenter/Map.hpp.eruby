@@ -6,6 +6,7 @@
 
 #include "all_fwd.hpp"
 
+#include <tr1/functional>
 #include <map>
 
 <%= debug_include %>
@@ -24,6 +25,7 @@ public:
 
 public:
     Map(data::pMapSetting setting): setting_(setting){}
+    Map& push_view(std::tr1::function<cube::pViewBase(int,int,int)> make_view);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);

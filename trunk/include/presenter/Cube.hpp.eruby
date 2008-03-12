@@ -14,7 +14,9 @@
 
 #include "all_fwd.hpp"
 #include "utils/ObjectPool.hpp"
+#include "presenter/cube/ViewBase.hpp"
 
+#include <boost/foreach.hpp>
 #include <tr1/memory>
 
 <%= debug_include %>
@@ -34,12 +36,19 @@ public:
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
     <% debug_hook '~Cube' do %>(){<%end%>}
 
+    void <% debug_hook 'drop_a_block' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ view->drop_a_block(); }
+    }
+    Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
+
     int x() const;
     int y() const;
+    int color_id() const;
 
 private:
     wpMap map_;
 <%= reader 'model::pCube', :model %>
+    std::list<cube::pViewBase> views_;
 };
 
 }}

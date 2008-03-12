@@ -1,0 +1,24 @@
+
+<% header_guard do %>
+
+#include "presenter/cube/ViewBase.hpp"
+#include "view/Sprite.hpp"
+
+namespace psc{ namespace presenter{ namespace cube{
+
+class ViewSprite: public ViewBase{
+public:
+    void ViewSprite(int x, int y, int color_id): ViewBase(x, y, color_id){
+        // body_ = psc::view::Sprite::create("cube/#{color_id}");
+    }
+    virtual void drop_a_block(){
+        // body_->tween<OCirc, Pos2D>(vec2(x_*50, y_--*50), 500);
+    }
+
+private:
+    view::Sprite body_;
+};
+
+}}} // end of namespaces
+
+<% end %>

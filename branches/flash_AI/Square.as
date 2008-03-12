@@ -78,10 +78,9 @@ class Square
         x_ = x;
         y_ = y;
         var depth: Number = map_.next_depth();
-		if(map_.for_clone != true){
-			body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
-			body_.self = this;
-		}
+		body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
+		body_.self = this;
+
 		//changed a lot, but I think Controller shouldn't be made like this.....
        /* body_.onPress = function()
 		{

@@ -1,0 +1,15 @@
+
+<% header_guard do %>
+
+#include "presenter/cube/ViewBase.hpp.eruby"
+
+namespace psc{ namespace presenter{ namespace cube{
+
+class ViewStdout: public ViewBase{
+public:
+    ViewStdout(int x, int y, int color_id): ViewBase(x, y, color_id){}
+};
+
+}}} // end of namespaces
+
+<% end %>

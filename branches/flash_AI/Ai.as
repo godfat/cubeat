@@ -3,7 +3,7 @@ class Ai{
 	public function Ai(game: Game, map: Map){
 		game_ = game;
 		map_ = map;
-		travel_limit = 9;
+		travel_limit = 5;//make AI only travel the last (11-limit) Row of Map
 		best_amass_point = 0;
 		best_chain_point = 0;
 		best_amass_step_x = -1;
@@ -52,6 +52,7 @@ class Ai{
 			trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
 			trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
 			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(99);
+			this.best_chain_point = 0;
 			this.best_chain_step_x = -1;
 			this.best_chain_step_y = -1;
 		}
@@ -73,6 +74,7 @@ class Ai{
 			if(this.best_amass_step_x != -1){
 				trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
 				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(99);
+				this.best_amass_point = 0;
 				this.best_amass_step_x = -1;
 				this.best_amass_step_y = -1;
 			}

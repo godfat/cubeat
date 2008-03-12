@@ -32,7 +32,7 @@ class Map{
 		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+9), 0);
 		//var clonedata_ = new Array(set_.Height);
 		//for(var i=0; i<set_.Height; ++i) clonedata_[i] = new Array(set_.Width);
-		
+		cloneMap.for_clone = true;
 		for(var y = 0; y < set_.Height; ++y)
             for(var x = 0; x < set_.Width; ++x) {
 				if( data_[y][x] != null )
@@ -45,6 +45,7 @@ class Map{
 
     public function Map(game: Game, setting: MapSetting, x: Number, y: Number){
 		
+		for_clone = false;
         game_ = game;
         init_setting(setting);
         var depth: Number = next_depth();
@@ -69,6 +70,7 @@ class Map{
 		id_ = ID;
 		garbage_buffer_ = 0;
 		garbage_step_ = 0;
+		
     }
 
     public function move_info_board(x: Number, y: Number): Void{ info_._x = x; info_._y = y; }
@@ -344,9 +346,11 @@ class Map{
 		return taglist_.push( tag );
 	}
 	private var taglist_: Array;         //this will keep the track of all the tags
-	private var garbage_buffer_: Number;	
+	private var garbage_buffer_: Number;
 	private var garbage_step_: Number;
 	private var player_: Player;
 	public function set_player(in_: Player): Void { player_ = in_; }
 	public function player(): Player { return player_; }
+	
+	public var for_clone: Boolean;
 }

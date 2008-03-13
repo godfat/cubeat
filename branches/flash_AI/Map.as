@@ -29,7 +29,7 @@ class Map{
 		
 		cloneMapSetting.Damage_Factor = this.Damage_Factor;
 		
-		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+9), 0);
+		var cloneMap: Map = new Map(game_, cloneMapSetting, this.Size*(this.Width+9), 0, true);
 		//var clonedata_ = new Array(set_.Height);
 		//for(var i=0; i<set_.Height; ++i) clonedata_[i] = new Array(set_.Width);
 		cloneMap.for_clone = true;
@@ -43,16 +43,23 @@ class Map{
 		return cloneMap;		
 	}
 
-    public function Map(game: Game, setting: MapSetting, x: Number, y: Number){
+    public function Map(game: Game, setting: MapSetting, x: Number, y: Number, to_clone: Boolean){
 		
-		for_clone = false;
-        game_ = game;
+		game_ = game;
         init_setting(setting);
         var depth: Number = next_depth();
-        body_ = game_.body.createEmptyMovieClip("map"+depth, depth);
-        body_._y = -set_.Size;
-        body_._x += x;
-        body_._y += y;
+		if(to_clone != true){
+			for_clone = false;
+			body_ = game_.body.createEmptyMovieClip("map"+depth, depth);
+			body_._y = -set_.Size;
+			body_._x += x;
+			body_._y += y;
+			depth = next_depth();
+			info_ = game_.body.createTextField("info"+depth, depth, 0, 0, 80, 70);
+			update_info_board();
+		}else{
+			for_clone = true;
+		}
         data_ = new Array(set_.Height);
         for(var i=0; i<set_.Height; ++i) data_[i] = new Array(set_.Width);
 
@@ -60,9 +67,9 @@ class Map{
             for(var x=0; x<set_.Width; ++x)
                 data_[y][x] = null;
 
-        depth = next_depth();
+        /*depth = next_depth();
         info_ = game_.body.createTextField("info"+depth, depth, 0, 0, 80, 70);
-        update_info_board();
+        update_info_board();*/
 		
 		//added
 		taglist_ = new Array(0);
@@ -345,7 +352,7 @@ class Map{
 	public function push_tag(tag: Tag): Number {
 		return taglist_.push( tag );
 	}
-	private var taglist_: Array;         //this will keep the track of all the tags
+	public var taglist_: Array;         //this will keep the track of all the tags
 	private var garbage_buffer_: Number;
 	private var garbage_step_: Number;
 	private var player_: Player;

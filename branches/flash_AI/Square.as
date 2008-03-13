@@ -33,6 +33,7 @@ class Square
 			clone_square.state_ = null;
 		}
 		clone_square.cycled = false;
+		clone_square.first_drop = this.first_drop;
 		//Gray.redOffset = 128;
 		//Gray.greenOffset = 128;
 		//Gray.blueOffset = 128;
@@ -77,10 +78,11 @@ class Square
         map_ = map;
         x_ = x;
         y_ = y;
-        var depth: Number = map_.next_depth();
-		body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
-		body_.self = this;
-
+        if(map_.for_clone != true){
+			var depth: Number = map_.next_depth();
+			body_ = map_.body.attachMovie("Square", "Square"+depth, depth, {_x: x*map_.Size, _y: y*map_.Size});
+			body_.self = this;
+		}
 		//changed a lot, but I think Controller shouldn't be made like this.....
        /* body_.onPress = function()
 		{
@@ -92,6 +94,7 @@ class Square
 		
 		choose_color( color );   //separated
 		color_num = color;
+		first_drop = true;
         
 		trans_.colorTransform = color_;
         map_.setup(x, y, this);
@@ -106,11 +109,12 @@ class Square
 		hp_ = 1;
 		is_garbage_ = false;
 		is_broken_ = false;
-
-        debug_tag  = body_.createTextField("tag"+depth, map_.next_depth(), 18, 0, 18, 18);
-		debug_tag2 = body_.createTextField("_tag"+depth, map_.next_depth(), 2, 10, 60, 18);
-		debug_tag4 = body_.createTextField("___tag"+depth, map_.next_depth(), 2, 20, 60, 18);
-		debug_tag5 = body_.createTextField("____tag"+depth, map_.next_depth(), 2, 30, 60, 18);
+		if(map_.for_clone != true){
+			debug_tag  = body_.createTextField("tag"+depth, map_.next_depth(), 18, 0, 18, 18);
+			debug_tag2 = body_.createTextField("_tag"+depth, map_.next_depth(), 2, 10, 60, 18);
+			debug_tag4 = body_.createTextField("___tag"+depth, map_.next_depth(), 2, 20, 60, 18);
+			debug_tag5 = body_.createTextField("____tag"+depth, map_.next_depth(), 2, 30, 60, 18);
+		}
     }
 	
 	//added
@@ -152,6 +156,7 @@ class Square
 				
 		if( state_ instanceof Waiting && Waiting(state_).state_checked() ) {
 			debug_tag5.text = "checked"
+			this.first_drop = false;
 		}
 		else { debug_tag5.text = ""; }
 		
@@ -237,6 +242,7 @@ class Square
 
     private function real_y_position(): Number{ return y_*map_.Size; }
 	public var color_num: Number;
+	public var first_drop: Boolean;
 	private var x_: Number;
     private var y_: Number;
     private var body_: MovieClip;

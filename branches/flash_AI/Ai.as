@@ -3,46 +3,80 @@ class Ai{
 	public function Ai(game: Game, map: Map){
 		game_ = game;
 		map_ = map;
-		travel_limit = 9;
-
+		travel_limit = 5;//make AI only travel the last (11-limit) Row of Map
 		best_amass_point = 0;
 		best_chain_point = 0;
 		best_amass_step_x = -1;
 		best_amass_step_y = -1;
 		best_chain_step_x = -1;
 		best_chain_step_y = -1;
-		shoot_x = new Array();
-		shoot_y = new Array();
-		test_shoot = false;
-		test_shoot_x = -1;
-		test_shoot_y = -1;
+		shooted = false;
+		clear_garbage_x = new Array();
+		clear_garbage_y = new Array();
 		trace("Hi,I am Ai!");
 	}
 	
-	private function first_shoot(brain_map: Map, sx: Number, sy: Number, ts: Boolean){
-		if(ts == true){
-			trace("test shoot(" + sx + "," + sy + ")");
-			del_block(brain_map, sx, sy, true);
-			this.test_shoot = false;
+	public function full_process(map: Map){
+		for(var h = map.Height-1; h > this.travel_limit; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
+					this.shooted = true;
+				}else{
+					this.shooted = false;
+				}
+			}
 		}
+		if(this.shooted != true){
+			if(count_square_Num(map) >= 40 || check_top(map) <= 2){
+				combo_travel(map);
+			}
+			if(count_square_Num(map) >=20 && this.best_chain_step_x == -1){
+				amass_travel(map);
+			}
+		}
+		best_chain_point = 0;
+		best_amass_point = 0;
+		best_amass_step_x = -1;
+		best_amass_step_y = -1;
+		best_chain_step_x = -1;
+		best_chain_step_y = -1;
+	}
+	//clone true map to think
+	private function set_brain_map (map: Map): Map{
+		var clone_map: Map = map.clone();
+		//trace("<map cloned>");
+		//trace_map_state(clone_map);
+		//trace_map_rgb(clone_map);
+		return clone_map;
 	}
 	
-	private function count_square_Num(brain_map: Map): Number{
+	private function count_square_Num(map: Map): Number{
 		var count:Number = 0;
-		for(var h = brain_map.Height-1; h > 0; --h){
-			for(var w = brain_map.Width-1; w >= 0 ; --w){
-				if( brain_map.lookup(w,h).state instanceof Waiting ){
+		for(var h = map.Height-1; h > 0; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if( map.lookup(w,h).state instanceof Waiting ){
 					++count;
 				}
 			}
 		}
 		return count;
 	}
-	public function combo_travel(map: Map){
-		if(count_square_Num(map)>=45){
+	private function check_top(map: Map): Number{
+		var top:Number = 12;
+		for(var h = map.Height-1; h > 0; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if( map.lookup(w,h).state instanceof Waiting && h < top){
+					top = h;
+				}
+			}
+		}
+		return top;
+	}
+	private function combo_travel(map: Map){
+		if(true){
 			for(var h = map.Height-1; h > this.travel_limit; --h){
 				for(var w = map.Width-1; w >= 0 ; --w){
-					if(map.lookup(w,h)!= null){
+					if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 						var temp_map: Map = set_brain_map(map);
 						del_block(temp_map, w, h, true);
 						combo_counter(temp_map, w, h);
@@ -53,17 +87,17 @@ class Ai{
 			trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
 			trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
 			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(99);
-			this.best_chain_step_x = -1;
-			this.best_chain_step_y = -1;
+			//this.best_chain_point = 0;
+			//this.best_chain_step_x = -1;
+			//this.best_chain_step_y = -1;
 		}
 	}
-	public function amass_travel(map: Map){
-		if(count_square_Num(map) >=20 && count_square_Num(map) < 45){
+	private function amass_travel(map: Map){
+		if(true){
 			amass_counter(map,this.best_amass_step_x, this.best_amass_step_y);
 			for(var h = map.Height-1; h > this.travel_limit; --h){
 				for(var w = map.Width-1; w >= 0 ; --w){
-					if(map.lookup(w,h)!= null){
-
+					if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 						var temp_map: Map = set_brain_map(map);
 						del_block(temp_map, w, h, true);
 						amass_counter(temp_map, w, h);
@@ -75,9 +109,9 @@ class Ai{
 			if(this.best_amass_step_x != -1){
 				trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
 				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(99);
-				this.best_amass_step_x = -1;
-				this.best_amass_step_y = -1;
-
+				//this.best_amass_point = 0;
+				//this.best_amass_step_x = -1;
+				//this.best_amass_step_y = -1;
 			}
 		}
 	}
@@ -91,19 +125,11 @@ class Ai{
 		}
 	}
 	
-	//clone true map to think
-	private function set_brain_map (true_map: Map): Map{
-		var clone_map: Map = true_map.clone();
-		//trace("<map cloned>");
-		//trace_map_state(clone_map);
-		//trace_map_rgb(clone_map);
-		return clone_map;
-	}
 	//count amass then get point
-	private function amass_counter(brain_map: Map, ac_x: Number, ac_y: Number){
-		if(contact_checker(brain_map, 3) == null){
+	private function amass_counter(map: Map, ac_x: Number, ac_y: Number){
+		if(contact_checker(map, 3) == null){
 			var get_point: Number = 0;
-			get_point = contact_checker(brain_map, 2).length;
+			get_point = contact_checker(map, 2).length;
 			if(get_point > this.best_amass_point){
 				this.best_amass_point = get_point;
 				this.best_amass_step_x = ac_x;
@@ -114,18 +140,18 @@ class Ai{
 	}
 	
 	//count chain combo then get point
-	private function combo_counter(brain_map: Map, cc_x: Number, cc_y: Number){
+	private function combo_counter(map: Map, cc_x: Number, cc_y: Number){
 		var square_count: Array = new Array();
 		var chain_count: Number = 0;
 		var get_point: Number = 0;
-		while(contact_checker(brain_map,3) != null){
+		while(contact_checker(map,3) != null){
 			//use Array to save contace_checker
 			var chain_arr: Array = new Array();
-			chain_arr = contact_checker(brain_map,3);
+			chain_arr = contact_checker(map,3);
 			//trace("del chain(len=" + chain_arr.length + ") : "+ chain_arr );
 			++chain_count;
 			square_count.push(chain_arr.length);
-			chain_del(brain_map, chain_arr);
+			chain_del(map, chain_arr);
 			//trace("chain_count = " + chain_count);
 			//trace("square_count = " + square_count[chain_count-1]);
 			//trace("next chain : "  + contact_checker(brain_map,3));
@@ -151,14 +177,14 @@ class Ai{
 		//trace_map_rgb(brain_map);
 	}
 	//treavl map to find chain or two_contact
-	private function contact_checker(brain_map: Map, contact_Num: Number): Array{
+	private function contact_checker(map: Map, contact_Num: Number): Array{
 		var temp_arr: Array = new Array();
 		var push_arr: Array = new Array();
-		for(var h = brain_map.Height-1; h > 0; --h){
-			for(var w = brain_map.Width-1; w >= 0 ; --w){
-				if(brain_map.make_row(brain_map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = brain_map.make_row( brain_map.lookup(w,h) );
-					push_arr.push( brain_map.lookup(w,h) );
+		for(var h = map.Height-1; h > 0; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.make_row(map.lookup(w,h)).length >= contact_Num-1){
+					push_arr = map.make_row( map.lookup(w,h) );
+					push_arr.push( map.lookup(w,h) );
 					for(var push_row = 0; push_row < push_arr.length; ++push_row){
 						if(push_arr[push_row].cycled == false){
 							push_arr[push_row].cycled = true;
@@ -166,9 +192,9 @@ class Ai{
 						}
 					}
 				}
-				if(brain_map.make_column(brain_map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = brain_map.make_column( brain_map.lookup(w,h) );
-					push_arr.push( brain_map.lookup(w,h) );
+				if(map.make_column(map.lookup(w,h)).length >= contact_Num-1){
+					push_arr = map.make_column( map.lookup(w,h) );
+					push_arr.push( map.lookup(w,h) );
 					for(var push_col = 0; push_col < push_arr.length; ++push_col){
 						if(push_arr[push_col].cycled == false){
 							push_arr[push_col].cycled = true;
@@ -192,12 +218,13 @@ class Ai{
 	//maybe we can use tag of true map to check what kind the dorpping cube is 
 	private function Dropping_checker(true_map: Map): Array{
 		var temp_map: Map = set_brain_map(true_map);
+		//trace_map_state(true_map);
 		var check_arr: Array = new Array();
 		var dropping_arr: Array = new Array();
 		var del_arr: Array = new Array();
 		for(var h = true_map.Height-1; h > 0; --h){
 			for(var w = true_map.Width-1; w >= 0 ; --w){
-				if(true_map.lookup(w, h).state instanceof Dropping){
+				if(true_map.lookup(w, h).state instanceof Dropping && true_map.lookup(w, h).first_drop == true){
 					dropping_arr.push(true_map.lookup(w, h));
 					check_arr.push(temp_map.lookup(w,h));
 				}
@@ -295,9 +322,15 @@ class Ai{
 					}else{
 						state_arr[h][w] = "Wa";
 					}
-				}else if ( brain_map.lookup(w,h).state instanceof Dropping )
-				    state_arr[h][w] = "Dr";
-				else if ( brain_map.lookup(w,h).state instanceof Dying )
+				}else if ( brain_map.lookup(w,h).state instanceof Dropping ){
+					if(brain_map.lookup(w,h).first_drop == true){
+						state_arr[h][w] = "DT";
+					}else if(brain_map.lookup(w,h).first_drop == false){
+						state_arr[h][w] = "DF";
+					}else{
+						state_arr[h][w] = "Dr";
+					}
+				}else if ( brain_map.lookup(w,h).state instanceof Dying )
 				    state_arr[h][w] = "Dy";
 				else
 				    state_arr[h][w] = "--";
@@ -356,8 +389,6 @@ class Ai{
 	}
 	
 	private function reset_best_step(){
-		this.shoot_x = new Array();
-		this.shoot_y = new Array();
 		this.best_amass_step_x = -1;
 		this.best_amass_step_y = -1;
 		this.best_chain_step_x = -1;
@@ -367,17 +398,15 @@ class Ai{
 	}
 	
 	private var travel_limit: Number;
-	private var shoot_x: Array;
-	private var shoot_y: Array;
 	private var best_amass_step_x: Number;
 	private var best_amass_step_y: Number;
 	private var best_chain_step_x: Number;
 	private var best_chain_step_y: Number;
 	private var best_amass_point: Number;
 	private var best_chain_point: Number;
+	private var clear_garbage_x: Array;
+	private var clear_garbage_y: Array;
+	private var shooted: Boolean;
 	private var game_: Game;
 	private var map_: Map;
-	private var test_shoot: Boolean;
-	private var test_shoot_x: Number;
-	private var test_shoot_y: Number;
 }

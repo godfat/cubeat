@@ -54,7 +54,7 @@ pExploding const Cube::is_exploding() const{ return dynamic_pointer_cast<Explodi
 void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
     --y_;
-    // owner()->drop_a_block();
+    drop_a_block_event()();
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){

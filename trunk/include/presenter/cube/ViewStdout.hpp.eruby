@@ -1,13 +1,19 @@
 
 <% header_guard do %>
 
-#include "presenter/cube/ViewBase.hpp.eruby"
+#include "presenter/cube/ViewBase.hpp"
+#include <iostream>
 
 namespace psc{ namespace presenter{ namespace cube{
 
 class ViewStdout: public ViewBase{
 public:
+    static ViewBase::pointer_type create(int x, int y, int color_id){
+        return utils::ObjectPool<ViewStdout>::create(x, y, color_id);
+    }
+public:
     ViewStdout(int x, int y, int color_id): ViewBase(x, y, color_id){}
+    virtual void drop_a_block(){std::cerr<<"stdout drop_a_block"<<std::endl;}
 };
 
 }}} // end of namespaces

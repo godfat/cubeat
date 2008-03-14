@@ -8,6 +8,10 @@ namespace psc{ namespace presenter{ namespace cube{
 
 class ViewSprite: public ViewBase{
 public:
+    static ViewBase::pointer_type create(int x, int y, int color_id){
+        return utils::ObjectPool<ViewBase>::create(x, y, color_id);
+    }
+public:
     void ViewSprite(int x, int y, int color_id): ViewBase(x, y, color_id){
         // body_ = psc::view::Sprite::create("cube/#{color_id}");
     }

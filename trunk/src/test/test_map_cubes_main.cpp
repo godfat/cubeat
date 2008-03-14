@@ -4,6 +4,7 @@
 
 #include "all_fwd.hpp"
 #include "presenter/Map.hpp"
+#include "presenter/cube/ViewStdout.hpp"
 #include "EventDispatcher.hpp"
 #include "IrrDevice.hpp"
 
@@ -40,6 +41,8 @@ int main(){
     IrrDevice::i().init(true);
 
     presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
+    map -> push_view( &presenter::cube::ViewStdout::create );
+
     std::cerr << "\n\n\nend creation\n\n\n";
     display(map);
     map->cycle();

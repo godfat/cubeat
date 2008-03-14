@@ -17,6 +17,7 @@ class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
+    typedef std::tr1::function<cube::pViewBase(int,int,int)> make_view_type;
 
     typedef model::Map::color_map_type color_map_type;
 
@@ -25,7 +26,7 @@ public:
 
 public:
     Map(data::pMapSetting setting): setting_(setting){}
-    Map& push_view(std::tr1::function<cube::pViewBase(int,int,int)> make_view);
+    Map& push_view(make_view_type make_view);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
@@ -39,12 +40,14 @@ public:
 
 private:
     pMap init();
+    static void setup_cube_view(pCube, cube::pViewBase);
 
 private:
     data::pMapSetting setting_;
 <%= reader 'model::pMap', :model %>
     view::pMap view_;
     container_type cubes_;
+    std::list<make_view_type> make_view_list_;
 };
 
 }} // end of namespace

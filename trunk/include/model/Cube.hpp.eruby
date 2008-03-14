@@ -16,6 +16,8 @@
 #include "utils/ObjectPool.hpp"
 #include "data/Color.hpp"
 
+#include <tr1/functional>
+
 <%= debug_include %>
 
 namespace psc{ namespace model{
@@ -130,6 +132,7 @@ private:
     state::pState state_;
     bool cycled_, has_grounded_, is_broken_, is_garbage_;
 	int hp_, lose_chain_delay_;
+<%= accessor :'std::tr1::function<void()>', :drop_a_block_event %>
 };
 
 }}

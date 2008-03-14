@@ -1,12 +1,20 @@
 
 <% header_guard do %>
 
+#include <tr1/memory>
+
 namespace psc{ namespace presenter{ namespace cube{
 
 class ViewBase{
 <%= accessor :int, :x, :y, :color_id %>
 public:
+    typedef std::tr1::shared_ptr<ViewBase> pointer_type;
+    static pointer_type create(int x, int y, int color_id){
+        return utils::ObjectPool<ViewBase>::create(x, y, color_id);
+    }
+public:
     ViewBase(int x, int y, int color_id): x_(x), y_(y), color_id_(color_id){}
+    virtual ~ViewBase(){}
     virtual void drop_a_block(){}
     virtual void cycle(){}
 };

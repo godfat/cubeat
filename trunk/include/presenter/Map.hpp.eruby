@@ -40,7 +40,6 @@ public:
 
 private:
     pMap init();
-    static void setup_cube_view(pCube, cube::pViewBase);
 
 private:
     data::pMapSetting setting_;

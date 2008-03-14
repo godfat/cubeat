@@ -13,7 +13,7 @@ public:
     }
 public:
     ViewStdout(int x, int y, int color_id): ViewBase(x, y, color_id){}
-    virtual void drop_a_block(){std::cerr<<"stdout drop_a_block"<<std::endl;}
+    virtual void drop_a_block(){std::cout<<"stdout drop_a_block"<<std::endl;}
 };
 
 }}} // end of namespaces

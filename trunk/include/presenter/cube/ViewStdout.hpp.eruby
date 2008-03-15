@@ -2,7 +2,9 @@
 <% header_guard do %>
 
 #include "presenter/cube/ViewBase.hpp"
-#include <iostream>
+#include "presenter/Map.hpp"
+#include <cstdio>
+#include <cstdlib>
 
 namespace psc{ namespace presenter{ namespace cube{
 
@@ -11,9 +13,24 @@ public:
     static ViewBase::pointer_type create(int x, int y, int color_id){
         return utils::ObjectPool<ViewStdout>::create(x, y, color_id);
     }
+    static void redraw(Map const& map){
+#ifdef _WIN32_
+        std::system("cls");
+#else
+        std::system("clear");
+#endif
+        Map::color_map_type p = map.color_map();
+        for(int y=10; y>=0; --y){
+            for(int x=0; x<6; ++x)
+                std::printf("%2d", p[x][y]);
+            std::printf("\n");
+        }
+        std::printf("\n");
+    }
+
 public:
     ViewStdout(int x, int y, int color_id): ViewBase(x, y, color_id){}
-    virtual void drop_a_block(){std::cout<<"stdout drop_a_block"<<std::endl;}
+    virtual void drop_a_block(){}
 };
 
 }}} // end of namespaces

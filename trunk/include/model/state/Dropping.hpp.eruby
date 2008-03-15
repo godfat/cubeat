@@ -30,8 +30,8 @@ public:
         // share the ownership of the Dropping. instead, bind raw ptr.
         // thanks to the 2nd argument of subscribe_timer, don't worry
         // about dereferencing invalid pointer again.
-        ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&State::next_state, result.get()), result, 1);
+        // ctrl::EventDispatcher::i().subscribe_timer(
+            // std::tr1::bind(&State::next_state, result.get()), result, 1);
         return result->init();
     }
 

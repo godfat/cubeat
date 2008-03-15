@@ -18,16 +18,6 @@
 
 using namespace psc;
 
-void display(presenter::pMap map){
-    presenter::Map::color_map_type p = map->color_map();
-    for(int y=10; y>=0; --y){
-        for(int x=0; x<6; ++x)
-            std::printf("%2d", p[x][y]);
-        std::printf("\n");
-    }
-    std::printf("\n");
-}
-
 void echo(){
     std::cout << "XD" << std::endl;
 }
@@ -41,13 +31,13 @@ int main(){
     IrrDevice::i().init(true);
 
     presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
-    map -> push_view( &presenter::cube::ViewStdout::create );
+    map->push_view( std::make_pair(&presenter::cube::ViewStdout::create, &presenter::cube::ViewStdout::redraw) );
 
     std::cerr << "\n\n\nend creation\n\n\n";
-    display(map);
+    // display(map);
     map->cycle();
     std::cerr << "\n\n\nend cycle\n\n\n";
-    display(map);
+    // display(map);
     // for(int i=0; i<25; ++i)
     //     map->cycle();
     // display(map);
@@ -63,10 +53,11 @@ int main(){
     IrrDevice::i().init(true);
     // psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, -1);
     // psc::ctrl::EventDispatcher::i().subscribe_timer(echo2, 500, -1);
-    psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&display, std::tr1::ref(map)), 500, -1);
+    // psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&display, std::tr1::ref(map)), 500, -1);
     psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&std::exit, 0), 10000);
     while(IrrDevice::i().d()->run()){
         map->cycle();
+        map->redraw();
 #ifdef WIN32
         Sleep(10);
 #else

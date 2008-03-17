@@ -11,7 +11,7 @@ SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
 IF(CMAKE_COMPILER_IS_GNUCXX)
     SET (cxx_flag "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math")
     IF(APPLE)
-        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework OpenGL")
+        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
     ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 SET (CMAKE_CXX_FLAGS "${cxx_flag}")
@@ -25,14 +25,14 @@ INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS})
 
 # setup linking path
 IF(APPLE)
-    SET(irrlicht_lib_path "../irrlicht/source/Irrlicht/MacOSX/build/Release")
+    SET(irrlicht_lib_path "../irrlicht/source/Irrlicht")
 ELSE(APPLE)
     SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
 ENDIF(APPLE)
-LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib)
+LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib)
 
 # setup linking
-LINK_LIBRARIES (Irrlicht freetype)
+LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL)
 
 # setup source codes
 SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \

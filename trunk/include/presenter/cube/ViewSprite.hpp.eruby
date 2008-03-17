@@ -4,23 +4,53 @@
 #include "presenter/cube/ViewBase.hpp"
 #include "view/Sprite.hpp"
 
+#include "Accessors.hpp"
+#include "EasingEquations.hpp"
+
+#include "all_fwd.hpp"
+
+#include <boost/lexical_cast.hpp>
+
 namespace psc{ namespace presenter{ namespace cube{
 
 class ViewSprite: public ViewBase{
 public:
-    static ViewBase::pointer_type create(int x, int y, int color_id){
-        return utils::ObjectPool<ViewBase>::create(x, y, color_id);
+    static ViewBase::pointer_type create(int x, int y, int color_id,
+        view::pScene scene, data::pMapSetting setting)
+    {
+        return utils::ObjectPool<ViewSprite>::create(x, y, color_id, scene, setting);
     }
+    static void redraw(Map const& map){}
 public:
-    void ViewSprite(int x, int y, int color_id): ViewBase(x, y, color_id){
-        // body_ = psc::view::Sprite::create("cube/#{color_id}");
+    ViewSprite(int x, int y, int color_id,
+        view::pScene scene, data::pMapSetting setting): ViewBase(x, y, color_id),
+        cube_size_(setting->cube_size())
+    {
+        std::cout << "x: " << x << " y: " << y << std::endl;
+        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
+        body_ = view::Sprite::create(path, scene,
+            cube_size_, cube_size_);
+        adjust();
     }
     virtual void drop_a_block(){
-        // body_->tween<OCirc, Pos2D>(vec2(x_*50, y_--*50), 500);
+        if( x() == -1 && y() == -1) // from preview state
+            update().adjust();
+        body_->moveTween(100 + x()*cube_size_, y()*cube_size_, 500);
     }
 
 private:
-    view::Sprite body_;
+    ViewSprite& update(){
+        // update x y from model... perhaps color_id too?
+        return *this;
+    }
+    ViewSprite& adjust(){
+        body_->moveTo(100 + x()*cube_size_, y()*cube_size_);
+        return *this;
+    }
+
+private:
+    view::pSprite body_;
+    int cube_size_;
 };
 
 }}} // end of namespaces

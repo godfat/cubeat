@@ -5,6 +5,7 @@
 #include "presenter/Map.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 
 namespace psc{ namespace presenter{ namespace cube{
 
@@ -14,14 +15,14 @@ public:
         return utils::ObjectPool<ViewStdout>::create(x, y, color_id);
     }
     static void redraw(Map const& map){
-#ifdef _WIN32_
-        std::system("cls");
-#else
-        std::system("clear");
-#endif
+        static std::clock_t last_ = std::clock();
+        std::clock_t now = std::clock();
+        if( now - last_ < CLOCKS_PER_SEC/10.0 ) return;
+        else last_ = now;
+
         Map::color_map_type p = map.color_map();
-        for(int y=10; y>=0; --y){
-            for(int x=0; x<6; ++x)
+        for(int y=map.setting()->height()-1; y>=0; --y){
+            for(int x=0; x<map.setting()->width(); ++x)
                 std::printf("%2d", p[x][y]);
             std::printf("\n");
         }

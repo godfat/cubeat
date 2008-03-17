@@ -2,6 +2,7 @@
 <% header_guard do %>
 
 #include <tr1/memory>
+#include <tr1/functional>
 
 namespace psc{ namespace presenter{ namespace cube{
 

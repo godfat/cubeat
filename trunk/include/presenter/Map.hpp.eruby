@@ -40,17 +40,18 @@ public:
     void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
 
     color_map_type color_map() const{ return model_->color_map(); }
-    void redraw(){
+    Map& redraw(){
         BOOST_FOREACH(view_pair_type& pair, view_list_){
             pair.second(*this); // redraw
         }
+        return *this;
     }
 
 private:
     pMap init();
 
 private:
-    data::pMapSetting setting_;
+<%= accessor 'data::pMapSetting', :setting %>
 <%= reader 'model::pMap', :model %>
     view::pMap view_;
     container_type cubes_;

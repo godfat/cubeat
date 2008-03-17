@@ -16,7 +16,7 @@ Map& <% debug_hook 'Map::push_view' do %>(view_pair_type view_pair){
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
-        cube->push_view(view_pair.first(cube->x(), cube->y(), cube->color_id()));
+        cube->push_view(view_pair.first(cube->model()->data()));
     }
     view_list_.push_back(view_pair);
     return *this;
@@ -36,7 +36,7 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     cube->model()->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) );
     BOOST_FOREACH(view_pair_type& view_pair, view_list_){
-        cube->push_view(view_pair.first(cube->x(), cube->y(), cube->color_id()));
+        cube->push_view(view_pair.first(cube->model()->data()));
     }
     cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;

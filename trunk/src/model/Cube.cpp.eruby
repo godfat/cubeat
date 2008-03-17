@@ -41,7 +41,7 @@ void <% debug_hook 'Cube::be_garbage' do %>(){
 <% end %>
     is_garbage_ = true;
 	hp_ = 3;
-    color_id_ = -1; // = data::Color::random_rgb_color();
+    color_id(-1); // = data::Color::random_rgb_color();
 	// show_outline();
 }
 
@@ -53,13 +53,14 @@ pExploding const Cube::is_exploding() const{ return dynamic_pointer_cast<Explodi
 
 void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
-    --y_;
+    // --y_;
+    y(y()-1);
     drop_a_block_event()();
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
-	if(chain_belonged_to_) {
+	if(chain_belonged_to_){
 		chain_belonged_to_->dec_one_owner();
 		chain_belonged_to_.reset();
 	}

@@ -15,36 +15,36 @@ namespace psc{ namespace presenter{ namespace cube{
 
 class ViewSprite: public ViewBase{
 public:
-    static ViewBase::pointer_type create(int x, int y, int color_id,
+    static ViewBase::pointer_type create(data::wpCube data,
         view::pScene scene, data::pMapSetting setting)
     {
-        return utils::ObjectPool<ViewSprite>::create(x, y, color_id, scene, setting);
+        return utils::ObjectPool<ViewSprite>::create(data, scene, setting);
     }
     static void redraw(Map const& map){}
 public:
-    ViewSprite(int x, int y, int color_id,
-        view::pScene scene, data::pMapSetting setting): ViewBase(x, y, color_id),
-        cube_size_(setting->cube_size())
+    ViewSprite(data::wpCube wd, view::pScene scene, data::pMapSetting setting):
+        ViewBase(wd), cube_size_(setting->cube_size())
     {
-        std::cout << "x: " << x << " y: " << y << std::endl;
+        data::pCube d = data().lock();
+        int color_id = d->color_id();
+
         std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
-        body_ = view::Sprite::create(path, scene,
-            cube_size_, cube_size_);
-        adjust();
+        body_ = view::Sprite::create(path, scene, cube_size_, cube_size_);
+
+        int x = d->x(), y = d->y();
+        adjust(x, y);
     }
     virtual void drop_a_block(){
-        if( x() == -1 && y() == -1) // from preview state
-            update().adjust();
-        body_->moveTween(100 + x()*cube_size_, y()*cube_size_, 500);
+        data::pCube d = data().lock();
+        int x = d->x(), y = d->y();
+        // adjust(x, y);
+
+        body_->moveTween(100 + x*cube_size_, 576-50 - y*cube_size_, 500);
     }
 
 private:
-    ViewSprite& update(){
-        // update x y from model... perhaps color_id too?
-        return *this;
-    }
-    ViewSprite& adjust(){
-        body_->moveTo(100 + x()*cube_size_, y()*cube_size_);
+    ViewSprite& adjust(int x, int y){
+        body_->moveTo(100 + x*cube_size_, 576-50 - y*cube_size_);
         return *this;
     }
 

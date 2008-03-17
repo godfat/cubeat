@@ -18,7 +18,7 @@ class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
-    typedef std::tr1::function<cube::pViewBase(int,int,int)> make_view_type;
+    typedef std::tr1::function<cube::pViewBase(data::wpCube)> make_view_type;
     typedef std::tr1::function<void(Map const&)> redraw_type;
     typedef std::pair<make_view_type, redraw_type> view_pair_type;
 

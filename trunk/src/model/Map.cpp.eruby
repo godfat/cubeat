@@ -10,12 +10,14 @@
 #include "model/state/Dropping.hpp"
 #include "model/state/Dying.hpp"
 
+#include "utils/Random.hpp"
 #include "utils/ChainChecker.hpp"
 #include "utils/for_each_multi_array.hpp"
 #include "utils/vector_2d.hpp"
 
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
+#include <cmath>
 
 <%= debug_include %>
 

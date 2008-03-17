@@ -14,7 +14,8 @@
 
 #include "all_fwd.hpp"
 #include "utils/ObjectPool.hpp"
-#include "data/Color.hpp"
+// #include "data/Color.hpp"
+#include "data/Cube.hpp"
 
 #include <tr1/functional>
 
@@ -32,11 +33,19 @@ public:
         return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): x_(x), y_(y),
-        color_id_(color_id), map_(map), cycled_(false), has_grounded_(false),
-        is_broken_(false), is_garbage_(false), hp_(1), lose_chain_delay_(0)
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): // x_(x), y_(y), color_id_(color_id)
+        data_(data::Cube::create(x, y, color_id)), map_(map), cycled_(false),
+        has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
+        lose_chain_delay_(0)
     {}
     <% debug_hook '~Cube' do %>(){<%end%>}
+
+    int x() const{ return data()->x(); }
+    int y() const{ return data()->y(); }
+    int color_id() const{ return data()->color_id(); }
+    Cube& x(int new_x){ data()->x(new_x); return *this; }
+    Cube& y(int new_y){ data()->y(new_y); return *this; }
+    Cube& color_id(int new_color_id){ data()->color_id(new_color_id); return *this; }
 
     // begin only used by Map::cycle
     bool cycle_and_die();
@@ -75,7 +84,9 @@ public:
     // end
 
     // begin only used by Map.cpp => local function check_not_continue
-    friend inline bool operator!=(Cube const& lhs, Cube const& rhs){ return lhs.color_id_ != rhs.color_id_; }
+    friend inline bool operator!=(Cube const& lhs, Cube const& rhs){
+        return lhs.color_id() != rhs.color_id();
+    }
     // end
 
     // begin only used by model::Map::color_map
@@ -125,7 +136,8 @@ private:
     bool is_dead() const{ return state_.use_count() == 0; }
 
 private:
-<%= accessor :int, :x, :y, :color_id %>
+/*<%= accessor :int, :x, :y, :color_id %>*/
+<%= accessor :'data::pCube', :data %>
     wpMap map_;
     // data::Color color_;
     pChain chain_belonged_to_;

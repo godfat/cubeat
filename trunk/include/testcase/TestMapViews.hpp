@@ -30,7 +30,7 @@ public:
         using namespace std::tr1::placeholders;
         map_->push_view( std::make_pair(
             std::tr1::bind(&presenter::cube::ViewSprite::create,
-                _1, _2, _3, scene_, map_->setting()),
+                _1, scene_, map_->setting()),
             &presenter::cube::ViewSprite::redraw) );
 
         // test_ = psc::view::Sprite::create("title", scene_, 100, 40);

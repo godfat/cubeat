@@ -73,4 +73,5 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
     state_ = state::Dying::create(shared_from_this());
+    go_dying_event()();
 }

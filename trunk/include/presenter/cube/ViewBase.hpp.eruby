@@ -19,7 +19,7 @@ public:
     ViewBase(data::wpCube data): data_(data){}
     virtual ~ViewBase(){}
     virtual void drop_a_block(){}
-    virtual void cycle(){}
+    virtual void go_dying(){}
 };
 
 }}} // end of namespaces

@@ -39,7 +39,14 @@ public:
         int x = d->x(), y = d->y();
         // adjust(x, y);
 
-        body_->moveTween(100 + x*cube_size_, 576-50 - y*cube_size_, 500);
+        // body_->moveTween(100 + x*cube_size_, 576-50 - y*cube_size_, 500);
+        body_->tween<easing::Linear, accessor::Pos2D>(
+            vec2(100 + x*cube_size_, 576-50 - y*cube_size_), 500
+        );
+    }
+
+    virtual void go_dying(){
+        body_->tween<easing::Linear, accessor::Alpha>(0, 100);
     }
 
 private:

@@ -49,6 +49,7 @@ public:
 
 private:
     pMap init();
+    static void bind_cube_event(pCube);
 
 private:
 <%= accessor 'data::pMapSetting', :setting %>

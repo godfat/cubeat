@@ -31,10 +31,16 @@ pMap <% debug_hook 'Map::init' do %>(){
     return self;
 }
 
+void Map::bind_cube_event(pCube cube){
+    model::pCube model = cube->model();
+    model->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) );
+    model->go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) );
+}
+
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 <% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
-    cube->model()->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) );
+    bind_cube_event(cube);
     BOOST_FOREACH(view_pair_type& view_pair, view_list_){
         cube->push_view(view_pair.first(cube->model()->data()));
     }

@@ -3,7 +3,7 @@ class Ai{
 	public function Ai(game: Game, map: Map){
 		game_ = game;
 		map_ = map;
-		travel_limit = 5;//make AI only travel the last (11-limit) Row of Map
+		travel_limit = 3;//make AI only travel the last (11-limit) Row of Map
 		best_amass_point = 0;
 		best_chain_point = 0;
 		best_amass_step_x = -1;
@@ -13,6 +13,10 @@ class Ai{
 		shooted = false;
 		clear_garbage_x = new Array();
 		clear_garbage_y = new Array();
+		tops = new Array(map.Width);
+		for(var i = 0; i < map.Width; i++){
+			tops[i] = 0;
+		}
 		trace("Hi,I am Ai!");
 	}
 	
@@ -27,6 +31,7 @@ class Ai{
 			}
 		}
 		if(this.shooted != true){
+			other_travel(map);
 			if(count_square_Num(map) >= 40 || check_top(map) <= 2){
 				combo_travel(map);
 			}
@@ -61,17 +66,36 @@ class Ai{
 		}
 		return count;
 	}
-	private function check_top(map: Map): Number{
-		var top:Number = 12;
+	private function other_travel(map: Map){
 		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if( map.lookup(w,h).state instanceof Waiting && h < top){
-					top = h;
+			for(var w = map.Width-1; w >= 0; --w){
+				if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_broken() == true){
+					trace("shoot broken(" + w + "," + h +")");
+					map.lookup(w,h).i_am_hit(1);
+				}else if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_garbage() == true){
+					trace("shoot garbage(" + w + "," + h +")");
+					map.lookup(w,h).i_am_hit(1);
 				}
 			}
 		}
+	}
+	
+	private function check_top(map: Map): Number{
+		var top:Number = 12;
+		for(var h = map.Height-1; h > 0; --h){
+			for(var w = map.Width-1; w >= 0; --w){
+				if( map.lookup(w,h).state instanceof Waiting){
+					this.tops[w] = map.Height-1-h;
+					if(h < top){
+						top = h;
+					}
+				}
+			}
+		}
+		trace("tops:" + this.tops);
 		return top;
 	}
+	
 	private function combo_travel(map: Map){
 		if(true){
 			for(var h = map.Height-1; h > this.travel_limit; --h){
@@ -86,7 +110,7 @@ class Ai{
 			}
 			trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
 			trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
-			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(99);
+			map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(1);
 			//this.best_chain_point = 0;
 			//this.best_chain_step_x = -1;
 			//this.best_chain_step_y = -1;
@@ -108,7 +132,7 @@ class Ai{
 			trace("Best amass step(" + best_amass_step_x + "," + best_amass_step_y + ")");
 			if(this.best_amass_step_x != -1){
 				trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
-				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(99);
+				map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(1);
 				//this.best_amass_point = 0;
 				//this.best_amass_step_x = -1;
 				//this.best_amass_step_y = -1;
@@ -116,10 +140,10 @@ class Ai{
 		}
 	}
 	public function dropping_travel(map: Map){
-		if(Dropping_checker(map) != null){
-			var del_arr = Dropping_checker(map);
+		var del_arr = Dropping_checker(map);
+		if(del_arr != null){
 			for(var del_i = 0; del_i < del_arr.length; ++del_i){
-				del_arr[del_i].i_am_hit(99);
+				del_arr[del_i].i_am_hit(1);
 				trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
 			}
 		}
@@ -135,7 +159,7 @@ class Ai{
 				this.best_amass_step_x = ac_x;
 				this.best_amass_step_y = ac_y;
 			}
-			trace("amass point(" + ac_x + "," + ac_y + "):" + get_point);
+			//trace("amass point(" + ac_x + "," + ac_y + "):" + get_point);
 		}
 	}
 	
@@ -172,7 +196,7 @@ class Ai{
 		}
 		//trace("Final_chain_count = " + chain_count);
 		//trace("All_square_count  = " + square_count);
-		trace("chain point(" + cc_x + "," + cc_y + "):" + get_point);
+		//trace("chain point(" + cc_x + "," + cc_y + "):" + get_point);
 		//trace_map_state(brain_map);
 		//trace_map_rgb(brain_map);
 	}
@@ -271,36 +295,34 @@ class Ai{
 	}
 	
 	private function del_block(brain_map: Map, x: Number, y: Number, need_move: Boolean){
-		var temp_map: Map = brain_map;
 		var del_x = x;
 		var del_y = y;
 		//trace("delete(" + del_x + "," + del_y + ")");
-		temp_map[del_y][del_x].suicide();
-		temp_map.delData(del_x, del_y);
+		brain_map[del_y][del_x].suicide();
+		brain_map.delData(del_x, del_y);
 		if(need_move == true){
-			move_block(temp_map, del_x, del_y, false);
+			move_block(brain_map, del_x, del_y, false);
 		}
 	}
 	
 	private function move_block(brain_map: Map, x: Number, y: Number, include_dropping: Boolean){
-		var temp_map: Map = brain_map;
 		var locx = x;
 		var locy = y;
 		for(var target_y = locy-1;
 			target_y > 0 &&
-			temp_map.lookup(locx,locy) == null;
+			brain_map.lookup(locx,locy) == null;
 			--target_y){
-			if(temp_map.lookup(locx,target_y) != null){
-				if(include_dropping == false && temp_map.lookup(locx,target_y).state instanceof Waiting){
-					temp_map.setup(locx, locy, temp_map.lookup(locx, target_y));
-					temp_map.lookup(locx, locy).y = locy;
+			if(brain_map.lookup(locx,target_y) != null){
+				if(include_dropping == false && brain_map.lookup(locx,target_y).state instanceof Waiting){
+					brain_map.setup(locx, locy, brain_map.lookup(locx, target_y));
+					brain_map.lookup(locx, locy).y = locy;
 					//trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
-					del_block(temp_map, locx, target_y, true);
-				}else if(include_dropping == true && temp_map.lookup(locx,target_y).state instanceof Dropping){
-					temp_map.setup(locx, locy, temp_map.lookup(locx, target_y));
-					temp_map.lookup(locx, locy).y = locy;
+					del_block(brain_map, locx, target_y, true);
+				}else if(include_dropping == true && brain_map.lookup(locx,target_y).state instanceof Dropping){
+					brain_map.setup(locx, locy, brain_map.lookup(locx, target_y));
+					brain_map.lookup(locx, locy).y = locy;
 					//trace("move waiting  cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
-					del_block(temp_map, locx, target_y, true);
+					del_block(brain_map, locx, target_y, true);
 				}
 			}
 		}
@@ -406,6 +428,7 @@ class Ai{
 	private var best_chain_point: Number;
 	private var clear_garbage_x: Array;
 	private var clear_garbage_y: Array;
+	private var tops: Array;
 	private var shooted: Boolean;
 	private var game_: Game;
 	private var map_: Map;

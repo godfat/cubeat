@@ -215,6 +215,14 @@ class Square
     private static var Black: ColorTransform = new ColorTransform;
 	private static var Gray:  ColorTransform = new ColorTransform;    //added
 	
+	public function if_garbage(): Boolean{
+		return this.is_garbage_;
+	}
+	
+	public function if_broken(): Boolean{
+		return this.is_broken_;
+	}
+	
     public function be_garbage(): Void{
 		is_garbage_ = true;
 		hp_ = 3;

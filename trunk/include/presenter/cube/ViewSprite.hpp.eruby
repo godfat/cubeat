@@ -39,7 +39,7 @@ public:
         body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
 
         body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
-            std::tr1::bind( &model::Cube::go_exploding, c.get() );
+            std::tr1::bind( &ViewSprite::cube_go_exploding, this, model::wpCube(c) );
     }
     virtual void drop_a_block(){
         data::pCube d = data().lock();
@@ -80,6 +80,10 @@ private:
     static inline int pos_y(int y, data::pMapSetting s){
         return s->y_offset() + -(y*s->cube_size()); }
     void just_for_hold_shared_ptr(){}
+    void cube_go_exploding(model::wpCube c){
+        if(model::pCube cube = c.lock())
+            cube->go_exploding();
+    }
 
 private:
     view::pSprite body_;

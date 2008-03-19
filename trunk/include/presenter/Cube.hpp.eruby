@@ -42,6 +42,9 @@ public:
     void <% debug_hook 'go_dying' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_dying(); }
     }
+    void <% debug_hook 'go_exploding' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_exploding(); }
+    }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 
     int x() const;

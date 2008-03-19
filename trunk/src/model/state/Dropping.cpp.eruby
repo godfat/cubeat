@@ -13,7 +13,7 @@ pState <% debug_hook 'Dropping::init' do %>(){
 <% end %>
     pState result = shared_from_this();
     ctrl::EventDispatcher::i().subscribe_timer(
-        std::tr1::bind(&State::next_state, result.get()), result,
+        std::tr1::bind(&State::next_state, result.get()), owner(), // it could interrupt
             map()->ms()->cube_dropping_duration());
     return result;
 }

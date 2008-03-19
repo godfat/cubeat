@@ -75,3 +75,10 @@ void <% debug_hook 'Cube::go_dying' do %>(){
     state_ = state::Dying::create(shared_from_this());
     go_dying_event()();
 }
+
+void <% debug_hook 'Cube::go_exploding' do %>(){
+<% end %>
+    // state_ = state::Exploding::create(shared_from_this());
+    state_.reset();
+    go_exploding_event()();
+}

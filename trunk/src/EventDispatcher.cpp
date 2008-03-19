@@ -10,6 +10,7 @@
 #include "view/Scene.hpp"
 
 #include <boost/foreach.hpp>
+#include <tr1/functional>
 #include <algorithm>
 #include <iostream>
 #include <utility>
@@ -45,7 +46,7 @@ EventDispatcher& EventDispatcher::subscribe_btn_event
 EventDispatcher& EventDispatcher::subscribe_timer
     (TimerCallback const& cb, wpvoid const& obj, int const& duration, int loop)
 {
-    const int zero = 0;
+    int const zero = 0;
     newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
     return *this;
 }

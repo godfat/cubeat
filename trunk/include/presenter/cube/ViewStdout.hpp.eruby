@@ -11,7 +11,7 @@ namespace psc{ namespace presenter{ namespace cube{
 
 class ViewStdout: public ViewBase{
 public:
-    static ViewBase::pointer_type create(data::wpCube data){
+    static ViewBase::pointer_type create(model::pCube){
         return ViewBase::pointer_type();
     }
     static void redraw(Map const& map){

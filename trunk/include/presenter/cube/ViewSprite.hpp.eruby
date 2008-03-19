@@ -6,34 +6,40 @@
 
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "Input.hpp"
 
 #include "all_fwd.hpp"
 
+#include <tr1/functional>
 #include <boost/lexical_cast.hpp>
 
 namespace psc{ namespace presenter{ namespace cube{
 
-class ViewSprite: public ViewBase{
+// stupid binding would be a must,
+// without it, ViewSprite, Sprite, etc. would be destroyed by GC!
+// then enable_shared_from_this would be used.
+class ViewSprite: public ViewBase, public std::tr1::enable_shared_from_this<ViewSprite>{
 public:
-    static ViewBase::pointer_type create(data::wpCube data,
+    static ViewBase::pointer_type create(model::pCube cube,
         view::pScene scene, data::pMapSetting setting)
     {
-        return utils::ObjectPool<ViewSprite>::create(data, scene, setting);
+        return utils::ObjectPool<ViewSprite>::create(cube, scene, setting);
     }
     static void redraw(Map const& map){}
 public:
-    ViewSprite(data::wpCube wd, view::pScene scene, data::wpMapSetting set):
-        ViewBase(wd), setting_(set)
+    ViewSprite(model::pCube c, view::pScene scene, data::pMapSetting s):
+        ViewBase(c), setting_(s)
     {
-        data::pCube d = data().lock();
+        data::pCube d = c->data();
         int color_id = d->color_id();
-
-        data::pMapSetting s = setting();
 
         std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
         body_ = view::Sprite::create(path, scene, s->cube_size(), s->cube_size());
 
         body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
+
+        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
+            std::tr1::bind( &model::Cube::go_exploding, c.get() );
     }
     virtual void drop_a_block(){
         data::pCube d = data().lock();
@@ -50,12 +56,30 @@ public:
         body_->tween<easing::Linear, accessor::Alpha>(0, setting()->cube_dying_duration());
     }
 
+    virtual void go_exploding(){
+        // stupid binding would be a must,
+        // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
+        body_->tween<easing::Linear, accessor::Alpha>(0, 1000,
+            0, std::tr1::bind(&ViewSprite::just_for_hold_shared_ptr, shared_from_this()) );
+        body_->tween<easing::Linear, accessor::Scale>(vec3(0,0,0), 1000);
+
+        // using std::tr1::cref;
+        // body_->tween<easing::Linear, accessor::Alpha>(0, 1000, 0, std::tr1::bind(static_cast<
+        //     view::Object& (view::Object::*) ( accessor::Scale::value_type const&,
+        //                                       int unsigned const&, int const&,
+        //                                       std::tr1::function<void()> const&,
+        //                                       int const& ) >
+        //         ( &view::Object::tween<easing::Linear, accessor::Scale> ),
+        //     body_.get(), cref(vec3(0,0,0)), cref(1000), cref(0), cref(0), cref(0)) );
+    }
+
 private:
     data::pMapSetting setting() const{ return setting_.lock(); }
     static inline int pos_x(int x, data::pMapSetting s){
         return s->x_offset() + x*s->cube_size(); }
     static inline int pos_y(int y, data::pMapSetting s){
         return s->y_offset() + -(y*s->cube_size()); }
+    void just_for_hold_shared_ptr(){}
 
 private:
     view::pSprite body_;

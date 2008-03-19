@@ -16,7 +16,7 @@ Map& <% debug_hook 'Map::push_view' do %>(view_pair_type view_pair){
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
-        cube->push_view(view_pair.first(cube->model()->data()));
+        cube->push_view(view_pair.first(cube->model()));
     }
     view_list_.push_back(view_pair);
     return *this;
@@ -32,9 +32,9 @@ pMap <% debug_hook 'Map::init' do %>(){
 }
 
 void Map::bind_cube_event(pCube cube){
-    model::pCube model = cube->model();
-    model->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
-               go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) );
+    cube->model()->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
+                       go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
+                   go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
@@ -42,7 +42,7 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     bind_cube_event(cube);
     BOOST_FOREACH(view_pair_type& view_pair, view_list_){
-        cube->push_view(view_pair.first(cube->model()->data()));
+        cube->push_view(view_pair.first(cube->model()));
     }
     cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;

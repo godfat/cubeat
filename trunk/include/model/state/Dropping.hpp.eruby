@@ -40,12 +40,7 @@ public:
     virtual <% debug_hook '~Dropping' do %>(){<%end%>}
 
 protected:
-    virtual pState init(){
-        pState result = shared_from_this();
-        ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&State::next_state, result.get()), result, 500);
-        return result;
-    }
+    virtual pState init();
 };
 
 }}} // end of namespace

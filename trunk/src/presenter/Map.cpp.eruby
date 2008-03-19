@@ -33,8 +33,8 @@ pMap <% debug_hook 'Map::init' do %>(){
 
 void Map::bind_cube_event(pCube cube){
     model::pCube model = cube->model();
-    model->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) );
-    model->go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) );
+    model->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
+               go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

@@ -22,42 +22,44 @@ public:
     }
     static void redraw(Map const& map){}
 public:
-    ViewSprite(data::wpCube wd, view::pScene scene, data::pMapSetting setting):
-        ViewBase(wd), cube_size_(setting->cube_size())
+    ViewSprite(data::wpCube wd, view::pScene scene, data::wpMapSetting set):
+        ViewBase(wd), setting_(set)
     {
         data::pCube d = data().lock();
         int color_id = d->color_id();
 
-        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
-        body_ = view::Sprite::create(path, scene, cube_size_, cube_size_);
+        data::pMapSetting s = setting();
 
-        int x = d->x(), y = d->y();
-        adjust(x, y);
+        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
+        body_ = view::Sprite::create(path, scene, s->cube_size(), s->cube_size());
+
+        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
     }
     virtual void drop_a_block(){
         data::pCube d = data().lock();
         int x = d->x(), y = d->y();
-        // adjust(x, y);
 
-        // body_->moveTween(100 + x*cube_size_, 576-50 - y*cube_size_, 500);
+        data::pMapSetting s = setting();
+
         body_->tween<easing::Linear, accessor::Pos2D>(
-            vec2(100 + x*cube_size_, 576-50 - y*cube_size_), 500
+            vec2( pos_x(x, s), pos_y(y, s) ), s->cube_dropping_duration()
         );
     }
 
-    virtual void go_dying(){
-        body_->tween<easing::Linear, accessor::Alpha>(0, 100);
+    virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
+        body_->tween<easing::Linear, accessor::Alpha>(0, setting()->cube_dying_duration());
     }
 
 private:
-    ViewSprite& adjust(int x, int y){
-        body_->moveTo(100 + x*cube_size_, 576-50 - y*cube_size_);
-        return *this;
-    }
+    data::pMapSetting setting() const{ return setting_.lock(); }
+    static inline int pos_x(int x, data::pMapSetting s){
+        return s->x_offset() + x*s->cube_size(); }
+    static inline int pos_y(int y, data::pMapSetting s){
+        return s->y_offset() + -(y*s->cube_size()); }
 
 private:
     view::pSprite body_;
-    int cube_size_;
+    data::wpMapSetting setting_;
 };
 
 }}} // end of namespaces

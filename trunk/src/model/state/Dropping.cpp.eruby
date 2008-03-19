@@ -9,6 +9,15 @@ using namespace psc;
 using namespace model;
 using namespace state;
 
+pState <% debug_hook 'Dropping::init' do %>(){
+<% end %>
+    pState result = shared_from_this();
+    ctrl::EventDispatcher::i().subscribe_timer(
+        std::tr1::bind(&State::next_state, result.get()), result,
+            map()->ms()->cube_dropping_duration());
+    return result;
+}
+
 // pState Dropping::next_state(){
 //     // owner()->drop_a_frame();
 //     // if( owner()->is_not_reached() )

@@ -37,10 +37,10 @@ public:
     <% debug_hook '~Cube' do %>(){<%end%>}
 
     void <% debug_hook 'drop_a_block' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ view->drop_a_block(); }
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->drop_a_block(); }
     }
     void <% debug_hook 'go_dying' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ view->go_dying(); }
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_dying(); }
     }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 

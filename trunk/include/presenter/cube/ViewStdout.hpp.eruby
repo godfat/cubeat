@@ -12,7 +12,7 @@ namespace psc{ namespace presenter{ namespace cube{
 class ViewStdout: public ViewBase{
 public:
     static ViewBase::pointer_type create(data::wpCube data){
-        return utils::ObjectPool<ViewStdout>::create(data);
+        return ViewBase::pointer_type();
     }
     static void redraw(Map const& map){
         static std::clock_t last_ = std::clock();
@@ -29,9 +29,8 @@ public:
         std::printf("\n");
     }
 
-public:
-    ViewStdout(data::wpCube d): ViewBase(d){}
-    virtual void drop_a_block(){}
+private:
+    ViewStdout();
 };
 
 }}} // end of namespaces

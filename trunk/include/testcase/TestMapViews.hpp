@@ -21,7 +21,9 @@ public:
         scene_ = psc::view::Scene::create("TestMapViewScene");
         scene_->setTo2DView();
 
-        map_ = presenter::Map::create(data::pMapSetting(new data::MapSetting));
+        data::pMapSetting setting(new data::MapSetting);
+        setting->y_offset(500);
+        map_ = presenter::Map::create(setting);
 
         map_->push_view( std::make_pair(
             &presenter::cube::ViewStdout::create,

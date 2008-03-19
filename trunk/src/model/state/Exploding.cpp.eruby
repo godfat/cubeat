@@ -11,7 +11,7 @@ using namespace state;
 
 void <% debug_hook 'Exploding::cycle' do %>(){
 <% end %>
-	if( exploding_step_ < map()->ms()->cube_dying_time() ){
+	if( exploding_step_ < map()->ms()->cube_dying_duration() ){
 		if( !explosion_started_ ){
 			owner()->explosion_setup();
 			explosion_started_ = true;

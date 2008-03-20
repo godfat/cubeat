@@ -31,14 +31,25 @@ file :Makefile do
 end
 
 desc 'preprocess and build'
-task :build => [:preprocess, :Makefile] do
+task :build => [:prepare, :Makefile] do
   sh 'make'
 end
 
 desc 'clobber and build'
 task :rebuild => [:clobber, :build]
 
-#####
+desc 'prepare for build, doing custom preprocessing'
+task :prepare => [:preprocess,
+                  :reprocess_CMakeLists]
+
+##
+
+task :reprocess_CMakeLists do
+  File.delete 'CMakeLists.txt'
+  sh 'rake CMakeLists.txt'
+end
+
+##
 
 namespace :svk do
   %w{commit push pull status update}.each{ |cmd|

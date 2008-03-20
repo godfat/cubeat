@@ -21,14 +21,16 @@ class Ai{
 	}
 	
 	public function full_process(map: Map){
-		for(var h = map.Height-1; h > this.travel_limit; --h){
+		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
 					this.shooted = true;
+					break;
 				}else{
 					this.shooted = false;
 				}
 			}
+			if( this.shooted == true ) break;
 		}
 		if(this.shooted != true){
 			other_travel(map);

@@ -307,16 +307,23 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 	// we must check which column's top is empty when drop squares
 	// so we setup an array of columns which its top is empty
     int top = ms()->height()-1;
-	std::vector<int> is_empty;
+	std::vector<int> is_empty, not_empty;
 	for( int x=0, width = ms()->width(); x < width; ++x )
 		if( !cubes_[x][top] && !cubes_[x][top-1] )
-			is_empty.push_back( x );
+			is_empty.push_back(x);
+		else
+            not_empty.push_back(x);
 
 	if( is_empty.size() == 0 ) return;
 
     BOOST_FOREACH(int x, is_empty){
         cubes_preview_[x]->x(x).y(top);
         insert_cube(cubes_preview_[x]);
+    }
+
+    presenter::pMap owner = owner_.lock();
+    BOOST_FOREACH(int x, not_empty){
+        owner->release(cubes_preview_[x]);
     }
 
     fill_preview_queue();
@@ -327,8 +334,7 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 
 void <% debug_hook 'Map::fill_preview_queue' do %>(){
 <% end %>
-	cubes_preview_.clear();
-
+    cubes_preview_.clear();
     int unsigned width = ms()->width();
 	std::vector<int> preview_set; // color set
     preview_set.push_back(utils::random( ms()->color_amounts() )+1);

@@ -87,8 +87,7 @@ private:
     void cycle_creation_garbage();
     void cycle_warning();
     void fill_preview_queue();
-    void fill_preview1(std::vector<int>&, int&);
-    void fill_preview2(std::vector<int>&, int&);
+    int fill_preview_create_color(std::vector<int>&);
 
     void make_row(pCube that, cube_list_type&, cube_list_type&);
     void make_column(pCube that, cube_list_type&, cube_list_type&);

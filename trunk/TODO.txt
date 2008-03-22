@@ -9,3 +9,9 @@
 * cube remember color id
 
 * <del>presenter hold model? or reversed way?</del>
+
+* profiling
+* thread
+* gcc43
+* gcc44
+* apple-gcc42

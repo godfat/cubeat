@@ -9,7 +9,7 @@ SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
 
 # setup cxx flags
 IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET (cxx_flag "-std=c++98 -Wall --expensive-optimizations -O3 -Os --input-charset=utf-8 --fast-math")
+    SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
     IF(APPLE)
         SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
     ENDIF(APPLE)

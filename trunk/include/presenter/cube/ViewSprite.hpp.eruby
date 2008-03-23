@@ -1,8 +1,9 @@
 
 <% header_guard do %>
 
-#include "presenter/cube/ViewMaster.hpp"
 #include "view/Sprite.hpp"
+#include "presenter/cube/ViewMaster.hpp"
+#include "data/ViewSpriteSetting.hpp"
 
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
@@ -20,14 +21,15 @@ namespace psc{ namespace presenter{ namespace cube{
 // then enable_shared_from_this would be used.
 class ViewSprite: public ViewBase, public std::tr1::enable_shared_from_this<ViewSprite>{
 public:
-    static ViewBase::pointer_type create(model::pCube cube,
-        view::pScene scene, data::pMapSetting setting)
+    static ViewBase::pointer_type create(model::pCube cube, view::pScene scene,
+        data::pMapSetting map_setting, data::pViewSpriteSetting setting)
     {
-        return utils::ObjectPool<ViewSprite>::create(cube, scene, setting);
+        return utils::ObjectPool<ViewSprite>::create(cube, scene, map_setting, setting);
     }
 public:
-    ViewSprite(model::pCube c, view::pScene scene, data::pMapSetting s):
-        ViewBase(c), setting_(s)
+    ViewSprite(model::pCube c, view::pScene scene,
+        data::pMapSetting ms, data::pViewSpriteSetting s):
+        ViewBase(c), map_setting_(ms), setting_(s)
     {
         data::pCube d = c->data();
         int color_id = d->color_id();
@@ -44,15 +46,16 @@ public:
         data::pCube d = data().lock();
         int x = d->x(), y = d->y();
 
-        data::pMapSetting s = setting();
+        data::pViewSpriteSetting s = setting();
 
         body_->tween<easing::Linear, accessor::Pos2D>(
-            vec2( pos_x(x, s), pos_y(y, s) ), s->cube_dropping_duration()
+            vec2( pos_x(x, s), pos_y(y, s) ), map_setting()->cube_dropping_duration()
         );
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
-        body_->tween<easing::Linear, accessor::Alpha>(0, setting()->cube_dying_duration());
+        body_->tween<easing::Linear, accessor::Alpha>(0,
+            map_setting()->cube_dying_duration());
     }
 
     virtual void go_exploding(){
@@ -73,10 +76,11 @@ public:
     }
 
 private:
-    data::pMapSetting setting() const{ return setting_.lock(); }
-    static inline int pos_x(int x, data::pMapSetting s){
+    data::pMapSetting map_setting() const{ return map_setting_.lock(); }
+    data::pViewSpriteSetting setting() const{ return setting_.lock(); }
+    static inline int pos_x(int x, data::pViewSpriteSetting s){
         return s->x_offset() + x*s->cube_size(); }
-    static inline int pos_y(int y, data::pMapSetting s){
+    static inline int pos_y(int y, data::pViewSpriteSetting s){
         return s->y_offset() + -(y*s->cube_size()); }
     void just_for_hold_shared_ptr(){}
     void cube_go_exploding(model::wpCube c){
@@ -86,24 +90,31 @@ private:
 
 private:
     view::pSprite body_;
-    data::wpMapSetting setting_;
+    data::wpMapSetting map_setting_;
+    data::wpViewSpriteSetting setting_;
 };
 
 class ViewSpriteMaster: public ViewMaster{
 public:
-    static ViewMaster::pointer_type create(view::pScene scene, data::pMapSetting setting){
+    static ViewMaster::pointer_type create(view::pScene scene, data::pViewSpriteSetting setting)
+    {
         return ViewMaster::pointer_type(new ViewSpriteMaster(scene, setting));
     }
-public:
-    ViewSpriteMaster(view::pScene scene, data::pMapSetting setting):
-        scene_(scene), setting_(setting){}
-    virtual ViewBase::pointer_type create(model::pCube cube) const{ // no covariant return type
-        return ViewSprite::create(cube, scene_.lock(), setting_.lock());
+    static ViewMaster::pointer_type create(view::pScene scene)
+    {
+        return create(scene, data::ViewSpriteSetting::create());
     }
-    virtual void redraw(Map const&){}
+public:
+    // no covariant return type
+    virtual ViewBase::pointer_type create(model::pCube cube) const{
+        return ViewSprite::create(cube, scene_.lock(), map_setting(), setting_);
+    }
+private:
+    ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting):
+        scene_(scene), setting_(setting){}
 private:
     view::wpScene scene_;
-    data::wpMapSetting setting_;
+    data::pViewSpriteSetting setting_;
 };
 
 }}} // end of namespaces

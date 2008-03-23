@@ -7,7 +7,6 @@
 #include "all_fwd.hpp"
 
 #include "presenter/Map.hpp"
-#include "data/MapSetting.hpp"
 #include "presenter/cube/ViewSprite.hpp"
 #include "presenter/cube/ViewStdout.hpp"
 
@@ -19,12 +18,14 @@ public:
         scene_ = psc::view::Scene::create("TestMapViewScene");
         scene_->setTo2DView();
 
-        data::pMapSetting setting(new data::MapSetting);
-        setting->y_offset(500);
-        map_ = presenter::Map::create(setting);
+        map_ = presenter::Map::create();
 
         map_->push_view( presenter::cube::ViewStdoutMaster::create() );
-        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, setting) );
+        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
+        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
+            data::ViewSpriteSetting::create(50, 100, 400) ) );
+        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
+            data::ViewSpriteSetting::create(25, 450, 400) ) );
 
         // test_ = psc::view::Sprite::create("title", scene_, 100, 40);
         // test_->moveTo(100,40);

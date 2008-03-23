@@ -1,0 +1,24 @@
+
+<% header_guard do %>
+
+#include <tr1/memory>
+
+namespace psc{ namespace data{
+
+class ViewSpriteSetting{
+public:
+    typedef std::tr1::shared_ptr<ViewSpriteSetting> pointer_type;
+    static pointer_type create(double cube_size = 50, double x_offset = 0, double y_offset = 0)
+    {
+        return pointer_type(new ViewSpriteSetting(cube_size, x_offset, y_offset));
+    }
+
+private:
+    ViewSpriteSetting(double cube_size = 50, double x_offset = 0, double y_offset = 0):
+        cube_size_(cube_size), x_offset_(x_offset), y_offset_(y_offset){}
+<%= accessor :double, :cube_size, :x_offset, :y_offset %>
+};
+
+}} // end of namespace
+
+<% end %>

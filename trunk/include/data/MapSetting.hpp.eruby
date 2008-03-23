@@ -2,23 +2,22 @@
 <% header_guard do %>
 <%= debug_include %>
 
+#include <tr1/memory>
+
 namespace psc{ namespace data{
 
 class MapSetting{<%# @prefix = ' '*4 %>
+public:
+    typedef std::tr1::shared_ptr<MapSetting> pointer_type;
+    static pointer_type create(){
+        return pointer_type(new MapSetting);
+    }
+
 <%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_dropping_duration, :grounded_check_delay, :warning_check_delay %>
-<%= accessor :double, :cube_size, :speed, :damage_factor, :x_offset, :y_offset %>
+<%= accessor :double, :speed, :damage_factor %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable %>
 public:
-    MapSetting():
-        color_amounts_(4), chain_amounts_(3), starting_line_(4),
-        chaining_duration_(100), cube_dying_duration_(250), cube_dropping_duration_(500),
-        grounded_check_delay_(3), warning_check_delay_(100),
-        cube_size_(50.0), speed_(0.75), damage_factor_(1.00),
-        x_offset_(cube_size_), y_offset_(cube_size_),
-        width_(6), height_(11), dropping_creatable_(true)
-    { reset_size(); }
-
     MapSetting& <% debug_hook 'width' do %>(int const& new_width){
 <% end %>
         width_ = new_width;
@@ -31,6 +30,16 @@ public:
     }
 
     <% debug_hook '~MapSetting' do %>(){<%end%>}
+
+private:
+    MapSetting():
+        color_amounts_(4), chain_amounts_(3), starting_line_(4),
+        chaining_duration_(100), cube_dying_duration_(250), cube_dropping_duration_(500),
+        grounded_check_delay_(3), warning_check_delay_(100),
+        speed_(0.75), damage_factor_(1.00),
+        width_(6), height_(11), dropping_creatable_(true)
+    { reset_size(); }
+
 private:
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };

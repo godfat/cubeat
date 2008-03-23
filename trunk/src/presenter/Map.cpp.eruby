@@ -13,6 +13,8 @@ using namespace presenter;
 
 Map& <% debug_hook 'Map::push_view' do %>(cube::pViewMaster view){
 <% end %>
+    view->map_setting(setting());
+
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;

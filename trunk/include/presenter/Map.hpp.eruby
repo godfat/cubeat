@@ -3,6 +3,7 @@
 
 #include "model/Map.hpp"
 #include "presenter/cube/ViewMaster.hpp"
+#include "data/MapSetting.hpp"
 
 #include "all_fwd.hpp"
 
@@ -23,6 +24,7 @@ public:
 
 public:
     static pMap create(data::pMapSetting setting){ return pMap(new Map(setting))->init(); }
+    static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
     Map(data::pMapSetting setting): setting_(setting){}

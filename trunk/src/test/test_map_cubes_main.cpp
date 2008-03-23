@@ -30,7 +30,7 @@ int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     IrrDevice::i().init(true);
 
-    presenter::pMap map = presenter::Map::create(data::pMapSetting(new data::MapSetting));
+    presenter::pMap map = presenter::Map::create();
     map->push_view( presenter::cube::ViewStdoutMaster::create() );
 
     std::cerr << "\n\n\nend creation\n\n\n";

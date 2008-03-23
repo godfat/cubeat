@@ -9,12 +9,22 @@ namespace psc{ namespace presenter{
 namespace cube{
 
 class ViewMaster{
+    friend class psc::presenter::Map; // for you to setup my map setting
 public:
     typedef std::tr1::shared_ptr<ViewMaster> pointer_type;
 public:
-    virtual ViewBase::pointer_type create(model::pCube cube) const = 0;
-    virtual void redraw(Map const& map) = 0;
+    virtual ViewBase::pointer_type create(model::pCube cube) const{
+        return ViewBase::pointer_type();
+    };
+    virtual void redraw(Map const& map){}
     virtual ~ViewMaster(){}
+
+protected:
+    data::pMapSetting map_setting() const{ return map_setting_.lock(); }
+
+private:
+    ViewMaster& map_setting(data::wpMapSetting ms){ map_setting_ = ms; return *this; }
+    data::wpMapSetting map_setting_;
 };
 
 }}} // end of namespace

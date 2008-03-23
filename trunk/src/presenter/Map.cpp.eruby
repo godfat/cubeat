@@ -11,14 +11,14 @@
 using namespace psc;
 using namespace presenter;
 
-Map& <% debug_hook 'Map::push_view' do %>(view_pair_type view_pair){
+Map& <% debug_hook 'Map::push_view' do %>(cube::pViewMaster view){
 <% end %>
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
-        cube->push_view(view_pair.first(cube->model()));
+        cube->push_view( view->create(cube->model()) );
     }
-    view_list_.push_back(view_pair);
+    view_list_.push_back(view);
     return *this;
 }
 
@@ -41,8 +41,8 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 <% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     bind_cube_event(cube);
-    BOOST_FOREACH(view_pair_type& view_pair, view_list_){
-        cube->push_view(view_pair.first(cube->model()));
+    BOOST_FOREACH(cube::pViewMaster& view, view_list_){
+        cube->push_view( view->create(cube->model()) );
     }
     cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;

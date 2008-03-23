@@ -2,9 +2,7 @@
 <% header_guard do %>
 
 #include "model/Cube.hpp"
-
 #include <tr1/memory>
-#include <tr1/functional>
 
 namespace psc{ namespace presenter{ namespace cube{
 
@@ -12,9 +10,7 @@ class ViewBase{
 <%= accessor :'data::wpCube', :data %>
 public:
     typedef std::tr1::shared_ptr<ViewBase> pointer_type;
-    static pointer_type create(model::pCube cube){
-        return utils::ObjectPool<ViewBase>::create(cube);
-    }
+    static pointer_type create(model::pCube){ return pointer_type(); }
 public:
     ViewBase(model::pCube cube): data_(cube->data()){}
     virtual ~ViewBase(){}

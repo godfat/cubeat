@@ -1,0 +1,22 @@
+
+<% header_guard do %>
+
+#include "presenter/cube/ViewBase.hpp"
+#include <tr1/memory>
+
+namespace psc{ namespace presenter{
+    class Map;
+namespace cube{
+
+class ViewMaster{
+public:
+    typedef std::tr1::shared_ptr<ViewMaster> pointer_type;
+public:
+    virtual ViewBase::pointer_type create(model::pCube cube) const = 0;
+    virtual void redraw(Map const& map) = 0;
+    virtual ~ViewMaster(){}
+};
+
+}}} // end of namespace
+
+<% end %>

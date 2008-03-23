@@ -1,7 +1,7 @@
 
 <% header_guard do %>
 
-#include "presenter/cube/ViewBase.hpp"
+#include "presenter/cube/ViewMaster.hpp"
 #include "view/Sprite.hpp"
 
 #include "Accessors.hpp"
@@ -25,7 +25,6 @@ public:
     {
         return utils::ObjectPool<ViewSprite>::create(cube, scene, setting);
     }
-    static void redraw(Map const& map){}
 public:
     ViewSprite(model::pCube c, view::pScene scene, data::pMapSetting s):
         ViewBase(c), setting_(s)
@@ -87,6 +86,23 @@ private:
 
 private:
     view::pSprite body_;
+    data::wpMapSetting setting_;
+};
+
+class ViewSpriteMaster: public ViewMaster{
+public:
+    static ViewMaster::pointer_type create(view::pScene scene, data::pMapSetting setting){
+        return ViewMaster::pointer_type(new ViewSpriteMaster(scene, setting));
+    }
+public:
+    ViewSpriteMaster(view::pScene scene, data::pMapSetting setting):
+        scene_(scene), setting_(setting){}
+    virtual ViewBase::pointer_type create(model::pCube cube) const{ // no covariant return type
+        return ViewSprite::create(cube, scene_.lock(), setting_.lock());
+    }
+    virtual void redraw(Map const&){}
+private:
+    view::wpScene scene_;
     data::wpMapSetting setting_;
 };
 

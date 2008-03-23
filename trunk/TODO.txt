@@ -1,17 +1,15 @@
 
-* need to fix some preprocessing ordering... e.g., CMakeList.txt,
-  create it last!!! and all_fwd.hpp is also suffer simlary problem.
+* <del>need to fix some preprocessing ordering... e.g., CMakeList.txt,
+  create it last!!! and all_fwd.hpp is also suffer simlary problem.</del>
 
 * garbage switch?
   - if there's some garbages, no dropping creation.
   - a'
 
-* cube remember color id
+* <del>cube remember color id</del>
 
 * <del>presenter hold model? or reversed way?</del>
 
 * profiling
 * thread
-* gcc43
-* gcc44
-* apple-gcc42
+* <del>gcc43</del>

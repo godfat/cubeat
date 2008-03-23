@@ -2,13 +2,13 @@
 <% header_guard do %>
 
 #include "model/Map.hpp"
-// #include "presenter/Cube.hpp"
+#include "presenter/cube/ViewMaster.hpp"
 
 #include "all_fwd.hpp"
 
 #include <boost/foreach.hpp>
-#include <tr1/functional>
 #include <map>
+#include <list>
 
 <%= debug_include %>
 
@@ -18,9 +18,6 @@ class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
-    typedef std::tr1::function<cube::pViewBase(model::pCube)> make_view_type;
-    typedef std::tr1::function<void(Map const&)> redraw_type;
-    typedef std::pair<make_view_type, redraw_type> view_pair_type;
 
     typedef model::Map::color_map_type color_map_type;
 
@@ -29,7 +26,7 @@ public:
 
 public:
     Map(data::pMapSetting setting): setting_(setting){}
-    Map& push_view(view_pair_type make_view);
+    Map& push_view(cube::pViewMaster);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
@@ -41,8 +38,8 @@ public:
 
     color_map_type color_map() const{ return model_->color_map(); }
     Map& redraw(){
-        BOOST_FOREACH(view_pair_type& pair, view_list_){
-            pair.second(*this); // redraw
+        BOOST_FOREACH(cube::pViewMaster& view, view_list_){
+            view->redraw(*this);
         }
         return *this;
     }
@@ -56,7 +53,7 @@ private:
 <%= reader 'model::pMap', :model %>
     view::pMap view_;
     container_type cubes_;
-    std::list<view_pair_type> view_list_;
+    std::list<cube::pViewMaster> view_list_;
 };
 
 }} // end of namespace

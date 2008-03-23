@@ -1,21 +1,21 @@
 
 <% header_guard do %>
 
-#include "presenter/cube/ViewBase.hpp"
+#include "presenter/cube/ViewMaster.hpp"
 #include "presenter/Map.hpp"
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
+#include <cstdio> // for printf
+#include <ctime> // for clock
 
 namespace psc{ namespace presenter{ namespace cube{
 
-class ViewStdout: public ViewBase{
+class ViewStdoutMaster: public ViewMaster{
 public:
-    static ViewBase::pointer_type create(model::pCube){
-        return ViewBase::pointer_type();
+    static ViewMaster::pointer_type create(){
+        return ViewMaster::pointer_type(new ViewStdoutMaster);
     }
-    static void redraw(Map const& map){
-        static std::clock_t last_ = std::clock();
+public:
+    virtual ViewBase::pointer_type create(model::pCube) const{return ViewBase::pointer_type(); }
+    virtual void redraw(Map const& map){
         std::clock_t now = std::clock();
         if( now - last_ < CLOCKS_PER_SEC/10.0 ) return;
         else last_ = now;
@@ -28,9 +28,10 @@ public:
         }
         std::printf("\n");
     }
-
 private:
-    ViewStdout();
+    ViewStdoutMaster(): last_(std::clock()){}
+private:
+    std::clock_t last_;
 };
 
 }}} // end of namespaces

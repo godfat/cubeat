@@ -11,8 +11,6 @@
 #include "presenter/cube/ViewSprite.hpp"
 #include "presenter/cube/ViewStdout.hpp"
 
-#include <tr1/functional>
-
 using namespace psc;
 
 class TestMapViews{
@@ -25,15 +23,8 @@ public:
         setting->y_offset(500);
         map_ = presenter::Map::create(setting);
 
-        map_->push_view( std::make_pair(
-            &presenter::cube::ViewStdout::create,
-            &presenter::cube::ViewStdout::redraw) );
-
-        using namespace std::tr1::placeholders;
-        map_->push_view( std::make_pair(
-            std::tr1::bind(&presenter::cube::ViewSprite::create,
-                _1, scene_, map_->setting()),
-            &presenter::cube::ViewSprite::redraw) );
+        map_->push_view( presenter::cube::ViewStdoutMaster::create() );
+        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, setting) );
 
         // test_ = psc::view::Sprite::create("title", scene_, 100, 40);
         // test_->moveTo(100,40);

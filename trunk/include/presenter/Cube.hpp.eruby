@@ -45,6 +45,15 @@ public:
     void <% debug_hook 'go_exploding' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_exploding(); }
     }
+    void <% debug_hook 'be_garbage' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->be_garbage(); }
+    }
+    void <% debug_hook 'be_broken' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->be_broken(); }
+    }
+    void <% debug_hook 'restore' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->restore(); }
+    }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 
     int x() const;

@@ -43,6 +43,7 @@ void <% debug_hook 'Cube::be_garbage' do %>(){
 	hp_ = 3;
     color_id(-1); // = data::Color::random_rgb_color();
 	// show_outline();
+    be_garbage_event()();
 }
 
 // begin only used by Map::next_state
@@ -83,4 +84,21 @@ void <% debug_hook 'Cube::go_exploding' do %>(){
 
     state_.reset();
     go_exploding_event()();
+}
+
+void <% debug_hook 'Cube::be_broken' do %>(){
+<% end %>
+	is_broken_ = true;
+    color_id(-1); // = data::Color::random_rgb_color();
+    be_broken_event()();
+}
+
+void <% debug_hook 'Cube::restore' do %>(){
+<% end %>
+    is_broken_ = false;
+    color_id(utils::random(map()->ms()->color_amounts())+1);
+	if( state::pWaiting w = is_waiting() )
+		if( !w->need_check() )
+		    w->uncheck();
+    restore_event()();
 }

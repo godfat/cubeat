@@ -36,7 +36,10 @@ pMap <% debug_hook 'Map::init' do %>(){
 void Map::bind_cube_event(pCube cube){
     cube->model()->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                        go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
-                   go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) );
+                   go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) ).
+                   be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
+                    be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
+                      restore_event( std::tr1::bind( &Cube::restore, cube.get()) );;
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

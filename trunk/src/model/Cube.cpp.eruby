@@ -100,5 +100,5 @@ void <% debug_hook 'Cube::restore' do %>(){
 	if( state::pWaiting w = is_waiting() )
 		if( !w->need_check() )
 		    w->uncheck();
-    restore_event()();
+    restore_event()(color_id());
 }

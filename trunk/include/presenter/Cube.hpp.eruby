@@ -51,8 +51,8 @@ public:
     void <% debug_hook 'be_broken' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->be_broken(); }
     }
-    void <% debug_hook 'restore' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->restore(); }
+    void <% debug_hook 'restore' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->restore(color_id); }
     }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 

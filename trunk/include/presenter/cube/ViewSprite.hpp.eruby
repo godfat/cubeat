@@ -4,6 +4,7 @@
 #include "view/Sprite.hpp"
 #include "presenter/cube/ViewMaster.hpp"
 #include "data/ViewSpriteSetting.hpp"
+#include "utils/Random.hpp"
 
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
@@ -29,18 +30,9 @@ public:
 public:
     ViewSprite(model::pCube c, view::pScene scene,
         data::pMapSetting ms, data::pViewSpriteSetting s):
-        ViewBase(c), map_setting_(ms), setting_(s)
+        ViewBase(c), scene_(scene), cube_(c), map_setting_(ms), setting_(s)
     {
-        data::pCube d = c->data();
-        int color_id = d->color_id();
-
-        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
-        body_ = view::Sprite::create(path, scene, s->cube_size(), s->cube_size());
-
-        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
-
-        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
-            std::tr1::bind( &ViewSprite::cube_go_exploding, this, model::wpCube(c) );
+        restore(c->data()->color_id());
     }
     virtual void drop_a_block(){
         data::pCube d = data().lock();
@@ -75,6 +67,36 @@ public:
         //     body_.get(), cref(vec3(0,0,0)), cref(1000), cref(0), cref(0), cref(0)) );
     }
 
+    virtual void be_broken(){
+        data::pCube d = cube_.lock()->data();
+        data::pViewSpriteSetting s = setting();
+
+        std::string path = "cubes/cube" + boost::lexical_cast<std::string>(utils::random(4)+1);        
+        body_ = view::Sprite::create(path, scene_.lock(), s->cube_size(), s->cube_size());
+        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
+        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
+            std::tr1::bind( &ViewSprite::check_cube_and_do,
+            std::tr1::mem_fn(&model::Cube::restore), cube_ );
+    }
+
+    virtual void restore(int color_id){
+        data::pCube d = cube_.lock()->data();
+        data::pViewSpriteSetting s = setting();
+
+        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
+        body_ = view::Sprite::create(path, scene_.lock(), s->cube_size(), s->cube_size());
+
+        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
+
+        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
+            std::tr1::bind( &ViewSprite::check_cube_and_do,
+            std::tr1::mem_fn(&model::Cube::go_exploding), cube_ );
+
+        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig2()) ) =
+            std::tr1::bind( &ViewSprite::check_cube_and_do,
+            std::tr1::mem_fn(&model::Cube::be_broken), cube_ );
+    }
+
 private:
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
     data::pViewSpriteSetting setting() const{ return setting_.lock(); }
@@ -82,14 +104,18 @@ private:
         return s->x_offset() + x*s->cube_size(); }
     static inline int pos_y(int y, data::pViewSpriteSetting s){
         return s->y_offset() + -(y*s->cube_size()); }
-    void just_for_hold_shared_ptr(){}
-    void cube_go_exploding(model::wpCube c){
-        if(model::pCube cube = c.lock())
-            cube->go_exploding();
+
+    static void check_cube_and_do(std::tr1::function<void(model::pCube)> method,
+        model::wpCube c)
+    {
+        if(model::pCube cube = c.lock()) method(cube);
     }
+    void just_for_hold_shared_ptr(){}
 
 private:
     view::pSprite body_;
+    view::wpScene scene_;
+    model::wpCube cube_;
     data::wpMapSetting map_setting_;
     data::wpViewSpriteSetting setting_;
 };

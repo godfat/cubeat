@@ -98,6 +98,7 @@ private:
     ViewSprite& adjust(){
         // vec2 pos = pos_vec2();
         body_->moveTo(last_pos_.X, last_pos_.Y); // NOTE: irr related...
+        // drop_a_block();
         return *this;
     }
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }

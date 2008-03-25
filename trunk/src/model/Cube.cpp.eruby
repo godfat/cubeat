@@ -88,6 +88,8 @@ void <% debug_hook 'Cube::go_exploding' do %>(){
 
 void <% debug_hook 'Cube::be_broken' do %>(){
 <% end %>
+    if( is_dying() ) return;
+
 	is_broken_ = true;
     color_id(-1); // = data::Color::random_rgb_color();
     be_broken_event()();

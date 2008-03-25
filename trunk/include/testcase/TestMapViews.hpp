@@ -18,29 +18,41 @@ public:
         scene_ = psc::view::Scene::create("TestMapViewScene");
         scene_->setTo2DView();
 
-        map_ = presenter::Map::create();
+        data::pViewSpriteSetting s;
 
-        // map_->push_view( presenter::cube::ViewStdoutMaster::create() );
-        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
-        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
-            data::ViewSpriteSetting::create(50, 100, 400) ) );
-        map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
-            data::ViewSpriteSetting::create(25, 450, 400) ) );
+        // setup map0
+        map0_ = presenter::Map::create();
+        s = data::ViewSpriteSetting::create(50, 500, 50);
+        s->push_ally(1).push_enemy(0);
+        map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
 
-        map_->push_garbage_land(map_);
-        map_->throw_garbage(10);
+        // map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
+        // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
 
-        // test_ = psc::view::Sprite::create("title", scene_, 100, 40);
-        // test_->moveTo(100,40);
+        // setup map1
+        map1_ = presenter::Map::create();
+        s = data::ViewSpriteSetting::create(450, 500, 50);
+        s->push_ally(0).push_enemy(1);
+        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
+
+        // mini view
+        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
+            data::ViewSpriteSetting::create(800, 300, 25) ) );
+
+        // setup garbage land
+        map0_->push_garbage_land(map1_);
+        map1_->push_garbage_land(map0_);
     }
     void cycle(){
         scene_->redraw();
-        map_->redraw().cycle();
+        map0_->redraw().cycle();
+        map1_->redraw().cycle();
     }
 
 private:
     view::pScene scene_;
-    presenter::pMap map_;
+    presenter::pMap map0_;
+    presenter::pMap map1_;
 };
 
 #endif

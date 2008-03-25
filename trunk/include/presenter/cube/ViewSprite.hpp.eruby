@@ -12,8 +12,11 @@
 
 #include "all_fwd.hpp"
 
-#include <tr1/functional>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+
+#include <tr1/functional>
+#include <iostream>
 
 namespace psc{ namespace presenter{ namespace cube{
 
@@ -64,26 +67,58 @@ public:
     virtual void be_broken(){
         create_sprite("cubes/cube" + to_s(utils::random(4)+1));
 
-        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
-            &model::Cube::restore );
+        data::pViewSpriteSetting s = setting();
+        BOOST_FOREACH( int id, s->ally_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
+                &model::Cube::restore );
+        }
+
+        // NOTE: test for enemy
+        BOOST_FOREACH( int id, s->enemy_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
+                &model::Cube::restore );
+        }
     }
 
     virtual void restore(int color_id){
         if( color_id == -1 ) return;
         create_sprite("cubes/cube-item-" + to_s(color_id));
 
-        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
-            &model::Cube::go_exploding );
+        data::pViewSpriteSetting s = setting();
+        BOOST_FOREACH( int id, s->ally_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
+                &model::Cube::go_exploding );
 
-        on_press( &(ctrl::Input::getInputByIndex(1)->trig2()),
-            &model::Cube::be_broken );
+            // NOTE: test for enemy
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
+                &model::Cube::be_broken );
+        }
+
+        BOOST_FOREACH( int id, s->enemy_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
+                &model::Cube::be_broken );
+
+            // NOTE: test for enemy
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
+                &model::Cube::go_exploding );
+        }
+
     }
 
     virtual void be_garbage(){
         create_sprite("cubes/cube-b-" + to_s(utils::random(4)+1));
 
-        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
-            &model::Cube::go_exploding );
+        data::pViewSpriteSetting s = setting();
+        BOOST_FOREACH( int id, s->ally_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
+                &model::Cube::go_exploding );
+        }
+
+        // NOTE: test for enemy
+        BOOST_FOREACH( int id, s->enemy_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
+                &model::Cube::go_exploding );
+        }
     }
 
     virtual void hit(int /*dmg*/, int hp){

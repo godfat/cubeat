@@ -80,10 +80,16 @@ void <% debug_hook 'Cube::go_dying' do %>(){
 void <% debug_hook 'Cube::go_exploding' do %>(){
 <% end %>
     // state_ = state::Exploding::create(shared_from_this());
-    if( is_dying() ) return; // don't explode me while i am dying!!
+    if( is_dying() )
+        return; // don't explode me while i am dying!!
 
-    state_.reset();
-    go_exploding_event()();
+    else if(--hp_ > 0)
+        hit_event()(1, hp_); // damgage, hp left
+
+    else{
+        state_.reset();
+        go_exploding_event()();
+    }
 }
 
 void <% debug_hook 'Cube::be_broken' do %>(){

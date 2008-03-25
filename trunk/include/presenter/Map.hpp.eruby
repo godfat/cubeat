@@ -29,6 +29,7 @@ public:
 public:
     Map(data::pMapSetting setting): setting_(setting){}
     Map& push_view(cube::pViewMaster);
+    Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = 0);
@@ -45,10 +46,20 @@ public:
         }
         return *this;
     }
+    Map& throw_garbage(int amounts){
+        BOOST_FOREACH(wpMap map, garbage_lands_){
+            map.lock()->push_garbage(amounts);
+        }
+        return *this;
+    }
 
 private:
     pMap init();
     static void bind_cube_event(pCube);
+    Map& push_garbage(int amounts){
+        model()->push_garbage(amounts);
+        return *this;
+    }
 
 private:
 <%= accessor 'data::pMapSetting', :setting %>
@@ -56,6 +67,7 @@ private:
     view::pMap view_;
     container_type cubes_;
     std::list<cube::pViewMaster> view_list_;
+    std::list<wpMap> garbage_lands_;
 };
 
 }} // end of namespace

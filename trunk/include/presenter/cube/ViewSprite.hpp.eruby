@@ -78,6 +78,17 @@ public:
             &model::Cube::be_broken );
     }
 
+    virtual void be_garbage(){
+        create_sprite("cubes/cube-b-" + to_s(utils::random(4)+1));
+
+        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
+            &model::Cube::go_exploding );
+    }
+
+    virtual void hit(int /*dmg*/, int hp){
+        body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
+    }
+
 private:
     template <class MemFn>
     ViewSprite& on_press( ctrl::Button const* btn, MemFn mem_fn ){
@@ -91,7 +102,7 @@ private:
 
         data::pViewSpriteSetting s = setting();
         body_ = view::Sprite::create(path, scene_.lock(),
-                                     s->cube_size(), s->cube_size());
+                                     s->cube_size(), s->cube_size(), true);
         adjust();
         return *this;
     }
@@ -106,8 +117,9 @@ private:
     vec2 pos_vec2() const{
         data::pViewSpriteSetting s = setting();
         data::pCube d = data();
-        return vec2( s->x_offset()+d->x()*s->cube_size(),
-                     s->y_offset()+d->y()*s->cube_size()*-1 ); // NOTE: reversed y
+        return vec2( s->x_offset()+ d->x()*s->cube_size()+s->cube_size()/2,
+                     s->y_offset()+(d->y()*s->cube_size()+s->cube_size()/2)*-1 );
+                                                              // NOTE: reversed y
     }
     static void check_cube_and_do(std::tr1::function<void(model::pCube)> method,
         model::wpCube c)

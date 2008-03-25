@@ -20,12 +20,15 @@ public:
 
         map_ = presenter::Map::create();
 
-        map_->push_view( presenter::cube::ViewStdoutMaster::create() );
+        // map_->push_view( presenter::cube::ViewStdoutMaster::create() );
         map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
         map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
             data::ViewSpriteSetting::create(50, 100, 400) ) );
         map_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
             data::ViewSpriteSetting::create(25, 450, 400) ) );
+
+        map_->push_garbage_land(map_);
+        map_->throw_garbage(10);
 
         // test_ = psc::view::Sprite::create("title", scene_, 100, 40);
         // test_->moveTo(100,40);

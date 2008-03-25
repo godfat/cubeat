@@ -40,7 +40,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     );
     utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
 
-    // utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
+    utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
     presenter::pMap owner = owner_.lock();
     for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
@@ -248,13 +248,16 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 
 void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
+    int damage_factor = ms()->damage_factor();
+    presenter::pMap o = owner();
+
     for(chain_list_type::iterator i=chains_.begin();
         i != chains_.end(); ++i)
     {
         // when the Chain's rear is not zero we notify to add a new combo
         if( (**i).last_step_amounts() != 0 ){
         // damage_factor to score adjustment (1.00 ~ 2.00)
-            score_ += (**i).score_step() * ms()->damage_factor();
+            score_ += (**i).score_step() * damage_factor;
             (**i).step_one();
         }
 
@@ -262,6 +265,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
         if( (**i).owner_amounts() == 0 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
             // SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
+            o->throw_garbage( (**i).power_factor() * damage_factor );
             i = chains_.erase(i);
             --i;
         }

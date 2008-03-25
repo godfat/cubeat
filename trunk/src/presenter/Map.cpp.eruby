@@ -40,7 +40,8 @@ void Map::bind_cube_event(pCube cube){
                    go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) ).
                    be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
                     be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
-                      restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) );;
+                      restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
+                          hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

@@ -70,7 +70,7 @@ public:
     // end
 
     // only used by Game::make_garbage
-    void <% debug_hook 'add_garbage' do %>(int amounts){ <%end%> garbage_left_ += amounts; }
+    void <% debug_hook 'push_garbage' do %>(int amounts){ <%end%> garbage_left_ += amounts; }
     // end
 
     // container_type const& cubes() const{ return cubes_; }
@@ -97,6 +97,7 @@ private:
     void update_chains();
     bool cube_can_lose_chain(cpCube) const;
     bool check_column_full() const;
+    presenter::pMap owner() const{ return owner_.lock(); }
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

@@ -39,7 +39,7 @@ public:
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
         lose_chain_delay_(0)
     {}
-    <% debug_hook '~Cube' do %>(){<%end%>}
+    <% debug_hook '~Cube' do %>(){ <% end %> lose_chain(); }
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }

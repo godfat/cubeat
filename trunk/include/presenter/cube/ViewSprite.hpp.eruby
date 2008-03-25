@@ -35,14 +35,8 @@ public:
         restore(c->data()->color_id());
     }
     virtual void drop_a_block(){
-        data::pCube d = data().lock();
-        int x = d->x(), y = d->y();
-
-        data::pViewSpriteSetting s = setting();
-
         body_->tween<easing::Linear, accessor::Pos2D>(
-            vec2( pos_x(x, s), pos_y(y, s) ), map_setting()->cube_dropping_duration()
-        );
+            pos_vec2(), map_setting()->cube_dropping_duration());
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
@@ -68,48 +62,59 @@ public:
     }
 
     virtual void be_broken(){
-        data::pCube d = cube_.lock()->data();
-        data::pViewSpriteSetting s = setting();
+        create_sprite("cubes/cube" + to_s(utils::random(4)+1));
 
-        std::string path = "cubes/cube" + boost::lexical_cast<std::string>(utils::random(4)+1);        
-        body_ = view::Sprite::create(path, scene_.lock(), s->cube_size(), s->cube_size());
-        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
-        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
-            std::tr1::bind( &ViewSprite::check_cube_and_do,
-            std::tr1::mem_fn(&model::Cube::restore), cube_ );
+        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
+            &model::Cube::restore );
     }
 
     virtual void restore(int color_id){
-        data::pCube d = cube_.lock()->data();
-        data::pViewSpriteSetting s = setting();
+        create_sprite("cubes/cube-item-" + to_s(color_id));
 
-        std::string path = "cubes/cube-item-" + boost::lexical_cast<std::string>(color_id);
-        body_ = view::Sprite::create(path, scene_.lock(), s->cube_size(), s->cube_size());
+        on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),
+            &model::Cube::go_exploding );
 
-        body_->moveTo( pos_x(d->x(), s), pos_y(d->y(), s) );
-
-        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig1()) ) =
-            std::tr1::bind( &ViewSprite::check_cube_and_do,
-            std::tr1::mem_fn(&model::Cube::go_exploding), cube_ );
-
-        body_->onPress( &(ctrl::Input::getInputByIndex(1)->trig2()) ) =
-            std::tr1::bind( &ViewSprite::check_cube_and_do,
-            std::tr1::mem_fn(&model::Cube::be_broken), cube_ );
+        on_press( &(ctrl::Input::getInputByIndex(1)->trig2()),
+            &model::Cube::be_broken );
     }
 
 private:
+    template <class MemFn>
+    ViewSprite& on_press( ctrl::Button const* btn, MemFn mem_fn ){
+        body_->onPress( btn ) =
+            std::tr1::bind( &ViewSprite::check_cube_and_do,
+            std::tr1::mem_fn(mem_fn), cube_ );
+        return *this;
+    }
+    ViewSprite& create_sprite(std::string const& path){
+        last_pos_ = body_ ? body_->get<accessor::Pos2D>() : pos_vec2();
+
+        data::pViewSpriteSetting s = setting();
+        body_ = view::Sprite::create(path, scene_.lock(),
+                                     s->cube_size(), s->cube_size());
+        adjust();
+        return *this;
+    }
+    ViewSprite& adjust(){
+        // vec2 pos = pos_vec2();
+        body_->moveTo(last_pos_.X, last_pos_.Y); // NOTE: irr related...
+        return *this;
+    }
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
     data::pViewSpriteSetting setting() const{ return setting_.lock(); }
-    static inline int pos_x(int x, data::pViewSpriteSetting s){
-        return s->x_offset() + x*s->cube_size(); }
-    static inline int pos_y(int y, data::pViewSpriteSetting s){
-        return s->y_offset() + -(y*s->cube_size()); }
-
+    vec2 pos_vec2() const{
+        data::pViewSpriteSetting s = setting();
+        data::pCube d = data();
+        return vec2( s->x_offset()+d->x()*s->cube_size(),
+                     s->y_offset()+d->y()*s->cube_size()*-1 ); // NOTE: reversed y
+    }
     static void check_cube_and_do(std::tr1::function<void(model::pCube)> method,
         model::wpCube c)
     {
         if(model::pCube cube = c.lock()) method(cube);
     }
+    template <class T>
+    static std::string to_s(T t){ return boost::lexical_cast<std::string>(t); }
     void just_for_hold_shared_ptr(){}
 
 private:
@@ -118,6 +123,8 @@ private:
     model::wpCube cube_;
     data::wpMapSetting map_setting_;
     data::wpViewSpriteSetting setting_;
+
+    vec2 last_pos_;
 };
 
 class ViewSpriteMaster: public ViewMaster{

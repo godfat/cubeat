@@ -276,7 +276,6 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
     // no garbage no working
 	if( garbage_left_ <= 0 || ( n_of_newcomers_ > 0 && garbage_switch_ == false ) ){
-    // if( garbage_left_ <= 0 || n_of_newcomers_ > 0 ){
 		garbage_switch_ = false;
         return;
 	}
@@ -285,9 +284,10 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
     std::vector<int> is_empty;
 
+    int top = ms()->height()-1;
 	// check empty columns
 	for( int x=0, width=ms()->width(); x < width; ++x )
-		if( !cubes_[x][0] && !cubes_[x][1] )
+		if( !cubes_[x][top] && !cubes_[x][top-1] )
 			is_empty.push_back( x );
 
 	// shuffle the array
@@ -295,7 +295,6 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
 	// drop them according to the empty column
     presenter::pMap owner = owner_.lock();
-    int top = ms()->height()-1;
 	for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
         int x = is_empty[i];
 		insert_garbage( owner->make_cube(x, top)->model() );

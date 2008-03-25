@@ -32,8 +32,8 @@ public:
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
 
 public:
-    pCube make_cube(int x = 0, int y = 0, int color_id = 0);
-    pCube make_cube_preview(int color_id = 0);
+    pCube make_cube(int x = 0, int y = 0, int color_id = -1);
+    pCube make_cube_preview(int color_id = -1);
     Map& cycle();
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }

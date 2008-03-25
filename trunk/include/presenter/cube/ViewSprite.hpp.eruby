@@ -69,6 +69,7 @@ public:
     }
 
     virtual void restore(int color_id){
+        if( color_id == -1 ) return;
         create_sprite("cubes/cube-item-" + to_s(color_id));
 
         on_press( &(ctrl::Input::getInputByIndex(1)->trig1()),

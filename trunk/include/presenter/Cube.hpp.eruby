@@ -57,6 +57,12 @@ public:
     void <% debug_hook 'hit' do %>(int dmg, int hp){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->hit(dmg, hp); }
     }
+    void <% debug_hook 'get_chain' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->get_chain(); }
+    }
+    void <% debug_hook 'lose_chain' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->lose_chain(); }
+    }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 
     int x() const;

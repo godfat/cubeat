@@ -20,6 +20,8 @@ public:
     virtual void be_broken(){}
     virtual void restore(int /*color_id*/){}
     virtual void hit(int /*dmg*/, int /*hp*/){}
+    virtual void get_chain(){}
+    virtual void lose_chain(){}
 
 protected:
     data::pCube data() const{ return data_.lock(); }

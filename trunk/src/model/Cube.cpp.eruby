@@ -42,7 +42,6 @@ void <% debug_hook 'Cube::be_garbage' do %>(){
     is_garbage_ = true;
 	hp_ = 3;
     color_id(-1); // = data::Color::random_rgb_color();
-	// show_outline();
     be_garbage_event()();
 }
 
@@ -65,8 +64,11 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 		chain_belonged_to_->dec_one_owner();
 		chain_belonged_to_.reset();
 	}
-	if( !is_garbage() )
-	    hide_outline();
+
+    // for determine whether self expired?
+    // i think enable_shared_from_this should provide such method.
+    try{ shared_from_this(); lose_chain_event()(); }
+    catch(std::tr1::bad_weak_ptr const&){/* do nothing for dying cube */}
 }
 // end
 

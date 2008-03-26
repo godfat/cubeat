@@ -151,7 +151,6 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
 		; ++y)
     {
         cubes_[x][y]->chain(chain);
-		// cubes_[x][y]->show_outline();
         cubes_[x][y]->lose_chain_delay() = 0;
         chain->inc_one_owner();
     }

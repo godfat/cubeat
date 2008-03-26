@@ -16,7 +16,8 @@
 #include <boost/foreach.hpp>
 
 #include <tr1/functional>
-#include <iostream>
+
+<%= debug_include %>
 
 namespace psc{ namespace presenter{ namespace cube{
 
@@ -123,6 +124,14 @@ public:
 
     virtual void hit(int /*dmg*/, int hp){
         body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
+    }
+
+    virtual void get_chain(){
+        body_->tween<easing::Linear, accessor::Scale>(vec3(1.2, 1.2, 1.2), 100);
+    }
+
+    virtual void <% debug_hook 'lose_chain' do %>(){ <% end %>
+        body_->tween<easing::Linear, accessor::Scale>(vec3(1, 1, 1), 100);
     }
 
 private:

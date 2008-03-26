@@ -7,6 +7,7 @@
    will be removed later. (when player class is out) */
 
 #include "all_fwd.hpp"
+#include <tr1/functional>
 
 namespace irr {
 class ITimer;
@@ -26,9 +27,7 @@ public:
         return app;
     }
 
-    template <class Tester>
-    int run(Tester tester = Tester());
-    int run(){ return run<void(*)()>(); }
+    int run(std::tr1::function<void()> = 0);
 
     void setLoading(int const& cent);
     void launchMainMenu();
@@ -58,6 +57,6 @@ private:
 
 }  //psc
 
-#include "detail/member_template/App_run.hpp"
+// #include "detail/member_template/App_run.hpp"
 
 #endif // _SHOOTING_CUBES_APPLICATION_CLASS_

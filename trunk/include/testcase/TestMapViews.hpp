@@ -26,7 +26,7 @@ public:
         s->push_ally(1).push_enemy(0);
         map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
 
-        // map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
+        map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
         // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
 
         // setup map1

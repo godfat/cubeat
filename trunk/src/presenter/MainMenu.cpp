@@ -86,8 +86,8 @@ void MainMenu::initDecorator()
     vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
     vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
 
-    int const time_w = 10000;            //1280 768 is best factor
-    int const time_h = time_w * (w/h);   //1280 768 is best factor
+    // int const time_w = 10000;            //1280 768 is best factor
+    // int const time_h = time_w * (w/h);   //1280 768 is best factor
 
     int const color_num = deco.I("color_num");
     for(int i=0; i < color_num * 4; ++i) {

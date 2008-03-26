@@ -39,7 +39,7 @@ public:
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
         lose_chain_delay_(0)
     {}
-    <% debug_hook '~Cube' do %>(){ <% end %> lose_chain(); }
+    <% debug_hook '~Cube' do %>(){ <% end %> lose_chain_without_event(); }
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }
@@ -122,6 +122,7 @@ private:
         return self;
     }
     bool is_dead() const{ return state_.use_count() == 0; }
+    void lose_chain_without_event();
 
 private:
 <%= accessor :'data::pCube', :data %>

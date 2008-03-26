@@ -58,17 +58,18 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
     drop_a_block_event()();
 }
 
-void <% debug_hook 'Cube::lose_chain' do %>(){
+void <% debug_hook 'Cube::lose_chain_without_event' do %>(){
 <% end %>
 	if(chain_belonged_to_){
 		chain_belonged_to_->dec_one_owner();
 		chain_belonged_to_.reset();
 	}
+}
 
-    // for determine whether self expired?
-    // i think enable_shared_from_this should provide such method.
-    try{ shared_from_this(); lose_chain_event()(); }
-    catch(std::tr1::bad_weak_ptr const&){/* do nothing for dying cube */}
+void <% debug_hook 'Cube::lose_chain' do %>(){
+<% end %>
+    lose_chain_without_event();
+    lose_chain_event()();
 }
 // end
 

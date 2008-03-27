@@ -82,8 +82,8 @@ inline T read_number_at( std::string const& str, int& i) {
     (to == -1) ? to = str.length() : to;
     std::string sub = str.substr( from, to-from );
 
-    if ( str[from] == '0' && str[from+1] == 'x' ||      //process hexdecimal
-         str[from+1] == '0' && str[from+2] == 'x' ) {
+    if ( (str[from] == '0' && str[from+1] == 'x') ||      //process hexdecimal
+         (str[from+1] == '0' && str[from+2] == 'x') ) {
         std::istringstream in(sub);
         in >> std::hex >> ret;
     }

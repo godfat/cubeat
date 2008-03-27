@@ -6,13 +6,11 @@
  * C++ Port by Johnson Lin(a.k.a arch.jslin) to combine with
  * Irrlicht Animator system
  *
- * last updated: 2008.2.16
+ * last updated: 2008.3
  * fixed some calculation which might invoke undefined behavior in C++.
  * (In Java and Flash this is not a problem, but in C++ IT IS A PROBLEM.)
  *
- * I left out a few complicated equations intentionally, because
- * the functions' signatures were not the same (more than t,b,c,d).
- * I'll try to add those back in the future if I have enough time.
+ * All equations are now working. there are some newly defined equations as well.
  */
 
 /**
@@ -30,7 +28,7 @@ TERMS OF USE - EASING EQUATIONS
 
 Open source under the BSD License.
 
-Copyright © 2001 Robert Penner
+Copyright ?2001 Robert Penner
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -334,7 +332,7 @@ namespace easing {
     {
 	public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-            return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b;
+            return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b);
 		}
     };
 
@@ -348,7 +346,7 @@ namespace easing {
     {
 	public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-            return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b;
+           return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b);
 		}
     };
 
@@ -362,7 +360,7 @@ namespace easing {
     {
 	public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-            return -c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b;
+            return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b);
 		}
     };
 

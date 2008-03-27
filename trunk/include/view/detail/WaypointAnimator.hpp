@@ -1,9 +1,9 @@
+
 #ifndef _SHOOTING_CUBES_WAYPOINT_ANIMATOR_
 #define _SHOOTING_CUBES_WAYPOINT_ANIMATOR_
 
 #include "Accessor_proto.hpp"
 #include "view/detail/CustomAnimator.hpp"
-#include "EasingEquations.hpp"
 
 //for debug & warning purpose
 #include <iostream>
@@ -68,25 +68,13 @@ public:
     }
 
 protected:
-    template<class TT>
-    inline float distance(TT const& next, TT const& last) {
-        return static_cast<float>(next - last);
-    }
-    inline float distance(core::vector3df const& next, core::vector3df const& last ) {
-        return (next - last).getLength();
-    }
-    inline float distance(core::vector2df const& next, core::vector2df const& last ) {
-        return (next - last).getLength();
-    }
-
     void calculateDistances() {
         float full_length = 0;
         range_list_.push_back(0);
         for( size_t i = 0; i < waypoints_.size() - 1; ++i ) {
-            full_length += distance(waypoints_[i+1], waypoints_[i]);
+            full_length += this->distance(waypoints_[i+1], waypoints_[i]);
             range_list_.push_back( full_length );
         }
-
         this->end_ = this->distance_ = full_length;
     }
 
@@ -133,4 +121,4 @@ protected:
 } // scene
 } // irr
 
-#endif // _SHOOTING_CUBES_WAYPOINT_ANIMATOR_
+#endif

@@ -19,15 +19,15 @@ decorator:
     path: 'cubes/cube',
     color_num: 4,
 
-#size formula of cube decorations on the mainmenu: screen width(pixel) * size_factor
+#size formula of cube decorations on the mainmenu: screen width(pixel) * size_factor(0.133)
     size_factor: 0.133,
     size_random_percent: 33,
     rotation_duration_ms: 3000,
     rotation_random_ms: 2000,
 
 #color offset test: r/g/b/y cubes' red, green, blue offset ( +255 ~ -256 )
-    color_offset: [[  0,  0,  0],
-                   [  0,  0,  0],
-                   [  0,  0,  0],
-                   [  0,  0,  0]]
+    color_offset: [[  0, 20, 10],
+                   [  0,-50,  0],
+                   [ 50, 50,  0],
+                   [  0,  0, 20]]
 }

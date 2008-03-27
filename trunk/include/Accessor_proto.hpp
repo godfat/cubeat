@@ -5,10 +5,11 @@
 #include "ESceneNodeAnimatorTypes.h"
 
 namespace irr{
+
 namespace scene{
 class ISceneNode;
-} //scene
-} //irr
+}
+}
 
 namespace psc{
 namespace accessor{
@@ -28,5 +29,4 @@ struct Accessor {
 };
 } //accessor
 } //psc
-
 #endif

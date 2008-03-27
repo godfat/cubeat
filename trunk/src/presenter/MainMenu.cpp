@@ -69,71 +69,6 @@ pMainMenu MainMenu::init()
     return shared_from_this();
 }
 
-void MainMenu::initDecorator()
-{
-    utils::map_any deco = config.M("decorator");
-
-    int const w = Conf::i().SCREEN_W;
-    int const h = Conf::i().SCREEN_H;
-    int const size = w * deco.F("size_factor");
-    int const num_w = (w/size)*2;
-    int const num_h = (h/size)*2 + 3;
-    int const outgoing = size * 1.41f;
-    int const contract = size / 4;
-
-    vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
-    vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
-    vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
-    vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
-
-    // int const time_w = 10000;            //1280 768 is best factor
-    // int const time_h = time_w * (w/h);   //1280 768 is best factor
-
-    int const color_num = deco.I("color_num");
-    for(int i=0; i < color_num * 4; ++i) {
-        std::string name;
-        switch( i/4 ) {
-            case 0: name += "-r-"; break;
-            case 1: name += "-g-"; break;
-            case 2: name += "-b-"; break;
-            case 3: name += "-y-"; break;
-        }
-        paths.push_back( deco.S("path") + name +
-            std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
-    }
-    std::vector<vec3> waypoints;
-    waypoints.push_back( vec3(w-contract, -(contract), 100) );
-    waypoints.push_back( vec3(w-contract, -(h-contract), 0) );
-    waypoints.push_back( vec3(contract, -(h-contract), -100) );
-    waypoints.push_back( vec3(contract, outgoing, -200) );
-
-    int capacity = (num_w + num_h - 6)*2;
-    for(int i=0; i < capacity; ++i ) {
-        int rand_size = size * (utils::random(33)/100.0f + 1);
-        view::Object::WAYTYPE wt = view::Object::START;
-        view::pSprite temp = view::Sprite::create(
-            paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
-
-        temp->moveTo(contract, contract).setDepth(200)
-             .tween<Linear, Pos3D>(waypoints, 20000, wt, -1, 0, -(float)i/capacity*20000)
-             .tween<Linear, Rotation>(vec3(0, 0, 360), utils::random(2000)+3000, -1, 0);
-
-        deco_cubes_.push_back( temp );
-    }
-
-//    function<void()> const& step4 =
-//        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
-//    function<void()> const& step3 =
-//        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
-//    function<void()> const& step2 =
-//        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
-//    function<void()> const& step1 =
-//        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
-//
-//    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
-    App::i().setLoading(100);
-}
-
 //helper
 void color_offset(data::Color& col, utils::vector_any& offset)
 {
@@ -159,6 +94,80 @@ void color_offset(data::Color& col, utils::vector_any& offset)
             col.g( col.g() + offset.V(3).I(1) );
             col.b( col.b() + offset.V(3).I(2) ); break;
     }
+}
+
+void MainMenu::initDecorator()
+{
+    utils::map_any deco = config.M("decorator");
+    utils::vector_any offset = deco.V("color_offset");
+
+    int const w = Conf::i().SCREEN_W;
+    int const h = Conf::i().SCREEN_H;
+    int const size = w * deco.F("size_factor");
+    int const num_w = (w/size)*2;
+    int const num_h = (h/size)*2 + 3;
+    int const outgoing = size * 1.41f;
+    int const contract = size / 4;
+
+    vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
+    vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
+    vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
+    vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
+
+//    int const time_w = 10000;            //1280 768 is best factor
+//    int const time_h = time_w * (w/h);   //1280 768 is best factor
+
+    int const color_num = deco.I("color_num");
+//    for(int i=0; i < color_num * 4; ++i) {
+//        std::string name;
+//        switch( i/4 ) {
+//            case 0: name += "-r-"; break;
+//            case 1: name += "-g-"; break;
+//            case 2: name += "-b-"; break;
+//            case 3: name += "-y-"; break;
+//        }
+//        paths.push_back( deco.S("path") + name +
+//            std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
+//    }
+    for(int i = 0; i < color_num; ++i ) {
+        paths.push_back( deco.S("path") +
+            std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
+    }
+
+    std::vector<vec3> waypoints;
+    waypoints.push_back( vec3(w-contract, -(contract), 100) );
+    waypoints.push_back( vec3(w-contract, -(h-contract), 0) );
+    waypoints.push_back( vec3(contract, -(h-contract), -100) );
+    waypoints.push_back( vec3(contract, outgoing, -200) );
+
+    int capacity = (num_w + num_h - 6)*2;
+    for(int i=0; i < capacity; ++i ) {
+        data::Color col = data::Color::from_id(0, color_num);
+        color_offset( col, offset );
+        int rand_size = size * (utils::random(33)/100.0f + 1);
+        view::Object::WAYTYPE wt = view::Object::START;
+        view::pSprite temp = view::Sprite::create(
+            paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
+
+        temp->moveTo(contract, contract).setDepth(200)
+             .set<ColorDiffuse>( 0xff000000 | col.rgb() )
+             .tween<Linear, Pos3D>(waypoints, 20000, wt, -1, 0, -(float)i/capacity*20000)
+             .tween<Linear, Rotation>(vec3(0, 0, 360), utils::random(2000)+3000, -1, 0);
+
+        deco_cubes_.push_back( temp );
+    }
+
+//    function<void()> const& step4 =
+//        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
+//    function<void()> const& step3 =
+//        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
+//    function<void()> const& step2 =
+//        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
+//    function<void()> const& step1 =
+//        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
+//
+//    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
+    App::i().setLoading(100);
 }
 
 void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,

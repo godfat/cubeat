@@ -1,6 +1,6 @@
 
-#ifndef _SHOOTING_CUBE_CUSTOM_ANIMATOR_
-#define _SHOOTING_CUBE_CUSTOM_ANIMATOR_
+#ifndef _SHOOTING_CUBES_CUSTOM_ANIMATOR_
+#define _SHOOTING_CUBES_CUSTOM_ANIMATOR_
 
 #include "ISceneNode.h"
 #include "IrrDevice.hpp"
@@ -15,7 +15,7 @@ template <template<class> class Eq, class Accessor>
 class CustomAnimator : public ISceneNodeAnimator
 {
 protected:
-    typedef std::tr1::function<void()>    EndCallback;
+    typedef std::tr1::function<void()> EndCallback;
     typedef typename Accessor::value_type T;
 
 public:
@@ -73,6 +73,17 @@ protected:
         f32 dur  = static_cast<f32>( duration_ );
         f32 time = static_cast<f32>( t % duration_ );
         return Eq<T>::calculate(time, start_, distance_, dur, node);
+    }
+
+    template<class TT>
+    inline float distance(TT const& next, TT const& last) {
+        return static_cast<float>(next - last);
+    }
+    inline float distance(core::vector3df const& next, core::vector3df const& last ) {
+        return (next - last).getLength();
+    }
+    inline float distance(core::vector2df const& next, core::vector2df const& last ) {
+        return (next - last).getLength();
     }
 
 protected:

@@ -47,17 +47,6 @@ namespace accessor {
         }
     };
 
-    struct ColorDiffuse : Accessor<unsigned int, AT::DIFFUSE>{
-        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getMaterialCount() )
-                node->getMaterial(0).DiffuseColor.set( val );
-        }
-        static void get(irr::scene::ISceneNode* node, value_type& out ) {
-            if( node->getMaterialCount() )
-                out = node->getMaterial(0).DiffuseColor.color;
-        }
-    };
-
     struct ColorDiffuseVec3 : Accessor<vec3, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
             if( node->getMaterialCount() ) {
@@ -72,6 +61,16 @@ namespace accessor {
                 out.Y = static_cast<float>(node->getMaterial(0).DiffuseColor.getGreen());
                 out.Z = static_cast<float>(node->getMaterial(0).DiffuseColor.getBlue());
             }
+        }
+    };
+
+    struct ColorDiffuse : Accessor<int, AT::DIFFUSE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() )
+                node->getMaterial(0).DiffuseColor.set( val );
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out ) {
+            return; //currently not used, and is not quite useful, hence no impl.
         }
     };
 
@@ -133,6 +132,39 @@ namespace accessor {
         static void get(irr::scene::ISceneNode* node, value_type& out) {
             if( node->getMaterialCount() )
                 out = node->getMaterial(0).DiffuseColor.getBlue();
+        }
+    };
+
+    struct RedE : Accessor<int, AT::RE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() )
+                node->getMaterial(0).EmissiveColor.setRed(val);
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out) {
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).EmissiveColor.getRed();
+        }
+    };
+
+    struct GreenE : Accessor<int, AT::GE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() )
+                node->getMaterial(0).EmissiveColor.setGreen(val);
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out) {
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).EmissiveColor.getGreen();
+        }
+    };
+
+    struct BlueE : Accessor<int, AT::BE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            if( node->getMaterialCount() )
+                node->getMaterial(0).EmissiveColor.setBlue(val);
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out) {
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).EmissiveColor.getBlue();
         }
     };
 

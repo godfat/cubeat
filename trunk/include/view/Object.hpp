@@ -7,6 +7,9 @@
 
 #include "view/detail/CustomAnimator.hpp"
 #include "view/detail/WaypointAnimator.hpp"
+#include "view/detail/CirclingAnimator.hpp"
+#include "view/detail/SplineAnimator.hpp"
+#include "view/detail/SpeedFuncAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "all_fwd.hpp"

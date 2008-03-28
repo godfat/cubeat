@@ -46,7 +46,7 @@ class SplineAnimator : public CustomAnimator<Eq, psc::accessor::Accessor<float, 
         WaypointType c_;
         WaypointType d_;
         template <class U>
-        inline float lengthOf( U const& vec )               { return absf(vec); }
+        inline float lengthOf( U const& vec )               { return std::abs(vec); }
         inline float lengthOf( core::vector3df const& vec ) { return vec.getLength(); }
         inline float lengthOf( core::vector2df const& vec ) { return vec.getLength(); }
     public:
@@ -69,22 +69,18 @@ class SplineAnimator : public CustomAnimator<Eq, psc::accessor::Accessor<float, 
     };
 
 public:
-    SplineAnimator(ISceneManager* smgr, Waypoints const& points, u32 duration,
-                   int const& loop = 0, std::tr1::function<void()> cb = 0,
-                   s32 delayTime = 0, std::vector<float>& tensions = std::vector<float>(),
+    SplineAnimator(ISceneManager* smgr, Waypoints const& points, u32 const& duration,
+                   int const& loop = 0, std::tr1::function<void()>const& cb = 0,
+                   s32 const& delayTime = 0, std::vector<float>const& tensions = std::vector<float>(),
                    bool const& isClosed = false)
         :SplineAnimatorBase(smgr, 0, 0, duration, loop, cb, delayTime),
-         waypoints_(points), spline_index_(waypoints_.size()/2*3), isClosed_(isClosed)
+         waypoints_(points), spline_index_(0), isClosed_(isClosed)
     {
-        if( points.size() < 2 ) {
+        if( waypoints_.size() < 2 ) {
             std::cout << "SplineAnimator: no point to go! (you at least need 2 points!)\n";
             return;
         }
         buildEndPoints();
-        tensions.insert(tensions.begin(), 0.5f);
-        tensions.push_back(0.5f);
-        if( tensions.size() < waypoints_.size() )
-            tensions.assign(waypoints_.size(), 0.5f);
         buildCoefficients<WaypointType>(coefs_, waypoints_, tensions);
         calculateDistances();
         buildSplineParam();
@@ -139,15 +135,16 @@ protected:
 
         spline_.push_back( core::vector2df(0.f, 0.f) );
         float prevT = 0.0f;
+        int const n = 3;
         for( size_t i = 1; i < range_list_.size(); ++i ) {
             float t = static_cast<float>(i);
-            int n = 3;
             for( int j=1; j <= n; ++j ) {
                 float tn = prevT + (t-prevT)*(static_cast<float>(j)/n);
                 spline_.push_back( core::vector2df(getIntegratedLengthAt(i, static_cast<float>(j)/n), tn) );
             }
             prevT = t;
         }
+        spline_index_ = waypoints_.size()/2*n; //set initial spline_index_ guess
     }
 
     inline void calculateCurrentWaypoint(ISceneNode* node, float pos) {
@@ -157,9 +154,10 @@ protected:
         float u = core::fract( t );
         float mis = getIntegratedLengthAt(static_cast<int>(t)+1, u) - pos;
         float misp= mis / range_list_.back();
-        float mist= abs(range_list_.size() * misp);
-        float ut = (mis > 0) ? t : t+mist*5; if( ut > range_list_.size() ) ut = range_list_.size()-0.f;
-        float lt = (mis < 0) ? t : t-mist*5; if( lt < 0.f ) lt = 0.f;
+        float mist= std::abs(range_list_.size() * misp);
+        float ut = (mis > 0) ? t : t+mist*4; if( ut > range_list_.size() ) ut = range_list_.size()-0.f;
+        float lt = (mis < 0) ? t : t-mist*4; if( lt < 0.f ) lt = 0.f;
+
         t = findIntervalBinarySearch(pos, ut, lt);
         u = core::fract( t );
         Acc::set(node, coefs_[ static_cast<int>(t)+1 ].valueAt(u) );
@@ -169,7 +167,7 @@ protected:
         float t = (upper_t + lower_t) / 2.f;
         float u = core::fract( t );
         float estimate = getIntegratedLengthAt(static_cast<int>(t)+1, u);
-        while( abs( pos - estimate ) > 0.01f && abs(upper_t - lower_t) > 0.01f ) {
+        while( std::abs( pos - estimate ) > 0.001f && std::abs(upper_t - lower_t) > 0.001f ) {
             if( pos > estimate ) lower_t = t;
             else if(pos < estimate) upper_t = t;
             else return t;
@@ -201,7 +199,8 @@ protected:
             W const& p3 = waypoints[ clamp_open( idx+2, pSize ) ];
             //catmull-rom spline cubic coefficients.
             //tension value from 0 to 1
-            float alpha = idx < static_cast<int>(tensions.size()) ? tensions[idx] : 0.f;
+            float alpha = (idx-1) < static_cast<int>(tensions.size()) ? tensions[idx-1] : 0.5f;
+            alpha = std::min( std::max(0.f, alpha), 1.0f );
             W const& a = (-alpha)*p0  + (2-alpha)*p1 + (alpha-2)*p2   + (alpha)*p3;
             W const& b = (2*alpha)*p0 + (alpha-3)*p1 + (3-2*alpha)*p2 + (-alpha)*p3;
             W const& c = (-alpha)*p0  +                (alpha)*p2;
@@ -284,6 +283,8 @@ protected:
 
     void buildEndPoints() {
         if( isClosed_ ) {
+            if( waypoints_.front() != waypoints_.back() )
+                waypoints_.push_back( waypoints_.front() );
             buildClosedEndpoints();
         }
         else {

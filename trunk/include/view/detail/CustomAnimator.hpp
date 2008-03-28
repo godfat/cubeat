@@ -6,6 +6,8 @@
 #include "IrrDevice.hpp"
 #include <tr1/functional>
 
+#include <cmath>
+
 namespace irr
 {
 namespace scene
@@ -77,7 +79,7 @@ protected:
 
     template<class TT>
     inline float distance(TT const& next, TT const& last) {
-        return static_cast<float>(next - last);
+        return std::abs(static_cast<float>(next - last));
     }
     inline float distance(core::vector3df const& next, core::vector3df const& last ) {
         return (next - last).getLength();

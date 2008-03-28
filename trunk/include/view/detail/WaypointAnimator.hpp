@@ -25,16 +25,19 @@ class WaypointAnimator : public CustomAnimator<Eq, psc::accessor::Accessor<float
     typedef std::vector< typename Acc::value_type > Waypoints;
 
 public:
-    WaypointAnimator(ISceneManager* smgr, Waypoints const& points, u32 duration,
-                    int const& loop = 0, std::tr1::function<void()> cb = 0,
-                    s32 delayTime = 0)
+    WaypointAnimator(ISceneManager* smgr, Waypoints const& points, u32 const& duration,
+                    int const& loop = 0, std::tr1::function<void()>const& cb = 0,
+                    s32 const& delayTime = 0, bool const& isClosed = false)
         :WaypointAnimatorBase(smgr, 0, 0, duration, loop, cb, delayTime),
          waypoints_(points), now_waypoint_index_(waypoints_.size()/2)
     {
-        if( points.size() < 2 ) {
+        if( waypoints_.size() < 2 ) {
             std::cout << "WaypointAnimator: no point to go! (you at least need 2 points!)\n";
             return;
         }
+        if( isClosed && waypoints_.front() != waypoints_.back() )
+            waypoints_.push_back( waypoints_.front() );
+
         calculateDistances();
     }
 

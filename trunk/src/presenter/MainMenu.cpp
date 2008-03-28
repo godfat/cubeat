@@ -135,6 +135,7 @@ void MainMenu::initDecorator()
     }
 
     std::vector<vec3> waypoints;
+    waypoints.push_back( vec3(contract, -contract, 200) );
     waypoints.push_back( vec3(w-contract, -(contract), 100) );
     waypoints.push_back( vec3(w-contract, -(h-contract), 0) );
     waypoints.push_back( vec3(contract, -(h-contract), -100) );
@@ -145,13 +146,11 @@ void MainMenu::initDecorator()
         data::Color col = data::Color::from_id(0, color_num);
         color_offset( col, offset );
         int rand_size = size * (utils::random(33)/100.0f + 1);
-        view::Object::WAYTYPE wt = view::Object::START;
         view::pSprite temp = view::Sprite::create(
             paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
 
-        temp->moveTo(contract, contract).setDepth(200)
-             .set<ColorDiffuse>( 0xff000000 | col.rgb() )
-             .tween<Linear, Pos3D>(waypoints, 20000, wt, -1, 0, -(float)i/capacity*20000)
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
+             .tween<Linear, Pos3D>(waypoints, 20000, false, -1, 0, -(float)i/capacity*20000)
              .tween<Linear, Rotation>(vec3(0, 0, 360), utils::random(2000)+3000, -1, 0);
 
         deco_cubes_.push_back( temp );

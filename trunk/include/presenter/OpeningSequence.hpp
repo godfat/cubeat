@@ -19,7 +19,7 @@ public:
     }
 
     OpeningSequence();
-    ~OpeningSequence();
+    virtual ~OpeningSequence();
 
     virtual void cycle();
 

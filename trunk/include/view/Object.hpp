@@ -89,29 +89,27 @@ public:
         return *this;
     }
 
-    enum WAYTYPE{NONE = 0, START = 1, END = 2};
-
     template <template <class> class Eq, class Accessor>
     Object& tween(std::vector
                   <typename Accessor::value_type> const& waypoints,
                   unsigned int                    const& duration,
-                  WAYTYPE                         const& wayType = NONE,
+                  bool                            const& closed = false,
                   int                             const& loop = 0,
                   std::tr1::function<void()>      const& cb = 0,
-                  int                             const& delay = 0)
+                  int                             const& delay = 0,
+                  std::vector<float>              const& tensions = std::vector<float>())
     {
-        if( !duration ) return *this;
-        std::vector<typename Accessor::value_type> internal_waypoints;
-        internal_waypoints.reserve(waypoints.size()+2);
-        typename Accessor::value_type current = typename Accessor::value_type();
-        Accessor::get(body_, current);
-        if( wayType & START ) internal_waypoints.push_back( current );
-        internal_waypoints.insert(internal_waypoints.end(), waypoints.begin(), waypoints.end());
-        if( wayType & END ) internal_waypoints.push_back( current );
+        if( duration == 0 ) return *this;
 
-        irr::scene::ISceneNodeAnimator* anim =
-            new irr::scene::WaypointAnimator<Eq, Accessor>
-                (smgr_, internal_waypoints, duration, loop, cb, delay);
+        irr::scene::ISceneNodeAnimator* anim;
+        if( tensions.size() != 0 ) {
+            anim = new irr::scene::SplineAnimator<Eq, Accessor>
+                (smgr_, waypoints, duration, loop, cb, delay, tensions, closed);
+        }
+        else {
+            anim = new irr::scene::WaypointAnimator<Eq, Accessor>
+                (smgr_, waypoints, duration, loop, cb, delay, closed);
+        }
         body_->addAnimator( anim );
         anim->drop();
         return *this;

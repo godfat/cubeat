@@ -74,6 +74,11 @@ public:
                 &model::Cube::restore );
         }
 
+        BOOST_FOREACH( int id, s->enemy_input_ids() ){
+            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
+                &model::Cube::go_exploding );
+        }
+
         // NOTE: test for enemy
         BOOST_FOREACH( int id, s->enemy_input_ids() ){
             on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),

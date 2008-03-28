@@ -24,8 +24,8 @@ public:
     SpeedFuncAnimator(ISceneManager* smgr, T const& start, T const& end,
                       std::tr1::function<float()>const& speedfunc, int const& loop = 0,
                       std::tr1::function<void()>const& cb = 0, s32 const& delayTime = 0)
-        :SpeedFuncAnimatorBase(smgr, start, end, 0, loop, cb, delayTime), speedfunc_(speedfunc),
-         pos_in_time_(0.f)
+        :SpeedFuncAnimatorBase(smgr, start, end, 0, loop, cb, delayTime),
+         pos_in_time_(0.f), speedfunc_(speedfunc)
     {
         cur_speed_ = speedfunc_();
         if( cur_speed_ > 0 ) {

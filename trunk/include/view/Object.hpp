@@ -66,7 +66,7 @@ public:
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
-        if( !duration ) return *this;
+        if( duration == 0 ) return *this;
         irr::scene::ISceneNodeAnimator* anim =
             new irr::scene::CustomAnimator<Eq, Accessor>
                 (smgr_, start, end, duration, loop, cb, delay);
@@ -82,10 +82,41 @@ public:
                   std::tr1::function<void()>    const& cb = 0,
                   int                           const& delay = 0)
     {
-        if( !duration ) return *this;
+        if( duration == 0 ) return *this;
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
         tween<Eq, Accessor>(start, end, duration, loop, cb, delay);
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& tween(typename Accessor::value_type const& start,
+                  typename Accessor::value_type const& end,
+                  std::tr1::function<float()>   const& speedfunc,
+                  int                           const& loop = 0,
+                  std::tr1::function<void()>    const& cb = 0,
+                  int                           const& delay = 0)
+    {
+        if( !speedfunc ) return *this;
+        irr::scene::ISceneNodeAnimator* anim =
+            new irr::scene::SpeedFuncAnimator<Eq, Accessor>
+                (smgr_, start, end, speedfunc, loop, cb, delay);
+        body_->addAnimator( anim );
+        anim->drop();
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& tween(typename Accessor::value_type const& end,
+                  std::tr1::function<float()>   const& speedfunc,
+                  int                           const& loop = 0,
+                  std::tr1::function<void()>    const& cb = 0,
+                  int                           const& delay = 0)
+    {
+        if( !speedfunc ) return *this;
+        typename Accessor::value_type start = typename Accessor::value_type();
+        Accessor::get(body_, start);
+        tween<Eq, Accessor>(start, end, speedfunc, loop, cb, delay);
         return *this;
     }
 
@@ -100,7 +131,6 @@ public:
                   std::vector<float>              const& tensions = std::vector<float>())
     {
         if( duration == 0 ) return *this;
-
         irr::scene::ISceneNodeAnimator* anim;
         if( tensions.size() != 0 ) {
             anim = new irr::scene::SplineAnimator<Eq, Accessor>
@@ -110,6 +140,43 @@ public:
             anim = new irr::scene::WaypointAnimator<Eq, Accessor>
                 (smgr_, waypoints, duration, loop, cb, delay, closed);
         }
+        body_->addAnimator( anim );
+        anim->drop();
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& orbit(vec2                       const& center, //specialize for 2D circle
+                  vec2                       const& start,  //2D polar coordinate
+                  vec2                       const& end,    //2D polar coordinate
+                  unsigned int               const& duration,
+                  int                        const& loop = 0,
+                  std::tr1::function<void()> const& cb = 0,
+                  int                        const& delayTime = 0)
+    {
+        if( duration == 0 ) return *this;
+        irr::scene::ISceneNodeAnimator* anim =
+            new irr::scene::CirclingAnimator<Eq, Accessor>
+                (smgr_, start, end, duration, center, loop, cb, delayTime);
+        body_->addAnimator( anim );
+        anim->drop();
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& orbit(vec3                       const& center, //specialize for 3D circle
+                  vec2                       const& start,  //2D polar coordinate
+                  vec2                       const& end,    //2D polar coordinate
+                  vec3                       const& rotation,//rotation along 3 axis
+                  unsigned int               const& duration,
+                  int                        const& loop = 0,
+                  std::tr1::function<void()> const& cb = 0,
+                  int                        const& delayTime = 0)
+    {
+        if( duration == 0 ) return *this;
+        irr::scene::ISceneNodeAnimator* anim =
+            new irr::scene::CirclingAnimator<Eq, Accessor>
+                (smgr_, start, end, duration, center, rotation, loop, cb, delayTime);
         body_->addAnimator( anim );
         anim->drop();
         return *this;

@@ -15,6 +15,8 @@
 #include "utils/ObjectPool.hpp"
 #include "view/All.hpp"
 
+#include <boost/function.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <tr1/functional>
 #include <iostream>
 
@@ -43,7 +45,9 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         sprite->moveTween( 0, 420, 4000, bind(&ViewTest1::step4_alt_timer, this, ref(sprite)) );
     }
     void step2(view::pSprite& sprite) {
-        sprite->moveTween( 540, 420, 3000, bind(&ViewTest1::step3, this, ref(sprite)), 2500 );
+        namespace BLL = boost::lambda;
+        boost::function<float()> func = BLL::var(speed);
+        sprite->tween<Linear, Pos2D>( vec2(540, 420), func, 0, bind(&ViewTest1::step3, this, ref(sprite)), 2500 );
     }
     void step1(view::pSprite& sprite) {
         sprite->moveTween( 540, 0, 4000, bind(&ViewTest1::step2, this, ref(sprite)) );
@@ -53,12 +57,15 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     }
     void test(view::pSprite&) {
         std::cout << "test...." << std::endl;
+        speed = 20.f;
     }
     void test2(view::pSprite&) {
         std::cout << "another test...." << std::endl;
+        speed = 40.f;
     }
     void test3(view::pSprite&) {
         std::cout << "yet another test...." << std::endl;
+        speed = 80.f;
     }
     void cube_owner_hit() {
         std::cout << "HEHEHE.\n";
@@ -87,11 +94,13 @@ private:
     view::pAnimatedSprite      girl;
     view::pAnimatedSprite      a;
     view::pMenu                menu;
+    float                      speed;
 };
 
 ViewTest1::ViewTest1()
 {
     //member test function workaround (shortcut)
+    speed = 40.f;
     std::tr1::function<void(view::pSprite&)> test_ = bind(&ViewTest1::test, this, _1);
     std::tr1::function<void(view::pSprite&)> test2_ = bind(&ViewTest1::test2, this, _1);
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
@@ -118,14 +127,16 @@ ViewTest1::ViewTest1()
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube2->moveTo(5,5,50).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
-                             .tween<Linear, Frame>(4801.0f,9600.0f,1500, -1);
+                             .tween<Linear, Frame>(4801.0f,9600.0f,1500, -1)
+                             .orbit<Linear, Pos3D>(vec3(5,5,50), vec2(10,0), vec2(10,360), vec3(-45,0,0), 5000, -1);
 
     testcube3 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube3->moveTo(-5,-5,60).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                                .tween<Linear, Frame>(0.0f,9600.0f,3000, -1);
 
     something = view::Button::create("title", guiv, 100, 40);
-    something->moveTo(100,100).set<GradientDiffuse>(200);
+    something->moveTo(100,100).set<GradientDiffuse>(200)
+              .orbit<SineCirc, Pos2D>(vec2(100,100), vec2(30,90), vec2(30,450), 5000, -1);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 

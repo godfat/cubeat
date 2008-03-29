@@ -47,14 +47,12 @@ public:
         refresh_cubes(); // make cube to cycle
     	update_chains();
         cycle_cubes();
-    	cycle_creation_garbage();
-    	if(ms()->dropping_creatable()){
-    	    cycle_creation();
-    		cycle_warning();
-        }
+        if(   ms()->garbage_dumpable() ) cycle_creation_garbage();
+    	if( ms()->dropping_creatable() ) cycle_creation();
+		cycle_warning();
         return *this;
     }
-    data::pMapSetting const& <% debug_hook 'ms' do %>() const{ <% end %> return setting_; }
+    data::pMapSetting const& ms() const{ return setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);

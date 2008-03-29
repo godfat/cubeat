@@ -16,26 +16,27 @@ public:
 public:
     static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner); }
 public:
-    Waiting(wpCube owner): State(owner), not_checked_(true),
-                           chain_property_checked_(false), delay_(0)
+    Waiting(wpCube owner): State(owner), checked_(false),
+                           chain_property_checked_(false)
     {}
 
     virtual <% debug_hook '~Waiting' do %>(){<%end%>}
     virtual void cycle();
 
     // begin only used by Map::next_state
-	void checked(){ not_checked_ = false; }
+    bool need_check() const{ return checked_ == false; };
+	void checked(){ checked_ = true; }
 	void chain_property_checked(){ chain_property_checked_ = true; }
-    bool need_check() const;
 	bool need_check_chain_property() const;
     // end
 
-	void uncheck(){ not_checked_ = true; }
+    // for Cube#restore
+	void uncheck(){ checked_ = false; }
 
 private:
-    bool not_checked_;
+    bool checked_;
 	bool chain_property_checked_;
-    int delay_;
+    // int delay_;
 };
 
 }}}

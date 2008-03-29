@@ -38,6 +38,8 @@ public:
         // setup garbage land
         map0_->push_garbage_land(map1_);
         map1_->push_garbage_land(map0_);
+
+        // map1_->throw_garbage(10);
     }
     void cycle(){
         scene_->redraw();

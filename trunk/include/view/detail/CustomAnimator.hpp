@@ -13,8 +13,19 @@ namespace irr
 namespace scene
 {
 
+class AnimatorBase : public ISceneNodeAnimator {
+public:
+    AnimatorBase(s32 const& delayTime = 0):delayTime_(delayTime){}
+    void updateStartTime() {
+        startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime_;
+    }
+protected:
+    s32 startTime_;
+    s32 delayTime_;
+};
+
 template <template<class> class Eq, class Accessor>
-class CustomAnimator : public ISceneNodeAnimator
+class CustomAnimator : public AnimatorBase
 {
 protected:
     typedef std::tr1::function<void()> EndCallback;
@@ -26,13 +37,14 @@ public:
     CustomAnimator(ISceneManager* smgr, T const& start, T const& end, u32 const& duration,
                    int const& loop = 0, EndCallback const& cb = 0,
                    s32 const& delayTime = 0)
-        : smgr_(smgr), start_(start), end_(end), distance_(end_ - start_),
+        : AnimatorBase( delayTime ),
+          smgr_(smgr), start_(start), end_(end), distance_(end_ - start_),
           duration_(duration), loop_(loop), cb_(cb)
     {
 	    #ifdef _DEBUG
 	    setDebugName("CustomAnimator");
 	    #endif
-        startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime;
+        updateStartTime();
     };
 
 	//! destructor
@@ -97,7 +109,7 @@ protected:
   //f32 length_;
 	T distance_;
   //f32 timeFactor_;
-	s32 startTime_;
+  //s32 startTime_;
 	u32 duration_;
 	int loop_;
 

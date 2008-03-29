@@ -50,7 +50,7 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         sprite->tween<Linear, Pos2D>( vec2(540, 420), func, 0, bind(&ViewTest1::step3, this, ref(sprite)), 2500 );
     }
     void step1(view::pSprite& sprite) {
-        sprite->moveTween( 540, 0, 4000, bind(&ViewTest1::step2, this, ref(sprite)) );
+        sprite->tween<Linear, Pos2D>( vec2(540, 0), 4000, 0, bind(&ViewTest1::step2, this, ref(sprite)) );
     }
     void glow(view::pButton& button) {
         button->tween<SineCirc, Alpha>(0, 300);
@@ -94,6 +94,7 @@ private:
     view::pAnimatedSprite      girl;
     view::pAnimatedSprite      a;
     view::pMenu                menu;
+    view::pAnimatedSceneObject cube4;
     float                      speed;
 };
 
@@ -104,6 +105,8 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&)> test_ = bind(&ViewTest1::test, this, _1);
     std::tr1::function<void(view::pSprite&)> test2_ = bind(&ViewTest1::test2, this, _1);
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
+    std::tr1::function<void()> owner_hit_ = bind(&ViewTest1::cube_owner_hit, this);
+    std::tr1::function<void()> enemy_hit_ = bind(&ViewTest1::cube_enemy_hit, this);
 
     guiv = view::Scene::create("ViewTest_GUI");
     guiv->setTo2DView();
@@ -118,11 +121,11 @@ ViewTest1::ViewTest1()
 
     //added callback setting test
     cube0 = view::Cube::create( map1 );
-    cube0->setOwnerHit( bind(&ViewTest1::cube_owner_hit, this) );
+    cube0->setOwnerHit( owner_hit_ );
 
     //added callback setting test
     c = view::Cube::create( map1 );
-    c->setEnemyHit( bind(&ViewTest1::cube_enemy_hit, this) ).
+    c->setEnemyHit( enemy_hit_ ).
        moveTo(10,0,0).set<GradientDiffuse>(127);
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
@@ -159,6 +162,18 @@ ViewTest1::ViewTest1()
     menu->getSprite("item1").set<Green>(0).set<Pos2D>(vec2(0, 50));
     menu->getSprite("item2").set<Blue>(0).set<Pos2D>(vec2(0, 150));
     menu->getSprite("item3").set<Red>(0).set<Pos2D>(vec2(0, 250));
+
+    std::vector<vec3> waypoints;
+    waypoints.push_back(vec3(0, 10, 60));
+    waypoints.push_back(vec3(5, -5, 70));
+    waypoints.push_back(vec3(0, 0, 80));
+
+    cube4 = view::AnimatedSceneObject::create("ex_move", worldv);
+    cube4->moveTo(0,0,80).set<Scale>(vec3(.3f, .3f, .3f))
+          .queue<SineCirc, Scale>(vec3(.5f,.5f,.5f), 2000, 0, owner_hit_)
+          .queue<IOExpo, Pos3D>(vec3(0,10,60), 3333, 0, enemy_hit_)
+          .queue<OCirc, Pos3D>(waypoints, 3333, false, 0, owner_hit_)
+          .orbit<Linear, Pos3D>(vec3(-3, 3, 83), vec2(3*1.71f, -45), vec2(9, 135), vec3(-90, 45, 0), 4000, 0, enemy_hit_);
 }
 
 void ViewTest1::init()

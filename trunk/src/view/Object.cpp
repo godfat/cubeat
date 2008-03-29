@@ -4,6 +4,9 @@
 #include "view/Scene.hpp"
 
 #include "Accessors.hpp"
+#include <boost/foreach.hpp>
+
+#include <iostream>
 
 using namespace irr;
 using namespace core;
@@ -48,6 +51,23 @@ Object& Object::moveTo(int x, int y, int z)
     return *this;
 }
 
+void Object::startTween() {
+    if( anim_queue_.size() > 0 ) {
+        AnimatorBase* anim = anim_queue_.front();
+        anim_queue_.pop_front();
+        anim->updateStartTime();
+        body_->addAnimator( anim );
+        anim->drop();
+    }
+}
+
+void Object::nextTween(std::tr1::function<void()>const& orig_cb)
+{
+    if( orig_cb )
+        orig_cb();
+    startTween();
+}
+
 pScene Object::scene() const
 {
     return scene_.lock();
@@ -60,5 +80,8 @@ ISceneNode* Object::body() const
 
 Object::~Object()
 {
+    BOOST_FOREACH(AnimatorBase*& anim, anim_queue_)
+        anim->drop();
+    anim_queue_.clear();
     if( body_ ) body_->remove();
 }

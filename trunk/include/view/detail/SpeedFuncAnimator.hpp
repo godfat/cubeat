@@ -29,7 +29,7 @@ public:
     {
         cur_speed_ = speedfunc_();
         if( cur_speed_ > 0 ) {
-            this->duration_ = static_cast<u32>((this->start_ - this->end_).getLength() / cur_speed_ * 1000.f);
+            this->duration_ = static_cast<u32>(this->distance(this->end_, this->start_) / cur_speed_ * 1000.f);
             last_speed_ = cur_speed_;
         }
         else {
@@ -46,7 +46,7 @@ public:
 
         cur_speed_ = speedfunc_();
         if( cur_speed_ > std::numeric_limits<float>::epsilon() )
-            this->duration_ = static_cast<u32>((this->start_ - this->end_).getLength() / cur_speed_ * 1000.f);
+            this->duration_ = static_cast<u32>(this->distance(this->end_, this->start_) / cur_speed_ * 1000.f);
         else return;
 
         if( cur_speed_ != last_speed_ ) {

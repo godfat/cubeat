@@ -12,6 +12,7 @@
 #include "view/detail/SpeedFuncAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
+#include "data/AnimatorParam.hpp"
 #include "all_fwd.hpp"
 #include <tr1/functional>
 #include <string>
@@ -56,6 +57,24 @@ public:
         typename Accessor::value_type out;
         Accessor::get(body_, out);
         return out;
+    }
+
+    ////////////////// tweening with parameter construct /////////////////////
+
+    template <template <class> class Eq, class Param>
+    Object& tween(Param const& p)
+    {
+        tween<Eq, typename Param::AccType>(p, typename Param::TypeInfo());
+        return *this;
+    }
+
+    ////////////// queued animation with parameter construct /////////////////
+
+    template <template <class> class Eq, class Param>
+    Object& queue(Param const& p)
+    {
+        queue<Eq, typename Param::AccType>(p, typename Param::TypeInfo());
+        return *this;
     }
 
     //// Original tweening methods (for compatibility with client code): ////
@@ -305,6 +324,97 @@ protected:
     void init(pointer_type const& parent);
     void startTween();
     void nextTween(std::tr1::function<void()>const& orig_cb);
+
+    ///////////////// tween param matching & deducing series ///////////////////
+
+    template <template <class> class Eq, class Acc, class Param>
+    void tween(Param const& p, data::dummy::AnimatorNormal const&)
+    {
+        if( p.speedFuncValid() ) {
+            if( p.startValid() )
+                tween<Eq, Acc>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+            else
+                tween<Eq, Acc>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+        } else {
+            if( p.startValid() )
+                tween<Eq, Acc>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+            else
+                tween<Eq, Acc>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+        }
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void tween(Param const& p, data::dummy::AnimatorWaypoint const&)
+    {
+        tween<Eq, Acc>
+        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void tween(Param const& p, data::dummy::AnimatorCircling const&)
+    {
+        tween<Eq, Acc>(p, typename Param::T());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void tween(Param const& p, vec2 const&)
+    {
+        orbit<Eq, Acc>
+        (p.center(), p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void tween(Param const& p, vec3 const&)
+    {
+        orbit<Eq, Acc>
+        (p.center(), p.start(), p.end(), p.rotation(), p.duration(), p.loop(), p.cb(), p.delay());
+    }
+
+    ///////////// queued animation param matching & deducing series ///////////
+
+    template <template <class> class Eq, class Acc, class Param>
+    void queue(Param const& p, data::dummy::AnimatorNormal const&)
+    {
+        if( p.speedFuncValid() ) {
+            if( p.startValid() )
+                queue<Eq, Acc>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+            else
+                queue<Eq, Acc>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+        } else {
+            if( p.startValid() )
+                queue<Eq, Acc>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+            else
+                queue<Eq, Acc>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+        }
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void queue(Param const& p, data::dummy::AnimatorWaypoint const&)
+    {
+        queue<Eq, Acc>
+        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void queue(Param const& p, data::dummy::AnimatorCircling const&)
+    {
+        queue<Eq, Acc>(p, typename Param::T());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void queue(Param const& p, vec2 const&)
+    {
+        queue<Eq, Acc>
+        (p.center(), p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+    }
+
+    template <template <class> class Eq, class Acc, class Param>
+    void queue(Param const& p, vec3 const&)
+    {
+        queue<Eq, Acc>
+        (p.center(), p.start(), p.end(), p.rotation(), p.duration(), p.loop(), p.cb(), p.delay());
+    }
+
 
 protected:
     irr::scene::ISceneManager* smgr_;

@@ -36,7 +36,6 @@ public:
 private:
     bool checked_;
 	bool chain_property_checked_;
-    // int delay_;
 };
 
 }}}

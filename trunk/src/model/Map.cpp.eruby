@@ -61,15 +61,15 @@ void <% debug_hook 'Map::refresh_cubes' do %>(){
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
 <% end %>
-    // n_of_newcomers_ = 0;
-    ms()->dropping_creatable(true);
-    ms()->garbage_dumpable(true);
     utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2));
 }
 
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
 <% end %>
-    if( !c->has_grounded()  ) ms()->dropping_creatable(false);
+    if( !c->has_grounded() ){
+        dropping_creatable_ = false;
+        if( !c->is_garbage() ) garbage_dumpable_ = false;
+    }
     if(  c->cycle_and_die() ) cubes_.origin()[i].reset(), owner_.lock()->release(c);
 }
 
@@ -275,16 +275,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
 void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
-    // no garbage no working
-	if( garbage_left_ <= 0 ){
-		// garbage_switch_ = false;
-        return;
-	}
-
-	// garbage_switch_ = true;
-
     std::vector<int> is_empty;
-
     int top = ms()->height()-1;
 	// check empty columns
 	for( int x=0, width=ms()->width(); x < width; ++x )
@@ -305,9 +296,6 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
 void <% debug_hook 'Map::cycle_creation' do %>(){
 <% end %>
-    if( garbage_left_ > 0 )//|| n_of_newcomers_ > 0 || garbage_switch_ == true )
-		return;
-
 	// we must check which column's top is empty when drop squares
 	// so we setup an array of columns which its top is empty
     int top = ms()->height()-1;

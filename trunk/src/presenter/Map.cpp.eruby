@@ -64,7 +64,19 @@ pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
 
 Map& <% debug_hook 'Map::cycle' do %>(){
 <% end %>
-    model()->cycle();
-    // view()->cycle();
+    model()->cycle_slow();
+    model()->cycle_fast();
+    return *this;
+}
+
+Map& <% debug_hook 'Map::cycle_slow' do %>(){
+<% end %>
+    model()->cycle_slow();
+    return *this;
+}
+
+Map& <% debug_hook 'Map::cycle_fast' do %>(){
+<% end %>
+    model()->cycle_fast();
     return *this;
 }

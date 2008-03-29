@@ -36,22 +36,31 @@ public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
         cubes_(boost::extents[setting->width()][setting->height()]),
-        n_of_newcomers_(0), garbage_left_(0), score_(0),
-        garbage_switch_(false), lose_warning_step_(0),
+        garbage_left_(0), score_(0), lose_warning_step_(0),
         counting_num_(0), warning_check_step_(0)
     {}
     Map& init_cubes();
     <% debug_hook '~Map' do %>(){<%end%>}
 
-    Map& cycle(){
+    Map& cycle_slow(){
+        garbage_dumpable_ = ms()->garbage_dumpable();
+        dropping_creatable_ = ms()->dropping_creatable();
+
         refresh_cubes(); // make cube to cycle
     	update_chains();
         cycle_cubes();
-        if(   ms()->garbage_dumpable() ) cycle_creation_garbage();
-    	if( ms()->dropping_creatable() ) cycle_creation();
+
 		cycle_warning();
         return *this;
     }
+    Map& cycle_fast(){
+        if( garbage_dumpable_ && garbage_left_ > 0 )
+            cycle_creation_garbage();
+    	else if( dropping_creatable_ )
+    	    cycle_creation();
+        return *this;
+    }
+
     data::pMapSetting const& ms() const{ return setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
@@ -101,11 +110,11 @@ private:
     presenter::wpMap owner_; // should be weak_ptr;
     data::pMapSetting setting_;
     container_type cubes_;
-    int n_of_newcomers_, garbage_left_, score_;
+    int garbage_left_, score_;//, dropping_cubes_, grounded_cubes_;
+    bool dropping_creatable_, garbage_dumpable_;
     // someday make it to be std::list
     chain_list_type chains_;
     preview_list_type cubes_preview_;
-    bool garbage_switch_;
     std::time_t lose_warning_step_;
     int counting_num_, warning_check_step_;
 };

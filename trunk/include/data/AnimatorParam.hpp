@@ -8,17 +8,9 @@
 namespace psc {
 namespace data {
 
-namespace dummy {
-struct AnimatorNormal{};
-struct AnimatorWaypoint{};
-struct AnimatorCircling{};
-}
-
-template <class Acc, class Type = dummy::AnimatorNormal>
+template <template <class> class Eq, class Acc>
 struct AnimatorParam {
     typedef typename Acc::value_type T;
-    typedef Acc                      AccType;
-    typedef Type                     TypeInfo;
 
     AnimatorParam():
         start_(T()), end_(T()), speedfunc_(0), is_start_specified_(false),
@@ -59,10 +51,9 @@ protected:
     int                         delay_;
 };
 
-template <class Acc>
-struct WaypointParam : public AnimatorParam<Acc, dummy::AnimatorWaypoint> {
+template <template <class> class Eq, class Acc>
+struct WaypointParam : public AnimatorParam<Eq, Acc> {
     typedef typename Acc::value_type T;
-    typedef Acc                      AccType;
 
     WaypointParam():
         waypoints_(std::vector<T>(2,T())), closed_(false) {}
@@ -81,10 +72,9 @@ private:
     bool               closed_;
 };
 
-template <class Acc>
-struct CirclingParam : public AnimatorParam<Acc, dummy::AnimatorCircling> {
+template <template <class> class Eq, class Acc>
+struct CirclingParam : public AnimatorParam<Eq, Acc> {
     typedef typename Acc::value_type T;
-    typedef Acc                      AccType;
 
     CirclingParam():
         center_(T()), start_(vec2()), end_(vec2()), rotation_(vec3()) {}

@@ -57,19 +57,69 @@ public:
 
     ////////////////// tweening with parameter construct /////////////////////
 
-    template <template <class> class Eq, class Param>
-    Object& tween(Param const& p)
+    template <template <class> class Eq, class Accessor>
+    Object& tween(data::AnimatorParam<Eq, Accessor> const& p)
     {
-        tween<Eq, typename Param::AccType>(p, typename Param::TypeInfo());
+        if( p.speedFuncValid() ) {
+            if( p.startValid() )
+                tween<Eq, Accessor>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+            else
+                tween<Eq, Accessor>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+        } else {
+            if( p.startValid() )
+                tween<Eq, Accessor>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+            else
+                tween<Eq, Accessor>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+        }
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& tween(data::WaypointParam<Eq, Accessor> const& p)
+    {
+        tween<Eq, Accessor>
+        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& tween(data::CirclingParam<Eq, Accessor> const& p)
+    {
+        tween<Eq, Accessor>(p, typename data::CirclingParam<Eq, Accessor>::T());
         return *this;
     }
 
     ////////////// queued animation with parameter construct /////////////////
 
-    template <template <class> class Eq, class Param>
-    Object& queue(Param const& p)
+    template <template <class> class Eq, class Accessor>
+    Object& queue(data::AnimatorParam<Eq, Accessor> const& p)
     {
-        queue<Eq, typename Param::AccType>(p, typename Param::TypeInfo());
+        if( p.speedFuncValid() ) {
+            if( p.startValid() )
+                queue<Eq, Accessor>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+            else
+                queue<Eq, Accessor>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
+        } else {
+            if( p.startValid() )
+                queue<Eq, Accessor>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+            else
+                queue<Eq, Accessor>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
+        }
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& queue(data::WaypointParam<Eq, Accessor> const& p)
+    {
+        queue<Eq, Accessor>
+        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
+        return *this;
+    }
+
+    template <template <class> class Eq, class Accessor>
+    Object& queue(data::CirclingParam<Eq, Accessor> const& p)
+    {
+        queue<Eq, Accessor>(p, typename data::CirclingParam<Eq, Accessor>::T());
         return *this;
     }
 
@@ -280,91 +330,33 @@ protected:
 
     ///////////////// tween param matching & deducing series ///////////////////
 
-    template <template <class> class Eq, class Acc, class Param>
-    void tween(Param const& p, data::dummy::AnimatorNormal const&)
+    template <template <class> class Eq, class Accessor>
+    void tween(data::CirclingParam<Eq, Accessor> const& p, vec2 const&)
     {
-        if( p.speedFuncValid() ) {
-            if( p.startValid() )
-                tween<Eq, Acc>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
-            else
-                tween<Eq, Acc>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
-        } else {
-            if( p.startValid() )
-                tween<Eq, Acc>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
-            else
-                tween<Eq, Acc>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
-        }
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void tween(Param const& p, data::dummy::AnimatorWaypoint const&)
-    {
-        tween<Eq, Acc>
-        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void tween(Param const& p, data::dummy::AnimatorCircling const&)
-    {
-        tween<Eq, Acc>(p, typename Param::T());
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void tween(Param const& p, vec2 const&)
-    {
-        orbit<Eq, Acc>
+        orbit<Eq, Accessor>
         (p.center(), p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
     }
 
-    template <template <class> class Eq, class Acc, class Param>
-    void tween(Param const& p, vec3 const&)
+    template <template <class> class Eq, class Accessor>
+    void tween(data::CirclingParam<Eq, Accessor> const& p, vec3 const&)
     {
-        orbit<Eq, Acc>
+        orbit<Eq, Accessor>
         (p.center(), p.start(), p.end(), p.rotation(), p.duration(), p.loop(), p.cb(), p.delay());
     }
 
     ///////////// queued animation param matching & deducing series ///////////
 
-    template <template <class> class Eq, class Acc, class Param>
-    void queue(Param const& p, data::dummy::AnimatorNormal const&)
+    template <template <class> class Eq, class Accessor>
+    void queue(data::CirclingParam<Eq, Accessor> const& p, vec2 const&)
     {
-        if( p.speedFuncValid() ) {
-            if( p.startValid() )
-                queue<Eq, Acc>(p.start(), p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
-            else
-                queue<Eq, Acc>(p.end(), p.speedfunc(), p.loop(), p.cb(), p.delay());
-        } else {
-            if( p.startValid() )
-                queue<Eq, Acc>(p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
-            else
-                queue<Eq, Acc>(p.end(), p.duration(), p.loop(), p.cb(), p.delay());
-        }
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void queue(Param const& p, data::dummy::AnimatorWaypoint const&)
-    {
-        queue<Eq, Acc>
-        (p.waypoints(), p.duration(), p.closed(), p.loop(), p.cb(), p.delay(), p.tensions());
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void queue(Param const& p, data::dummy::AnimatorCircling const&)
-    {
-        queue<Eq, Acc>(p, typename Param::T());
-    }
-
-    template <template <class> class Eq, class Acc, class Param>
-    void queue(Param const& p, vec2 const&)
-    {
-        queue<Eq, Acc>
+        queue<Eq, Accessor>
         (p.center(), p.start(), p.end(), p.duration(), p.loop(), p.cb(), p.delay());
     }
 
-    template <template <class> class Eq, class Acc, class Param>
-    void queue(Param const& p, vec3 const&)
+    template <template <class> class Eq, class Accessor>
+    void queue(data::CirclingParam<Eq, Accessor> const& p, vec3 const&)
     {
-        queue<Eq, Acc>
+        queue<Eq, Accessor>
         (p.center(), p.start(), p.end(), p.rotation(), p.duration(), p.loop(), p.cb(), p.delay());
     }
 

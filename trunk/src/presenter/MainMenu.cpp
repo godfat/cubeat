@@ -149,13 +149,13 @@ void MainMenu::initDecorator()
         view::pSprite temp = view::Sprite::create(
             paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
 
-        data::WaypointParam<Pos3D> p1;
+        data::WaypointParam<Linear, Pos3D> p1;
         p1.waypoints(waypoints).duration(20000).loop(-1).delay(-(float)i/capacity*20000);
-        data::AnimatorParam<Rotation> p2;
+        data::AnimatorParam<Linear, Rotation> p2;
         p2.end(vec3(0,0,360)).duration(utils::random(2000)+3000).loop(-1);
 
         temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
-             .tween<Linear>(p1).tween<Linear>(p2);
+             .tween(p1).tween(p2);
 
         deco_cubes_.push_back( temp );
     }

@@ -47,9 +47,9 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void step2(view::pSprite& sprite) {
         namespace BLL = boost::lambda;
         boost::function<float()> func = BLL::var(speed);
-        data::AnimatorParam<Pos2D> param;
+        data::AnimatorParam<Linear, Pos2D> param;
         param.end(vec2(540,420)).speedfunc(func).cb( bind(&ViewTest1::step3, this, ref(sprite)) ).delay(2500);
-        sprite->tween<Linear>(param);
+        sprite->tween(param);
     }
     void step1(view::pSprite& sprite) {
         sprite->tween<Linear, Pos2D>( vec2(540, 0), 4000, 0, bind(&ViewTest1::step2, this, ref(sprite)) );
@@ -130,25 +130,24 @@ ViewTest1::ViewTest1()
     c->setEnemyHit( enemy_hit_ ).
        moveTo(10,0,0).set<GradientDiffuse>(127);
 
-    data::AnimatorParam<Frame> param1; param1.start(4801.0f).end(9600.0f).loop(-1);
-    data::CirclingParam<Pos3D> param2;
+    data::AnimatorParam<Linear, Frame> param1; param1.start(4801.0f).end(9600.0f).loop(-1);
+    data::CirclingParam<Linear, Pos3D> param2;
     param2.center(vec3(5,5,50)).start(vec2(10,0)).end(vec2(10,360)).rotation(vec3(-45,0,0))
           .duration(5000).loop(-1);
 
     testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube2->moveTo(5,5,50).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
-                             .tween<Linear>(param1)
-                             .tween<Linear>(param2);
+                             .tween(param1).tween(param2);
 
     testcube3 = view::AnimatedSceneObject::create("ex_move", worldv);
     testcube3->moveTo(-5,-5,60).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                                .tween<Linear, Frame>(0.0f,9600.0f,3000, -1);
 
-    data::CirclingParam<Pos2D> param3;
+    data::CirclingParam<SineCirc, Pos2D> param3;
     param3.center(vec2(100,100)).start(vec2(30,90)).end(vec2(30,450)).duration(5000).loop(-1);
 
     something = view::Button::create("title", guiv, 100, 40);
-    something->moveTo(100,100).set<GradientDiffuse>(200).tween<SineCirc>(param3);
+    something->moveTo(100,100).set<GradientDiffuse>(200).tween(param3);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
 
@@ -177,10 +176,10 @@ ViewTest1::ViewTest1()
     waypoints.push_back(vec3(5, -5, 70));
     waypoints.push_back(vec3(0, 0, 80));
 
-    data::AnimatorParam<Scale> paramA; paramA.end(vec3(.5f,.5f,.5f)).duration(2000).cb(owner_hit_);
-    data::AnimatorParam<Pos3D> paramB; paramB.end(vec3(0,10,60)).duration(3333).cb(enemy_hit_);
-    data::WaypointParam<Pos3D> paramC; paramC.waypoints(waypoints).duration(3333).cb(owner_hit_);
-    data::CirclingParam<Pos3D> paramD;
+    data::AnimatorParam<SineCirc, Scale> paramA; paramA.end(vec3(.5f,.5f,.5f)).duration(2000).cb(owner_hit_);
+    data::AnimatorParam<IOExpo, Pos3D> paramB; paramB.end(vec3(0,10,60)).duration(3333).cb(enemy_hit_);
+    data::WaypointParam<OCirc, Pos3D> paramC; paramC.waypoints(waypoints).duration(3333).cb(owner_hit_);
+    data::CirclingParam<Linear, Pos3D> paramD;
     paramD.center(vec3(-3,3,83)).start(vec2(3*1.71f,-45)).end(vec2(9,135)).rotation(vec3(-90,45,0))
           .duration(4000).cb(enemy_hit_);
 

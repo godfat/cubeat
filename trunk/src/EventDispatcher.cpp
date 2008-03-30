@@ -74,43 +74,64 @@ EventDispatcher& EventDispatcher::subscribe_obj_event
 
 //TODO:
 //Event dispatching need to be extended to other button state: Release, Up, Down
+
+/// This is the Main Loop for Object Event Dispatching
+
 void EventDispatcher::dispatch_obj()
 {
-    BOOST_FOREACH(SceneListenerPair& slp, scene_listeners_)
-    {   //SceneListenerPair::first = const wpScene, SceneListenerPair::second = ObjListener
+    BOOST_FOREACH(SceneListenerPair& slp, scene_listeners_) {
         view::pScene scene = slp.first.lock();
         if( !scene ) {
             scene_expired_.push_back( slp.first );
             continue;
         }
-        ObjListener& listeners       = slp.second;
-        ISceneCollisionManager* colm = scene->getCollisionMgr();
-        std::map<Input const*, ISceneNode*> pickmap;
-
-        BOOST_FOREACH(Input const* input, Input::getInputs()) {
-            position2di pos(input->cursor().x(), input->cursor().y());
-            ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
-            if( picked )
-                pickmap.insert( std::make_pair(input, picked) );
-        }
-        for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
-            if( view::pSprite sv = get<OE::SPRITE>(*o).lock() ) { //sprite not expired
-                Button const* btn = get<OE::BTN>(*o);
-                if( btn->state() != BTN_PRESS )                   //not right state
-                    continue;
-
-                if( pickmap[ btn->owner() ] == sv->body() ) {
-                    get<OE::OBJ_CB>(*o)(sv);                      //lastly, fire up callback
-                    std::cout << "dispatcher trace: " << pickmap[ btn->owner() ] << "\n";
-                    break;
-                }
-            }
-            else
-                obj_events_to_be_deleted_.insert( std::make_pair(slp.first, o) );
-        }
+        obj_listening(scene, slp.second);
     }
     cleanup_obj_event();
 }
+
+
+/// This is for caching picked SceneNode for different Inputs
+/// This procedure is executed per frame, and per Scene
+
+void EventDispatcher::obj_picking(view::pScene const& scene)
+{
+    ISceneCollisionManager* colm = scene->getCollisionMgr();
+    pickmap_.clear();
+    BOOST_FOREACH(Input const* input, Input::getInputs()) {
+        position2di pos(input->cursor().x(), input->cursor().y());
+        ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
+        if( picked )
+            pickmap_.insert( std::make_pair(input, picked) );
+    }
+}
+
+
+/// This is for dispatching events in a specific Scene
+/// This procedure is executed per frame, and per Scene
+
+void EventDispatcher::obj_listening(view::pScene const& scene, ObjListener& listeners)
+{
+    obj_picking( scene );
+
+    for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
+        if( view::pSprite sv = get<OE::SPRITE>(*o).lock() ) { //sprite not expired
+            Button const* btn = get<OE::BTN>(*o);
+            if( btn->state() != BTN_PRESS )                   //not right state
+                continue;
+
+            if( pickmap_[ btn->owner() ] == sv->body() ) {
+                get<OE::OBJ_CB>(*o)(sv);                      //lastly, fire up callback
+                std::cout << "dispatcher trace: " << pickmap_[ btn->owner() ] << "\n";
+                break;
+            }
+        }
+        else obj_events_to_be_deleted_.insert( std::make_pair(scene, o) );
+    }
+}
+
+
+/// This is the Main Loop for Global Button Events.
 
 void EventDispatcher::dispatch_btn(){
     for(BtnListener::iterator b = btn_listeners_.begin(), bend = btn_listeners_.end();
@@ -124,6 +145,9 @@ void EventDispatcher::dispatch_btn(){
     }
     cleanup_btn_event();
 }
+
+
+/// This is the Main Loop of Timer
 
 void EventDispatcher::dispatch_timer(){
 
@@ -145,12 +169,18 @@ void EventDispatcher::dispatch_timer(){
     }
 }
 
+
+/// Main Loop of Event Dispatcher
+
 void EventDispatcher::dispatch()
 {
     dispatch_btn();
     dispatch_obj();
     dispatch_timer();
 }
+
+
+/// Cleanup method for Event Dispatcher
 
 void EventDispatcher::cleanup_timer_and_init_newly_created_timer()
 {

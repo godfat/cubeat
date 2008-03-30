@@ -5,7 +5,6 @@
 #include "ESceneNodeAnimatorTypes.h"
 
 namespace irr{
-
 namespace scene{
 class ISceneNode;
 }
@@ -14,10 +13,15 @@ class ISceneNode;
 namespace psc{
 namespace accessor{
 
+// potential conflicting enum:
+//     DIFFUSE  <-> {R,G,B}    (but R /G /B  are not conflicting among themselves)
+//     EMISSIVE <-> {RE,GE,BE} (but RE/GE/BE are not conflicting among themselves)
+//     SCALE    <-> SIZE2D
+
 struct AT{
-    enum{POSITION = irr::scene::ESNAT_UNKNOWN+1,
-         ROTATION, SCALE, DIFFUSE, EMISSIVE, R, G, B, A, RE, GE, BE, AE,
-         FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
+    enum ATEnum {POSITION = irr::scene::ESNAT_UNKNOWN+1,
+                 ROTATION, SCALE, DIFFUSE, EMISSIVE, R, G, B, A, RE, GE, BE, AE,
+                 FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
 };
 
 template <class T, int U = AT::UNKNOWN>

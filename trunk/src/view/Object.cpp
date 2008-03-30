@@ -51,11 +51,55 @@ Object& Object::moveTo(int x, int y, int z)
     return *this;
 }
 
+Object& Object::clearAllTween()
+{
+    clearAllQueuedTween();
+    body_->removeAnimators();
+    return *this;
+}
+
+Object& Object::clearAllQueuedTween()
+{
+    BOOST_FOREACH(AnimatorBase*& anim, anim_queue_)
+        anim->drop();
+    anim_queue_.clear();
+    return *this;
+}
+
+Object& Object::clearTween(AT::ATEnum const& eType)
+{
+    typedef core::list< ISceneNodeAnimator* > IrrAnimList;
+    IrrAnimList const& alist = body_->getAnimators();
+    for( IrrAnimList::ConstIterator it = alist.begin(), end = alist.end();
+         it != end; ++it ) {
+        if( static_cast<int>((*it)->getType()) == static_cast<int>(eType) ) //work?
+            smgr_->addToAnimatorDeletionQueue(*it, body_);
+    }
+    return *this;
+}
+
+Object& Object::clearQueuedTween(AT::ATEnum const& eType)
+{
+    typedef std::list< AnimatorBase* > AnimList;
+    typedef std::list< AnimList::iterator > AnimRemoval;
+    AnimRemoval removal;
+    for( AnimList::iterator it = anim_queue_.begin(), end = anim_queue_.end();
+         it != end; ++it ) {
+        if( static_cast<int>((*it)->getType()) == static_cast<int>(eType) ) //work?
+            removal.push_back(it);
+    }
+    BOOST_FOREACH(AnimList::iterator& it, removal)
+        anim_queue_.erase(it);
+    removal.clear();
+    return *this;
+}
+
 void Object::startTween() {
     if( anim_queue_.size() > 0 ) {
         AnimatorBase* anim = anim_queue_.front();
         anim_queue_.pop_front();
         anim->updateStartTime();
+        clearTween( static_cast<AT::ATEnum>(anim->getType()) ); //del all animators of same type
         body_->addAnimator( anim );
         anim->drop();
     }
@@ -80,8 +124,6 @@ ISceneNode* Object::body() const
 
 Object::~Object()
 {
-    BOOST_FOREACH(AnimatorBase*& anim, anim_queue_)
-        anim->drop();
-    anim_queue_.clear();
+    clearAllQueuedTween();
     if( body_ ) body_->remove();
 }

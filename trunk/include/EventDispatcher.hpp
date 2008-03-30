@@ -20,6 +20,12 @@
 #include <vector>
 #include <list>
 
+namespace irr {
+namespace scene {
+class ISceneNode;
+}
+}
+
 namespace psc {
 
 namespace ctrl {
@@ -47,6 +53,8 @@ class EventDispatcher
     typedef std::pair<view::wpScene const, ObjListener>                    SceneListenerPair;
     typedef std::map <view::wpScene, ObjListener>                          SceneListener;
     typedef std::list<SceneListener::key_type>                             SceneListenerRemoval;
+
+    typedef std::map <Input const*, irr::scene::ISceneNode*>               PickingMap;
 
 public:
     static EventDispatcher& i() {
@@ -77,7 +85,10 @@ private:
     void cleanup_timer_and_init_newly_created_timer();
     void cleanup_obj_event();
     void cleanup_btn_event();
+    void obj_picking(view::pScene const&);
+    void obj_listening(view::pScene const&, ObjListener&);
 
+private:
     BtnListener          btn_listeners_;
     BtnEventRemoval      btn_events_to_be_deleted_;
     TimerList            timers_, newly_created_timers_;
@@ -85,6 +96,7 @@ private:
     SceneListener        scene_listeners_;
     ObjEventRemoval      obj_events_to_be_deleted_;
     SceneListenerRemoval scene_expired_;
+    PickingMap           pickmap_;
 
     static pvoid self_; //point to &EventDispatcher::i()
 };

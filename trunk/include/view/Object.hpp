@@ -1,10 +1,6 @@
 #ifndef _SHOOTING_CUBES_OBJECT_VIEW_
 #define _SHOOTING_CUBES_OBJECT_VIEW_
 
-/* TODO:
-   We might need a queue and loop-finite-times features to tween interface
-   will be implemented when needed. */
-
 #include "view/detail/CustomAnimator.hpp"
 #include "view/detail/WaypointAnimator.hpp"
 #include "view/detail/CirclingAnimator.hpp"
@@ -254,6 +250,11 @@ public:
         anim_queue_.push_back( anim );
         return *this;
     }
+
+    Object& clearAllTween();
+    Object& clearAllQueuedTween();
+    Object& clearTween(accessor::AT::ATEnum const&);
+    Object& clearQueuedTween(accessor::AT::ATEnum const&);
 
 #undef START
 #undef END

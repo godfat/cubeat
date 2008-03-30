@@ -79,14 +79,23 @@ public:
 
     //// Original tweening methods (for compatibility with client code): ////
 
+#define START         typename Accessor::value_type const& start
+#define END           typename Accessor::value_type const& end
+#define DURATION      unsigned int                  const& duration
+#define SPEEDFUNC     std::tr1::function<float()>   const& speedfunc
+#define CLOSED        bool                          const& closed = false
+#define TENSIONS      std::vector<float>            const& tensions = std::vector<float>()
+#define VEC2START     vec2                          const& start
+#define VEC2END       vec2                          const& end
+#define VEC2CENTER    vec2                          const& center
+#define VEC3CENTER    vec3                          const& center
+#define VEC3ROTATION  vec3                          const& rotation
+#define WAYPOINTS     std::vector<typename Accessor::value_type> const& waypoints
+#define LOOP_CB_DELAY int const& loop = 0, std::tr1::function<void()> const& cb = 0, int const& delay = 0
+
     // an animation which specified start and end.
     template <template <class> class Eq, class Accessor>
-    Object& tween(typename Accessor::value_type const& start,
-                  typename Accessor::value_type const& end,
-                  unsigned int                  const& duration,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& tween(START, END, DURATION, LOOP_CB_DELAY)
     {
         queue<Eq, Accessor>(start, end, duration, loop, cb, delay);
         startTween();
@@ -95,11 +104,7 @@ public:
 
     // an animation which specified only end, will use current status as start.
     template <template <class> class Eq, class Accessor>
-    Object& tween(typename Accessor::value_type const& end,
-                  unsigned int                  const& duration,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& tween(END, DURATION, LOOP_CB_DELAY)
     {
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
@@ -109,12 +114,7 @@ public:
 
     // an animation with speed control (start, end)
     template <template <class> class Eq, class Accessor>
-    Object& tween(typename Accessor::value_type const& start,
-                  typename Accessor::value_type const& end,
-                  std::tr1::function<float()>   const& speedfunc,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& tween(START, END, SPEEDFUNC, LOOP_CB_DELAY)
     {
         queue<Eq, Accessor>(start, end, speedfunc, loop, cb, delay);
         startTween();
@@ -123,11 +123,7 @@ public:
 
     // an animation with speed control (current status, end)
     template <template <class> class Eq, class Accessor>
-    Object& tween(typename Accessor::value_type const& end,
-                  std::tr1::function<float()>   const& speedfunc,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& tween(END, SPEEDFUNC, LOOP_CB_DELAY)
     {
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
@@ -137,47 +133,27 @@ public:
 
     // an animation with more than 2 keypoints (waypoints).
     template <template <class> class Eq, class Accessor>
-    Object& tween(std::vector
-                  <typename Accessor::value_type> const& waypoints,
-                  unsigned int                    const& duration,
-                  bool                            const& closed = false,
-                  int                             const& loop = 0,
-                  std::tr1::function<void()>      const& cb = 0,
-                  int                             const& delay = 0,
-                  std::vector<float>              const& tensions = std::vector<float>())
+    Object& tween(WAYPOINTS, DURATION, CLOSED, LOOP_CB_DELAY, TENSIONS)
     {
         queue<Eq, Accessor>(waypoints, duration, closed, loop, cb, delay, tensions);
         startTween();
         return *this;
     }
 
-    // orbit a center, there's only 2D and 3D version.
+    // orbit a center, specialized for 2D circle (start and end is polar coordinate)
     template <template <class> class Eq, class Accessor>
-    Object& orbit(vec2                       const& center, //specialize for 2D circle
-                  vec2                       const& start,  //2D polar coordinate
-                  vec2                       const& end,    //2D polar coordinate
-                  unsigned int               const& duration,
-                  int                        const& loop = 0,
-                  std::tr1::function<void()> const& cb = 0,
-                  int                        const& delayTime = 0)
+    Object& orbit(VEC2CENTER, VEC2START, VEC2END, DURATION, LOOP_CB_DELAY)
     {
-        queue<Eq, Accessor>(center, start, end, duration, loop, cb, delayTime);
+        queue<Eq, Accessor>(center, start, end, duration, loop, cb, delay);
         startTween();
         return *this;
     }
 
-    // orbit a center, there's only 2D and 3D version.
+    // orbit a center, specialized for 3D circle (start and end is polar coordinate)
     template <template <class> class Eq, class Accessor>
-    Object& orbit(vec3                       const& center, //specialize for 3D circle
-                  vec2                       const& start,  //2D polar coordinate
-                  vec2                       const& end,    //2D polar coordinate
-                  vec3                       const& rotation,//rotation along 3 axis
-                  unsigned int               const& duration,
-                  int                        const& loop = 0,
-                  std::tr1::function<void()> const& cb = 0,
-                  int                        const& delayTime = 0)
+    Object& orbit(VEC3CENTER, VEC2START, VEC2END, VEC3ROTATION, DURATION, LOOP_CB_DELAY)
     {
-        queue<Eq, Accessor>(center, start, end, rotation, duration, loop, cb, delayTime);
+        queue<Eq, Accessor>(center, start, end, rotation, duration, loop, cb, delay);
         startTween();
         return *this;
     }
@@ -186,12 +162,7 @@ public:
 
     // an animation which specified start and end.
     template <template <class> class Eq, class Accessor>
-    Object& queue(typename Accessor::value_type const& start,
-                  typename Accessor::value_type const& end,
-                  unsigned int                  const& duration,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& queue(START, END, DURATION, LOOP_CB_DELAY)
     {
         if( duration == 0 ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
@@ -206,11 +177,7 @@ public:
 
     // an animation which specified only end, will use current status as start.
     template <template <class> class Eq, class Accessor>
-    Object& queue(typename Accessor::value_type const& end,
-                  unsigned int                  const& duration,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& queue(END, DURATION, LOOP_CB_DELAY)
     {
         if( duration == 0 ) return *this;
         typename Accessor::value_type start = typename Accessor::value_type();
@@ -221,12 +188,7 @@ public:
 
     // an animation with speed control (start, end)
     template <template <class> class Eq, class Accessor>
-    Object& queue(typename Accessor::value_type const& start,
-                  typename Accessor::value_type const& end,
-                  std::tr1::function<float()>   const& speedfunc,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& queue(START, END, SPEEDFUNC, LOOP_CB_DELAY)
     {
         if( !speedfunc ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
@@ -239,11 +201,7 @@ public:
 
     // an animation with speed control (current status, end)
     template <template <class> class Eq, class Accessor>
-    Object& queue(typename Accessor::value_type const& end,
-                  std::tr1::function<float()>   const& speedfunc,
-                  int                           const& loop = 0,
-                  std::tr1::function<void()>    const& cb = 0,
-                  int                           const& delay = 0)
+    Object& queue(END, SPEEDFUNC, LOOP_CB_DELAY)
     {
         if( !speedfunc ) return *this;
         typename Accessor::value_type start = typename Accessor::value_type();
@@ -254,14 +212,7 @@ public:
 
     // an animation with more than 2 keypoints (waypoints).
     template <template <class> class Eq, class Accessor>
-    Object& queue(std::vector
-                  <typename Accessor::value_type> const& waypoints,
-                  unsigned int                    const& duration,
-                  bool                            const& closed = false,
-                  int                             const& loop = 0,
-                  std::tr1::function<void()>      const& cb = 0,
-                  int                             const& delay = 0,
-                  std::vector<float>              const& tensions = std::vector<float>())
+    Object& queue(WAYPOINTS, DURATION, CLOSED, LOOP_CB_DELAY, TENSIONS)
     {
         if( duration == 0 ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
@@ -278,44 +229,45 @@ public:
         return *this;
     }
 
-    // orbit a center, there's only 2D and 3D version.
+    // orbit a center, specialized for 2D circle
     template <template <class> class Eq, class Accessor>
-    Object& queue(vec2                       const& center, //specialize for 2D circle
-                  vec2                       const& start,  //2D polar coordinate
-                  vec2                       const& end,    //2D polar coordinate
-                  unsigned int               const& duration,
-                  int                        const& loop = 0,
-                  std::tr1::function<void()> const& cb = 0,
-                  int                        const& delayTime = 0)
+    Object& queue(VEC2CENTER, VEC2START, VEC2END, DURATION, LOOP_CB_DELAY)
     {
         if( duration == 0 ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
         irr::scene::AnimatorBase* anim =
             new irr::scene::CirclingAnimator<Eq, Accessor>
-                (smgr_, start, end, duration, center, loop, combo, delayTime);
+                (smgr_, start, end, duration, center, loop, combo, delay);
         anim_queue_.push_back( anim );
         return *this;
     }
 
-    // orbit a center, there's only 2D and 3D version.
+    // orbit a center, specialized for 3D circle
     template <template <class> class Eq, class Accessor>
-    Object& queue(vec3                       const& center, //specialize for 3D circle
-                  vec2                       const& start,  //2D polar coordinate
-                  vec2                       const& end,    //2D polar coordinate
-                  vec3                       const& rotation,//rotation along 3 axis
-                  unsigned int               const& duration,
-                  int                        const& loop = 0,
-                  std::tr1::function<void()> const& cb = 0,
-                  int                        const& delayTime = 0)
+    Object& queue(VEC3CENTER, VEC2START, VEC2END, VEC3ROTATION, DURATION, LOOP_CB_DELAY)
     {
         if( duration == 0 ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
         irr::scene::AnimatorBase* anim =
             new irr::scene::CirclingAnimator<Eq, Accessor>
-                (smgr_, start, end, duration, center, rotation, loop, combo, delayTime);
+                (smgr_, start, end, duration, center, rotation, loop, combo, delay);
         anim_queue_.push_back( anim );
         return *this;
     }
+
+#undef START
+#undef END
+#undef DURATION
+#undef SPEEDFUNC
+#undef CLOSED
+#undef TENSIONS
+#undef VEC2START
+#undef VEC2END
+#undef VEC2CENTER
+#undef VEC3CENTER
+#undef VEC3ROTATION
+#undef WAYPOINTS
+#undef LOOP_CB_DELAY
 
     virtual ~Object();
 
@@ -414,7 +366,6 @@ protected:
         queue<Eq, Acc>
         (p.center(), p.start(), p.end(), p.rotation(), p.duration(), p.loop(), p.cb(), p.delay());
     }
-
 
 protected:
     irr::scene::ISceneManager* smgr_;

@@ -16,6 +16,7 @@ namespace psc {
 
 namespace ctrl {
 class Button;
+class Crosshair;
 }
 
 namespace view {
@@ -45,10 +46,14 @@ public:
     virtual Sprite& moveTo(int,int);
     virtual Sprite& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
 
-    ctrl::CallbackDelegate& onPress(ctrl::Button const*);
-  /*CallbackDelegate& onRelease(Button const*);
-    CallbackDelegate& onUp(Button const*);
-    CallbackDelegate& onDown(Button const*);*/ //draft, dont use just yet
+    //Maybe this feature should move to another class and use multiple inheritance.
+    ctrl::CallbackDelegate& onPress  (ctrl::Button const*);
+    ctrl::CallbackDelegate& onRelease(ctrl::Button const*);
+    ctrl::CallbackDelegate& onUp     (ctrl::Button const*);
+    ctrl::CallbackDelegate& onDown   (ctrl::Button const*);
+//    ctrl::CallbackDelegate& onFocus     (ctrl::Crosshair const*);
+//    ctrl::CallbackDelegate& onLeaveFocus(ctrl::Crosshair const*);
+    //End of maybe
 
     virtual ~Sprite();
 
@@ -58,12 +63,9 @@ protected:
     void adjust_texcoord_for_hand_made_texture(int const&, int const&);
 
 protected:
-  /*ctrl::CallbackDelegate press_;
-    CallbackDelegate release_;
-    CallbackDelegate up_;
-    CallbackDelegate down_; */ //draft, dont use just yet
-
+    //Maybe this feature should move to another class and use multiple inheritance.
     std::list< ctrl::CallbackDelegate > delegates_;
+    //End of maybe
 
     bool center_;
 

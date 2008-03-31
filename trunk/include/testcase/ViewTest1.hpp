@@ -69,6 +69,9 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         std::cout << "yet another test...." << std::endl;
         speed = 80.f;
     }
+    void test4(view::pSprite& sp) {
+        sp->set<GradientDiffuse>(255);
+    }
     void cube_owner_hit() {
         std::cout << "HEHEHE.\n";
     }
@@ -107,6 +110,7 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&)> test_ = bind(&ViewTest1::test, this, _1);
     std::tr1::function<void(view::pSprite&)> test2_ = bind(&ViewTest1::test2, this, _1);
     std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
+    std::tr1::function<void(view::pSprite&)> test4_ = bind(&ViewTest1::test4, this, _1);
     std::tr1::function<void()> owner_hit_ = bind(&ViewTest1::cube_owner_hit, this);
     std::tr1::function<void()> enemy_hit_ = bind(&ViewTest1::cube_enemy_hit, this);
 
@@ -150,6 +154,8 @@ ViewTest1::ViewTest1()
     something->moveTo(100,100).set<GradientDiffuse>(200).tween(param3);
 
     something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
+    something->onRelease( &(Input::getInputByIndex(1)->trig1()) ) = test2_;
+    something->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test4_;
 
     anotherthing = view::Sprite::create("title", guiv, 100, 40);
     anotherthing->moveTo(0,0);

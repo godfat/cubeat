@@ -5,7 +5,6 @@
 #include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
-#include "CallbackDelegate.hpp"
 
 #include <sstream>
 
@@ -22,7 +21,8 @@ using namespace easing;
 using namespace accessor;
 
 Sprite::Sprite(std::string const& name, bool const& center)
-    :Object(name), center_(center), center_aligned_plane_(0),
+    :Object(name),
+     center_(center), center_aligned_plane_(0),
      upperleft_aligned_plane_(0), thismesh_(0)
 {
     upperleft_aligned_plane_ =
@@ -135,12 +135,52 @@ Sprite* Sprite::clone() const
     return obj;
 }
 
+
+/// Maybe this feature should move to another class and use multiple inheritance.
+
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
 {
     ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_PRESS);
     delegates_.push_back( cd );
     return delegates_.back();
 }
+
+ctrl::CallbackDelegate& Sprite::onRelease(ctrl::Button const* btn)
+{
+    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_RELEASE);
+    delegates_.push_back( cd );
+    return delegates_.back();
+}
+
+ctrl::CallbackDelegate& Sprite::onDown(ctrl::Button const* btn)
+{
+    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_DOWN);
+    delegates_.push_back( cd );
+    return delegates_.back();
+}
+
+ctrl::CallbackDelegate& Sprite::onUp(ctrl::Button const* btn)
+{
+    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_UP);
+    delegates_.push_back( cd );
+    return delegates_.back();
+}
+
+//ctrl::CallbackDelegate& Sprite::onFocus(ctrl::Crosshair const*)
+//{
+//    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_DOWN);
+//    delegates_.push_back( cd );
+//    return delegates_.back();
+//}
+//
+//ctrl::CallbackDelegate& Sprite::onLeaveFocus(ctrl::Crosshair const*)
+//{
+//    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_UP);
+//    delegates_.push_back( cd );
+//    return delegates_.back();
+//}
+
+/// End of Maybe
 
 Sprite::~Sprite()
 {

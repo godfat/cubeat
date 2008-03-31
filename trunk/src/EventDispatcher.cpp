@@ -39,6 +39,12 @@ EventDispatcher::EventDispatcher()
 EventDispatcher& EventDispatcher::subscribe_btn_event
     (BtnCallback const& cb, wpvoid const& obj, Button const* btn, BSTATE const& state)
 {
+    BOOST_FOREACH(BtnEvent& b, btn_listeners_)
+        if( get<BUTTON>(b) == btn && get<STATE>(b) == state ) {
+            get<BCALLBACK>(b) = cb;    //update new callback
+            get<BCALLEE>(b) = obj;     //update new callee
+            return *this;
+        }
     btn_listeners_.push_back( tie( cb, btn, state, obj ) );
     return *this;
 }
@@ -66,7 +72,7 @@ EventDispatcher& EventDispatcher::subscribe_timer
 }
 
 EventDispatcher& EventDispatcher::subscribe_obj_event
-    (ObjCallback const& ocb, view::pSprite const& obj, Button const* btn, BSTATE const& state)
+    (ObjCallback const* ocb, view::pSprite const& obj, Button const* btn, BSTATE const& state)
 {   //SceneListenerPair::first = const wpScene, SceneListenerPair::second = ObjListener
     view::wpScene scene = obj->scene();
     if( scene_listeners_.find( scene ) != scene_listeners_.end() )
@@ -122,13 +128,14 @@ void EventDispatcher::obj_listening(view::pScene const& scene, ObjListener& list
     obj_picking( scene );
 
     for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
-        if( view::pSprite sv = get<OE::SPRITE>(*o).lock() ) { //sprite not expired
+        view::pSprite sv = get<OE::SPRITE>(*o).lock();      //sprite not expired
+        if( sv && *get<OE::OBJ_CB>(*o) ) {                  //and callback is not NULL
             Button const* btn = get<OE::BTN>(*o);
-            if( btn->state() != get<STATE>(*o) )                   //not right state
+            if( btn->state() != get<STATE>(*o) )            //not right state
                 continue;
 
             if( pickmap_[ btn->owner() ] == sv->body() ) {
-                get<OE::OBJ_CB>(*o)(sv);                      //lastly, fire up callback
+                (*get<OE::OBJ_CB>(*o))(sv);                 //lastly, fire up callback
                 std::cout << "dispatcher trace: " << pickmap_[ btn->owner() ] << "\n";
                 break;
             }

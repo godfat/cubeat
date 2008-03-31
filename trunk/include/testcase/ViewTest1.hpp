@@ -57,6 +57,22 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void glow(view::pButton& button) {
         button->tween<SineCirc, Alpha>(0, 300);
     }
+    void removeFn(view::pButton& button) {
+        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = 0;
+        std::cout << "pButton onUp removed.\n";
+    }
+    void addFn(view::pButton& button) {
+        std::cout << "global button input2 trig2 press changed.\n";
+        std::tr1::function<void(int,int)> btest2_ = bind(&ViewTest1::btn_press_test2, this, _1, _2);
+        EventDispatcher::i().subscribe_btn_event(btest2_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+        std::cout << "pButton onUp assigned.\n";
+        std::tr1::function<void(view::pSprite&)> test4_ = bind(&ViewTest1::test4, this, _1);
+        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test4_;
+    }
+    void addFn2(view::pButton& button) {
+        std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
+        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test3_;
+    }
     void test(view::pSprite&) {
         std::cout << "test...." << std::endl;
         speed = 20.f;
@@ -70,6 +86,7 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         speed = 80.f;
     }
     void test4(view::pSprite& sp) {
+        std::cout << "yet yet another test...." << std::endl;
         sp->set<GradientDiffuse>(255);
     }
     void cube_owner_hit() {
@@ -77,6 +94,30 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     }
     void cube_enemy_hit() {
         std::cout << "HAHAHA.\n";
+    }
+
+
+    //AMAZING!!!!!!!! the following 4 functions work very well!
+
+    void btn_press_test(int, int) {
+        std::cout << "BLAHHHH.\n";
+        std::tr1::function<void(int,int)> btest2_ = bind(&ViewTest1::btn_press_test2, this, _1, _2);
+        EventDispatcher::i().subscribe_btn_event(btest2_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+    }
+    void btn_press_test2(int, int) {
+        std::cout << "BLOHHHH.\n";
+        std::tr1::function<void(int,int)> btest_ = bind(&ViewTest1::btn_press_test, this, _1, _2);
+        EventDispatcher::i().subscribe_btn_event(btest_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+    }
+    void obj_press_test(view::pSprite& sp) {
+        std::cout << "BLEHHHH.\n";
+        std::tr1::function<void(view::pSprite&)> otest2_ = bind(&ViewTest1::obj_press_test2, this, _1);
+        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest2_;
+    }
+    void obj_press_test2(view::pSprite& sp) {
+        std::cout << "BLIHHHH.\n";
+        std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
+        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
     }
 
     void init();
@@ -183,15 +224,21 @@ ViewTest1::ViewTest1()
     waypoints.push_back(vec3(0, 0, 80));
 
     data::AnimatorParam<SineCirc, Scale> paramA; paramA.end(vec3(.5f,.5f,.5f)).duration(2000).cb(owner_hit_);
-    data::AnimatorParam<IOExpo, Pos3D> paramB; paramB.end(vec3(0,10,60)).duration(3333).cb(enemy_hit_);
-    data::WaypointParam<OCirc, Pos3D> paramC; paramC.waypoints(waypoints).duration(3333).cb(owner_hit_);
-    data::CirclingParam<Linear, Pos3D> paramD;
+    data::AnimatorParam<IOExpo, Pos3D>   paramB; paramB.end(vec3(0,10,60)).duration(3333).cb(enemy_hit_);
+    data::WaypointParam<OCirc, Pos3D>    paramC; paramC.waypoints(waypoints).duration(3333).cb(owner_hit_);
+    data::CirclingParam<Linear, Pos3D>   paramD;
     paramD.center(vec3(-3,3,83)).start(vec2(3*1.71f,-45)).end(vec2(9,135)).rotation(vec3(-90,45,0))
           .duration(4000).cb(enemy_hit_);
 
     cube4 = view::AnimatedSceneObject::create("ex_move", worldv);
     cube4->moveTo(0,0,80).set<Scale>(vec3(.3f, .3f, .3f))
           .queue<SineCirc>(paramA).queue<IOExpo>(paramB).queue<OCirc>(paramC).tween<Linear>(paramD);
+
+    std::tr1::function<void(int,int)> btest_ = bind(&ViewTest1::btn_press_test, this, _1, _2);
+    EventDispatcher::i().subscribe_btn_event(btest_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+
+    std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
+    anotherthing->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
 }
 
 void ViewTest1::init()
@@ -201,6 +248,15 @@ void ViewTest1::init()
 
     EventDispatcher::i().subscribe_timer(
         bind(&ViewTest1::glow, this, ref(something)), shared_from_this(), 600, -1 );
+
+    EventDispatcher::i().subscribe_timer(
+        bind(&ViewTest1::removeFn, this, ref(something)), shared_from_this(), 2000 );
+
+    EventDispatcher::i().subscribe_timer(
+        bind(&ViewTest1::addFn, this, ref(something)), shared_from_this(), 4000 );
+
+    EventDispatcher::i().subscribe_timer(
+        bind(&ViewTest1::addFn2, this, ref(something)), shared_from_this(), 6000 );
 }
 
 void ViewTest1::cycle()

@@ -7,6 +7,7 @@
 #include "EasingEquations.hpp"
 
 #include <sstream>
+#include <boost/foreach.hpp>
 
 using std::tr1::function;
 
@@ -140,6 +141,10 @@ Sprite* Sprite::clone() const
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
 {
+    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
+        if( btn == cd.subscribed_btn() && ctrl::BTN_PRESS == cd.subscribed_state() )
+            return cd;
+
     ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_PRESS);
     delegates_.push_back( cd );
     return delegates_.back();
@@ -147,6 +152,10 @@ ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
 
 ctrl::CallbackDelegate& Sprite::onRelease(ctrl::Button const* btn)
 {
+    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
+        if( btn == cd.subscribed_btn() && ctrl::BTN_RELEASE == cd.subscribed_state() )
+            return cd;
+
     ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_RELEASE);
     delegates_.push_back( cd );
     return delegates_.back();
@@ -154,6 +163,10 @@ ctrl::CallbackDelegate& Sprite::onRelease(ctrl::Button const* btn)
 
 ctrl::CallbackDelegate& Sprite::onDown(ctrl::Button const* btn)
 {
+    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
+        if( btn == cd.subscribed_btn() && ctrl::BTN_DOWN == cd.subscribed_state() )
+            return cd;
+
     ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_DOWN);
     delegates_.push_back( cd );
     return delegates_.back();
@@ -161,21 +174,25 @@ ctrl::CallbackDelegate& Sprite::onDown(ctrl::Button const* btn)
 
 ctrl::CallbackDelegate& Sprite::onUp(ctrl::Button const* btn)
 {
+    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
+        if( btn == cd.subscribed_btn() && ctrl::BTN_UP == cd.subscribed_state() )
+            return cd;
+
     ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_UP);
     delegates_.push_back( cd );
     return delegates_.back();
 }
 
-//ctrl::CallbackDelegate& Sprite::onFocus(ctrl::Crosshair const*)
+//ctrl::CallbackDelegate& Sprite::onFocus(ctrl::Crosshair const* cursor)
 //{
-//    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_DOWN);
+//    ctrl::CallbackDelegate cd(shared_from_this(), cursor);
 //    delegates_.push_back( cd );
 //    return delegates_.back();
 //}
 //
-//ctrl::CallbackDelegate& Sprite::onLeaveFocus(ctrl::Crosshair const*)
+//ctrl::CallbackDelegate& Sprite::onLeaveFocus(ctrl::Crosshair const* cursor)
 //{
-//    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_UP);
+//    ctrl::CallbackDelegate cd(shared_from_this(), cursor);
 //    delegates_.push_back( cd );
 //    return delegates_.back();
 //}

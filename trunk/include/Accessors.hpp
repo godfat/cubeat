@@ -216,9 +216,10 @@ namespace accessor {
             else {
                 vec2 ori;
                 get(node, ori);
-                irr::scene::IMeshManipulator* mani = IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
-                mani->scaleMesh(
-                    static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(), vec3(val.X / ori.X, val.Y / ori.Y, 1) );
+                irr::scene::IMeshManipulator* mani =
+                    IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
+                mani->scaleMesh( static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(),
+                    vec3(val.X / ori.X, val.Y / ori.Y, 1) );
             }
         }
         static void get(irr::scene::ISceneNode* node, value_type& out) {

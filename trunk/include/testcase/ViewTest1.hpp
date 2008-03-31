@@ -112,12 +112,14 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void obj_press_test(view::pSprite& sp) {
         std::cout << "BLEHHHH.\n";
         std::tr1::function<void(view::pSprite&)> otest2_ = bind(&ViewTest1::obj_press_test2, this, _1);
-        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest2_;
+        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest2_; //input2's haste is middle button
+        sp->setTexture("cubes/cube4");
     }
     void obj_press_test2(view::pSprite& sp) {
         std::cout << "BLIHHHH.\n";
         std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
-        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
+        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;  //input2's haste is middle button
+        sp->setTexture("title");
     }
 
     void init();

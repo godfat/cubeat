@@ -51,6 +51,15 @@ Object& Object::moveTo(int x, int y, int z)
     return *this;
 }
 
+Object& Object::setTexture(std::string const& path)
+{
+    std::string full_path("rc/texture/");
+    full_path += path + ".png";
+    video::IVideoDriver* driver = smgr_->getVideoDriver();
+    body_->setMaterialTexture(0, driver->getTexture(full_path.c_str()) );
+    return *this;
+}
+
 Object& Object::clearAllTween()
 {
     clearAllQueuedTween();

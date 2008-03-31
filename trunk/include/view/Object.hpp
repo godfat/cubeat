@@ -39,6 +39,7 @@ public:
     virtual Object* clone() const;
     virtual pScene  scene() const;
     virtual Object& moveTo(int,int,int);
+    virtual Object& setTexture(std::string const& path);
 
     virtual irr::scene::ISceneNode* body() const;
 

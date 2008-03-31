@@ -1,14 +1,9 @@
 #ifndef _SHOOTING_CUBES_BUTTON_STATE_
 #define _SHOOTING_CUBES_BUTTON_STATE_
 
-namespace psc { namespace ctrl {
+#include "ButtonEnum.hpp"
 
-enum BSTATE{
-    BTN_UP = 0,
-    BTN_DOWN = 1,
-    BTN_PRESS = 2,
-    BTN_RELEASE = 3
-};
+namespace psc { namespace ctrl {
 
 class Input;
 

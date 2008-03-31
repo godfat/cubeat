@@ -41,7 +41,6 @@ SpriteText::init(std::string const& text, std::string const& font_path,
 
     adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
 
-    press_.setOwner( shared_from_this() );
     return std::tr1::static_pointer_cast<SpriteText>( shared_from_this() );
 }
 

@@ -41,13 +41,13 @@ public:
         map0_->push_garbage_land(map1_);
         map1_->push_garbage_land(map0_);
 
-        // model cycle for 10 fps
-        ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&presenter::Map::cycle_slow, map0_.get()), map0_, 100, -1);
-
-        // model cycle for 10 fps
-        ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&presenter::Map::cycle_slow, map1_.get()), map1_, 100, -1);
+//        // model cycle for 10 fps
+//        ctrl::EventDispatcher::i().subscribe_timer(
+//            std::tr1::bind(&presenter::Map::cycle_slow, map0_.get()), map0_, 100, -1);
+//
+//        // model cycle for 10 fps
+//        ctrl::EventDispatcher::i().subscribe_timer(
+//            std::tr1::bind(&presenter::Map::cycle_slow, map1_.get()), map1_, 100, -1);
 
         // for testing garbage
         map1_->throw_garbage(15);
@@ -57,8 +57,10 @@ public:
     }
     void cycle(){
         scene_->redraw();
-        map0_->redraw().cycle_fast();
-        map1_->redraw().cycle_fast();
+//        map0_->redraw().cycle_fast();
+//        map1_->redraw().cycle_fast();
+        map0_->redraw().cycle();
+        map1_->redraw().cycle();
     }
 
 private:

@@ -40,7 +40,6 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
-    press_.setOwner( static_pointer_cast<AnimatedSprite>(shared_from_this()) );
     return static_pointer_cast<AnimatedSprite>(shared_from_this());
 }
 

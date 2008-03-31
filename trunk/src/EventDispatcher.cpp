@@ -43,6 +43,13 @@ EventDispatcher& EventDispatcher::subscribe_btn_event
     return *this;
 }
 
+EventDispatcher& EventDispatcher::subscribe_btn_event
+    (BtnCallback const& cb, Button const* btn, BSTATE const& state)
+{
+    if(!self_) self_ = pvoid(&EventDispatcher::i(), &free_func_do_nothing_deleter);
+    return subscribe_btn_event(cb, self_, btn, state);
+}
+
 EventDispatcher& EventDispatcher::subscribe_timer
     (TimerCallback const& cb, wpvoid const& obj, int const& duration, int loop)
 {
@@ -59,15 +66,15 @@ EventDispatcher& EventDispatcher::subscribe_timer
 }
 
 EventDispatcher& EventDispatcher::subscribe_obj_event
-    (ObjCallback const& ocb, view::pSprite const& obj, Button const* btn)
+    (ObjCallback const& ocb, view::pSprite const& obj, Button const* btn, BSTATE const& state)
 {   //SceneListenerPair::first = const wpScene, SceneListenerPair::second = ObjListener
     view::wpScene scene = obj->scene();
     if( scene_listeners_.find( scene ) != scene_listeners_.end() )
-        scene_listeners_[ scene ].push_back( tie( ocb, btn, obj ) );
+        scene_listeners_[ scene ].push_back( tie( ocb, btn, state, obj ) );
     else {
         typedef std::pair<SceneListener::iterator, bool> InsertionPair;
         InsertionPair p = scene_listeners_.insert( make_pair( scene, ObjListener() ) );
-        (p.first)->second.push_back( tie(ocb, btn, obj) );
+        (p.first)->second.push_back( tie(ocb, btn, state, obj) );
     }
     return *this;
 }
@@ -117,7 +124,7 @@ void EventDispatcher::obj_listening(view::pScene const& scene, ObjListener& list
     for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
         if( view::pSprite sv = get<OE::SPRITE>(*o).lock() ) { //sprite not expired
             Button const* btn = get<OE::BTN>(*o);
-            if( btn->state() != BTN_PRESS )                   //not right state
+            if( btn->state() != get<STATE>(*o) )                   //not right state
                 continue;
 
             if( pickmap_[ btn->owner() ] == sv->body() ) {

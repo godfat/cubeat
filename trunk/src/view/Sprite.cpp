@@ -5,8 +5,11 @@
 #include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "CallbackDelegate.hpp"
 
 #include <sstream>
+
+using std::tr1::function;
 
 using namespace irr;
 using namespace core;
@@ -17,27 +20,6 @@ using namespace psc;
 using namespace view;
 using namespace easing;
 using namespace accessor;
-using std::tr1::function;
-
-
-CallbackDelegate& CallbackDelegate::operator =(std::tr1::function<void(pSprite&)> const& cb)
-{
-    ctrl::EventDispatcher::i().subscribe_obj_event(cb, owner_.lock(), subscribed_btn_);
-    return *this;
-}
-
-CallbackDelegate& CallbackDelegate::setButton(ctrl::Button const* btn)
-{
-    subscribed_btn_ = btn;
-    return *this;
-}
-
-void CallbackDelegate::setOwner(pSprite const& owner)
-{
-    owner_ = owner;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
 
 Sprite::Sprite(std::string const& name, bool const& center)
     :Object(name), center_(center), center_aligned_plane_(0),
@@ -78,8 +60,6 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
-
-    press_.setOwner( shared_from_this() );
 
     return shared_from_this();
 }
@@ -155,9 +135,11 @@ Sprite* Sprite::clone() const
     return obj;
 }
 
-CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
+ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
 {
-    return press_.setButton(btn);
+    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_PRESS);
+    delegates_.push_back( cd );
+    return delegates_.back();
 }
 
 Sprite::~Sprite()

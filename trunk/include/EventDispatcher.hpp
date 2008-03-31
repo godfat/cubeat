@@ -9,7 +9,7 @@
    * currently none?
 */
 
-#include "Button.hpp"
+#include "ButtonEnum.hpp"
 #include "all_fwd.hpp"
 
 #include <tr1/memory>
@@ -30,6 +30,9 @@ namespace psc {
 
 namespace ctrl {
 
+class Input;
+class Button;
+
 class EventDispatcher
 {
     typedef std::tr1::shared_ptr<void>                                     pvoid;
@@ -46,7 +49,7 @@ class EventDispatcher
     typedef std::list< TimerList::iterator >                               TimerRemoval;
 
     typedef std::tr1::function<void( view::pSprite& )>                     ObjCallback;
-    typedef std::tr1::tuple<ObjCallback, Button const*, view::wpSprite>    ObjEvent;
+    typedef std::tr1::tuple<ObjCallback, Button const*, BSTATE, view::wpSprite>    ObjEvent;
     typedef std::list<ObjEvent>                                            ObjListener;
     typedef std::pair<view::wpScene const, ObjListener::iterator>          ObjEventRemovalPair;
     typedef std::map <view::wpScene, ObjListener::iterator>                ObjEventRemoval;
@@ -62,14 +65,19 @@ public:
         return singleton;
     }
 
+    /// Object binding version
     EventDispatcher&
     subscribe_btn_event(BtnCallback const&, wpvoid const&, Button const*, BSTATE const&);
     EventDispatcher&
     subscribe_timer(TimerCallback const&, wpvoid const&, int const&, int loop = 0);
     EventDispatcher&
-    subscribe_timer(TimerCallback const&, int const&, int loop = 0);
+    subscribe_obj_event(ObjCallback const&, view::pSprite const&, Button const*, BSTATE const&);
+
+    /// Free function version
     EventDispatcher&
-    subscribe_obj_event(ObjCallback const&, view::pSprite const&, Button const*);
+    subscribe_btn_event(BtnCallback const&, Button const*, BSTATE const&);
+    EventDispatcher&
+    subscribe_timer(TimerCallback const&, int const&, int loop = 0);
 
     void dispatch();
 
@@ -77,7 +85,7 @@ private:
     enum { BCALLBACK = 0, BUTTON = 1, STATE = 2, BCALLEE = 3 };
     enum { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3, TCALLEE = 4 };
     enum { TIMER_TIME, TIMER };
-    struct OE{enum{OBJ_CB, BTN, SPRITE};};
+    struct OE{enum{OBJ_CB, BTN, STATE, SPRITE};};
     EventDispatcher();
     void dispatch_btn();
     void dispatch_obj();

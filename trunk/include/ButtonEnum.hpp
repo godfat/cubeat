@@ -8,6 +8,12 @@ enum BSTATE{
     BTN_PRESS = 2,
     BTN_RELEASE = 3
 };
+enum FSTATE {
+    FOCUS_ON,
+    FOCUS_OFF,
+    FOCUS_ENTER,
+    FOCUS_LEAVE
+}; //Focus state
 }
 }
 

@@ -51,7 +51,14 @@ class EventDispatcher
     typedef std::map <view::wpScene, ObjListener>                          SceneListener;
     typedef std::list<SceneListener::key_type>                             SceneListenerRemoval;
 
-    typedef std::map <Input const*, view::wpObject>                        PickingMap;
+    typedef std::list<view::wpObject>                                      ObjList;
+    typedef std::pair<Input const* const, ObjList>                         PickingMapPair;
+    typedef std::map <Input const*, ObjList>                               PickingMap;
+
+    typedef std::tr1::function<void(view::pSprite&, int x, int y)>         FocusCallback;
+    typedef std::tr1::tuple<FocusCallback const*, Input const*, FSTATE, view::wpSprite> FocusEvent;
+    typedef std::list<FocusEvent>                                          FocusListener;
+    typedef std::list<FocusListener::iterator>                             FocusEventRemoval;
 
 public:
     static EventDispatcher& i() {
@@ -66,6 +73,8 @@ public:
     subscribe_timer(TimerCallback const&, wpvoid const&, int const&, int loop = 0);
     EventDispatcher&
     subscribe_obj_event(ObjCallback const*, view::pSprite const&, Button const*, BSTATE const&);
+    EventDispatcher&
+    subscribe_focus_event(FocusCallback const*, view::pSprite const&, Input const*, FSTATE const&);
 
     /// Free function version
     EventDispatcher&
@@ -76,19 +85,22 @@ public:
     void dispatch();
 
 private:
-    enum { BCALLBACK = 0, BUTTON = 1, STATE = 2, BCALLEE = 3 };
-    enum { TCALLBACK = 0, DURATION = 1, LASTTIME = 2, LOOP = 3, TCALLEE = 4 };
+    struct BE{enum{BTN_CB, BTN, STATE, CALLEE};};
+    struct TE{enum{TIMER_CB, DURATION, LASTTIME, LOOP, CALLEE};};
+    struct FE{enum{FOCUS_CB, INPUT, STATE, CALLEE};};
+    struct OE{enum{OBJ_CB, BTN, STATE, CALLEE};};
     enum { TIMER_TIME, TIMER };
-    struct OE{enum{OBJ_CB, BTN, STATE, SPRITE};};
     EventDispatcher();
     void dispatch_btn();
     void dispatch_obj();
     void dispatch_timer();
+    void dispatch_focus();  //this is not an independent dispatching, it depends on dispatch_obj
     void cleanup_timer_and_init_newly_created_timer();
     void cleanup_obj_event();
     void cleanup_btn_event();
     void obj_picking(view::pScene const&);
     void obj_listening(view::pScene const&, ObjListener&);
+    void update_focus_objs();
 
 private:
     BtnListener          btn_listeners_;
@@ -98,7 +110,9 @@ private:
     SceneListener        scene_listeners_;
     ObjEventRemoval      obj_events_to_be_deleted_;
     SceneListenerRemoval scene_expired_;
-    PickingMap           pickmap_;
+    PickingMap           pickmap_, last_pickmap_, focus_objs_, leave_focus_objs_;
+    FocusListener        focus_listeners_;
+    FocusEventRemoval    focus_events_to_be_deleted_;
 
     static pvoid self_; //point to &EventDispatcher::i()
 };

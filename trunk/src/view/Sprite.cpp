@@ -171,19 +171,25 @@ Sprite::onButtonEvent(ctrl::Button const* btn, ctrl::BSTATE const& state)
     return delegates_.back();
 }
 
-//ctrl::CallbackDelegate& Sprite::onFocus(ctrl::Crosshair const* cursor)
-//{
-//    ctrl::CallbackDelegate cd(shared_from_this(), cursor);
-//    delegates_.push_back( cd );
-//    return delegates_.back();
-//}
-//
-//ctrl::CallbackDelegate& Sprite::onLeaveFocus(ctrl::Crosshair const* cursor)
-//{
-//    ctrl::CallbackDelegate cd(shared_from_this(), cursor);
-//    delegates_.push_back( cd );
-//    return delegates_.back();
-//}
+ctrl::FocusDelegate& Sprite::onEnterFocus(ctrl::Input const* input) {
+    return onFocusEvent(input, ctrl::FOCUS_ENTER);
+}
+
+ctrl::FocusDelegate& Sprite::onLeaveFocus(ctrl::Input const* input) {
+    return onFocusEvent(input, ctrl::FOCUS_LEAVE);
+}
+
+ctrl::FocusDelegate&
+Sprite::onFocusEvent(ctrl::Input const* input, ctrl::FSTATE const& state)
+{
+    BOOST_FOREACH(ctrl::FocusDelegate& fd, delegates_focus_)
+        if( input == fd.subscribed_input() && state == fd.subscribed_state() )
+            return fd;
+
+    ctrl::FocusDelegate fd(static_pointer_cast<Sprite>(shared_from_this()), input, state);
+    delegates_focus_.push_back( fd );
+    return delegates_focus_.back();
+}
 
 /// End of Maybe
 

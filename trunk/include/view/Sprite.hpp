@@ -59,8 +59,8 @@ public:
     ctrl::CallbackDelegate& onRelease(ctrl::Button const*);
     ctrl::CallbackDelegate& onUp     (ctrl::Button const*);
     ctrl::CallbackDelegate& onDown   (ctrl::Button const*);
-//    ctrl::CallbackDelegate& onFocus     (ctrl::Crosshair const*);
-//    ctrl::CallbackDelegate& onLeaveFocus(ctrl::Crosshair const*);
+    ctrl::FocusDelegate&    onEnterFocus(ctrl::Input const*);
+    ctrl::FocusDelegate&    onLeaveFocus(ctrl::Input const*);
     //End of maybe
 
     virtual ~Sprite();
@@ -72,11 +72,13 @@ protected:
 
     //Maybe this feature should move to another class and use multiple inheritance.
     inline ctrl::CallbackDelegate& onButtonEvent(ctrl::Button const*, ctrl::BSTATE const&);
+    inline ctrl::FocusDelegate&    onFocusEvent (ctrl::Input  const*, ctrl::FSTATE const&);
     //End of maybe
 
 protected:
     //Maybe this feature should move to another class and use multiple inheritance.
     std::list< ctrl::CallbackDelegate > delegates_;
+    std::list< ctrl::FocusDelegate > delegates_focus_;
     //End of maybe
 
     bool center_;

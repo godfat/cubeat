@@ -9,6 +9,7 @@ namespace psc {
 namespace ctrl{
 
 class Button;
+class Input;
 
 class CallbackDelegate
 {
@@ -25,7 +26,23 @@ private:
 
     std::tr1::function<void(view::pSprite&)> cb_;
 };
-}
-}
+
+class FocusDelegate
+{
+public:
+    FocusDelegate(view::pSprite const&, Input const*, FSTATE const&);
+    FocusDelegate& operator=(std::tr1::function<void(view::pSprite&, int x, int y)> const&);
+    Input const* subscribed_input() const;
+    FSTATE       subscribed_state() const;
+private:
+    view::wpSprite owner_;
+    Input const*   subscribed_input_;
+    FSTATE         subscribed_state_;
+
+    std::tr1::function<void(view::pSprite&, int, int)> cb_;
+};
+
+} //ctrl
+} //psc
 
 #endif // _SHOOTING_CUBES_CTRL_CALLBACK_DELEGATE_

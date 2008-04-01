@@ -36,6 +36,12 @@ public:
         data::pMapSetting ms, data::pViewSpriteSetting s):
         ViewBase(c), scene_(scene), cube_(c), map_setting_(ms), setting_(s)
     {
+        body_ = view::Sprite::create("cubes/cube-item-1", scene,
+                                     s->cube_size(), s->cube_size(), true);
+
+        vec2 pos = pos_vec2();
+        body_->moveTo(pos.X, pos.Y); // NOTE: irr related!
+
         restore(c->data()->color_id());
     }
     virtual void drop_a_block(){
@@ -66,7 +72,7 @@ public:
     }
 
     virtual void be_broken(){
-        create_sprite("cubes/cube" + to_s(utils::random(4)+1));
+        body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
 
         data::pViewSpriteSetting s = setting();
         BOOST_FOREACH( int id, s->ally_input_ids() ){
@@ -88,7 +94,7 @@ public:
 
     virtual void restore(int color_id){
         if( color_id == -1 ) return;
-        create_sprite("cubes/cube-item-" + to_s(color_id));
+        body_->setTexture("cubes/cube-item-" + to_s(color_id));
 
         data::pViewSpriteSetting s = setting();
         BOOST_FOREACH( int id, s->ally_input_ids() ){
@@ -112,7 +118,7 @@ public:
     }
 
     virtual void be_garbage(){
-        create_sprite("cubes/cube-b-" + to_s(utils::random(4)+1));
+        body_->setTexture("cubes/cube-b-" + to_s(utils::random(4)+1));
 
         data::pViewSpriteSetting s = setting();
         BOOST_FOREACH( int id, s->ally_input_ids() ){
@@ -147,21 +153,6 @@ private:
             std::tr1::mem_fn(mem_fn), cube_ );
         return *this;
     }
-    ViewSprite& create_sprite(std::string const& path){
-        last_pos_ = body_ ? body_->get<accessor::Pos2D>() : pos_vec2();
-
-        data::pViewSpriteSetting s = setting();
-        body_ = view::Sprite::create(path, scene_.lock(),
-                                     s->cube_size(), s->cube_size(), true);
-        adjust();
-        return *this;
-    }
-    ViewSprite& adjust(){
-        // vec2 pos = pos_vec2();
-        body_->moveTo(last_pos_.X, last_pos_.Y); // NOTE: irr related...
-        // drop_a_block();
-        return *this;
-    }
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
     data::pViewSpriteSetting setting() const{ return setting_.lock(); }
     vec2 pos_vec2() const{
@@ -186,8 +177,6 @@ private:
     model::wpCube cube_;
     data::wpMapSetting map_setting_;
     data::wpViewSpriteSetting setting_;
-
-    vec2 last_pos_;
 };
 
 class ViewSpriteMaster: public ViewMaster{

@@ -57,6 +57,12 @@ Object& Object::setTexture(std::string const& path)
     full_path += path + ".png";
     video::IVideoDriver* driver = smgr_->getVideoDriver();
     body_->setMaterialTexture(0, driver->getTexture(full_path.c_str()) );
+
+    //temp code
+    if( name_ == "unnamed" ) {
+        name_ = path;
+        body_->setName(path.c_str());
+    }
     return *this;
 }
 
@@ -134,5 +140,9 @@ ISceneNode* Object::body() const
 Object::~Object()
 {
     clearAllQueuedTween();
-    if( body_ ) body_->remove();
+    if( body_ ) {
+        if( scene() )
+            scene()->removePickMapping( body_ );
+        body_->remove();
+    }
 }

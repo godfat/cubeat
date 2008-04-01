@@ -21,10 +21,6 @@ using std::make_pair;
 
 using irr::ITimer;
 
-using namespace irr;
-using namespace core;
-using namespace scene;
-
 using namespace psc;
 using namespace ctrl;
 
@@ -109,12 +105,10 @@ void EventDispatcher::dispatch_obj()
 
 void EventDispatcher::obj_picking(view::pScene const& scene)
 {
-    ISceneCollisionManager* colm = scene->getCollisionMgr();
     pickmap_.clear();
     BOOST_FOREACH(Input const* input, Input::getInputs()) {
-        position2di pos(input->cursor().x(), input->cursor().y());
-        ISceneNode* picked = colm->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
-        if( picked )
+        view::wpObject picked = scene->pick(input->cursor().x(), input->cursor().y());
+        if( picked.lock() )
             pickmap_.insert( std::make_pair(input, picked) );
     }
 }
@@ -134,9 +128,9 @@ void EventDispatcher::obj_listening(view::pScene const& scene, ObjListener& list
             if( btn->state() != get<STATE>(*o) )            //not right state
                 continue;
 
-            if( pickmap_[ btn->owner() ] == sv->body() ) {
+            if( pickmap_[ btn->owner() ].lock() == sv ) {
                 (*get<OE::OBJ_CB>(*o))(sv);                 //lastly, fire up callback
-                std::cout << "dispatcher trace: " << pickmap_[ btn->owner() ] << "\n";
+                std::cout << "dispatcher trace: " << sv << "\n";
                 break;
             }
         }

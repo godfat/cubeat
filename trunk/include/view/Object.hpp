@@ -23,7 +23,7 @@ class ISceneNode;
 
 namespace psc { namespace view {
 
-class Object
+class Object : public std::tr1::enable_shared_from_this<Object>
 {
 public:
     typedef std::tr1::shared_ptr< Object > pointer_type;

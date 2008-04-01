@@ -25,7 +25,7 @@ namespace view {
    This thing should be "upgrade" to Object level.
    It's quite critical to the view hierarchy.     */
 
-class Sprite : public Object, public std::tr1::enable_shared_from_this<Sprite>
+class Sprite : public Object
 {
 public:
     typedef std::tr1::shared_ptr< Sprite > pointer_type;
@@ -36,6 +36,14 @@ public:
                                bool const& center = false)
     {
         return utils::ObjectPool< Sprite >::create(name, center)->init(parent, w, h);
+    }
+
+    static pointer_type create(pObject const& parent,
+                               int const& w = 100,
+                               int const& h = 100,
+                               bool const& center = false)
+    {
+        return utils::ObjectPool< Sprite >::create("unnamed", center)->init(parent, w, h);
     }
 
     Sprite(std::string const& name, bool const& center);
@@ -61,6 +69,10 @@ protected:
     pointer_type init(pObject const&, int const&, int const&);
     void setupMeshBase(pObject const&);
     void adjust_texcoord_for_hand_made_texture(int const&, int const&);
+
+    //Maybe this feature should move to another class and use multiple inheritance.
+    inline ctrl::CallbackDelegate& onButtonEvent(ctrl::Button const*, ctrl::BSTATE const&);
+    //End of maybe
 
 protected:
     //Maybe this feature should move to another class and use multiple inheritance.

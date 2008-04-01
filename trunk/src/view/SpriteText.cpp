@@ -1,5 +1,6 @@
 
 #include "view/SpriteText.hpp"
+#include "view/Scene.hpp"
 #include "utils/TTFont.hpp"
 
 #include <sstream>
@@ -12,6 +13,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using std::tr1::static_pointer_cast;
 
 pSpriteText
 SpriteText::init(std::string const& text, std::string const& font_path,
@@ -41,7 +43,9 @@ SpriteText::init(std::string const& text, std::string const& font_path,
 
     adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
 
-    return std::tr1::static_pointer_cast<SpriteText>( shared_from_this() );
+    pSpriteText self = static_pointer_cast<SpriteText>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+    return self;
 }
 
 void SpriteText::createText(std::string const& text, std::string const& font_path, int const& size)

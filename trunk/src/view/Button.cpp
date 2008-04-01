@@ -1,6 +1,7 @@
 
 #include "IrrDevice.hpp"
 #include "view/Button.hpp"
+#include "view/Scene.hpp"
 #include "EventDispatcher.hpp"
 #include "Button.hpp"
 
@@ -14,11 +15,12 @@ using namespace scene;
 
 using namespace psc;
 using namespace view;
+using std::tr1::static_pointer_cast;
 
 pButton Button::init(pObject const& parent, int const& w, int const& h)
 {
     Sprite::init(parent, w, h);
-    return std::tr1::static_pointer_cast<Button>(shared_from_this());
+    return static_pointer_cast<Button>( shared_from_this() );
 }
 
 Button* Button::clone() const

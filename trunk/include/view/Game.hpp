@@ -18,7 +18,7 @@ class IVideoDriver;
 
 namespace psc { namespace view {
 
-class Game : public Object, public std::tr1::enable_shared_from_this<Game>
+class Game : public Object
 {
 public:
     typedef std::tr1::shared_ptr< Game > pointer_type;

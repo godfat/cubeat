@@ -14,6 +14,7 @@ using namespace scene;
 using namespace psc;
 using namespace view;
 using namespace accessor;
+using std::tr1::static_pointer_cast;
 
 Scene::Scene()
 {
@@ -38,7 +39,7 @@ void Scene::init(std::string const& name)
 
     std::cout << name << "'s collision manager: " << smgr_->getSceneCollisionManager() << "\n";
 
-    scene_ = shared_from_this();
+    scene_ = std::tr1::static_pointer_cast<Scene>(shared_from_this());
 }
 
 Scene& Scene::setTo2DView()
@@ -105,9 +106,27 @@ ISceneCollisionManager* Scene::getCollisionMgr() const
     return smgr_->getSceneCollisionManager();
 }
 
+wpObject const& Scene::pick(int const& x, int const& y)
+{
+    position2di pos(x, y);
+    ISceneNode* picked = getCollisionMgr()->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
+    return node2view_[ picked ];
+}
+
+void Scene::addPickMapping(ISceneNode* node, wpObject const& obj)
+{
+    node2view_.insert( std::make_pair(node, obj) );
+}
+
+void Scene::removePickMapping(ISceneNode* node)
+{
+    node2view_.erase( node );
+}
+
 Scene::~Scene()
 {
     std::cout << body_->getName() << " scene died.\n";
+    node2view_.clear();
     smgr_->drop();
     body_ = 0;
 }

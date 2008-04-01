@@ -6,7 +6,7 @@
    on_release, on_blahblah.
 
    TODO:
-   * currently none?
+   * onFocus, onLeaveFocus, Player events.
 */
 
 #include "ButtonEnum.hpp"
@@ -19,12 +19,6 @@
 #include <ctime>
 #include <vector>
 #include <list>
-
-namespace irr {
-namespace scene {
-class ISceneNode;
-}
-}
 
 namespace psc {
 
@@ -57,7 +51,7 @@ class EventDispatcher
     typedef std::map <view::wpScene, ObjListener>                          SceneListener;
     typedef std::list<SceneListener::key_type>                             SceneListenerRemoval;
 
-    typedef std::map <Input const*, irr::scene::ISceneNode*>               PickingMap;
+    typedef std::map <Input const*, view::wpObject>                        PickingMap;
 
 public:
     static EventDispatcher& i() {

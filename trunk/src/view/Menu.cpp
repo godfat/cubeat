@@ -1,6 +1,7 @@
 
 #include "view/Menu.hpp"
 #include "view/SpriteText.hpp"
+#include "view/Scene.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 
@@ -77,5 +78,5 @@ Sprite& Menu::getSprite(std::string const& name)
 pMenu Menu::init(pObject const& parent, int const& w, int const& h)
 {
     Sprite::init(parent, w, h);
-    return static_pointer_cast<Menu>(shared_from_this());
+    return static_pointer_cast<Menu>( shared_from_this() );
 }

@@ -10,7 +10,7 @@
 
 namespace psc { namespace view {
 
-class SceneObject : public Object, public std::tr1::enable_shared_from_this<SceneObject>
+class SceneObject : public Object
 {
 public:
     typedef std::tr1::shared_ptr< SceneObject > pointer_type;

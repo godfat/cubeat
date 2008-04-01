@@ -1,5 +1,6 @@
 
 #include "view/AnimatedSprite.hpp"
+#include "view/Scene.hpp"
 #include "view/detail/TextureAnimator.hpp"
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
@@ -40,7 +41,9 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
-    return static_pointer_cast<AnimatedSprite>(shared_from_this());
+    pAnimatedSprite self = static_pointer_cast<AnimatedSprite>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+    return self;
 }
 
 AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int total_frames)

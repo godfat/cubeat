@@ -1,5 +1,6 @@
 
 #include "view/SpriteMovie.hpp"
+#include "view/Scene.hpp"
 #include "private/AVIVideo.hpp"
 #include "IrrDevice.hpp"
 
@@ -40,7 +41,9 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     dimension2di avi_actual_size = avi->getSize();
     adjust_texcoord_for_hand_made_texture( avi_actual_size.Width, avi_actual_size.Height );
 
-    return static_pointer_cast<SpriteMovie>(shared_from_this());
+    pSpriteMovie self = static_pointer_cast<SpriteMovie>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+    return self;
 }
 
 SpriteMovie& SpriteMovie::redraw()  { avi->redraw(); return *this; }

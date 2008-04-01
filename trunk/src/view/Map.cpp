@@ -17,6 +17,7 @@ using namespace scene;
 using namespace psc;
 using namespace view;
 using std::tr1::bind;
+using std::tr1::static_pointer_cast;
 using namespace std::tr1::placeholders;
 
 Map* Map::clone() const
@@ -50,7 +51,7 @@ pMap Map::init(pScene const& parent)
     body_ = smgr_->addEmptySceneNode( parent->body() );
     parent_ = parent;
 
-    return shared_from_this();
+    return static_pointer_cast<Map>( shared_from_this() );
 }
 
 Map& Map::addCube(pCube cube)

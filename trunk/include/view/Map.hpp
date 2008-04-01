@@ -22,7 +22,7 @@ class ISceneNode;
 
 namespace psc { namespace view {
 
-class Map : public Object, public std::tr1::enable_shared_from_this<Map>
+class Map : public Object
 {
 public:
     typedef std::tr1::shared_ptr< Map > pointer_type;

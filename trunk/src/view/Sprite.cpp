@@ -1,6 +1,7 @@
 
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
+#include "view/Scene.hpp"
 #include "EventDispatcher.hpp"
 #include "Button.hpp"
 #include "Accessors.hpp"
@@ -20,6 +21,7 @@ using namespace psc;
 using namespace view;
 using namespace easing;
 using namespace accessor;
+using std::tr1::static_pointer_cast;
 
 Sprite::Sprite(std::string const& name, bool const& center)
     :Object(name),
@@ -37,7 +39,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 {
     if( name_.size() < 1 ) {
         Object::init(parent);
-        return shared_from_this();
+        return std::tr1::static_pointer_cast<Sprite>(shared_from_this());
     }
     setupSceneAndManager(parent);
 
@@ -62,7 +64,9 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
-    return shared_from_this();
+    pSprite self = static_pointer_cast<Sprite>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+    return self;
 }
 
 void Sprite::setupMeshBase(pObject const& parent)
@@ -139,46 +143,30 @@ Sprite* Sprite::clone() const
 
 /// Maybe this feature should move to another class and use multiple inheritance.
 
-ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn)
-{
-    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
-        if( btn == cd.subscribed_btn() && ctrl::BTN_PRESS == cd.subscribed_state() )
-            return cd;
-
-    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_PRESS);
-    delegates_.push_back( cd );
-    return delegates_.back();
+ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {
+    return onButtonEvent(btn, ctrl::BTN_PRESS);
 }
 
-ctrl::CallbackDelegate& Sprite::onRelease(ctrl::Button const* btn)
-{
-    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
-        if( btn == cd.subscribed_btn() && ctrl::BTN_RELEASE == cd.subscribed_state() )
-            return cd;
-
-    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_RELEASE);
-    delegates_.push_back( cd );
-    return delegates_.back();
+ctrl::CallbackDelegate& Sprite::onRelease(ctrl::Button const* btn) {
+    return onButtonEvent(btn, ctrl::BTN_RELEASE);
 }
 
-ctrl::CallbackDelegate& Sprite::onDown(ctrl::Button const* btn)
-{
-    BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
-        if( btn == cd.subscribed_btn() && ctrl::BTN_DOWN == cd.subscribed_state() )
-            return cd;
-
-    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_DOWN);
-    delegates_.push_back( cd );
-    return delegates_.back();
+ctrl::CallbackDelegate& Sprite::onDown(ctrl::Button const* btn) {
+    return onButtonEvent(btn, ctrl::BTN_DOWN);
 }
 
-ctrl::CallbackDelegate& Sprite::onUp(ctrl::Button const* btn)
+ctrl::CallbackDelegate& Sprite::onUp(ctrl::Button const* btn) {
+    return onButtonEvent(btn, ctrl::BTN_UP);
+}
+
+ctrl::CallbackDelegate&
+Sprite::onButtonEvent(ctrl::Button const* btn, ctrl::BSTATE const& state)
 {
     BOOST_FOREACH(ctrl::CallbackDelegate& cd, delegates_)
-        if( btn == cd.subscribed_btn() && ctrl::BTN_UP == cd.subscribed_state() )
+        if( btn == cd.subscribed_btn() && state == cd.subscribed_state() )
             return cd;
 
-    ctrl::CallbackDelegate cd(shared_from_this(), btn, ctrl::BTN_UP);
+    ctrl::CallbackDelegate cd(static_pointer_cast<Sprite>(shared_from_this()), btn, state);
     delegates_.push_back( cd );
     return delegates_.back();
 }

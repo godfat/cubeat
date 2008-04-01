@@ -20,6 +20,7 @@ using namespace video;
 using namespace psc;
 using namespace view;
 using namespace accessor;
+using std::tr1::static_pointer_cast;
 
 pGame Game::init(pScene const& world, pScene const& gui)
 {
@@ -34,7 +35,7 @@ pGame Game::init(pScene const& world, pScene const& gui)
     cursors_[0]->setDepth(-500).body()->setIsDebugObject(true);
     cursors_[1]->setDepth(-500).body()->setIsDebugObject(true);
 
-    return shared_from_this();
+    return static_pointer_cast<Game>( shared_from_this() );
 }
 
 Game& Game::setWorld(pScene const& world) { world_ = world; return *this; }

@@ -1,5 +1,6 @@
 
 #include "view/AnimatedSceneObject.hpp"
+#include "view/Scene.hpp"
 #include "IrrDevice.hpp"
 
 #include <sstream>
@@ -11,6 +12,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using std::tr1::static_pointer_cast;
 
 AnimatedSceneObject* AnimatedSceneObject::clone() const
 {
@@ -30,5 +32,7 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
     body_ = temp;
     body_->getMaterial(0).Shininess = 0;
 
-    return std::tr1::static_pointer_cast<AnimatedSceneObject>( shared_from_this() );
+    pAnimatedSceneObject self = static_pointer_cast<AnimatedSceneObject>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+    return self;
 }

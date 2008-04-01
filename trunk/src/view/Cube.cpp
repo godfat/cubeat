@@ -1,6 +1,7 @@
 
 #include "view/Cube.hpp"
 #include "view/Map.hpp"
+#include "view/Scene.hpp"
 #include "IrrDevice.hpp"
 
 //test code
@@ -13,6 +14,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using std::tr1::static_pointer_cast;
 
 Cube* Cube::clone() const
 {
@@ -24,8 +26,9 @@ pCube Cube::init(pMap& parent)
 {
     SceneObject::init(parent);
 
-    parent->addCube( std::tr1::static_pointer_cast<Cube>(shared_from_this()) );
-    return std::tr1::static_pointer_cast<Cube>( shared_from_this() );
+    pCube self = static_pointer_cast<Cube>( shared_from_this() );
+    parent->addCube( self );
+    return self;
 }
 
 Cube& Cube::setOwnerHit( HitCallback const& ownerhit )

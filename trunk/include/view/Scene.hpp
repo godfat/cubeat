@@ -6,13 +6,11 @@
 #include "all_fwd.hpp"
 
 #include <string>
-
-/* TODO:
-   Somehow add a node2view conversion here? Not so sure. */
+#include <map>
 
 namespace psc { namespace view {
 
-class Scene : public Object, public std::tr1::enable_shared_from_this<Scene>
+class Scene : public Object
 {
 public:
     typedef std::tr1::shared_ptr< Scene > pointer_type;
@@ -32,6 +30,9 @@ public:
     virtual Scene& deactivate();
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
+    virtual wpObject const& pick(int const& x, int const& y);
+    void addPickMapping(irr::scene::ISceneNode*, wpObject const&);
+    void removePickMapping(irr::scene::ISceneNode*);
     virtual ~Scene();
 
 protected:
@@ -40,6 +41,7 @@ protected:
 protected:
     irr::scene::ICameraSceneNode* camera_;
     irr::scene::ILightSceneNode* light_;
+    std::map<irr::scene::ISceneNode*, wpObject> node2view_;
 };
 
 } //view

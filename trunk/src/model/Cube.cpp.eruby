@@ -47,10 +47,7 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
 
 void <% debug_hook 'Cube::lose_chain_without_event' do %>(){
 <% end %>
-	if(chain_belonged_to_){
-		chain_belonged_to_->dec_one_owner();
-		chain_belonged_to_.reset();
-	}
+	chain_belonged_to_.reset();
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){

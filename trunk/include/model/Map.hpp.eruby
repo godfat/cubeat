@@ -10,6 +10,7 @@
 #include <boost/multi_array.hpp>
 #include <tr1/functional>
 #include <set>
+#include <list>
 #include <vector>
 
 #include <ctime>
@@ -21,7 +22,7 @@ public:
     typedef pMap pointer_type;
     typedef boost::multi_array<pCube, 2> container_type;
     typedef std::set<pCube> cube_list_type;
-    typedef std::vector<pChain> chain_list_type;
+    typedef std::list<pChain> chain_list_type;
     typedef std::vector<pCube> preview_list_type;
 
     typedef boost::multi_array<int, 2> color_map_type;

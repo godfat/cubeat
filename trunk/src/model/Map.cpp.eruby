@@ -144,7 +144,6 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
 		; ++y)
     {
         cubes_[x][y]->chain(chain);
-        chain->inc_one_owner();
     }
 }
 
@@ -242,23 +241,24 @@ void <% debug_hook 'Map::update_chains' do %>(){
     int damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
 
-    for(chain_list_type::iterator i=chains_.begin();
-        i != chains_.end(); ++i)
+    for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
         // when the Chain's rear is not zero we notify to add a new combo
-        if( (**i).last_step_amounts() != 0 ){
+        if( (*i)->last_step_amounts() != 0 ){
         // damage_factor to score adjustment (1.00 ~ 2.00)
-            score_ += (**i).score_step() * damage_factor;
-            (**i).step_one();
+            score_ += (*i)->score_step() * damage_factor;
+            (*i)->step_one();
         }
 
         // when the Chain's all dead then we fire up the attack and make this one null
-        if( (**i).owner_amounts() == 0 ){
+        if( (*i).use_count() == 1 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
             // SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
-            o->throw_garbage( (**i).power_factor() * damage_factor );
+            o->throw_garbage( (*i)->power_factor() * damage_factor );
             i = chains_.erase(i);
-            --i;
+        }
+        else{
+            ++i;
         }
     }
 }

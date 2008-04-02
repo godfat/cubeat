@@ -16,7 +16,6 @@ public:
     static pChain create(){ return utils::ObjectPool<Chain>::create(); }
 
 public:
-    Chain(): owner_amounts_(0){}
     int last_step_amounts() const{ return chain_step_.back(); }
 
     void add_last_step_amounts(int num){
@@ -29,10 +28,6 @@ public:
 		chain_step_.push_back(0);
         // Sound::i().combo( chain_step_.size() );
 	}
-
-    void inc_one_owner(){ ++owner_amounts_; }
-	void dec_one_owner(){ --owner_amounts_; }
-	int owner_amounts() const{ return owner_amounts_; }
 
     int power_factor() const{
 		int result = 0;
@@ -52,7 +47,6 @@ public:
 	}
 
 private:
-    int owner_amounts_;
     std::vector<int> chain_step_;
 };
 

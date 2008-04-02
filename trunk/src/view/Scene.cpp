@@ -106,11 +106,26 @@ ISceneCollisionManager* Scene::getCollisionMgr() const
     return smgr_->getSceneCollisionManager();
 }
 
-wpObject const& Scene::pick(int const& x, int const& y)
+std::list<wpObject> const& Scene::pick(vec2 const& p)
 {
-    position2di pos(x, y);
+    picked_temporary_.clear();
+    position2di pos(p.X, p.Y);
     ISceneNode* picked = getCollisionMgr()->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
-    return node2view_[ picked ];
+    if( picked )
+        picked_temporary_.push_back( node2view_[picked] );
+    return picked_temporary_;
+}
+
+std::list<wpObject> const& Scene::pick(vec2 const& p, int const& r)
+{
+    picked_temporary_.clear();
+    return picked_temporary_;
+}
+
+std::list<wpObject> const& Scene::pick(vec2 const& tl, vec2 const& br)
+{
+    picked_temporary_.clear();
+    return picked_temporary_;
 }
 
 void Scene::addPickMapping(ISceneNode* node, wpObject const& obj)

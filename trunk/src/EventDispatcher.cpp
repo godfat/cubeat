@@ -173,16 +173,6 @@ void EventDispatcher::dispatch_focus()
         }
         else focus_events_to_be_deleted_.push_back(f);
     }
-//    BOOST_FOREACH(PickingMapPair& pmp, leave_focus_objs_) {
-//        ObjList& leave_list = pmp.second;
-//        BOOST_FOREACH(view::wpObject& obj, leave_list)
-//            std::cout << obj.lock() << " leaves focus of input: " << pmp.first << "\n";
-//    }
-//    BOOST_FOREACH(PickingMapPair& pmp, focus_objs_) {
-//        ObjList& focus_list = pmp.second;
-//        BOOST_FOREACH(view::wpObject& obj, focus_list)
-//            std::cout << obj.lock() << " get focus by input: " << pmp.first << "\n";
-//    }
 }
 
 
@@ -193,12 +183,11 @@ void EventDispatcher::obj_picking(view::pScene const& scene)
 {
     BOOST_FOREACH(Input const* input, Input::getInputs()) {
         if( pickmap_.find(input) == pickmap_.end() )
-                pickmap_.insert( make_pair(input, ObjList()) );
+            pickmap_.insert( make_pair(input, ObjList()) );
 
-        view::wpObject picked = scene->pick(input->cursor().x(), input->cursor().y());
-
-        if( picked.lock() )
-            pickmap_[input].push_back(picked);
+        ObjList const& picked = scene->pick(vec2(input->cursor().x(), input->cursor().y()));
+        ObjList& pick_input = pickmap_[input];
+        pick_input.insert(pick_input.end(), picked.begin(), picked.end());
     }
 }
 

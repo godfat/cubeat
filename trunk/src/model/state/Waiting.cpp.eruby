@@ -1,20 +1,25 @@
 
 #include "model/Cube.hpp"
 #include "model/state/Waiting.hpp"
+#include "EventDispatcher.hpp"
+
 <%= debug_include %>
 
 using namespace psc;
 using namespace model;
 using namespace state;
 
-void <% debug_hook 'Waiting::cycle' do %>(){
+pState <% debug_hook 'Waiting::init' do %>(){
 <% end %>
-	if( !need_check_chain_property() ) ++owner()->lose_chain_delay();
-    if(pState result = map()->next_state(owner()))
-        switch_state(result);
+    pState result = shared_from_this();
+    ctrl::EventDispatcher::i().subscribe_timer(
+        std::tr1::bind(&Waiting::check_chain_now, this),
+        result, map()->ms()->chaining_duration());
+    return result;
 }
 
-bool <% debug_hook 'Waiting::need_check_chain_property' do %>() const{
+void <% debug_hook 'Waiting::cycle' do %>(){
 <% end %>
-	return !chain_property_checked_ && owner()->lose_chain_delay() >= map()->ms()->chaining_duration();
+    if(pState result = map()->next_state(owner()))
+        switch_state(result);
 }

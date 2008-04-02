@@ -39,8 +39,7 @@ public:
         body_ = view::Sprite::create("cubes/cube-item-1", scene,
                                      s->cube_size(), s->cube_size(), true);
 
-        vec2 pos = pos_vec2();
-        body_->moveTo(pos.X, pos.Y); // NOTE: irr related!
+        body_->set<accessor::Pos2D>(pos_vec2());
 
         restore(c->data()->color_id());
     }

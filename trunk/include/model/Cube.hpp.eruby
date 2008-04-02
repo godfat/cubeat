@@ -36,8 +36,7 @@ public:
     // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): // x_(x), y_(y), color_id_(color_id)
         data_(data::Cube::create(x, y, color_id)), map_(map), cycled_(false),
-        has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1),
-        lose_chain_delay_(0)
+        has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1)
     {}
     <% debug_hook '~Cube' do %>(){ <% end %> lose_chain_without_event(); }
 
@@ -111,9 +110,6 @@ public:
 	bool has_grounded() const{ return has_grounded_; }
 	void set_grounded(){ has_grounded_ = true; }
 
-	int& <% debug_hook 'lose_chain_delay' do %>(){ <% end %> return lose_chain_delay_; }
-	int const& <% debug_hook 'lose_chain_delay' do %>() const{ <% end %> return lose_chain_delay_; }
-
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>
@@ -131,7 +127,7 @@ private:
     pChain chain_belonged_to_;
     state::pState state_;
     bool cycled_, has_grounded_, is_broken_, is_garbage_;
-	int hp_, lose_chain_delay_;
+	int hp_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>

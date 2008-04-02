@@ -105,10 +105,10 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
             waiting->checked();
 			that->set_grounded(); // once grounded, always grounded
         }
-		if( waiting->need_check_chain_property() ){
+		if( waiting->need_check_chain() ){
 			if( cube_can_lose_chain(that) )
 	            that->lose_chain();
-			waiting->chain_property_checked();
+			waiting->chain_checked();
 		}
     }
 
@@ -136,15 +136,6 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
 // resolve the chain on the cube
 void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCube that, pChain chain){
 <% end %>
-    for(int x=that->x(), y=that->y();
-		cubes_[x][y].use_count() != 0 &&
-		cubes_[x][y]->is_waiting() &&
-        cubes_[x][y]->chain() == chain
-		; ++y)
-    {
-        cubes_[x][y]->lose_chain_delay() = 0;
-    }
-
     // start chainging
 	for(int x=that->x(), y=that->y();
         cubes_[x][y].use_count() != 0 &&
@@ -153,7 +144,6 @@ void <% debug_hook 'Map::cubes_belong_to_the_chain_from_bottom_to_top' do %>(pCu
 		; ++y)
     {
         cubes_[x][y]->chain(chain);
-        cubes_[x][y]->lose_chain_delay() = 0;
         chain->inc_one_owner();
     }
 }

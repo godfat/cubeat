@@ -14,28 +14,34 @@ public:
     typedef pWaiting pointer_type;
 
 public:
-    static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner); }
+    static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner)->init(); }
 public:
     Waiting(wpCube owner): State(owner), checked_(false),
-                           chain_property_checked_(false)
+                           need_check_chain_(false)
     {}
 
     virtual <% debug_hook '~Waiting' do %>(){<%end%>}
     virtual void cycle();
 
     // begin only used by Map::next_state
-    bool need_check() const{ return checked_ == false; };
+    bool need_check() const{ return checked_ == false; }
 	void checked(){ checked_ = true; }
-	void chain_property_checked(){ chain_property_checked_ = true; }
-	bool need_check_chain_property() const;
+    bool need_check_chain() const{ return need_check_chain_; }
+    void chain_checked(){ need_check_chain_ = false; }
     // end
 
     // for Cube#restore
 	void uncheck(){ checked_ = false; }
 
+protected:
+    virtual pState init();
+
+private:
+    void check_chain_now(){ need_check_chain_ = true; }
+
 private:
     bool checked_;
-	bool chain_property_checked_;
+	bool need_check_chain_;
 };
 
 }}}

@@ -111,10 +111,6 @@ void EventDispatcher::dispatch_obj()
     cleanup_obj_event();
 }
 
-//void out(view::wpObject const& wpo) {
-//    std::cout << wpo.lock() << " ";
-//}
-
 
 /// This updates the newly focused or lost focused objects
 /// according to different inputs.
@@ -130,8 +126,6 @@ void EventDispatcher::update_focus_objs()
         ObjList const& new_list = pmp.second;
         ObjList::const_iterator o = old_list.begin(), oe = old_list.end();
         ObjList::const_iterator n = new_list.begin(), ne = new_list.end();
-//        std::cout << "old: "; std::for_each(o, oe, out); std::cout << "\n";
-//        std::cout << "new: "; std::for_each(n, ne, out); std::cout << "\n";
         ObjList leave_objs_list;
         ObjList focus_objs_list;
         while( o != oe && n != ne ) {

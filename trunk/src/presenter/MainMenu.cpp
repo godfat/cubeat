@@ -10,6 +10,7 @@
 #include "App.hpp"
 #include "Conf.hpp"
 #include "EventDispatcher.hpp"
+#include "Input.hpp"
 
 #include <tr1/functional>
 #include <boost/lambda/lambda.hpp>
@@ -96,6 +97,16 @@ void color_offset(data::Color& col, utils::vector_any& offset)
     }
 }
 
+void test_focus(view::pSprite& obj, int x, int y)
+{
+    obj->set<Scale>(vec3(0.8f, 0.8f, 1));
+}
+
+void test_focus2(view::pSprite& obj, int x, int y)
+{
+    obj->set<Scale>(vec3(1, 1, 1));
+}
+
 void MainMenu::initDecorator()
 {
     utils::map_any deco = config.M("decorator");
@@ -156,6 +167,9 @@ void MainMenu::initDecorator()
 
         temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
              .tween(p1).tween(p2);
+
+        temp->onEnterFocus( ctrl::Input::getInputByIndex(1) ) = bind(&test_focus, _1, _2, _3);
+        temp->onLeaveFocus( ctrl::Input::getInputByIndex(1) ) = bind(&test_focus2, _1, _2, _3);
 
         deco_cubes_.push_back( temp );
     }

@@ -33,7 +33,7 @@ public:
 
     virtual std::list<wpObject> const& pick(vec2 const&);
     virtual std::list<wpObject> const& pick(vec2 const&, int const&);
-    virtual std::list<wpObject> const& pick(vec2 const&, vec2 const&);
+    virtual std::list<wpObject> const& pick(vec2 const&, int const&, int const&);
 
     void addPickMapping(irr::scene::ISceneNode*, wpObject const&);
     void removePickMapping(irr::scene::ISceneNode*);
@@ -43,6 +43,8 @@ protected:
     void init(std::string const&);
 
 protected:
+    typedef std::pair<irr::scene::ISceneNode* const, wpObject> Node2ViewPair;
+
     irr::scene::ICameraSceneNode* camera_;
     irr::scene::ILightSceneNode* light_;
     std::map<irr::scene::ISceneNode*, wpObject> node2view_;

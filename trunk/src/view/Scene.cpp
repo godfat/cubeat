@@ -5,6 +5,7 @@
 #include "EventDispatcher.hpp"
 #include "Conf.hpp"
 
+#include <boost/foreach.hpp>
 #include <iostream>
 
 using namespace irr;
@@ -46,8 +47,10 @@ Scene& Scene::setTo2DView()
 {
     float w = (float)Conf::i().SCREEN_W;
     float h = (float)Conf::i().SCREEN_H;
-    camera_->setPosition( vector3df(10000,0,0) );
-    camera_->setTarget( vector3df(10000,0,100) );
+//    camera_->setPosition( vector3df(10000,0,0) );
+//    camera_->setTarget( vector3df(10000,0,100) );
+    camera_->setPosition( vector3df(0,0,0) );
+    camera_->setTarget( vector3df(0,0,100) );
     float const bloat = 0.0f;    //not useful??? set to 0 for now...
 
     matrix4 ortho;
@@ -119,12 +122,29 @@ std::list<wpObject> const& Scene::pick(vec2 const& p)
 std::list<wpObject> const& Scene::pick(vec2 const& p, int const& r)
 {
     picked_temporary_.clear();
+    ISceneCollisionManager* colm = getCollisionMgr();
+    vec2 scene_offset_ = get<Pos2D>();
+    BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
+        position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getPosition(), camera_);
+        vec2 object_pos(pos.X + scene_offset_.X, pos.Y + scene_offset_.Y);
+        if( (p - object_pos).getLengthSQ() < r*r )
+            picked_temporary_.push_back( nv.second );
+    }
     return picked_temporary_;
 }
 
-std::list<wpObject> const& Scene::pick(vec2 const& tl, vec2 const& br)
+std::list<wpObject> const& Scene::pick(vec2 const& p, int const& w, int const& h)
 {
     picked_temporary_.clear();
+    ISceneCollisionManager* colm = getCollisionMgr();
+    vec2 scene_offset_ = get<Pos2D>();
+    BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
+        position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getPosition(), camera_);
+        vec2 object_pos(pos.X + scene_offset_.X, pos.Y + scene_offset_.Y);
+        if( object_pos.X > p.X - w/2 && object_pos.X < p.X + w/2 &&
+            object_pos.Y > p.Y - h/2 && object_pos.Y < p.Y + h/2 )
+            picked_temporary_.push_back( nv.second );
+    }
     return picked_temporary_;
 }
 

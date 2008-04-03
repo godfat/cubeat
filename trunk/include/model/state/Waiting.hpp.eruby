@@ -16,9 +16,7 @@ public:
 public:
     static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner)->init(); }
 public:
-    Waiting(wpCube owner): State(owner), checked_(false),
-                           need_check_chain_(false)
-    {}
+    Waiting(wpCube owner): State(owner), checked_(false){}
 
     virtual <% debug_hook '~Waiting' do %>(){<%end%>}
     virtual void cycle();
@@ -26,8 +24,6 @@ public:
     // begin only used by Map::next_state
     bool need_check() const{ return checked_ == false; }
 	void checked(){ checked_ = true; }
-    bool need_check_chain() const{ return need_check_chain_; }
-    void chain_checked(){ need_check_chain_ = false; }
     // end
 
     // for Cube#restore
@@ -37,11 +33,10 @@ protected:
     virtual pState init();
 
 private:
-    void check_chain_now(){ need_check_chain_ = true; }
+    void check_chain_now();
 
 private:
     bool checked_;
-	bool need_check_chain_;
 };
 
 }}}

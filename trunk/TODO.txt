@@ -13,3 +13,6 @@
 * profiling
 * thread
 * <del>gcc43</del>
+
+* introduce state Sinking
+* introduce state Waiting_neednt_check

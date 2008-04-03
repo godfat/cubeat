@@ -3,7 +3,13 @@
 
 #include <boost/multi_array.hpp>
 namespace psc{ namespace utils{
-    typedef boost::multi_array<int, 2> vector_2d;
+template <typename T>
+class vector_2d: public boost::multi_array<T, 2>{
+public:
+    vector_2d(int width, int height):
+        boost::multi_array<T, 2>(boost::extents[width][height]){}
+};
+
 }} // end of namespace
 
 <% end %>

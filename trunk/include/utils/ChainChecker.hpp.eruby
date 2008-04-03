@@ -8,30 +8,30 @@ namespace psc{ namespace utils{
 
 class ChainChecker{
     enum{ width=0, height=1 };
-    typedef utils::vector_2d::index index;
+    typedef utils::vector_2d<int>::index index;
 public:
-    static void until_no_chained_cubes(vector_2d& cube_colors, int chain_amounts){
+    static void until_no_chained_cubes(vector_2d<int>& cube_colors, int chain_amounts){
         // this should implement some timeout mech
         while(has_chained_cubes(cube_colors, chain_amounts))
             std::random_shuffle(cube_colors.origin(),
                                 cube_colors.origin() + cube_colors.num_elements());
     }
-    static bool has_chained_cubes(vector_2d const& cube_colors, int chain_amounts){
+    static bool has_chained_cubes(vector_2d<int> const& cube_colors, int chain_amounts){
         for(index y=0, yend=cube_colors.shape()[height]; y!=yend; ++y)
             for(index x=0, xend=cube_colors.shape()[width]; x!=xend; ++x)
                 if(has_chain_here(cube_colors, x, y, chain_amounts))
                     return true;
         return false;
     }
-    static bool has_chain_here(vector_2d const& cube_colors, index x, index y, int chain_amounts)
+    static bool has_chain_here(vector_2d<int> const& cube_colors, index x, index y, int chain_amounts)
     {
         ChainChecker c(cube_colors, x, y, chain_amounts);
         return c.has_left() || c.has_right() || c.has_up() || c.has_down();
     }
 private:
-    friend bool has_chain_here(vector_2d const&, index, index, int);
+    friend bool has_chain_here(vector_2d<int> const&, index, index, int);
 
-    ChainChecker(vector_2d const& cube_colors, index x, index y, int chain_amounts):
+    ChainChecker(vector_2d<int> const& cube_colors, index x, index y, int chain_amounts):
         cube_colors_(cube_colors), x_(x), y_(y), chain_amounts_(chain_amounts),
         tested_color_(cube_colors[x_][y_])
     {}
@@ -66,8 +66,8 @@ private:
     }
 
 private:
-    vector_2d const& cube_colors_;
-    typedef vector_2d::size_type size_type;
+    vector_2d<int> const& cube_colors_;
+    typedef vector_2d<int>::size_type size_type;
     size_type const x_, y_;
     size_type const chain_amounts_;
     int const tested_color_;

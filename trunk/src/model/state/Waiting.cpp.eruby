@@ -23,3 +23,8 @@ void <% debug_hook 'Waiting::cycle' do %>(){
     if(pState result = map()->next_state(owner()))
         switch_state(result);
 }
+
+void <% debug_hook 'Waiting::check_chain_now' do %>(){
+<% end %>
+    owner()->lose_chain();
+}

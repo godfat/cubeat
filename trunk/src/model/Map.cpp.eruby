@@ -33,7 +33,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
     using boost::lambda::_1; // this would be used in for_each for element
     using boost::lambda::_2; // this would be used in for_each for index
     int width = ms()->width(); //, height = ms()->height();
-    utils::vector_2d cube_colors(boost::extents[width][ms()->starting_line()]);
+    utils::vector_2d<int> cube_colors(width, ms()->starting_line());
 
     int const one_color_amounts = std::ceil(
         static_cast<double>(width)*ms()->starting_line()/ms()->color_amounts()
@@ -61,7 +61,19 @@ void <% debug_hook 'Map::refresh_cubes' do %>(){
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
 <% end %>
-    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2));
+    // utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2));
+    int width = ms()->width(), height = ms()->height();
+    for(int y=0; y<height; ++y){
+        for(int x=0; x<width; ++x){
+            pCube c = cubes_[x][y];
+            if(!c) continue;
+            if( !c->has_grounded() ){
+                dropping_creatable_ = false;
+                if( !c->is_garbage() ) garbage_dumpable_ = false;
+            }
+            if( c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
+        }
+    }
 }
 
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
@@ -105,11 +117,6 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
             waiting->checked();
             that->set_grounded(); // once grounded, always grounded
         }
-		if( waiting->need_check_chain() ){
-			if( cube_can_lose_chain(that) )
-	            that->lose_chain();
-			waiting->chain_checked();
-		}
     }
 
     if( is_below_empty(that) ){
@@ -355,7 +362,7 @@ int <% debug_hook 'Map::fill_preview_create_color' do %>(std::vector<int>& previ
 Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 <% end %>
     int width = ms()->width(), height = ms()->height();
-    color_map_type result(boost::extents[width][height]);
+    color_map_type result(width, height);
     for(int y=0; y<height; ++y)
         for(int x=0; x<width; ++x)
             if(cubes_[x][y])

@@ -52,8 +52,10 @@ void <% debug_hook 'Cube::lose_chain_without_event' do %>(){
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
-    lose_chain_without_event();
-    lose_chain_event()();
+    if( map()->cube_can_lose_chain(shared_from_this()) ){
+        lose_chain_without_event();
+        lose_chain_event()();
+    }
 }
 // end
 

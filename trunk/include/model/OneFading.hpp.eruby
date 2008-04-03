@@ -44,7 +44,6 @@ public:
             map_.cubes_belong_to_the_chain_from_bottom_to_top(*i, chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
-                (**i).cycled();
             }
         }
     }

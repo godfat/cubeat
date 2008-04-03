@@ -12,7 +12,6 @@
 
 #include "utils/Random.hpp"
 #include "utils/ChainChecker.hpp"
-#include "utils/for_each_multi_array.hpp"
 #include "utils/vector_2d.hpp"
 
 #include <boost/lambda/lambda.hpp>
@@ -31,14 +30,15 @@ using namespace std::tr1::placeholders;
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
     using boost::lambda::_1; // this would be used in for_each for element
-    using boost::lambda::_2; // this would be used in for_each for index
+    using boost::lambda::_2; // this would be used in for_each for x
+    using boost::lambda::_3; // this would be used in for_each for y
     int width = ms()->width(); //, height = ms()->height();
     utils::vector_2d<int> cube_colors(width, ms()->starting_line());
 
     int const one_color_amounts = std::ceil(
         static_cast<double>(width)*ms()->starting_line()/ms()->color_amounts()
     );
-    utils::for_each(cube_colors, _1 = _2/one_color_amounts + 1);
+    utils::for_each(cube_colors, _1 = (_2+_3*width)/one_color_amounts + 1);
 
     utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
@@ -52,11 +52,6 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
 	fill_preview_queue(); // added
 
     return *this;
-}
-
-void <% debug_hook 'Map::refresh_cubes' do %>(){
-<% end %>
-    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Cube::refresh, _1));
 }
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){

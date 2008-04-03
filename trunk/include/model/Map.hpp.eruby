@@ -47,7 +47,6 @@ public:
         garbage_dumpable_ = ms()->garbage_dumpable();
         dropping_creatable_ = ms()->dropping_creatable();
 
-        refresh_cubes(); // make cube to cycle
     	update_chains();
         cycle_cubes();
 

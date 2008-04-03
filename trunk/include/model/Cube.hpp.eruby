@@ -35,7 +35,7 @@ public:
     }
     // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): // x_(x), y_(y), color_id_(color_id)
-        data_(data::Cube::create(x, y, color_id)), map_(map), cycled_(false),
+        data_(data::Cube::create(x, y, color_id)), map_(map),
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1)
     {}
     <% debug_hook '~Cube' do %>(){ <% end %> lose_chain_without_event(); }
@@ -49,7 +49,6 @@ public:
 
     // begin only used by Map::cycle
     bool cycle_and_die();
-    void refresh(){ cycled_ = false; }
     // end
 
     // begin only used by Map::next_state
@@ -75,7 +74,6 @@ public:
 
     // begin only used by OneFading::fade
     void go_dying();
-    void cycled(){ cycled_ = true; }
     // end
 
 	// begin only used by State::map
@@ -126,7 +124,7 @@ private:
     // data::Color color_;
     pChain chain_belonged_to_;
     state::pState state_;
-    bool cycled_, has_grounded_, is_broken_, is_garbage_;
+    bool has_grounded_, is_broken_, is_garbage_;
 	int hp_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>

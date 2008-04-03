@@ -28,7 +28,9 @@ public:
         // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
 
         // setup map1
-        map1_ = presenter::Map::create();
+        data::pMapSetting set = data::MapSetting::create();
+        // set->cube_dropping_duration(2000);
+        map1_ = presenter::Map::create(set);
         s = data::ViewSpriteSetting::create(450, 500, 50);
         s->push_ally(0).push_enemy(1);
         map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );

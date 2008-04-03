@@ -19,7 +19,7 @@ class Ai{
 	}
 	
 	public function full_process(map: Map){
-		/*for(var h = map.Height-1; h > this.travel_limit; --h){
+		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
 					this.shooted = true;
@@ -32,10 +32,10 @@ class Ai{
 				break;
 			}
 		}
-		//combo_rank_update(map);
-		if(this.shooted != true){
+		combo_rank_update(map);
+		/*if(this.shooted != true){
 			bk_gbg_travel(map);
-			if(count_square_Num(map) >= 30 || this.map_tops[map.Width-1+2] <= 2){
+			if(count_square_Num(map) >= 30 || top_update[map.Width-1+2] <= 2){
 				combo_travel(map);
 			}
 			if(count_square_Num(map) >= 10 && this.best_chain_step_x == -1){
@@ -51,6 +51,7 @@ class Ai{
 				}
 			}
 		}
+		combo_rank_update(map);
 		best_amass_point = [0,0,0];
 		best_amass_step_x = [-1,-1,-1];
 		best_amass_step_y = [-1,-1,-1];
@@ -212,8 +213,8 @@ class Ai{
 					}
 				}
 			}
-			for(var l = 0; l < this.best_chain_point.length; ++l){
-				trace("Best combo<" + best_chain_point[l] + ">(" + best_chain_step_x[l] + "," + best_chain_step_y[l] + ")");
+			for(var k = 0; k < this.best_chain_point.length; ++k){
+				trace("Best combo<" + best_chain_point[k] + ">(" + best_chain_step_x[k] + "," + best_chain_step_y[k] + ")");
 			}
 		}
 	}
@@ -231,62 +232,51 @@ class Ai{
 					}
 				}
 			}
-			//trace("Best combo step(" + best_chain_step_x + "," + best_chain_step_y + ")");
-			//trace("shoot chain(" + this.best_chain_step_x + "," + this.best_chain_step_y + ")");
-			//map.lookup(best_chain_step_x,best_chain_step_y).i_am_hit(1);
 		}
 	}
-	private function amass_travel(map: Map){
-		if(true){
-			var temp_point = 0;
-			var amass_point = amass_counter(map);
-			for(var h = map.Height-1; h > this.travel_limit; --h){
-				for(var w = map.Width-1; w >= 0 ; --w){
-					if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-						var temp_map: Map = set_brain_map(map);
-						del_block(temp_map, w, h, true);
-						temp_point = amass_counter(temp_map);
-						if(temp_point > amass_point){
-							amass_point = temp_point;
-						}
-						delete temp_map;
+	
+	private function amass_travel_normal(map: Map){
+		var temp_point = 0;
+		var amass_point = amass_counter(map);
+		for(var h = map.Height-1; h > this.travel_limit; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
+					var temp_map: Map = set_brain_map(map);
+					del_block(temp_map, w, h, true);
+					temp_point = amass_counter(temp_map);
+					if(temp_point > amass_point){
+						amass_point = temp_point;
 					}
+					delete temp_map;
 				}
-			}
-			//trace("Best amass step(" + best_amass_step_x + "," + best_amass_step_y + ")");
-			if(this.best_amass_step_x != -1){
-				//trace("shoot amass(" + this.best_amass_step_x + "," + this.best_amass_step_y + ")");
-				//map.lookup(best_amass_step_x,best_amass_step_y).i_am_hit(1);
 			}
 		}
 	}
 	
 	private function amass_travel_deep(map: Map){
-		if(true){
-			var amass_point = 0;
-			var chain_point = 0;
-			amass_point = amass_counter(map);
-			for(var h = map.Height-1; h > this.travel_limit; --h){
-				for(var w = map.Width-1; w >= 0 ; --w){
-					if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-						var temp_map: Map = set_brain_map(map);
-						del_block(temp_map, w, h, true);
-						amass_point = amass_counter(temp_map);
-						for(var i = this.best_chain_cubes.length; i >=0; --i){
-							if(w != this.best_chain_cubes[i].x){
-								var temp_map_2: Map = set_brain_map(temp_map);
-								del_block(temp_map_2,this.best_chain_cubes[i].x,this.best_chain_cubes[i].y,true);
-								chain_point = combo_counter(temp_map_2);
-								delete temp_map_2;
-							}else if(w = this.best_chain_cubes[i].x && h > this.best_chain_cubes[i].y){
-								var temp_map_2: Map = set_brain_map(temp_map);
-								del_block(temp_map_2,this.best_chain_cubes[i].x,this.best_chain_cubes[i].y+1,true);
-								chain_point = combo_counter(temp_map_2);
-								delete temp_map_2;
-							}
+		var amass_point = 0;
+		var chain_point = 0;
+		amass_point = amass_counter(map);
+		for(var h = map.Height-1; h > this.travel_limit; --h){
+			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
+					var temp_map: Map = set_brain_map(map);
+					del_block(temp_map, w, h, true);
+					amass_point = amass_counter(temp_map);
+					for(var i = this.best_chain_cubes.length; i >=0; --i){
+						if(w != this.best_chain_cubes[i].x){
+							var temp_map_2: Map = set_brain_map(temp_map);
+							del_block(temp_map_2,this.best_chain_cubes[i].x,this.best_chain_cubes[i].y,true);
+							chain_point = combo_counter(temp_map_2);
+							delete temp_map_2;
+						}else if(w = this.best_chain_cubes[i].x && h > this.best_chain_cubes[i].y){
+							var temp_map_2: Map = set_brain_map(temp_map);
+							del_block(temp_map_2,this.best_chain_cubes[i].x,this.best_chain_cubes[i].y+1,true);
+							chain_point = combo_counter(temp_map_2);
+							delete temp_map_2;
 						}
-						delete temp_map;
 					}
+					delete temp_map;
 				}
 			}
 		}

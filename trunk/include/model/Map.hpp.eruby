@@ -36,7 +36,7 @@ public:
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
-        cubes_(boost::extents[setting->width()][setting->height()]),
+        cubes_(setting->width(), setting->height()),
         garbage_left_(0), score_(0), lose_warning_step_(0),
         counting_num_(0), warning_check_step_(0)
     {}
@@ -93,7 +93,7 @@ private:
     Map& insert_preview(pCube);
     void refresh_cubes();
     void cycle_cubes();
-    void cycle_a_cube(pCube, int index);
+    void cycle_a_cube(pCube, int x, int y);
     void cycle_creation();
     void cycle_creation_garbage();
     void cycle_warning();

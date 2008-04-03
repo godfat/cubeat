@@ -61,28 +61,16 @@ void <% debug_hook 'Map::refresh_cubes' do %>(){
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
 <% end %>
-    // utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2));
-    int width = ms()->width(), height = ms()->height();
-    for(int y=0; y<height; ++y){
-        for(int x=0; x<width; ++x){
-            pCube c = cubes_[x][y];
-            if(!c) continue;
-            if( !c->has_grounded() ){
-                dropping_creatable_ = false;
-                if( !c->is_garbage() ) garbage_dumpable_ = false;
-            }
-            if( c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
-        }
-    }
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2, _3));
 }
 
-void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int i){
+void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
 <% end %>
     if( !c->has_grounded() ){
         dropping_creatable_ = false;
         if( !c->is_garbage() ) garbage_dumpable_ = false;
     }
-    if(  c->cycle_and_die() ) cubes_.origin()[i].reset(), owner_.lock()->release(c);
+    if(  c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
 }
 
 Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){

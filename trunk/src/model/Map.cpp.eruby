@@ -95,7 +95,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
 <% end %>
     if( state::pWaiting waiting = that->is_waiting() ){
 
-		if( waiting->need_check() && that->y() < ms()->height()-1 ){
+        if( waiting->need_check() && that->y() < ms()->height()-1 ){
             pOneFading one_fading = make_OneFading(that);
 
             if( one_fading ){
@@ -103,7 +103,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
                 return state::Dying::create(that);
             }
             waiting->checked();
-			that->set_grounded(); // once grounded, always grounded
+            that->set_grounded(); // once grounded, always grounded
         }
 		if( waiting->need_check_chain() ){
 			if( cube_can_lose_chain(that) )
@@ -124,10 +124,10 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
     else{
         if( that->is_waiting() )
             return state::pState();
-		else{
-			// Sound::i().cube_dropped();
+        else{
+            // Sound::i().cube_dropped();
             return state::Waiting::create(that);
-		}
+        }
     }
     // throw "impossible flow";
     return state::pState();

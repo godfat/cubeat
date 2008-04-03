@@ -119,7 +119,8 @@ std::list<wpObject> const& Scene::pick(vec2 const& p)
     return picked_temporary_;
 }
 
-std::list<wpObject> const& Scene::pick(vec2 const& p, int const& r)
+std::list<wpObject> const& Scene::pick
+    (vec2 const& p, std::tr1::function<bool(vec2 const&, vec2 const&)> const& pred)
 {
     picked_temporary_.clear();
     ISceneCollisionManager* colm = getCollisionMgr();
@@ -127,22 +128,7 @@ std::list<wpObject> const& Scene::pick(vec2 const& p, int const& r)
     BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
         position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getPosition(), camera_);
         vec2 object_pos(pos.X + scene_offset_.X, pos.Y + scene_offset_.Y);
-        if( (p - object_pos).getLengthSQ() < r*r )
-            picked_temporary_.push_back( nv.second );
-    }
-    return picked_temporary_;
-}
-
-std::list<wpObject> const& Scene::pick(vec2 const& p, int const& w, int const& h)
-{
-    picked_temporary_.clear();
-    ISceneCollisionManager* colm = getCollisionMgr();
-    vec2 scene_offset_ = get<Pos2D>();
-    BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
-        position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getPosition(), camera_);
-        vec2 object_pos(pos.X + scene_offset_.X, pos.Y + scene_offset_.Y);
-        if( object_pos.X > p.X - w/2 && object_pos.X < p.X + w/2 &&
-            object_pos.Y > p.Y - h/2 && object_pos.Y < p.Y + h/2 )
+        if( pred(p, object_pos) )
             picked_temporary_.push_back( nv.second );
     }
     return picked_temporary_;

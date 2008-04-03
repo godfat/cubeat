@@ -16,12 +16,18 @@
 
 #include <string>
 #include <vector>
+#include <tr1/memory>
 
 #ifdef _USE_WIIMOTE_
 #include <wiimote.h>
 #endif
 
-namespace psc { namespace ctrl {
+namespace psc {
+namespace ctrl {
+
+class Player;
+typedef std::tr1::shared_ptr<Player> pPlayer;
+typedef std::tr1::weak_ptr<Player> wpPlayer;
 
 class Input
 {
@@ -50,6 +56,9 @@ public:
     Button const& wep3() const { return wep3_; }
     Button const& haste() const { return haste_; }
     Button const& pause() const { return pause_; }
+
+    Input&  player(wpPlayer player);
+    pPlayer player();
 
 private:
     Input(Input const&);    //No copy constructor
@@ -80,6 +89,7 @@ private:
 
     int CURSOR_SENSATIVITY;
 
+    wpPlayer player_;
 #ifdef _USE_WIIMOTE_
     wiimote wiimote_;
 #endif

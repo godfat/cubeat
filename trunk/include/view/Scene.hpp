@@ -31,9 +31,9 @@ public:
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
 
-    virtual std::list<wpObject> const& pick(vec2 const&);
-    virtual std::list<wpObject> const& pick(vec2 const&, int const&);
-    virtual std::list<wpObject> const& pick(vec2 const&, int const&, int const&);
+    std::list<wpObject> const& pick(vec2 const&);
+    std::list<wpObject> const& pick(vec2 const&,
+                                    std::tr1::function<bool(vec2 const&, vec2 const&)> const&);
 
     void addPickMapping(irr::scene::ISceneNode*, wpObject const&);
     void removePickMapping(irr::scene::ISceneNode*);

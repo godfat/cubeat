@@ -4,6 +4,7 @@
 */
 
 #include "Input.hpp"
+#include "Player.hpp"
 #include "utils/dictionary.hpp"
 #include "private/MastEventReceiver.hpp"
 
@@ -160,6 +161,9 @@ void Input::update_btn_state()
     haste_.update_state();
     pause_.update_state();
 }
+
+Input&  Input::player(wpPlayer player) { player_ = player; return *this; }
+pPlayer Input::player() { return player_.lock(); }
 
 Input::~Input()
 {

@@ -213,8 +213,6 @@ public:
     {
         if( duration == 0 ) return *this;
         std::tr1::function<void()> combo = bind(&Object::nextTween, this, cb);
-        //std::tr1::function<void()> combo = bind(&Object::nextTween, this, cref(cb));
-        //if I use const reference wrapper there, it will crash. Dunno why...
         irr::scene::AnimatorBase* anim =
             new irr::scene::CustomAnimator<Eq, Accessor>
                 (smgr_, start, end, duration, loop, combo, delay);

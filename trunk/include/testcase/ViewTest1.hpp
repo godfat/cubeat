@@ -244,7 +244,7 @@ ViewTest1::ViewTest1()
 
     cube4 = view::AnimatedSceneObject::create("ex_move", worldv);
     cube4->moveTo(0,0,80).set<Scale>(vec3(.3f, .3f, .3f))
-          .queue<SineCirc>(paramA).queue<IOExpo>(paramB).queue<OCirc>(paramC).tween<Linear>(paramD);
+          .queue(paramA).queue(paramB).queue(paramC).tween(paramD);
 
     std::tr1::function<void(int,int)> btest_ = bind(&ViewTest1::btn_press_test, this, _1, _2);
     EventDispatcher::i().subscribe_btn_event(btest_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);

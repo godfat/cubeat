@@ -14,15 +14,18 @@ class Input;
 class CallbackDelegate
 {
 public:
-    CallbackDelegate(view::pSprite const&, Button const*, BSTATE const&);
+    CallbackDelegate(view::pSprite const&, Button const*, BSTATE const&, bool const& manual = false);
     CallbackDelegate& operator=(std::tr1::function<void(view::pSprite&)> const&);
     Button const* subscribed_btn()   const;
     BSTATE        subscribed_state() const;
+
+    void call_manually();
 
 private:
     view::wpSprite owner_;
     Button const*  subscribed_btn_;
     BSTATE         subscribed_state_;
+    bool           manual_;
 
     std::tr1::function<void(view::pSprite&)> cb_;
 };
@@ -30,14 +33,18 @@ private:
 class FocusDelegate
 {
 public:
-    FocusDelegate(view::pSprite const&, Input const*, FSTATE const&);
+    FocusDelegate(view::pSprite const&, Input const*, FSTATE const&, bool const& manual = false);
     FocusDelegate& operator=(std::tr1::function<void(view::pSprite&, int x, int y)> const&);
     Input const* subscribed_input() const;
     FSTATE       subscribed_state() const;
+
+    void call_manually();
+
 private:
     view::wpSprite owner_;
     Input const*   subscribed_input_;
     FSTATE         subscribed_state_;
+    bool           manual_;
 
     std::tr1::function<void(view::pSprite&, int, int)> cb_;
 };

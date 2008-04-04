@@ -171,6 +171,30 @@ Sprite::onButtonEvent(ctrl::Button const* btn, ctrl::BSTATE const& state)
     return delegates_.back();
 }
 
+/// MANUAL HIT ///
+ctrl::CallbackDelegate& Sprite::onHit(ctrl::Button const* btn) {
+    return manualButtonEvent(btn);
+}
+
+void Sprite::triggerHit(ctrl::Button const* btn) {
+    BOOST_FOREACH(ctrl::CallbackDelegate& cdm, delegates_manual_)
+        if( btn == cdm.subscribed_btn() )
+            cdm.call_manually();
+}
+
+ctrl::CallbackDelegate& Sprite::manualButtonEvent(ctrl::Button const* btn)
+{
+    BOOST_FOREACH(ctrl::CallbackDelegate& cdm, delegates_manual_)
+        if( btn == cdm.subscribed_btn() )
+            return cdm;
+
+    ctrl::CallbackDelegate
+        cdm(static_pointer_cast<Sprite>(shared_from_this()), btn, ctrl::BTN_PRESS, true);
+    delegates_manual_.push_back( cdm );                           //^^ useless
+    return delegates_manual_.back();
+}
+/// END OF MANUAL HIT ///
+
 ctrl::FocusDelegate& Sprite::onEnterFocus(ctrl::Input const* input) {
     return onFocusEvent(input, ctrl::FOCUS_ENTER);
 }
@@ -190,6 +214,41 @@ Sprite::onFocusEvent(ctrl::Input const* input, ctrl::FSTATE const& state)
     delegates_focus_.push_back( fd );
     return delegates_focus_.back();
 }
+
+/// MANUAL HOVER IN / OUT ///
+ctrl::FocusDelegate& Sprite::onHoverIn(ctrl::Input const* input ) {
+    return manualFocusEvent(input, ctrl::FOCUS_ENTER);
+}
+
+ctrl::FocusDelegate& Sprite::onHoverOut(ctrl::Input const* input ) {
+    return manualFocusEvent(input, ctrl::FOCUS_LEAVE);
+}
+
+void Sprite::triggerHoverIn(ctrl::Input const* input) {
+    BOOST_FOREACH(ctrl::FocusDelegate& fdm, delegates_focus_manual_)
+        if( input == fdm.subscribed_input() && ctrl::FOCUS_ENTER == fdm.subscribed_state() )
+            fdm.call_manually();
+}
+
+void Sprite::triggerHoverOut(ctrl::Input const* input) {
+    BOOST_FOREACH(ctrl::FocusDelegate& fdm, delegates_focus_manual_)
+        if( input == fdm.subscribed_input() && ctrl::FOCUS_LEAVE == fdm.subscribed_state() )
+            fdm.call_manually();
+}
+
+ctrl::FocusDelegate&
+Sprite::manualFocusEvent(ctrl::Input const* input, ctrl::FSTATE const& state)
+{
+    BOOST_FOREACH(ctrl::FocusDelegate& fdm, delegates_focus_manual_)
+        if( input == fdm.subscribed_input() && state == fdm.subscribed_state() )
+            return fdm;
+
+    ctrl::FocusDelegate
+        fdm(static_pointer_cast<Sprite>(shared_from_this()), input, state, true);
+    delegates_focus_manual_.push_back( fdm );
+    return delegates_focus_manual_.back();
+}
+/// END OF MANUAL HOVER IN / OUT ///
 
 /// End of Maybe
 

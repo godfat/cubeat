@@ -2,10 +2,13 @@
 #ifndef _SHOOTING_CUBES_CTRL_WEAPON_
 #define _SHOOTING_CUBES_CTRL_WEAPON_
 
+#include "data/BasicViewTypes.hpp"
 #include <tr1/functional>
 
 namespace psc {
 namespace ctrl {
+
+typedef std::tr1::function<bool(vec2 const&, vec2 const&)> AreaPredicate;
 
 class Weapon
 {
@@ -40,8 +43,10 @@ public:
 	void reloadable(bool const& in){ reloadable_ = in; }
 	void ammo(int const& in)       { ammo_ = in; }
 
-	bool can_fire() { return !is_reloading() && !is_coolingdown() && ammo() >= 0; }
+	bool can_fire() { return !is_reloading() && !is_coolingdown() && ammo() > 0; }
 	bool can_fire_repeatedly() { return repeat_; }
+
+    virtual AreaPredicate areaPredicate() { return 0; }  //default no predicate. use point picking
 
 protected:
     int  firepower_;
@@ -75,6 +80,9 @@ class AreaShoot : public Weapon
 public:
 	AreaShoot():Weapon(3, 0, 1, true, false){}
 	virtual void fire();
+    virtual AreaPredicate areaPredicate();
+protected:
+    bool area(vec2 const&, vec2 const&, int, int);
 };
 
 } //ctrl

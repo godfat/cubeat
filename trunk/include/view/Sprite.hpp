@@ -59,8 +59,14 @@ public:
     ctrl::CallbackDelegate& onRelease(ctrl::Button const*);
     ctrl::CallbackDelegate& onUp     (ctrl::Button const*);
     ctrl::CallbackDelegate& onDown   (ctrl::Button const*);
+    ctrl::CallbackDelegate& onHit    (ctrl::Button const*);   //this will not be triggered by EventD.
     ctrl::FocusDelegate&    onEnterFocus(ctrl::Input const*);
     ctrl::FocusDelegate&    onLeaveFocus(ctrl::Input const*);
+    ctrl::FocusDelegate&    onHoverIn(ctrl::Input const*);    //this will not be triggered by EventD.
+    ctrl::FocusDelegate&    onHoverOut(ctrl::Input const*);   //this will not be triggered by EventD.
+    void                    triggerHit(ctrl::Button const*);  //this will be used by view::Scene
+    void                    triggerHoverIn(ctrl::Input const*);   //this will be used by view::Scene
+    void                    triggerHoverOut(ctrl::Input const*);  //this will be used by view::Scene
     //End of maybe
 
     virtual ~Sprite();
@@ -72,13 +78,17 @@ protected:
 
     //Maybe this feature should move to another class and use multiple inheritance.
     inline ctrl::CallbackDelegate& onButtonEvent(ctrl::Button const*, ctrl::BSTATE const&);
-    inline ctrl::FocusDelegate&    onFocusEvent (ctrl::Input  const*, ctrl::FSTATE const&);
+    inline ctrl::CallbackDelegate& manualButtonEvent(ctrl::Button const*);
+    inline ctrl::FocusDelegate&    onFocusEvent (ctrl::Input const*, ctrl::FSTATE const&);
+    inline ctrl::FocusDelegate&    manualFocusEvent(ctrl::Input const*, ctrl::FSTATE const&);
     //End of maybe
 
 protected:
     //Maybe this feature should move to another class and use multiple inheritance.
     std::list< ctrl::CallbackDelegate > delegates_;
     std::list< ctrl::FocusDelegate > delegates_focus_;
+    std::list< ctrl::CallbackDelegate > delegates_manual_;
+    std::list< ctrl::FocusDelegate > delegates_focus_manual_;
     //End of maybe
 
     bool center_;

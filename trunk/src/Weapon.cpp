@@ -6,6 +6,8 @@
 
 using namespace psc;
 using namespace ctrl;
+using std::tr1::bind;
+using namespace std::tr1::placeholders;
 
 void Weapon::reload() {
     if( reloadable_ == true && reloading_ == false ) {
@@ -18,7 +20,7 @@ void Weapon::reload() {
 ///////////////// Blocking Shoot ////////////////////
 
 void BlockShoot::fire() {
-    if( ammo_ >= 0 && reloading_ == false ) {
+    if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         //Sound::i().blockShoot();
         //use Timer to refresh coolingdown_
@@ -28,7 +30,7 @@ void BlockShoot::fire() {
 ///////////////// Powerful Shoot ////////////////////
 
 void PowerShoot::fire() {
-    if( ammo_ >= 0 && reloading_ == false ) {
+    if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         //Sound::i().powerShoot();
         //use Timer to refresh coolingdown_
@@ -38,9 +40,18 @@ void PowerShoot::fire() {
 ////////////////// Area Shoot ///////////////////////
 
 void AreaShoot::fire() {
-    if( ammo_ >= 0 && reloading_ == false ) {
+    if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         //Sound::i().rocket();
         //use Timer to refresh coolingdown_
     }
+}
+
+AreaPredicate AreaShoot::areaPredicate() {
+    return bind(&AreaShoot::area, this, _1, _2, 148, 148);
+}
+
+bool AreaShoot::area(vec2 const& p, vec2 const& obj_pos, int w, int h) {
+    return obj_pos.X > p.X - w/2 && obj_pos.X < p.X + w/2 &&
+           obj_pos.Y > p.Y - h/2 && obj_pos.Y < p.Y + h/2;
 }

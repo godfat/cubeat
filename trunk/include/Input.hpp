@@ -58,7 +58,7 @@ public:
     Button const& pause() const { return pause_; }
 
     Input&  player(wpPlayer player);
-    pPlayer player();
+    pPlayer player() const;
 
 private:
     Input(Input const&);    //No copy constructor

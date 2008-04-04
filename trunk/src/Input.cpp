@@ -163,7 +163,7 @@ void Input::update_btn_state()
 }
 
 Input&  Input::player(wpPlayer player) { player_ = player; return *this; }
-pPlayer Input::player() { return player_.lock(); }
+pPlayer Input::player() const { return player_.lock(); }
 
 Input::~Input()
 {

@@ -37,8 +37,13 @@ pPlayer Player::init() {
             bind(&Player::set_active_weapon, this, 1), &input_->wep2(), BTN_PRESS);
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::set_active_weapon, this, 2), &input_->wep3(), BTN_PRESS);
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::special_fire, this), &input_->trig2(), BTN_PRESS);
+
+//        EventDispatcher::i().subscribe_btn_event(
+//            bind(&Player::special_fire, this), &input_->trig2(), BTN_PRESS);
+//      dont subscribe this! it will overwrite scene's picking!
+//      maybe I should let different callee have parallel calling button and state...
+//      do it when have time.
+
     }
     return shared_from_this();
 }
@@ -116,14 +121,19 @@ Player& Player::subscribe_shot_event
         Input*  input = Input::getInputByIndex(id);
         pPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
-        sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
+        //sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
+
+        //Maybe:
+        sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
     }
 
     if( enemy_cb ) {
         BOOST_FOREACH(int& id, enemy_input_ids_) {
             Input*  input = Input::getInputByIndex(id);
             pPlayer enemy = input->player();
-            sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
+            //sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
+
+            sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
         }
     }
     return *this;
@@ -138,7 +148,7 @@ void Player::normal_shot_delegate
 void Player::shot_delegate
     (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
 {
-    if( player->can_fire() && !player->is_changing_wep() )
+    //if( player->can_fire() && !player->is_changing_wep() )  //now global button event handles this
         if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
             hit_cb( player->weapon()->firepower() ); // if the player is ally OR player can crossfire
 }
@@ -146,7 +156,8 @@ void Player::shot_delegate
 void Player::repeating_shot_delegate
     (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
 {
-    if( player->can_fire_repeatedly() && player->can_fire() && !player->is_changing_wep() )
+    //now global button event handles this
+    //if( player->can_fire_repeatedly() && player->can_fire() && !player->is_changing_wep() )
         if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
             hit_cb( player->weapon()->firepower() );
 }

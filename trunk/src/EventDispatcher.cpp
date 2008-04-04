@@ -151,7 +151,8 @@ void EventDispatcher::dispatch_focus()
 {
     for(FocusListener::iterator f = focus_listeners_.begin(), fend = focus_listeners_.end();
         f != fend; ++f) {
-        if( view::pSprite sv = get<FE::CALLEE>(*f).lock() ) {
+        view::pSprite sv = get<FE::CALLEE>(*f).lock();      //sprite not expired
+        if( sv && *get<FE::FOCUS_CB>(*f) ) {                //and callback is not NULL
             Input const* input = get<FE::INPUT>(*f);
             ObjList olist;
             if( get<FE::STATE>(*f) == FOCUS_ENTER )
@@ -162,7 +163,7 @@ void EventDispatcher::dispatch_focus()
             ObjList::iterator it = find_if(olist.begin(), olist.end(), bind(&cmp, _1, sv));
             if( it != olist.end() ) {
                 (*get<FE::FOCUS_CB>(*f))(sv, input->cursor().x(), input->cursor().y());
-                std::cout << "focus event dispatched: " << sv << "\n";
+                //std::cout << "focus event dispatched: " << sv << "\n";
             }
         }
         else focus_events_to_be_deleted_.push_back(f);
@@ -182,6 +183,8 @@ void EventDispatcher::obj_picking(view::pScene const& scene)
         ObjList const& picked = scene->pick(vec2(input->cursor().x(), input->cursor().y()));
         ObjList& pick_input = pickmap_[input];
         pick_input.insert(pick_input.end(), picked.begin(), picked.end());
+
+        scene->update_focus_objs_by_input(input);
     }
 }
 
@@ -201,7 +204,7 @@ void EventDispatcher::obj_listening(view::pScene const& scene, ObjListener& list
             ObjList::iterator it = find_if(olist.begin(), olist.end(), bind(&cmp, _1, sv));
             if( it != olist.end() ) {
                 (*get<OE::OBJ_CB>(*o))(sv);                 //lastly, fire up callback
-                std::cout << "dispatcher trace: " << sv << "\n";
+                //std::cout << "dispatcher trace: " << sv << "\n";
             }
         }
         else obj_events_to_be_deleted_.insert( std::make_pair(scene, o) );

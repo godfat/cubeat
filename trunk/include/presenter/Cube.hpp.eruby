@@ -63,6 +63,9 @@ public:
     void <% debug_hook 'lose_chain' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->lose_chain(); }
     }
+    void <% debug_hook 'sink_a_block' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->sink_a_block(); }
+    }
     Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
 
     int x() const;

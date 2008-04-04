@@ -1,0 +1,29 @@
+
+<% header_guard do %>
+
+#include "model/state/Dropping.hpp"
+#include "utils/ObjectPool.hpp"
+
+<%= debug_include %>
+
+namespace psc{ namespace model{ class Cube; namespace state{
+
+class Sinking: public Dropping{
+public:
+    typedef std::tr1::shared_ptr<Sinking> pointer_type;
+
+public:
+    static pState create(std::tr1::weak_ptr<Cube> owner){
+        return utils::ObjectPool<Sinking>::create(owner)->init();
+    }
+
+public:
+    Sinking(std::tr1::weak_ptr<Cube> owner): Dropping(owner){}
+
+protected:
+    virtual pState init();
+};
+
+}}} // end of namespace
+
+<% end %>

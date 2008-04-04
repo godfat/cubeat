@@ -1,5 +1,5 @@
 
-#include "model/state/Dropping.hpp"
+#include "model/state/Sinking.hpp"
 #include "model/Map.hpp"
 #include "EventDispatcher.hpp"
 
@@ -11,11 +11,11 @@ using namespace psc;
 using namespace model;
 using namespace state;
 
-pState <% debug_hook 'Dropping::init' do %>(){
+pState <% debug_hook 'Sinking::init' do %>(){
 <% end %>
     pState result = shared_from_this();
     ctrl::EventDispatcher::i().subscribe_timer(
         std::tr1::bind(&State::next_state, result.get()), result,
-            map()->ms()->cube_dropping_duration());
+            map()->ms()->cube_sinking_duration());
     return result;
 }

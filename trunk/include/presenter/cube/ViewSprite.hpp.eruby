@@ -48,6 +48,11 @@ public:
             pos_vec2(), map_setting()->cube_dropping_duration());
     }
 
+    virtual void sink_a_block(){
+        body_->tween<easing::Linear, accessor::Pos2D>(
+            pos_vec2(), map_setting()->cube_sinking_duration());
+    }
+
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
         body_->tween<easing::Linear, accessor::Alpha>(0,
             map_setting()->cube_dying_duration());

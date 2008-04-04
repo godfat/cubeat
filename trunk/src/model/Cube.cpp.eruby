@@ -6,6 +6,7 @@
 #include "model/state/Exploding.hpp"
 #include "model/state/Dropping.hpp"
 #include "model/state/Dying.hpp"
+#include "model/state/Sinking.hpp"
 
 #include "all_fwd.hpp"
 
@@ -22,25 +23,28 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
     return is_dead();
 }
 
-void <% debug_hook 'Cube::be_garbage' do %>(){
+Cube& <% debug_hook 'Cube::be_garbage' do %>(){
 <% end %>
     is_garbage_ = true;
 	hp_ = 1;
-    color_id(-1); // = data::Color::random_rgb_color();
+    color_id(-1);
     be_garbage_event()();
+    return *this;
 }
 
 // begin only used by Map::next_state
 pWaiting Cube::is_waiting(){ return dynamic_pointer_cast<Waiting>(state_); }
 pDropping Cube::is_dropping(){ return dynamic_pointer_cast<Dropping>(state_); }
-pDying const Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
-// pExploding const Cube::is_exploding() const{ return dynamic_pointer_cast<Exploding>(state_); }
+cpDying Cube::is_dying() const{ return dynamic_pointer_cast<Dying>(state_); }
+cpSinking Cube::is_sinking() const{ return dynamic_pointer_cast<Sinking>(state_); }
 
 void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
-    // --y_;
     y(y()-1);
-    drop_a_block_event()();
+    if( is_sinking() )
+        sink_a_block_event()();
+    else
+        drop_a_block_event()();
 }
 
 void <% debug_hook 'Cube::lose_chain_without_event' do %>(){
@@ -62,6 +66,13 @@ void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
     state_ = state::Dying::create(shared_from_this());
     go_dying_event()();
+}
+
+Cube& <% debug_hook 'Cube::go_sinking' do %>(){
+<% end %>
+    state_ = state::Sinking::create(shared_from_this());
+    drop_a_block();
+    return *this;
 }
 
 void <% debug_hook 'Cube::go_exploding' do %>(){

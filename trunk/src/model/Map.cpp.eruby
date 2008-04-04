@@ -73,9 +73,10 @@ Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
     cubes_[cube->x()][cube->y()] = cube;
     return *this;
 }
+
 Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
 <% end %>
-    cube->be_garbage();
+    cube->be_garbage().go_sinking();
     return insert_cube(cube);
 }
 
@@ -85,38 +86,38 @@ Map& <% debug_hook 'Map::insert_preview' do %>(pCube cube){
     return *this;
 }
 
-// used by Dropping::cycle, Waiting::cycle
-state::pState <% debug_hook 'Map::next_state' do %>(pCube that){
+// used Waiting::cycle
+state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 <% end %>
-    if( state::pWaiting waiting = that->is_waiting() ){
+    if( state::pWaiting waiting = cube->is_waiting() ){
 
-        if( waiting->need_check() && that->y() < ms()->height()-1 ){
-            pOneFading one_fading = make_OneFading(that);
+        if( waiting->need_check() ){
+            pOneFading one_fading = make_OneFading(cube);
 
             if( one_fading ){
-                one_fading->fade(that);
-                return state::Dying::create(that);
+                one_fading->fade(cube);
+                return state::Dying::create(cube);
             }
             waiting->checked();
-            that->set_grounded(); // once grounded, always grounded
+            cube->set_grounded(); // once grounded, always grounded
         }
     }
 
-    if( is_below_empty(that) ){
-        cubes_[that->x()][that->y()].reset();
-        that->drop_a_block();
-        cubes_[that->x()][that->y()] = that;
-        if( that->is_dropping() )
+    if( is_below_empty(cube) ){
+        cubes_[cube->x()][cube->y()].reset();
+        cube->drop_a_block();
+        cubes_[cube->x()][cube->y()] = cube;
+        if( cube->is_dropping() )
             return state::pState();
         else
-            return state::Dropping::create(that);
+            return state::Dropping::create(cube);
     }
     else{
-        if( that->is_waiting() )
+        if( cube->is_waiting() )
             return state::pState();
         else{
             // Sound::i().cube_dropped();
-            return state::Waiting::create(that);
+            return state::Waiting::create(cube);
         }
     }
     // throw "impossible flow";
@@ -289,7 +290,7 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 	if( is_empty.size() == 0 ) return;
 
     BOOST_FOREACH(int x, is_empty){
-        cubes_preview_[x]->x(x).y(top);
+        cubes_preview_[x]->x(x).y(top).go_sinking();
         insert_cube(cubes_preview_[x]);
     }
 

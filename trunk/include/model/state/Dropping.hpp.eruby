@@ -3,9 +3,8 @@
 
 #include "model/state/State.hpp"
 #include "utils/ObjectPool.hpp"
-#include "EventDispatcher.hpp"
 
-#include <tr1/functional>
+#include <tr1/memory>
 
 <%= debug_include %>
 
@@ -13,30 +12,15 @@ namespace psc{ namespace model{ namespace state{
 
 class Dropping: public State{
 public:
-    typedef pDropping pointer_type;
+    typedef std::tr1::shared_ptr<Dropping> pointer_type;
 
 public:
-    static pState create(wpCube owner){
-        pDropping result = utils::ObjectPool<Dropping>::create(owner);
-        // here we have timer for 1 ms is needed because in the previous
-        // logic flow, Dropping is working as do{}while(); not while();
-        // as a result, we have to call next_state on the next cycle.
-        // don't directly call next_state, cos we need it on "next" cycle.
-        // and don't worry about we subsribed two timer events,
-        // if Dropping is dead on the first event, the 2nd argument of
-        // subscribe_timer, the weak_ptr, would be expired,
-        // so no invalid pointer would be dereferenced.
-        // finally, we can't bind shared_ptr, because it can't really
-        // share the ownership of the Dropping. instead, bind raw ptr.
-        // thanks to the 2nd argument of subscribe_timer, don't worry
-        // about dereferencing invalid pointer again.
-        // ctrl::EventDispatcher::i().subscribe_timer(
-            // std::tr1::bind(&State::next_state, result.get()), result, 1);
-        return result->init();
+    static pState create(std::tr1::weak_ptr<Cube> owner){
+        return utils::ObjectPool<Dropping>::create(owner)->init();
     }
 
 public:
-    Dropping(wpCube owner): State(owner){}
+    Dropping(std::tr1::weak_ptr<Cube> owner): State(owner){}
     virtual <% debug_hook '~Dropping' do %>(){<%end%>}
 
 protected:

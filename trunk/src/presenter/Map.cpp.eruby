@@ -43,7 +43,8 @@ void Map::bind_cube_event(pCube cube){
                       restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
                           hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
                     get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
-                   lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) );
+                   lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
+                   sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

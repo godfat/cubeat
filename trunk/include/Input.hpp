@@ -23,6 +23,16 @@
 #endif
 
 namespace psc {
+
+namespace view {
+class Scene;
+typedef std::tr1::shared_ptr<Scene> pScene;
+typedef std::tr1::weak_ptr<Scene> wpScene;
+class Sprite;
+typedef std::tr1::shared_ptr<Sprite> pSprite;
+typedef std::tr1::weak_ptr<Sprite> wpSprite;
+}
+
 namespace ctrl {
 
 class Player;
@@ -35,11 +45,14 @@ class Input
     typedef std::vector<Input*> InputList;
 public:
     static void update_all();
+    static void redraw_all();
+    static void init_graphic_items();
     static Input* getInputByIndex(unsigned int);
     static InputList& getInputs() { return inputs_; }
     static int count() { return static_cast<int>(inputs_.size()); }
 
 private:
+    static view::pScene scene_;
     static InputList inputs_;
     static bool keyboard_mouse_input_;
 
@@ -59,15 +72,19 @@ public:
 
     Input&  player(wpPlayer player);
     pPlayer player() const;
+    void setRangeShapeVisible(bool);
+    void setCursorVisible(bool);
 
 private:
     Input(Input const&);    //No copy constructor
 
     void update();
+    void redraw();
     void cursor_by_keyboard_mouse();
     void buttons_by_keyboard_mouse();
     void write_state_now_to_last();
     void update_btn_state();
+    void init_graphic();
 
     Crosshair cursor_;
     Button trig1_;
@@ -90,6 +107,10 @@ private:
     int CURSOR_SENSATIVITY;
 
     wpPlayer player_;
+    view::pSprite cursor_mark_;
+    view::pSprite range_shape_;
+    std::string cursor_texture_name_;
+    std::string area_texture_name_;
 #ifdef _USE_WIIMOTE_
     wiimote wiimote_;
 #endif

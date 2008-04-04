@@ -5,12 +5,16 @@
 
 #include "Input.hpp"
 #include "Player.hpp"
+#include "view/Scene.hpp"       //is this really good...?
+#include "view/Sprite.hpp"      //is this really good...?
 #include "utils/dictionary.hpp"
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
 #include "private/Wiimote_IR_internal.hpp"
 #endif
+
+#include "Accessors.hpp"
 
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -22,8 +26,10 @@ using namespace irr;
 using namespace psc;
 using namespace utils;
 using namespace ctrl;
+using namespace accessor;
 
 //static functions
+view::pScene Input::scene_ = view::pScene();
 Input::InputList Input::inputs_;
 bool Input::keyboard_mouse_input_ = false;
 
@@ -41,6 +47,21 @@ void Input::update_all()
         it->update();
 
     MastEventReceiver::i().startEventProcess();
+}
+
+void Input::init_graphic_items()
+{
+    scene_ = view::Scene::create("Input scene");
+    scene_->setTo2DView();
+    BOOST_FOREACH( Input* it, inputs_ )
+        it->init_graphic();
+}
+
+void Input::redraw_all()
+{
+    BOOST_FOREACH( Input* it, inputs_ )
+        it->redraw();
+    scene_->redraw();
 }
 
 Input* Input::getInputByIndex(unsigned int i)
@@ -76,6 +97,9 @@ Input::Input(std::string const& path)
     std::cout << "Wiimote connected: " << wiimote::TotalConnected() << "\n";
 #endif
     inputs_.push_back( this );
+
+    cursor_texture_name_ = keymap.S("cursor_texture");
+    area_texture_name_ = keymap.S("area_rect");
 }
 
 void Input::update()
@@ -106,6 +130,30 @@ void Input::update()
 
     update_btn_state();
     cursor_.constrain();
+}
+
+void Input::init_graphic()
+{
+    cursor_mark_ = view::Sprite::create(cursor_texture_name_, scene_, 128, 128, true);
+    range_shape_ = view::Sprite::create(area_texture_name_, scene_, 150, 150, true);
+    range_shape_->set<Alpha>(192);
+    range_shape_->set<Visible>(false);
+}
+
+void Input::redraw()
+{
+    cursor_mark_->moveTo(cursor_.x(), cursor_.y());
+    range_shape_->moveTo(cursor_.x(), cursor_.y());
+}
+
+void Input::setRangeShapeVisible(bool b) {
+    if( range_shape_ )
+        range_shape_->set<Visible>(b);
+}
+
+void Input::setCursorVisible(bool b) {
+    if( cursor_mark_ )
+        cursor_mark_->set<Visible>(b);
 }
 
 void Input::cursor_by_keyboard_mouse()

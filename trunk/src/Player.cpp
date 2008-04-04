@@ -79,6 +79,10 @@ Player& Player::set_active_weapon(int i)
     std::cout << "switch weapon to " << i << "\n";
     current_wep_ = weplist_[i];
     weplist_idx_ = i;
+    if( i == 2 )  //write it dead for now. will expand and refactor it later.
+        input_->setRangeShapeVisible(true);
+    else
+        input_->setRangeShapeVisible(false);
     return *this;
 }
 

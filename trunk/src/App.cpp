@@ -82,6 +82,7 @@ int App::run(std::tr1::function<void()> tester)
     using namespace ctrl;
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+    Input::init_graphic_items();
     int lastFPS = -1;
 
     while( IrrDevice::i().run() ) {
@@ -100,6 +101,7 @@ int App::run(std::tr1::function<void()> tester)
             driver->clearZBuffer();
 
             if(tester) tester();
+            Input::redraw_all();
 
             driver->endScene();
 

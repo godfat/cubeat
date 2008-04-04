@@ -1,3 +1,5 @@
+cursor_texture: 'cursor1',
+area_rect: 'area_rect',
 cursor: 0x01,
 trig1: 0x58,
 trig2: 0x43,

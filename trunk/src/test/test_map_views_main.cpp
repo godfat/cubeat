@@ -7,8 +7,6 @@
 #include "presenter/cube/ViewStdout.hpp"
 
 #include "EventDispatcher.hpp"
-#include "Input.hpp"
-#include "Player.hpp"
 
 using namespace psc;
 
@@ -16,7 +14,7 @@ class TestMapViews{
 public:
     TestMapViews(){
         scene_ = psc::view::Scene::create("TestMapViewScene");
-        scene_->setTo2DView().enableGlobalHittingEvent();     //important
+        scene_->setTo2DView();
 
         data::pViewSpriteSetting s;
 
@@ -24,8 +22,8 @@ public:
         map0_ = presenter::Map::create();
         s = data::ViewSpriteSetting::create(50, 500, 50);
         s->push_ally(1).push_enemy(0);
-        player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s->ally_input_ids(), s->enemy_input_ids());
-        map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s, player0_) );
+        map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
+
         // map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
         // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
 
@@ -35,12 +33,11 @@ public:
         map1_ = presenter::Map::create(set);
         s = data::ViewSpriteSetting::create(450, 500, 50);
         s->push_ally(0).push_enemy(1);
-        player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s->ally_input_ids(), s->enemy_input_ids());
-        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s, player1_) );
+        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
 
         // mini view
         map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
-            data::ViewSpriteSetting::create(800, 300, 25), ctrl::Player::create() ) );
+            data::ViewSpriteSetting::create(800, 300, 25) ) );
 
         // setup garbage land
         map0_->push_garbage_land(map1_);
@@ -72,8 +69,6 @@ private:
     view::pScene scene_;
     presenter::pMap map0_;
     presenter::pMap map1_;
-    ctrl::pPlayer player0_;
-    ctrl::pPlayer player1_;
 };
 
 #include "App.hpp"

@@ -8,7 +8,7 @@
 #include "view/detail/SpeedFuncAnimator.hpp"
 #include "utils/ObjectPool.hpp"
 #include "data/BasicViewTypes.hpp"
-#include "data/AnimatorParam.hpp"
+#include "data/TAnimatorParam.hpp"
 #include "all_fwd.hpp"
 #include <tr1/functional>
 #include <string>

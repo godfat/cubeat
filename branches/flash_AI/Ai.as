@@ -27,17 +27,15 @@ class Ai{
 				break;
 			}
 		}
-		combo_rank_update(map);
 		var bg_list: Array = bk_gbg_travel(map);
-		/*if(this.shooted != true){
+		if(this.shooted != true){
 			bk_gbg_travel(map);
 			if(count_square_Num(map) >= 30 || top_update[map.Width-1+2] <= 2){
-				combo_travel(map);
+				this.best_chain_cubes[2].i_am_hit(1);
+			}else if(count_square_Num(map) >= 10 && this.best_chain_step_x == -1){
+				amass_travel_deep(map);
 			}
-			if(count_square_Num(map) >= 10 && this.best_chain_step_x == -1){
-				amass_travel(map);
-			}
-		}*/
+		}
 		/*trace_map_rgb(map);
 		var del_arr: Array = too_high_travel(map);
 		for(var i = 0; i<del_arr.length; ++i){

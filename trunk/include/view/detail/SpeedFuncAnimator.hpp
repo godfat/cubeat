@@ -45,14 +45,18 @@ public:
         if ( static_cast<s32>(timeMs) < this->startTime_ ) return;
 
         cur_speed_ = speedfunc_();
-        if( cur_speed_ > std::numeric_limits<float>::epsilon() )
-            this->duration_ = static_cast<u32>(this->distance(this->end_, this->start_) / cur_speed_ * 1000.f);
-        else return;
-
-        if( cur_speed_ != last_speed_ ) {
-            this->startTime_ = timeMs - static_cast<s32>(pos_in_time_ * this->duration_);
-            last_speed_ = cur_speed_;
+        if( cur_speed_ > std::numeric_limits<float>::epsilon() ) {
+            if( cur_speed_ != last_speed_ ) {
+                int time_ahead =
+                    static_cast<int>((1000.f/IrrDevice::i().d()->getVideoDriver()->getFPS())+0.5f);
+                this->duration_ =
+                    static_cast<u32>(this->distance(this->end_, this->start_) / cur_speed_ * 1000.f);
+                this->startTime_ =
+                    timeMs - time_ahead - static_cast<s32>(pos_in_time_ * this->duration_);
+                last_speed_ = cur_speed_;
+            }
         }
+        else return;
         pos_in_time_ = static_cast<float>(timeMs - this->startTime_) / this->duration_;
 
         if( timeMs - this->startTime_ >= this->duration_ ) {
@@ -64,6 +68,7 @@ public:
                 Acc::set(node, pos);
                 if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                return;   //DAMN HOW CAN I FORGET THIS!!!!!!
             }
             else if( this->loop_ > 0 ) this->loop_ -= 1;
         }

@@ -61,11 +61,33 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 }
 // end
 
+void <% debug_hook 'Cube::next_state' do %>(){
+<% end %>
+    state_->next_state();
+}
+
+std::tr1::function<void()> <% debug_hook 'Cube::drop_a_block_callback' do %>(){
+<% end %>
+    return std::tr1::bind(&Cube::next_state, this);
+}
+
+std::tr1::function<void()> <% debug_hook 'Cube::sink_a_block_callback' do %>(){
+<% end %>
+    return std::tr1::bind(&Cube::next_state, this);
+}
+
 // only used by OneFading::fade
 void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
     state_ = state::Dying::create(shared_from_this());
     go_dying_event()();
+}
+
+Cube& <% debug_hook 'Cube::go_dropping' do %>(){
+<% end %>
+    state_ = state::Dropping::create(shared_from_this());
+    drop_a_block();
+    return *this;
 }
 
 Cube& <% debug_hook 'Cube::go_sinking' do %>(){

@@ -2,6 +2,7 @@
 <% header_guard do %>
 
 #include "model/Cube.hpp"
+#include <tr1/functional>
 #include <tr1/memory>
 
 namespace psc{ namespace presenter{ namespace cube{
@@ -9,11 +10,12 @@ namespace psc{ namespace presenter{ namespace cube{
 class ViewBase{
 public:
     typedef std::tr1::shared_ptr<ViewBase> pointer_type;
+    typedef std::tr1::function<void()> callback_type;
     static pointer_type create(model::pCube){ return pointer_type(); }
+
 public:
     ViewBase(model::pCube cube): data_(cube->data()){}
     virtual ~ViewBase(){}
-    virtual void drop_a_block(){}
     virtual void go_dying(){}
     virtual void go_exploding(){}
     virtual void be_garbage(){}
@@ -22,10 +24,14 @@ public:
     virtual void hit(int /*dmg*/, int /*hp*/){}
     virtual void get_chain(){}
     virtual void lose_chain(){}
+    virtual void drop_a_block(){}
     virtual void sink_a_block(){}
+    virtual void drop_a_block_with_callback(callback_type){}
+    virtual void sink_a_block_with_callback(callback_type){}
 
 protected:
     data::pCube data() const{ return data_.lock(); }
+
 private:
     data::wpCube data_;
 };

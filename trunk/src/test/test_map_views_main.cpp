@@ -22,7 +22,7 @@ public:
         map0_ = presenter::Map::create();
         s = data::ViewSpriteSetting::create(50, 500, 50);
         s->push_ally(1).push_enemy(0);
-        map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
+        map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s) );
 
         // map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
         // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
@@ -33,10 +33,10 @@ public:
         map1_ = presenter::Map::create(set);
         s = data::ViewSpriteSetting::create(450, 500, 50);
         s->push_ally(0).push_enemy(1);
-        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s) );
+        map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s) );
 
         // mini view
-        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
+        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_,
             data::ViewSpriteSetting::create(800, 300, 25) ) );
 
         // setup garbage land

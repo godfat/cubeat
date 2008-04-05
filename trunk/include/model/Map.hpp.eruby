@@ -43,7 +43,7 @@ public:
     Map& init_cubes();
     <% debug_hook '~Map' do %>(){<%end%>}
 
-    Map& cycle_slow(){
+    Map& <% debug_hook 'cycle_slow' do %>(){ <% end %>
         garbage_dumpable_ = ms()->garbage_dumpable();
         dropping_creatable_ = ms()->dropping_creatable();
 
@@ -53,7 +53,7 @@ public:
 		cycle_warning();
         return *this;
     }
-    Map& cycle_fast(){
+    Map& <% debug_hook 'cycle_fast' do %>(){ <% end %>
         if( garbage_dumpable_ && garbage_left_ > 0 )
             cycle_creation_garbage();
     	else if( dropping_creatable_ )

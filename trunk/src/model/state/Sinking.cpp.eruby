@@ -14,8 +14,9 @@ using namespace state;
 pState <% debug_hook 'Sinking::init' do %>(){
 <% end %>
     pState result = shared_from_this();
-    ctrl::EventDispatcher::i().subscribe_timer(
-        std::tr1::bind(&State::next_state, result.get()), result,
-            map()->ms()->cube_sinking_duration());
+    // if( no_view_master() )
+        // ctrl::EventDispatcher::i().subscribe_timer(
+        //     std::tr1::bind(&State::next_state, result.get()), result,
+        //         map()->ms()->cube_sinking_duration());
     return result;
 }

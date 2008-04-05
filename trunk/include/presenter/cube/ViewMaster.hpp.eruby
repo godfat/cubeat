@@ -15,7 +15,7 @@ public:
 public:
     virtual ViewBase::pointer_type create(model::pCube cube) const{
         return ViewBase::pointer_type();
-    };
+    }
     virtual void redraw(Map const& map){}
     virtual ~ViewMaster(){}
 

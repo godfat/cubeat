@@ -11,16 +11,29 @@
 using namespace psc;
 using namespace presenter;
 
-Map& <% debug_hook 'Map::push_view' do %>(cube::pViewMaster view){
+Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
     view->map_setting(setting());
 
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
-        cube->push_view( view->create(cube->model()) );
+        cube->push_view_slave( view->create(cube->model()) );
     }
-    view_list_.push_back(view);
+    view_slaves_.push_back(view);
+    return *this;
+}
+
+Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
+<% end %>
+    view->map_setting(setting());
+
+    typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
+    BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
+        pCube cube = cube_pair.second;
+        cube->set_view_master( view->create(cube->model()) );
+    }
+    view_master_ = view;
     return *this;
 }
 
@@ -33,17 +46,18 @@ pMap <% debug_hook 'Map::init' do %>(){
     return self;
 }
 
-void Map::bind_cube_event(pCube cube){
+void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
+<% end %>
     using namespace std::tr1::placeholders;
-    cube->model()->drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
-                       go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
+    cube->model()->    go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
                    go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) ).
-                   be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
-                    be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
-                      restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
-                          hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
-                    get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
-                   lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
+                     be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
+                      be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
+                        restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
+                            hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
+                      get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
+                     lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
+                   drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) );
 }
 
@@ -51,9 +65,10 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 <% end %>
     pCube cube = Cube::create(shared_from_this(), x, y, color_id);
     bind_cube_event(cube);
-    BOOST_FOREACH(cube::pViewMaster& view, view_list_){
-        cube->push_view( view->create(cube->model()) );
+    BOOST_FOREACH(cube::pViewMaster& view, view_slaves_){
+        cube->push_view_slave( view->create(cube->model()) );
     }
+    if(view_master_) cube->set_view_master( view_master_->create(cube->model()) );
     cubes_.insert(std::make_pair(cube->model(), cube));
     return cube;
 }

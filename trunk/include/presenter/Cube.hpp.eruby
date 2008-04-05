@@ -37,36 +37,47 @@ public:
     <% debug_hook '~Cube' do %>(){<%end%>}
 
     void <% debug_hook 'drop_a_block' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->drop_a_block(); }
-    }
-    void <% debug_hook 'go_dying' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_dying(); }
-    }
-    void <% debug_hook 'go_exploding' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->go_exploding(); }
-    }
-    void <% debug_hook 'be_garbage' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->be_garbage(); }
-    }
-    void <% debug_hook 'be_broken' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->be_broken(); }
-    }
-    void <% debug_hook 'restore' do %>(int color_id){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->restore(color_id); }
-    }
-    void <% debug_hook 'hit' do %>(int dmg, int hp){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->hit(dmg, hp); }
-    }
-    void <% debug_hook 'get_chain' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->get_chain(); }
-    }
-    void <% debug_hook 'lose_chain' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->lose_chain(); }
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->drop_a_block(); }
+        if(view_master_) view_master_->drop_a_block_with_callback( model()->drop_a_block_callback() );
     }
     void <% debug_hook 'sink_a_block' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, views_){ if(view) view->sink_a_block(); }
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->sink_a_block(); }
+        if(view_master_) view_master_->sink_a_block_with_callback( model()->sink_a_block_callback() );
     }
-    Cube& push_view(cube::pViewBase view){ views_.push_back(view); return *this; }
+    void <% debug_hook 'go_dying' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_dying(); }
+        if(view_master_) view_master_->go_dying();
+    }
+    void <% debug_hook 'go_exploding' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_exploding(); }
+        if(view_master_) view_master_->go_exploding();
+    }
+    void <% debug_hook 'be_garbage' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_garbage(); }
+        if(view_master_) view_master_->be_garbage();
+    }
+    void <% debug_hook 'be_broken' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_broken(); }
+        if(view_master_) view_master_->be_broken();
+    }
+    void <% debug_hook 'restore' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->restore(color_id); }
+        if(view_master_) view_master_->restore(color_id);
+    }
+    void <% debug_hook 'hit' do %>(int dmg, int hp){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->hit(dmg, hp); }
+        if(view_master_) view_master_->hit(dmg, hp);
+    }
+    void <% debug_hook 'get_chain' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->get_chain(); }
+        if(view_master_) view_master_->get_chain();
+    }
+    void <% debug_hook 'lose_chain' do %>(){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->lose_chain(); }
+        if(view_master_) view_master_->lose_chain();
+    }
+    Cube& set_view_master(cube::pViewBase view){ view_master_ = view; return *this; }
+    Cube& push_view_slave(cube::pViewBase view){ view_slaves_.push_back(view); return *this; }
 
     int x() const;
     int y() const;
@@ -75,7 +86,8 @@ public:
 private:
     wpMap map_;
 <%= reader 'model::pCube', :model %>
-    std::list<cube::pViewBase> views_;
+    std::list<cube::pViewBase> view_slaves_;
+    cube::pViewBase view_master_;
 };
 
 }}

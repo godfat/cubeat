@@ -44,14 +44,33 @@ public:
 
         restore(c->data()->color_id());
     }
-    virtual void drop_a_block(){
+
+    virtual void <% debug_hook 'drop_a_block' do %>(){ <% end %>
         body_->tween<easing::Linear, accessor::Pos2D>(
             pos_vec2(), map_setting()->cube_dropping_duration());
     }
 
-    virtual void sink_a_block(){
+    virtual void <% debug_hook 'sink_a_block' do %>(){ <% end %>
         body_->tween<easing::Linear, accessor::Pos2D>(
             pos_vec2(), map_setting()->cube_sinking_duration());
+    }
+
+    // static float rnd(){
+    //     return utils::random(2) + 100;
+    // }
+
+    virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
+        body_->tween<easing::Linear, accessor::Pos2D>(
+            pos_vec2(), map_setting()->cube_dropping_duration(), 0,
+            std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
+    }
+
+    virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>
+        body_->tween<easing::Linear, accessor::Pos2D>(
+            pos_vec2(), map_setting()->cube_sinking_duration(), 0,
+            std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
+        // body_->tween(data::AnimatorParam<easing::Linear, accessor::Pos2D>().
+        //     end(pos_vec2()).cb(callback).speedfunc(&rnd));
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
@@ -59,7 +78,8 @@ public:
             map_setting()->cube_dying_duration());
     }
 
-    virtual void go_exploding(){
+    virtual void <% debug_hook 'go_exploding' do %>(){ <% end %>
+        body_->clearAllTween();
         // stupid binding would be a must,
         // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
         body_->tween<easing::Linear, accessor::Alpha>(0, 1000,
@@ -67,18 +87,18 @@ public:
         body_->tween<easing::Linear, accessor::Scale>(vec3(0,0,0), 1000);
     }
 
-    virtual void be_broken(){
+    virtual void <% debug_hook 'be_broken' do %>(){ <% end %>
         body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
         shot_event(&model::Cube::restore, &model::Cube::go_exploding);
     }
 
-    virtual void restore(int color_id){
+    virtual void <% debug_hook 'restore' do %>(int color_id){ <% end %>
         if( color_id == -1 ) return;
         body_->setTexture("cubes/cube-item-" + to_s(color_id));
         shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     }
 
-    virtual void be_garbage(){
+    virtual void <% debug_hook 'be_garbage' do %>(){ <% end %>
         body_->setTexture("cubes/cube-b-" + to_s(utils::random(4)+1));
         shot_event(&model::Cube::go_exploding);
     }
@@ -87,7 +107,7 @@ public:
         body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
     }
 
-    virtual void get_chain(){
+    virtual void <% debug_hook 'get_chain' do %>(){ <% end %>
         body_->tween<easing::Linear, accessor::Scale>(vec3(1.2, 1.2, 1.2), 100);
     }
 
@@ -130,6 +150,9 @@ private:
         model::wpCube c)
     {
         if(model::pCube cube = c.lock()) method(cube);
+    }
+    void <% debug_hook 'check_if_need_callback' do %>(callback_type callback){ <% end %>
+        if(model::pCube c = cube_.lock()) callback();
     }
     template <class T>
     static std::string to_s(T t){ return boost::lexical_cast<std::string>(t); }

@@ -17,6 +17,11 @@ void <% debug_hook 'State::next_state' do %>(){
     else init();
 }
 
+/*bool <% debug_hook 'State::no_view_master' do %>() const{
+<% end %>
+    return owner()->no_view_master();
+}*/
+
 void <% debug_hook 'State::switch_state' do %>(pState state){ <% end %>
     owner()->state_ = state;
     if(owner()->is_dying()) owner()->go_dying_event()();

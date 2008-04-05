@@ -34,7 +34,7 @@ public:
 private:
     MapSetting():
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
-        chaining_duration_(100), cube_dying_duration_(250), cube_sinking_duration_(500),
+        chaining_duration_(500), cube_dying_duration_(250), cube_sinking_duration_(500),
         cube_dropping_duration_(250), grounded_check_delay_(3), warning_check_delay_(100),
         speed_(0.75), damage_factor_(1.00),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true)

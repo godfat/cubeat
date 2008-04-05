@@ -83,6 +83,9 @@ public:
     // for Cube#lose_chain
     bool cube_can_lose_chain(cpCube) const;
 
+    // for Cube#drop_a_block
+    Map& update_cube_position(pCube cube, int old_x, int old_y);
+
     // container_type const& cubes() const{ return cubes_; }
     color_map_type color_map() const;
 

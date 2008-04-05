@@ -41,6 +41,7 @@ cpSinking Cube::is_sinking() const{ return dynamic_pointer_cast<Sinking>(state_)
 void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
     y(y()-1);
+    map()->update_cube_position(shared_from_this(), x(), y()+1);
     if( is_sinking() )
         sink_a_block_event()();
     else
@@ -86,20 +87,17 @@ void <% debug_hook 'Cube::go_dying' do %>(){
 Cube& <% debug_hook 'Cube::go_dropping' do %>(){
 <% end %>
     state_ = state::Dropping::create(shared_from_this());
-    drop_a_block();
     return *this;
 }
 
 Cube& <% debug_hook 'Cube::go_sinking' do %>(){
 <% end %>
     state_ = state::Sinking::create(shared_from_this());
-    drop_a_block();
     return *this;
 }
 
 void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
 <% end %>
-    // state_ = state::Exploding::create(shared_from_this());
     if( is_dying() )
         return; // don't explode me while i am dying!!
 
@@ -117,7 +115,7 @@ void <% debug_hook 'Cube::be_broken' do %>(int){
     if( is_dying() ) return;
 
 	is_broken_ = true;
-    color_id(-1); // = data::Color::random_rgb_color();
+    color_id(-1);
     be_broken_event()();
 }
 

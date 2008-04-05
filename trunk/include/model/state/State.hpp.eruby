@@ -20,7 +20,6 @@ protected:
     pMap map();
     pMap const map() const;
     pCube const owner() const{ return owner_.lock(); }
-    // bool no_view_master() const;
     void switch_state(pState state);
 
 private:

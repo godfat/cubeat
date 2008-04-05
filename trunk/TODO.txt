@@ -1,18 +1,19 @@
 
+* profiling
+* thread
+* introduce state Waiting_neednt_check
+* add type check for master/slave view. stdout couldn't be a master.
+
 * <del>need to fix some preprocessing ordering... e.g., CMakeList.txt,
   create it last!!! and all_fwd.hpp is also suffer simlary problem.</del>
 
-* garbage switch?
+* <del>garbage switch?</del>
   - if there's some garbages, no dropping creation.
-  - a'
 
 * <del>cube remember color id</del>
 
 * <del>presenter hold model? or reversed way?</del>
 
-* profiling
-* thread
 * <del>gcc43</del>
 
-* introduce state Sinking
-* introduce state Waiting_neednt_check
+* <del>introduce state Sinking</del>

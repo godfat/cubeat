@@ -32,8 +32,7 @@ public:
     static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
         return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
-    // perhaps you have to specify from_id(color_id, "ms()->color_amounts()");
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0): // x_(x), y_(y), color_id_(color_id)
+    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), map_(map),
         has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1)
     {}
@@ -100,8 +99,6 @@ public:
     void be_broken(int);
 	void restore(int);
 
-	// added
-	// state::pExploding const is_exploding() const;
 	void go_exploding(int);
 
 	bool has_grounded() const{ return has_grounded_; }
@@ -131,7 +128,6 @@ private:
 private:
 <%= accessor :'data::pCube', :data %>
     wpMap map_;
-    // data::Color color_;
     pChain chain_belonged_to_;
     state::pState state_;
     bool has_grounded_, is_broken_, is_garbage_;

@@ -31,7 +31,7 @@ int main(){
     IrrDevice::i().init(true);
 
     presenter::pMap map = presenter::Map::create();
-    map->set_view_master( presenter::cube::ViewStdoutMaster::create() );
+    map->push_view_slave( presenter::cube::ViewStdoutMaster::create() );
 
     std::cerr << "\n\n\nend creation\n\n\n";
     // display(map);

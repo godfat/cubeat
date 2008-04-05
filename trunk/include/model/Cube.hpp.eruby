@@ -110,8 +110,7 @@ public:
     Cube& go_sinking();
 
     // for presenter::Cube
-    std::tr1::function<void()> drop_a_block_callback();
-    std::tr1::function<void()> sink_a_block_callback();
+    void next_state();
 
 private:
     pCube <% debug_hook 'init' do %>(){
@@ -123,7 +122,6 @@ private:
     bool is_dead() const{ return state_.use_count() == 0; }
     void lose_chain_without_event();
     state::cpSinking is_sinking() const;
-    void next_state();
     void drop_a_block();
 
 private:

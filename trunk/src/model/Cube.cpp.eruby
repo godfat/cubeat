@@ -67,16 +67,6 @@ void <% debug_hook 'Cube::next_state' do %>(){
     state_->next_state();
 }
 
-std::tr1::function<void()> <% debug_hook 'Cube::drop_a_block_callback' do %>(){
-<% end %>
-    return std::tr1::bind(&Cube::next_state, this);
-}
-
-std::tr1::function<void()> <% debug_hook 'Cube::sink_a_block_callback' do %>(){
-<% end %>
-    return std::tr1::bind(&Cube::next_state, this);
-}
-
 // only used by OneFading::fade
 void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>

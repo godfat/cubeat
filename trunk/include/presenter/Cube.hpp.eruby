@@ -40,18 +40,21 @@ public:
     void <% debug_hook 'drop_a_block' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->drop_a_block(); }
         if(view_master_)
-            view_master_->drop_a_block_with_callback( model()->drop_a_block_callback() );
+            view_master_->drop_a_block_with_callback(
+                std::tr1::bind(&model::Cube::next_state, model().get()) );
         else
             ctrl::EventDispatcher::i().subscribe_timer(
-                model()->drop_a_block_callback(),
+                std::tr1::bind(&model::Cube::next_state, model().get()),
                 ms()->cube_dropping_duration());
     }
     void <% debug_hook 'sink_a_block' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->sink_a_block(); }
-        if(view_master_) view_master_->sink_a_block_with_callback( model()->sink_a_block_callback() );
+        if(view_master_)
+            view_master_->sink_a_block_with_callback(
+                std::tr1::bind(&model::Cube::next_state, model().get()) );
         else
             ctrl::EventDispatcher::i().subscribe_timer(
-                model()->sink_a_block_callback(),
+                std::tr1::bind(&model::Cube::next_state, model().get()),
                 ms()->cube_sinking_duration());
     }
     void <% debug_hook 'go_dying' do %>(){ <% end %>

@@ -120,19 +120,19 @@ private:
     ViewSprite& shot_event( MemFn ally_cb, MemFn enemy_cb ) {
         using namespace std::tr1::placeholders;
         if( ctrl::pPlayer p = player_.lock() ) {
-            p->subscribe_shot_event(
+            p->subscribe_shot_event( body_,
                 std::tr1::bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(ally_cb), cube_, _1),
                 std::tr1::bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(enemy_cb), cube_, _1)
             );
         }
         return *this;
     }
-    template <class MemFn
-    ViewSprite& shot_event() {
+    template <class MemFn>
+    ViewSprite& shot_event( MemFn ally_cb ) {
         using namespace std::tr1::placeholders;
         if( ctrl::pPlayer p = player_.lock() ) {
-            p->subscribe_shot_event(
-                std::tr1__bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(ally_cb), cube_, _1),
+            p->subscribe_shot_event( body_,
+                std::tr1::bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(ally_cb), cube_, _1),
                 0);
         }
         return *this;
@@ -146,10 +146,10 @@ private:
                      s->y_offset()+(d->y()*s->cube_size()+s->cube_size()/2)*-1 );
                                                               // NOTE: reversed y
     }
-    static void check_cube_and_do(std::tr1::function<void(model::pCube)> method,
-        model::wpCube c)
+    static void check_cube_and_do(std::tr1::function<void(model::pCube, int)> method,
+        model::wpCube c, int dmg)
     {
-        if(model::pCube cube = c.lock()) method(cube);
+        if(model::pCube cube = c.lock()) method(cube, dmg);
     }
     void <% debug_hook 'check_if_need_callback' do %>(callback_type callback){ <% end %>
         if(model::pCube c = cube_.lock()) callback();

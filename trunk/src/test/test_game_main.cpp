@@ -31,7 +31,7 @@ public:
 
         // setup map0
         map0_ = presenter::Map::create();
-        map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
+        map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
         // map0_->push_view( presenter::cube::ViewStdoutMaster::create() );
         // map0_->push_view( presenter::cube::ViewSpriteMaster::create(scene_) );
 
@@ -39,10 +39,10 @@ public:
         data::pMapSetting set = data::MapSetting::create();
         // set->cube_dropping_duration(2000);
         map1_ = presenter::Map::create(set);
-        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
+        map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
         // mini view
-        map1_->push_view( presenter::cube::ViewSpriteMaster::create(scene_,
+        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_,
             data::ViewSpriteSetting::create(800, 300, 25), ctrl::Player::create() ) );
 
         // setup garbage land

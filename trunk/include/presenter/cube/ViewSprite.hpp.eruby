@@ -169,13 +169,13 @@ private:
 
 class ViewSpriteMaster: public ViewMaster{
 public:
-    static ViewMaster::pointer_type create(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player)
+    static ViewMaster::pointer_type create(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player = ctrl::wpPlayer())
     {
         return ViewMaster::pointer_type(new ViewSpriteMaster(scene, setting, player));
     }
     static ViewMaster::pointer_type create(view::pScene scene)
     {
-        return create(scene, data::ViewSpriteSetting::create(), ctrl::Player::create());
+        return create(scene, data::ViewSpriteSetting::create());
     }
 public:
     // no covariant return type

@@ -43,7 +43,7 @@ public:
 
         // mini view
         map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_,
-            data::ViewSpriteSetting::create(800, 300, 25), ctrl::Player::create() ) );
+            data::ViewSpriteSetting::create(800, 300, 25) ) );
 
         // setup garbage land
         map0_->push_garbage_land(map1_);

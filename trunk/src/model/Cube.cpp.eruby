@@ -75,14 +75,14 @@ Cube& <% debug_hook 'Cube::go_sinking' do %>(){
     return *this;
 }
 
-void <% debug_hook 'Cube::go_exploding' do %>(){
+void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
 <% end %>
     // state_ = state::Exploding::create(shared_from_this());
     if( is_dying() )
         return; // don't explode me while i am dying!!
 
-    else if(--hp_ > 0)
-        hit_event()(1, hp_); // damgage, hp left
+    else if( hp_ -= dmg > 0)
+        hit_event()(dmg, hp_); // damage, hp left
 
     else{
         state_.reset();
@@ -90,7 +90,7 @@ void <% debug_hook 'Cube::go_exploding' do %>(){
     }
 }
 
-void <% debug_hook 'Cube::be_broken' do %>(){
+void <% debug_hook 'Cube::be_broken' do %>(int){
 <% end %>
     if( is_dying() ) return;
 
@@ -99,7 +99,7 @@ void <% debug_hook 'Cube::be_broken' do %>(){
     be_broken_event()();
 }
 
-void <% debug_hook 'Cube::restore' do %>(){
+void <% debug_hook 'Cube::restore' do %>(int){
 <% end %>
     is_broken_ = false;
     color_id(utils::random(map()->ms()->color_amounts())+1);

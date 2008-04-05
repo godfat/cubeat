@@ -31,6 +31,11 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
     temp->setAnimationSpeed(0);
     body_ = temp;
     body_->getMaterial(0).Shininess = 0;
+    for( size_t i = 0; i < body_->getMaterialCount(); ++i ) {
+        body_->getMaterial(i).MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+        body_->getMaterial(i).MaterialTypeParam = 0.01f;
+        body_->getMaterial(i).DiffuseColor.set(255, 255, 255, 255);
+    }
 
     pAnimatedSceneObject self = static_pointer_cast<AnimatedSceneObject>( shared_from_this() );
     scene()->addPickMapping( body_, self );

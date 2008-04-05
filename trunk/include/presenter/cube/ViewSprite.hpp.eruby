@@ -9,6 +9,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "Input.hpp"
+#include "Player.hpp"
 
 #include "all_fwd.hpp"
 
@@ -27,14 +28,14 @@ namespace psc{ namespace presenter{ namespace cube{
 class ViewSprite: public ViewBase, public std::tr1::enable_shared_from_this<ViewSprite>{
 public:
     static ViewBase::pointer_type create(model::pCube cube, view::pScene scene,
-        data::pMapSetting map_setting, data::pViewSpriteSetting setting)
+        data::pMapSetting map_setting, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player)
     {
-        return utils::ObjectPool<ViewSprite>::create(cube, scene, map_setting, setting);
+        return utils::ObjectPool<ViewSprite>::create(cube, scene, map_setting, setting, player);
     }
 public:
     ViewSprite(model::pCube c, view::pScene scene,
-        data::pMapSetting ms, data::pViewSpriteSetting s):
-        ViewBase(c), scene_(scene), cube_(c), map_setting_(ms), setting_(s)
+        data::pMapSetting ms, data::pViewSpriteSetting s, ctrl::wpPlayer p):
+        ViewBase(c), scene_(scene), cube_(c), map_setting_(ms), setting_(s), player_(p)
     {
         body_ = view::Sprite::create("cubes/cube-item-1", scene,
                                      s->cube_size(), s->cube_size(), true);
@@ -64,80 +65,25 @@ public:
         body_->tween<easing::Linear, accessor::Alpha>(0, 1000,
             0, std::tr1::bind(&ViewSprite::just_for_hold_shared_ptr, shared_from_this()) );
         body_->tween<easing::Linear, accessor::Scale>(vec3(0,0,0), 1000);
-
-        // using std::tr1::cref;
-        // body_->tween<easing::Linear, accessor::Alpha>(0, 1000, 0, std::tr1::bind(static_cast<
-        //     view::Object& (view::Object::*) ( accessor::Scale::value_type const&,
-        //                                       int unsigned const&, int const&,
-        //                                       std::tr1::function<void()> const&,
-        //                                       int const& ) >
-        //         ( &view::Object::tween<easing::Linear, accessor::Scale> ),
-        //     body_.get(), cref(vec3(0,0,0)), cref(1000), cref(0), cref(0), cref(0)) );
     }
 
     virtual void be_broken(){
         body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
-
-        data::pViewSpriteSetting s = setting();
-        BOOST_FOREACH( int id, s->ally_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
-                &model::Cube::restore );
-        }
-
-        BOOST_FOREACH( int id, s->enemy_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
-                &model::Cube::go_exploding );
-        }
-
-        // NOTE: test for enemy
-        BOOST_FOREACH( int id, s->enemy_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
-                &model::Cube::restore );
-        }
+        shot_event(&model::Cube::restore, &model::Cube::go_exploding);
     }
 
     virtual void restore(int color_id){
         if( color_id == -1 ) return;
         body_->setTexture("cubes/cube-item-" + to_s(color_id));
-
-        data::pViewSpriteSetting s = setting();
-        BOOST_FOREACH( int id, s->ally_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
-                &model::Cube::go_exploding );
-
-            // NOTE: test for enemy
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
-                &model::Cube::be_broken );
-        }
-
-        BOOST_FOREACH( int id, s->enemy_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
-                &model::Cube::be_broken );
-
-            // NOTE: test for enemy
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
-                &model::Cube::go_exploding );
-        }
-
+        shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     }
 
     virtual void be_garbage(){
         body_->setTexture("cubes/cube-b-" + to_s(utils::random(4)+1));
-
-        data::pViewSpriteSetting s = setting();
-        BOOST_FOREACH( int id, s->ally_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig1()),
-                &model::Cube::go_exploding );
-        }
-
-        // NOTE: test for enemy
-        BOOST_FOREACH( int id, s->enemy_input_ids() ){
-            on_press( &(ctrl::Input::getInputByIndex(id)->trig2()),
-                &model::Cube::go_exploding );
-        }
+        shot_event(&model::Cube::go_exploding);
     }
 
-    virtual void hit(int /*dmg*/, int hp){
+    virtual void hit(int dmg, int hp){
         body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
     }
 
@@ -151,10 +97,24 @@ public:
 
 private:
     template <class MemFn>
-    ViewSprite& on_press( ctrl::Button const* btn, MemFn mem_fn ){
-        body_->onPress( btn ) =
-            std::tr1::bind( &ViewSprite::check_cube_and_do,
-            std::tr1::mem_fn(mem_fn), cube_ );
+    ViewSprite& shot_event( MemFn ally_cb, MemFn enemy_cb ) {
+        using namespace std::tr1::placeholders;
+        if( ctrl::pPlayer p = player_.lock() ) {
+            p->subscribe_shot_event(
+                std::tr1::bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(ally_cb), cube_, _1),
+                std::tr1::bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(enemy_cb), cube_, _1)
+            );
+        }
+        return *this;
+    }
+    template <class MemFn
+    ViewSprite& shot_event() {
+        using namespace std::tr1::placeholders;
+        if( ctrl::pPlayer p = player_.lock() ) {
+            p->subscribe_shot_event(
+                std::tr1__bind( &ViewSprite::check_cube_and_do, std::tr1::mem_fn(ally_cb), cube_, _1),
+                0);
+        }
         return *this;
     }
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
@@ -181,29 +141,31 @@ private:
     model::wpCube cube_;
     data::wpMapSetting map_setting_;
     data::wpViewSpriteSetting setting_;
+    ctrl::wpPlayer player_;
 };
 
 class ViewSpriteMaster: public ViewMaster{
 public:
-    static ViewMaster::pointer_type create(view::pScene scene, data::pViewSpriteSetting setting)
+    static ViewMaster::pointer_type create(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player)
     {
-        return ViewMaster::pointer_type(new ViewSpriteMaster(scene, setting));
+        return ViewMaster::pointer_type(new ViewSpriteMaster(scene, setting, player));
     }
     static ViewMaster::pointer_type create(view::pScene scene)
     {
-        return create(scene, data::ViewSpriteSetting::create());
+        return create(scene, data::ViewSpriteSetting::create(), ctrl::Player::create());
     }
 public:
     // no covariant return type
     virtual ViewBase::pointer_type create(model::pCube cube) const{
-        return ViewSprite::create(cube, scene_.lock(), map_setting(), setting_);
+        return ViewSprite::create(cube, scene_.lock(), map_setting(), setting_, player_);
     }
 private:
-    ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting):
-        scene_(scene), setting_(setting){}
+    ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player):
+        scene_(scene), setting_(setting), player_(player){}
 private:
     view::wpScene scene_;
     data::pViewSpriteSetting setting_;
+    ctrl::wpPlayer player_;
 };
 
 }}} // end of namespaces

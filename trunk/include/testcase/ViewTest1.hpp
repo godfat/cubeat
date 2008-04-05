@@ -149,6 +149,8 @@ private:
     view::pAnimatedSprite      a;
     view::pMenu                menu;
     view::pAnimatedSceneObject cube4;
+    view::pAnimatedSceneObject background;
+
     float                      speed;
 };
 
@@ -169,7 +171,7 @@ ViewTest1::ViewTest1()
     guiv->setTo2DView();
 
     worldv = view::Scene::create("ViewTest_WORLD");
-    worldv->setTo3DView();
+    worldv->setTo3DView(PI/5.f);
 
     game = view::Game::create( worldv, guiv );
 
@@ -251,6 +253,10 @@ ViewTest1::ViewTest1()
 
     std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
     anotherthing->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
+
+    data::AnimatorParam<Linear, Frame> paramAni; paramAni.end(90.f).duration(3000).loop(-1);
+    background = view::AnimatedSceneObject::create("jungle/palm1", worldv);
+    background->moveTo(0,-15,48).tween(paramAni);
 }
 
 void ViewTest1::init()

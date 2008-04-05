@@ -1,7 +1,7 @@
 
-/*2007.11.9 
+/*2007.11.9
   cleaned up things which were coupled with VtMovieClip
-  
+
   These included file is going to be heavily modified or deleted:
   1. VtMovieClip.hpp
   2. MovieClip.hpp
@@ -97,12 +97,12 @@ public:
 	// end
 
     bool is_garbage() const{ return is_garbage_; }
-    void be_broken();
-	void restore();
+    void be_broken(int);
+	void restore(int);
 
 	// added
 	// state::pExploding const is_exploding() const;
-	void go_exploding();
+	void go_exploding(int);
 
 	bool has_grounded() const{ return has_grounded_; }
 	void set_grounded(){ has_grounded_ = true; }

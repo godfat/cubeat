@@ -103,7 +103,7 @@ public:
         shot_event(&model::Cube::go_exploding);
     }
 
-    virtual void hit(int dmg, int hp){
+    virtual void <% debug_hook 'hit' do %>(int /*dmg*/, int hp){ <% end %>
         body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
     }
 

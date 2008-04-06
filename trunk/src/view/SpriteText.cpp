@@ -2,6 +2,7 @@
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
 #include "utils/TTFont.hpp"
+#include "Accessors.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
@@ -13,6 +14,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using namespace accessor;
 using std::tr1::static_pointer_cast;
 
 pSpriteText
@@ -26,6 +28,8 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     setupSceneAndManager(parent);
     createText( text, font_path, size );
 
+    setupMeshBase(parent);
+
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
@@ -38,7 +42,6 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     col.setAlpha( 255 );
     mat.DiffuseColor = col;
 
-    setupMeshBase(parent);
     body_->getMaterial(0) = mat;
 
     adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
@@ -57,17 +60,28 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     std::ostringstream oss;
     oss << "rc/fonts/" << font_path << ".ttf";
 
-    utils::TTFont* ttfont;
-	ttfont = (utils::TTFont *)gui->getFont(oss.str().c_str(),size);
-    ttfont->AntiAlias = true;
-    ttfont->TransParency = true;
-    std::wstring temp(text.length(),L' ');             //so hard to convert between wchar and char @@
-    std::copy(text.begin(), text.end(), temp.begin()); //so hard to convert between wchar and char @@
+	ttfont_ = (utils::TTFont *)gui->getFont(oss.str().c_str(),size); //bad c-cast. need to fix it.
+    ttfont_->AntiAlias = true;
+    ttfont_->TransParency = true;
 
-    font_texture_ = ttfont->getTextureFromText(temp.c_str(), (text+"_font").c_str());
-    dimension2di size_int = ttfont->getDimension(temp.c_str());
+    changeText( text );
+}
+
+SpriteText& SpriteText::changeText(std::string const& new_text)
+{
+    std::wstring temp(new_text.length(),L' ');         //so hard to convert between wchar and char @@
+    std::copy(new_text.begin(), new_text.end(), temp.begin()); //so hard to convert between wchar and char @@
+
+    font_texture_ = ttfont_->getTextureFromText(temp.c_str(), (new_text+"_font").c_str());
+    dimension2di size_int = ttfont_->getDimension(temp.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
+    if( body_ ) {
+        body_->setMaterialTexture(0, font_texture_);
+        set<Size2D>( vec2(size_.Width, size_.Height) );
+        adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
+    }
+    return *this;
 }
 
 SpriteText& SpriteText::setCenterAligned(bool const& center)

@@ -31,6 +31,9 @@ public:
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
+    Map& call_end_game();
+    Map& setup_warning();
+    Map& take_out_warning();
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -55,6 +58,10 @@ public:
         }
         return *this;
     }
+
+    int score()        const { return model()->score(); }
+    int garbage_left() const { return model()->garbage_left(); }
+    int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
 
 private:
     pMap init();

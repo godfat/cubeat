@@ -6,7 +6,13 @@
 #include "all_fwd.hpp"
 #include <string>
 
-namespace psc { namespace view {
+namespace psc {
+
+namespace utils {
+class TTFont;
+}
+
+namespace view {
 
 class SpriteText : public Sprite
 {
@@ -29,6 +35,8 @@ public:
     virtual SpriteText* clone() const { return 0; }
     virtual SpriteText& setCenterAligned(bool const&);
 
+    SpriteText& changeText(std::string const&);
+
     virtual ~SpriteText();
 
 protected:
@@ -38,7 +46,7 @@ protected:
 
 protected:
     irr::video::ITexture* font_texture_;
-
+    utils::TTFont* ttfont_;
 };
 
 } //view

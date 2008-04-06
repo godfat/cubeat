@@ -11,6 +11,24 @@
 using namespace psc;
 using namespace presenter;
 
+Map& <% debug_hook 'Map::call_end_game' do %>(){
+<% end %>
+    std::cout << "presenter map call end game.\n";
+    return *this;
+}
+
+Map& <% debug_hook 'Map::setup_warning' do %>(){
+<% end %>
+    std::cout << "presenter map setup_warning.\n";
+    return *this;
+}
+
+Map& <% debug_hook 'Map::take_out_warning' do %>(){
+<% end %>
+    std::cout << "presenter map take_out_warning.\n";
+    return *this;
+}
+
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
     view->map_setting(setting());

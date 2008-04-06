@@ -228,7 +228,7 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 <% end %>
 	for( int x = that->x(), y = that->y()-1; y >= 0; --y )
 	    if( cubes_[x][y].use_count() == 0 ||
-	        cubes_[x][y]->is_dying() /*|| cubes_[x][y]->is_exploding()*/ ) 
+	        cubes_[x][y]->is_dying() /*|| cubes_[x][y]->is_exploding()*/ )
 	    {
 	        // when it's empty, dying or exploding, the square ontop can't lose chain
 	        return false;
@@ -241,11 +241,12 @@ void <% debug_hook 'Map::update_chains' do %>(){
     int damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
 
+    current_sum_of_attack_ = 0;
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
-        // damage_factor to score adjustment (1.00 ~ 2.00)
+            // damage_factor to score adjustment (1.00 ~ 2.00)
             score_ += (*i)->score_step() * damage_factor;
             (*i)->step_one();
         }
@@ -258,6 +259,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             i = chains_.erase(i);
         }
         else{
+            current_sum_of_attack_ += (*i)->power_factor() * damage_factor;
             ++i;
         }
     }
@@ -366,36 +368,19 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
-/*
-    EventDispatcher::i().subscribe_timer(cycle_warning, 1500);
-    if( check_column_full() )
-        switch(counting_num_){
-            case -1: game over; break;
-            default: --counting_num_, yell warning, count down; break;
-        }
-
-    else
-        counting_num_ = 4, no warning;
-*/
-    if( ++warning_check_step_ > ms()->warning_check_delay() ){
-		if( check_column_full() ){ // warning!!!
-			if( lose_warning_step_ == 0 ){
-				counting_num_ = 4;
-                lose_warning_step_ = std::time(0);
-            }
-			if( counting_num_ >= 0 ){
-				// SG::Instance().yell_warning(this, counting_num );
-				--counting_num_;
-				// Sound::i().countdown();
-			}
-			else ;// SG::Instance().game_over(this);
-        }
-        else{
-            // SG::Instance().no_warning(this);
-            lose_warning_step_ = 0;
-        }
-		warning_check_step_ = 0;
-	}
+    bool has_column_full = check_column_full();
+    if( !has_column_full && warning_dummy_ ) {
+        warning_dummy_.reset();
+        owner()->take_out_warning();
+    }
+    else if( has_column_full && !warning_dummy_ ) {
+        warning_dummy_ = std::tr1::shared_ptr<int>(new int);
+        owner()->setup_warning();
+        ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::setup_warning, owner().get()),
+            warning_dummy_, 1000, 3);
+        ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::call_end_game, owner().get()),
+            warning_dummy_, 5000);
+    }
 }
 
 bool <% debug_hook 'Map::check_column_full' do %>() const{

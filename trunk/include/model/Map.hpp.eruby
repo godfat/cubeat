@@ -37,8 +37,7 @@ public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         owner_(owner), setting_(setting),
         cubes_(setting->width(), setting->height()),
-        garbage_left_(0), score_(0), lose_warning_step_(0),
-        counting_num_(0), warning_check_step_(0)
+        garbage_left_(0), score_(0), current_sum_of_attack_(0)
     {}
     Map& init_cubes();
     <% debug_hook '~Map' do %>(){<%end%>}
@@ -89,6 +88,11 @@ public:
     // container_type const& cubes() const{ return cubes_; }
     color_map_type color_map() const;
 
+    //added by arch.jslin
+    int score() const                 { return score_; }
+    int garbage_left() const          { return garbage_left_; }
+    int current_sum_of_attack() const { return current_sum_of_attack_; }
+
 private:
     Map& insert_cube(pCube);
     Map& insert_garbage(pCube);
@@ -115,13 +119,12 @@ private:
     presenter::wpMap owner_; // should be weak_ptr;
     data::pMapSetting setting_;
     container_type cubes_;
-    int garbage_left_, score_;//, dropping_cubes_, grounded_cubes_;
+    int garbage_left_, score_, current_sum_of_attack_;//, dropping_cubes_, grounded_cubes_;
     bool dropping_creatable_, garbage_dumpable_;
     // someday make it to be std::list
     chain_list_type chains_;
     preview_list_type cubes_preview_;
-    std::time_t lose_warning_step_;
-    int counting_num_, warning_check_step_;
+    std::tr1::shared_ptr<int> warning_dummy_; //added by arch.jslin
 };
 
 }} // end of namespace

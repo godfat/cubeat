@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
+#include <boost/lexical_cast.hpp>
 
 using namespace irr;
 using namespace core;
@@ -69,6 +70,8 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
 
 SpriteText& SpriteText::changeText(std::string const& new_text)
 {
+    if( text_ == new_text ) return *this;
+    text_ = new_text;
     std::wstring temp(new_text.length(),L' ');         //so hard to convert between wchar and char @@
     std::copy(new_text.begin(), new_text.end(), temp.begin()); //so hard to convert between wchar and char @@
 
@@ -81,6 +84,16 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
         set<Size2D>( vec2(size_.Width, size_.Height) );
         adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
     }
+    return *this;
+}
+
+SpriteText& SpriteText::showNumber(int num, unsigned int digit)
+{
+    std::string str = boost::lexical_cast<std::string>(num);
+    while( str.size() < digit ) {
+        str = "0" + str;
+    }
+    changeText( str );
     return *this;
 }
 

@@ -16,6 +16,7 @@ using namespace video;
 using namespace psc;
 using namespace view;
 using std::tr1::static_pointer_cast;
+using std::tr1::dynamic_pointer_cast;
 
 Menu* Menu::clone() const
 {
@@ -73,6 +74,15 @@ Sprite& Menu::getSprite(std::string const& name)
         return *temp;
 
     return *this;
+}
+
+SpriteText& Menu::getSpriteText(std::string const& name)
+{
+    if( pSpriteText temp = dynamic_pointer_cast<SpriteText>( sprites_[name] ) )
+        return *temp;
+
+    std::cout << "You accessed a SpriteText, which is not in this Menu.\n";
+    return *pSpriteText();
 }
 
 pMenu Menu::init(pObject const& parent, int const& w, int const& h)

@@ -59,7 +59,8 @@ public:
                                   data::Color const& color = data::Color(255,255,255) );
 
     virtual Menu&   deleteSprite(std::string const& name);
-    virtual Sprite& getSprite(std::string const& name);    //non-const-getter
+    virtual Sprite&     getSprite    (std::string const& name);  //non-const-getter
+    virtual SpriteText& getSpriteText(std::string const& name);  //non-const-getter
     virtual Menu&   setCallbackToSprite(std::string const& name,
                                         std::tr1::function<void(pSprite&)> cb);
 

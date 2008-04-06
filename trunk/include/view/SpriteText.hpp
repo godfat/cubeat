@@ -36,6 +36,7 @@ public:
     virtual SpriteText& setCenterAligned(bool const&);
 
     SpriteText& changeText(std::string const&);
+    SpriteText& showNumber(int, unsigned int digit = 0);
 
     virtual ~SpriteText();
 
@@ -45,6 +46,7 @@ protected:
     void createText(std::string const& text, std::string const& font_path, int const& size);
 
 protected:
+    std::string text_;
     irr::video::ITexture* font_texture_;
     utils::TTFont* ttfont_;
 };

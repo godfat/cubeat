@@ -135,7 +135,8 @@ void Input::update()
 void Input::init_graphic()
 {
     cursor_mark_ = view::Sprite::create(cursor_texture_name_, scene_, 128, 128, true);
-    range_shape_ = view::Sprite::create(area_texture_name_, scene_, 150, 150, true);
+    range_shape_ = view::Sprite::create(area_texture_name_, scene_, 191, 191, true);
+    //must use config or changes dynamically when weapon's area predicate changes.
     range_shape_->set<Alpha>(192);
     range_shape_->set<Visible>(false);
 }

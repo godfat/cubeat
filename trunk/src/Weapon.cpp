@@ -19,6 +19,8 @@ void Weapon::reload() {
 
 ///////////////// Blocking Shoot ////////////////////
 
+BlockShoot::BlockShoot():Weapon(1, 0, 99, true, false){} //must use config
+
 void BlockShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
@@ -28,6 +30,8 @@ void BlockShoot::fire() {
 }
 
 ///////////////// Powerful Shoot ////////////////////
+
+PowerShoot::PowerShoot():Weapon(3, 0, 99, false, false){} //must use config
 
 void PowerShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
@@ -39,6 +43,8 @@ void PowerShoot::fire() {
 
 ////////////////// Area Shoot ///////////////////////
 
+AreaShoot::AreaShoot():Weapon(3, 0, 99, true, false){} //must use config
+
 void AreaShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
@@ -48,7 +54,7 @@ void AreaShoot::fire() {
 }
 
 AreaPredicate AreaShoot::areaPredicate() {
-    return bind(&AreaShoot::area, this, _1, _2, 148, 148);
+    return bind(&AreaShoot::area, this, _1, _2, 190, 190);
 }
 
 bool AreaShoot::area(vec2 const& p, vec2 const& obj_pos, int w, int h) {

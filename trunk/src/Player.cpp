@@ -166,6 +166,7 @@ void Player::repeating_shot_delegate
             hit_cb( player->weapon()->firepower() );
 }
 
+Input const* Player::input()          const { return input_; }
 Weapon* Player::weapon()              const { return current_wep_; }
 Weapon* Player::weapon(int id)        const { return weplist_[id]; }
 bool Player::is_changing_wep()        const { return changing_wep_; }

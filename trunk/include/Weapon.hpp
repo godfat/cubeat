@@ -64,21 +64,21 @@ protected:
 class BlockShoot : public Weapon
 {
 public:
-	BlockShoot():Weapon(1, 0, 10, true, false){}
+	BlockShoot();
 	virtual void fire();
 };
 
 class PowerShoot : public Weapon
 {
 public:
-	PowerShoot():Weapon(3, 0, 10, false, false){}
+	PowerShoot();
 	virtual void fire();
 };
 
 class AreaShoot : public Weapon
 {
 public:
-	AreaShoot():Weapon(3, 0, 1, true, false){}
+	AreaShoot();
 	virtual void fire();
     virtual AreaPredicate areaPredicate();
 protected:

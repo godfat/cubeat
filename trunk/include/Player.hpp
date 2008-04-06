@@ -36,6 +36,7 @@ public:
 	//I'd better refactor this afterwards.
 	//void eat_item(Item const& item);
 
+    Input const* input()          const;
 	Weapon* weapon()              const;
 	Weapon* weapon(int id)        const;
 	bool is_changing_wep()        const;

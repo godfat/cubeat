@@ -55,9 +55,9 @@ public:
             pos_vec2(), map_setting()->cube_sinking_duration());
     }
 
-    // static float rnd(){
-    //     return utils::random(2) + 100;
-    // }
+    static float speed(ctrl::Button const* btn){
+         return btn->state() == ctrl::BTN_DOWN ? 320.f : 80.f;
+    }
 
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
         body_->tween<easing::Linear, accessor::Pos2D>(
@@ -66,11 +66,14 @@ public:
     }
 
     virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>
-        body_->tween<easing::Linear, accessor::Pos2D>(
-            pos_vec2(), map_setting()->cube_sinking_duration(), 0,
-            std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
-        // body_->tween(data::AnimatorParam<easing::Linear, accessor::Pos2D>().
-        //     end(pos_vec2()).cb(callback).speedfunc(&rnd));
+        if( ctrl::pPlayer p = player_.lock() ) {
+            body_->tween( data::AnimatorParam<easing::Linear, accessor::Pos2D>().
+                 end(pos_vec2()).cb(callback).speedfunc(std::tr1::bind(&speed, &p->input()->haste())) );
+        } else {
+            body_->tween<easing::Linear, accessor::Pos2D>(
+                pos_vec2(), map_setting()->cube_sinking_duration(), 0,
+                std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
+        }
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>

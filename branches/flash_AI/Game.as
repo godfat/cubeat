@@ -30,11 +30,11 @@ class Game{
 		
 		//new AI
 		Ai_ = new Ai(this,maps_[0]);
-		Ai_.combo_rank_update(map_[0]);
+		//Ai_.combo_rank_update(map_[0]);
 		//setInterval( Delegate.create(Ai_, Ai_.starter), 9500 );
-		setInterval( Delegate.create(Ai_, Ai_.full_process), 5000, maps_[0]);
+		//setInterval( Delegate.create(Ai_, Ai_.full_process), 5000, maps_[0]);
 		setInterval( Delegate.create(Ai_, Ai_.dropping_travel), 1000, maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.combo_rank_update), 8000, maps_[0]);
+		//setInterval( Delegate.create(Ai_, Ai_.combo_rank_update), 8000, maps_[0]);
 		
 		var testcase: Array = [[9,9,9,9,9,9],
 							   [9,9,9,9,9,9],

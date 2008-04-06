@@ -15,8 +15,10 @@ AVIVideo::AVIVideo(std::string const& path)
      now_frame_(-1), width_(0), height_(0), last_tick_(0), texture_(0)
 {
     timer_ = IrrDevice::i().d()->getTimer();
-    if( !open(path) )
+    if( !open(path) ) {
         std::cerr << "AVI file open failed.\n";
+        is_end_ = true;
+    }
 }
 
 AVIVideo::~AVIVideo()

@@ -4,6 +4,7 @@
 #include "view/Scene.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
+#include "Accessors.hpp"
 
 /* TODO:
    Fix relative position problem. This is important. */
@@ -15,6 +16,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using namespace accessor;
 using std::tr1::static_pointer_cast;
 using std::tr1::dynamic_pointer_cast;
 
@@ -64,6 +66,46 @@ Menu& Menu::setCallbackToSprite(std::string const& name,
     if( pSprite temp = sprites_[name] ) {
         BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs())
             temp->onPress( &it->trig1() ) = cb;
+    }
+    return *this;
+}
+
+Menu& Menu::flipH()
+{
+    textureFlipH();
+    BOOST_FOREACH( SpriteListItem& it, sprites_ ) {
+        it.second->textureFlipH();
+        vec2 pos;
+        if( center_ == true ) {
+            pos = it.second->get<Pos2D>();
+            pos.X *= -1;
+            it.second->set<Pos2D>(pos);
+        }
+        else {
+            pos = it.second->get<Pos2D>();
+            pos.X = size_.Width - pos.X;
+            it.second->set<Pos2D>(pos);
+        }
+    }
+    return *this;
+}
+
+Menu& Menu::flipV()
+{
+    textureFlipV();
+    BOOST_FOREACH( SpriteListItem& it, sprites_ ) {
+        it.second->textureFlipV();
+        vec2 pos;
+        if( center_ == true ) {
+            pos = it.second->get<Pos2D>();
+            pos.Y *= -1;
+            it.second->set<Pos2D>(pos);
+        }
+        else {
+            pos = it.second->get<Pos2D>();
+            pos.Y = size_.Height - pos.Y;
+            it.second->set<Pos2D>(pos);
+        }
     }
     return *this;
 }

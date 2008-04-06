@@ -53,6 +53,8 @@ public:
     virtual Sprite& setDepth(float);
     virtual Sprite& moveTo(int,int);
     virtual Sprite& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
+    virtual Sprite& textureFlipH();
+    virtual Sprite& textureFlipV();
 
     //Maybe this feature should move to another class and use multiple inheritance.
     ctrl::CallbackDelegate& onPress  (ctrl::Button const*);

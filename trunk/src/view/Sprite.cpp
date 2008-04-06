@@ -9,6 +9,7 @@
 
 #include <sstream>
 #include <boost/foreach.hpp>
+#include <algorithm>
 
 using std::tr1::function;
 
@@ -97,6 +98,23 @@ void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
     ptr[0].TCoords.Y = tex_coord_ratio_y;
     ptr[1].TCoords.X = tex_coord_ratio_x; ptr[1].TCoords.Y = tex_coord_ratio_y;
     ptr[3].TCoords.X = tex_coord_ratio_x;
+}
+
+Sprite& Sprite::textureFlipH()
+{
+    std::cout << "flipping...\n";
+    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+    std::swap(ptr[0].TCoords, ptr[1].TCoords);
+    std::swap(ptr[2].TCoords, ptr[3].TCoords);
+    return *this;
+}
+
+Sprite& Sprite::textureFlipV()
+{
+    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+    std::swap(ptr[0].TCoords, ptr[2].TCoords);
+    std::swap(ptr[1].TCoords, ptr[3].TCoords);
+    return *this;
 }
 
 Sprite& Sprite::setDepth(float d)

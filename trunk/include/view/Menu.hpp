@@ -64,6 +64,9 @@ public:
     virtual Menu&   setCallbackToSprite(std::string const& name,
                                         std::tr1::function<void(pSprite&)> cb);
 
+    Menu& flipH();
+    Menu& flipV();
+
     //Important Note: Use for material-related tweening only
     template <template <class> class Eq, class Accessor>
     Menu& tweenAll(typename Accessor::value_type const& start,

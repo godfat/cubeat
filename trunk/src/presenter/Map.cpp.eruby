@@ -13,19 +13,19 @@ using namespace presenter;
 
 Map& <% debug_hook 'Map::call_end_game' do %>(){
 <% end %>
-    std::cout << "presenter map call end game.\n";
+    // std::cout << "presenter map call end game.\n";
     return *this;
 }
 
 Map& <% debug_hook 'Map::setup_warning' do %>(){
 <% end %>
-    std::cout << "presenter map setup_warning.\n";
+    // std::cout << "presenter map setup_warning.\n";
     return *this;
 }
 
 Map& <% debug_hook 'Map::take_out_warning' do %>(){
 <% end %>
-    std::cout << "presenter map take_out_warning.\n";
+    // std::cout << "presenter map take_out_warning.\n";
     return *this;
 }
 
@@ -60,7 +60,14 @@ pMap <% debug_hook 'Map::init' do %>(){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(); // beware! this need refer model_!
-    // view_ = view::Map::create(self);
+    return self;
+}
+
+pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
+<% end %>
+    pMap self = shared_from_this();
+    model_ = model::Map::create(self, setting_);
+    model_->init_cubes(data); // beware! this need refer model_!
     return self;
 }
 

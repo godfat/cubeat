@@ -1,0 +1,68 @@
+
+<% header_guard do %>
+
+#include "presenter/Map.hpp"
+
+#include "data/MapSetting.hpp"
+#include "utils/vector_2d.hpp"
+#include "utils/dictionary.hpp"
+#include <string>
+
+namespace psc{ namespace utils{
+
+class MapLoader{
+public:
+    static presenter::Map::pointer_type load(std::string const& path){
+        return presenter::Map::create(load_map_setting(path.c_str()),
+                                      load_cube_colors(path.c_str()));
+    }
+    static data::MapSetting::pointer_type load_map_setting(std::string const& path){
+        return load_map_setting(path.c_str()); }
+    static vector_2d<int> load_cube_colors(std::string const& path){
+        return load_cube_colors(path.c_str()); }
+
+
+    static presenter::Map::pointer_type load(char const* path){
+        return presenter::Map::create(load_map_setting(path),
+                                      load_cube_colors(path));
+    }
+
+    static data::MapSetting::pointer_type load_map_setting(char const* path){
+        map_any m = map_any::construct(utils::fetchConfig(path));
+        data::MapSetting::pointer_type result = data::MapSetting::create();
+
+        result->color_amounts(m.I("color_amounts")).
+                chain_amounts(m.I("chain_amounts")).
+                starting_line(m.I("starting_line")).
+                chaining_duration(m.I("chaining_duration")).
+                cube_dying_duration(m.I("cube_dying_duration")).
+                cube_sinking_duration(m.I("cube_sinking_duration")).
+                cube_dropping_duration(m.I("cube_dropping_duration")).
+                speed(m.F("speed")).
+                damage_factor(m.F("damage_factor")).
+                width(m.I("width")).
+                height(m.I("height")).
+                dropping_creatable(m.I("dropping_creatable") == 1 ? true : false).
+                garbage_dumpable(m.I("garbage_dumpable") == 1 ? true : false);
+
+        return result;
+    }
+
+    static vector_2d<int> load_cube_colors(char const* path){
+        map_any m = map_any::construct(utils::fetchConfig(path));
+        int width = m.I("width"), height = m.I("height");
+        vector_2d<int> result(width, height);
+
+        for(int y=0; y<height; ++y)
+            for(int x=0; x<width; ++x)
+                result[x][height-1-y] = m.V("cube_colors").V(y).I(x);
+        return result;
+    }
+
+private:
+    MapLoader();
+};
+
+}}
+
+<% end %>

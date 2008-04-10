@@ -3,8 +3,7 @@
 #include <irrKlang.h>
 
 using namespace psc;
-using namespace irr;
-using namespace audio;
+using namespace irrklang;
 
 Sound::Sound()
     :base_path_("rc/sound/")

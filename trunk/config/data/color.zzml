@@ -2,10 +2,10 @@
 #this is color's offset table
 
 # when color is pure red   (255, 0, 0)
-[  0, 20, 10],
+[  0, 30, 20],
 
 # when color is pure green (0, 255, 0)
-[  0,-50,  0],
+[  0,-30,  0],
 
 # when color is pure blue  (0, 0, 255)
 [ 50, 50,  0],

@@ -93,7 +93,6 @@ void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
 
     else if( hp_ - dmg > 0) {
         hp_ -= dmg;
-        std::cout << "hp: " << hp_ << ", dmg: " << dmg << "\n";
         hit_event()(dmg, hp_); // damage, hp left
     }
     else{

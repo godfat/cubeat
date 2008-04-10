@@ -54,6 +54,7 @@ public:
 
 protected:
     pointer_type init(pObject const&, int const&, int const&);
+    virtual void loadAllAnime();
 
 protected:
     typedef std::vector< irr::video::ITexture* > Animation2D;

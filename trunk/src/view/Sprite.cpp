@@ -102,18 +102,21 @@ void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
 
 Sprite& Sprite::textureFlipH()
 {
-    std::cout << "flipping...\n";
-    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
-    std::swap(ptr[0].TCoords, ptr[1].TCoords);
-    std::swap(ptr[2].TCoords, ptr[3].TCoords);
+    if( thismesh_ ) {
+        S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+        std::swap(ptr[0].TCoords, ptr[1].TCoords);
+        std::swap(ptr[2].TCoords, ptr[3].TCoords);
+    }
     return *this;
 }
 
 Sprite& Sprite::textureFlipV()
 {
-    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
-    std::swap(ptr[0].TCoords, ptr[2].TCoords);
-    std::swap(ptr[1].TCoords, ptr[3].TCoords);
+    if( thismesh_ ) {
+        S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+        std::swap(ptr[0].TCoords, ptr[2].TCoords);
+        std::swap(ptr[1].TCoords, ptr[3].TCoords);
+    }
     return *this;
 }
 

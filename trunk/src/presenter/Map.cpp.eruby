@@ -3,8 +3,15 @@
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
 
+#include "view/Scene.hpp"
+#include "view/SpriteText.hpp"
+#include "EasingEquations.hpp"
+#include "Accessors.hpp"
+#include "Sound.hpp"
+
 #include "all_fwd.hpp"
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 <%= debug_include %>
 
@@ -13,19 +20,39 @@ using namespace presenter;
 
 Map& <% debug_hook 'Map::call_end_game' do %>(){
 <% end %>
-    // std::cout << "presenter map call end game.\n";
+    std::cout << "presenter map call end game.\n";
     return *this;
 }
 
 Map& <% debug_hook 'Map::setup_warning' do %>(){
 <% end %>
-    // std::cout << "presenter map setup_warning.\n";
+    std::cout << "presenter map setup_warning.\n";
     return *this;
 }
 
 Map& <% debug_hook 'Map::take_out_warning' do %>(){
 <% end %>
-    // std::cout << "presenter map take_out_warning.\n";
+    std::cout << "presenter map take_out_warning.\n";
+    return *this;
+}
+
+Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx){
+<% end %>
+    std::cout << "chain: " << idx << " ,combo " << combo << "\n";
+    std::string str("Chain "), numstr( boost::lexical_cast<std::string>(combo) );
+    str += numstr;
+    view::pScene s = view_master_->scene();
+    view::pSpriteText chain_outl = view::SpriteText::create(str, s, "Star Jedi", 35 + combo*5, true, data::Color(255,0,0));
+    view::pSpriteText chain_text = view::SpriteText::create(str, s, "Star Jedi", 35 + combo*5, true);
+    chain_outl->setDepth(-50).set<accessor::Pos2D>( vec2(setting()->centerx()+1, 199 + idx*40) );
+    chain_text->setDepth(-60).set<accessor::Pos2D>( vec2(setting()->centerx(), 200 + idx*40) );
+    Sound::i().play( ("2/2b_" + numstr) + ".mp3");
+
+    //let it bind and make copy to preserve tween
+    chain_outl->tween<easing::OElastic, accessor::Scale>
+        (vec3(0,0,0), vec3(1.03,1.15,1), 500, 0, std::tr1::bind(&view::SpriteText::changeText, chain_outl, ""));
+    chain_text->tween<easing::OElastic, accessor::Scale>
+        (vec3(0,0,0), vec3(1,1,1), 500, 0, std::tr1::bind(&view::SpriteText::changeText, chain_text, ""));
     return *this;
 }
 
@@ -60,14 +87,7 @@ pMap <% debug_hook 'Map::init' do %>(){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(); // beware! this need refer model_!
-    return self;
-}
-
-pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
-<% end %>
-    pMap self = shared_from_this();
-    model_ = model::Map::create(self, setting_);
-    model_->init_cubes(data); // beware! this need refer model_!
+    // view_ = view::Map::create(self);
     return self;
 }
 

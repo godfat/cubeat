@@ -4,7 +4,6 @@
 #include "model/Map.hpp"
 #include "presenter/cube/ViewMaster.hpp"
 #include "data/MapSetting.hpp"
-#include "utils/vector_2d.hpp"
 
 #include "all_fwd.hpp"
 
@@ -24,9 +23,6 @@ public:
     typedef model::Map::color_map_type color_map_type;
 
 public:
-    static pMap create(data::pMapSetting setting, utils::vector_2d<int> const& cube_colors){
-        return pMap(new Map(setting))->init(cube_colors);
-    }
     static pMap create(data::pMapSetting setting){ return pMap(new Map(setting))->init(); }
     static pMap create(){ return create(data::MapSetting::create()); }
 
@@ -38,6 +34,7 @@ public:
     Map& call_end_game();
     Map& setup_warning();
     Map& take_out_warning();
+    Map& show_chain(int, int);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -54,7 +51,6 @@ public:
         BOOST_FOREACH(cube::pViewMaster& view, view_slaves_){
             view->redraw(*this);
         }
-        if(view_master_) view_master_->redraw(*this);
         return *this;
     }
     Map& throw_garbage(int amounts){
@@ -67,10 +63,10 @@ public:
     int score()        const { return model()->score(); }
     int garbage_left() const { return model()->garbage_left(); }
     int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
+    bool has_column_full() const { return model()->check_column_full(); }
 
 private:
     pMap init();
-    pMap init(utils::vector_2d<int> const&);
     /*static*/ void bind_cube_event(pCube);
     Map& push_garbage(int amounts){
         model()->push_garbage(amounts);

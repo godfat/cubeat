@@ -24,10 +24,4 @@ decorator:
     size_random_percent: 33,
     rotation_duration_ms: 3000,
     rotation_random_ms: 2000,
-
-#color offset test: r/g/b/y cubes' red, green, blue offset ( +255 ~ -256 )
-    color_offset: [[  0, 20, 10],
-                   [  0,-50,  0],
-                   [ 50, 50,  0],
-                   [  0,  0, 20]]
 }

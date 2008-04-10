@@ -16,6 +16,9 @@
 
 namespace psc { namespace view {
 
+class AnimatedSprite;
+class SpriteText;
+
 class Menu : public Sprite
 {
 public:
@@ -58,9 +61,17 @@ public:
                                   bool const& center = false,
                                   data::Color const& color = data::Color(255,255,255) );
 
+    virtual Menu&   addAnimSprite(std::string const& name,
+                                  std::string const& sprite_name,
+                                  std::tr1::function<void(pSprite&)> cb = 0,
+                                  int const& w = 100,
+                                  int const& h = 100,
+                                  bool const& center = false);
+
     virtual Menu&   deleteSprite(std::string const& name);
-    virtual Sprite&     getSprite    (std::string const& name);  //non-const-getter
-    virtual SpriteText& getSpriteText(std::string const& name);  //non-const-getter
+    virtual Sprite&         getSprite    (std::string const& name);  //non-const-getter
+    virtual SpriteText&     getSpriteText(std::string const& name);  //non-const-getter
+    virtual AnimatedSprite& getAnimSprite(std::string const& name);  //non-const-getter
     virtual Menu&   setCallbackToSprite(std::string const& name,
                                         std::tr1::function<void(pSprite&)> cb);
 
@@ -110,7 +121,6 @@ protected:
     typedef std::map< std::string, pSprite > SpriteList;
 
     SpriteList sprites_;
-
 };
 
 } //view

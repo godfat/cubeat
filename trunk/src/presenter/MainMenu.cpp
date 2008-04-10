@@ -70,33 +70,6 @@ pMainMenu MainMenu::init()
     return shared_from_this();
 }
 
-//helper
-void color_offset(data::Color& col, utils::vector_any& offset)
-{
-    int const blue = 0xff;
-    int const green = blue<<8;
-    int const red = green<<8;
-    int const yellow = red|green;
-    switch ( col.rgb() ) {
-        case red:
-            col.r( col.r() + offset.V(0).I(0) );
-            col.g( col.g() + offset.V(0).I(1) );
-            col.b( col.b() + offset.V(0).I(2) ); break;
-        case green:
-            col.r( col.r() + offset.V(1).I(0) );
-            col.g( col.g() + offset.V(1).I(1) );
-            col.b( col.b() + offset.V(1).I(2) ); break;
-        case blue:
-            col.r( col.r() + offset.V(2).I(0) );
-            col.g( col.g() + offset.V(2).I(1) );
-            col.b( col.b() + offset.V(2).I(2) ); break;
-        case yellow:
-            col.r( col.r() + offset.V(3).I(0) );
-            col.g( col.g() + offset.V(3).I(1) );
-            col.b( col.b() + offset.V(3).I(2) ); break;
-    }
-}
-
 void test_focus(view::pSprite& obj, int x, int y)
 {
     obj->set<Scale>(vec3(0.8f, 0.8f, 1));
@@ -110,7 +83,6 @@ void test_focus2(view::pSprite& obj, int x, int y)
 void MainMenu::initDecorator()
 {
     utils::map_any deco = config.M("decorator");
-    utils::vector_any offset = deco.V("color_offset");
 
     int const w = Conf::i().SCREEN_W;
     int const h = Conf::i().SCREEN_H;
@@ -155,7 +127,7 @@ void MainMenu::initDecorator()
     int capacity = (num_w + num_h - 6)*2;
     for(int i=0; i < capacity; ++i ) {
         data::Color col = data::Color::from_id(0, color_num);
-        color_offset( col, offset );
+        col.offset();
         int rand_size = size * (utils::random(33)/100.0f + 1);
         view::pSprite temp = view::Sprite::create(
             paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
@@ -205,7 +177,6 @@ void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
     for(int i=0, range=0; i < num; ++i, range += gap)
     {
 //        data::Color col = data::Color::from_id(0, color_num);
-//        color_offset( col, offset );
 
         int rand_bias   = utils::random( bias ) - bias/2;
         vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 100 );

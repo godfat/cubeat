@@ -4,7 +4,7 @@
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
 #include "view/Sprite.hpp"
-//#include "Sound.hpp"
+#include "Sound.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -38,9 +38,9 @@ pPlayer Player::init() {
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::set_active_weapon, this, 2), &input_->wep3(), BTN_PRESS);
 
-//        EventDispatcher::i().subscribe_btn_event(
-//            bind(&Player::special_fire, this), &input_->trig2(), BTN_PRESS);
-//      dont subscribe this! it will overwrite scene's picking!
+        EventDispatcher::i().subscribe_btn_event(
+            bind(&Player::normal_weapon_sound, this), &input_->trig1(), BTN_PRESS);
+
 //      maybe I should let different callee have parallel calling button and state...
 //      do it when have time.
 
@@ -83,6 +83,7 @@ Player& Player::set_active_weapon(int i)
         input_->setRangeShapeVisible(true);
     else
         input_->setRangeShapeVisible(false);
+    Sound::i().play("1/g/09.mp3");
     return *this;
 }
 
@@ -93,31 +94,6 @@ Player& Player::disable_all_wep_reloadability()
     return *this;
 }
 
-// when the cube is RESTORED, consider:
-//     player->subscribe_shot_event(body_, go_exploding, be_broken);
-
-// when the cube is BROKEN, consider:
-//     player->subscribe_shot_event(body_, restore, go_exploding);
-
-// when the cube is GARBAGE, consider:
-//     player->subscribe_shot_event(body_, go_exploding, 0);
-//---------------------------------------------------------------------
-// now we have 2 kind of firing method:
-// as of trig1(), it will always be normal shoot, so actually no delegate hooking is needed:
-//     sv->onPress( &input->trig1() ) = ally_cb; //when RESTORED | GARBAGE, this is go_exploding.
-                                                 //when BROKEN, this is restore.
-// and, enemy's trig1() will never affect you, so there's no subscription at all.
-
-// as of trig2(), it will be a little complicated, we need delegate hooking,
-// also, we have to consider enemy's trig2().
-//     sv->onPress( &input->trig2() ) = bound_ally_cb; //when RESTORED | GARBAGE, this is go_exploding,
-                                                       //when BROKEN, this is restore.
-//     sv->onPress( &input->trig2() ) = bound_enemy_cb;
-//     when RESTORED, this is be_broken IF AND ONLY IF enemy's weapon can crossfire.
-//     when GARBAGE,  this does nothing. (dont bind at all)
-//     when BROKEN,   this is go_exploding.
-
-
 Player& Player::subscribe_shot_event
     (view::pSprite& sv, HitCallback const& ally_cb, HitCallback const& enemy_cb)
 {
@@ -125,9 +101,6 @@ Player& Player::subscribe_shot_event
         Input*  input = Input::getInputByIndex(id);
         pPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
-        //sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
-
-        //Maybe:
         sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
     }
 
@@ -135,8 +108,6 @@ Player& Player::subscribe_shot_event
         BOOST_FOREACH(int& id, enemy_input_ids_) {
             Input*  input = Input::getInputByIndex(id);
             pPlayer enemy = input->player();
-            //sv->onPress( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
-
             sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
         }
     }
@@ -181,7 +152,9 @@ bool Player::ammo_all_out() const {
     return count == 0;
 }
 
-void Player::special_fire() { current_wep_->fire(); }
+void Player::normal_weapon_sound() {
+    Sound::i().play("1/a/1a-1.mp3");
+}
 
 //need fix
 //void Player::eat_item(Item const& item)

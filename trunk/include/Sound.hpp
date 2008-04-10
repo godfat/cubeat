@@ -1,21 +1,34 @@
 
-/*2007.11.9 
-  Deleted things coupled with Virtools. 
+/*2007.11.9
+  Deleted things coupled with Virtools.
   This item cannot compile unless further changes made.
 
   This class is now more or less like an interface.
-*/         
+*/
 
-#ifndef _SHOOTING_CUBE_SOUND_
-#define _SHOOTING_CUBE_SOUND_
+#ifndef _SHOOTING_CUBES_SOUND_
+#define _SHOOTING_CUBES_SOUND_
 
-class Sound 
+#include <string>
+
+namespace irr {
+namespace audio {
+class ISoundEngine;
+}
+}
+
+namespace psc {
+
+class Sound
 {
 public:
     //There will be an interface change.
-	virtual static Sound& i()      = 0;
+	static Sound& i() {
+	    static Sound singleton;
+	    return singleton;
+	}
 
-	virtual void pistol()          = 0;  
+/*	virtual void pistol()          = 0;
 	virtual void heavypistol()     = 0;
 	virtual void machinegun()      = 0;
 	virtual void heavymachinegun() = 0;
@@ -44,19 +57,22 @@ public:
 
 	virtual void get_focus()       = 0;
 	virtual void proceed()         = 0;
-/*	virtual void cancel()          = 0;
+	virtual void cancel()          = 0;
 	virtual void quit()            = 0; */
 
-	virtual void play_music(int index) = 0; 
+	virtual void play(std::string const& path, bool loop = false);
 
-	virtual void init() = 0;
-	virtual ~Sound() = 0;
-
-private:
-	virtual Sound() = 0;
+	void init();
+    ~Sound();
 
 private:
+	Sound();
 
+private:
+    irr::audio::ISoundEngine* engine_;
+    std::string base_path_;
 };
+
+} //psc
 
 #endif

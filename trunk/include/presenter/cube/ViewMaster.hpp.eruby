@@ -4,8 +4,14 @@
 #include "presenter/cube/ViewBase.hpp"
 #include <tr1/memory>
 
-namespace psc{ namespace presenter{
-    class Map;
+namespace psc{
+namespace view{
+class Scene;
+typedef std::tr1::shared_ptr<Scene> pScene;
+typedef std::tr1::weak_ptr<Scene> wpScene;
+}
+namespace presenter{
+class Map;
 namespace cube{
 
 class ViewMaster{
@@ -20,7 +26,10 @@ public:
     virtual ~ViewMaster(){}
 
 protected:
+    ViewMaster(view::pScene scene):scene_(scene){}
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
+    view::pScene scene() const{ return scene_.lock(); }
+    view::wpScene scene_; //good?
 
 private:
     ViewMaster& map_setting(data::wpMapSetting ms){ map_setting_ = ms; return *this; }

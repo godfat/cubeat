@@ -40,7 +40,6 @@ public:
         garbage_left_(0), score_(0), current_sum_of_attack_(0)
     {}
     Map& init_cubes();
-    Map& init_cubes(utils::vector_2d<int> const&);
     <% debug_hook '~Map' do %>(){<%end%>}
 
     Map& <% debug_hook 'cycle_slow' do %>(){ <% end %>
@@ -93,6 +92,7 @@ public:
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }
+    bool check_column_full() const;
 
 private:
     Map& insert_cube(pCube);
@@ -113,7 +113,6 @@ private:
     pOneFading make_OneFading(pCube);
     bool is_below_empty(cpCube) const;
     void update_chains();
-    bool check_column_full() const;
     presenter::pMap owner() const{ return owner_.lock(); }
 
 private:

@@ -239,7 +239,7 @@ void EventDispatcher::dispatch_timer(){
         if( get<TE::CALLEE>(*t).lock() ) {
             if( now - get<TE::LASTTIME>(*t) >= get<TE::DURATION>(*t) ) {
                 get<TE::TIMER_CB>(*t)();
-                get<TE::LASTTIME>(*t) = now;
+                get<TE::LASTTIME>(*t) = now; //or should be += get<TE::DURATION>(*t) ?
                 int& looptimes = get<TE::LOOP>(*t);
                 if( looptimes == 0 ) {
                     timers_to_be_deleted_.push_back(t);

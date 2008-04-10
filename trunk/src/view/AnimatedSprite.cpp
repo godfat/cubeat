@@ -8,6 +8,7 @@
 #include <sstream>
 
 using namespace irr;
+using namespace io;    //for file system and file list
 using namespace core;
 using namespace scene;
 using namespace video;
@@ -43,11 +44,16 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
 
     pAnimatedSprite self = static_pointer_cast<AnimatedSprite>( shared_from_this() );
     scene()->addPickMapping( body_, self );
+
+    loadAllAnime();
+
     return self;
 }
 
 AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int total_frames)
 {
+    if( animations_.find(anime_name) != animations_.end() ) return *this; //don't add repetitively.
+
     video::IVideoDriver* driver = smgr_->getVideoDriver();
     driver->setTextureCreationFlag(video::ETCF_OPTIMIZED_FOR_QUALITY, true);
 
@@ -58,10 +64,38 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
         ITexture* tex = driver->getTexture( oss.str().c_str() );
         animation.push_back( tex );
     }
-
     animations_.insert( std::make_pair( anime_name, animation ) );
-
     return *this;
+}
+
+void AnimatedSprite::loadAllAnime()
+{
+    IFileSystem* fs = IrrDevice::i().d()->getFileSystem();
+    std::string work_dir( fs->getWorkingDirectory() );
+    std::string to_path( (work_dir + "/rc/texture/") + name_ );
+    fs->changeWorkingDirectoryTo( to_path.c_str() );
+    IFileList* flist = fs->createFileList();
+    for( unsigned int i = 0; i < flist->getFileCount(); ++i ) {
+        if( flist->isDirectory(i) ) {
+            if( std::string( flist->getFileName(i) ) == std::string(".") ||
+                std::string( flist->getFileName(i) ) == std::string("..") ) continue;
+
+            std::string anim_path( flist->getFileName(i) );
+            fs->changeWorkingDirectoryTo( ((to_path + "/")+anim_path).c_str() );
+            IFileList* animlist = fs->createFileList();
+            int count_frame = animlist->getFileCount();
+            int num_of_dirs_to_skip = 0;
+            for( unsigned int j = 0; j < animlist->getFileCount(); ++j )
+                if( animlist->isDirectory(j) ) ++num_of_dirs_to_skip;
+
+            fs->changeWorkingDirectoryTo( work_dir.c_str() );
+            //must call this in root dir, for old client code compatibility.
+            addAnime( anim_path, count_frame - num_of_dirs_to_skip );
+
+            fs->changeWorkingDirectoryTo( to_path.c_str() );
+        }
+    }
+    fs->changeWorkingDirectoryTo( work_dir.c_str() );
 }
 
 AnimatedSprite&
@@ -69,11 +103,10 @@ AnimatedSprite::playAnime(std::string const& anime_name, unsigned int const& dur
                           std::tr1::function<void()> cb, int const& delayTime)
 {
     if( !duration ) return *this;
-    ISceneNodeAnimator* animator =
-        new TextureAnimator<SineCirc>( smgr_, animations_[anime_name], duration, loop, cb, delayTime );
-    body_->addAnimator( animator );
-    animator->drop();
-
+    AnimatorBase* animator =
+        new TextureAnimator<Linear>( smgr_, animations_[anime_name], duration, loop, cb, delayTime );
+    anim_queue_.push_back( animator );
+    startTween();
     return *this;
 }
 

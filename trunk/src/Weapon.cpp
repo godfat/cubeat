@@ -1,7 +1,7 @@
 
 #include "Weapon.hpp"
 #include "EventDispatcher.hpp"
-//#include "Sound.hpp"
+#include "Sound.hpp"
 #include <iostream>
 
 using namespace psc;
@@ -24,7 +24,7 @@ BlockShoot::BlockShoot():Weapon(1, 0, 99, true, false){} //must use config
 void BlockShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        //Sound::i().blockShoot();
+        Sound::i().play("1/a/1a-2.mp3");
         //use Timer to refresh coolingdown_
     }
 }
@@ -36,7 +36,7 @@ PowerShoot::PowerShoot():Weapon(3, 0, 99, false, false){} //must use config
 void PowerShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        //Sound::i().powerShoot();
+        Sound::i().play("1/a/1a-3.mp3");
         //use Timer to refresh coolingdown_
     }
 }
@@ -48,7 +48,7 @@ AreaShoot::AreaShoot():Weapon(3, 0, 99, true, false){} //must use config
 void AreaShoot::fire() {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        //Sound::i().rocket();
+        Sound::i().play("1/a/1a-4.mp3");
         //use Timer to refresh coolingdown_
     }
 }

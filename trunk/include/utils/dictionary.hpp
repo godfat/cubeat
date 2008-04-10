@@ -87,6 +87,8 @@ typedef std::tr1::unordered_map< boost::any, boost::any, boost::hash<boost::any>
     map_any_;
 typedef std::vector< boost::any > //Can't use list here cuz we dependent on random access.
     vector_any_;
+typedef std::pair<boost::any const, boost::any>
+    pair_any;
 
 class map_any; //forward
 

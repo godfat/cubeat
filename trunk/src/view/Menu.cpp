@@ -1,13 +1,11 @@
 
 #include "view/Menu.hpp"
 #include "view/SpriteText.hpp"
+#include "view/AnimatedSprite.hpp"
 #include "view/Scene.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "Accessors.hpp"
-
-/* TODO:
-   Fix relative position problem. This is important. */
 
 using namespace irr;
 using namespace core;
@@ -49,6 +47,18 @@ Menu& Menu::addSpriteText(std::string const& name, std::string const& text,
                                             static_pointer_cast<Menu>(shared_from_this()),
                                             font_path, size, center, color);
 
+    sprites_.insert( std::make_pair(name, newobj) );
+    if( cb ) setCallbackToSprite(name, cb);
+    return *this;
+}
+
+Menu& Menu::addAnimSprite(std::string const& name, std::string const& sprite_name,
+                          std::tr1::function<void(pSprite&)> cb, int const& w, int const& h,
+                          bool const& center)
+{
+    pAnimatedSprite newobj = AnimatedSprite::create(sprite_name,
+                                                    static_pointer_cast<Menu>(shared_from_this()),
+                                                    w, h, center);
     sprites_.insert( std::make_pair(name, newobj) );
     if( cb ) setCallbackToSprite(name, cb);
     return *this;
@@ -125,6 +135,15 @@ SpriteText& Menu::getSpriteText(std::string const& name)
 
     std::cout << "You accessed a SpriteText, which is not in this Menu.\n";
     return *pSpriteText();
+}
+
+AnimatedSprite& Menu::getAnimSprite(std::string const& name)
+{
+    if( pAnimatedSprite temp = dynamic_pointer_cast<AnimatedSprite>( sprites_[name] ) )
+        return *temp;
+
+    std::cout << "You accessed a AnimatedSprite, which is not in this Menu.\n";
+    return *pAnimatedSprite();
 }
 
 pMenu Menu::init(pObject const& parent, int const& w, int const& h)

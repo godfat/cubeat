@@ -42,8 +42,12 @@ public:
 	}
 
     // this returns the score fragment made by the last combo
-	int score_step() const{ 
+	int score_step() const{
 		return chain_step_.back() * 20 * chain_step_.size();
+	}
+
+	int step() const{
+	    return chain_step_.size();
 	}
 
 private:

@@ -76,10 +76,10 @@ namespace accessor {
 
     struct GradientDiffuse : Accessor<int, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getMaterialCount() ) {
-                node->getMaterial(0).DiffuseColor.setRed(val%256);
-                node->getMaterial(0).DiffuseColor.setGreen(val%256);
-                node->getMaterial(0).DiffuseColor.setBlue(val%256);
+            for( unsigned int i=0; i < node->getMaterialCount(); ++i ) {    //IMPORTANT NOTE!
+                node->getMaterial(i).DiffuseColor.setRed(val%256);
+                node->getMaterial(i).DiffuseColor.setGreen(val%256);
+                node->getMaterial(i).DiffuseColor.setBlue(val%256);
             }
         }
         static void get(irr::scene::ISceneNode* node, value_type& out) {

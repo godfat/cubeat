@@ -10,6 +10,7 @@
 #include "EasingEquations.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
+#include "Sound.hpp"
 
 #include "all_fwd.hpp"
 
@@ -92,22 +93,32 @@ public:
 
     virtual void <% debug_hook 'be_broken' do %>(){ <% end %>
         body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
+        body_->set<accessor::GradientDiffuse>( 255 );
         shot_event(&model::Cube::restore, &model::Cube::go_exploding);
+        Sound::i().play("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'restore' do %>(int color_id){ <% end %>
         if( color_id == -1 ) return;
-        body_->setTexture("cubes/cube-item-" + to_s(color_id));
+        body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
+        data::Color col = data::Color::from_id(color_id);
+        col.offset();
+        body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
         shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
+        //Sound::i().play("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'be_garbage' do %>(){ <% end %>
-        body_->setTexture("cubes/cube-b-" + to_s(utils::random(4)+1));
+        body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
+        body_->set<accessor::GradientDiffuse>( 100 );
         shot_event(&model::Cube::go_exploding);
     }
 
     virtual void <% debug_hook 'hit' do %>(int /*dmg*/, int hp){ <% end %>
-        body_->tween<easing::Linear, accessor::Scale>(vec3(hp/3.0,hp/3.0,hp/3.0), 500);
+        body_->tween<easing::Linear, accessor::Alpha>(255*(hp/3.f), 300);
+        if( cube_.lock()->is_garbage() )
+            Sound::i().play("1/c/GlassF@11.wav");
+        else Sound::i().play("1/b/HitB@11.wav");
     }
 
     virtual void <% debug_hook 'get_chain' do %>(){ <% end %>
@@ -187,9 +198,8 @@ public:
     }
 private:
     ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player):
-        scene_(scene), setting_(setting), player_(player){}
+        ViewMaster(scene), setting_(setting), player_(player){}
 private:
-    view::wpScene scene_;
     data::pViewSpriteSetting setting_;
     ctrl::wpPlayer player_;
 };

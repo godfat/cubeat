@@ -95,8 +95,8 @@ int App::run(std::tr1::function<void()> tester)
             EventDispatcher::i().dispatch();
 
             driver->beginScene(true, true, video::SColor(0,0,0,0));
-            master_presenter_->cycle();
-            driver->clearZBuffer();  //clear z-buffer to overlay the whole scene
+            //master_presenter_->cycle();  //for demo's sake temporarily close these
+            //driver->clearZBuffer();      //for demo's sake temporarily close these
             trans_->cycle();
             driver->clearZBuffer();
 

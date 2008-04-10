@@ -42,19 +42,12 @@ Map& <% debug_hook 'Map::init_cubes' do %>(){
 
     utils::ChainChecker::until_no_chained_cubes(cube_colors, ms()->chain_amounts());
 
-    return init_cubes(cube_colors);
-}
-
-Map& <% debug_hook 'Map::init_cubes' do %>(utils::vector_2d<int> const& cube_colors){
-<% end %>
     presenter::pMap owner = owner_.lock();
-    int width = cube_colors.width(), height = cube_colors.height();
-    for(int y=0; y<height; ++y)
-        for(int x=0; x<width; ++x)
-            if(cube_colors[x][y] == 0)
-                continue;
-            else
-                insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
+    for(int i=0, iend=cube_colors.num_elements(); i!=iend; ++i)
+    {
+        int x = i%width, y = i/width;
+        insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
+    }
 
 	fill_preview_queue(); // added
 
@@ -249,11 +242,14 @@ void <% debug_hook 'Map::update_chains' do %>(){
     presenter::pMap o = owner();
 
     current_sum_of_attack_ = 0;
+    int idx = 0;
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
+            o->show_chain( (*i)->step(), idx );
+            ++idx;
             score_ += (*i)->score_step() * damage_factor;
             (*i)->step_one();
         }
@@ -261,7 +257,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
         // when the Chain's all dead then we fire up the attack and make this one null
         if( (*i).use_count() == 1 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
-            // SG::Instance().make_garbage( this, (**i).power_factor() * ms().damage_factor );
             o->throw_garbage( (*i)->power_factor() * damage_factor );
             i = chains_.erase(i);
         }

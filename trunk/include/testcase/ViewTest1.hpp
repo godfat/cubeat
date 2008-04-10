@@ -149,7 +149,9 @@ private:
     view::pAnimatedSprite      a;
     view::pMenu                menu;
     view::pAnimatedSceneObject cube4;
-    view::pAnimatedSceneObject background;
+    view::pAnimatedSceneObject palm1;
+    view::pAnimatedSceneObject palm2;
+    view::pAnimatedSceneObject palm3;
 
     float                      speed;
 };
@@ -255,8 +257,12 @@ ViewTest1::ViewTest1()
     anotherthing->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
 
     data::AnimatorParam<Linear, Frame> paramAni; paramAni.end(90.f).duration(3000).loop(-1);
-    background = view::AnimatedSceneObject::create("jungle/palm1", worldv);
-    background->moveTo(0,-15,48).tween(paramAni);
+    palm1 = view::AnimatedSceneObject::create("jungle/palm1", worldv);
+    palm1->moveTo(0,-15,48).tween(paramAni);
+    palm2 = view::AnimatedSceneObject::create("jungle/palm2", worldv);
+    palm2->moveTo(5,-15,48).tween(paramAni);
+    palm3 = view::AnimatedSceneObject::create("jungle/palm3", worldv);
+    palm3->moveTo(-5,-15,48).tween(paramAni);
 }
 
 void ViewTest1::init()

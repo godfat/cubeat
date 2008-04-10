@@ -1,0 +1,16 @@
+
+#this is color's offset table
+
+# when color is pure red   (255, 0, 0)
+[  0, 20, 10],
+
+# when color is pure green (0, 255, 0)
+[  0,-50,  0],
+
+# when color is pure blue  (0, 0, 255)
+[ 50, 50,  0],
+
+# when color is pure yellow(255, 255, 0)
+[  0,  0, 20]
+
+# when color is cyan (green blue) or purple (red blue) is not yet implemented

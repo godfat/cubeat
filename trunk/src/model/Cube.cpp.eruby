@@ -26,7 +26,7 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(){
 Cube& <% debug_hook 'Cube::be_garbage' do %>(){
 <% end %>
     is_garbage_ = true;
-	hp_ = 1;
+	hp_ = 3;
     color_id(-1);
     be_garbage_event()();
     return *this;
@@ -91,9 +91,11 @@ void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
     if( is_dying() )
         return; // don't explode me while i am dying!!
 
-    else if( hp_ -= dmg > 0)
+    else if( hp_ - dmg > 0) {
+        hp_ -= dmg;
+        std::cout << "hp: " << hp_ << ", dmg: " << dmg << "\n";
         hit_event()(dmg, hp_); // damage, hp left
-
+    }
     else{
         state_.reset();
         go_exploding_event()();

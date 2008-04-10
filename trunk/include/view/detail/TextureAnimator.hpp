@@ -57,6 +57,7 @@ public:
                 node->setMaterialTexture(0, animation_[pos]);
                 if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                return;   //DAMN....... WHY FORGOT THIS.........
             }
             else if( this->loop_ > 0 ) this->loop_ -= 1;
         }

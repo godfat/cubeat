@@ -6,6 +6,7 @@
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
 #include "utils/Random.hpp"
+#include "utils/dictionary.hpp"
 #include <algorithm> // for find
 #include <iterator> // for distance
 
@@ -21,25 +22,7 @@ public:
         switch(i){
             case  0: return from_id(random_id(limit)); break;
             default: rgb = id2rgb[i];
-            // case 1: rgb = blue;       break;
-            // case 2: rgb = green;      break;
-            // case 3: rgb = red;        break;
-            // case 4: rgb = red_green;  break;
-            // case 5: rgb = red_blue;   break;
-            // case 6: rgb = green_blue; break;
-            // case 7: rgb = 0;          break;
-            // case 8: rgb = blue|green|red; break;
-            // default: rgb = 0;
         }
-        /* i would like this:
-        int rgb = case i
-                    when 0; random_color
-                    when 1; blue
-                    when 2; green
-                    when 3: red
-                    ...
-                  end
-        */
         return Color(rgb);
     }
 
@@ -67,6 +50,8 @@ public:
     Color& g(int new_g){ rgb_ &= red_blue; rgb_ |= new_g<<8; return *this; }
     Color& b(int new_b){ rgb_ &= red_green; rgb_ |= new_b; return *this; }
 
+    Color& offset();
+
 private:
     static int random_id(int limit){
         return utils::random(limit)+1;
@@ -74,6 +59,7 @@ private:
 
 private:
     int rgb_;
+    static utils::vector_any offt_; //color offset table
     enum{
         blue=0xff, green=blue<<8, red=green<<8,
         green_blue = green|blue,

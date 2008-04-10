@@ -1,0 +1,23 @@
+#this corresponds to sprite: rc/texture/char2
+
+anim_attr: {
+    body: { anim:'char2',     w:192, h:192, x:  0, y:0   ,defanim:'stand' , ms:1000, loop:-1 },
+    gdeco:{ anim:'good_deco', w:50,  h:50 , x:  4, y:-71 ,defanim:'moving', ms:1000, loop:-1 },
+    bdeco:{ anim:'bad_deco',  w:50,  h:75 , x:-71, y:-59 ,defanim:'moving', ms:1000, loop:-1 }
+},
+
+face_w: 50,
+face_h: 50,
+
+# face texture corresponding to state
+normal: 'char2/face_normal',
+good  : 'char2/face_good',
+bad   : 'char2/face_bad',
+
+# face pos from frame0 to frame3
+face_pos: [
+    {x:-44, y:-38 },
+    {x:-45, y:-37 },
+    {x:-47, y:-36 },
+    {x:-45, y:-37 }
+]

@@ -46,7 +46,7 @@ Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx){
     view::pSpriteText chain_text = view::SpriteText::create(str, s, "Star Jedi", 35 + combo*5, true);
     chain_outl->setDepth(-50).set<accessor::Pos2D>( vec2(setting()->centerx()+1, 199 + idx*40) );
     chain_text->setDepth(-60).set<accessor::Pos2D>( vec2(setting()->centerx(), 200 + idx*40) );
-    Sound::i().play( ("2/2b_" + numstr) + ".mp3");
+    Sound::i().play( ("2/2b_" + boost::lexical_cast<std::string>(combo >= 7 ? 7 : combo) + ".mp3"));
 
     //let it bind and make copy to preserve tween
     chain_outl->tween<easing::OElastic, accessor::Scale>

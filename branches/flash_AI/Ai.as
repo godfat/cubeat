@@ -11,9 +11,60 @@ class Ai{
 		shooted = false;
 		chaining = false;
 		trace("Hi,I am Ai!");
+		combo_rank_update(map);
 	}
 	
+	//一般完整流程
 	public function full_process(map: Map){
+		update_ai_state(map);
+		var bg_list: Array = bk_gbg_travel(map);
+		var too_high_list: Array = too_high_travel(map);
+		if(bg_list != null){
+			trace("find broken & garbage !!");
+			for (var i =0; i<bg_list.length; ++i){
+				shooting_arr(map, bg_list[i]);
+			}
+		}
+		var c_cube: Square = null;
+		var c_point: Number = 0;
+		for(var i = 0; i<best_chain_cubes.length; ++i){
+			if(best_chain_cubes[i] != null && best_chain_point[i]>c_point){
+				c_point = best_chain_point[i];
+				c_cube = best_chain_cubes[i];
+			}
+		}
+		if(count_square_Num(map)>=30 && this.shooted == false && this.chaining == false && c_point>10){
+			//進行連鎖
+			if(c_cube != null){
+				trace("**********shoot for chain***********");
+				shooting(map,c_cube);
+				this.chaining = true;
+			}
+		}else if(too_high_list != null && this.shooted == false){
+			//消去過高列
+			trace("**********shoot too high column !!**********");
+			for (var i =0; i<too_high_list.length; ++i){
+				shooting_arr(map, too_high_list[i]);
+			}
+		}else if(count_square_Num(map)>=10 && count_square_Num(map)<30 && this.shooted == false && this.chaining == false){
+			//整理盤面
+			var amass_cube: Square = amass_travel_deep(map);
+			if(amass_cube != null){
+				trace("***********shoot for amass***********");
+				shooting(map,amass_travel_deep(map));
+			}
+		}else if(this.shooted == true && this.chaining == true){
+			//即時連鎖
+			var rtc_cube = rtc_checker(map);
+			if(rtc_cube != null){
+				trace("***********shoot for rtc_chain***********");
+				shooting(map, rtc_cube);
+			}			
+		}
+	}
+	
+	//檢查盤面是否在連鎖中or剛進行射擊過
+	public function update_ai_state(map){
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
@@ -23,50 +74,50 @@ class Ai{
 					this.shooted = false;
 				}
 			}
-			if(this.shooted != true){
+			if(this.shooted == true){
+				trace("==========map is shooted!!==========");
 				break;
 			}
 		}
-		//var bg_list: Array = bk_gbg_travel(map);
-		/*if(this.shooted != true){
-			bk_gbg_travel(map);
-			if(count_square_Num(map) >= 30 || top_checker[map.Width-1+2] <= 2){
-				this.best_chain_cubes[2].i_am_hit(1);
-			}else if(count_square_Num(map) >= 10){
-				amass_travel_deep(map);
+		if(this.shooted == true && this.chaining == true){
+			trace("==========map is chaining!!==========");
+			this.chaining = true;
+		}else if(this.shooted == true){
+			var temp_map = set_brain_map(map);
+			failing_dropping(temp_map);
+			if(contact_checker(temp_map,3)!=null){
+				trace("==========map is chaining!!==========");
+				this.chaining = true;
 			}
-		}*/
-		//trace_map_rgb(map);
-		/*var del_arr: Array = too_high_travel(map);
-		for(var i = 0; i<del_arr.length; ++i){
-			if(del_arr[i]!=null){
-				for(var j=0;j<del_arr[i].length; ++j){
-					del_arr[i][j].i_am_hit(1);
-				}
-			}
-		}*/
-		//var temp_map: Map = set_brain_map(map);
-		//var temp_best_chain_cubes: Array = [null,null,null];
-		/*for(var k = 0; k < this.best_chain_point.length; ++k){
-			temp_best_chain_cubes[k] = temp_map.lookup(best_chain_cubes[k].x,best_chain_cubes[k].y);
-			del_block(temp_map, temp_best_chain_cubes[k].x, temp_best_chain_cubes[k].y+1, true);
-			trace("temp combo<" + best_chain_point[k] + ">(" + temp_best_chain_cubes[k].x + "," + temp_best_chain_cubes[k].y + ")");
-			trace("Best combo<" + best_chain_point[k] + ">(" + best_chain_cubes[k].x + "," + best_chain_cubes[k].y + ")");
-		}*/
+		}else if(this.shooted == false){
+			this.chaining = false;
+		}
 	}
-	//clone true map to think
+	
+	//回傳複製盤面
 	private function set_brain_map (map: Map): Map{
 		var clone_map: Map = map.clone();
 		return clone_map;
 	}
+	
 	//射擊目標方塊,對最佳發火點分數進行更新
 	private function shooting(map:Map, cube: Square){
 		cube.i_am_hit(1);
+		this.shooted = true;
+		best_chain_point_update(map);
+	}
+	
+	//射擊目標方塊陣列,對最佳發火點分數進行更新
+	private function shooting_arr(map: Map, s_list: Array){
+		for(var i=0; i<s_list.length; ++i){
+			s_list[i].i_am_hit(1);
+			this.shooted = true;
+		}
 		best_chain_point_update(map);
 	}
 	
 	//更新最佳的3個發火點
-	private function combo_rank_update(map: Map){
+	public function combo_rank_update(map: Map){
 		var get_point: Number = 0;
 		var best_chain_list: Array = new Array(2);
 		best_chain_list[0] = new Array(3);
@@ -101,6 +152,7 @@ class Ai{
 		best_chain_cubes = best_chain_list[1];
 	}
 	
+	//最佳發火點分數進行更新
 	private function best_chain_point_update(map: Map){
 		for(var i = 0; i<this.best_chain_cubes.length; ++i){
 			var temp_map: Map = set_brain_map(map);
@@ -109,6 +161,7 @@ class Ai{
 		}
 	}
 	
+	//計算map中的cube總數
 	private function count_square_Num(map: Map): Number{
 		var count:Number = 0;
 		for(var h = map.Height-1; h > 0; --h){
@@ -120,7 +173,8 @@ class Ai{
 		}
 		return count;
 	}
-		
+	
+	//檢查盤面高度
 	private function top_checker(map: Map): Array{
 		var map_tops = new Array(map.Width+2);
 		for(var i = 0; i < map.Width+2; i++){
@@ -141,72 +195,95 @@ class Ai{
 			}
 		}
 		map_tops[map.Width-1+1] = int(map_tops[map.Width-1+1]/map.Width);
-		trace("map_tops:" + map_tops);
+		//trace("map_tops:" + map_tops);
 		return map_tops;
 	}
 	
-	private function rtc_checker(map):Square{
+	//找即時連鎖發火點
+	private function rtc_checker(map): Square{
+		trace("==========start rtc travel==========");
 		var temp_map = set_brain_map(map);
+		var temp_map_2: Map = null;
 		var true_failing_cubes: Array = new Array;
 		var temp_failing_cubes: Array = new Array;
 		var temp_failing_cubes_2: Array = new Array;
+		var temp_chain_list: Array = new Array;
+		var rtc_list: Array = new Array;
+		var rtc_cube: Square = null;
+		update_ai_state(map);
+		//搜尋整個map,將2次落下方塊加入failing_cubes中
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop != true){
 					true_failing_cubes.push(map.lookup(w, h));
 					temp_failing_cubes.push(temp_map.lookup(w,h));
 				}
-				if(map.lookup(w, h) == null){
-					for(var y_ = h; y_ > 0; --y_){
-						if(map.lookup(w, y_).state instanceof Dropping && map.lookup(w, y_).first_drop != true){
-							
-							break;
-						}
-					}
-				}
 			}
+		}
+		if(true_failing_cubes == null){
+			trace("==========no 2nd dropping cubes!!==========");
+			this.shooted = false;
+			this.chaining = false;
+			return null;
 		}
 		failing_dropping(temp_map,false);
 		if(contact_checker(temp_map,3)!=null){
+			trace("==========map keep chaining!!==========");
+			this.chaining = true;
 			return null;
 		}else{
+			trace("==========now check rtc!!==========");
 			for(var h_ = map.Height-1; h_ > 0; --h_){
 				for(var w_ = map.Width-1; w_ >= 0 ; --w_){
-					if(map.lookup(w_,h_)!= null && map.lookup(w_,h_).state instanceof Waiting){
-						var temp_map_2: Map = set_brain_map(temp_map);
+					if(map.lookup(w_,h_)!= null && map.lookup(w_,h_).first_drop == false){
+						temp_map_2 = set_brain_map(temp_map);
 						temp_failing_cubes_2 = new Array;
+						temp_chain_list = new Array;
+						rtc_list = new Array;
+						rtc_cube = null;
 						for(var i = 0; i<temp_failing_cubes.length; ++i){
 							temp_failing_cubes_2.push(temp_map_2.lookup(temp_failing_cubes[i].x,temp_failing_cubes[i].y));
 						}
-						del_block(temp_map_2, w_, h_, true);
-						var temp_rtc_list: Array = new Array;
 						for(var j = 0; j<temp_failing_cubes_2.length; ++j){
-							temp_chain_list = contact_checker_unit(temp_map_2, temp_map_2.lookup(temp_failing_cubes_2[j].x,temp_failing_cubes_2[j].y), temp_rtc_list, 3);
-						}
-						if(temp_rtc_list.length !=0){
-							for(var recy=0; recy<temp_rtc_list.length; ++recy){
-								temp_rtc_list[recy].cycled = false;
+							if(temp_failing_cubes_2[j].x == w_ && temp_failing_cubes_2[j].y == h_){
+								rtc_cube = true_failing_cubes[j];
+								break;
+							}else{
+								rtc_cube = map.lookup(w_,h_);
 							}
+						}
+						del_block(temp_map_2, w_, h_, true);
+						for(var k = 0; k<temp_failing_cubes_2.length; ++k){
+							if(temp_failing_cubes_2[k] == null) continue;
+							if(temp_failing_cubes_2[k].x==w_ && temp_failing_cubes_2[k].y==h_) continue;
+								rtc_list = contact_checker_unit(temp_map_2, temp_map_2.lookup(temp_failing_cubes_2[k].x,temp_failing_cubes_2[k].y), rtc_list, 3);
+						
+						}
+						if(rtc_list.length !=0){
+							trace("find rtc_cube(" + rtc_cube.x + "," + rtc_cube.y + ")");
+							return rtc_cube;
 						}
 						delete temp_map_2;
 					}
 				}
 			}
 		}
+		return null;
 	}
 	
+	//暴搜盤面,回傳過高列的目標可消去方塊
 	private function too_high_travel(map: Map): Array{
 		var map_tops: Array = top_checker(map);//get high of each column
 		var del_list: Array = new Array(map.Width);//to save cubes that need delete
 		for(var i = 0; i < del_list.length; ++i){
 			del_list[i] = null;
 		}
-		for(var w = map.Width-1; w > 0; --w){
-			//如此列高度超過平均值2
-			if(map_tops[w] - map_tops[map.Width-1+1] > 2){
+		for(var w = map.Width-1; w >= 0; --w){
+			//此列高度超過平均值+3
+			if(map_tops[w] > map_tops[map.Width-1+1] + 3 || map_tops[w] > 7){
 				//travel this column
-				trace("column(" + w + ")too high");
-				del_list[w] = column_travel(map, w);
+				trace("==========column(" + w + ")too high==========");
+				del_list[w] = column_travel_type1(map, w);
 			}
 		}
 		for(var j = 0; j < del_list.length; ++j){
@@ -216,7 +293,9 @@ class Ai{
 		}
 		return null;
 	}
-	private function column_travel(map: Map, w: Number): Array{
+	
+	//搜尋此列的一組22相鄰方塊 找出第3個方塊 將中間的方塊s回傳
+	private function column_travel_type1(map: Map, w: Number): Array{
 		var del_list: Array = new Array;//to save cubes that need delete
 		for(var h = map.Height-1; h > 0; --h){
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
@@ -225,25 +304,25 @@ class Ai{
 				if(map.make_column(map.lookup(w,h)).length >= 1){
 					//check which one is higher than the other
 					//map.make_column(map.lookup(w,h))[0] always higher(<) than h
-					trace("find 2-contact at(" + w + "," + h + ")");
+					//trace("find 2-contact at(" + w + "," + h + ")");
 					var del_list_up: Array = new Array;
 					var del_list_down: Array = new Array;
-					for(var ph = 1; h + ph < 11 && h - 1 - ph > 0 && ph < 3; ++ph){
-						if(map.lookup(w,h + ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h + ph).state instanceof Waiting){
-							trace("column_travel_dw find!");
+					for(var ph = 1; ph < 6; ++ph){
+						if(map.lookup(w,h+ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
+							//trace("column_travel_dw find!");
 							del_list = del_list_down;
 							break;
-						}else{
-							trace("push_dw: " + w + "," + (h + ph));
+						}else if(map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
+							//trace("push_dw: " + w + "," + (h+ph));
 							del_list_down.push(map.lookup(w,h + ph));
 						}
-						if(map.lookup(w,h - 1 - ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h - 1 - ph).state instanceof Waiting){
-							trace("column_travel_up find!");
+						if(map.lookup(w,h-1-ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h-1-ph).state instanceof Waiting && h-1-ph > 0){
+							//trace("column_travel_up find!");
 							del_list = del_list_up;
 							break;
-						}else{
-							trace("push_up: " + w + "," + (h - 1 - ph));
-							del_list_up.push(map.lookup(w,h - 1 - ph));
+						}else if(map.lookup(w,h-1-ph).state instanceof Waiting && h-1-ph > 0){
+							//trace("push_up: " + w + "," + (h-1-ph));
+							del_list_up.push(map.lookup(w,h-1-ph));
 						}
 					}
 					if(del_list.length != 0){
@@ -259,6 +338,26 @@ class Ai{
 			return null;
 		}
 	}
+	
+	//未完成 以此列一個方塊發跡向上找同色,找到後再往上找另一個同色 將中間的方塊s回傳
+	private function column_travel_type2(map: Map, w: Number): Array{
+		var del_list: Array = new Array;//to save cubes that need delete
+		for(var h = map.Height-1; h > 0; --h){
+			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
+				var del_list_up: Array = new Array;
+				var del_list_down: Array = new Array;
+				for(var ph = 1; ph < 5; ++ph){
+					if(map.lookup(w,h+ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
+						
+					}else if(map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
+						del_list_down.push(map.lookup(w,h + ph));
+					}
+				}
+			}
+		}
+		return null
+	}
+	
 	//暴搜盤面,找出broken或是garbage方塊並回傳
 	private function bk_gbg_travel(map: Map): Array{
 		var bg_cubes: Array = new Array(2);
@@ -267,10 +366,10 @@ class Ai{
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0; --w){
 				if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_broken() == true){
-					trace("push broken(" + w + "," + h +")");
+					//trace("push broken(" + w + "," + h +")");
 					bg_cubes[0].push(map.lookup(w,h));
 				}else if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_garbage() == true){
-					trace("push garbage(" + w + "," + h +")");
+					//trace("push garbage(" + w + "," + h +")");
 					bg_cubes[1].push(map.lookup(w,h));
 				}
 			}
@@ -301,12 +400,8 @@ class Ai{
 		}
 		return best_cube;
 	}
-	//暴搜盤面找出最佳發火點並回傳(使用combo_rank_udate)
-	private function combo_travel_ver2(map: Map): Square{
-		combo_rank_update(map);
-		return this.best_chain_cubes[2];
-	}
 	
+	//暴搜盤面找出最佳排列點並回傳
 	private function amass_travel(map: Map): Square{
 		var get_point: Number = 0;
 		var best_cube: Square = null;
@@ -328,14 +423,15 @@ class Ai{
 		return best_cube;
 	}
 	
-	private function amass_travel_deep(map: Map): Array{
-		var best_cube: Square = null;
+	//深層暴搜盤面找出最佳排列點並回傳
+	private function amass_travel_deep(map: Map): Square{
+		var best_cube: Square = null;//最佳排列點方塊
 		var in_best_cubes: Boolean = false;
 		var best_point: Number = 0;
 		var result_: Array = new Array(2);//return
-		result_[0] = null;//最佳排列點方塊
-		result_[1] = new Array(3);//元最佳發火點消去最佳排列解後的新得點
-		result_[1] = [0,0,0];
+		//result_[0] = null;//最佳排列點方塊
+		//result_[1] = new Array(3);//元最佳發火點消去最佳排列解後的新得點
+		//result_[1] = [0,0,0];
 		best_point = amass_deep_formula(amass_counter(map),this.best_chain_point);
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
@@ -362,6 +458,7 @@ class Ai{
 						}
 					}
 					if(amass_deep_formula(amass_counter(temp_map),chain_point) > best_point){
+						trace("find best amass(" + w + "," + h + ")");
 						best_point = amass_deep_formula(amass_counter(temp_map),chain_point);
 						best_cube = map.lookup(w,h);
 					}
@@ -370,9 +467,10 @@ class Ai{
 				in_best_cubes = false;
 			}
 		}
-		return result_;
+		return best_cube;
 	}
 	
+	//深層暴搜盤面最佳排列點計算公式
 	private function amass_deep_formula(amass_point: Number,chain_points: Array): Number{
 		var amass_deep_point = amass_point;
 		for(var i = 0; i < chain_points.length; ++i){
@@ -381,13 +479,14 @@ class Ai{
 		return amass_deep_point;
 	}
 	
+	//暴搜初落下方塊找出會造成誤消去的方塊並打掉
 	public function dropping_travel(map: Map){
 		var del_arr = Dropping_checker(map);
 		if(del_arr != null){
 			trace_map_rgb(map);
 			for(var del_i = 0; del_i < del_arr.length; ++del_i){
 				shooting(map,del_arr[del_i]);
-				trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
+				trace("**********shoot_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")**********");
 			}
 		}
 	}
@@ -426,6 +525,7 @@ class Ai{
 		}
 		return get_point;
 	}
+	
 	//暴搜盤面,找出兩兩相鄰或是可連鎖消去的方塊並回傳,以contact_Num決定有幾個同色相連才要回傳
 	private function contact_checker(map: Map, contact_Num: Number): Array{
 		var temp_arr: Array = new Array();
@@ -466,6 +566,7 @@ class Ai{
 		}
 	}
 	
+	//檢查傳入的方塊,檢查是否有同色相鄰或是可連鎖消去並回傳,以contact_Num決定有幾個同色相連才要回傳
 	private function contact_checker_unit(map: Map, cube: Square, list: Array, contact_Num: Number): Array{
 		var temp_list: Array = new Array;
 		if(map.make_row(cube).length >= contact_Num-1){
@@ -521,6 +622,7 @@ class Ai{
 			return del_arr;
 		}
 	}
+	
 	//傳入一cube array,先消去這些cube,再將消去後造成的空格填滿
 	private function chain_del(map: Map, del_arr: Array){
 		//delete del_arr
@@ -536,6 +638,7 @@ class Ai{
 			}
 		}
 	}
+	
 	//消去map中位於(x,y)的cube,由need_move傳入之值決定是否要將消去後造成的空格填起
 	private function del_block(map: Map, x: Number, y: Number, need_move: Boolean){
 		var del_x = x;
@@ -546,6 +649,7 @@ class Ai{
 			move_block(map, del_x, del_y, false);
 		}
 	}
+	
 	//傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填滿空格
 	private function move_block(map: Map, x: Number, y: Number){
 		var locx = x;
@@ -558,32 +662,39 @@ class Ai{
 				if(map.lookup(locx,target_y).state instanceof Waiting){
 					map.setup(locx, locy, map.lookup(locx, target_y));
 					map.lookup(locx, locy).y = locy;
+					map.lookup(locx, locy).state = new Waiting(map);
 					//trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
 					del_block(map, locx, target_y, true);
 				}
 			}
 		}
 	}
+	
 	//將落下中方塊強制落下,由first_drop決定目標是否為初落下方塊
-	private function failing_dropping(map: Map, first_drop: Boolean){
+	private function failing_dropping(map: Map, first_dropping: Boolean){
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h).state instanceof Dropping && map.lookup(w,h).first_drop == true && first_drop == true){
+				if( map.lookup(w,h) == null) continue;
+				if( !(map.lookup(w,h).state instanceof Dropping) ) continue;
+				
+				if( map.lookup(w,h).first_drop == true && first_dropping == true ){
 					for(var move_to = h+1; move_to < map.Height && map.lookup(w,move_to) == null; ++move_to){
 						map.setup(w, move_to, map.lookup(w, h));
 						map.lookup(w, move_to).y = move_to;
-						del_block(map, w, move_to, false);
+						del_block(map, w, h, false);
 						if(move_to+1 == map.Height || map.lookup(w,move_to+1) != null){
-							map.lookup(w, move_to).state(new Waiting(map));
+							map.lookup(w, move_to).state = new Waiting(map);
 						}
 					}
-				}else if(map.lookup(w,h).state instanceof Dropping && map.lookup(w,h).first_drop == false && first_drop == false){
-					for(var move_to = h+1; move_to < map.Height && map.lookup(w,move_to) == null; ++move_to){
-						map.setup(w, move_to, map.lookup(w, h));
-						map.lookup(w, move_to).y = move_to;
-						del_block(map, w, move_to, false);
-						if(move_to+1 == map.Height || map.lookup(w,move_to+1) != null){
-							map.lookup(w, move_to).state(new Waiting(map));
+				}else if( map.lookup(w,h).first_drop == false && first_dropping == false ){
+					for(var move_to = h; move_to < map.Height; ++move_to){
+						if( map.lookup(w,move_to+1) != null ){
+							map.setup(w, move_to, map.lookup(w, h));
+							map.lookup(w, move_to).y = move_to;
+							if( h != move_to ) 
+							    del_block(map, w, h, false);
+							map.lookup(w, move_to).state = new Waiting(map);
+							break;
 						}
 					}
 				}
@@ -596,7 +707,7 @@ class Ai{
         for(var i = 0; i < map.Height; ++i){
 			state_arr[i] = new Array(map.Width);
 		}
-		for(var h = map.Height-1; h > 0; --h){
+		for(var h = map.Height-1; h >= 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if( map.lookup(w,h).state instanceof Waiting ){
 					var waiting: Waiting = Waiting(map.lookup(w,h).state);
@@ -626,13 +737,12 @@ class Ai{
 			trace(state_arr[a]);
 		}
 	}
-	
 	private function trace_map_rgb(map: Map){
 		var rgb_arr: Array = new Array(map.Height);
         for(var i = 0; i < map.Height; ++i){
 			rgb_arr[i] = new Array(map.Width);
 		}
-		for(var h = map.Height-1; h > 0; --h){
+		for(var h = map.Height-1; h >= 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if( map.lookup(w,h).rgb == 255 << 16 )
 				    rgb_arr[h][w] = "Re";
@@ -649,27 +759,6 @@ class Ai{
 		trace("map_RGB:");
 		for(var a = 0; a < map.Height; ++a){
 			trace(rgb_arr[a]);
-		}
-	}
-	private function trace_map_cycled(map: Map){
-		var cycled_arr: Array = new Array(map.Height);
-        for(var i = 0; i < map.Height; ++i){
-			cycled_arr[i] = new Array(map.Width);
-		}
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h).cycled == true ){
-					cycled_arr[h][w] = "Tr";
-				}else if(map.lookup(w,h).cycled == false ){
-					cycled_arr[h][w] = "Fa";
-				}else{
-					cycled_arr[h][w] = "--";
-				}
-			}
-		}
-		trace("map_cycled:");
-		for(var a = 0; a < map.Height; ++a){
-			trace(cycled_arr[a]);
 		}
 	}
 	

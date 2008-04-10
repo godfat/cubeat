@@ -251,6 +251,7 @@ class Square
     private function real_y_position(): Number{ return y_*map_.Size; }
 	public var color_num: Number;
 	public var first_drop: Boolean;
+	public function dropped():Void { this.first_drop = false; }
 	private var x_: Number;
     private var y_: Number;
     private var body_: MovieClip;

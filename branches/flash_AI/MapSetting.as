@@ -3,7 +3,8 @@ class MapSetting{
     public var Width: Number = 6;
     public var Height: Number = 11;
     public var Size: Number = 50;
-    public var Speed: Number = Size/15 + 0.03;  //we plus 0.01 here is because of float number's inaccuracy.
+    //public var Speed: Number = Size/15 + 0.03;  //we plus 0.01 here is because of float number's inaccuracy.
+	public var Speed: Number = Size/30 + 0.03;
     public var Frequency: Number = 180;
     public var Decay: Number = 50;
     public var Delay: Number = 0;

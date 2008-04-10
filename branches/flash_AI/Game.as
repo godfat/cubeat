@@ -30,13 +30,12 @@ class Game{
 		
 		//new AI
 		Ai_ = new Ai(this,maps_[0]);
-		//Ai_.combo_rank_update(map_[0]);
-		//setInterval( Delegate.create(Ai_, Ai_.starter), 9500 );
-		//setInterval( Delegate.create(Ai_, Ai_.full_process), 5000, maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.dropping_travel), 1000, maps_[0]);
-		//setInterval( Delegate.create(Ai_, Ai_.combo_rank_update), 8000, maps_[0]);
+		setInterval( Delegate.create(Ai_, Ai_.full_process), 1000, maps_[0]);
+		setInterval( Delegate.create(Ai_, Ai_.dropping_travel), 3000, maps_[0]);
+		setInterval( Delegate.create(Ai_, Ai_.combo_rank_update), 10000, maps_[0]);
+		setInterval( Delegate.create(Ai_, Ai_.update_ai_state), 500, maps_[0]);
 		
-		var testcase: Array = [[9,9,9,9,9,9],
+		/*var testcase: Array = [[9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
@@ -46,12 +45,23 @@ class Game{
 							   [9,2,2,1,9,9],
 							   [0,1,0,0,9,9],
 							   [1,3,2,3,3,9],
-							   [1,2,0,0,3,9]];
+							   [1,2,0,0,3,9]];*/
 		
+		var testcase: Array = [[9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,0,9,9,9,9],
+							   [9,1,3,9,9,9],
+							   [9,1,2,0,9,9],
+							   [9,2,2,1,9,9],
+							   [0,1,0,0,9,9],
+							   [1,3,2,3,3,9],
+							   [1,2,0,0,3,9]];
 		for( var i = testcase.length -1; i >= 0; i-- ) {
 			for( var j = testcase[i].length -1; j >= 0 ; j-- ) {
 				if( testcase[i][j] != 9 )
-					new Square(maps_[0], j, i, testcase[i][j]);
+					new Square(maps_[0], j, i, testcase[i][j]).dropped();
 			}
 		}
 		

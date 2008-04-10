@@ -32,11 +32,12 @@ public:
         player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s1->ally_input_ids(), s1->enemy_input_ids());
 
         // setup map0
-        map0_ = utils::MapLoader::load("config/puzzle.zzml");
+        map0_ = utils::MapLoader::generate(5); // presenter::Map::create();
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1
-        map1_ = presenter::Map::create();
+        // map1_ = utils::MapLoader::load("config/puzzle.zzml");
+        map1_ = utils::MapLoader::load(utils::random(2));
         map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
         // mini view

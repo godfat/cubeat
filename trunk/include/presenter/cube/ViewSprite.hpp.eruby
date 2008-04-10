@@ -4,6 +4,7 @@
 #include "view/Sprite.hpp"
 #include "presenter/cube/ViewMaster.hpp"
 #include "data/ViewSpriteSetting.hpp"
+#include "data/Color.hpp"
 #include "utils/Random.hpp"
 
 #include "Accessors.hpp"

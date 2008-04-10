@@ -40,6 +40,7 @@ public:
         garbage_left_(0), score_(0), current_sum_of_attack_(0)
     {}
     Map& init_cubes();
+    Map& init_cubes(utils::vector_2d<int> const&);
     <% debug_hook '~Map' do %>(){<%end%>}
 
     Map& <% debug_hook 'cycle_slow' do %>(){ <% end %>

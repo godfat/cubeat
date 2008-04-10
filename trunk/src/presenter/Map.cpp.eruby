@@ -87,7 +87,15 @@ pMap <% debug_hook 'Map::init' do %>(){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(); // beware! this need refer model_!
-    // view_ = view::Map::create(self);
+    return self;
+}
+
+pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){		
+<% end %>		
+    pMap self = shared_from_this();		
+    model_ = model::Map::create(self, setting_);		
+    model_->init_cubes(data); // beware! this need refer model_!
+
     return self;
 }
 

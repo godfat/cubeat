@@ -11,10 +11,8 @@
 
 #include <string>
 
-namespace irr {
-namespace audio {
+namespace irrklang {
 class ISoundEngine;
-}
 }
 
 namespace psc {
@@ -69,7 +67,7 @@ private:
 	Sound();
 
 private:
-    irr::audio::ISoundEngine* engine_;
+    irrklang::ISoundEngine* engine_;
     std::string base_path_;
 };
 

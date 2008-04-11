@@ -104,7 +104,7 @@ private:
     int haste_key_;
     int pause_key_;
 
-    int CURSOR_SENSATIVITY;
+    float CURSOR_SENSATIVITY;
 
     wpPlayer player_;
     view::pSprite cursor_mark_;

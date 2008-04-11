@@ -27,6 +27,10 @@ using namespace easing;
 using namespace accessor;
 
 class TestGame{
+    typedef std::tr1::shared_ptr<int> pDummy;
+    enum STATE { STAND, ATTACK, HIT };
+    enum { NORMAL, GOOD, BAD };
+
 public:
     TestGame(){
         scene_ = psc::view::Scene::create("TestMapViewScene");
@@ -133,40 +137,11 @@ public:
         //character sprite setup (by config):
         setup_char_sprite_by_config( char_1p_, conf1p_, "config/char/char1.zzml" );
         setup_char_sprite_by_config( char_2p_, conf2p_, "config/char/char2.zzml" );
+        char_2p_->flipH();
 
-        //other ui which needs to be configured....
-        character_1p_ = view::AnimatedSprite::create("char1", scene_, 192, 192, true);
-        character_1p_->textureFlipH().set<Pos2D>(vec2(640, 580));
-        character_2p_ = view::AnimatedSprite::create("char2", scene_, 192, 192, true);
-        character_2p_->set<Pos2D>(vec2(640,580));
+        min_ = 0, sec_ = 0;
 
-        good_deco_1p_ = view::AnimatedSprite::create("good_deco", character_1p_, 50, 50);
-        good_deco_1p_->textureFlipH().set<Pos2D>(vec2(-24, -96));
-        good_deco_1p_->playAnime("moving", 1000, -1).set<Visible>(false);
-
-        good_deco_2p_ = view::AnimatedSprite::create("good_deco", character_2p_, 50, 50);
-        good_deco_2p_->set<Pos2D>(vec2(-21, -96));
-        good_deco_2p_->playAnime("moving", 1000, -1).set<Visible>(false);
-
-        bad_deco_1p_ = view::AnimatedSprite::create("bad_deco", character_1p_, 50, 75);
-        bad_deco_1p_->textureFlipH().setDepth(-1).set<Pos2D>(vec2(-96, -96));
-        bad_deco_1p_->playAnime("moving", 1000, -1).set<Visible>(false);
-
-        bad_deco_2p_ = view::AnimatedSprite::create("bad_deco", character_2p_, 50, 75);
-        bad_deco_2p_->set<Pos2D>(vec2(46, -96));
-        bad_deco_2p_->playAnime("moving", 1000, -1).set<Visible>(false);
-
-        face_1p_ = view::Sprite::create("char1/face_normal", character_1p_, 50, 50);
-        face_1p_->textureFlipH().set<Pos2D>(vec2(-72, -64));
-
-        face_2p_ = view::Sprite::create("char2/face_normal", character_2p_, 50, 50);
-        face_2p_->set<Pos2D>(vec2(114, 33));
-
-        character_1p_->playAnime("stand", 1000, -1);
-        character_2p_->playAnime("stand", 1000, -1);
-
-        min_ = 0, sec_ = 0, last_garbage_1p_ = 0, last_garbage_2p_ = 0;
-        state_1p_ = STAND, state_2p_ = STAND;
+        last_garbage_1p_ = 0, last_garbage_2p_ = 0, state_1p_ = STAND, state_2p_ = STAND;
 
         /// END OF SCARY UI SETUP
 
@@ -176,19 +151,16 @@ public:
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
 
-        //about face... how to do it?
-        face_1p_pos_.push_back(vec2(-72, -64));
-        face_1p_pos_.push_back(vec2(-72, -65));
-        face_1p_pos_.push_back(vec2(-72, -66));
-        face_1p_pos_.push_back(vec2(-72, -65));
-//        face_2p_pos_.push_back(vec2(114, 33));
-//        face_2p_pos_.push_back(vec2(115, 34));
-//        face_2p_pos_.push_back(vec2(117, 35));
-//        face_2p_pos_.push_back(vec2(115, 34));
-        face_2p_pos_.push_back(vec2(18, -63));
-        face_2p_pos_.push_back(vec2(19, -62));
-        face_2p_pos_.push_back(vec2(21, -61));
-        face_2p_pos_.push_back(vec2(19, -62));
+        for( size_t i = 0; i < conf1p_.V("face_pos").size(); ++i ) {
+            utils::map_any const& pos = conf1p_.V("face_pos").M(i);
+            face_1p_pos_.push_back(vec2( pos.I("x"), pos.I("y") ));
+        }
+
+        for( size_t i = 0; i < conf2p_.V("face_pos").size(); ++i ) {
+            utils::map_any const& pos = conf2p_.V("face_pos").M(i);
+            face_2p_pos_.push_back(vec2( - pos.I("x"), pos.I("y") ) );
+            //2p's face position needs to be flipped horizontally
+        }
 
         restore_1p_state();
         restore_2p_state();
@@ -219,10 +191,20 @@ public:
         stage_->redraw();
         //IrrDevice::i().d()->getVideoDriver()->clearZBuffer();
         scene_->redraw();
-//        map0_->redraw().cycle_fast();
-//        map1_->redraw().cycle_fast();
         map0_->redraw().cycle();
         map1_->redraw().cycle();
+    }
+
+    void switch_character_sprite_state
+        ( view::pMenu& charsp, utils::map_any& conf, STATE const& state, pDummy& dummy )
+    {
+        conf["current_state"] = static_cast<int>(state);
+        utils::map_any const& attr = conf.M("state").M(state);
+        charsp->getSprite("face").set<Visible>( attr.I("face_visible") );
+        dummy.reset();
+        charsp->getAnimSprite("body")
+               .playAnime( attr.S("anim"), 1000, 0/*, std::tr1::bind(restore_stand)*/ );
+        Sound::i().play( attr.S("sound") );
     }
 
     void update_ui(){
@@ -242,58 +224,66 @@ public:
         //1p and 2p state change here.. should become state pattern:
         if( state_1p_ != HIT && last_garbage_1p_ > new_garbage_1p_ ) {
             state_1p_ = HIT;
-            face_1p_->set<Visible>(false);
+            char_1p_->getSprite("face").set<Visible>(false);
             stupid_dummy_1p_.reset();
-            character_1p_->playAnime("hit", 1000, 0, std::tr1::bind(&TestGame::restore_1p_state, this));
+            char_1p_->getAnimSprite("body").playAnime("hit", 1000, 0, std::tr1::bind(&TestGame::restore_1p_state, this));
             Sound::i().play("char1/hit.wav");
         }
         else if( state_1p_ != ATTACK && state_1p_ != HIT && map0_->current_sum_of_attack() > 1 ) {
             state_1p_ = ATTACK;
-            face_1p_->set<Visible>(false);
+            char_1p_->getSprite("face").set<Visible>(false);
             stupid_dummy_1p_.reset();
-            character_1p_->playAnime("attack", 1000, 0, std::tr1::bind(&TestGame::restore_1p_state, this));
+            char_1p_->getAnimSprite("body").playAnime("attack", 1000, 0, std::tr1::bind(&TestGame::restore_1p_state, this));
             Sound::i().play("char1/attack.wav");
         }
 
         if( state_2p_ != HIT && last_garbage_2p_ > new_garbage_2p_ ) {
             state_2p_ = HIT;
-            face_2p_->set<Visible>(false);
+            char_2p_->getSprite("face").set<Visible>(false);
             stupid_dummy_2p_.reset();
-            character_2p_->playAnime("hit", 1000, 0, std::tr1::bind(&TestGame::restore_2p_state, this));
+            char_2p_->getAnimSprite("body").playAnime("hit", 1000, 0, std::tr1::bind(&TestGame::restore_2p_state, this));
             Sound::i().play("char2/hit.wav");
         }
         else if( state_2p_ != ATTACK && state_2p_ != HIT && map1_->current_sum_of_attack() > 1 ) {
             state_2p_ = ATTACK;
-            face_2p_->set<Visible>(false);
+            char_2p_->getSprite("face").set<Visible>(false);
             stupid_dummy_2p_.reset();
-            character_2p_->playAnime("attack", 1000, 0, std::tr1::bind(&TestGame::restore_2p_state, this));
+            char_2p_->getAnimSprite("body").playAnime("attack", 1000, 0, std::tr1::bind(&TestGame::restore_2p_state, this));
             Sound::i().play("char2/attack.wav");
         }
 
         bool map0_column_full = map0_->has_column_full(), map1_column_full = map1_->has_column_full();
         if( map0_column_full && map1_column_full ) {
-            face_1p_->setTexture("char1/face_bad");
-            face_2p_->setTexture("char2/face_bad");
-            bad_deco_1p_->set<Visible>(true); good_deco_1p_->set<Visible>(false);
-            bad_deco_2p_->set<Visible>(true); good_deco_2p_->set<Visible>(false);
+            char_1p_->getSprite("face").setTexture("char1/face_bad");
+            char_2p_->getSprite("face").setTexture("char2/face_bad");
+            char_1p_->getAnimSprite("bdeco").set<Visible>(true);
+            char_1p_->getAnimSprite("gdeco").set<Visible>(false);
+            char_2p_->getAnimSprite("bdeco").set<Visible>(true);
+            char_2p_->getAnimSprite("gdeco").set<Visible>(false);
         }
         else if( !map0_column_full && map1_column_full ) {
-            face_1p_->setTexture("char1/face_good");
-            face_2p_->setTexture("char2/face_bad");
-            bad_deco_1p_->set<Visible>(false); good_deco_1p_->set<Visible>(true);
-            bad_deco_2p_->set<Visible>(true);  good_deco_2p_->set<Visible>(false);
+            char_1p_->getSprite("face").setTexture("char1/face_good");
+            char_2p_->getSprite("face").setTexture("char2/face_bad");
+            char_1p_->getAnimSprite("bdeco").set<Visible>(false);
+            char_1p_->getAnimSprite("gdeco").set<Visible>(true);
+            char_2p_->getAnimSprite("bdeco").set<Visible>(true);
+            char_2p_->getAnimSprite("gdeco").set<Visible>(false);
         }
         else if( map0_column_full && !map1_column_full ) {
-            face_1p_->setTexture("char1/face_bad");
-            face_2p_->setTexture("char2/face_good");
-            bad_deco_1p_->set<Visible>(true);  good_deco_1p_->set<Visible>(false);
-            bad_deco_2p_->set<Visible>(false); good_deco_2p_->set<Visible>(true);
+            char_1p_->getSprite("face").setTexture("char1/face_bad");
+            char_2p_->getSprite("face").setTexture("char2/face_good");
+            char_1p_->getAnimSprite("bdeco").set<Visible>(true);
+            char_1p_->getAnimSprite("gdeco").set<Visible>(false);
+            char_2p_->getAnimSprite("bdeco").set<Visible>(false);
+            char_2p_->getAnimSprite("gdeco").set<Visible>(true);
         }
         else {
-            face_1p_->setTexture("char1/face_normal");
-            face_2p_->setTexture("char2/face_normal");
-            bad_deco_1p_->set<Visible>(false); good_deco_1p_->set<Visible>(false);
-            bad_deco_2p_->set<Visible>(false); good_deco_2p_->set<Visible>(false);
+            char_1p_->getSprite("face").setTexture("char1/face_normal");
+            char_2p_->getSprite("face").setTexture("char2/face_normal");
+            char_1p_->getAnimSprite("bdeco").set<Visible>(false);
+            char_1p_->getAnimSprite("gdeco").set<Visible>(false);
+            char_2p_->getAnimSprite("bdeco").set<Visible>(false);
+            char_2p_->getAnimSprite("gdeco").set<Visible>(false);
         }
 
         last_garbage_1p_ = new_garbage_1p_;
@@ -309,7 +299,7 @@ public:
     }
 
     void restore_1p_state(){
-        face_1p_->set<Visible>(true);
+        char_1p_->getSprite("face").set<Visible>(true);
         state_1p_ = STAND;
         stupid_dummy_1p_ = std::tr1::shared_ptr<int>(new int); //refresh
         restore_1p_state_();
@@ -318,16 +308,15 @@ public:
     }
 
     void restore_1p_state_(){
-        character_1p_->playAnime("stand", 1000, -1);
+        char_1p_->getAnimSprite("body").playAnime("stand", 1000, -1);
         f1_it_ = face_1p_pos_.begin();
-        face_1p_->set<Pos2D>( *f1_it_ );
-        stupid_dummy_1p2_ = std::tr1::shared_ptr<int>(new int); //refresh2
+        char_1p_->getSprite("face").set<Pos2D>( *f1_it_ );
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&TestGame::face_1p_update, this), stupid_dummy_1p2_, 250, -1);
+            std::tr1::bind(&TestGame::face_1p_update, this), 250, 2);
     }
 
     void restore_2p_state(){
-        face_2p_->set<Visible>(true);
+        char_2p_->getSprite("face").set<Visible>(true);
         state_2p_ = STAND;
         stupid_dummy_2p_ = std::tr1::shared_ptr<int>(new int); //refresh
         restore_2p_state_();
@@ -336,24 +325,23 @@ public:
     }
 
     void restore_2p_state_(){
-        character_2p_->playAnime("stand", 1000, -1);
+        char_2p_->getAnimSprite("body").playAnime("stand", 1000, -1);
         f2_it_ = face_2p_pos_.begin();
-        face_2p_->set<Pos2D>( *f2_it_ );
-        stupid_dummy_2p2_ = std::tr1::shared_ptr<int>(new int); //refresh2
+        char_2p_->getSprite("face").set<Pos2D>( *f2_it_ );
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&TestGame::face_2p_update, this), stupid_dummy_2p2_, 250, -1);
+            std::tr1::bind(&TestGame::face_2p_update, this), 250, 2);
     }
 
     //SUPER BRUTE FORCE... but I can't think of any faster way to do this....
     void face_1p_update(){
         ++f1_it_;
         if( f1_it_ == face_1p_pos_.end() ) f1_it_ = face_1p_pos_.begin();
-        face_1p_->set<Pos2D>( *f1_it_ );
+        char_1p_->getSprite("face").set<Pos2D>( *f1_it_ );
     }
     void face_2p_update(){
         ++f2_it_;
         if( f2_it_ == face_2p_pos_.end() ) f2_it_ = face_2p_pos_.begin();
-        face_2p_->set<Pos2D>( *f2_it_ );
+        char_2p_->getSprite("face").set<Pos2D>( *f2_it_ );
     }
 
 private:
@@ -378,23 +366,16 @@ private:
     //Temporary Character
     view::pMenu char_1p_;
     view::pMenu char_2p_;
-    view::pAnimatedSprite character_1p_, character_2p_;
-    view::pSprite         face_1p_, face_2p_;
-    view::pAnimatedSprite good_deco_1p_, good_deco_2p_;
-    view::pAnimatedSprite bad_deco_1p_, bad_deco_2p_;
     int min_, sec_;
 
     //used for temporary state comparison
-    enum { STAND, ATTACK, HIT };
-    enum { NORMAL, GOOD, BAD };
     int last_garbage_1p_, last_garbage_2p_;
     int state_1p_, state_2p_;
     std::vector<vec2> face_1p_pos_;
     std::vector<vec2> face_2p_pos_;
     std::vector<vec2>::iterator f1_it_;
     std::vector<vec2>::iterator f2_it_;
-    std::tr1::shared_ptr<int> stupid_dummy_1p_, stupid_dummy_2p_;
-    std::tr1::shared_ptr<int> stupid_dummy_1p2_, stupid_dummy_2p2_;
+    pDummy stupid_dummy_1p_, stupid_dummy_2p_;
 };
 
 #include "App.hpp"

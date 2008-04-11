@@ -184,7 +184,7 @@ void EventDispatcher::obj_picking(view::pScene const& scene)
         ObjList& pick_input = pickmap_[input];
         pick_input.insert(pick_input.end(), picked.begin(), picked.end());
 
-        scene->update_focus_objs_by_input(input);
+        scene->update_focus_objs_by_input(input); //must have some better place to put this code.
     }
 }
 

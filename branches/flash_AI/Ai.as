@@ -299,25 +299,18 @@ class Ai{
 		var del_list: Array = new Array;//to save cubes that need delete
 		for(var h = map.Height-1; h > 0; --h){
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-				//trace("check(" + h + ")>>" + map.make_column(map.lookup(w,h)).length);
-				//find 2-contact at this column
 				if(map.make_column(map.lookup(w,h)).length >= 1){
 					//check which one is higher than the other
-					//map.make_column(map.lookup(w,h))[0] always higher(<) than h
-					//trace("find 2-contact at(" + w + "," + h + ")");
 					var del_list_up: Array = new Array;
 					var del_list_down: Array = new Array;
 					for(var ph = 1; ph < 6; ++ph){
 						if(map.lookup(w,h+ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
-							//trace("column_travel_dw find!");
 							del_list = del_list_down;
 							break;
 						}else if(map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
-							//trace("push_dw: " + w + "," + (h+ph));
 							del_list_down.push(map.lookup(w,h + ph));
 						}
 						if(map.lookup(w,h-1-ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h-1-ph).state instanceof Waiting && h-1-ph > 0){
-							//trace("column_travel_up find!");
 							del_list = del_list_up;
 							break;
 						}else if(map.lookup(w,h-1-ph).state instanceof Waiting && h-1-ph > 0){
@@ -335,27 +328,51 @@ class Ai{
 		if(del_list.length != 0){
 			return del_list;
 		}else{
-			return null;
+			return column_travel_type2(map, w);
 		}
 	}
 	
-	//未完成 以此列一個方塊發跡向上找同色,找到後再往上找另一個同色 將中間的方塊s回傳
+	//以此列一個方塊發跡向上找同色,找到後再往上找另一個同色 將中間的方塊s回傳
 	private function column_travel_type2(map: Map, w: Number): Array{
 		var del_list: Array = new Array;//to save cubes that need delete
+		var color_list: Array = new Array;
+		trace("start col type2!!");
+		trace_map_rgb(map);
 		for(var h = map.Height-1; h > 0; --h){
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-				var del_list_up: Array = new Array;
-				var del_list_down: Array = new Array;
-				for(var ph = 1; ph < 5; ++ph){
-					if(map.lookup(w,h+ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
-						
-					}else if(map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
-						del_list_down.push(map.lookup(w,h + ph));
-					}
-				}
+				trace("start : "+h+" > "+map.lookup(w,h).rgb);
+				del_list = new Array;
+				color_list = new Array;
+				color_list.push(map.lookup(w,h));
+				del_list = column_color_checker(map, del_list, color_list);
+			}
+			if(del_list!=null){
+				return del_list;
 			}
 		}
 		return null
+	}
+	
+	//接續column_travel_type2
+	private function column_color_checker(map: Map, del_list: Array, color_list: Array): Array{
+		if(color_list.length > 0){
+			for(var ph = 1; ph <=3 && color_list[color_list.length-1].y-ph > 0 && color_list.length < 3; ++ph){
+				if( !(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph).state instanceof Waiting) ) continue;
+				if(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph).rgb == color_list[color_list.length-1].rgb){
+					color_list.push(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph));
+					del_list = column_color_checker(map, del_list, color_list);
+				}else{
+					del_list.push(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph));
+				}
+			}
+			if(color_list.length >= 3){
+				return del_list;
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
 	}
 	
 	//暴搜盤面,找出broken或是garbage方塊並回傳

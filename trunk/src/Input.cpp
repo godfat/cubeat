@@ -5,8 +5,9 @@
 
 #include "Input.hpp"
 #include "Player.hpp"
-#include "view/Scene.hpp"       //is this really good...?
-#include "view/Sprite.hpp"      //is this really good...?
+#include "view/Scene.hpp"       //warning: is this really good...?
+#include "view/Sprite.hpp"      //warning: is this really good...?
+#include "IrrDevice.hpp"        //warning: is this really good...?
 #include "utils/dictionary.hpp"
 #include "private/MastEventReceiver.hpp"
 
@@ -86,7 +87,7 @@ Input::Input(std::string const& path)
     haste_key_  = keymap.I("haste");
     pause_key_  = keymap.I("pause");
 
-    CURSOR_SENSATIVITY = keymap.I("speed");
+    CURSOR_SENSATIVITY = static_cast<float>( keymap.I("speed") );
 
 #ifdef _USE_WIIMOTE_
     //connect and init wiimote
@@ -159,21 +160,23 @@ void Input::setCursorVisible(bool b) {
 
 void Input::cursor_by_keyboard_mouse()
 {
+    float speed = CURSOR_SENSATIVITY * 150.f / IrrDevice::i().d()->getVideoDriver()->getFPS();
+    if( speed < 1.f ) speed = 1.f;
     if( cursor_key_ == 0 ) {     //A Special Case Which Is Not EKEY_CODE: 0x00 means "mouse"
         cursor_.x() = MastEventReceiver::i().mouseX();
         cursor_.y() = MastEventReceiver::i().mouseY();
     }
     else if( cursor_key_ == 1 ) {//A Special Case Which Is Not EKEY_CODE: 0x01 means "wasd"
         cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_D)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_A))) * CURSOR_SENSATIVITY;
+                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_A))) * speed;
         cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_S)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_W))) * CURSOR_SENSATIVITY;
+                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_W))) * speed;
     }
     else if( cursor_key_ == 2 ) {//A Special Case Which Is Not EKEY_CODE: 0x02 means "use arrow"
         cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_RIGHT)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_LEFT ))) * CURSOR_SENSATIVITY;
+                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_LEFT ))) * speed;
         cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_DOWN )) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_UP   ))) * CURSOR_SENSATIVITY;
+                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_UP   ))) * speed;
     }
 }
 

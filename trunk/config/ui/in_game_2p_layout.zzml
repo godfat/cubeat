@@ -29,4 +29,4 @@ misc: {
 
 # 1p & 2p character sprite positions
 character_center_x: 640,
-character_center_y: 700
+character_center_y: 580

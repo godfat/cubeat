@@ -9,10 +9,17 @@ anim_attr: {
 face_w: 50,
 face_h: 50,
 
-# face texture corresponding to state
+# face texture
 normal: 'char2/face_normal',
 good  : 'char2/face_good',
 bad   : 'char2/face_bad',
+
+# actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }
+state : {
+    0: { anim: 'stand',  face_visible: 1, sound: '' },
+    1: { anim: 'attack', face_visible: 0, sound: 'char2/attack.wav' },
+    2: { anim: 'hit'  ,  face_visible: 0, sound: 'char2/hit.wav' }
+},
 
 # face pos from frame0 to frame3
 face_pos: [

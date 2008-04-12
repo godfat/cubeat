@@ -3,49 +3,52 @@ class Ai{
 	public function Ai(game: Game, map: Map){
 		game_ = game;
 		map_ = map;
-		travel_limit = 3;//make AI only travel the last (11-limit) Row of Map
-		best_amass_point = [0,0,0];
-		best_amass_cube = null;
+		travel_limit = 3;//設定暴力搜尋時的搜尋極限(到高為11-travel_limit為止)
 		best_chain_point = [0,0,0];
-		best_chain_cubes = [null,null,null];//儲存最佳的3個發火點
+		best_chain_cubes = [null,null,null];//儲存最佳的3個發火點方塊
 		shooted = false;
 		chaining = false;
 		trace("Hi,I am Ai!");
-		combo_rank_update(map);
 	}
 	
 	//一般完整流程
 	public function full_process(map: Map){
-		update_ai_state(map);
+		update_ai_state(map);//檢查AI盤面狀態
+		//消去broken與garbage方塊s
 		var bg_list: Array = bk_gbg_travel(map);
 		var too_high_list: Array = too_high_travel(map);
 		if(bg_list != null){
-			trace("find broken & garbage !!");
+			trace("find broken or garbage !!");
 			for (var i =0; i<bg_list.length; ++i){
 				shooting_arr(map, bg_list[i]);
 			}
 		}
-		var c_cube: Square = null;
-		var c_point: Number = 0;
-		for(var i = 0; i<best_chain_cubes.length; ++i){
-			if(best_chain_cubes[i] != null && best_chain_point[i]>c_point){
-				c_point = best_chain_point[i];
-				c_cube = best_chain_cubes[i];
-			}
-		}
+		//以下為進行各種行動的條件判斷,或許不用else 而是單純個別用if比較好?
+		//讓AI進行連鎖的條件
 		if(count_square_Num(map)>=30 && this.shooted == false && this.chaining == false && c_point>10){
 			//進行連鎖
+			var c_cube: Square = null;
+			var c_point: Number = 0;
+			//找出前三名取得最高分方塊
+			for(var i = 0; i<best_chain_cubes.length; ++i){
+				if(best_chain_cubes[i] != null && best_chain_point[i]>c_point){
+					c_point = best_chain_point[i];
+					c_cube = best_chain_cubes[i];
+				}
+			}
 			if(c_cube != null){
 				trace("**********shoot for chain***********");
 				shooting(map,c_cube);
 				this.chaining = true;
 			}
+		//讓AI進行消去過高列的條件
 		}else if(too_high_list != null && this.shooted == false){
 			//消去過高列
 			trace("**********shoot too high column !!**********");
 			for (var i =0; i<too_high_list.length; ++i){
 				shooting_arr(map, too_high_list[i]);
 			}
+		//讓AI進行整理盤面的條件
 		}else if(count_square_Num(map)>=10 && count_square_Num(map)<30 && this.shooted == false && this.chaining == false){
 			//整理盤面
 			var amass_cube: Square = amass_travel_deep(map);
@@ -53,6 +56,7 @@ class Ai{
 				trace("***********shoot for amass***********");
 				shooting(map,amass_travel_deep(map));
 			}
+		//讓AI進行動態連鎖的條件
 		}else if(this.shooted == true && this.chaining == true){
 			//即時連鎖
 			var rtc_cube = rtc_checker(map);
@@ -65,7 +69,7 @@ class Ai{
 	
 	//檢查盤面是否在連鎖中or剛進行射擊過
 	public function update_ai_state(map){
-		for(var h = map.Height-1; h > this.travel_limit; --h){
+		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
 					this.shooted = true;
@@ -119,25 +123,20 @@ class Ai{
 	//更新最佳的3個發火點
 	public function combo_rank_update(map: Map){
 		var get_point: Number = 0;
-		var best_chain_list: Array = new Array(2);
-		best_chain_list[0] = new Array(3);
-		best_chain_list[1] = new Array(3);
-		best_chain_list[0] = [0,0,0];
-		best_chain_list[1] = [null,null,null];
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 					var temp_map: Map = set_brain_map(map);
 					del_block(temp_map, w, h, true);
 					get_point = combo_counter(temp_map);
-					for(var i = best_chain_list[0].length; i >=0; --i){
-						if(get_point > best_chain_list[0][i]){
+					for(var i = best_chain_point.length; i >=0; --i){
+						if(get_point > best_chain_point[i]){
 							for(var j = 0; j < i; ++j){
-								best_chain_list[0][j] = best_chain_list[0][j+1];
-								best_chain_list[1][j] = best_chain_list[1][j+1];
+								best_chain_point[j] = best_chain_point[j+1];
+								best_chain_cubes[j] = best_chain_cubes[j+1];
 							}
-							best_chain_list[0][i] = get_point;
-							best_chain_list[1][i] = map.lookup(w,h);
+							best_chain_point[i] = get_point;
+							best_chain_cubes[i] = map.lookup(w,h);
 							break;
 						}
 					}
@@ -146,10 +145,8 @@ class Ai{
 			}
 		}
 		for(var k = 0; k < this.best_chain_cubes.length; ++k){
-			trace("Best combo<" + best_chain_list[0][k] + ">(" + best_chain_list[1][k].x + "," + best_chain_list[1][k].y + ")");
+			trace("Best combo<" + best_chain_point[k] + ">(" + best_chain_cubes[k].x + "," + best_chain_cubes[k].y + ")");
 		}
-		best_chain_point = best_chain_list[0];
-		best_chain_cubes = best_chain_list[1];
 	}
 	
 	//最佳發火點分數進行更新
@@ -271,7 +268,7 @@ class Ai{
 		return null;
 	}
 	
-	//暴搜盤面,回傳過高列的目標可消去方塊
+	//消立柱相關,暴搜盤面,回傳過高列的目標可消去方塊
 	private function too_high_travel(map: Map): Array{
 		var map_tops: Array = top_checker(map);//get high of each column
 		var del_list: Array = new Array(map.Width);//to save cubes that need delete
@@ -279,10 +276,9 @@ class Ai{
 			del_list[i] = null;
 		}
 		for(var w = map.Width-1; w >= 0; --w){
-			//此列高度超過平均值+3
+			//判定此列過高的條件
 			if(map_tops[w] > map_tops[map.Width-1+1] + 3 || map_tops[w] > 7){
-				//travel this column
-				trace("==========column(" + w + ")too high==========");
+				trace("==========column(" + w + ") is too high==========");
 				del_list[w] = column_travel_type1(map, w);
 			}
 		}
@@ -294,16 +290,16 @@ class Ai{
 		return null;
 	}
 	
-	//搜尋此列的一組22相鄰方塊 找出第3個方塊 將中間的方塊s回傳
+	//消立柱相關,搜尋此列的一組22相鄰方塊 找出第3個方塊 將中間的方塊s回傳
 	private function column_travel_type1(map: Map, w: Number): Array{
-		var del_list: Array = new Array;//to save cubes that need delete
+		var del_list: Array = new Array;
 		for(var h = map.Height-1; h > 0; --h){
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 				if(map.make_column(map.lookup(w,h)).length >= 1){
-					//check which one is higher than the other
 					var del_list_up: Array = new Array;
 					var del_list_down: Array = new Array;
 					for(var ph = 1; ph < 6; ++ph){
+						//ph為與前一方塊距離, 因此可設定搜尋極限(目前為6)
 						if(map.lookup(w,h+ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h+ph).state instanceof Waiting && h+ph < 11){
 							del_list = del_list_down;
 							break;
@@ -314,7 +310,6 @@ class Ai{
 							del_list = del_list_up;
 							break;
 						}else if(map.lookup(w,h-1-ph).state instanceof Waiting && h-1-ph > 0){
-							//trace("push_up: " + w + "," + (h-1-ph));
 							del_list_up.push(map.lookup(w,h-1-ph));
 						}
 					}
@@ -332,15 +327,12 @@ class Ai{
 		}
 	}
 	
-	//以此列一個方塊發跡向上找同色,找到後再往上找另一個同色 將中間的方塊s回傳
+	//消立柱相關,以此列一個方塊發跡向上找同色,找到後再往上找另一個同色 將中間的方塊s回傳
 	private function column_travel_type2(map: Map, w: Number): Array{
-		var del_list: Array = new Array;//to save cubes that need delete
+		var del_list: Array = new Array;
 		var color_list: Array = new Array;
-		trace("start col type2!!");
-		trace_map_rgb(map);
 		for(var h = map.Height-1; h > 0; --h){
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-				trace("start : "+h+" > "+map.lookup(w,h).rgb);
 				del_list = new Array;
 				color_list = new Array;
 				color_list.push(map.lookup(w,h));
@@ -350,13 +342,14 @@ class Ai{
 				return del_list;
 			}
 		}
-		return null
+		return column_travel_type3(map, w);
 	}
 	
 	//接續column_travel_type2
 	private function column_color_checker(map: Map, del_list: Array, color_list: Array): Array{
 		if(color_list.length > 0){
 			for(var ph = 1; ph <=3 && color_list[color_list.length-1].y-ph > 0 && color_list.length < 3; ++ph){
+				//ph為與前一方塊距離, 因此可設定搜尋極限(目前為6)
 				if( !(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph).state instanceof Waiting) ) continue;
 				if(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph).rgb == color_list[color_list.length-1].rgb){
 					color_list.push(map.lookup(color_list[color_list.length-1].x,color_list[color_list.length-1].y-ph));
@@ -375,6 +368,23 @@ class Ai{
 		}
 	}
 	
+	//消立柱相關,直接打掉最高的兩顆方塊....orz
+	private function column_travel_type3(map: Map, w: Number): Array{
+		var del_list: Array = new Array;
+		for(var h = map.Height-1; h > 0; --h){
+			if(map.lookup(w,h) == null && map.lookup(w,h+1).state instanceof Waiting){
+				del_list.push(map.lookup(w,h+1));
+				del_list.push(map.lookup(w,h+2));
+				break;
+			}
+		}
+		if(del_list.length>0){
+			return del_list;
+		}else{
+			return null;
+		}
+	}
+	
 	//暴搜盤面,找出broken或是garbage方塊並回傳
 	private function bk_gbg_travel(map: Map): Array{
 		var bg_cubes: Array = new Array(2);
@@ -383,10 +393,8 @@ class Ai{
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0; --w){
 				if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_broken() == true){
-					//trace("push broken(" + w + "," + h +")");
 					bg_cubes[0].push(map.lookup(w,h));
 				}else if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_garbage() == true){
-					//trace("push garbage(" + w + "," + h +")");
 					bg_cubes[1].push(map.lookup(w,h));
 				}
 			}
@@ -445,10 +453,6 @@ class Ai{
 		var best_cube: Square = null;//最佳排列點方塊
 		var in_best_cubes: Boolean = false;
 		var best_point: Number = 0;
-		var result_: Array = new Array(2);//return
-		//result_[0] = null;//最佳排列點方塊
-		//result_[1] = new Array(3);//元最佳發火點消去最佳排列解後的新得點
-		//result_[1] = [0,0,0];
 		best_point = amass_deep_formula(amass_counter(map),this.best_chain_point);
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
@@ -487,7 +491,7 @@ class Ai{
 		return best_cube;
 	}
 	
-	//深層暴搜盤面最佳排列點計算公式
+	//深層暴搜盤面最佳排列點計算公式(這裡是打掉此點後的22相鄰方塊數+前3名發火點更新後的分數)
 	private function amass_deep_formula(amass_point: Number,chain_points: Array): Number{
 		var amass_deep_point = amass_point;
 		for(var i = 0; i < chain_points.length; ++i){
@@ -545,45 +549,23 @@ class Ai{
 	
 	//暴搜盤面,找出兩兩相鄰或是可連鎖消去的方塊並回傳,以contact_Num決定有幾個同色相連才要回傳
 	private function contact_checker(map: Map, contact_Num: Number): Array{
-		var temp_arr: Array = new Array();
-		var push_arr: Array = new Array();
+		var cube_list: Array = new Array();
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
-				temp_arr = contact_checker_unit(map, map.lookup(w,h), temp_arr, contact_Num);
-				
-				/*if(map.make_row(map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = map.make_row( map.lookup(w,h) );
-					push_arr.push( map.lookup(w,h) );
-					for(var push_row = 0; push_row < push_arr.length; ++push_row){
-						if(push_arr[push_row].cycled == false){
-							push_arr[push_row].cycled = true;
-							temp_arr.push(push_arr[push_row]);
-						}
-					}
-				}
-				if(map.make_column(map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = map.make_column( map.lookup(w,h) );
-					push_arr.push( map.lookup(w,h) );
-					for(var push_col = 0; push_col < push_arr.length; ++push_col){
-						if(push_arr[push_col].cycled == false){
-							push_arr[push_col].cycled = true;
-							temp_arr.push(push_arr[push_col]);
-						}
-					}
-				}*/
+				cube_list = contact_checker_unit(map, map.lookup(w,h), cube_list, contact_Num);
 			}
 		}
-		for(var re_cy = 0; re_cy < temp_arr.length; ++re_cy){
-			temp_arr[re_cy].cycled = false;
+		for(var re_cy = 0; re_cy < cube_list.length; ++re_cy){
+			cube_list[re_cy].cycled = false;
 		}
-		if(temp_arr.length == 0){
+		if(cube_list.length == 0){
 			return null;
 		}else{
-			return temp_arr;
+			return cube_list;
 		}
 	}
 	
-	//檢查傳入的方塊,檢查是否有同色相鄰或是可連鎖消去並回傳,以contact_Num決定有幾個同色相連才要回傳
+	//接續contact_checker
 	private function contact_checker_unit(map: Map, cube: Square, list: Array, contact_Num: Number): Array{
 		var temp_list: Array = new Array;
 		if(map.make_row(cube).length >= contact_Num-1){
@@ -609,7 +591,7 @@ class Ai{
 		return list;
 	}
 	
-	//檢查初落下方塊是否會造成誤消去,有則return一組cube array
+	//檢查初落下方塊是否會造成誤消去,有則回傳這些方塊s
 	private function Dropping_checker(map: Map): Array{
 		var temp_map: Map = set_brain_map(map);
 		var check_arr: Array = new Array();
@@ -640,13 +622,14 @@ class Ai{
 		}
 	}
 	
+	//虛擬盤面操作
 	//傳入一cube array,先消去這些cube,再將消去後造成的空格填滿
 	private function chain_del(map: Map, del_arr: Array){
-		//delete del_arr
+		//delete cubes
 		for(var cube_Num = 0; cube_Num < del_arr.length; ++cube_Num){
 			del_block(map, del_arr[cube_Num].x, del_arr[cube_Num].y, false);
 		}
-		//sort map
+		//填補空格
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h) == null){
@@ -656,6 +639,7 @@ class Ai{
 		}
 	}
 	
+	//虛擬盤面操作
 	//消去map中位於(x,y)的cube,由need_move傳入之值決定是否要將消去後造成的空格填起
 	private function del_block(map: Map, x: Number, y: Number, need_move: Boolean){
 		var del_x = x;
@@ -667,7 +651,8 @@ class Ai{
 		}
 	}
 	
-	//傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填滿空格
+	//虛擬盤面操作
+	//傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填補空格
 	private function move_block(map: Map, x: Number, y: Number){
 		var locx = x;
 		var locy = y;
@@ -687,6 +672,7 @@ class Ai{
 		}
 	}
 	
+	//虛擬盤面操作
 	//將落下中方塊強制落下,由first_drop決定目標是否為初落下方塊
 	private function failing_dropping(map: Map, first_dropping: Boolean){
 		for(var h = map.Height-1; h > 0; --h){
@@ -719,6 +705,7 @@ class Ai{
 		}
 	}
 	
+	//trace盤面資訊 state
 	private function trace_map_state(map: Map){
 		var state_arr: Array = new Array(map.Height);
         for(var i = 0; i < map.Height; ++i){
@@ -754,6 +741,8 @@ class Ai{
 			trace(state_arr[a]);
 		}
 	}
+	
+	//trace盤面資訊 RGB
 	private function trace_map_rgb(map: Map){
 		var rgb_arr: Array = new Array(map.Height);
         for(var i = 0; i < map.Height; ++i){
@@ -780,8 +769,6 @@ class Ai{
 	}
 	
 	private var travel_limit: Number;
-	private var best_amass_cube: Square;
-	private var best_amass_point: Array;
 	private var best_chain_point: Array;
 	private var best_chain_cubes: Array;
 	private var shooted: Boolean;

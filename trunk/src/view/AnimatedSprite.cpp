@@ -110,6 +110,18 @@ AnimatedSprite::playAnime(std::string const& anime_name, unsigned int const& dur
     return *this;
 }
 
+bool AnimatedSprite::isPlaying() const
+{
+    typedef core::list< ISceneNodeAnimator* > IrrAnimList;
+    IrrAnimList const& alist = body_->getAnimators();
+    for( IrrAnimList::ConstIterator it = alist.begin(), end = alist.end();
+         it != end; ++it ) {
+        if( static_cast<int>((*it)->getType()) == static_cast<int>(accessor::AT::TEXTURE) ) //work?
+            return true;
+    }
+    return false;
+}
+
 AnimatedSprite::~AnimatedSprite()
 {
 }

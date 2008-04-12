@@ -49,6 +49,7 @@ public:
                   int const& loop = 0,
                   std::tr1::function<void()> cb = 0,
                   int const& delayTime = 0);
+    virtual bool isPlaying() const;
 
     virtual ~AnimatedSprite();
 

@@ -9,10 +9,12 @@ anim_attr: {
 face_w: 50,
 face_h: 50,
 
-# face texture
-normal: 'char2/face_normal',
-good  : 'char2/face_good',
-bad   : 'char2/face_bad',
+# face texture for corresponding enum FACE { NORMAL=0, GOOD=1, BAD=2 }
+face: {
+    0: { tex: 'char2/face_normal', bdeco:0, gdeco:0 },
+    1: { tex: 'char2/face_good',   bdeco:0, gdeco:1 },
+    2: { tex: 'char2/face_bad',    bdeco:1, gdeco:0 }
+},
 
 # actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }
 state : {

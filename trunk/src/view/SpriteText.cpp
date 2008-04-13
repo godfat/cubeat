@@ -62,6 +62,7 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     oss << "rc/fonts/" << font_path << ".ttf";
 
 	ttfont_ = (utils::TTFont *)gui->getFont(oss.str().c_str(),size); //bad c-cast. need to fix it.
+
     ttfont_->AntiAlias = true;
     ttfont_->TransParency = true;
 
@@ -76,6 +77,7 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     std::copy(new_text.begin(), new_text.end(), temp.begin()); //so hard to convert between wchar and char @@
 
     font_texture_ = ttfont_->getTextureFromText(temp.c_str(), (new_text+"_font").c_str());
+
     dimension2di size_int = ttfont_->getDimension(temp.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;

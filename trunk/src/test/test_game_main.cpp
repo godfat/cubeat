@@ -18,6 +18,7 @@
 #include "Sound.hpp"
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
+#include "utils/MapLoader.hpp"
 #include "Conf.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
@@ -50,7 +51,7 @@ public:
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create();
         set0->centerx(352);
-        map0_ = presenter::Map::create(set0);
+        map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1

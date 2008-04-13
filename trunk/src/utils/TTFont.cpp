@@ -37,11 +37,14 @@ ITexture* TTFont::getTextureFromText(const wchar_t* text, const c8* name)
             s32 texw = Glyphs[n].texw;
             s32 texh = Glyphs[n].texh;
             s32 offx = Glyphs[n].left;
-            s32 offy = Glyphs[n].size - Glyphs[n].top;
+            s32 offy = Glyphs[n].size - Glyphs[n].top - 1;
             u8* pixel_i = Glyphs[n].image;
-
+            int bound = Glyphs[n].size;
             for(int h = 0; h < texh; ++h) {
-                int yo = ( h + offy )*size.Width;
+                int ypos = h + offy;
+                if( ypos < 0 )           ypos = 0;
+                else if( ypos >= bound ) ypos = bound-1;
+                int yo = ypos*size.Width;
                 for(int w = 0; w < texw; ++w) {
                     int current_pos = yo + offset.X + w + offx;
                     if( *pixel_i )

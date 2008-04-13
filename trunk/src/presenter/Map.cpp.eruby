@@ -4,10 +4,12 @@
 #include "model/Map.hpp"
 
 #include "view/Scene.hpp"
+#include "view/Menu.hpp"
 #include "view/SpriteText.hpp"
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "Sound.hpp"
+#include "EventDispatcher.hpp"
 
 #include "all_fwd.hpp"
 #include <boost/foreach.hpp>
@@ -36,24 +38,35 @@ Map& <% debug_hook 'Map::take_out_warning' do %>(){
     return *this;
 }
 
-Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx){
+Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx, int amounts){
 <% end %>
+    using namespace accessor; using namespace easing;
     std::cout << "chain: " << idx << " ,combo " << combo << "\n";
     std::string str("Chain "), numstr( boost::lexical_cast<std::string>(combo) );
+    std::string str2( boost::lexical_cast<std::string>(amounts) );
     str += numstr;
+    str2 += " cubes!";
     view::pScene s = view_master_->scene();
-    view::pSpriteText chain_outl = view::SpriteText::create(str, s, "Star Jedi", 35 + combo*5, true, data::Color(255,0,0));
-    view::pSpriteText chain_text = view::SpriteText::create(str, s, "Star Jedi", 35 + combo*5, true);
-    chain_outl->setDepth(-50).set<accessor::Pos2D>( vec2(setting()->centerx()+1, 199 + idx*40) );
-    chain_text->setDepth(-60).set<accessor::Pos2D>( vec2(setting()->centerx(), 200 + idx*40) );
-    Sound::i().play( ("2/2b_" + boost::lexical_cast<std::string>(combo >= 7 ? 7 : combo) + ".mp3"));
 
-    //let it bind and make copy to preserve tween
-    chain_outl->tween<easing::OElastic, accessor::Scale>
-        (vec3(0,0,0), vec3(1.03,1.15,1), 500, 0, std::tr1::bind(&view::SpriteText::changeText, chain_outl, ""));
-    chain_text->tween<easing::OElastic, accessor::Scale>
-        (vec3(0,0,0), vec3(1,1,1), 500, 0, std::tr1::bind(&view::SpriteText::changeText, chain_text, ""));
+    view::pMenu m = view::Menu::create("", s, 100, 100, true);
+    m->addSpriteText("chaino",  str, "Star Jedi", 0, 35+combo*5, true, data::Color(255,0,0))
+      .addSpriteText("chain",   str, "Star Jedi", 0, 35+combo*5, true)
+      .addSpriteText("amounto", str2,"Star Jedi", 0, 20+combo*3, true, data::Color(255,0,0))
+      .addSpriteText("amount",  str2,"Star Jedi", 0, 20+combo*3, true);
+    m->getSprite("chaino").setDepth(-50).set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1));
+    m->getSprite("chain").setDepth(-60);
+    m->getSprite("amounto").setDepth(-50).set<Pos2D>(vec2(1,34+combo*5)).set<Scale>(vec3(1.03,1.15,1));
+    m->getSprite("amount").setDepth(-60).set<Pos2D>(vec2(0,35+combo*5));
+    int y_offset = 200 + chain_texts_.size()*70;
+    m->set<Pos2D>( vec2(setting()->centerx(), y_offset) ).tween<OElastic, Scale>
+       (vec3(0,0,0), vec3(1,1,1), 600, 0, std::tr1::bind(&Map::pop_a_chain_text, this));
+    chain_texts_.push_back( m );
+    Sound::i().play( ("2/2b_" + boost::lexical_cast<std::string>(combo >= 7 ? 7 : combo) + ".mp3"));
     return *this;
+}
+
+void Map::pop_a_chain_text() {
+    chain_texts_to_be_deleted_.push_back( chain_texts_.begin() );
 }
 
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
@@ -90,10 +103,10 @@ pMap <% debug_hook 'Map::init' do %>(){
     return self;
 }
 
-pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){		
-<% end %>		
-    pMap self = shared_from_this();		
-    model_ = model::Map::create(self, setting_);		
+pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
+<% end %>
+    pMap self = shared_from_this();
+    model_ = model::Map::create(self, setting_);
     model_->init_cubes(data); // beware! this need refer model_!
 
     return self;
@@ -135,6 +148,13 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 <% end %>
     model()->cycle_slow();
     model()->cycle_fast();
+
+    //delete chain_texts here
+    BOOST_FOREACH(std::list<view::pMenu>::iterator& t, chain_texts_to_be_deleted_){
+        chain_texts_.erase(t);
+    }
+    chain_texts_to_be_deleted_.clear();
+
     return *this;
 }
 

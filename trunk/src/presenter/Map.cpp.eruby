@@ -38,17 +38,25 @@ Map& <% debug_hook 'Map::take_out_warning' do %>(){
     return *this;
 }
 
-Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx, int amounts){
+Map& <% debug_hook 'Map::show_chain' do %>(int combo, model::wpChain const& chain, int amounts){
 <% end %>
     using namespace accessor; using namespace easing;
-    std::cout << "chain: " << idx << " ,combo " << combo << "\n";
     std::string str("Chain "), numstr( boost::lexical_cast<std::string>(combo) );
     std::string str2( boost::lexical_cast<std::string>(amounts) );
     str += numstr;
     str2 += " cubes!";
     view::pScene s = view_master_->scene();
 
+    int y_offset;
+    if( chain_texts_.find( chain ) == chain_texts_.end() ) {
+        y_offset = 200;
+        BOOST_FOREACH(ChainTextPair const& it, chain_texts_)
+            y_offset += it.second->getSprite("chain").get<Size2D>().Y * 2;
+        chain_texts_.insert( std::make_pair(chain, view::pMenu()) );
+    } else y_offset = chain_texts_[chain]->get<Pos2D>().Y;
+
     view::pMenu m = view::Menu::create("", s, 100, 100, true);
+
     m->addSpriteText("chaino",  str, "Star Jedi", 0, 35+combo*5, true, data::Color(255,0,0))
       .addSpriteText("chain",   str, "Star Jedi", 0, 35+combo*5, true)
       .addSpriteText("amounto", str2,"Star Jedi", 0, 20+combo*3, true, data::Color(255,0,0))
@@ -57,16 +65,16 @@ Map& <% debug_hook 'Map::show_chain' do %>(int combo, int idx, int amounts){
     m->getSprite("chain").setDepth(-60);
     m->getSprite("amounto").setDepth(-50).set<Pos2D>(vec2(1,34+combo*5)).set<Scale>(vec3(1.03,1.15,1));
     m->getSprite("amount").setDepth(-60).set<Pos2D>(vec2(0,35+combo*5));
-    int y_offset = 200 + chain_texts_.size()*70;
     m->set<Pos2D>( vec2(setting()->centerx(), y_offset) ).tween<OElastic, Scale>
-       (vec3(0,0,0), vec3(1,1,1), 600, 0, std::tr1::bind(&Map::pop_a_chain_text, this));
-    chain_texts_.push_back( m );
+       (vec3(0,0,0), vec3(1,1,1), 1000, 0, std::tr1::bind(&Map::pop_a_chain_text, this, chain));
+
+    chain_texts_[ chain ] = m;
     Sound::i().play( ("2/2b_" + boost::lexical_cast<std::string>(combo >= 7 ? 7 : combo) + ".mp3"));
     return *this;
 }
 
-void Map::pop_a_chain_text() {
-    chain_texts_to_be_deleted_.push_back( chain_texts_.begin() );
+void Map::pop_a_chain_text(model::wpChain const& key) {
+    chain_texts_to_be_deleted_.push_back( key );
 }
 
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
@@ -150,7 +158,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){
     model()->cycle_fast();
 
     //delete chain_texts here
-    BOOST_FOREACH(std::list<view::pMenu>::iterator& t, chain_texts_to_be_deleted_){
+    BOOST_FOREACH(model::wpChain const& t, chain_texts_to_be_deleted_){
         chain_texts_.erase(t);
     }
     chain_texts_to_be_deleted_.clear();

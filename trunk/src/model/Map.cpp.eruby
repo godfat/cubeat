@@ -255,7 +255,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
             // damage_factor to score adjustment (1.00 ~ 2.00)
-            o->show_chain( (*i)->step(), idx, (*i)->last_step_amounts() );
+            o->show_chain( (*i)->step(), (*i), (*i)->last_step_amounts() );
             ++idx;
             score_ += (*i)->score_step() * damage_factor;
             (*i)->step_one();

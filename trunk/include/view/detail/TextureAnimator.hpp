@@ -55,8 +55,8 @@ public:
                 T pos = Eq<T>::calculate(1, this->start_, this->distance_, 1, node);
                 if( pos >= this->end_ ) pos = this->end_ - 1; //size bound safe guard
                 node->setMaterialTexture(0, animation_[pos]);
-                if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                if( this->cb_ ) this->cb_();
                 return;   //DAMN....... WHY FORGOT THIS.........
             }
             else if( this->loop_ > 0 ) this->loop_ -= 1;

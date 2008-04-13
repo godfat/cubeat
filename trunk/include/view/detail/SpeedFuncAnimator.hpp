@@ -66,8 +66,8 @@ public:
             if( this->loop_ == 0 ) {
                 T const& pos = Eq<T>::calculate(1, this->start_, this->distance_, 1, node);
                 Acc::set(node, pos);
-                if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                if( this->cb_ ) this->cb_();
                 return;   //DAMN HOW CAN I FORGET THIS!!!!!!
             }
             else if( this->loop_ > 0 ) this->loop_ -= 1;

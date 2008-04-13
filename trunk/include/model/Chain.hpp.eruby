@@ -26,7 +26,6 @@ public:
 
 	void step_one(){
 		chain_step_.push_back(0);
-        // Sound::i().combo( chain_step_.size() );
 	}
 
     int power_factor() const{

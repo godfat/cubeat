@@ -103,8 +103,8 @@ public:
             if( this->loop_ == 0 ) {
                 float const& pos = Eq<float>::calculate(1, this->start_, this->distance_, 1, node);
                 calculateCurrentWaypoint(node, pos);
-                if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                if( this->cb_ ) this->cb_();
                 return;
             }
             else if( this->loop_ > 0 )

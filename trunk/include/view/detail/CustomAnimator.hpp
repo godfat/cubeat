@@ -61,8 +61,8 @@ public:
             startTime_ = timeMs; //or should be += duration_ ?
             if( loop_ == 0 ) {
                 Accessor::set(node, Eq<T>::calculate(1, start_, distance_, 1, node) );
-                if( cb_ ) cb_();
                 smgr_->addToAnimatorDeletionQueue(this, node);
+                if( cb_ ) cb_();
                 return;
             }
             else if( loop_ > 0 ) loop_ -= 1;

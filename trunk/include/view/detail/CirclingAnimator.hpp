@@ -59,8 +59,8 @@ public:
                 core::vector2df const& pos =
                     Eq<core::vector2df>::calculate(1, this->start_, this->distance_, 1, node);
                 calculateCircle(node, pos, center_);
-                if( this->cb_ ) this->cb_();
                 this->smgr_->addToAnimatorDeletionQueue(this, node);
+                if( this->cb_ ) this->cb_();
                 return;
             }
             else if( this->loop_ > 0 )

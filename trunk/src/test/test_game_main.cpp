@@ -27,7 +27,7 @@ using namespace easing;
 using namespace accessor;
 
 class TestGame{
-    typedef std::tr1::shared_ptr<int> pDummy;
+    typedef std::vector< view::pAnimatedSceneObject > SceneObjList;
     enum STATE { STAND, ATTACK, HIT, NONE };
     enum FACE  { NORMAL, GOOD, BAD };
 
@@ -59,96 +59,21 @@ public:
         map1_ = presenter::Map::create(set1);
         map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
-        // mini view (currently not used, close it down)
-//        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_,
-//            data::ViewSpriteSetting::create(800, 300, 25) ) );
-
         // setup garbage land
         map0_->push_garbage_land(map1_);
         map1_->push_garbage_land(map0_);
 
-
-        ///START OF SCARY GUI SETTING
-
-        //temporary Scene: must use config it all
-        stage_ = view::Scene::create("TestGameStage");
-        stage_->setTo3DView(PI/5.f);
-
-        data::AnimatorParam<Linear, Frame> ani;
-        ani.end(90.f).duration(9000).loop(-1);
-        bg_ = view::AnimatedSceneObject::create("jungle/bg", stage_ );
-        bg_->set<Pos3D>(vec3(0, -17.5, 50)).set<Scale>(vec3(1.23f, 1.15f, 1.1f)).tween(ani);
-
-        //create palms left / right
-        for( int i = 0; i < 8; ++i ) {
-            data::AnimatorParam<Linear, Frame> paramAni;
-            paramAni.end(90.f).duration( 3000+utils::random(1000) ).loop(-1).delay( utils::random(3000) );
-            std::string kind = boost::lexical_cast<std::string>( utils::random(3)+1 );
-            palms_.push_back( view::AnimatedSceneObject::create("jungle/palm"+kind, stage_) );
-            int x = - (utils::random(22) + 3);
-            float y = -13 + utils::random(100)/50.f;
-            float z = 38 + utils::random(14) + utils::random(100)/100.f ;
-            palms_[i]->set<Pos3D>(vec3(x,y,z)).tween(paramAni);
-            int bri = 255 - 192 * ((z-38.f)/15.f);
-            palms_[i]->set<GradientDiffuse>( bri );
-        }
-
-        for( int i = 8; i < 16; ++i ) {
-            data::AnimatorParam<Linear, Frame> paramAni;
-            paramAni.end(90.f).duration( 3000+utils::random(1000) ).loop(-1).delay( utils::random(3000) );
-            std::string kind = boost::lexical_cast<std::string>( utils::random(3)+1 );
-            palms_.push_back( view::AnimatedSceneObject::create("jungle/palm"+kind, stage_) );
-            int x = (utils::random(22) + 3);
-            float y = -13 + utils::random(100)/50.f;
-            float z = 38 + utils::random(10) + utils::random(100)/100.f ;
-            palms_[i]->set<Pos3D>(vec3(x,y,z)).tween(paramAni);
-            int bri = 255 - 192 * ((z-38.f)/10.f);
-            palms_[i]->set<GradientDiffuse>( bri );
-        }
-
-        //create grasses (no left right)
-        for( int i = 0; i < 16; ++i ) {
-            data::AnimatorParam<Linear, Frame> paramAni;
-            paramAni.end(90.f).duration( 3000+utils::random(1000) ).loop(-1).delay( utils::random(3000) );
-            std::string kind = boost::lexical_cast<std::string>( utils::random(4)+1 );
-            grass_.push_back( view::AnimatedSceneObject::create("jungle/grass"+kind, stage_) );
-            int x = utils::random(50) - 25;
-            float y = -13 + utils::random(100)/50.f;
-            float z = 36 + utils::random(12) + utils::random(100)/100.f ;
-            grass_[i]->set<Pos3D>(vec3(x,y,z)).set<Scale>(vec3(1.5, 1.5, 1.5)).tween(paramAni);
-            int bri = 255 - 192 * ((z-36.f)/12.f);
-            grass_[i]->set<GradientDiffuse>( bri );
-        }
-
-        //UI (by config):
-        uiconf_ = utils::map_any::construct( utils::fetchConfig("config/ui/in_game_2p_layout.zzml") );
-        utils::map_any const& base = uiconf_.M("base");
-        ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
-
-        utils::map_any const& misc = uiconf_.M("misc");
-        BOOST_FOREACH(utils::pair_any const& it, misc) {
-            std::string    const& key  = boost::any_cast<std::string const>(it.first);
-            utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
-            ui_layout_->
-                addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
-               .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
-        }
-
-        //character sprite setup (by config):
+        //temporary Scene:
+        setup_stage_by_config( "config/stage/jungle.zzml" );
+        setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
         setup_char_sprite_by_config( char_1p_, conf1p_, "config/char/char1.zzml" );
         setup_char_sprite_by_config( char_2p_, conf2p_, "config/char/char2.zzml" );
         char_2p_->flipH();
 
-        min_ = 0, sec_ = 0;
-
-        last_garbage_1p_ = 0, last_garbage_2p_ = 0;
-        /// END OF SCARY UI SETUP
+        min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
         //start music
-        Sound::i().play("jungle/bgm.mp3", true);
-
-        ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
+        Sound::i().play( stageconf_.S("music"), true);
 
         for( size_t i = 0; i < conf2p_.V("face_pos").size(); ++i ) {
             utils::map_any& pos = conf2p_.V("face_pos").M(i);
@@ -159,6 +84,60 @@ public:
         clear_state( conf2p_ );
         conf1p_["current_face"] = static_cast<int>(NORMAL);
         conf2p_["current_face"] = static_cast<int>(NORMAL);
+
+        ctrl::EventDispatcher::i().subscribe_timer(
+            std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
+    }
+
+    void setup_stage_by_config(std::string const& path)
+    {
+        stageconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+        stage_ = view::Scene::create( stageconf_.S("name") );
+        stage_->setTo3DView( stageconf_.I("FoV") / 180.f * PI );
+        utils::vector_any const& lists = stageconf_.V("all_items");
+        BOOST_FOREACH(boost::any const& list, lists) {
+            slists_.push_back( SceneObjList() );
+            SceneObjList& slist = slists_.back();
+            utils::vector_any const& items = boost::any_cast<utils::vector_any const>(list);
+            BOOST_FOREACH(boost::any const& it, items) {
+                utils::map_any const& item = boost::any_cast<utils::map_any const>(it);
+                view::pAnimatedSceneObject obj;
+                obj = view::AnimatedSceneObject::create( item.S("xfile") ,stage_ );
+
+                utils::map_any const& pos = item.M("position"), &rot = item.M("rotation"),
+                    &sca = item.M("scale"), &dif = item.M("diffuse");
+                obj->set<Pos3D>(    vec3( pos.I("x"), pos.I("y"), pos.I("z") ) )
+                    .set<Rotation>( vec3( rot.I("x"), rot.I("y"), rot.I("z") ) )
+                    .set<Scale>(    vec3( sca.F("x"), sca.F("y"), sca.F("z") ) )
+                    .set<ColorDiffuseVec3>( vec3( dif.I("r"), dif.I("g"), dif.I("b") ) )
+                    .set<Alpha>( dif.I("a") );
+
+                utils::map_any const& econf = item.M("anim").M("emerge");
+                utils::map_any const& iconf = item.M("anim").M("idle");
+                data::AnimatorParam<Linear, Frame> emerge;
+                data::AnimatorParam<Linear, Frame> idle;
+                emerge.start( econf.I("s") ).end( econf.I("e") ).duration( econf.I("duration") ).loop( econf.I("loop") ).delay( 2500 );
+                idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop( iconf.I("loop") );
+                obj->queue(emerge).tween(idle);
+                slist.push_back( obj );
+            }
+        }
+    }
+
+    void setup_ui_by_config( std::string const& path ) {
+        uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+        utils::map_any const& base = uiconf_.M("base");
+        ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
+        ui_layout_->set<Alpha>(192);
+
+        utils::map_any const& misc = uiconf_.M("misc");
+        BOOST_FOREACH(utils::pair_any const& it, misc) {
+            std::string    const& key  = boost::any_cast<std::string const>(it.first);
+            utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
+            ui_layout_->
+                addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
+               .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
+        }
     }
 
     void setup_char_sprite_by_config(view::pMenu& charsp, utils::map_any& conf, std::string const& path) {
@@ -234,6 +213,25 @@ public:
         charsp->getSprite("face").set<Pos2D>( vec2( face_pos.M(idx).I("x"), face_pos.M(idx).I("y") ) );
     }
 
+    void hit_stage_group(int const& id) {
+        SceneObjList& slist = slists_[id];
+        utils::vector_any const& listconf = stageconf_.V("all_items").V(id);
+        for( size_t i = 0; i < slist.size(); ++i ) {
+            view::pAnimatedSceneObject& obj = slist[i];
+            utils::map_any const& hconf = listconf.M(i).M("anim").M("hit");
+            utils::map_any const& rconf = listconf.M(i).M("anim").M("recover");
+            utils::map_any const& iconf = listconf.M(i).M("anim").M("idle");
+            data::AnimatorParam<OBounce, Frame> hit;
+            data::AnimatorParam<Linear, Frame> recover;
+            data::AnimatorParam<Linear, Frame> idle;
+            int fn = obj->get<Frame>(), s = fn < hconf.I("s") ? hconf.I("s") : fn;
+            hit.start( s ).end( hconf.I("e") ).duration( hconf.I("duration") );
+            recover.start( rconf.I("s") ).end( rconf.I("e") ).duration( rconf.I("duration") );
+            idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop(-1);
+            obj->clearAllTween().queue(hit).queue(recover).tween(idle);
+        }
+    }
+
     void update_ui(){
         int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
         int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
@@ -248,20 +246,24 @@ public:
         ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
         ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
-        if( conf1p_.I("current_state") != HIT && last_garbage_1p_ > new_garbage_1p_ )
+        int state1p = conf1p_.I("current_state");
+        if( state1p != HIT && last_garbage_1p_ > new_garbage_1p_ ) {
+            hit_stage_group(1);
             switch_character_sprite_state( char_1p_, conf1p_, HIT );
-        else if( conf1p_.I("current_state") != ATTACK && conf1p_.I("current_state") != HIT &&
-                 map0_->current_sum_of_attack() > 1 )
+        }
+        else if( state1p != ATTACK && state1p != HIT && map0_->current_sum_of_attack() > 1 )
             switch_character_sprite_state( char_1p_, conf1p_, ATTACK );
-        else if( conf1p_.I("current_state") == NONE )
+        else if( state1p == NONE )
             switch_character_sprite_state( char_1p_, conf1p_, STAND );
 
-        if( conf2p_.I("current_state") != HIT && last_garbage_2p_ > new_garbage_2p_ )
+        int state2p = conf2p_.I("current_state");
+        if( state2p != HIT && last_garbage_2p_ > new_garbage_2p_ ) {
+            hit_stage_group(2);
             switch_character_sprite_state( char_2p_, conf2p_, HIT );
-        else if( conf2p_.I("current_state") != ATTACK && conf2p_.I("current_state") != HIT &&
-                 map1_->current_sum_of_attack() > 1 )
+        }
+        else if( state2p != ATTACK && state2p != HIT && map1_->current_sum_of_attack() > 1 )
             switch_character_sprite_state( char_2p_, conf2p_, ATTACK );
-        else if( conf2p_.I("current_state") == NONE )
+        else if( state2p == NONE )
             switch_character_sprite_state( char_2p_, conf2p_, STAND );
 
         bool map0_column_full = map0_->has_column_full(), map1_column_full = map1_->has_column_full();
@@ -287,31 +289,23 @@ public:
     }
 
 private:
-    view::pScene scene_;
+    view::pScene scene_, stage_;
     presenter::pMap map0_;
     presenter::pMap map1_;
     ctrl::pPlayer player0_;
     ctrl::pPlayer player1_;
 
+    utils::map_any stageconf_;
     utils::map_any uiconf_;
     utils::map_any conf1p_;
     utils::map_any conf2p_;
 
-    //Temporary Scene
-    view::pScene  stage_;
-    view::pAnimatedSceneObject bg_;
-    std::vector< view::pAnimatedSceneObject > palms_;
-    std::vector< view::pAnimatedSceneObject > grass_;
-
-    //Temporary UI
+    std::vector< SceneObjList > slists_;
     view::pMenu ui_layout_;
-    //Temporary Character
     view::pMenu char_1p_;
     view::pMenu char_2p_;
     int min_, sec_;
-
-    //used for temporary state comparison
-    int last_garbage_1p_, last_garbage_2p_;
+    int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
 };
 
 #include "App.hpp"

@@ -4,6 +4,7 @@
 #include "IrrDevice.hpp"
 
 #include <sstream>
+#include <utility>
 
 using namespace irr;
 using namespace core;
@@ -41,3 +42,16 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
     scene()->addPickMapping( body_, self );
     return self;
 }
+
+bool AnimatedSceneObject::isPlaying() const
+{
+    typedef core::list< ISceneNodeAnimator* > IrrAnimList;
+    IrrAnimList const& alist = body_->getAnimators();
+    for( IrrAnimList::ConstIterator it = alist.begin(), end = alist.end();
+         it != end; ++it ) {
+        if( static_cast<int>((*it)->getType()) == static_cast<int>(accessor::AT::FRAME) )
+            return true;
+    }
+    return false;
+}
+

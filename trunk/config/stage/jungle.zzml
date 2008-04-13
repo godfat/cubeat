@@ -1,0 +1,88 @@
+# stage jungle's configuration
+
+# degree of "Field of View"
+FoV: 36,
+name: 'jungle',
+music: 'jungle/bgm.mp3',
+
+all_items: [
+    # item group 0
+    [
+        # item 0-0
+        {
+            xfile: 'jungle/bg',
+            position: { x: 0, y: -22, z: 60 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.45, y: 1.45, z: 1.1 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0   duration: 0,    loop 0   },
+                idle:    { s: 0, e: 90, duration: 9000, loop: -1 }
+            }
+        },
+        # item 0-1
+        {
+            xfile: 'jungle/grass1',
+            position: { x:-10, y:-13, z: 35 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.4, y: 1.4, z: 1.4 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0   duration: 0,    loop 0   },
+                idle:    { s: 0, e: 90, duration: 5000, loop: -1 }
+            }
+        },
+        # item 0-2
+        {
+            xfile: 'jungle/grass2',
+            position: { x:18, y:-13, z: 42 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.3, y: 1.3, z: 1.3 },
+            diffuse: { a: 255, r: 160, g: 160, b: 160 },
+
+            anim: {
+                emerge:  { s: 0, e: 0   duration: 0,    loop 0   },
+                idle:    { s: 0, e: 90, duration: 5000, loop: -1 }
+            }
+        }
+    ],
+    # item group 1
+    [
+        # item 1-0
+        {
+            xfile: 'jungle/palm1',
+            position: { x:-15, y:-13, z: 40 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.0, y: 1.0, z: 1.0 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 45, duration: 1000, loop: 0 },
+                idle:    { s:46, e:135, duration: 6000, loop: -1 },
+                hit:     { s:136,e:180, duration: 1000, loop: 0 },
+                recover: { s:180,e:136, duration: 3000, loop: 0 }
+            }
+        }
+    ],
+    # item group 2
+    [
+        # item 2-0
+        {
+            xfile: 'jungle/palm1',
+            position: { x:15, y:-14, z: 45 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.0, y: 1.0, z: 1.0 },
+            diffuse: { a: 255, r: 200, g: 200, b: 200 },
+
+            anim: {
+                emerge:  { s: 0, e: 45, duration: 1000, loop: 0 },
+                idle:    { s:46, e:135, duration: 6000, loop: -1 },
+                hit:     { s:136,e:180, duration: 1000, loop: 0 },
+                recover: { s:180,e:136, duration: 3000, loop: 0 }
+            }
+        }
+    ]
+]
+

@@ -49,10 +49,10 @@ namespace accessor {
 
     struct ColorDiffuseVec3 : Accessor<vec3, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getMaterialCount() ) {
-                node->getMaterial(0).DiffuseColor.setRed(static_cast<int>(val.X)%256);
-                node->getMaterial(0).DiffuseColor.setGreen(static_cast<int>(val.Y)%256);
-                node->getMaterial(0).DiffuseColor.setBlue(static_cast<int>(val.Z)%256);
+            for( unsigned int i=0; i < node->getMaterialCount(); ++i ) {    //IMPORTANT NOTE!
+                node->getMaterial(i).DiffuseColor.setRed(static_cast<int>(val.X)%256);
+                node->getMaterial(i).DiffuseColor.setGreen(static_cast<int>(val.Y)%256);
+                node->getMaterial(i).DiffuseColor.setBlue(static_cast<int>(val.Z)%256);
             }
         }
         static void get(irr::scene::ISceneNode* node, value_type& out ) {
@@ -66,8 +66,8 @@ namespace accessor {
 
     struct ColorDiffuse : Accessor<int, AT::DIFFUSE>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getMaterialCount() )
-                node->getMaterial(0).DiffuseColor.set( val );
+            for( unsigned int i=0; i < node->getMaterialCount(); ++i )      //IMPORTANT NOTE!
+                node->getMaterial(i).DiffuseColor.set( val );
         }
         static void get(irr::scene::ISceneNode* node, value_type& out ) {
             return; //currently not used, and is not quite useful, hence no impl.

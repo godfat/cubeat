@@ -1,0 +1,4 @@
+#if you want to test different stage using "TestStage.exe"
+#change the path here
+
+test_stage: 'config/stage/jungle.zzml'

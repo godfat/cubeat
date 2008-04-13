@@ -51,7 +51,7 @@ public:
 
     template <class Accessor>
     typename Accessor::value_type get() const {
-        typename Accessor::value_type out;
+        typename Accessor::value_type out = typename Accessor::value_type();
         Accessor::get(body_, out);
         return out;
     }

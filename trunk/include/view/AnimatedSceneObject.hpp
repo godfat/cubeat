@@ -3,11 +3,19 @@
 #define _SHOOTING_CUBES_ANIMATED_SCENE_OBJECT_VIEW_
 
 #include "view/SceneObject.hpp"
-
+#include "Accessors.hpp"
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+#include <map>
+
 namespace psc { namespace view {
+
+//struct KeyFrameData {
+//    KeyFrameData(float const& s, float const& e):start(s), end(e){}
+//    float start;
+//    float end;
+//};
 
 class AnimatedSceneObject : public SceneObject
 {
@@ -20,10 +28,10 @@ public:
     AnimatedSceneObject(std::string const& path):SceneObject(path){}
 
     virtual AnimatedSceneObject* clone() const;
+    virtual bool isPlaying() const;
 
 protected:
     pointer_type init(pObject const&);
-
 };
 
 }  //view

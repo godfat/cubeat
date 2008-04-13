@@ -38,7 +38,7 @@ public:
     Map& call_end_game();
     Map& setup_warning();
     Map& take_out_warning();
-    Map& show_chain(int, int, int);
+    Map& show_chain(int, model::wpChain const&, int);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -79,7 +79,7 @@ private:
         return *this;
     }
 
-    void pop_a_chain_text();
+    void pop_a_chain_text(model::wpChain const& key);
 
 private:
 <%= accessor 'data::pMapSetting', :setting %>
@@ -89,8 +89,11 @@ private:
     std::list<cube::pViewMaster> view_slaves_;
     cube::pViewMaster view_master_;
     std::list<wpMap> garbage_lands_;
-    std::list<view::pMenu> chain_texts_;
-    std::list< std::list<view::pMenu>::iterator > chain_texts_to_be_deleted_;
+
+    typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
+    typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
+    std::map< model::wpChain, view::pMenu > chain_texts_;
+    std::list< model::wpChain > chain_texts_to_be_deleted_;
 };
 
 }} // end of namespace

@@ -29,15 +29,27 @@ public:
 	}
 
     int power_factor() const{
-		int result = 0;
-		for(int i=0, iend=chain_step_.size(); i!=iend; ++i){
-			if( chain_step_[i] < 3 ) break;
-			if( i == 0 )
-				result += (chain_step_[i] - 2)*(i+1);
-			else
-				result += (chain_step_[i] - 2)*(i+1) + utils::power2(i-1);
-		}
-		return result;
+//		int result = 0;
+//		for(int i=0, iend=chain_step_.size(); i!=iend; ++i){
+//			if( chain_step_[i] < 3 ) break;
+//			if( i == 0 )
+//				result += (chain_step_[i] - 2)*(i+1);
+//			else
+//				result += (chain_step_[i] - 2)*(i+1) + utils::power2(i-1);
+//		}
+//		return result;
+        return power_factor_;
+	}
+
+	void update_power_factor() {
+	    last_power_factor_ = power_factor_;
+	    int new_step_amount = chain_step_.back();
+	    if( new_step_amount < 3 ) return;
+	    int stepnum = chain_step_.size();
+	    if( stepnum == 1 )
+            power_factor_ += (new_step_amount - 2);
+        else
+            power_factor_ += (new_step_amount - 2)*(stepnum) + utils::power2(stepnum-2);
 	}
 
     // this returns the score fragment made by the last combo
@@ -49,8 +61,19 @@ public:
 	    return chain_step_.size();
 	}
 
+	void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
+	int last_step_x() const { return last_step_x_; }
+	int last_step_y() const { return last_step_y_; }
+	int attack_of_current_step() const {
+	    return power_factor_ - last_power_factor_;
+	}
+
+    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
+
 private:
     std::vector<int> chain_step_;
+    int last_step_x_, last_step_y_;
+    int power_factor_, last_power_factor_;
 };
 
 }} // end of namespace

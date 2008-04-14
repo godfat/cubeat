@@ -72,6 +72,7 @@ private:
 
         //and add combo to it
         chain->add_last_step_amounts( list_.size() );
+        chain->set_last_step_position( (*list_.rbegin())->x(), (*list_.rbegin())->y() );
 
         return chain;
     }

@@ -77,6 +77,15 @@ void Map::pop_a_chain_text(model::wpChain const& key) {
     chain_texts_to_be_deleted_.push_back( key );
 }
 
+
+Map& <% debug_hook 'Map::garbage_animation' do %>(int n, int modelx, int modely){
+<% end %>
+    //throw garbage animation here!
+    std::cout << "amount of current gar: " << n << ", at " << modelx << ", " << modely << "\n";
+    return *this;
+}
+
+
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
     view->map_setting(setting());

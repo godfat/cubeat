@@ -2,6 +2,7 @@
 <% header_guard do %>
 
 #include "presenter/cube/ViewBase.hpp"
+#include "data/BasicViewTypes.hpp"
 #include <tr1/memory>
 
 namespace psc{
@@ -23,6 +24,7 @@ public:
         return ViewBase::pointer_type();
     }
     virtual void redraw(Map const& map){}
+    virtual vec2 pos_vec2(int const&, int const&) const{ return vec2(); }
     virtual ~ViewMaster(){}
 
 protected:

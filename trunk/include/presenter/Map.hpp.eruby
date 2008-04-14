@@ -40,6 +40,7 @@ public:
     Map& take_out_warning();
     Map& show_chain(int, model::wpChain const&, int);
     Map& garbage_animation(int, int, int);
+    vec2 garbage_endpoint_vec2() const;
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);

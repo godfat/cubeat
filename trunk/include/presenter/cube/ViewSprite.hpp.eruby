@@ -197,6 +197,11 @@ public:
     virtual ViewBase::pointer_type create(model::pCube cube) const{
         return ViewSprite::create(cube, view_orig_, map_setting(), setting_, player_);
     }
+    virtual vec2 pos_vec2(int const& x, int const& y) const{
+        return vec2( setting_->x_offset() + x*setting_->cube_size() + setting_->cube_size()/2,
+                     setting_->y_offset() +(y*setting_->cube_size() + setting_->cube_size()/2)*-1 );
+                     //note: y reversed
+    }
 private:
     ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player):
         ViewMaster(scene), setting_(setting), player_(player)

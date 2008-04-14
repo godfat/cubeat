@@ -56,7 +56,6 @@ Map& <% debug_hook 'Map::show_chain' do %>(int combo, model::wpChain const& chai
     } else y_offset = chain_texts_[chain]->get<Pos2D>().Y;
 
     view::pMenu m = view::Menu::create("", s, 100, 100, true);
-
     m->addSpriteText("chaino",  str, "Star Jedi", 0, 35+combo*5, true, data::Color(255,0,0))
       .addSpriteText("chain",   str, "Star Jedi", 0, 35+combo*5, true)
       .addSpriteText("amounto", str2,"Star Jedi", 0, 20+combo*3, true, data::Color(255,0,0))
@@ -81,7 +80,7 @@ void Map::pop_a_chain_text(model::wpChain const& key) {
 Map& <% debug_hook 'Map::garbage_animation' do %>(int n, int modelx, int modely){
 <% end %>
     //throw garbage animation here!
-    std::cout << "amount of current gar: " << n << ", at " << modelx << ", " << modely << "\n";
+    std::cout << "garbage_animated (limited): " << (n>20?20:n) << ", at " << modelx << ", " << modely << "\n";
     return *this;
 }
 
@@ -102,13 +101,12 @@ Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
 <% end %>
     view->map_setting(setting());
-
+    view_master_ = view;
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
         cube->set_view_master( view->create(cube->model()) );
     }
-    view_master_ = view;
     return *this;
 }
 

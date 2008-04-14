@@ -141,8 +141,9 @@ Object::~Object()
 {
     clearAllQueuedTween();
     if( body_ ) {
-        if( scene() )
+        if( scene() ) {
             scene()->removePickMapping( body_ );
+        }
         body_->remove();
     }
 }

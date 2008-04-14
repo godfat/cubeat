@@ -28,18 +28,7 @@ public:
 		chain_step_.push_back(0);
 	}
 
-    int power_factor() const{
-//		int result = 0;
-//		for(int i=0, iend=chain_step_.size(); i!=iend; ++i){
-//			if( chain_step_[i] < 3 ) break;
-//			if( i == 0 )
-//				result += (chain_step_[i] - 2)*(i+1);
-//			else
-//				result += (chain_step_[i] - 2)*(i+1) + utils::power2(i-1);
-//		}
-//		return result;
-        return power_factor_;
-	}
+    int power_factor() const{ return power_factor_; }
 
 	void update_power_factor() {
 	    last_power_factor_ = power_factor_;

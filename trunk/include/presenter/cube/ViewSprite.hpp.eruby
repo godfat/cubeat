@@ -29,17 +29,17 @@ namespace psc{ namespace presenter{ namespace cube{
 // then enable_shared_from_this would be used.
 class ViewSprite: public ViewBase, public std::tr1::enable_shared_from_this<ViewSprite>{
 public:
-    static ViewBase::pointer_type create(model::pCube cube, view::pScene scene,
+    static ViewBase::pointer_type create(model::pCube cube, view::pObject view_orig_,
         data::pMapSetting map_setting, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player)
     {
-        return utils::ObjectPool<ViewSprite>::create(cube, scene, map_setting, setting, player);
+        return utils::ObjectPool<ViewSprite>::create(cube, view_orig_, map_setting, setting, player);
     }
 public:
-    ViewSprite(model::pCube c, view::pScene scene,
+    ViewSprite(model::pCube c, view::pObject orig,
         data::pMapSetting ms, data::pViewSpriteSetting s, ctrl::wpPlayer p):
-        ViewBase(c), scene_(scene), cube_(c), map_setting_(ms), setting_(s), player_(p)
+        ViewBase(c), view_orig_(orig), cube_(c), map_setting_(ms), setting_(s), player_(p)
     {
-        body_ = view::Sprite::create("cubes/cube-item-1", scene,
+        body_ = view::Sprite::create("cubes/cube-item-1", view_orig_.lock(),
                                      s->cube_size(), s->cube_size(), true);
 
         body_->set<accessor::Pos2D>(pos_vec2());
@@ -157,9 +157,9 @@ private:
     vec2 pos_vec2() const{
         data::pViewSpriteSetting s = setting();
         data::pCube d = data();
-        return vec2( s->x_offset()+ d->x()*s->cube_size()+s->cube_size()/2,
-                     s->y_offset()+(d->y()*s->cube_size()+s->cube_size()/2)*-1 );
-                                                              // NOTE: reversed y
+        return vec2( ( d->x()*s->cube_size() + s->cube_size()/2 ),
+                     ( d->y()*s->cube_size() + s->cube_size()/2 )*-1 );
+                                            // NOTE: reversed y
     }
     static void check_cube_and_do(std::tr1::function<void(model::pCube, int)> method,
         model::wpCube c, int dmg)
@@ -174,9 +174,9 @@ private:
     void just_for_hold_shared_ptr(){}
 
 private:
-    view::pSprite body_;
-    view::wpScene scene_;
-    model::wpCube cube_;
+    view::pSprite  body_;
+    view::wpObject view_orig_;
+    model::wpCube  cube_;
     data::wpMapSetting map_setting_;
     data::wpViewSpriteSetting setting_;
     ctrl::wpPlayer player_;
@@ -195,11 +195,15 @@ public:
 public:
     // no covariant return type
     virtual ViewBase::pointer_type create(model::pCube cube) const{
-        return ViewSprite::create(cube, scene_.lock(), map_setting(), setting_, player_);
+        return ViewSprite::create(cube, view_orig_, map_setting(), setting_, player_);
     }
 private:
     ViewSpriteMaster(view::pScene scene, data::pViewSpriteSetting setting, ctrl::wpPlayer const& player):
-        ViewMaster(scene), setting_(setting), player_(player){}
+        ViewMaster(scene), setting_(setting), player_(player)
+    {   //temporary
+        view_orig_ = view::Object::create( scene );
+        view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
+    }
 private:
     data::pViewSpriteSetting setting_;
     ctrl::wpPlayer player_;

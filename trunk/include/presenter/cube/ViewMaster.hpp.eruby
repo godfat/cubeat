@@ -28,8 +28,12 @@ public:
 protected:
     ViewMaster(view::pScene scene):scene_(scene){}
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
-    view::pScene scene() const{ return scene_.lock(); }
-    view::wpScene scene_; //good?
+    view::pScene  scene() const { return scene_.lock(); }
+    view::wpScene scene_;
+
+    //temporary (hold)
+    view::pObject view_orig() const { return view_orig_; }
+    view::pObject view_orig_;
 
 private:
     ViewMaster& map_setting(data::wpMapSetting ms){ map_setting_ = ms; return *this; }

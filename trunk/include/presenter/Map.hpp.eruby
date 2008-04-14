@@ -85,10 +85,10 @@ private:
 private:
 <%= accessor 'data::pMapSetting', :setting %>
 <%= reader 'model::pMap', :model %>
-    view::pMap view_;
-    container_type cubes_;
+    //view::pMap view_;                       //note: not used for now.
+    cube::pViewMaster view_master_;           //note: must not be destructed before cubes_
     std::list<cube::pViewMaster> view_slaves_;
-    cube::pViewMaster view_master_;
+    container_type cubes_;
     std::list<wpMap> garbage_lands_;
 
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;

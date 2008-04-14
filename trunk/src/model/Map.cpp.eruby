@@ -243,8 +243,16 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
+void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
+void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
+{
+    be_subed_from -= amount;
+    cb(amount);
+}
+
 void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
+    using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
     int damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
 
@@ -253,21 +261,27 @@ void <% debug_hook 'Map::update_chains' do %>(){
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
             (*i)->update_power_factor();
-            current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
-            //note: timer call add current_sum_of_attack
+            // damage_factor adjustment (1.00 ~ 2.00)
+            int amount = (*i)->attack_of_current_step()*damage_factor;
+            //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
+            ctrl::EventDispatcher::i().subscribe_timer(
+                bind(&delay_adder, ref(current_sum_of_attack_), amount), 1000);
             o->show_chain( (*i)->step(), (*i), (*i)->last_step_amounts() );
-            o->garbage_animation( (*i)->attack_of_current_step()*damage_factor,
-                                  (*i)->last_step_x(), (*i)->last_step_y() );
-            // damage_factor to score adjustment (1.00 ~ 2.00)
+            o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
+            // damage_factor adjustment (1.00 ~ 2.00)
             score_ += (*i)->score_step() * damage_factor;
             (*i)->step_one();
         }
 
         // when the Chain's all dead then we fire up the attack and make this one null
         if( (*i).use_count() == 1 ){
-            current_sum_of_attack_ -= (*i)->power_factor()*damage_factor;
-            // damage_factor to score adjustment (1.00 ~ 2.00)
-            o->throw_garbage( (*i)->power_factor()*damage_factor );
+            // damage_factor adjustment (1.00 ~ 2.00)
+            int amount = (*i)->power_factor()*damage_factor;
+            //current_sum_of_attack_ -= amount;
+            //o->throw_garbage( amount );
+            std::tr1::function<void(int)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
+            ctrl::EventDispatcher::i().subscribe_timer(
+                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount), 1000);
             //note: timer call throw_garbage
             i = chains_.erase(i);
         }

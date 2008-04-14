@@ -20,36 +20,44 @@
 using namespace psc;
 using namespace presenter;
 
+//note: someday make a helper utility header
+template<class T>
+inline std::string to_s(T t) { return boost::lexical_cast<std::string>(t); }
+
 Map& <% debug_hook 'Map::call_end_game' do %>(){
 <% end %>
     std::cout << "presenter map call end game.\n";
     return *this;
 }
 
+//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::setup_warning' do %>(){
 <% end %>
     std::cout << "presenter map setup_warning.\n";
     return *this;
 }
 
+//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::take_out_warning' do %>(){
 <% end %>
     std::cout << "presenter map take_out_warning.\n";
     return *this;
 }
 
+//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::show_chain' do %>(int combo, model::wpChain const& chain, int amounts){
 <% end %>
     using namespace accessor; using namespace easing;
-    std::string str("Chain "), numstr( boost::lexical_cast<std::string>(combo) );
-    std::string str2( boost::lexical_cast<std::string>(amounts) );
-    str += numstr;
-    str2 += " cubes!";
+    std::string str("Chain " + to_s(combo));
+    std::string str2( to_s(amounts) + " cubes!" );
     view::pScene s = view_master_->scene();
 
-    int y_offset;
+    int y_offset = 200, x_offset = 0, w = setting()->width();
+    if( setting()->width() % 2 == 0 )
+        x_offset = (view_master_->pos_vec2(w/2, 0).X + view_master_->pos_vec2(w/2-1, 0).X) / 2;
+    else x_offset = view_master_->pos_vec2(w/2, 0).X;
+
     if( chain_texts_.find( chain ) == chain_texts_.end() ) {
-        y_offset = 200;
         BOOST_FOREACH(ChainTextPair const& it, chain_texts_)
             y_offset += it.second->getSprite("chain").get<Size2D>().Y * 2;
         chain_texts_.insert( std::make_pair(chain, view::pMenu()) );
@@ -60,15 +68,15 @@ Map& <% debug_hook 'Map::show_chain' do %>(int combo, model::wpChain const& chai
       .addSpriteText("chain",   str, "Star Jedi", 0, 35+combo*5, true)
       .addSpriteText("amounto", str2,"Star Jedi", 0, 20+combo*3, true, data::Color(255,0,0))
       .addSpriteText("amount",  str2,"Star Jedi", 0, 20+combo*3, true);
-    m->getSprite("chaino").setDepth(-50).set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1));
-    m->getSprite("chain").setDepth(-60);
-    m->getSprite("amounto").setDepth(-50).set<Pos2D>(vec2(1,34+combo*5)).set<Scale>(vec3(1.03,1.15,1));
-    m->getSprite("amount").setDepth(-60).set<Pos2D>(vec2(0,35+combo*5));
-    m->set<Pos2D>( vec2(setting()->centerx(), y_offset) ).tween<OElastic, Scale>
+    m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1));
+    m->getSprite("chain").setDepth(-10);
+    m->getSprite("amounto").set<Pos2D>(vec2(1,34+combo*5)).set<Scale>(vec3(1.03,1.15,1));
+    m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,35+combo*5));
+    m->setDepth(-100).set<Pos2D>( vec2(x_offset, y_offset) ).tween<OElastic, Scale>
        (vec3(0,0,0), vec3(1,1,1), 1000, 0, std::tr1::bind(&Map::pop_a_chain_text, this, chain));
 
     chain_texts_[ chain ] = m;
-    Sound::i().play( ("2/2b_" + boost::lexical_cast<std::string>(combo >= 7 ? 7 : combo) + ".mp3"));
+    Sound::i().play( ("2/2b_" + to_s(combo >= 7 ? 7 : combo) + ".mp3"));
     return *this;
 }
 
@@ -76,14 +84,41 @@ void Map::pop_a_chain_text(model::wpChain const& key) {
     chain_texts_to_be_deleted_.push_back( key );
 }
 
-
+//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::garbage_animation' do %>(int n, int modelx, int modely){
 <% end %>
-    //throw garbage animation here!
-    std::cout << "garbage_animated (limited): " << (n>20?20:n) << ", at " << modelx << ", " << modely << "\n";
+    using namespace accessor; using namespace easing; using std::tr1::bind;
+    vec2 pos = view_master_->pos_vec2(modelx, modely);
+    view::pScene s = view_master_->scene();
+    int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
+    BOOST_FOREACH(wpMap& mg, garbage_lands_) {
+        vec2 endp = mg.lock()->garbage_endpoint_vec2();
+        for( int i = 0; i < num; ++i ) {
+            view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
+            vec2 midp = (pos + endp)/2;
+            midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
+            std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
+            //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
+            data::AnimatorParam<Linear, Rotation> rota;
+            data::AnimatorParam<IQuad, Alpha> alpha;
+            data::AnimatorParam<Linear, Scale> scale;
+            data::WaypointParam<ICirc, Pos2D> way;
+            rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
+            alpha.start(0).end(255).duration(700);
+            scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
+            //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
+            way.waypoints(wp).duration(700+utils::random(300));
+            way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+            g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
+              .tween(rota).tween(alpha).tween(scale).tween(way);
+        }
+    }
     return *this;
 }
 
+vec2 Map::garbage_endpoint_vec2() const {
+    return view_master_->pos_vec2(setting()->width()/2, setting()->height()+2); //endpoint is out of bound
+}
 
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>

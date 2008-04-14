@@ -221,11 +221,9 @@ std::list<wpObject> const& Scene::pick
 
     picked_temporary_.clear();
     ISceneCollisionManager* colm = getCollisionMgr();
-    vec2 scene_offset_ = get<Pos2D>();
     BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
-        position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getPosition(), camera_);
-        vec2 object_pos(pos.X + scene_offset_.X, pos.Y + scene_offset_.Y);
-        if( pred(p, object_pos) )
+        position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getAbsolutePosition(), camera_);
+        if( pred(p, vec2(pos.X, pos.Y)) )
             picked_temporary_.push_back( nv.second );
     }
     return picked_temporary_;

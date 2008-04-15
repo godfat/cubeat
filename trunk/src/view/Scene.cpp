@@ -57,6 +57,7 @@ void Scene::enableGlobalHittingEvent() {
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Scene::onPressEvent, this, _1, _2, btn), scene_, btn, ctrl::BTN_PRESS);
 
+//note: long_press repeating fire is not used for now.
 //        ctrl::Button const* btn = &input->trig2();
 //        ctrl::EventDispatcher::i().subscribe_btn_event(
 //            bind(&Scene::onDownEvent, this, _1, _2, btn), scene_, btn, ctrl::BTN_DOWN);
@@ -67,8 +68,6 @@ Scene& Scene::setTo2DView()
 {
     float w = (float)Conf::i().SCREEN_W;
     float h = (float)Conf::i().SCREEN_H;
-//    camera_->setPosition( vector3df(10000,0,0) );
-//    camera_->setTarget( vector3df(10000,0,100) );
     camera_->setPosition( vector3df(0,0,0) );
     camera_->setTarget( vector3df(0,0,100) );
     float const bloat = 0.0f;    //not useful??? set to 0 for now...
@@ -129,6 +128,8 @@ ISceneCollisionManager* Scene::getCollisionMgr() const
     return smgr_->getSceneCollisionManager();
 }
 
+//warning: the content of this method should not be in view!
+//         because it is not view related.
 void Scene::onPressEvent(int x, int y, ctrl::Button const* bound_button)
 {
     if ( ctrl::pPlayer p = bound_button->owner()->player() )
@@ -136,6 +137,8 @@ void Scene::onPressEvent(int x, int y, ctrl::Button const* bound_button)
             processHit(x, y, bound_button);
 }
 
+//warning: the content of this method should not be in view!
+//         because it is not view related.
 void Scene::onDownEvent(int x, int y, ctrl::Button const* bound_button)
 {
     if ( ctrl::pPlayer p = bound_button->owner()->player() )
@@ -143,6 +146,8 @@ void Scene::onDownEvent(int x, int y, ctrl::Button const* bound_button)
             processHit(x, y, bound_button);
 }
 
+//warning: the content of this method should not be in view!
+//         because it is not view related.
 void Scene::processHit(int x, int y, ctrl::Button const* btn)
 {
     vec2 point(x, y);
@@ -161,12 +166,14 @@ void Scene::processHit(int x, int y, ctrl::Button const* btn)
 void Scene::update_focus_objs_by_input(ctrl::Input const* input)
 {
     pickmap_[input] = ObjList();
+    //warning: some code of this part should not be in view. need refactoring.
     if( ctrl::pPlayer player = input->player() ) {
         vec2 point(input->cursor().x(), input->cursor().y());
         ObjList const& picked = pick(point, player->weapon()->areaPredicate());
         ObjList& pick_input   = pickmap_[input];
         pick_input.insert(pick_input.end(), picked.begin(), picked.end());
     }
+    //end of warning.
 
     ObjList& old_list = last_pickmap_[input];  //reference
     ObjList& new_list = pickmap_[input];       //reference
@@ -199,7 +206,7 @@ void Scene::update_focus_objs_by_input(ctrl::Input const* input)
             obj->triggerHoverOut( input );
         }
 
-    last_pickmap_[input] = pickmap_[input]; //copy?
+    last_pickmap_[input] = pickmap_[input]; //is this copy? should be copy.
 }
 
 

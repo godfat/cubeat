@@ -282,7 +282,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
             std::tr1::function<void(int)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
             ctrl::EventDispatcher::i().subscribe_timer(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount), 1000);
-            //note: timer call throw_garbage
             i = chains_.erase(i);
         }
         else{

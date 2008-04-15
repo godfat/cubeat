@@ -20,9 +20,9 @@ Player::Player(Input* input, std::list<int> const& ally_ids, std::list<int> cons
     weplist_.push_back( new PowerShoot() );
     weplist_.push_back( new AreaShoot() );
 
-    current_wep_ = weplist_[0];  //pistol
+    current_wep_ = weplist_[0];
 
-    //tempcode
+    //note: tempcode
     weplist_[0]->reset();
     weplist_[1]->reset();
     weplist_[2]->reset();
@@ -41,7 +41,7 @@ pPlayer Player::init() {
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_sound, this), &input_->trig1(), BTN_PRESS);
 
-//      maybe I should let different callee have parallel calling button and state...
+//note: maybe I should let different callee have parallel calling button and state...
 //      do it when have time.
 
     }
@@ -123,19 +123,17 @@ void Player::normal_shot_delegate
 void Player::shot_delegate
     (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
 {
-    //if( player->can_fire() && !player->is_changing_wep() )  //now global button event handles this
-        if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
-            hit_cb( player->weapon()->firepower() ); // if the player is ally OR player can crossfire
+    if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
+        hit_cb( player->weapon()->firepower() ); // if the player is ally OR player can crossfire
 }
 
-void Player::repeating_shot_delegate
-    (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
-{
-    //now global button event handles this
-    //if( player->can_fire_repeatedly() && player->can_fire() && !player->is_changing_wep() )
-        if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
-            hit_cb( player->weapon()->firepower() );
-}
+// note: no use for now?
+//void Player::repeating_shot_delegate
+//    (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
+//{
+//    if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
+//        hit_cb( player->weapon()->firepower() );
+//}
 
 Input const* Player::input()          const { return input_; }
 Weapon* Player::weapon()              const { return current_wep_; }

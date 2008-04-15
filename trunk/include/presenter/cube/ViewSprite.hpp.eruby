@@ -57,6 +57,7 @@ public:
             pos_vec2(), map_setting()->cube_sinking_duration());
     }
 
+    //note: this is temporary speed function
     static float speed(ctrl::Button const* btn){
          return btn->state() == ctrl::BTN_DOWN ? 320.f : 80.f;
     }
@@ -106,7 +107,7 @@ public:
         col.offset();
         body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
         shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
-        //Sound::i().play("1/d/ShotA@11.wav");
+        Sound::i().play("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'be_garbage' do %>(){ <% end %>

@@ -59,7 +59,7 @@ public:
 
     //note: this is temporary speed function
     static float speed(ctrl::Button const* btn){
-         return btn->state() == ctrl::BTN_DOWN ? 320.f : 80.f;
+         return btn->state() == ctrl::BTN_DOWN ? 400.f : 80.f;
     }
 
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
@@ -80,22 +80,28 @@ public:
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
-        body_->tween<easing::Linear, accessor::Alpha>(0,
-            map_setting()->cube_dying_duration());
+        unsigned int duration = map_setting()->cube_dying_duration();
+        body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
+        body_->tween<easing::Linear, accessor::Alpha>(0, duration);
+        body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,180), duration);
+        body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
     }
 
     virtual void <% debug_hook 'go_exploding' do %>(){ <% end %>
         body_->clearAllTween();
         // stupid binding would be a must,
         // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
-        body_->tween<easing::Linear, accessor::Alpha>(0, 1000,
+        body_->setDepth(-40); //so it is not blocked in view;
+        body_->tween<easing::OQuad, accessor::Scale>(vec3(1.3,1.3,1.3), 300);
+        body_->tween<easing::Linear, accessor::Alpha>(0, 300);
+        body_->tween<easing::Linear, accessor::GradientEmissive>(255, 300,
             0, std::tr1::bind(&ViewSprite::just_for_hold_shared_ptr, shared_from_this()) );
-        body_->tween<easing::Linear, accessor::Scale>(vec3(0,0,0), 1000);
     }
 
     virtual void <% debug_hook 'be_broken' do %>(){ <% end %>
         body_->setTexture("cubes/cube" + to_s(utils::random(4)+1));
         body_->set<accessor::GradientDiffuse>( 255 );
+        body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         shot_event(&model::Cube::restore, &model::Cube::go_exploding);
         Sound::i().play("1/d/ShotA@11.wav");
     }
@@ -106,8 +112,8 @@ public:
         data::Color col = data::Color::from_id(color_id);
         col.offset();
         body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+        body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
-        Sound::i().play("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'be_garbage' do %>(){ <% end %>
@@ -117,18 +123,21 @@ public:
     }
 
     virtual void <% debug_hook 'hit' do %>(int /*dmg*/, int hp){ <% end %>
-        body_->tween<easing::Linear, accessor::Alpha>(255*(hp/3.f), 300);
+        int alpha = body_->get<accessor::Alpha>();
+        body_->tween<easing::Linear, accessor::Alpha>(alpha/2, 300);
+        body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         if( cube_.lock()->is_garbage() )
             Sound::i().play("1/c/GlassF@11.wav");
         else Sound::i().play("1/b/HitB@11.wav");
     }
 
     virtual void <% debug_hook 'get_chain' do %>(){ <% end %>
-        body_->tween<easing::Linear, accessor::Scale>(vec3(1.2, 1.2, 1.2), 100);
+        if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() )
+        body_->tween<easing::SineCirc, accessor::GradientEmissive>(100, 500u, -1);
     }
 
     virtual void <% debug_hook 'lose_chain' do %>(){ <% end %>
-        body_->tween<easing::Linear, accessor::Scale>(vec3(1, 1, 1), 100);
+        body_->tween<easing::Linear, accessor::GradientEmissive>(0, 100u);
     }
 
 private:

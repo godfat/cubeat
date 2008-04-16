@@ -50,6 +50,7 @@ public:
     static Input* getInputByIndex(unsigned int);
     static InputList& getInputs() { return inputs_; }
     static int count() { return static_cast<int>(inputs_.size()); }
+    static view::pScene& scene() { return scene_; } //note: bad
 
 private:
     static view::pScene scene_;

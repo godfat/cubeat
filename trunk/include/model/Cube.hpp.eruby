@@ -97,6 +97,7 @@ public:
 
     bool is_garbage() const{ return is_garbage_; }
     void be_broken(int);
+    bool is_broken() const{ return is_broken_; }
 	void restore(int);
 
 	void go_exploding(int);

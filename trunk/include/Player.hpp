@@ -46,7 +46,7 @@ public:
 	int  wepid()                  const;
     bool ammo_all_out()           const;
 
-    void normal_weapon_sound();
+    void normal_weapon_fx();
 
     virtual ~Player();
 

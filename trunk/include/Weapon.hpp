@@ -4,24 +4,29 @@
 
 #include "data/BasicViewTypes.hpp"
 #include <tr1/functional>
+#include <tr1/memory>
 
 namespace psc {
 namespace ctrl {
+
+class Player;
+typedef std::tr1::shared_ptr<Player> pPlayer;
+typedef std::tr1::weak_ptr<Player> wpPlayer;
 
 typedef std::tr1::function<bool(vec2 const&, vec2 const&)> AreaPredicate;
 
 class Weapon
 {
 public:
-	Weapon(int const& firepower = 0, int const& ammo = 0, int const& max_ammo = 0,
+	Weapon(wpPlayer const& p, int const& firepower = 0, int const& ammo = 0, int const& max_ammo = 0,
 	       bool const& crossfire = false, bool const& reloadable = true,
            bool const& reloadtime = 500, bool const& repeat = false, int const& cooldowntime = 100)
-		:firepower_(firepower), ammo_(ammo), max_ammo_(max_ammo), crossfire_(crossfire),
+		:player_(p), firepower_(firepower), ammo_(ammo), max_ammo_(max_ammo), crossfire_(crossfire),
 		 reloadable_(reloadable), reloading_(false), reloadtime_(reloadtime),
 		 repeat_(repeat), coolingdown_(false), cooldowntime_(cooldowntime)
 	{}
 
-	virtual void fire() = 0;       //trigger fire
+	virtual void fire(vec2 const&) = 0;       //trigger fire
 
 	void reload();
 	void reset() {
@@ -49,6 +54,8 @@ public:
     virtual AreaPredicate areaPredicate() { return 0; }  //default no predicate. use point picking
 
 protected:
+    wpPlayer player_;
+
     int  firepower_;
 	int  ammo_;
 	int  max_ammo_;
@@ -64,22 +71,22 @@ protected:
 class BlockShoot : public Weapon
 {
 public:
-	BlockShoot();
-	virtual void fire();
+	BlockShoot(wpPlayer const&);
+	virtual void fire(vec2 const&);
 };
 
 class PowerShoot : public Weapon
 {
 public:
-	PowerShoot();
-	virtual void fire();
+	PowerShoot(wpPlayer const&);
+	virtual void fire(vec2 const&);
 };
 
 class AreaShoot : public Weapon
 {
 public:
-	AreaShoot();
-	virtual void fire();
+	AreaShoot(wpPlayer const&);
+	virtual void fire(vec2 const&);
     virtual AreaPredicate areaPredicate();
 protected:
     bool area(vec2 const&, vec2 const&, int, int);

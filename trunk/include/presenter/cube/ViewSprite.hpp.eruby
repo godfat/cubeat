@@ -39,7 +39,7 @@ public:
         data::pMapSetting ms, data::pViewSpriteSetting s, ctrl::wpPlayer p):
         ViewBase(c), view_orig_(orig), cube_(c), map_setting_(ms), setting_(s), player_(p)
     {
-        body_ = view::Sprite::create("cubes/cube-item-1", view_orig_.lock(),
+        body_ = view::Sprite::create("cubes/cube1", view_orig_.lock(),
                                      s->cube_size(), s->cube_size(), true);
 
         body_->set<accessor::Pos2D>(pos_vec2());
@@ -89,6 +89,7 @@ public:
 
     virtual void <% debug_hook 'go_exploding' do %>(){ <% end %>
         body_->clearAllTween();
+        body_->setPickable(false);
         // stupid binding would be a must,
         // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
         body_->setDepth(-40); //so it is not blocked in view;

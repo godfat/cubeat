@@ -40,6 +40,8 @@ public:
     virtual pScene  scene() const;
     virtual Object& moveTo(int,int,int);
     virtual Object& setTexture(std::string const& path);
+    virtual Object& setPickable(bool const&);
+    virtual Object& setLighting(bool const&);
 
     virtual irr::scene::ISceneNode* body() const;
 

@@ -6,23 +6,21 @@
 #include "view/Scene.hpp"
 #include "view/Menu.hpp"
 #include "view/SpriteText.hpp"
+
+#include "utils/to_s.hpp"
+
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "Sound.hpp"
 #include "EventDispatcher.hpp"
 
 #include "all_fwd.hpp"
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 <%= debug_include %>
 
 using namespace psc;
 using namespace presenter;
-
-//note: someday make a helper utility header
-template<class T>
-inline std::string to_s(T t) { return boost::lexical_cast<std::string>(t); }
+using psc::utils::to_s;
 
 Map& <% debug_hook 'Map::call_end_game' do %>(){
 <% end %>

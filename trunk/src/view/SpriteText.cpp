@@ -2,11 +2,11 @@
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
 #include "utils/TTFont.hpp"
+#include "utils/to_s.hpp"
 #include "Accessors.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
-#include <boost/lexical_cast.hpp>
 
 using namespace irr;
 using namespace core;
@@ -91,7 +91,7 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
 
 SpriteText& SpriteText::showNumber(int num, unsigned int digit)
 {
-    std::string str = boost::lexical_cast<std::string>(num);
+    std::string str = utils::to_s(num);
     while( str.size() < digit ) {
         str = "0" + str;
     }

@@ -4,6 +4,7 @@
 #include "view/Menu.hpp"
 #include "view/Sprite.hpp"
 #include "data/Color.hpp"
+#include "utils/to_s.hpp"
 
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
@@ -16,7 +17,6 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/lexical_cast.hpp>
 #include <utility>
 #include <sstream>
 #include <iostream>
@@ -114,7 +114,7 @@ void MainMenu::initDecorator()
 //    }
     for(int i = 0; i < color_num; ++i ) {
         paths.push_back( deco.S("path") +
-            std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
+            std::string( utils::to_s((i%4)+1) ) );
     }
 
     std::vector<vec3> waypoints;

@@ -3,8 +3,6 @@
 #include "presenter/Map.hpp"
 #include "model/Cube.hpp"
 
-// #include "all_fwd.hpp"
-
 <%= debug_include %>
 
 using namespace psc;

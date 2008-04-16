@@ -11,7 +11,7 @@ public:
         best_chain_point_(3), best_chain_cubes_(3), shooted_(false),
         chaining_(false)
     {
-        // NOTE: trace
+        // NOTE: // trace
         std::cout << "Hi, I am Ai!" std::endl;
     }
 
@@ -65,7 +65,7 @@ private:
                 }
             }
         }
-        // NOTE: trace
+        // NOTE: // trace
         for(int k=0; k<best_chain_cubes_.size(); ++k)
             std::cout << "Best combo<" << get<0>(best_chain_list[k]) << ">(" << get<1>(best_chain_list[k])->x() << "," << get<1>(best_chain_list[k])->y() << ")";
 
@@ -108,7 +108,7 @@ private:
 
         map_tops[width(map)-1+1] = map_tops[width(map)-1+1]/width(map);
 
-        // NOTE: trace
+        // NOTE: // trace
         std::cout << "map_tops:";
         std::copy(map_tops.begin(), map_tops.end(), std::ostream_iterator<int>(std::cout, ", "))
 
@@ -182,7 +182,7 @@ private:
         }
     }
 
-	std::vector<> too_high_travel(pMap map){
+	std::vector<pCube> too_high_travel(pMap map){
 		std::vector<> map_tops = top_checker(map);// get high of each column
         std::vector<pCube> del_list(width(map)); // to save cubes that need delete
 		for(int w = width(map)-1; w > 0; --w){
@@ -199,23 +199,22 @@ private:
 				return del_list;
 			}
 		}
-		return null;
+		return std::vector<pCube>();
 	}
 
-
-    std::vector<> column_travel(pMap map, int w){
-		std::vector<> del_list; // to save cubes that need delete
-		for(var h = height(map)-1; h > 0; --h){
+    std::vector<pCube> column_travel(pMap map, int w){
+		std::vector<pCube> del_list; // to save cubes that need delete
+		for(int h = height(map)-1; h > 0; --h){
 			if( map->lookup(w,h) && map->lookup(w,h)->is_waiting() ){
-				// trace("check(" + h + ")>>" + map.make_column(map.lookup(w,h)).length);
+				// // trace("check(" + h + ")>>" + map.make_column(map->lookup(w,h)).size());
 				// find 2-contact at this column
 				if(map->make_column(map->lookup(w,h)).size() >= 1){
 					// check which one is higher than the other
-					// map.make_column(map.lookup(w,h))[0] always higher(<) than h
+					// map.make_column(map->lookup(w,h))[0] always higher(<) than h
 					// NOTE: tracing
 					std::cout << "find 2-contact at(" << w << "," << h << ")";
-					std::vector<> del_list_up;
-					std::vector<> del_list_down;
+					std::vector<pCube> del_list_up;
+					std::vector<pCube> del_list_down;
 					for(int ph = 1; h + ph < 11 && h - 1 - ph > 0 && ph < 3; ++ph){
 						if(map->lookup(w,h + ph) == map->lookup(w,h) && map->lookup(w,h + ph)->is_waiting){
 						    // NOTE: tracing
@@ -226,27 +225,100 @@ private:
 							std::cout << "push_dw: " << w << "," << (h + ph);
 							del_list_down.push_back(map->lookup(w,h + ph));
 						}
-						if(map.lookup(w,h - 1 - ph).rgb == map.lookup(w,h).rgb && map.lookup(w,h - 1 - ph).state instanceof Waiting){
-							trace("column_travel_up find!");
+						if(map->lookup(w,h - 1 - ph) == map->lookup(w,h) && map->lookup(w,h - 1 - ph)->is_waiting()){
+							// // trace("column_travel_up find!");
 							del_list = del_list_up;
 							break;
 						}else{
-							trace("push_up: " + w + "," + (h - 1 - ph));
-							del_list_up.push(map.lookup(w,h - 1 - ph));
+							// // trace("push_up: " + w + "," + (h - 1 - ph));
+							del_list_up.push_back(map->lookup(w,h - 1 - ph));
 						}
 					}
-					if(del_list.length != 0){
+					if(del_list.size() != 0){
 						break;
 					}
 					--h;
 				}
 			}
 		}
-		if(del_list.length != 0){
-			return del_list;
-		}else{
-			return null;
+		return del_list;
+	}
+
+	//暴搜盤面,找出broken或是garbage方塊並回傳
+	 std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bk_gbg_travel(pMap map){
+	     //儲存broken_cubes //儲存garbage_cubes
+		std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bg_cubes;
+		for(int h = height(map)-1; h > 0; --h){
+			for(int w = width(map)-1; w >= 0; --w){
+				if(map->lookup(w,h)->is_waiting() && map->lookup(w,h)->if_broken() == true){
+					// trace("push broken(" + w + "," + h +")");
+					get<0>(bg_cubes).push_back(map->lookup(w,h));
+				}else if(map->lookup(w,h)->is_waiting() && map->lookup(w,h).if_garbage() == true){
+					// // trace("push garbage(" + w + "," + h +")");
+					get<1>(bg_cubes).push_back(map->lookup(w,h));
+				}
+			}
 		}
+		if(get<0>(bg_cubes).size()!=0 || get<1>(bg_cubes).size()!=0){
+			return bg_cubes;
+		}else{
+			return std::tr1::tuple< std::vector<pCube>, std::vector<pCube> >();
+		}
+	}
+
+	//暴搜盤面找出最佳發火點並回傳
+	pCube combo_travel(pMap map){
+		int combo_point = 0;
+        pCube best_cube;
+		for(int h = height(map)-1; h > travel_limit_; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				if(map->lookup(w,h) && map->lookup(w,h)->is_waiting()){
+					Map temp_map = map->clone();
+					del_block(temp_map, w, h, true);
+					if(combo_counter(temp_map)>combo_point){
+						combo_point = combo_counter(temp_map);
+						best_cube = map->lookup(w,h);
+					}
+				}
+			}
+		}
+		return best_cube;
+	}
+
+	//暴搜盤面找出最佳發火點並回傳(使用combo_rank_udate)
+	pCube combo_travel_ver2(pMap map){
+		combo_rank_update(map);
+		return best_chain_cubes[2];
+	}
+
+	//計算此盤面的兩兩相臨方塊個數 並回傳
+	int amass_counter(pMap map){
+		if(contact_checker(map, 3).size() == 0){
+			int get_point = 0;
+			get_point = contact_checker(map, 2).size();
+			return get_point;
+		}
+		return 0;
+	}
+
+	pCube amass_travel(pMap map){
+		int get_point = 0;
+		pCube best_cube;
+		int amass_point = amass_counter(map);
+		for(int h = height(map)-1; h > travel_limit_; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				if(map->lookup(w,h) && map->lookup(w,h)->is_waiting()){
+					Map temp_map = map->clone();
+					del_block(temp_map, w, h, true);
+					get_point = amass_counter(temp_map);
+					if(get_point > amass_point){
+						amass_point = get_point;
+						best_cube = map->lookup(w,h);
+					}
+				}
+			}
+		}
+		return best_cube;
 	}
 
 };
@@ -254,83 +326,11 @@ private:
 }} // end of namespace
 
 class Ai{
-	//暴搜盤面,找出broken或是garbage方塊並回傳
-	private function bk_gbg_travel(map: Map): Array{
-		var bg_cubes: Array = new Array(2);
-		bg_cubes[0] = new Array;//儲存broken_cubes
-		bg_cubes[1] = new Array;//儲存garbage_cubes
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0; --w){
-				if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_broken() == true){
-					trace("push broken(" + w + "," + h +")");
-					bg_cubes[0].push(map.lookup(w,h));
-				}else if(map.lookup(w,h).state instanceof Waiting && map.lookup(w,h).if_garbage() == true){
-					trace("push garbage(" + w + "," + h +")");
-					bg_cubes[1].push(map.lookup(w,h));
-				}
-			}
-		}
-		if(bg_cubes[0].length!=0 || bg_cubes[1].length!=0){
-			return bg_cubes;
-		}else{
-			return null;
-		}
-	}
-		
-	//暴搜盤面找出最佳發火點並回傳
-	private function combo_travel(map: Map): Square{
-		var combo_point: Number = 0;
-		var best_cube: Square = null;
-		for(var h = map.Height-1; h > this.travel_limit; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-					var temp_map: Map = set_brain_map(map);
-					del_block(temp_map, w, h, true);
-					if(combo_counter(temp_map)>combo_point){
-						combo_point = combo_counter(temp_map);
-						best_cube = map.lookup(w,h);
-					}
-					delete temp_map;
-				}
-			}
-		}
-		return best_cube;
-	}
-	//暴搜盤面找出最佳發火點並回傳(使用combo_rank_udate)
-	private function combo_travel_ver2(map: Map): Square{
-		combo_rank_update(map);
-		return this.best_chain_cubes[2];
-	}
-	
-	private function amass_travel(map: Map): Square{
-		var get_point: Number = 0;
-		var best_cube: Square = null;
-		var amass_point = amass_counter(map);
-		for(var h = map.Height-1; h > this.travel_limit; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
-					var temp_map: Map = set_brain_map(map);
-					del_block(temp_map, w, h, true);
-					get_point = amass_counter(temp_map);
-					if(get_point > amass_point){
-						amass_point = get_point;
-						best_cube = map.lookup(w,h);
-					}
-					delete temp_map;
-				}
-			}
-		}
-		return best_cube;
-	}
-	
-	private function amass_travel_deep(map: Map): Array{
-		var best_cube: Square = null;
-		var in_best_cubes: Boolean = false;
-		var best_point: Number = 0;
-		var result_: Array = new Array(2);//return
-		result_[0] = null;//最佳排列點方塊
-		result_[1] = new Array(3);//元最佳發火點消去最佳排列解後的新得點
-		result_[1] = [0,0,0];
+	//深層暴搜盤面找出最佳排列點並回傳
+	pCube amass_travel_deep(pMap map){
+		pCube best_cube;//最佳排列點方塊
+		bool in_best_cubes = false;
+		int best_point = 0;
 		best_point = amass_deep_formula(amass_counter(map),this.best_chain_point);
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
@@ -357,6 +357,7 @@ class Ai{
 						}
 					}
 					if(amass_deep_formula(amass_counter(temp_map),chain_point) > best_point){
+						trace("find best amass(" + w + "," + h + ")");
 						best_point = amass_deep_formula(amass_counter(temp_map),chain_point);
 						best_cube = map.lookup(w,h);
 					}
@@ -365,53 +366,43 @@ class Ai{
 				in_best_cubes = false;
 			}
 		}
-		return result_;
+		return best_cube;
 	}
 	
-	private function amass_deep_formula(amass_point: Number,chain_points: Array): Number{
+	amass_deep_formula(int amass_point,Array chain_points): int{
 		var amass_deep_point = amass_point;
-		for(var i = 0; i < chain_points.length; ++i){
+		for(var i = 0; i < chain_points.size(); ++i){
 			amass_deep_point += chain_points[i];
 		}
 		return amass_deep_point;
 	}
 	
-	public function dropping_travel(map: Map){
+	public function dropping_travel(pMap map){
 		var del_arr = Dropping_checker(map);
 		if(del_arr != null){
-			trace_map_rgb(map);
-			for(var del_i = 0; del_i < del_arr.length; ++del_i){
+			// trace_map_rgb(map);
+			for(var del_i = 0; del_i < del_arr.size(); ++del_i){
 				shooting(map,del_arr[del_i]);
-				trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
+				// trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
 			}
 		}
 	}
 	
-	//計算此盤面的兩兩相臨方塊個數 並回傳
-	private function amass_counter(map: Map): Number{
-		if(contact_checker(map, 3) == null){
-			var get_point: Number = 0;
-			get_point = contact_checker(map, 2).length;
-			return get_point;
-		}
-		return 0;
-	}
-	
 	//計算此盤面的連鎖分數並回傳
-	private function combo_counter(map: Map): Number{
-		var square_count: Array = new Array();
-		var chain_count: Number = 0;
-		var get_point: Number = 0;
+	combo_counter(pMap map): int{
+		Array square_count = new Array();
+		int chain_count = 0;
+		int get_point = 0;
 		while(contact_checker(map,3) != null){
 			//use Array to save contace_checker
-			var chain_arr: Array = new Array();
+			Array chain_arr = new Array();
 			chain_arr = contact_checker(map,3);
 			++chain_count;
-			square_count.push(chain_arr.length);
+			square_count.push(chain_arr.size());
 			chain_del(map, chain_arr);
 		}
 		//point_formula : (del_square_in_each_chain-3)*each_chain_Num+2^(each_chain_Num-2)
-		for(var i = 0; i < square_count.length; ++i){
+		for(var i = 0; i < square_count.size(); ++i){
 			get_point += (square_count[i]-3)*i+1;
 			if( i == 0 ){
 				get_point += (square_count[i]-3)*(i+1);
@@ -422,27 +413,27 @@ class Ai{
 		return get_point;
 	}
 	//暴搜盤面,找出兩兩相鄰或是可連鎖消去的方塊並回傳,以contact_Num決定有幾個同色相連才要回傳
-	private function contact_checker(map: Map, contact_Num: Number): Array{
-		var temp_arr: Array = new Array();
-		var push_arr: Array = new Array();
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				temp_arr = contact_checker_unit(map, map.lookup(w,h), temp_arr, contact_Num);
+	contact_checker(pMap map, int contact_Num): Array{
+		Array temp_arr = new Array();
+		Array push_arr = new Array();
+		for(int h = height(map)-1; h > 0; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				temp_arr = contact_checker_unit(map, map->lookup(w,h), temp_arr, contact_Num);
 				
-				/*if(map.make_row(map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = map.make_row( map.lookup(w,h) );
-					push_arr.push( map.lookup(w,h) );
-					for(var push_row = 0; push_row < push_arr.length; ++push_row){
+				/*if(map.make_row(map->lookup(w,h)).size() >= contact_Num-1){
+					push_arr = map.make_row( map->lookup(w,h) );
+					push_arr.push( map->lookup(w,h) );
+					for(var push_row = 0; push_row < push_arr.size(); ++push_row){
 						if(push_arr[push_row].cycled == false){
 							push_arr[push_row].cycled = true;
 							temp_arr.push(push_arr[push_row]);
 						}
 					}
 				}
-				if(map.make_column(map.lookup(w,h)).length >= contact_Num-1){
-					push_arr = map.make_column( map.lookup(w,h) );
-					push_arr.push( map.lookup(w,h) );
-					for(var push_col = 0; push_col < push_arr.length; ++push_col){
+				if(map.make_column(map->lookup(w,h)).size() >= contact_Num-1){
+					push_arr = map.make_column( map->lookup(w,h) );
+					push_arr.push( map->lookup(w,h) );
+					for(var push_col = 0; push_col < push_arr.size(); ++push_col){
 						if(push_arr[push_col].cycled == false){
 							push_arr[push_col].cycled = true;
 							temp_arr.push(push_arr[push_col]);
@@ -451,32 +442,32 @@ class Ai{
 				}*/
 			}
 		}
-		for(var re_cy = 0; re_cy < temp_arr.length; ++re_cy){
+		for(var re_cy = 0; re_cy < temp_arr.size(); ++re_cy){
 			temp_arr[re_cy].cycled = false;
 		}
-		if(temp_arr.length == 0){
+		if(temp_arr.size() == 0){
 			return null;
 		}else{
 			return temp_arr;
 		}
 	}
 	
-	private function contact_checker_unit(map: Map, cube: Square, list: Array, contact_Num: Number): Array{
-		var temp_list: Array = new Array;
-		if(map.make_row(cube).length >= contact_Num-1){
+	contact_checker_unit(pMap map, pCube cube, Array list, int contact_Num): Array{
+		Array temp_list = new Array;
+		if(map.make_row(cube).size() >= contact_Num-1){
 			temp_list = map.make_row( cube );
 			temp_list.push( cube );
-			for(var push_row = 0; push_row < temp_list.length; ++push_row){
+			for(var push_row = 0; push_row < temp_list.size(); ++push_row){
 				if(temp_list[push_row].cycled == false){
 					temp_list[push_row].cycled = true;
 					list.push(temp_list[push_row]);
 				}
 			}
 		}
-		if(map.make_column(cube).length >= contact_Num-1){
+		if(map.make_column(cube).size() >= contact_Num-1){
 			temp_list = map.make_column( cube );
 			temp_list.push( cube );
-			for(var push_col = 0; push_col < temp_list.length; ++push_col){
+			for(var push_col = 0; push_col < temp_list.size(); ++push_col){
 				if(temp_list[push_col].cycled == false){
 					temp_list[push_col].cycled = true;
 					list.push(temp_list[push_col]);
@@ -487,16 +478,16 @@ class Ai{
 	}
 	
 	//檢查初落下方塊是否會造成誤消去,有則return一組cube array
-	private function Dropping_checker(map: Map): Array{
-		var temp_map: Map = set_brain_map(map);
-		var check_arr: Array = new Array();
-		var dropping_arr: Array = new Array();
-		var del_arr: Array = new Array();
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == true){
-					dropping_arr.push(map.lookup(w, h));
-					check_arr.push(temp_map.lookup(w,h));
+	Dropping_checker(pMap map): Array{
+		Map temp_map = set_brain_map(map);
+		Array check_arr = new Array();
+		Array dropping_arr = new Array();
+		Array del_arr = new Array();
+		for(int h = height(map)-1; h > 0; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				if(map->lookup(w, h)->is_dropping() && map->lookup(w, h).first_drop == true){
+					dropping_arr.push(map->lookup(w, h));
+					check_arr.push(temp_map->lookup(w,h));
 				}
 			}
 		}
@@ -505,10 +496,10 @@ class Ai{
 			delete temp_map;
 			return null;
 		}else{
-			for(var check_i = 0; check_i < check_arr.length; ++check_i){
-				if(temp_map.make_row(check_arr[check_i]).length >= 2){
+			for(var check_i = 0; check_i < check_arr.size(); ++check_i){
+				if(temp_map.make_row(check_arr[check_i]).size() >= 2){
 					del_arr.push(dropping_arr[check_i]);
-				}else if(temp_map.make_column(check_arr[check_i]).length >= 2){
+				}else if(temp_map.make_column(check_arr[check_i]).size() >= 2){
 					del_arr.push(dropping_arr[check_i]);
 				}
 			}
@@ -517,22 +508,22 @@ class Ai{
 		}
 	}
 	//傳入一cube array,先消去這些cube,再將消去後造成的空格填滿
-	private function chain_del(map: Map, del_arr: Array){
+	chain_del(pMap map, Array del_arr){
 		//delete del_arr
-		for(var cube_Num = 0; cube_Num < del_arr.length; ++cube_Num){
+		for(var cube_Num = 0; cube_Num < del_arr.size(); ++cube_Num){
 			del_block(map, del_arr[cube_Num].x, del_arr[cube_Num].y, false);
 		}
 		//sort map
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w, h) == null){
+		for(int h = height(map)-1; h > 0; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				if(map->lookup(w, h) == null){
 					move_block(map, w, h, false);
 				}
 			}
 		}
 	}
 	//消去map中位於(x,y)的cube,由need_move傳入之值決定是否要將消去後造成的空格填起
-	private function del_block(map: Map, x: Number, y: Number, need_move: Boolean){
+	del_block(pMap map, int x, int y, bool need_move){
 		var del_x = x;
 		var del_y = y;
 		map[del_y][del_x].suicide();
@@ -542,141 +533,49 @@ class Ai{
 		}
 	}
 	//傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填滿空格
-	private function move_block(map: Map, x: Number, y: Number){
+	move_block(pMap map, int x, int y){
 		var locx = x;
 		var locy = y;
 		for(var target_y = locy-1;
 			target_y > 0 &&
-			map.lookup(locx,locy) == null;
+			map->lookup(locx,locy) == null;
 			--target_y){
-			if(map.lookup(locx,target_y) != null){
-				if(map.lookup(locx,target_y).state instanceof Waiting){
-					map.setup(locx, locy, map.lookup(locx, target_y));
-					map.lookup(locx, locy).y = locy;
-					//trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
+			if(map->lookup(locx,target_y) != null){
+				if(map->lookup(locx,target_y)->is_waiting()){
+					map.setup(locx, locy, map->lookup(locx, target_y));
+					map->lookup(locx, locy).y = locy;
+					//// trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
 					del_block(map, locx, target_y, true);
 				}
 			}
 		}
 	}
 	//將落下中方塊強制落下,由first_drop決定目標是否為初落下方塊
-	private function failing_dropping(map: Map, first_drop: Boolean){
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h).state instanceof Dropping && map.lookup(w,h).first_drop == true && first_drop == true){
-					for(var move_to = h+1; move_to < map.Height && map.lookup(w,move_to) == null; ++move_to){
-						map.setup(w, move_to, map.lookup(w, h));
-						map.lookup(w, move_to).y = move_to;
+	failing_dropping(pMap map, bool first_drop){
+		for(int h = height(map)-1; h > 0; --h){
+			for(int w = width(map)-1; w >= 0 ; --w){
+				if(map->lookup(w,h)->is_dropping() && map->lookup(w,h).first_drop == true && first_drop == true){
+					for(var move_to = h+1; move_to < height(map) && map->lookup(w,move_to) == null; ++move_to){
+						map.setup(w, move_to, map->lookup(w, h));
+						map->lookup(w, move_to).y = move_to;
 						del_block(map, w, move_to, false);
-						if(move_to+1 == map.Height || map.lookup(w,move_to+1) != null){
-							map.lookup(w, move_to).state(new Waiting(map));
+						if(move_to+1 == height(map) || map->lookup(w,move_to+1) != null){
+							map->lookup(w, move_to).state(new Waiting(map));
 						}
 					}
-				}else if(map.lookup(w,h).state instanceof Dropping && map.lookup(w,h).first_drop == false && first_drop == false){
-					for(var move_to = h+1; move_to < map.Height && map.lookup(w,move_to) == null; ++move_to){
-						map.setup(w, move_to, map.lookup(w, h));
-						map.lookup(w, move_to).y = move_to;
+				}else if(map->lookup(w,h)->is_dropping() && map->lookup(w,h).first_drop == false && first_drop == false){
+					for(var move_to = h+1; move_to < height(map) && map->lookup(w,move_to) == null; ++move_to){
+						map.setup(w, move_to, map->lookup(w, h));
+						map->lookup(w, move_to).y = move_to;
 						del_block(map, w, move_to, false);
-						if(move_to+1 == map.Height || map.lookup(w,move_to+1) != null){
-							map.lookup(w, move_to).state(new Waiting(map));
+						if(move_to+1 == height(map) || map->lookup(w,move_to+1) != null){
+							map->lookup(w, move_to).state(new Waiting(map));
 						}
 					}
 				}
 			}
 		}
 	}
-	
-	private function trace_map_state(map: Map){
-		var state_arr: Array = new Array(map.Height);
-        for(var i = 0; i < map.Height; ++i){
-			state_arr[i] = new Array(map.Width);
-		}
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if( map.lookup(w,h).state instanceof Waiting ){
-					var waiting: Waiting = Waiting(map.lookup(w,h).state);
-					if( waiting.state_checked() == true){
-						state_arr[h][w] = "WT";
-					}else if( waiting.state_checked() == false){
-						state_arr[h][w] = "WF";
-					}else{
-						state_arr[h][w] = "Wa";
-					}
-				}else if ( map.lookup(w,h).state instanceof Dropping ){
-					if(map.lookup(w,h).first_drop == true){
-						state_arr[h][w] = "DT";
-					}else if(map.lookup(w,h).first_drop == false){
-						state_arr[h][w] = "DF";
-					}else{
-						state_arr[h][w] = "Dr";
-					}
-				}else if ( map.lookup(w,h).state instanceof Dying )
-				    state_arr[h][w] = "Dy";
-				else
-				    state_arr[h][w] = "--";
-			}
-		}
-		trace("map_state:");
-		for(var a = 0; a < map.Height; ++a){
-			trace(state_arr[a]);
-		}
-	}
-	
-	private function trace_map_rgb(map: Map){
-		var rgb_arr: Array = new Array(map.Height);
-        for(var i = 0; i < map.Height; ++i){
-			rgb_arr[i] = new Array(map.Width);
-		}
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if( map.lookup(w,h).rgb == 255 << 16 )
-				    rgb_arr[h][w] = "Re";
-				else if ( map.lookup(w,h).rgb == 255 << 8 )
-				    rgb_arr[h][w] = "Gr";
-				else if ( map.lookup(w,h).rgb == 255 )
-				    rgb_arr[h][w] = "Bl";
-				else if ( map.lookup(w,h).rgb == (255<<16) + (255<<8) )
-				    rgb_arr[h][w] = "Ye";
-				else
-				    rgb_arr[h][w] = "--";
-			}
-		}
-		trace("map_RGB:");
-		for(var a = 0; a < map.Height; ++a){
-			trace(rgb_arr[a]);
-		}
-	}
-	private function trace_map_cycled(map: Map){
-		var cycled_arr: Array = new Array(map.Height);
-        for(var i = 0; i < map.Height; ++i){
-			cycled_arr[i] = new Array(map.Width);
-		}
-		for(var h = map.Height-1; h > 0; --h){
-			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h).cycled == true ){
-					cycled_arr[h][w] = "Tr";
-				}else if(map.lookup(w,h).cycled == false ){
-					cycled_arr[h][w] = "Fa";
-				}else{
-					cycled_arr[h][w] = "--";
-				}
-			}
-		}
-		trace("map_cycled:");
-		for(var a = 0; a < map.Height; ++a){
-			trace(cycled_arr[a]);
-		}
-	}
-	
-	private var travel_limit: Number;
-	private var best_amass_cube: Square;
-	private var best_amass_point: Array;
-	private var best_chain_point: Array;
-	private var best_chain_cubes: Array;
-	private var shooted: Boolean;
-	private var chaining: Boolean;
-	private var game_: Game;
-	private var map_: Map;
 };
 
 <% end %>

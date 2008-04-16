@@ -71,6 +71,8 @@ public:
     int garbage_left() const { return model()->garbage_left(); }
     int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
     bool has_column_full() const { return model()->check_column_full(); }
+    int  sum_of_all_enemy() const;
+    bool enemy_column_full() const;
 
 private:
     pMap init();

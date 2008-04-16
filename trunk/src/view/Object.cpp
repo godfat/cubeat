@@ -127,6 +127,25 @@ void Object::nextTween(std::tr1::function<void()>const& orig_cb)
     startTween();
 }
 
+Object& Object::setPickable(bool const& pickable)
+{
+    if( pickable ) {
+        scene()->addPickMapping( body_, shared_from_this() );
+        body_->setIsDebugObject(false);
+    }
+    else {
+        scene()->removePickMapping( body_ );
+        body_->setIsDebugObject(true);
+    }
+    return *this;
+}
+
+Object& Object::setLighting(bool const& lighting)
+{
+    body_->setMaterialFlag(video::EMF_LIGHTING, lighting);
+    return *this;
+}
+
 pScene Object::scene() const
 {
     return scene_.lock();

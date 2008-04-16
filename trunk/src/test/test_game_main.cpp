@@ -4,12 +4,11 @@
 #include "view/SpriteText.hpp"
 #include "view/Menu.hpp"
 #include "view/AnimatedSprite.hpp"
-#include "view/AnimatedSceneObject.hpp"
 #include "Accessors.hpp"
 
+#include "presenter/Stage.hpp"
 #include "presenter/Map.hpp"
 #include "presenter/cube/ViewSprite.hpp"
-#include "presenter/cube/ViewStdout.hpp"
 
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
@@ -28,7 +27,6 @@ using namespace easing;
 using namespace accessor;
 
 class TestGame{
-    typedef std::vector< view::pAnimatedSceneObject > SceneObjList;
     enum STATE { STAND, ATTACK, HIT, NONE };
     enum FACE  { NORMAL, GOOD, BAD };
 
@@ -63,7 +61,7 @@ public:
         map1_->push_garbage_land(map0_);
 
         //temporary Scene:
-        setup_stage_by_config( "config/stage/jungle.zzml" );
+        stage_ = presenter::Stage::create( "config/stage/jungle.zzml" );
         setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
         setup_char_sprite_by_config( char_1p_, conf1p_, "config/char/char1.zzml" );
         setup_char_sprite_by_config( char_2p_, conf2p_, "config/char/char2.zzml" );
@@ -72,7 +70,7 @@ public:
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
         //start music
-        Sound::i().play( stageconf_.S("music"), true);
+        stage_->playBGM();
 
         for( size_t i = 0; i < conf2p_.V("face_pos").size(); ++i ) {
             utils::map_any& pos = conf2p_.V("face_pos").M(i);
@@ -86,41 +84,6 @@ public:
 
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
-    }
-
-    void setup_stage_by_config(std::string const& path)
-    {
-        stageconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
-        stage_ = view::Scene::create( stageconf_.S("name") );
-        stage_->setTo3DView( stageconf_.I("FoV") / 180.f * PI );
-        utils::vector_any const& lists = stageconf_.V("all_items");
-        BOOST_FOREACH(boost::any const& list, lists) {
-            slists_.push_back( SceneObjList() );
-            SceneObjList& slist = slists_.back();
-            utils::vector_any const& items = boost::any_cast<utils::vector_any const>(list);
-            BOOST_FOREACH(boost::any const& it, items) {
-                utils::map_any const& item = boost::any_cast<utils::map_any const>(it);
-                view::pAnimatedSceneObject obj;
-                obj = view::AnimatedSceneObject::create( item.S("xfile") ,stage_ );
-
-                utils::map_any const& pos = item.M("position"), &rot = item.M("rotation"),
-                    &sca = item.M("scale"), &dif = item.M("diffuse");
-                obj->set<Pos3D>(    vec3( pos.I("x"), pos.I("y"), pos.I("z") ) )
-                    .set<Rotation>( vec3( rot.I("x"), rot.I("y"), rot.I("z") ) )
-                    .set<Scale>(    vec3( sca.F("x"), sca.F("y"), sca.F("z") ) )
-                    .set<ColorDiffuseVec3>( vec3( dif.I("r"), dif.I("g"), dif.I("b") ) )
-                    .set<Alpha>( dif.I("a") );
-
-                utils::map_any const& econf = item.M("anim").M("emerge");
-                utils::map_any const& iconf = item.M("anim").M("idle");
-                data::AnimatorParam<Linear, Frame> emerge;
-                data::AnimatorParam<Linear, Frame> idle;
-                emerge.start( econf.I("s") ).end( econf.I("e") ).duration( econf.I("duration") ).loop( econf.I("loop") ).delay( 2500 );
-                idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop( iconf.I("loop") );
-                obj->queue(emerge).tween(idle);
-                slist.push_back( obj );
-            }
-        }
     }
 
     void setup_ui_by_config( std::string const& path ) {
@@ -162,7 +125,7 @@ public:
 
     void cycle(){
         update_ui();
-        stage_->redraw();
+        stage_->cycle();
         //IrrDevice::i().d()->getVideoDriver()->clearZBuffer();
         scene_->redraw();
         map0_->redraw().cycle();
@@ -212,25 +175,6 @@ public:
         charsp->getSprite("face").set<Pos2D>( vec2( face_pos.M(idx).I("x"), face_pos.M(idx).I("y") ) );
     }
 
-    void hit_stage_group(int const& id) {
-        SceneObjList& slist = slists_[id];
-        utils::vector_any const& listconf = stageconf_.V("all_items").V(id);
-        for( size_t i = 0; i < slist.size(); ++i ) {
-            view::pAnimatedSceneObject& obj = slist[i];
-            utils::map_any const& hconf = listconf.M(i).M("anim").M("hit");
-            utils::map_any const& rconf = listconf.M(i).M("anim").M("recover");
-            utils::map_any const& iconf = listconf.M(i).M("anim").M("idle");
-            data::AnimatorParam<OBounce, Frame> hit;
-            data::AnimatorParam<Linear, Frame> recover;
-            data::AnimatorParam<Linear, Frame> idle;
-            int fn = obj->get<Frame>(), s = fn < hconf.I("s") ? hconf.I("s") : fn;
-            hit.start( s ).end( hconf.I("e") ).duration( hconf.I("duration") );
-            recover.start( rconf.I("s") ).end( rconf.I("e") ).duration( rconf.I("duration") );
-            idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop(-1);
-            obj->clearAllTween().queue(hit).queue(recover).tween(idle);
-        }
-    }
-
     void update_ui(){
         int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
         int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
@@ -247,7 +191,7 @@ public:
 
         int state1p = conf1p_.I("current_state");
         if( state1p != HIT && last_garbage_1p_ > new_garbage_1p_ ) {
-            hit_stage_group(1);
+            stage_->hitGroup(1);
             switch_character_sprite_state( char_1p_, conf1p_, HIT );
         }
         else if( state1p != ATTACK && state1p != HIT && map0_->current_sum_of_attack() > 1 )
@@ -257,7 +201,7 @@ public:
 
         int state2p = conf2p_.I("current_state");
         if( state2p != HIT && last_garbage_2p_ > new_garbage_2p_ ) {
-            hit_stage_group(2);
+            stage_->hitGroup(2);
             switch_character_sprite_state( char_2p_, conf2p_, HIT );
         }
         else if( state2p != ATTACK && state2p != HIT && map1_->current_sum_of_attack() > 1 )
@@ -288,18 +232,17 @@ public:
     }
 
 private:
-    view::pScene scene_, stage_;
+    view::pScene scene_;
+    presenter::pStage stage_;
     presenter::pMap map0_;
     presenter::pMap map1_;
     ctrl::pPlayer player0_;
     ctrl::pPlayer player1_;
 
-    utils::map_any stageconf_;
     utils::map_any uiconf_;
     utils::map_any conf1p_;
     utils::map_any conf2p_;
 
-    std::vector< SceneObjList > slists_;
     view::pMenu ui_layout_;
     view::pMenu char_1p_;
     view::pMenu char_2p_;

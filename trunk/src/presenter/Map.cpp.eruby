@@ -118,6 +118,25 @@ vec2 Map::garbage_endpoint_vec2() const {
     return view_master_->pos_vec2(setting()->width()/2, setting()->height()+2); //endpoint is out of bound
 }
 
+int Map::sum_of_all_enemy() const {
+    int sum = 0;
+    BOOST_FOREACH(wpMap const& wmg, garbage_lands_)
+        if( pMap mg = wmg.lock() )
+            sum += mg->current_sum_of_attack();
+    return sum;
+}
+
+bool Map::enemy_column_full() const {
+    int full = 0, not_full = 0;
+    BOOST_FOREACH(wpMap const& wmg, garbage_lands_) {
+        if( pMap mg = wmg.lock() ) {
+            if( mg->has_column_full() ) ++full;
+            else ++not_full;
+        }
+    }
+    return full >= not_full;
+}
+
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
     view->map_setting(setting());

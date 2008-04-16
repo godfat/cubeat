@@ -1,12 +1,11 @@
 
 #include "view/Scene.hpp"
-#include "view/Sprite.hpp"
 #include "view/SpriteText.hpp"
 #include "view/Menu.hpp"
-#include "view/AnimatedSprite.hpp"
 #include "Accessors.hpp"
 
 #include "presenter/Stage.hpp"
+#include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
 #include "presenter/cube/ViewSprite.hpp"
 
@@ -14,21 +13,18 @@
 #include "Input.hpp"
 #include "Player.hpp"
 #include "Weapon.hpp"
-#include "Sound.hpp"
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
 #include "utils/MapLoader.hpp"
-#include "Conf.hpp"
-#include <boost/lexical_cast.hpp>
+#include "utils/to_s.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
 using namespace easing;
 using namespace accessor;
+using utils::to_s;
 
 class TestGame{
-    enum STATE { STAND, ATTACK, HIT, NONE };
-    enum FACE  { NORMAL, GOOD, BAD };
 
 public:
     TestGame(){
@@ -60,27 +56,21 @@ public:
         map0_->push_garbage_land(map1_);
         map1_->push_garbage_land(map0_);
 
-        //temporary Scene:
+        // setup stage & ui & player's view objects:
         stage_ = presenter::Stage::create( "config/stage/jungle.zzml" );
         setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
-        setup_char_sprite_by_config( char_1p_, conf1p_, "config/char/char1.zzml" );
-        setup_char_sprite_by_config( char_2p_, conf2p_, "config/char/char2.zzml" );
-        char_2p_->flipH();
+
+        vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
+        pview1_ = presenter::PlayerView::create( "config/char/char1.zzml", scene_, center_pos );
+        pview2_ = presenter::PlayerView::create( "config/char/char2.zzml", scene_, center_pos );
+        pview2_->flipPosition();
+        pview1_->setMap( map0_ );
+        pview2_->setMap( map1_ );
 
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
         //start music
         stage_->playBGM();
-
-        for( size_t i = 0; i < conf2p_.V("face_pos").size(); ++i ) {
-            utils::map_any& pos = conf2p_.V("face_pos").M(i);
-            pos.I("x") *= -1;  //2p's face position needs to be flipped horizontally
-        }
-
-        clear_state( conf1p_ );
-        clear_state( conf2p_ );
-        conf1p_["current_face"] = static_cast<int>(NORMAL);
-        conf2p_["current_face"] = static_cast<int>(NORMAL);
 
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
@@ -102,77 +92,15 @@ public:
         }
     }
 
-    void setup_char_sprite_by_config(view::pMenu& charsp, utils::map_any& conf, std::string const& path) {
-        conf = utils::map_any::construct( utils::fetchConfig( path ) );
-        utils::map_any const& anim = conf.M("anim_attr");
-
-        vec2 character_center( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-        charsp = view::Menu::create("", scene_, 1, 1, true);
-        charsp->set<Pos2D>( character_center );
-
-        BOOST_FOREACH(utils::pair_any const& it, anim) {
-            std::string    const& key  = boost::any_cast<std::string const>(it.first);
-            utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
-            charsp->addAnimSprite(key, attr.S("anim"), 0, attr.I("w"), attr.I("h"), true )
-                   .getAnimSprite(key).playAnime( attr.S("defanim"), attr.I("ms"), attr.I("loop") )
-                                      .set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
-        }
-        utils::map_any const& pos = conf.V("face_pos").M(0);
-        utils::map_any const& face= conf.M("face");
-        charsp->addSprite("face", 0, conf.I("face_w"), conf.I("face_h"), true, face.M(NORMAL).S("tex") )
-               .getSprite("face").set<Pos2D>( vec2(pos.I("x"), pos.I("y")) );
-    }
-
     void cycle(){
+        pview1_->cycle();
+        pview2_->cycle();
         update_ui();
         stage_->cycle();
         //IrrDevice::i().d()->getVideoDriver()->clearZBuffer();
         scene_->redraw();
         map0_->redraw().cycle();
         map1_->redraw().cycle();
-    }
-
-    void switch_character_sprite_state
-        ( view::pMenu& charsp, utils::map_any& conf, STATE const& state )
-    {
-        using std::tr1::ref; using std::tr1::bind;
-        conf["current_state"] = static_cast<int>(state);
-        utils::map_any const& attr = conf.M("state").M(state);
-        charsp->getSprite("face").set<Visible>( attr.I("face_visible") );
-        charsp->getAnimSprite("body")
-               .playAnime( attr.S("anim"), 1000, 0, bind(&TestGame::clear_state, this, ref(conf)) );
-        if( attr.S("sound") != "" )
-            Sound::i().play( attr.S("sound") );
-        if( state == STAND ) {
-            conf["face_pos_idx"] = 0;
-            utils::vector_any& face_pos = conf.V("face_pos");
-            charsp->getSprite("face").set<Pos2D>( vec2( face_pos.M(0).I("x"), face_pos.M(0).I("y") ) );
-            ctrl::EventDispatcher::i().subscribe_timer(
-                std::tr1::bind(&TestGame::face_update, this, ref(charsp), ref(conf)), 250, 2);
-        }
-    }
-
-    void switch_character_face
-        ( view::pMenu& charsp, utils::map_any& conf, FACE const& fstate )
-    {
-        if( conf1p_["current_face"] == fstate ) return;
-        conf1p_["current_face"] = static_cast<int>(fstate);
-        utils::map_any const& attr = conf.M("face").M(fstate);
-        charsp->getSprite("face").setTexture( attr.S("tex") );
-        charsp->getAnimSprite("bdeco").set<Visible>( attr.I("bdeco") );
-        charsp->getAnimSprite("gdeco").set<Visible>( attr.I("gdeco") );
-    }
-
-    void clear_state( utils::map_any& conf ) {
-        conf["current_state"] = static_cast<int>(NONE);
-    }
-
-    void face_update( view::pMenu& charsp, utils::map_any& conf){
-        int& idx = conf.I("face_pos_idx");
-        utils::vector_any& face_pos = conf.V("face_pos");
-        ++idx;
-        if( static_cast<unsigned int>(idx) >= face_pos.size() ) idx = 0;
-        charsp->getSprite("face").set<Pos2D>( vec2( face_pos.M(idx).I("x"), face_pos.M(idx).I("y") ) );
     }
 
     void update_ui(){
@@ -189,35 +117,10 @@ public:
         ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
         ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
-        int state1p = conf1p_.I("current_state");
-        if( state1p != HIT && last_garbage_1p_ > new_garbage_1p_ ) {
-            stage_->hitGroup(1);
-            switch_character_sprite_state( char_1p_, conf1p_, HIT );
-        }
-        else if( state1p != ATTACK && state1p != HIT && map0_->current_sum_of_attack() > 1 )
-            switch_character_sprite_state( char_1p_, conf1p_, ATTACK );
-        else if( state1p == NONE )
-            switch_character_sprite_state( char_1p_, conf1p_, STAND );
-
-        int state2p = conf2p_.I("current_state");
-        if( state2p != HIT && last_garbage_2p_ > new_garbage_2p_ ) {
-            stage_->hitGroup(2);
-            switch_character_sprite_state( char_2p_, conf2p_, HIT );
-        }
-        else if( state2p != ATTACK && state2p != HIT && map1_->current_sum_of_attack() > 1 )
-            switch_character_sprite_state( char_2p_, conf2p_, ATTACK );
-        else if( state2p == NONE )
-            switch_character_sprite_state( char_2p_, conf2p_, STAND );
-
-        bool map0_column_full = map0_->has_column_full(), map1_column_full = map1_->has_column_full();
-
-        if( !map0_column_full && !map1_column_full ) {
-            switch_character_face( char_1p_, conf1p_, NORMAL );
-            switch_character_face( char_2p_, conf2p_, NORMAL );
-        } else {
-            switch_character_face( char_1p_, conf1p_, map0_column_full ? BAD:GOOD );
-            switch_character_face( char_2p_, conf2p_, map1_column_full ? BAD:GOOD );
-        }
+        if( pview1_->getState() == presenter::PlayerView::HIT &&
+            last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
+        if( pview2_->getState() == presenter::PlayerView::HIT &&
+            last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
         last_garbage_1p_ = new_garbage_1p_;
         last_garbage_2p_ = new_garbage_2p_;
@@ -226,8 +129,8 @@ public:
     void update_ui_by_second(){
         ++sec_;
         if( sec_ > 59 ) ++min_, sec_ = 0;
-        std::string sec = boost::lexical_cast<std::string>(sec_); if( sec.size() < 2 ) sec = "0" + sec;
-        std::string min = boost::lexical_cast<std::string>(min_); if( min.size() < 2 ) min = "0" + min;
+        std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
+        std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
         ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
     }
 
@@ -240,12 +143,11 @@ private:
     ctrl::pPlayer player1_;
 
     utils::map_any uiconf_;
-    utils::map_any conf1p_;
-    utils::map_any conf2p_;
-
     view::pMenu ui_layout_;
-    view::pMenu char_1p_;
-    view::pMenu char_2p_;
+
+    presenter::pPlayerView pview1_;
+    presenter::pPlayerView pview2_;
+
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
 };

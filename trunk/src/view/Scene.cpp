@@ -160,7 +160,7 @@ void Scene::processHit(int x, int y, ctrl::Button const* btn)
             obj->triggerHit( btn );
         }
     }
-    wep->fire();
+    wep->fire(point);
 }
 
 void Scene::update_focus_objs_by_input(ctrl::Input const* input)

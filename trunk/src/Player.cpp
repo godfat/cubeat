@@ -4,6 +4,7 @@
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
 #include "view/Sprite.hpp"
+#include "view/SFX.hpp"
 #include "Sound.hpp"
 #include <boost/foreach.hpp>
 
@@ -16,9 +17,13 @@ Player::Player(Input* input, std::list<int> const& ally_ids, std::list<int> cons
     :changetime_(500), changing_wep_(false), weplist_idx_(0), input_(input),
      ally_input_ids_(ally_ids), enemy_input_ids_(enemy_ids)
 {
-    weplist_.push_back( new BlockShoot() );
-    weplist_.push_back( new PowerShoot() );
-    weplist_.push_back( new AreaShoot() );
+}
+
+pPlayer Player::init()
+{
+    weplist_.push_back( new BlockShoot( shared_from_this() ) );
+    weplist_.push_back( new PowerShoot( shared_from_this() ) );
+    weplist_.push_back( new AreaShoot( shared_from_this() ) );
 
     current_wep_ = weplist_[0];
 
@@ -26,9 +31,7 @@ Player::Player(Input* input, std::list<int> const& ally_ids, std::list<int> cons
     weplist_[0]->reset();
     weplist_[1]->reset();
     weplist_[2]->reset();
-}
 
-pPlayer Player::init() {
     if( input_ ) {
         input_->player( shared_from_this() );
         EventDispatcher::i().subscribe_btn_event(
@@ -39,7 +42,7 @@ pPlayer Player::init() {
             bind(&Player::set_active_weapon, this, 2), &input_->wep3(), BTN_PRESS);
 
         EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::normal_weapon_sound, this), &input_->trig1(), BTN_PRESS);
+            bind(&Player::normal_weapon_fx, this), &input_->trig1(), BTN_PRESS);
 
 //note: maybe I should let different callee have parallel calling button and state...
 //      do it when have time.
@@ -55,7 +58,7 @@ Player::~Player()
     weplist_.clear();
 }
 
-//need fix
+//note: need fix
 Player& Player::update()
 {
     process_input();
@@ -79,7 +82,7 @@ Player& Player::set_active_weapon(int i)
     std::cout << "switch weapon to " << i << "\n";
     current_wep_ = weplist_[i];
     weplist_idx_ = i;
-    if( i == 2 )  //write it dead for now. will expand and refactor it later.
+    if( i == 2 )  //temp: write it dead for now. will expand and refactor it later.
         input_->setRangeShapeVisible(true);
     else
         input_->setRangeShapeVisible(false);
@@ -150,18 +153,20 @@ bool Player::ammo_all_out() const {
     return count == 0;
 }
 
-void Player::normal_weapon_sound() {
+//temp: not flexible and stupid.
+void Player::normal_weapon_fx() {
     Sound::i().play("1/a/1a-1.mp3");
+    view::SFX::i().normal_weapon_vfx( Input::scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
 }
 
-//need fix
+//note: need fix
 //void Player::eat_item(Item const& item)
 //{
 //    weplist_[ item.type()+1 ]->reset();
 //    Sound::i().item_box();
 //}
 
-//need fix
+//note: need fix
 void Player::process_input()
 {
 //    changing weapon, using timer call. no more step delay

@@ -55,6 +55,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
 
     mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

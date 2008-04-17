@@ -16,6 +16,7 @@
 #endif
 
 #include "Accessors.hpp"
+#include "EasingEquations.hpp"
 
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -27,6 +28,7 @@ using namespace irr;
 using namespace psc;
 using namespace utils;
 using namespace ctrl;
+using namespace easing;
 using namespace accessor;
 
 //static functions
@@ -136,6 +138,7 @@ void Input::update()
 void Input::init_graphic()
 {
     cursor_mark_ = view::Sprite::create(cursor_texture_name_, scene_, 128, 128, true);
+    cursor_mark_->tween<Linear, Rotation>(vec3(0,0,360), 3000u, -1);
     range_shape_ = view::Sprite::create(area_texture_name_, scene_, 191, 191, true);
     //must use config or changes dynamically when weapon's area predicate changes.
     range_shape_->set<Alpha>(192);
@@ -146,6 +149,8 @@ void Input::redraw()
 {
     cursor_mark_->moveTo(cursor_.x(), cursor_.y());
     range_shape_->moveTo(cursor_.x(), cursor_.y());
+    if( trig1_.pressed() || trig2_.pressed() ) //note: temporary effects
+        cursor_mark_->tween<OBack, Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
 }
 
 void Input::setRangeShapeVisible(bool b) {

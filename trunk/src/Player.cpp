@@ -25,12 +25,7 @@ pPlayer Player::init()
     weplist_.push_back( new PowerShoot( shared_from_this() ) );
     weplist_.push_back( new AreaShoot( shared_from_this() ) );
 
-    current_wep_ = weplist_[0];
-
-    //note: tempcode
-    weplist_[0]->reset();
-    weplist_[1]->reset();
-    weplist_[2]->reset();
+    set_active_weapon(0);
 
     if( input_ ) {
         input_->player( shared_from_this() );
@@ -87,6 +82,13 @@ Player& Player::set_active_weapon(int i)
     else
         input_->setRangeShapeVisible(false);
     Sound::i().play("1/g/09.mp3");
+    return *this;
+}
+
+Player& Player::debug_reset_all_weapon()
+{
+    BOOST_FOREACH(Weapon* wp, weplist_)
+        wp->reset();
     return *this;
 }
 

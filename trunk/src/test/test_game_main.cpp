@@ -41,7 +41,8 @@ public:
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
         player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s0->ally_input_ids(), s0->enemy_input_ids());
         player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s1->ally_input_ids(), s1->enemy_input_ids());
-
+        player0_->debug_reset_all_weapon();
+        player1_->debug_reset_all_weapon();
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create();
         map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));

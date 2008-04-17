@@ -30,6 +30,7 @@ public:
     }
 	Player& update();
     Player& set_active_weapon(int i);
+    Player& debug_reset_all_weapon();
     Player& disable_all_wep_reloadability();
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);

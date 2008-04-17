@@ -42,7 +42,7 @@ Multi::~Multi()
 pMulti Multi::init()
 {
     //App::i().setLoading(1);
-    scene_ = psc::view::Scene::create("TestMapViewScene");
+    scene_ = psc::view::Scene::create("Multiplayer game");
     scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
     data::pViewSpriteSetting s0, s1;
@@ -70,6 +70,8 @@ pMulti Multi::init()
     // setup garbage land
     map0_->push_garbage_land(map1_);
     map1_->push_garbage_land(map0_);
+    map0_->set_endgame(bind(&Multi::end, this));
+    map1_->set_endgame(bind(&Multi::end, this));
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( "config/stage/jungle.zzml" );
@@ -87,8 +89,10 @@ pMulti Multi::init()
     //start music
     stage_->playBGM();
 
-    ctrl::EventDispatcher::i().subscribe_timer( bind(&Multi::update_ui_by_second, this), 1000, -1);
-    ctrl::EventDispatcher::i().subscribe_timer( bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Multi::update_ui_by_second, this), shared_from_this(), 1000, -1);
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
     return shared_from_this();
 }
 
@@ -140,6 +144,11 @@ void Multi::update_ui_by_second(){
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 }
 
+void Multi::end(){
+    App::i().launchMainMenu();
+    std::cout << "game_multiplayer end call finished.\n";
+}
+
 void Multi::cycle()
 {
     pview1_->cycle();
@@ -150,3 +159,4 @@ void Multi::cycle()
     map0_->redraw().cycle();
     map1_->redraw().cycle();
 }
+

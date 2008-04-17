@@ -233,13 +233,16 @@ bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 // all cubes share the same column with that lose the chain
 bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 <% end %>
-	for( int x = that->x(), y = that->y()-1; y >= 0; --y )
+	for( int x = that->x(), y = that->y()-1; y >= 0; --y ) {
+	    if( x < 0 || x >= setting_->width() ) return true; //note: bad. only for preview queue
+	    if( y >= setting_->height() ) return true;         //note: bad. only for preview queue
 	    if( cubes_[x][y].use_count() == 0 ||
 	        cubes_[x][y]->is_dying() /*|| cubes_[x][y]->is_exploding()*/ )
 	    {
 	        // when it's empty, dying or exploding, the square ontop can't lose chain
 	        return false;
 	    }
+	}
 	return true;
 }
 
@@ -265,7 +268,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             int amount = (*i)->attack_of_current_step()*damage_factor;
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().subscribe_timer(
-                bind(&delay_adder, ref(current_sum_of_attack_), amount), 1000);
+                bind(&delay_adder, ref(current_sum_of_attack_), amount), shared_from_this(), 1000);
             o->show_chain( (*i)->step(), (*i), (*i)->last_step_amounts() );
             o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
@@ -281,7 +284,9 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //o->throw_garbage( amount );
             std::tr1::function<void(int)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
             ctrl::EventDispatcher::i().subscribe_timer(
-                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount), 1000);
+                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount),
+                shared_from_this(),
+                1000);
             i = chains_.erase(i);
         }
         else{
@@ -336,9 +341,6 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
     }
 
     fill_preview_queue();
-
-    // if( SG::Instance().game_mode() == 1 ) // if single
-    //  garbage_left_ += SG::Instance().random(3);
 }
 
 void <% debug_hook 'Map::fill_preview_queue' do %>(){

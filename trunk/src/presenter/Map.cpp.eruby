@@ -24,7 +24,8 @@ using psc::utils::to_s;
 
 Map& <% debug_hook 'Map::call_end_game' do %>(){
 <% end %>
-    std::cout << "presenter map call end game.\n";
+    if( endgame_callback_ )
+        endgame_callback_();
     return *this;
 }
 
@@ -118,6 +119,11 @@ vec2 Map::garbage_endpoint_vec2() const {
     return view_master_->pos_vec2(setting()->width()/2, setting()->height()+2); //endpoint is out of bound
 }
 
+Map& Map::set_endgame(std::tr1::function<void()>const& cb) {
+    endgame_callback_ = cb;
+    return *this;
+}
+
 int Map::sum_of_all_enemy() const {
     int sum = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_)
@@ -208,7 +214,7 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
 
 pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
 <% end %>
-    return make_cube(-1, -1, color_id);
+    return make_cube(3, 14, color_id); //temp
 }
 
 Map& <% debug_hook 'Map::cycle' do %>(){

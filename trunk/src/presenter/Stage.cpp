@@ -4,7 +4,6 @@
 #include "view/AnimatedSceneObject.hpp"
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
-#include "EventDispatcher.hpp"
 #include "Sound.hpp"
 
 #include <boost/foreach.hpp>
@@ -20,6 +19,7 @@ Stage::Stage()
 
 Stage::~Stage()
 {
+    Sound::i().stopAll();
 }
 
 pStage Stage::init( std::string const& path )

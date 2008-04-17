@@ -15,9 +15,16 @@ void Sound::init()
 {
 }
 
-void Sound::play(std::string const& path, bool loop)
+Sound& Sound::play(std::string const& path, bool loop)
 {
     engine_->play2D((base_path_ + path).c_str(), loop);
+    return *this;
+}
+
+Sound& Sound::stopAll()
+{
+    engine_->stopAllSounds();
+    return *this;
 }
 
 Sound::~Sound()

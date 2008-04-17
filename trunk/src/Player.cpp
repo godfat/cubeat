@@ -30,14 +30,14 @@ pPlayer Player::init()
     if( input_ ) {
         input_->player( shared_from_this() );
         EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 0), &input_->wep1(), BTN_PRESS);
+            bind(&Player::set_active_weapon, this, 0), shared_from_this(), &input_->wep1(), BTN_PRESS);
         EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 1), &input_->wep2(), BTN_PRESS);
+            bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
         EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 2), &input_->wep3(), BTN_PRESS);
+            bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
 
         EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::normal_weapon_fx, this), &input_->trig1(), BTN_PRESS);
+            bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
 
 //note: maybe I should let different callee have parallel calling button and state...
 //      do it when have time.

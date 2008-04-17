@@ -72,7 +72,7 @@ PlayerView& PlayerView::switchCharacterState( STATE const& state )
         utils::vector_any& face_pos = conf_.V("face_pos");
         character_->getSprite("face").set<Pos2D>( vec2( face_pos.M(0).I("x"), face_pos.M(0).I("y") ) );
         ctrl::EventDispatcher::i().subscribe_timer(
-            std::tr1::bind(&PlayerView::faceUpdate, this), 250, 2);
+            std::tr1::bind(&PlayerView::faceUpdate, this), shared_from_this(), 250, 2);
     }
     return *this;
 }

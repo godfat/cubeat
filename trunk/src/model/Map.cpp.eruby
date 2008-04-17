@@ -234,8 +234,8 @@ bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 <% end %>
 	for( int x = that->x(), y = that->y()-1; y >= 0; --y ) {
-	    if( x < 0 || x >= setting_->width() ) return true; //note: bad. only for preview queue
-	    if( y >= setting_->height() ) return true;         //note: bad. only for preview queue
+	    // if( x < 0 || x >= setting_->width() ) return true; //note: bad. only for preview queue
+	    // if( y >= setting_->height() ) return true;         //note: bad. only for preview queue
 	    if( cubes_[x][y].use_count() == 0 ||
 	        cubes_[x][y]->is_dying() /*|| cubes_[x][y]->is_exploding()*/ )
 	    {

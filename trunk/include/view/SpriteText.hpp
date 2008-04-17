@@ -49,6 +49,8 @@ protected:
     std::string text_;
     irr::video::ITexture* font_texture_;
     utils::TTFont* ttfont_;
+    int fsize_;
+    std::string fpath_;
 };
 
 } //view

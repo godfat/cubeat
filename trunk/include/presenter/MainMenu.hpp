@@ -42,8 +42,6 @@ protected:
     void end();
 
     void initDecorator();
-    void initDecoInner_(int, vec2 const&, vec2 const&, int const& num,
-                        int const&, int const&, std::tr1::function<void()>const&);
 
 protected:
     view::pScene mainmenu_scene_;

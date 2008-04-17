@@ -9,6 +9,12 @@
 #include <string>
 
 namespace psc {
+
+namespace ctrl {
+class Player;
+typedef std::tr1::shared_ptr<Player> pPlayer;
+}
+
 namespace presenter {
 namespace game {
 
@@ -27,10 +33,26 @@ public:
 
 protected:
     pointer_type init();
+    void update_ui_by_second();
+    void update_ui();
+    void setup_ui_by_config( std::string const& path );
 
 protected:
+    view::pScene scene_;
+    presenter::pStage stage_;
+    presenter::pMap map0_;
+    presenter::pMap map1_;
+    ctrl::pPlayer player0_;
+    ctrl::pPlayer player1_;
 
+    utils::map_any uiconf_;
+    view::pMenu ui_layout_;
 
+    presenter::pPlayerView pview1_;
+    presenter::pPlayerView pview2_;
+
+    int min_, sec_;
+    int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
 };
 
 } //game

@@ -31,6 +31,7 @@ public:
 
     void setLoading(int const& cent);
     void launchMainMenu();
+    void launchMultiplayer();
 
     ~App();
 

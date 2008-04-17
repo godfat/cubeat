@@ -37,6 +37,9 @@ protected:
 
     void menu1_1_click(view::pSprite&);
     void menu2_1_click(view::pSprite&);
+    void fadeAllOut(int);
+    void push_start();
+    void end();
 
     void initDecorator();
     void initDecoInner_(int, vec2 const&, vec2 const&, int const& num,
@@ -44,6 +47,8 @@ protected:
 
 protected:
     view::pScene mainmenu_scene_;
+
+    typedef std::pair<std::string const, view::pMenu> MenuPair;
     std::map<std::string, view::pMenu> menus_;
     std::vector<view::pSprite> deco_cubes_;
 

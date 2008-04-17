@@ -58,7 +58,8 @@ public:
 	virtual void cancel()          = 0;
 	virtual void quit()            = 0; */
 
-	virtual void play(std::string const& path, bool loop = false);
+	Sound& play(std::string const& path, bool loop = false);
+	Sound& stopAll();
 
 	void init();
     ~Sound();

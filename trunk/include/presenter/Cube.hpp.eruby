@@ -4,11 +4,11 @@
 // 1. map presenter is created.
 // 2. map model is inited.
 // 3. map view is inited.
-// 
+//
 // 4. cube presenter list is created, passing map presenter to it.
 // 5. cube model is inited, getting map model.
 // 6. map model gets cube model.
-// 
+//
 // 7. cube view is inited, getting map view.
 // 8. map view gets cube view.
 
@@ -24,7 +24,7 @@
 
 namespace psc{ namespace presenter{
 
-class Cube{
+class Cube : public std::tr1::enable_shared_from_this<Cube>{
 public:
     typedef Cube this_type;
     typedef std::tr1::shared_ptr<this_type> pointer_type;
@@ -44,7 +44,7 @@ public:
                 std::tr1::bind(&model::Cube::next_state, model().get()) );
         else
             ctrl::EventDispatcher::i().subscribe_timer(
-                std::tr1::bind(&model::Cube::next_state, model().get()),
+                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
                 ms()->cube_dropping_duration());
     }
     void <% debug_hook 'sink_a_block' do %>(){ <% end %>
@@ -54,7 +54,7 @@ public:
                 std::tr1::bind(&model::Cube::next_state, model().get()) );
         else
             ctrl::EventDispatcher::i().subscribe_timer(
-                std::tr1::bind(&model::Cube::next_state, model().get()),
+                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
                 ms()->cube_sinking_duration());
     }
     void <% debug_hook 'go_dying' do %>(){ <% end %>

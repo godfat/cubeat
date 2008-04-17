@@ -31,7 +31,7 @@ public:
     static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
-    Map(data::pMapSetting setting): setting_(setting){}
+    Map(data::pMapSetting setting): setting_(setting), endgame_callback_(0){}
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
@@ -40,6 +40,7 @@ public:
     Map& take_out_warning();
     Map& show_chain(int, model::wpChain const&, int);
     Map& garbage_animation(int, int, int);
+    Map& set_endgame(std::tr1::function<void()>const&);
     vec2 garbage_endpoint_vec2() const;
 
 public:
@@ -98,6 +99,8 @@ private:
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
+
+    std::tr1::function<void()> endgame_callback_;
 };
 
 }} // end of namespace

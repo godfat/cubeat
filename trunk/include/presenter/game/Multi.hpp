@@ -33,6 +33,7 @@ public:
 
 protected:
     pointer_type init();
+    void end();
     void update_ui_by_second();
     void update_ui();
     void setup_ui_by_config( std::string const& path );

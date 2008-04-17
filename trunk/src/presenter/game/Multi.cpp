@@ -59,7 +59,7 @@ pMulti Multi::init()
     player1_->debug_reset_all_weapon();
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();
-    map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
+    map0_ = presenter::Map::create(set0);
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
@@ -116,8 +116,8 @@ void Multi::setup_ui_by_config( std::string const& path )
 void Multi::update_ui(){
     int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
     int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
-    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_);
-    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_);
+    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
+    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
     ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);

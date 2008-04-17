@@ -4,6 +4,7 @@
 #include "utils/TTFont.hpp"
 #include "utils/to_s.hpp"
 #include "Accessors.hpp"
+#include "IrrDevice.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
@@ -16,6 +17,7 @@ using namespace video;
 using namespace psc;
 using namespace view;
 using namespace accessor;
+using utils::to_s;
 using std::tr1::static_pointer_cast;
 
 pSpriteText
@@ -27,6 +29,8 @@ SpriteText::init(std::string const& text, std::string const& font_path,
         return std::tr1::static_pointer_cast<SpriteText>( shared_from_this() );
     }
     setupSceneAndManager(parent);
+    fsize_ = size;
+    fpath_ = font_path;
     createText( text, font_path, size );
 
     setupMeshBase(parent);
@@ -76,11 +80,13 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     std::wstring temp(new_text.length(),L' ');         //so hard to convert between wchar and char @@
     std::copy(new_text.begin(), new_text.end(), temp.begin()); //so hard to convert between wchar and char @@
 
-    font_texture_ = ttfont_->getTextureFromText(temp.c_str(), (new_text+"_font").c_str());
+    font_texture_ =
+        ttfont_->getTextureFromText(temp.c_str(), (new_text+"_"+fpath_+"_"+to_s(fsize_)).c_str());
 
     dimension2di size_int = ttfont_->getDimension(temp.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
+
     if( body_ ) {
         body_->setMaterialTexture(0, font_texture_);
         set<Size2D>( vec2(size_.Width, size_.Height) );
@@ -91,7 +97,7 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
 
 SpriteText& SpriteText::showNumber(int num, unsigned int digit)
 {
-    std::string str = utils::to_s(num);
+    std::string str = to_s(num);
     while( str.size() < digit ) {
         str = "0" + str;
     }

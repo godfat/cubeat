@@ -12,6 +12,7 @@
 #include "Conf.hpp"
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
+#include "Sound.hpp"
 
 #include <tr1/functional>
 #include <boost/lambda/lambda.hpp>
@@ -96,17 +97,6 @@ void MainMenu::initDecorator()
 //    int const time_h = time_w * (w/h);   //1280 768 is best factor
 
     int const color_num = deco.I("color_num");
-//    for(int i=0; i < color_num * 4; ++i) {
-//        std::string name;
-//        switch( i/4 ) {
-//            case 0: name += "-r-"; break;
-//            case 1: name += "-g-"; break;
-//            case 2: name += "-b-"; break;
-//            case 3: name += "-y-"; break;
-//        }
-//        paths.push_back( deco.S("path") + name +
-//            std::string( boost::lexical_cast<std::string>((i%4)+1) ) );
-//    }
     for(int i = 0; i < color_num; ++i ) {
         paths.push_back( deco.S("path") +
             std::string( utils::to_s((i%4)+1) ) );
@@ -137,68 +127,9 @@ void MainMenu::initDecorator()
         deco_cubes_.push_back( temp );
     }
 
-//    function<void()> const& step4 =
-//        bind(&MainMenu::initDecoInner_, this, size, start4, end4, num_h, time_h, 100, function<void()>());
-//    function<void()> const& step3 =
-//        bind(&MainMenu::initDecoInner_, this, size, start3, end3, num_w, time_w, 75, step4);
-//    function<void()> const& step2 =
-//        bind(&MainMenu::initDecoInner_, this, size, start2, end2, num_h, time_h, 50, step3);
-//    function<void()> const& step1 =
-//        bind(&MainMenu::initDecoInner_, this, size, start1, end1, num_w, time_w, 25, step2);
-//
-//    ctrl::EventDispatcher::i().subscribe_timer(step1, shared_from_this(), 0);
+    Sound::i().play("title.mp3", true);
+
     App::i().setLoading(100);
-}
-
-void MainMenu::initDecoInner_(int base_size, vec2 const& from, vec2 const& dest,
-                              int const& num, int const& time, int const& load_stat,
-                              function<void()> const& cb)
-{
-    utils::map_any    deco = config.M("decorator");
-    utils::vector_any offset = deco.V("color_offset");
-    int const size_random = deco.I("size_random_percent");
-    int const rot_dur     = deco.I("rotation_duration_ms");
-    int const rot_rand    = deco.I("rotation_random_ms");
-//    int const color_num   = deco.I("color_num");
-    int const bias        = base_size / 3;
-
-    int const length = (dest - from).getLength();
-    int const gap = length / num;
-
-    for(int i=0, range=0; i < num; ++i, range += gap)
-    {
-//        data::Color col = data::Color::from_id(0, color_num);
-
-        int rand_bias   = utils::random( bias ) - bias/2;
-        vec3 from3d( from.X + rand_bias, -from.Y + rand_bias, 100 );
-        vec3 dest3d( dest.X + rand_bias, -dest.Y + rand_bias, -100 );
-        view::pSprite temp = view::Sprite::create(
-            paths[ utils::random(paths.size()) ], mainmenu_scene_, base_size, base_size, true);
-
-        float scale = utils::random( size_random )/100.0f + 1;
-        float rot_duration = rot_dur + utils::random( rot_rand );
-        float delay = utils::random( rot_duration );
-        float time_position = time * range / length;
-        temp->//set<ColorDiffuse>( 0xff000000 | col.rgb() )
-              set<GradientDiffuse>(255)
-             .set<Scale>(vec3(scale, scale, 1))
-             .tween<Linear, Rotation>(vec3(0, 0, 360), rot_duration, -1, 0, -delay )
-             .tween<Linear, Pos3D>(from3d, dest3d, time, -1, 0, -time_position );
-
-        temp->tween<IOCubic, GradientDiffuse>(128, 255, time, -1, 0, -time_position );
-
-//        if( col.r() > 0 )
-//            temp->tween<IOCubic, Red>(  col.r()>>2, col.r(), time, -1, 0, -time_position );
-//        if( col.g() > 0 )
-//            temp->tween<IOCubic, Green>(col.g()>>2, col.g(), time, -1, 0, -time_position );
-//        if( col.b() > 0 )
-//            temp->tween<IOCubic, Blue>( col.b()>>2, col.b(), time, -1, 0, -time_position );
-
-        deco_cubes_.push_back( temp );
-    }
-    App::i().setLoading(load_stat);
-    if( cb )
-        ctrl::EventDispatcher::i().subscribe_timer(cb, shared_from_this(), 10);
 }
 
 void MainMenu::menu1_1_click(view::pSprite& sprite)
@@ -221,6 +152,7 @@ void MainMenu::fadeAllOut(int dur)
     BOOST_FOREACH(view::pSprite& sp, deco_cubes_)
         sp->tween<Linear, Alpha>(0, dur);
 
+    ctrl::EventDispatcher::i().subscribe_timer(bind(&Sound::stopAll, &Sound::i()), dur);
     ctrl::EventDispatcher::i().subscribe_timer(bind(&App::setLoading, &App::i(), 1), dur);
 }
 

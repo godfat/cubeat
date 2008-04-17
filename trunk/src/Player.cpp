@@ -48,6 +48,7 @@ pPlayer Player::init()
 
 Player::~Player()
 {
+    input_->setRangeShapeVisible(false);
     BOOST_FOREACH(Weapon* wp, weplist_)
         delete wp;
     weplist_.clear();

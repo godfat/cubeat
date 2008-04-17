@@ -45,7 +45,8 @@ public:
         player1_->debug_reset_all_weapon();
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create();
-        map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
+        //map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
+        map0_ = presenter::Map::create(set0);
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1
@@ -58,7 +59,8 @@ public:
         map1_->push_garbage_land(map0_);
 
         // setup stage & ui & player's view objects:
-        stage_ = presenter::Stage::create( "config/stage/jungle.zzml" );
+        utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
+        stage_ = presenter::Stage::create( stage.S("test_stage") );
         setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
 
         vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );

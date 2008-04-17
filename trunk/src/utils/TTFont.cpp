@@ -1,6 +1,8 @@
 
 #include "utils/TTFont.hpp"
 
+#include <iostream>
+
 using namespace irr;
 using namespace core;
 using namespace gui;
@@ -11,6 +13,10 @@ using namespace utils;
 
 ITexture* TTFont::getTextureFromText(const wchar_t* text, const c8* name)
 {
+    if( Driver->findTexture(name) ) {    //note: critical fix!!! prevent always writing new texture!!
+        return Driver->getTexture(name); //      have to re-write SpriteText wholly in the future.
+    }
+
     if( !AntiAlias ) AntiAlias = true;      //force this texture to be 32bit anti-aliased
     dimension2di size = getDimension(text);
     position2di offset= position2di(0,0);

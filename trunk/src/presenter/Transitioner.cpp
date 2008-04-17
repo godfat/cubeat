@@ -52,6 +52,13 @@ void Transitioner::init()
 Transitioner&
 Transitioner::setLoadingBar(int const& percent)
 {
+    if( percent == 1 ) {
+        loading_menu_->set<Alpha>(255);
+        loading_menu_->getSprite("loading_bar").set<Alpha>(255);
+        loading_menu_->getSprite("text1").set<Alpha>(255);
+        loading_menu_->getSprite("text2").set<Alpha>(255);
+    }
+
     loading_menu_->set<Visible>(true);
     loading_menu_->getSprite("loading_bar").set<Scale>(vec3(percent/100.0f,1,1));
 

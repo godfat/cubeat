@@ -58,10 +58,9 @@ pMainMenu MainMenu::init()
     temp->moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - temp->get<Size2D>().Y/3 )
          .setDepth( title.I("depth") );
 
-    function<void(view::pSprite&)> click1_1 = bind(&MainMenu::menu1_1_click, this, _1);
-    function<void(view::pSprite&)> click2_1 = bind(&MainMenu::menu2_1_click, this, _1);
+    function<void(view::pSprite&)> click1 = bind(&MainMenu::push_start, this);
 
-    temp->addSpriteText("text", text.S("text"), text.S("font"), click1_1, m_text_size, true)
+    temp->addSpriteText("text", text.S("text"), text.S("font"), click1, m_text_size, true)
          .getSprite("text").set<Pos2D>( vec2( 0, height ) )
          .tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1);
 
@@ -70,14 +69,10 @@ pMainMenu MainMenu::init()
     return shared_from_this();
 }
 
-void test_focus(view::pSprite& obj, int x, int y)
+void MainMenu::end()
 {
-    obj->set<Scale>(vec3(0.8f, 0.8f, 1));
-}
-
-void test_focus2(view::pSprite& obj, int x, int y)
-{
-    obj->set<Scale>(vec3(1, 1, 1));
+    App::i().launchMultiplayer();
+    std::cout << "MainMenu end call finished.\n";
 }
 
 void MainMenu::initDecorator()
@@ -137,11 +132,7 @@ void MainMenu::initDecorator()
         data::AnimatorParam<Linear, Rotation> p2;
         p2.end(vec3(0,0,360)).duration(utils::random(2000)+3000).loop(-1);
 
-        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() )
-             .tween(p1).tween(p2);
-
-        temp->onEnterFocus( ctrl::Input::getInputByIndex(1) ) = bind(&test_focus, _1, _2, _3);
-        temp->onLeaveFocus( ctrl::Input::getInputByIndex(1) ) = bind(&test_focus2, _1, _2, _3);
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() ).tween(p1).tween(p2);
 
         deco_cubes_.push_back( temp );
     }
@@ -222,6 +213,24 @@ void MainMenu::menu2_1_click(view::pSprite& sprite)
     animating_ = true;
 }
 
+void MainMenu::fadeAllOut(int dur)
+{
+    BOOST_FOREACH(MenuPair& mp, menus_)
+        mp.second->tweenAll<Linear, Alpha>(0, dur);
+
+    BOOST_FOREACH(view::pSprite& sp, deco_cubes_)
+        sp->tween<Linear, Alpha>(0, dur);
+
+    ctrl::EventDispatcher::i().subscribe_timer(bind(&App::setLoading, &App::i(), 1), dur);
+}
+
+void MainMenu::push_start()
+{
+    fadeAllOut(1000);
+    function<void()> cb = bind(&MainMenu::end, this);
+    ctrl::EventDispatcher::i().subscribe_timer(cb, shared_from_this(), 1100);
+}
+
 MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
@@ -243,7 +252,6 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 
 MainMenu& MainMenu::cubeRearrange()
 {
-
     return *this;
 }
 

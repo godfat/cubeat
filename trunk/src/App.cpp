@@ -8,6 +8,9 @@
 #include "presenter/Transitioner.hpp"
 #include "presenter/MainMenu.hpp"
 #include "presenter/OpeningSequence.hpp"
+
+#include "presenter/game/Multi.hpp"
+
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
@@ -62,6 +65,12 @@ void App::launchMainMenu()
     std::cout << "MainMenu launched.\n";
 }
 
+void App::launchMultiplayer()
+{
+    temp_presenter_ = presenter::game::Multi::create();
+    std::cout << "game_Multiplayer launched.\n";
+}
+
 bool App::update_block()
 {
     u32 now_time = timer_->getTime();
@@ -95,12 +104,11 @@ int App::run(std::tr1::function<void()> tester)
             EventDispatcher::i().dispatch();
 
             driver->beginScene(true, true, video::SColor(0,0,0,0));
-            //master_presenter_->cycle();  //for demo's sake temporarily close these
-            //driver->clearZBuffer();      //for demo's sake temporarily close these
-            trans_->cycle();
+            if( tester ) tester();
+            else master_presenter_->cycle();
             driver->clearZBuffer();
+            trans_->cycle();
 
-            if(tester) tester();
             Input::redraw_all();
 
             driver->endScene();

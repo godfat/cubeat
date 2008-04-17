@@ -25,7 +25,7 @@ pPlayer Player::init()
     weplist_.push_back( new PowerShoot( shared_from_this() ) );
     weplist_.push_back( new AreaShoot( shared_from_this() ) );
 
-    set_active_weapon(0);
+    current_wep_ = weplist_[0];
 
     if( input_ ) {
         input_->player( shared_from_this() );

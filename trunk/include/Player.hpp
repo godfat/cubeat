@@ -35,7 +35,7 @@ public:
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
 	//I'd better refactor this afterwards.
-	//void eat_item(Item const& item);
+	void eat_item();
 
     Input const* input()          const;
 	Weapon* weapon()              const;

@@ -36,7 +36,10 @@ protected:
     void end();
     void update_ui_by_second();
     void update_ui();
+    void item_creation();
+    void item_destruction();
     void setup_ui_by_config( std::string const& path );
+    void eat_item(ctrl::pPlayer, int);
 
 protected:
     view::pScene scene_;
@@ -51,6 +54,8 @@ protected:
 
     presenter::pPlayerView pview1_;
     presenter::pPlayerView pview2_;
+
+    view::pAnimatedSprite item_;
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison

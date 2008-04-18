@@ -46,7 +46,11 @@ public:
     bool is_reloading()   const { return reloading_; }
 	bool is_coolingdown() const { return coolingdown_; }
 	void reloadable(bool const& in){ reloadable_ = in; }
-	void ammo(int const& in)       { ammo_ = in; }
+	void ammo(int const& in) {
+	    ammo_ = in;
+	    if( ammo_ > max_ammo_ )
+	        ammo_ = max_ammo_;
+    }
 
 	bool can_fire() { return !is_reloading() && !is_coolingdown() && ammo() > 0; }
 	bool can_fire_repeatedly() { return repeat_; }

@@ -11,6 +11,7 @@
 #include <boost/foreach.hpp>
 #include <map>
 #include <list>
+#include <vector>
 
 <%= debug_include %>
 
@@ -31,7 +32,7 @@ public:
     static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
-    Map(data::pMapSetting setting): setting_(setting), endgame_callback_(0){}
+    Map(data::pMapSetting setting): setting_(setting), endgame_callback_(0), warning_level_(0){}
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
@@ -41,6 +42,7 @@ public:
     Map& show_chain(int, model::wpChain const&, int);
     Map& garbage_animation(int, int, int);
     Map& set_endgame(std::tr1::function<void()>const&);
+    Map& show_warning_at(int, bool);
     vec2 garbage_endpoint_vec2() const;
 
 public:
@@ -84,6 +86,7 @@ private:
         return *this;
     }
 
+    void create_warning_strips();
     void pop_a_chain_text(model::wpChain const& key);
 
 private:
@@ -99,8 +102,10 @@ private:
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
+    std::vector< view::pSprite > warning_strip_;
 
     std::tr1::function<void()> endgame_callback_;
+    int warning_level_;
 };
 
 }} // end of namespace

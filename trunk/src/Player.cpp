@@ -6,6 +6,7 @@
 #include "view/Sprite.hpp"
 #include "view/SFX.hpp"
 #include "Sound.hpp"
+#include "utils/Random.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -163,11 +164,20 @@ void Player::normal_weapon_fx() {
 }
 
 //note: need fix
-//void Player::eat_item(Item const& item)
-//{
-//    weplist_[ item.type()+1 ]->reset();
-//    Sound::i().item_box();
-//}
+void Player::eat_item()
+{
+    int percent = utils::random(100);
+    if( percent < 45 ) {
+        weplist_[0]->ammo( weplist_[0]->ammo()+10 );
+    }
+    else if( percent < 90 ) {
+        weplist_[1]->ammo( weplist_[1]->ammo()+10 );
+    }
+    else {
+        weplist_[2]->ammo( weplist_[2]->ammo()+1 );
+    }
+    Sound::i().play("1/e/getitem.mp3");
+}
 
 //note: need fix
 void Player::process_input()

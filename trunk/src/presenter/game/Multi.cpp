@@ -1,9 +1,11 @@
 
 #include "presenter/game/Multi.hpp"
 #include "view/Scene.hpp"
+#include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
 #include "view/Menu.hpp"
 #include "Accessors.hpp"
+#include "EasingEquations.hpp"
 
 #include "presenter/Stage.hpp"
 #include "presenter/PlayerView.hpp"
@@ -14,7 +16,8 @@
 #include "Input.hpp"
 #include "Player.hpp"
 #include "Weapon.hpp"
-
+#include "Sound.hpp"
+#include "Conf.hpp"
 #include "App.hpp"
 
 #include "utils/Random.hpp"
@@ -55,8 +58,7 @@ pMulti Multi::init()
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s0->ally_input_ids(), s0->enemy_input_ids());
     player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s1->ally_input_ids(), s1->enemy_input_ids());
-    player0_->debug_reset_all_weapon();
-    player1_->debug_reset_all_weapon();
+
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();
     map0_ = presenter::Map::create(set0);
@@ -93,6 +95,8 @@ pMulti Multi::init()
         bind(&Multi::update_ui_by_second, this), shared_from_this(), 1000, -1);
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Multi::item_creation, this), shared_from_this(), 15000);
     return shared_from_this();
 }
 
@@ -127,6 +131,16 @@ void Multi::update_ui(){
     ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
     ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
+    for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
+        if( i == player0_->wepid() )
+            ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+        else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+
+        if( i == player1_->wepid() )
+            ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+        else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+    }
+
     if( pview1_->getState() == presenter::PlayerView::HIT &&
         last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
     if( pview2_->getState() == presenter::PlayerView::HIT &&
@@ -147,6 +161,43 @@ void Multi::update_ui_by_second(){
 void Multi::end(){
     App::i().launchMainMenu();
     std::cout << "game_multiplayer end call finished.\n";
+}
+
+//note: not very elegant.
+void Multi::item_creation()
+{
+    using namespace std::tr1::placeholders;
+    Sound::i().play("3/3f/item.mp3");
+    item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
+    item_->playAnime("moving", 500, -1).setDepth(-60);
+
+    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, player0_, _1);
+    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, player1_, _1);
+    view::pSprite body_ = item_;
+    player0_->subscribe_shot_event(body_, cb1);
+    player1_->subscribe_shot_event(body_, cb2);
+
+    int y = utils::random(192) + 32;
+    std::tr1::function<void()> endcall = bind(&Multi::item_destruction, this);
+    item_->tween<OElastic, Scale>(vec3(0,0,0), vec3(1,1,1), 1000u);
+    if( utils::random(2) )
+        item_->tween<Linear, Pos2D>(vec2(32, y), vec2(Conf::i().SCREEN_W+64, y), 4000u, 0, endcall);
+    else
+        item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W-32, y), vec2(-64, y), 4000u, 0, endcall);
+}
+
+void Multi::eat_item(ctrl::pPlayer p, int)
+{
+    item_->setPickable(false);
+    item_->tween<Linear, Alpha>(0, 400u);
+    item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
+    p->eat_item();
+}
+
+void Multi::item_destruction()
+{
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Multi::item_creation, this), shared_from_this(), 15000);
 }
 
 void Multi::cycle()

@@ -416,9 +416,9 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
 	for( int x=0, width = ms()->width(), y = ms()->height()-2; x < width; ++x ){
 		if( cubes_[x][y] && cubes_[x][y]->is_waiting() ){
 			++counter;
-			// warning_strip_[xx]->Show(CKSHOW);
+			owner()->show_warning_at(x, true);
 		}
-		else ;// warning_strip_[xx]->Show(CKHIDE);
+		else owner()->show_warning_at(x, false);
 	}
 
     return counter > 0;

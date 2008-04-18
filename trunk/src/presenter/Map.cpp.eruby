@@ -5,6 +5,7 @@
 
 #include "view/Scene.hpp"
 #include "view/Menu.hpp"
+#include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
 
 #include "utils/to_s.hpp"
@@ -30,9 +31,31 @@ Map& <% debug_hook 'Map::call_end_game' do %>(){
 }
 
 //note: we should make this be delegate to ViewMaster's derived classes
+Map& Map::show_warning_at(int x, bool visible){
+    warning_strip_[x]->set<accessor::Visible>(visible);
+    return *this;
+}
+
+//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::setup_warning' do %>(){
 <% end %>
-    std::cout << "presenter map setup_warning.\n";
+    using std::tr1::bind; using namespace accessor; using namespace easing;
+    ++warning_level_;
+    Sound::i().play("3/3d/alarm.mp3");
+    int w = setting()->width();
+    int h = setting()->height() - 1;
+    vec2 pos;
+    if( w % 2 == 0 )
+        pos = (view_master_->pos_vec2(w/2, h) + view_master_->pos_vec2(w/2-1, h)) / 2;
+    else pos = view_master_->pos_vec2(w/2, h);
+    pos.Y += 16;
+    view::pAnimatedSprite alert =
+        view::AnimatedSprite::create("alert", view_master_->scene(), 64*w, 32, true);
+    alert->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos ).setPickable(false);
+
+    int endalpha = 0 + warning_level_ * 50;
+    alert->tween<SineCirc, Alpha>
+        (0, endalpha, 1000u, 0, bind(&view::Object::set<Visible>, alert, false)); //bind copy
     return *this;
 }
 
@@ -40,6 +63,7 @@ Map& <% debug_hook 'Map::setup_warning' do %>(){
 Map& <% debug_hook 'Map::take_out_warning' do %>(){
 <% end %>
     std::cout << "presenter map take_out_warning.\n";
+    warning_level_ = 0;
     return *this;
 }
 
@@ -165,7 +189,27 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
         pCube cube = cube_pair.second;
         cube->set_view_master( view->create(cube->model()) );
     }
+
+    create_warning_strips(); //note: bad?
+
     return *this;
+}
+
+//note: we should make this be delegate to ViewMaster's derived classes
+void Map::create_warning_strips(){
+    using namespace accessor; using namespace easing;
+    for( int i = 0; i < setting()->width(); ++i ) {
+        int h = setting()->height() - 1;
+        view::pSprite temp = view::Sprite::create("warning", view_master_->scene(), 64, 64*h, true);
+        vec2 pos;
+        if( h % 2 == 0 )
+            pos = (view_master_->pos_vec2(i, h/2) + view_master_->pos_vec2(i, h/2-1)) / 2;
+        else pos = view_master_->pos_vec2(i, h/2);
+        temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
+        temp->set<ColorDiffuseVec3>(vec3(255,0,0)).set<Alpha>(64).set<Visible>(false);
+        temp->tween<SineCirc, Alpha>(0, 1000u, -1);
+        warning_strip_.push_back( temp );
+    }
 }
 
 pMap <% debug_hook 'Map::init' do %>(){
@@ -181,7 +225,6 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(data); // beware! this need refer model_!
-
     return self;
 }
 

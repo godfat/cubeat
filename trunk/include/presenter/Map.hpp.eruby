@@ -41,8 +41,9 @@ public:
     Map& take_out_warning();
     Map& show_chain(int, model::wpChain const&, int);
     Map& garbage_animation(int, int, int);
-    Map& set_endgame(std::tr1::function<void()>const&);
+    Map& set_endgame(std::tr1::function<void(pMap)>const&);
     Map& show_warning_at(int, bool);
+    Map& stop_dropping();
     vec2 garbage_endpoint_vec2() const;
 
 public:
@@ -74,6 +75,8 @@ public:
     int garbage_left() const { return model()->garbage_left(); }
     int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
     bool has_column_full() const { return model()->check_column_full(); }
+    bool all_empty() const { return model()->all_empty(); }
+    bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;
     bool enemy_column_full() const;
 
@@ -88,6 +91,7 @@ private:
 
     void create_warning_strips();
     void pop_a_chain_text(model::wpChain const& key);
+    void speedup();
 
 private:
 <%= accessor 'data::pMapSetting', :setting %>
@@ -104,7 +108,7 @@ private:
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::vector< view::pSprite > warning_strip_;
 
-    std::tr1::function<void()> endgame_callback_;
+    std::tr1::function<void(pMap)> endgame_callback_;
     int warning_level_;
 };
 

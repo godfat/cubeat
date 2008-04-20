@@ -82,6 +82,12 @@ public:
     EventDispatcher&
     subscribe_timer(TimerCallback const&, int const&, int loop = 0);
 
+    /// Clear all: clean up events, usually use when menu change or stage change.
+    EventDispatcher& clear_btn_event();
+    EventDispatcher& clear_timer_event(); //note: has bug, don't use.
+    //note: call to this has no effect, don't sure why. need to check in the future.
+    EventDispatcher& clear_obj_event(view::pScene const& scene);
+
     void dispatch();
 
 private:

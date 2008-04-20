@@ -94,6 +94,8 @@ public:
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }
     bool check_column_full() const;
+    bool all_empty() const;
+    bool all_waiting() const;
 
 private:
     Map& insert_cube(pCube);

@@ -35,6 +35,7 @@ public:
     PlayerView& switchCharacterFace(FACE const&);
     PlayerView& clearFaceState();
     PlayerView& setMap(presenter::wpMap m) { map_ = m; return *this; }
+    view::pMenu& getView() { return character_; }
 
     void cycle();
 

@@ -31,7 +31,8 @@ public:
 
     void setLoading(int const& cent);
     void launchMainMenu();
-    void launchMultiplayer();
+    void launchMultiplayer(std::string const&, std::string const&, std::string const&);
+    void launchPuzzle     (std::string const&, std::string const&, int);
 
     ~App();
 

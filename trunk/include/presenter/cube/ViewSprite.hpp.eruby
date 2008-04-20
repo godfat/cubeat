@@ -58,8 +58,8 @@ public:
     }
 
     //note: this is temporary speed function
-    static float speed(ctrl::Button const* btn){
-         return btn->state() == ctrl::BTN_DOWN ? 400.f : 80.f;
+    float speed(ctrl::Button const* btn){
+         return btn->state() == ctrl::BTN_DOWN ? 400.f : map_setting()->speed();
     }
 
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
@@ -70,8 +70,8 @@ public:
 
     virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>
         if( ctrl::pPlayer p = player_.lock() ) {
-            body_->tween( data::AnimatorParam<easing::Linear, accessor::Pos2D>().
-                 end(pos_vec2()).cb(callback).speedfunc(std::tr1::bind(&speed, &p->input()->haste())) );
+            body_->tween( data::AnimatorParam<easing::Linear, accessor::Pos2D>().end(pos_vec2())
+                  .cb(callback).speedfunc(std::tr1::bind(&ViewSprite::speed, this, &p->input()->haste())) );
         } else {
             body_->tween<easing::Linear, accessor::Pos2D>(
                 pos_vec2(), map_setting()->cube_sinking_duration(), 0,
@@ -125,7 +125,7 @@ public:
 
     virtual void <% debug_hook 'hit' do %>(int /*dmg*/, int hp){ <% end %>
         int alpha = body_->get<accessor::Alpha>();
-        body_->tween<easing::Linear, accessor::Alpha>(alpha/2, 300);
+        body_->tween<easing::Linear, accessor::Alpha>(alpha/2 + 30, 300);
         body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         if( cube_.lock()->is_garbage() )
             Sound::i().play("1/c/GlassF@11.wav");

@@ -1,5 +1,5 @@
-#ifndef _SHOOTING_CUBES_PRESENTER_GAME_MULTI_
-#define _SHOOTING_CUBES_PRESENTER_GAME_MULTI_
+#ifndef _SHOOTING_CUBES_PRESENTER_GAME_PUZZLE_HPP_
+#define _SHOOTING_CUBES_PRESENTER_GAME_PUZZLE_HPP_
 
 #include "presenter/Object.hpp"
 #include "utils/ObjectPool.hpp"
@@ -18,30 +18,28 @@ typedef std::tr1::shared_ptr<Player> pPlayer;
 namespace presenter {
 namespace game {
 
-class Multi : public Object, public std::tr1::enable_shared_from_this<Multi>
+class Puzzle : public Object, public std::tr1::enable_shared_from_this<Puzzle>
 {
     typedef std::tr1::shared_ptr<int> pDummy;
 public:
-    typedef std::tr1::shared_ptr<Multi> pointer_type;
-    static pointer_type create(std::string const& c1p, std::string const& c2p, std::string const& sc) {
-        return utils::ObjectPool<Multi>::create()->init(c1p,c2p,sc);
+    typedef std::tr1::shared_ptr<Puzzle> pointer_type;
+    static pointer_type create(std::string const& c1p, std::string const& sc, int puzzle_level) {
+        return utils::ObjectPool<Puzzle>::create()->init(c1p,sc,puzzle_level);
     }
 
-    Multi();
-    ~Multi();
+    Puzzle();
+    ~Puzzle();
 
     virtual void cycle();
 
 protected:
-    pointer_type init(std::string const&, std::string const&, std::string const&);
+    pointer_type init(std::string const&, std::string const&, int puzzle_level);
     void end(pMap p);
     void reinit();
     void update_ui_by_second();
     void update_ui();
-    void item_creation();
-    void item_destruction();
     void setup_ui_by_config( std::string const& path );
-    void eat_item(ctrl::pPlayer, int);
+    void single_shot();
 
     void setup_end_button();
     void end_sequence1();
@@ -52,19 +50,18 @@ protected:
     presenter::pMap map0_;
     presenter::pMap map1_;
     ctrl::pPlayer player0_;
-    ctrl::pPlayer player1_;
 
     utils::map_any uiconf_;
     view::pMenu ui_layout_;
 
     presenter::pPlayerView pview1_;
-    presenter::pPlayerView pview2_;
 
-    view::pAnimatedSprite item_;
-    view::pSprite         blocker_, win_t_, lose_t_;
-    view::pSpriteText     end_text_, end_text2_;
-    pDummy timer_item_, timer_ui_, btn_reinit_;
-    std::string c1p_, c2p_, sconf_;
+    view::pSprite     blocker_, win_t_, lose_t_;
+    view::pSpriteText end_text_, end_text2_;
+    pDummy timer_ui_, btn_reinit_, btn_single_shot_;
+    std::string c1p_, sconf_;
+    int puzzle_level_;
+    bool win_, fired_, end_;
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
@@ -74,5 +71,4 @@ protected:
 } //presenter
 } //psc
 
-
-#endif // _SHOOTING_CUBES_PRESENTER_GAME_MULTI_
+#endif // _SHOOTING_CUBES_PRESENTER_GAME_PUZZLE_HPP_

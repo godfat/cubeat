@@ -151,8 +151,7 @@ Map& Map::set_endgame(std::tr1::function<void(pMap)>const& cb) {
 
 Map& Map::stop_dropping()
 {
-    setting()->garbage_dumpable(false);
-    setting()->dropping_creatable(false);
+    setting()->garbage_dumpable(false).dropping_creatable(false);
     return *this;
 }
 
@@ -198,10 +197,11 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
         cube->set_view_master( view->create(cube->model()) );
     }
 
-    using std::tr1::bind;
     create_warning_strips(); //note: bad?
+    // NOTE: this is bad!! why is set_view_master related to speedup?
+    //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
-        bind(&Map::speedup, this), shared_from_this(), 30000);
+        std::tr1::bind(&Map::speedup, this), shared_from_this(), 30000);
     return *this;
 }
 

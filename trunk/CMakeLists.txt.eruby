@@ -56,3 +56,6 @@ TARGET_LINK_LIBRARIES (bin/test-game-main shooting-cubes)
 
 ADD_EXECUTABLE        (bin/puzzle src/test/test_puzzle_main.cpp)
 TARGET_LINK_LIBRARIES (bin/puzzle shooting-cubes)
+
+ADD_EXECUTABLE        (bin/stage src/test/test_stage_main.cpp)
+TARGET_LINK_LIBRARIES (bin/stage shooting-cubes)

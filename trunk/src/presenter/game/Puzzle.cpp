@@ -1,5 +1,6 @@
 
-#include "presenter/game/Multi.hpp"
+
+#include "presenter/game/Puzzle.hpp"
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
@@ -35,48 +36,49 @@ using utils::to_s;
 using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
-Multi::Multi()
+Puzzle::Puzzle()
 {
 }
 
-Multi::~Multi()
+Puzzle::~Puzzle()
 {
 }
 
-pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string const& sc)
+pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_level)
 {
     //App::i().setLoading(1);
-    scene_ = psc::view::Scene::create("Multiplayer game");
+    scene_ = psc::view::Scene::create("random Puzzle game");
     scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
-    c1p_ = c1p; c2p_ = c2p; sconf_ = sc;
+    c1p_ = c1p; sconf_ = sc; puzzle_level_ = puzzle_level;
 
     data::pViewSpriteSetting s0, s1;
 
     s0 = data::ViewSpriteSetting::create(159, 684, 64);   //must use config
-    s0->push_ally(0).push_enemy(1);
+    s0->push_ally(0);//.push_enemy(1);
     s1 = data::ViewSpriteSetting::create(740, 684, 64);   //must use config
-    s1->push_ally(1).push_enemy(0);
+    s1->push_ally(1);//.push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
-    player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s1->ally_input_ids(), s1->enemy_input_ids());
+    player0_->weapon(0)->ammo(0);
+    player0_->weapon(1)->ammo(0);
+    player0_->weapon(2)->ammo(0);
 
     // setup map0
-    data::pMapSetting set0 = data::MapSetting::create();
-    map0_ = presenter::Map::create(set0);
+    map0_ = utils::MapLoader::generate( puzzle_level );
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
     data::pMapSetting set1 = data::MapSetting::create();
+    set1->starting_line(0).dropping_creatable(false);
     map1_ = presenter::Map::create(set1);
-    map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
+    map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1) );
 
     // setup garbage land
     map0_->push_garbage_land(map1_);
     map1_->push_garbage_land(map0_);
-    map0_->set_endgame(bind(&Multi::end, this, _1));
-    map1_->set_endgame(bind(&Multi::end, this, _1));
+    //map0_->set_endgame(bind(&Puzzle::end, this, _1)); no endgame right now.. testing
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
@@ -84,31 +86,31 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
 
     vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
-    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
-    pview2_->flipPosition();
     pview1_->setMap( map0_ );
-    pview2_->setMap( map1_ );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
+    win_ = false, fired_ = false, end_ = false;
 
     //start music
     stage_->playBGM();
 
     //note: bad area
-    timer_item_ = pDummy(new int);
     timer_ui_   = pDummy(new int);
+    btn_single_shot_ = pDummy(new int);
     //note: end of bad area
 
     ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
+        bind(&Puzzle::update_ui_by_second, this), timer_ui_, 1000, -1);
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
-    ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&Multi::item_creation, this), timer_item_, 15000);
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Puzzle::single_shot, this), btn_single_shot_, &player0_->input()->trig1(), ctrl::BTN_PRESS);
+
     return shared_from_this();
 }
 
-void Multi::setup_ui_by_config( std::string const& path )
+void Puzzle::setup_ui_by_config( std::string const& path )
 {
     uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
     utils::map_any const& base = uiconf_.M("base");
@@ -125,7 +127,7 @@ void Multi::setup_ui_by_config( std::string const& path )
     }
 }
 
-void Multi::update_ui(){
+void Puzzle::update_ui(){
     int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
     int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
     ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
@@ -135,30 +137,12 @@ void Multi::update_ui(){
     ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
     ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
     ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
-
-    for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
-        if( i == player0_->wepid() )
-            ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-        else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
-
-        if( i == player1_->wepid() )
-            ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-        else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
-    }
-
-    if( pview1_->getState() == presenter::PlayerView::HIT &&
-        last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
-    if( pview2_->getState() == presenter::PlayerView::HIT &&
-        last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
     last_garbage_1p_ = new_garbage_1p_;
     last_garbage_2p_ = new_garbage_2p_;
 }
 
-void Multi::update_ui_by_second(){
+void Puzzle::update_ui_by_second(){
     ++sec_;
     if( sec_ > 59 ) ++min_, sec_ = 0;
     std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
@@ -166,39 +150,38 @@ void Multi::update_ui_by_second(){
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 }
 
+void Puzzle::single_shot(){
+    btn_single_shot_.reset();
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), ref(scene_)), 100);
+    fired_ = true;
+    //ctrl::EventDispatcher::i().clear_obj_event( scene_ );
+}
+
 //note: temp code
-void Multi::end(pMap lose_map)
+void Puzzle::end(pMap lose_map)
 {
-    timer_item_.reset();
+    end_ = true;
     timer_ui_.reset();
-    if( item_ ) item_->setPickable(false);
     ctrl::EventDispatcher::i().clear_btn_event();
-    ctrl::EventDispatcher::i().clear_obj_event( scene_ );
     Sound::i().stopAll();
     map0_->take_out_warning().stop_dropping();
     map1_->take_out_warning().stop_dropping();
 
-    Sound::i().play("3/3c/win.mp3");
+    Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
 
-    win_t_  = view::Sprite::create("win", scene_, 384, 192, true);
-    lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
+    win_t_  = view::Sprite::create( win_ ? "win" : "lose" , scene_, 384, 192, true);
+    //lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
 
-    vec2 pos1 = vec2(Conf::i().SCREEN_W/4,   Conf::i().SCREEN_H/2);
-    vec2 pos2 = vec2(Conf::i().SCREEN_W/4*3, Conf::i().SCREEN_H/2);
-    if( lose_map == map0_ ) {
-        lose_t_->set<Pos2D>( pos1 );
-        win_t_->set<Pos2D>( pos2 );
-    }
-    else {
-        lose_t_->set<Pos2D>( pos2 );
-        win_t_->set<Pos2D>( pos1 );
-    }
+    vec2 pos = vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - 50);
+    win_t_->set<Pos2D>( pos );
+
     vec3 v0(0,0,0), v1(1,1,1);
     win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
-    lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+    //lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
     end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
     end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
@@ -207,85 +190,59 @@ void Multi::end(pMap lose_map)
     end_text_-> setDepth(-450).set<Alpha>(0).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     end_text2_->setDepth(-450).set<Alpha>(0).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
-    ctrl::EventDispatcher::i().subscribe_timer(bind(&Multi::setup_end_button, this), 1000);
+    ctrl::EventDispatcher::i().subscribe_timer(bind(&Puzzle::setup_end_button, this), 1000);
 }
 
-void Multi::setup_end_button()
+void Puzzle::setup_end_button()
 {
-    std::tr1::function<void(int, int)> clicka = bind(&Multi::reinit, this);
-    std::tr1::function<void(int, int)> clickb = bind(&Multi::end_sequence1, this);
+    std::tr1::function<void(int, int)> clicka = bind(&Puzzle::reinit, this);
+    std::tr1::function<void(int, int)> clickb = bind(&Puzzle::end_sequence1, this);
+
     btn_reinit_ = pDummy(new int);
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs()) {
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            clickb, btn_reinit_, &input->trig2(), ctrl::BTN_PRESS);
-    }
+
+    ctrl::Input const* input = ctrl::Input::getInputByIndex(0);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clickb, btn_reinit_, &input->trig2(), ctrl::BTN_PRESS);
 }
 
-void Multi::end_sequence1()
+void Puzzle::end_sequence1()
 {
     Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
     App::i().launchMainMenu();
-    std::cout << "game_multiplayer end call finished.\n";
+    std::cout << "game_puzzle end call finished.\n";
 }
 
-void Multi::reinit()
+void Puzzle::reinit()
 {
+    int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_-1;
+    if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
+    else if( new_puzzle_lv < 3 ) new_puzzle_lv = 3;
     Sound::i().play("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_), 500);
-    std::cout << "game_multiplayer end call finished.\n";
+        bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);
+    std::cout << "game_puzzle end call finished.\n";
 }
 
-//note: not very elegant.
-void Multi::item_creation()
-{
-    using namespace std::tr1::placeholders;
-    Sound::i().play("3/3f/item.mp3");
-    item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
-    item_->playAnime("moving", 500, -1).setDepth(-60);
-
-    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, player0_, _1);
-    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, player1_, _1);
-    view::pSprite body_ = item_;
-    player0_->subscribe_shot_event(body_, cb1);
-    player1_->subscribe_shot_event(body_, cb2);
-
-    int y = utils::random(192) + 32;
-    std::tr1::function<void()> endcall = bind(&Multi::item_destruction, this);
-    item_->tween<OElastic, Scale>(vec3(0,0,0), vec3(1,1,1), 1000u);
-    if( utils::random(2) )
-        item_->tween<Linear, Pos2D>(vec2(32, y), vec2(Conf::i().SCREEN_W+64, y), 4000u, 0, endcall);
-    else
-        item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W-32, y), vec2(-64, y), 4000u, 0, endcall);
-}
-
-void Multi::eat_item(ctrl::pPlayer p, int)
-{
-    item_->setPickable(false);
-    item_->tween<Linear, Alpha>(0, 400u);
-    item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
-    p->eat_item();
-}
-
-void Multi::item_destruction()
-{
-    timer_item_ = pDummy(new int);
-    ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&Multi::item_creation, this), timer_item_, 15000);
-}
-
-void Multi::cycle()
+void Puzzle::cycle()
 {
     pview1_->cycle();
-    pview2_->cycle();
     update_ui();
     stage_->cycle();
     scene_->redraw();
     map0_->redraw().cycle();
     map1_->redraw().cycle();
-}
 
+    //note: bad way........ but have no time.
+    if( !end_ && map0_->all_empty() ) {
+        win_ = true;
+        end(map0_);
+    }
+    else if( !end_ && fired_ && map0_->all_waiting() ) {
+        win_ = false;
+        end(map0_);
+    }
+}

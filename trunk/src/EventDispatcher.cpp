@@ -88,6 +88,43 @@ EventDispatcher& EventDispatcher::subscribe_focus_event
     return *this;
 }
 
+EventDispatcher& EventDispatcher::clear_btn_event()
+{
+    for(BtnListener::iterator b = btn_listeners_.begin(), bend = btn_listeners_.end();
+        b != bend; ++b) {
+        btn_events_to_be_deleted_.push_back(b);
+    }
+    cleanup_btn_event();
+    return *this;
+}
+
+//note: has bug, don't use.
+EventDispatcher& EventDispatcher::clear_timer_event()
+{
+//    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t)
+//        timers_to_be_deleted_.push_back(t);
+//
+//    // clean up
+//    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
+//        timers_.erase(t);
+//    }
+//    timers_to_be_deleted_.clear();
+//    timers_.clear();
+    return *this;
+}
+
+//note: bad way to do this... but normal way has no effect... don't know why...
+EventDispatcher& EventDispatcher::clear_obj_event(view::pScene const& scene)
+{
+//    ObjListener& listeners = scene_listeners_[ scene ];
+//    for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
+//        obj_events_to_be_deleted_.insert( std::make_pair(scene, o) );
+//    }
+//    cleanup_obj_event();
+    scene_listeners_[ scene ] = ObjListener();
+    return *this;
+}
+
 
 /// This is the Main Loop for Object Event Dispatching
 

@@ -395,6 +395,11 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
+    if( ms()->garbage_dumpable() == false || ms()->dropping_creatable() == false ) {
+        warning_dummy_.reset();
+        return;
+    }
+
     bool has_column_full = check_column_full();
     if( !has_column_full && warning_dummy_ ) {
         warning_dummy_.reset();
@@ -422,4 +427,22 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
 	}
 
     return counter > 0;
+}
+
+bool Map::all_empty() const {
+    for( int x=0; x < ms()->width(); ++x ) {
+        for( int y=0; y < ms()->height(); ++y ) {
+            if( cubes_[x][y] ) return false;
+        }
+    }
+    return true;
+}
+
+bool Map::all_waiting() const {
+    for( int x=0; x < ms()->width(); ++x ) {
+        for( int y=0; y < ms()->height(); ++y ) {
+            if( cubes_[x][y] && !cubes_[x][y]->is_waiting() ) return false;
+        }
+    }
+    return true;
 }

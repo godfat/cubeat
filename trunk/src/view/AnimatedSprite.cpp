@@ -34,6 +34,7 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
     mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 

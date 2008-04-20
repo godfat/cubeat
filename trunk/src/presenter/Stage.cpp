@@ -15,11 +15,11 @@ using namespace accessor;
 
 Stage::Stage()
 {
+    Sound::i().stopAll();
 }
 
 Stage::~Stage()
 {
-    Sound::i().stopAll();
 }
 
 pStage Stage::init( std::string const& path )

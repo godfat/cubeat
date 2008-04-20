@@ -23,7 +23,7 @@ void Weapon::reload() {
 
 ///////////////// Blocking Shoot ////////////////////
 
-BlockShoot::BlockShoot(wpPlayer const& p):Weapon(p, 1, 0, 99, true, false){} //must use config
+BlockShoot::BlockShoot(wpPlayer const& p):Weapon(p, 1, 10, 99, true, false){} //must use config
 
 void BlockShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
@@ -36,7 +36,7 @@ void BlockShoot::fire(vec2 const& pos) {
 
 ///////////////// Powerful Shoot ////////////////////
 
-PowerShoot::PowerShoot(wpPlayer const& p):Weapon(p, 3, 0, 99, false, false){} //must use config
+PowerShoot::PowerShoot(wpPlayer const& p):Weapon(p, 3, 10, 99, false, false){} //must use config
 
 void PowerShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
@@ -49,7 +49,7 @@ void PowerShoot::fire(vec2 const& pos) {
 
 ////////////////// Area Shoot ///////////////////////
 
-AreaShoot::AreaShoot(wpPlayer const& p):Weapon(p, 3, 0, 99, true, false){} //must use config
+AreaShoot::AreaShoot(wpPlayer const& p):Weapon(p, 3, 1, 99, true, false){} //must use config
 
 void AreaShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {

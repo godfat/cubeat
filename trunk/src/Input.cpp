@@ -119,8 +119,8 @@ void Input::update()
     wiimote_.RefreshState();
 
     if( interpret_ir_data(wiimote_, center_x, center_y, zdepth) ) {
-        cursor_.x() = static_cast<int>(center_x * cursor_.width());
-        cursor_.y() = static_cast<int>(center_y * cursor_.height());
+        cursor_.x() = static_cast<int>(center_x * cursor_.width() * 1.2f);
+        cursor_.y() = static_cast<int>(center_y * cursor_.height() * 1.2f);
     }
     trig1_.now() |= wiimote_.Button.A();
     trig2_.now() |= wiimote_.Button.B();

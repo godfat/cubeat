@@ -10,6 +10,7 @@
 #include "presenter/OpeningSequence.hpp"
 
 #include "presenter/game/Multi.hpp"
+#include "presenter/game/Puzzle.hpp"
 
 #include "Input.hpp"
 #include "IrrDevice.hpp"
@@ -65,10 +66,17 @@ void App::launchMainMenu()
     std::cout << "MainMenu launched.\n";
 }
 
-void App::launchMultiplayer()
+void App::launchMultiplayer(std::string const& conf1p, std::string const& conf2p,
+                            std::string const& stage)
 {
-    temp_presenter_ = presenter::game::Multi::create();
+    temp_presenter_ = presenter::game::Multi::create(conf1p, conf2p, stage);
     std::cout << "game_Multiplayer launched.\n";
+}
+
+void App::launchPuzzle(std::string const& conf1p, std::string const& stage, int puzzle_level)
+{
+    temp_presenter_ = presenter::game::Puzzle::create(conf1p, stage, puzzle_level);
+    std::cout << "game_puzzle launched.\n";
 }
 
 bool App::update_block()
@@ -95,8 +103,8 @@ int App::run(std::tr1::function<void()> tester)
     int lastFPS = -1;
 
     while( IrrDevice::i().run() ) {
-        if( IrrDevice::i().d()->isWindowActive() )
-        {
+        //if( IrrDevice::i().d()->isWindowActive() )                   //temp for double tasking
+        //{                                                            //temp for double tasking
             if( IrrDevice::i().d()->getTimer()->isStopped() )
                 IrrDevice::i().d()->getTimer()->start();
             //if( update_block() ) continue;
@@ -125,10 +133,10 @@ int App::run(std::tr1::function<void()> tester)
                 master_presenter_ = temp_presenter_;
                 temp_presenter_.reset();
             }
-        }
-        else
-            if( !IrrDevice::i().d()->getTimer()->isStopped() )
-                IrrDevice::i().d()->getTimer()->stop();
+        //}                                                      //temp for double tasking
+        //else                                                   //temp for double tasking
+        //    if( !IrrDevice::i().d()->getTimer()->isStopped() ) //temp for double tasking
+        //        IrrDevice::i().d()->getTimer()->stop();        //temp for double tasking
     }
 
     return 0;

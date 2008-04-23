@@ -1,8 +1,9 @@
 ﻿
 class Ai{
-	public function Ai(game: Game, map: Map){
+	public function Ai(game: Game, map: Map, player: Number){
 		game_ = game;
 		map_ = map;
+		player_n = player;
 		travel_limit = 3;//設定暴力搜尋時的搜尋極限(到高為11-travel_limit為止)
 		best_chain_point = [0,0,0];
 		best_chain_cubes = [null,null,null];//儲存最佳的3個發火點方塊
@@ -106,16 +107,51 @@ class Ai{
 	
 	//射擊目標方塊,對最佳發火點分數進行更新
 	private function shooting(map:Map, cube: Square){
-		cube.i_am_hit(1);
+		Player.change_player_ver2( map_.id() );
 		this.shooted = true;
+		cube.i_am_hit(1);
 		best_chain_point_update(map);
+		if(map_.id() == 1){
+			Player.change_player_ver2( 2 );
+		}else if(map_.id() == 2){
+			Player.change_player_ver2( 1 );
+		}
+		/*if(map_.id() == Player.active_player()) {
+			cube.i_am_hit(1);
+			this.shooted = true;
+			best_chain_point_update(map);
+			Player.change_player_ver2();
+		}else if(map_.id() != Player.active_player()) {
+			Player.change_player_ver2();
+			cube.i_am_hit(1);
+			this.shooted = true;
+			best_chain_point_update(map);
+			Player.change_player_ver2();
+		}*/
 	}
 	
 	//射擊目標方塊陣列,對最佳發火點分數進行更新
 	private function shooting_arr(map: Map, s_list: Array){
 		for(var i=0; i<s_list.length; ++i){
-			s_list[i].i_am_hit(1);
+			Player.change_player_ver2( map_.id() );
 			this.shooted = true;
+			s_list[i].i_am_hit(1);
+			best_chain_point_update(map);
+			if(map_.id() == 1){
+				Player.change_player_ver2( 2 );
+			}else if(map_.id() == 2){
+				Player.change_player_ver2( 1 );
+			}
+			/*if(map_.id() == Player.active_player()) {
+				s_list[i].i_am_hit(1);
+				Player.change_player_ver2();
+				this.shooted = true;
+			}else if(map_.id() != Player.active_player()) {
+				Player.change_player_ver2();
+				s_list[i].i_am_hit(1);
+				Player.change_player_ver2();
+				this.shooted = true;
+			}*/
 		}
 		best_chain_point_update(map);
 	}
@@ -125,7 +161,9 @@ class Ai{
 		var get_point: Number = 0;
 		for(var h = map.Height-1; h > this.travel_limit; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
-				if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
+				if(map.lookup(w,h)== null) continue;
+				if( !(map.lookup(w,h).state instanceof Waiting) ) continue;
+				if(map.lookup(w,h).if_broken() != true && map.lookup(w,h).if_garbage() != true){
 					var temp_map: Map = set_brain_map(map);
 					del_block(temp_map, w, h, true);
 					get_point = combo_counter(temp_map);
@@ -211,6 +249,7 @@ class Ai{
 		//搜尋整個map,將2次落下方塊加入failing_cubes中
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w,h).if_broken() == true || map.lookup(w,h).if_garbage() == true) continue;
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop != true){
 					true_failing_cubes.push(map.lookup(w, h));
 					temp_failing_cubes.push(temp_map.lookup(w,h));
@@ -232,6 +271,7 @@ class Ai{
 			trace("==========now check rtc!!==========");
 			for(var h_ = map.Height-1; h_ > 0; --h_){
 				for(var w_ = map.Width-1; w_ >= 0 ; --w_){
+					if(map.lookup(w_,h_).if_broken() == true || map.lookup(w_,h_).if_garbage() == true) continue;
 					if(map.lookup(w_,h_)!= null && map.lookup(w_,h_).first_drop == false){
 						temp_map_2 = set_brain_map(temp_map);
 						temp_failing_cubes_2 = new Array;
@@ -253,7 +293,7 @@ class Ai{
 						for(var k = 0; k<temp_failing_cubes_2.length; ++k){
 							if(temp_failing_cubes_2[k] == null) continue;
 							if(temp_failing_cubes_2[k].x==w_ && temp_failing_cubes_2[k].y==h_) continue;
-								rtc_list = contact_checker_unit(temp_map_2, temp_map_2.lookup(temp_failing_cubes_2[k].x,temp_failing_cubes_2[k].y), rtc_list, 3);
+							rtc_list = contact_checker_unit(temp_map_2, temp_map_2.lookup(temp_failing_cubes_2[k].x,temp_failing_cubes_2[k].y), rtc_list, 3);
 						
 						}
 						if(rtc_list.length !=0){
@@ -294,6 +334,7 @@ class Ai{
 	private function column_travel_type1(map: Map, w: Number): Array{
 		var del_list: Array = new Array;
 		for(var h = map.Height-1; h > 0; --h){
+			if(map.lookup(w,h).if_broken() == true || map.lookup(w,h).if_garbage() == true) continue;
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 				if(map.make_column(map.lookup(w,h)).length >= 1){
 					var del_list_up: Array = new Array;
@@ -332,6 +373,7 @@ class Ai{
 		var del_list: Array = new Array;
 		var color_list: Array = new Array;
 		for(var h = map.Height-1; h > 0; --h){
+			if(map.lookup(w,h).if_broken() == true || map.lookup(w,h).if_garbage() == true) continue;
 			if(map.lookup(w,h)!= null && map.lookup(w,h).state instanceof Waiting){
 				del_list = new Array;
 				color_list = new Array;
@@ -552,6 +594,7 @@ class Ai{
 		var cube_list: Array = new Array();
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w,h).if_broken() == true || map.lookup(w,h).if_garbage() == true) continue;
 				cube_list = contact_checker_unit(map, map.lookup(w,h), cube_list, contact_Num);
 			}
 		}
@@ -599,6 +642,7 @@ class Ai{
 		var del_arr: Array = new Array();
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
+				if(map.lookup(w,h).if_broken() == true || map.lookup(w,h).if_garbage() == true) continue;
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == true){
 					dropping_arr.push(map.lookup(w, h));
 					check_arr.push(temp_map.lookup(w,h));
@@ -775,4 +819,5 @@ class Ai{
 	private var chaining: Boolean;
 	private var game_: Game;
 	private var map_: Map;
+	private var player_n: Number;
 }

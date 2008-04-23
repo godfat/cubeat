@@ -29,13 +29,18 @@ class Game{
         }*/
 		
 		//new AI
-		Ai_ = new Ai(this,maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.full_process), 1000, maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.dropping_travel), 3000, maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.combo_rank_update), 10000, maps_[0]);
-		setInterval( Delegate.create(Ai_, Ai_.update_ai_state), 500, maps_[0]);
+		//Ai_1 = new Ai(this,maps_[0]);
+		Ai_2 = new Ai(this,maps_[1]);
+		/*setInterval( Delegate.create(Ai_1, Ai_1.full_process), 1000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.dropping_travel), 3000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.combo_rank_update), 10000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.update_ai_state), 500, maps_[0]);*/
+		setInterval( Delegate.create(Ai_2, Ai_2.full_process), 1001, maps_[1]);
+		setInterval( Delegate.create(Ai_2, Ai_2.dropping_travel), 3001, maps_[1]);
+		setInterval( Delegate.create(Ai_2, Ai_2.combo_rank_update), 10001, maps_[1]);
+		setInterval( Delegate.create(Ai_2, Ai_2.update_ai_state), 501, maps_[1]);
 		
-		/*var testcase: Array = [[9,9,9,9,9,9],
+		var testcase1: Array = [[9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
@@ -45,34 +50,31 @@ class Game{
 							   [9,2,2,1,9,9],
 							   [0,1,0,0,9,9],
 							   [1,3,2,3,3,9],
-							   [1,2,0,0,3,9]];*/
+							   [1,2,0,0,3,9]];
 		
-		/*var testcase: Array = [[9,9,9,9,9,9],
+		var testcase2: Array = [[9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,0,9,9,9,9],
 							   [9,1,3,9,9,9],
-							   [9,1,2,0,9,9],
+							   [9,1,2,1,9,9],
 							   [9,2,2,1,9,9],
 							   [0,1,0,0,9,9],
 							   [1,3,2,3,3,9],
-							   [1,2,0,0,3,9]];*/
-		var testcase: Array = [[9,9,9,9,9,9],
-							   [9,9,9,9,9,9],
-							   [9,9,9,9,9,9],
-							   [9,9,9,9,9,9],
-							   [9,0,9,9,9,9],
-							   [9,2,3,9,9,9],
-							   [9,1,2,0,9,9],
-							   [9,2,2,1,9,9],
-							   [0,1,0,0,9,9],
-							   [1,3,2,3,3,9],
-							   [1,2,0,0,3,9]];					   
-		for( var i = testcase.length -1; i >= 0; i-- ) {
-			for( var j = testcase[i].length -1; j >= 0 ; j-- ) {
-				if( testcase[i][j] != 9 )
-					new Square(maps_[0], j, i, testcase[i][j]).dropped();
+							   [1,2,0,0,3,9]];
+		
+		for( var i = testcase1.length -1; i >= 0; i-- ) {
+			for( var j = testcase1[i].length -1; j >= 0 ; j-- ) {
+				if( testcase1[i][j] != 9 )
+					new Square(maps_[0], j, i, testcase1[i][j]).dropped();
+			}
+		}
+		
+		for( var i_ = testcase2.length -1; i_ >= 0; i_-- ) {
+			for( var j_ = testcase2[i_].length -1; j_ >= 0 ; j_-- ) {
+				if( testcase2[i_][j_] != 9 )
+					new Square(maps_[1], j_, i_, testcase2[i_][j_]).dropped();
 			}
 		}
 		
@@ -229,8 +231,10 @@ class Game{
 	
 	//added
 	public static function change_main_player_to(i: Number): Void { 
-		if( players_[i] != null )
-			main_player_ = players_[i]; 
+		if( players_[i] != null ){
+			trace("change_main_player_to >> " + i);
+			main_player_ = players_[i];
+		}
 	}
 	
 	private static var main_player_: Player;
@@ -239,7 +243,9 @@ class Game{
 	private var setting_: MapSetting;
 	private var step_: Number = 0;
 	private var itembox_: Item;
-	private var Ai_: Ai;
+	private var Ai_1: Ai;
+	private var Ai_2: Ai;
+	
 	// dummy
     private var self: Game;
 }

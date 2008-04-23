@@ -71,6 +71,12 @@ class Player
 			Game.change_main_player_to( 1 );
 		}
 	}
+	
+	public static function change_player_ver2(p: Number): Void {
+		active_player_ = p;
+		Game.change_main_player_to( p-1 );
+	}
+	
 
 	public static function active_player(): Number { return active_player_; }
 	private static var active_player_: Number;

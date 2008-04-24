@@ -6,17 +6,14 @@
 #include <tr1/memory>
 
 namespace psc{
-namespace view{
-class Scene;
-typedef std::tr1::shared_ptr<Scene> pScene;
-typedef std::tr1::weak_ptr<Scene> wpScene;
+namespace data{
+class ViewSetting;
+typedef std::tr1::shared_ptr<ViewSetting> pViewSetting;
+typedef std::tr1::weak_ptr<ViewSetting> wpViewSetting;
 }
-namespace presenter{
-class Map;
-namespace cube{
+namespace presenter{ namespace cube{
 
 class ViewMaster{
-    friend class psc::presenter::Map; // for you to setup my map setting
 public:
     typedef std::tr1::shared_ptr<ViewMaster> pointer_type;
 public:
@@ -24,14 +21,23 @@ public:
         return ViewBase::pointer_type();
     }
     virtual void redraw(Map const& map){}
-    virtual vec2 pos_vec2(int const&, int const&) const{ return vec2(); }
     virtual ~ViewMaster(){}
+    ViewMaster& init(data::wpMapSetting ms){
+        map_setting(ms).derived_init();
+        return *this;
+    }
+
+    data::pViewSetting view_setting() const{ return view_setting_; }
+    virtual void column_full(int at){}
+    virtual void column_not_full(int at){}
+    virtual void new_chain(model::pChain chain){}
+    virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_land, int tmp_amounts){}
 
 protected:
-    ViewMaster(view::pScene scene):scene_(scene){}
+    ViewMaster(){}
+    ViewMaster(data::pViewSetting view_setting): view_setting_(view_setting){}
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
-    view::pScene  scene() const { return scene_.lock(); }
-    view::wpScene scene_;
+    virtual void derived_init(){};
 
     //temporary (hold)
     view::pObject view_orig() const { return view_orig_; }
@@ -40,6 +46,7 @@ protected:
 private:
     ViewMaster& map_setting(data::wpMapSetting ms){ map_setting_ = ms; return *this; }
     data::wpMapSetting map_setting_;
+    data::pViewSetting view_setting_;
 };
 
 }}} // end of namespace

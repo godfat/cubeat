@@ -3,11 +3,6 @@
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
 
-#include "view/Scene.hpp"
-#include "view/Menu.hpp"
-#include "view/AnimatedSprite.hpp"
-#include "view/SpriteText.hpp"
-
 #include "utils/to_s.hpp"
 
 #include "EasingEquations.hpp"
@@ -31,117 +26,11 @@ Map& <% debug_hook 'Map::call_end_game' do %>(){
 }
 
 //note: we should make this be delegate to ViewMaster's derived classes
-Map& Map::show_warning_at(int x, bool visible){
-    if( !setting()->dropping_creatable() ) visible = false;
-    warning_strip_[x]->set<accessor::Visible>(visible);
-    return *this;
-}
-
-//note: we should make this be delegate to ViewMaster's derived classes
-Map& <% debug_hook 'Map::setup_warning' do %>(){
-<% end %>
-    using std::tr1::bind; using namespace accessor; using namespace easing;
-    ++warning_level_;
-    Sound::i().play("3/3d/alarm.mp3");
-    int w = setting()->width();
-    int h = setting()->height() - 1;
-    vec2 pos;
-    if( w % 2 == 0 )
-        pos = (view_master_->pos_vec2(w/2, h) + view_master_->pos_vec2(w/2-1, h)) / 2;
-    else pos = view_master_->pos_vec2(w/2, h);
-    pos.Y += 16;
-    view::pAnimatedSprite alert =
-        view::AnimatedSprite::create("alert", view_master_->scene(), 64*w, 32, true);
-    alert->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-
-    int endalpha = 0 + warning_level_ * 50;
-    alert->tween<SineCirc, Alpha>
-        (0, endalpha, 1000u, 0, bind(&view::Object::set<Visible>, alert, false)); //bind copy
-    return *this;
-}
-
-//note: we should make this be delegate to ViewMaster's derived classes
 Map& <% debug_hook 'Map::take_out_warning' do %>(){
 <% end %>
-    std::cout << "presenter map take_out_warning.\n";
+    // std::cout << "presenter map take_out_warning.\n";
     warning_level_ = 0;
     return *this;
-}
-
-//note: we should make this be delegate to ViewMaster's derived classes
-Map& <% debug_hook 'Map::show_chain' do %>(int combo, model::wpChain const& chain, int amounts){
-<% end %>
-    using namespace accessor; using namespace easing;
-    std::string str("Chain " + to_s(combo));
-    std::string str2( to_s(amounts) + " cubes!" );
-    view::pScene s = view_master_->scene();
-
-    int y_offset = 200, x_offset = 0, w = setting()->width();
-    if( setting()->width() % 2 == 0 )
-        x_offset = (view_master_->pos_vec2(w/2, 0).X + view_master_->pos_vec2(w/2-1, 0).X) / 2;
-    else x_offset = view_master_->pos_vec2(w/2, 0).X;
-
-    if( chain_texts_.find( chain ) == chain_texts_.end() ) {
-        BOOST_FOREACH(ChainTextPair const& it, chain_texts_)
-            y_offset += it.second->getSprite("chain").get<Size2D>().Y * 2;
-        chain_texts_.insert( std::make_pair(chain, view::pMenu()) );
-    } else y_offset = chain_texts_[chain]->get<Pos2D>().Y;
-
-    view::pMenu m = view::Menu::create("", s, 100, 100, true);
-    m->addSpriteText("chaino",  str, "Star Jedi", 0, 35+combo*5, true, data::Color(255,0,0))
-      .addSpriteText("chain",   str, "Star Jedi", 0, 35+combo*5, true)
-      .addSpriteText("amounto", str2,"Star Jedi", 0, 20+combo*3, true, data::Color(255,0,0))
-      .addSpriteText("amount",  str2,"Star Jedi", 0, 20+combo*3, true);
-    m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1));
-    m->getSprite("chain").setDepth(-10);
-    m->getSprite("amounto").set<Pos2D>(vec2(1,34+combo*5)).set<Scale>(vec3(1.03,1.15,1));
-    m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,35+combo*5));
-    m->setDepth(-100).set<Pos2D>( vec2(x_offset, y_offset) ).tween<OElastic, Scale>
-       (vec3(0,0,0), vec3(1,1,1), 1000, 0, std::tr1::bind(&Map::pop_a_chain_text, this, chain));
-
-    chain_texts_[ chain ] = m;
-    Sound::i().play( ("2/2b_" + to_s(combo >= 7 ? 7 : combo) + ".mp3"));
-    return *this;
-}
-
-void Map::pop_a_chain_text(model::wpChain const& key) {
-    chain_texts_to_be_deleted_.push_back( key );
-}
-
-//note: we should make this be delegate to ViewMaster's derived classes
-Map& <% debug_hook 'Map::garbage_animation' do %>(int n, int modelx, int modely){
-<% end %>
-    using namespace accessor; using namespace easing; using std::tr1::bind;
-    vec2 pos = view_master_->pos_vec2(modelx, modely);
-    view::pScene s = view_master_->scene();
-    int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
-    BOOST_FOREACH(wpMap& mg, garbage_lands_) {
-        vec2 endp = mg.lock()->garbage_endpoint_vec2();
-        for( int i = 0; i < num; ++i ) {
-            view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
-            vec2 midp = (pos + endp)/2;
-            midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
-            std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
-            //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
-            data::AnimatorParam<Linear, Rotation> rota;
-            data::AnimatorParam<IQuad, Alpha> alpha;
-            data::AnimatorParam<Linear, Scale> scale;
-            data::WaypointParam<ICirc, Pos2D> way;
-            rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
-            alpha.start(0).end(255).duration(700);
-            scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
-            //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
-            way.waypoints(wp).duration(700+utils::random(300));
-            way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
-            g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
-              .tween(rota).tween(alpha).tween(scale).tween(way);
-        }
-    }
-    return *this;
-}
-
-vec2 Map::garbage_endpoint_vec2() const {
-    return view_master_->pos_vec2(setting()->width()/2, setting()->height()+2); //endpoint is out of bound
 }
 
 Map& Map::set_endgame(std::tr1::function<void(pMap)>const& cb) {
@@ -176,32 +65,33 @@ bool Map::enemy_column_full() const {
 
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
-    view->map_setting(setting());
+    view->init(setting());
+    bind_view_event(view);
 
+    // every existing cube should setup it also
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
         cube->push_view_slave( view->create(cube->model()) );
     }
+
     view_slaves_.push_back(view);
     return *this;
 }
 
 Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
 <% end %>
-    view->map_setting(setting());
-    view_master_ = view;
+    view->init(setting());
+    bind_view_event(view);
+
+    // every existing cube should setup it also
     typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
     BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
         pCube cube = cube_pair.second;
         cube->set_view_master( view->create(cube->model()) );
     }
 
-    create_warning_strips(); //note: bad?
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
-    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), shared_from_this(), 30000);
+    view_master_ = view;
     return *this;
 }
 
@@ -212,28 +102,18 @@ void Map::speedup(){
         bind(&Map::speedup, this), shared_from_this(), 10000);
 }
 
-//note: we should make this be delegate to ViewMaster's derived classes
-void Map::create_warning_strips(){
-    using namespace accessor; using namespace easing;
-    for( int i = 0; i < setting()->width(); ++i ) {
-        int h = setting()->height() - 1;
-        view::pSprite temp = view::Sprite::create("warning", view_master_->scene(), 64, 64*h, true);
-        vec2 pos;
-        if( h % 2 == 0 )
-            pos = (view_master_->pos_vec2(i, h/2) + view_master_->pos_vec2(i, h/2-1)) / 2;
-        else pos = view_master_->pos_vec2(i, h/2);
-        temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,0,0)).set<Alpha>(64).set<Visible>(false);
-        temp->tween<SineCirc, Alpha>(0, 1000u, -1);
-        warning_strip_.push_back( temp );
-    }
-}
 
 pMap <% debug_hook 'Map::init' do %>(){
 <% end %>
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(); // beware! this need refer model_!
+
+    // NOTE: this is bad!! why is set_view_master related to speedup?
+    //       it should be placed in somewhere like start map or start game.
+    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
     return self;
 }
 
@@ -242,7 +122,26 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, setting_);
     model_->init_cubes(data); // beware! this need refer model_!
+
+    // NOTE: this is bad!! why is set_view_master related to speedup?
+    //       it should be placed in somewhere like start map or start game.
+    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
     return self;
+}
+
+void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
+<% end %>
+    using namespace std::tr1::placeholders;
+    column_full_event(
+        std::tr1::bind(&cube::ViewMaster::column_full, view.get(), _1)).
+    column_not_full_event(
+        std::tr1::bind(&cube::ViewMaster::column_not_full, view.get(), _1)).
+    new_chain_event(
+        std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
+    new_garbage_event(
+        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3));
 }
 
 void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
@@ -281,13 +180,6 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 <% end %>
     model()->cycle_slow();
     model()->cycle_fast();
-
-    //delete chain_texts here
-    BOOST_FOREACH(model::wpChain const& t, chain_texts_to_be_deleted_){
-        chain_texts_.erase(t);
-    }
-    chain_texts_to_be_deleted_.clear();
-
     return *this;
 }
 

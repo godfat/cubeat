@@ -52,12 +52,12 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
     c1p_ = c1p; sconf_ = sc; puzzle_level_ = puzzle_level;
 
-    data::pViewSpriteSetting s0, s1;
+    data::pViewSetting s0, s1;
 
-    s0 = data::ViewSpriteSetting::create(159, 684, 64);   //must use config
-    s0->push_ally(0);//.push_enemy(1);
-    s1 = data::ViewSpriteSetting::create(740, 684, 64);   //must use config
-    s1->push_ally(1);//.push_enemy(0);
+    s0 = data::ViewSetting::create(64);   //must use config
+    s0->x_offset(159).y_offset(684).push_ally(0);//.push_enemy(1);
+    s1 = data::ViewSetting::create(64);   //must use config
+    s1->x_offset(740).y_offset(684).push_ally(1);//.push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());

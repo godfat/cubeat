@@ -269,8 +269,9 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().subscribe_timer(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), shared_from_this(), 1000);
-            o->show_chain( (*i)->step(), (*i), (*i)->last_step_amounts() );
-            o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
+            o->new_chain_event()(*i);
+            o->new_garbage_event()(*i, o->garbage_lands(), amount);
+            // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             score_ += (*i)->score_step() * damage_factor;
             (*i)->step_one();
@@ -403,13 +404,13 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     bool has_column_full = check_column_full();
     if( !has_column_full && warning_dummy_ ) {
         warning_dummy_.reset();
-        owner()->take_out_warning();
+        // owner()->take_out_warning();
     }
     else if( has_column_full && !warning_dummy_ ) {
         warning_dummy_ = std::tr1::shared_ptr<int>(new int);
-        owner()->setup_warning();
-        ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::setup_warning, owner().get()),
-            warning_dummy_, 1000, 3);
+        // owner()->setup_warning();
+        // ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::setup_warning, owner().get()),
+        //    warning_dummy_, 1000, 3);
         ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::call_end_game, owner().get()),
             warning_dummy_, 5000);
     }
@@ -421,9 +422,9 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
 	for( int x=0, width = ms()->width(), y = ms()->height()-2; x < width; ++x ){
 		if( cubes_[x][y] && cubes_[x][y]->is_waiting() ){
 			++counter;
-			owner()->show_warning_at(x, true);
+			owner()->column_full_event()(x); // owner()->show_warning_at(x, true);
 		}
-		else owner()->show_warning_at(x, false);
+		else owner()->column_not_full_event()(x); // owner()->show_warning_at(x, false);
 	}
 
     return counter > 0;

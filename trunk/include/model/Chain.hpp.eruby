@@ -63,6 +63,7 @@ private:
     std::vector<int> chain_step_;
     int last_step_x_, last_step_y_;
     int power_factor_, last_power_factor_;
+    // int damage_factor_;
 };
 
 }} // end of namespace

@@ -18,6 +18,7 @@
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
+<%= reader 'std::list<wpMap>', :garbage_lands %>
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
@@ -37,14 +38,14 @@ public:
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
     Map& call_end_game();
-    Map& setup_warning();
+    // Map& setup_warning();
     Map& take_out_warning();
-    Map& show_chain(int, model::wpChain const&, int);
-    Map& garbage_animation(int, int, int);
+    // Map& show_chain(int, model::wpChain const&, int);
+    // Map& garbage_animation(int, int, int);
     Map& set_endgame(std::tr1::function<void(pMap)>const&);
-    Map& show_warning_at(int, bool);
+    // Map& show_warning_at(int, bool);
     Map& stop_dropping();
-    vec2 garbage_endpoint_vec2() const;
+    // vec2 garbage_endpoint_vec2() const;
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -79,18 +80,24 @@ public:
     bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;
     bool enemy_column_full() const;
+    data::pViewSetting view_setting() const{
+        return view_master_ ?
+                view_master_->view_setting() :
+                data::pViewSetting();
+    }
 
 private:
     pMap init();
     pMap init(utils::vector_2d<int> const&);
     /*static*/ void bind_cube_event(pCube);
+    /*static*/ void bind_view_event(cube::pViewMaster);
     Map& push_garbage(int amounts){
         model()->push_garbage(amounts);
         return *this;
     }
 
-    void create_warning_strips();
-    void pop_a_chain_text(model::wpChain const& key);
+    // void create_warning_strips();
+    // void pop_a_chain_text(model::wpChain const& key);
     void speedup();
 
 private:
@@ -100,16 +107,18 @@ private:
     cube::pViewMaster view_master_;           //note: must not be destructed before cubes_
     std::list<cube::pViewMaster> view_slaves_;
     container_type cubes_;
-    std::list<wpMap> garbage_lands_;
 
-    typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
-    typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
-    std::map< model::wpChain, view::pMenu > chain_texts_;
-    std::list< model::wpChain > chain_texts_to_be_deleted_;
-    std::vector< view::pSprite > warning_strip_;
+    // typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
+    // typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
+    // std::map< model::wpChain, view::pMenu > chain_texts_;
+    // std::list< model::wpChain > chain_texts_to_be_deleted_;
+    // std::vector< view::pSprite > warning_strip_;
 
     std::tr1::function<void(pMap)> endgame_callback_;
     int warning_level_;
+<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event %>
+<%= accessor 'std::tr1::function<void(model::pChain)>', :new_chain_event %>
+<%= accessor 'std::tr1::function<void(model::pChain, std::list<wpMap> const&, int)>', :new_garbage_event %>
 };
 
 }} // end of namespace

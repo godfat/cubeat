@@ -20,12 +20,12 @@ public:
         scene_ = psc::view::Scene::create("TestMapViewScene");
         scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
-        data::pViewSpriteSetting s0, s1;
+        data::pViewSetting s0, s1;
 
-        s0 = data::ViewSpriteSetting::create(50, 500, 50);
-        s0->push_ally(1).push_enemy(0);
-        s1 = data::ViewSpriteSetting::create(450, 500, 50);
-        s1->push_ally(0).push_enemy(1);
+        s0 = data::ViewSetting::create(50);
+        s0->x_offset(50).y_offset(500).push_ally(1).push_enemy(0);
+        s1 = data::ViewSetting::create(50);
+        s1->x_offset(450).y_offset(500).push_ally(0).push_enemy(1);
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
         player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s0->ally_input_ids(), s0->enemy_input_ids());
@@ -41,8 +41,9 @@ public:
         map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
         // mini view
-        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_,
-            data::ViewSpriteSetting::create(800, 300, 25) ) );
+        data::pViewSetting s2 = data::ViewSetting::create(25);
+        s2->x_offset(800).y_offset(300);
+        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_, s2) );
 
         // setup garbage land
         map0_->push_garbage_land(map1_);

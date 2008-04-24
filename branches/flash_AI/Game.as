@@ -29,12 +29,12 @@ class Game{
         }*/
 		
 		//new AI
-		//Ai_1 = new Ai(this,maps_[0]);
+		Ai_1 = new Ai(this,maps_[0]);
 		Ai_2 = new Ai(this,maps_[1]);
-		/*setInterval( Delegate.create(Ai_1, Ai_1.full_process), 1000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.full_process), 1000, maps_[0]);
 		setInterval( Delegate.create(Ai_1, Ai_1.dropping_travel), 3000, maps_[0]);
 		setInterval( Delegate.create(Ai_1, Ai_1.combo_rank_update), 10000, maps_[0]);
-		setInterval( Delegate.create(Ai_1, Ai_1.update_ai_state), 500, maps_[0]);*/
+		setInterval( Delegate.create(Ai_1, Ai_1.update_ai_state), 500, maps_[0]);
 		setInterval( Delegate.create(Ai_2, Ai_2.full_process), 1001, maps_[1]);
 		setInterval( Delegate.create(Ai_2, Ai_2.dropping_travel), 3001, maps_[1]);
 		setInterval( Delegate.create(Ai_2, Ai_2.combo_rank_update), 10001, maps_[1]);

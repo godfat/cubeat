@@ -24,19 +24,19 @@ class Ai{
 				shooting_arr(map, bg_list[i]);
 			}
 		}
+		//找出前三名取得最高分方塊
+		var c_cube: Square = null;
+		var c_point: Number = 0;
+		for(var i = 0; i<best_chain_cubes.length; ++i){
+			if(best_chain_cubes[i] != null && best_chain_point[i]>c_point){
+				c_point = best_chain_point[i];
+				c_cube = best_chain_cubes[i];
+			}
+		}
 		//以下為進行各種行動的條件判斷,或許不用else 而是單純個別用if比較好?
 		//讓AI進行連鎖的條件
-		if(count_square_Num(map)>=30 && this.shooted == false && this.chaining == false && c_point>10){
+		if(count_square_Num(map)>=20 && this.shooted == false && this.chaining == false && c_point>20){
 			//進行連鎖
-			var c_cube: Square = null;
-			var c_point: Number = 0;
-			//找出前三名取得最高分方塊
-			for(var i = 0; i<best_chain_cubes.length; ++i){
-				if(best_chain_cubes[i] != null && best_chain_point[i]>c_point){
-					c_point = best_chain_point[i];
-					c_cube = best_chain_cubes[i];
-				}
-			}
 			if(c_cube != null){
 				trace("**********shoot for chain***********");
 				shooting(map,c_cube);
@@ -116,18 +116,6 @@ class Ai{
 		}else if(map_.id() == 2){
 			Player.change_player_ver2( 1 );
 		}
-		/*if(map_.id() == Player.active_player()) {
-			cube.i_am_hit(1);
-			this.shooted = true;
-			best_chain_point_update(map);
-			Player.change_player_ver2();
-		}else if(map_.id() != Player.active_player()) {
-			Player.change_player_ver2();
-			cube.i_am_hit(1);
-			this.shooted = true;
-			best_chain_point_update(map);
-			Player.change_player_ver2();
-		}*/
 	}
 	
 	//射擊目標方塊陣列,對最佳發火點分數進行更新
@@ -142,16 +130,6 @@ class Ai{
 			}else if(map_.id() == 2){
 				Player.change_player_ver2( 1 );
 			}
-			/*if(map_.id() == Player.active_player()) {
-				s_list[i].i_am_hit(1);
-				Player.change_player_ver2();
-				this.shooted = true;
-			}else if(map_.id() != Player.active_player()) {
-				Player.change_player_ver2();
-				s_list[i].i_am_hit(1);
-				Player.change_player_ver2();
-				this.shooted = true;
-			}*/
 		}
 		best_chain_point_update(map);
 	}

@@ -35,7 +35,7 @@ public:
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        owner_(owner), setting_(setting),
+        owner_(owner), map_setting_(setting),
         cubes_(setting->width(), setting->height()),
         garbage_left_(0), score_(0), current_sum_of_attack_(0)
     {}
@@ -46,11 +46,12 @@ public:
     Map& <% debug_hook 'cycle_slow' do %>(){ <% end %>
         garbage_dumpable_ = ms()->garbage_dumpable();
         dropping_creatable_ = ms()->dropping_creatable();
+        if(garbage_dumpable_ && dropping_creatable_)
+    		cycle_warning();
 
     	update_chains();
         cycle_cubes();
 
-		cycle_warning();
         return *this;
     }
     Map& <% debug_hook 'cycle_fast' do %>(){ <% end %>
@@ -61,7 +62,7 @@ public:
         return *this;
     }
 
-    data::pMapSetting const& ms() const{ return setting_; }
+    data::pMapSetting const& ms() const{ return map_setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
@@ -120,14 +121,14 @@ private:
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;
-    data::pMapSetting setting_;
+    data::pMapSetting map_setting_;
     container_type cubes_;
     int garbage_left_, score_, current_sum_of_attack_;//, dropping_cubes_, grounded_cubes_;
     bool dropping_creatable_, garbage_dumpable_;
     // someday make it to be std::list
     chain_list_type chains_;
     preview_list_type cubes_preview_;
-    std::tr1::shared_ptr<int> warning_dummy_; //added by arch.jslin
+    std::tr1::shared_ptr<int> warning_level_; //added by arch.jslin
 };
 
 }} // end of namespace

@@ -17,4 +17,4 @@ int <% debug_hook 'Cube::color_id' do %>() const{ <%end%> return model()->color_
     model_(model::Cube::create(map.lock()->model(), x, y, color_id))
 {<%end%>}
 
-data::cpMapSetting Cube::ms() const{ return map_.lock()->setting(); }
+data::cpMapSetting Cube::ms() const{ return map_.lock()->map_setting(); }

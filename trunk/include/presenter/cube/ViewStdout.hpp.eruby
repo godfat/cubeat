@@ -20,8 +20,8 @@ public:
         else last_ = now;
 
         Map::color_map_type p = map.color_map();
-        for(int y=map.setting()->height()-1; y>=0; --y){
-            for(int x=0; x<map.setting()->width(); ++x)
+        for(int y=map.map_setting()->height()-1; y>=0; --y){
+            for(int x=0; x<map.map_setting()->width(); ++x)
                 std::printf("%2d", p[x][y]);
             std::printf("\n");
         }

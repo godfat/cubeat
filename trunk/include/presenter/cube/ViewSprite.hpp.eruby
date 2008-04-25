@@ -276,7 +276,7 @@ public:
         view::pScene s = scene_.lock();
         int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
         BOOST_FOREACH(wpMap const& mg, garbage_lands) {
-            data::pMapSetting ms = mg.lock()->setting();
+            data::pMapSetting ms = mg.lock()->map_setting();
             vec2 endp = pos_vec2(mg.lock()->view_setting(), ms->width()/2, ms->height()+2);
             for( int i = 0; i < num; ++i ) {
                 view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
@@ -298,6 +298,25 @@ public:
                   .tween(rota).tween(alpha).tween(scale).tween(way);
             }
         }
+    }
+
+    virtual void <% debug_hook 'warning_counting' do %>(int warning_level){ <% end %>
+        using std::tr1::bind; using namespace accessor; using namespace easing;
+        Sound::i().play("3/3d/alarm.mp3");
+        int w = map_setting()->width();
+        int h = map_setting()->height() - 1;
+        vec2 pos;
+        if( w % 2 == 0 )
+            pos = (pos_vec2(w/2, h) + pos_vec2(w/2-1, h)) / 2;
+        else pos = pos_vec2(w/2, h);
+        pos.Y += 16;
+        view::pAnimatedSprite alert =
+            view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 32, true);
+        alert->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos ).setPickable(false);
+
+        int endalpha = 0 + warning_level * 50;
+        alert->tween<SineCirc, Alpha>
+            (0, endalpha, 1000u, 0, bind(&view::Object::set<Visible>, alert, false)); //bind copy
     }
 
 private:

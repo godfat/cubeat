@@ -33,7 +33,7 @@ public:
     static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
-    Map(data::pMapSetting setting): setting_(setting), endgame_callback_(0), warning_level_(0){}
+    Map(data::pMapSetting setting): map_setting_(setting), endgame_callback_(0){}
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
@@ -101,7 +101,7 @@ private:
     void speedup();
 
 private:
-<%= accessor 'data::pMapSetting', :setting %>
+<%= accessor 'data::pMapSetting', :map_setting %>
 <%= reader 'model::pMap', :model %>
     //view::pMap view_;                       //note: not used for now.
     cube::pViewMaster view_master_;           //note: must not be destructed before cubes_
@@ -115,8 +115,7 @@ private:
     // std::vector< view::pSprite > warning_strip_;
 
     std::tr1::function<void(pMap)> endgame_callback_;
-    int warning_level_;
-<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event %>
+<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event %>
 <%= accessor 'std::tr1::function<void(model::pChain)>', :new_chain_event %>
 <%= accessor 'std::tr1::function<void(model::pChain, std::list<wpMap> const&, int)>', :new_garbage_event %>
 };

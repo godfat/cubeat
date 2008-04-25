@@ -16,6 +16,8 @@
 
 #include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
+#include <boost/function.hpp> // workaround for gcc43...
+
 #include <algorithm>
 #include <cmath>
 
@@ -25,7 +27,6 @@ using namespace psc;
 using namespace model;
 using detail::check_not_continue;
 using detail::process_chaining;
-using namespace std::tr1::placeholders;
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
@@ -63,6 +64,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(utils::vector_2d<int> const& cube_col
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
 <% end %>
+    using namespace std::tr1::placeholders;
     utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2, _3));
 }
 
@@ -396,23 +398,27 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
-    if( ms()->garbage_dumpable() == false || ms()->dropping_creatable() == false ) {
-        warning_dummy_.reset();
-        return;
-    }
+    using boost::lambda::var;
+    using std::tr1::bind; using std::tr1::ref;
 
     bool has_column_full = check_column_full();
-    if( !has_column_full && warning_dummy_ ) {
-        warning_dummy_.reset();
-        // owner()->take_out_warning();
+    if( !has_column_full && warning_level_ ) {
+        warning_level_.reset();
     }
-    else if( has_column_full && !warning_dummy_ ) {
-        warning_dummy_ = std::tr1::shared_ptr<int>(new int);
-        // owner()->setup_warning();
-        // ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::setup_warning, owner().get()),
-        //    warning_dummy_, 1000, 3);
-        ctrl::EventDispatcher::i().subscribe_timer( bind(&presenter::Map::call_end_game, owner().get()),
-            warning_dummy_, 5000);
+    else if( has_column_full && !warning_level_ ) {
+        warning_level_ = std::tr1::shared_ptr<int>(new int(0));
+
+        ctrl::EventDispatcher::i().subscribe_timer(
+            // boost function is a gcc43 workaround!
+            boost::function<void()>(++*var(warning_level_)), warning_level_, 1000, 3);
+
+        ctrl::EventDispatcher::i().subscribe_timer(
+            bind(owner()->warning_counting_event(), ref(*warning_level_)),
+            warning_level_, 1000, 3);
+
+        ctrl::EventDispatcher::i().subscribe_timer(
+            bind(&presenter::Map::call_end_game, owner().get()),
+            warning_level_, 5000);
     }
 }
 
@@ -422,9 +428,9 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
 	for( int x=0, width = ms()->width(), y = ms()->height()-2; x < width; ++x ){
 		if( cubes_[x][y] && cubes_[x][y]->is_waiting() ){
 			++counter;
-			owner()->column_full_event()(x); // owner()->show_warning_at(x, true);
+			owner()->column_full_event()(x);
 		}
-		else owner()->column_not_full_event()(x); // owner()->show_warning_at(x, false);
+		else owner()->column_not_full_event()(x);
 	}
 
     return counter > 0;

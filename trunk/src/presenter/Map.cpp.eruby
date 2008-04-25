@@ -18,24 +18,6 @@ using namespace psc;
 using namespace presenter;
 using psc::utils::to_s;
 
-//note: we should make this be delegate to ViewMaster's derived classes
-Map& <% debug_hook 'Map::take_out_warning' do %>(){
-<% end %>
-    return *this;
-}
-
-Map& <% debug_hook 'Map::call_end_game' do %>(){
-<% end %>
-    if( endgame_callback_ )
-        endgame_callback_( shared_from_this() );
-    return *this;
-}
-
-Map& Map::set_endgame(std::tr1::function<void(pMap)>const& cb) {
-    endgame_callback_ = cb;
-    return *this;
-}
-
 Map& Map::stop_dropping()
 {
     map_setting()->garbage_dumpable(false).dropping_creatable(false);

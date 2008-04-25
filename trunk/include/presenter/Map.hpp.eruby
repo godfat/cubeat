@@ -33,19 +33,11 @@ public:
     static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
-    Map(data::pMapSetting setting): map_setting_(setting), endgame_callback_(0){}
+    Map(data::pMapSetting setting): map_setting_(setting){}
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
-    Map& call_end_game();
-    // Map& setup_warning();
-    Map& take_out_warning();
-    // Map& show_chain(int, model::wpChain const&, int);
-    // Map& garbage_animation(int, int, int);
-    Map& set_endgame(std::tr1::function<void(pMap)>const&);
-    // Map& show_warning_at(int, bool);
     Map& stop_dropping();
-    // vec2 garbage_endpoint_vec2() const;
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -96,8 +88,6 @@ private:
         return *this;
     }
 
-    // void create_warning_strips();
-    // void pop_a_chain_text(model::wpChain const& key);
     void speedup();
 
 private:
@@ -108,13 +98,7 @@ private:
     std::list<cube::pViewMaster> view_slaves_;
     container_type cubes_;
 
-    // typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
-    // typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
-    // std::map< model::wpChain, view::pMenu > chain_texts_;
-    // std::list< model::wpChain > chain_texts_to_be_deleted_;
-    // std::vector< view::pSprite > warning_strip_;
-
-    std::tr1::function<void(pMap)> endgame_callback_;
+<%= accessor 'std::tr1::function<void()>', :lose_event %>
 <%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event %>
 <%= accessor 'std::tr1::function<void(model::pChain)>', :new_chain_event %>
 <%= accessor 'std::tr1::function<void(model::pChain, std::list<wpMap> const&, int)>', :new_garbage_event %>

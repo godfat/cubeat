@@ -416,9 +416,9 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             bind(owner()->warning_counting_event(), ref(*warning_level_)),
             warning_level_, 1000, 3);
 
-        ctrl::EventDispatcher::i().subscribe_timer(
-            bind(&presenter::Map::call_end_game, owner().get()),
-            warning_level_, 5000);
+        if( owner()->lose_event() )
+            ctrl::EventDispatcher::i().subscribe_timer(
+                owner()->lose_event(), warning_level_, 5000);
     }
 }
 

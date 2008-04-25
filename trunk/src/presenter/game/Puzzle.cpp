@@ -165,8 +165,8 @@ void Puzzle::end(pMap lose_map)
     timer_ui_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
     Sound::i().stopAll();
-    map0_->take_out_warning().stop_dropping();
-    map1_->take_out_warning().stop_dropping();
+    map0_->stop_dropping();
+    map1_->stop_dropping();
 
     Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);

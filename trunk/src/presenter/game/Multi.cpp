@@ -75,8 +75,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     // setup garbage land
     map0_->push_garbage_land(map1_);
     map1_->push_garbage_land(map0_);
-    map0_->set_endgame(bind(&Multi::end, this, _1));
-    map1_->set_endgame(bind(&Multi::end, this, _1));
+    map0_->lose_event(bind(&Multi::end, this, map0_));
+    map1_->lose_event(bind(&Multi::end, this, map1_));
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
@@ -175,8 +175,8 @@ void Multi::end(pMap lose_map)
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
     Sound::i().stopAll();
-    map0_->take_out_warning().stop_dropping();
-    map1_->take_out_warning().stop_dropping();
+    map0_->stop_dropping();
+    map1_->stop_dropping();
 
     Sound::i().play("3/3c/win.mp3");
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);

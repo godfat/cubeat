@@ -7,3 +7,4 @@ install_name_tool -change /usr/local/lib/libirrklang.dylib libirrklang.dylib bin
 install_name_tool -change /usr/local/lib/libirrklang.dylib libirrklang.dylib bin/test-map-views
 install_name_tool -change /usr/local/lib/libirrklang.dylib libirrklang.dylib bin/puzzle
 install_name_tool -change /usr/local/lib/libirrklang.dylib libirrklang.dylib bin/stage
+install_name_tool -change /usr/local/lib/libirrklang.dylib libirrklang.dylib bin/psc

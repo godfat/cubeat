@@ -88,7 +88,7 @@ $(STATIC_LIB): $(LINKOBJ)
 
 # Copies static lib into /lib/Linux
 staticlib: $(STATIC_LIB)
-	cp $^ $(LIB_PATH)
+	# cp $^ $(LIB_PATH)
 
 # Builds Irrlicht as dll (Irrlicht.dll) into ../../bin/Win32-gcc
 all_win32 win32: sharedlib_win32

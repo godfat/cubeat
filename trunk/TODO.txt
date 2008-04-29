@@ -1,4 +1,6 @@
 
+* refactor main.cpp
+
 * profiling
 * thread
 * introduce state Waiting_neednt_check

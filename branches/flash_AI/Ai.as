@@ -12,18 +12,19 @@ class Ai{
 		trace("Hi,I am Ai!");
 	}
 	
-	//一般完整流程
-	public function full_process(map: Map){
-		update_ai_state(map);//檢查AI盤面狀態
+	public function process_bg(map: Map){
 		//消去broken與garbage方塊s
 		var bg_list: Array = bk_gbg_travel(map);
-		var too_high_list: Array = too_high_travel(map);
 		if(bg_list != null){
-			trace("find broken or garbage !!");
+			//trace("find broken or garbage !!");
 			for (var i =0; i<bg_list.length; ++i){
 				shooting_arr(map, bg_list[i]);
+				this.shooted = false;
 			}
 		}
+	}
+	
+	public function process_chain(map: Map){
 		//找出前三名取得最高分方塊
 		var c_cube: Square = null;
 		var c_point: Number = 0;
@@ -33,7 +34,6 @@ class Ai{
 				c_cube = best_chain_cubes[i];
 			}
 		}
-		//以下為進行各種行動的條件判斷,或許不用else 而是單純個別用if比較好?
 		//讓AI進行連鎖的條件
 		if(count_square_Num(map)>=20 && this.shooted == false && this.chaining == false && c_point>20){
 			//進行連鎖
@@ -42,23 +42,35 @@ class Ai{
 				shooting(map,c_cube);
 				this.chaining = true;
 			}
+		}
+	}
+	
+	public function process_high(map: Map){
+		var too_high_list: Array = too_high_travel(map);
 		//讓AI進行消去過高列的條件
-		}else if(too_high_list != null && this.shooted == false){
+		if(too_high_list != null && this.shooted == false){
 			//消去過高列
 			trace("**********shoot too high column !!**********");
 			for (var i =0; i<too_high_list.length; ++i){
 				shooting_arr(map, too_high_list[i]);
 			}
+		}
+	}
+	
+	public function process_amass(map: Map){
 		//讓AI進行整理盤面的條件
-		}else if(count_square_Num(map)>=10 && count_square_Num(map)<30 && this.shooted == false && this.chaining == false){
-			//整理盤面
+		if(count_square_Num(map)>=20 && this.shooted == false && this.chaining == false){
 			var amass_cube: Square = amass_travel_deep(map);
 			if(amass_cube != null){
 				trace("***********shoot for amass***********");
 				shooting(map,amass_travel_deep(map));
 			}
+		}
+	}
+	
+	public function process_rtc(map: Map){
 		//讓AI進行動態連鎖的條件
-		}else if(this.shooted == true && this.chaining == true){
+		if(this.shooted == true && this.chaining == true){
 			//即時連鎖
 			var rtc_cube = rtc_checker(map);
 			if(rtc_cube != null){
@@ -68,8 +80,34 @@ class Ai{
 		}
 	}
 	
+	//暴搜初落下方塊找出會造成誤消去的方塊並打掉
+	public function process_drop(map: Map){
+		var del_arr = Dropping_checker(map);
+		if(del_arr != null){
+			trace_map_rgb(map);
+			for(var del_i = 0; del_i < del_arr.length; ++del_i){
+				trace("**********shoot_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")**********");
+				shooting(map,del_arr[del_i]);
+				this.shooted = false;//射擊初落下方塊不影響盤面判斷
+			}
+		}
+	}
+	
+	
+	//一般完整流程
+	public function process_mix(map: Map){
+		update_ai_state(map);
+		process_bg(map);
+		//update_ai_state(map);
+		process_chain(map);
+		//update_ai_state(map);
+		process_high(map);
+		//update_ai_state(map);
+		process_amass(map);
+	}
+	
 	//檢查盤面是否在連鎖中or剛進行射擊過
-	public function update_ai_state(map){
+	public function update_ai_state(map: Map){
 		for(var h = map.Height-1; h > 0; --h){
 			for(var w = map.Width-1; w >= 0 ; --w){
 				if(map.lookup(w, h).state instanceof Dropping && map.lookup(w, h).first_drop == false){
@@ -80,18 +118,18 @@ class Ai{
 				}
 			}
 			if(this.shooted == true){
-				trace("==========map is shooted!!==========");
+				//trace("==========map is shooted!!==========");
 				break;
 			}
 		}
 		if(this.shooted == true && this.chaining == true){
-			trace("==========map is chaining!!==========");
+			//trace("==========map is chaining!!==========");
 			this.chaining = true;
 		}else if(this.shooted == true){
 			var temp_map = set_brain_map(map);
 			failing_dropping(temp_map);
 			if(contact_checker(temp_map,3)!=null){
-				trace("==========map is chaining!!==========");
+				//trace("==========map is chaining!!==========");
 				this.chaining = true;
 			}
 		}else if(this.shooted == false){
@@ -109,6 +147,7 @@ class Ai{
 	private function shooting(map:Map, cube: Square){
 		Player.change_player_ver2( map_.id() );
 		this.shooted = true;
+		trace("shoot (" + cube.x + "," +cube.y + ")");
 		cube.i_am_hit(1);
 		best_chain_point_update(map);
 		if(map_.id() == 1){
@@ -123,6 +162,7 @@ class Ai{
 		for(var i=0; i<s_list.length; ++i){
 			Player.change_player_ver2( map_.id() );
 			this.shooted = true;
+			trace("shoot (" + s_list[i].x + "," + s_list[i].y + ")");
 			s_list[i].i_am_hit(1);
 			best_chain_point_update(map);
 			if(map_.id() == 1){
@@ -161,7 +201,7 @@ class Ai{
 			}
 		}
 		for(var k = 0; k < this.best_chain_cubes.length; ++k){
-			trace("Best combo<" + best_chain_point[k] + ">(" + best_chain_cubes[k].x + "," + best_chain_cubes[k].y + ")");
+			//trace("Best combo<" + best_chain_point[k] + ">(" + best_chain_cubes[k].x + "," + best_chain_cubes[k].y + ")");
 		}
 	}
 	
@@ -295,7 +335,7 @@ class Ai{
 		}
 		for(var w = map.Width-1; w >= 0; --w){
 			//判定此列過高的條件
-			if(map_tops[w] > map_tops[map.Width-1+1] + 3 || map_tops[w] > 7){
+			if(map_tops[w] > map_tops[map.Width-1+1] + 3 || map_tops[w] > 6){
 				trace("==========column(" + w + ") is too high==========");
 				del_list[w] = column_travel_type1(map, w);
 			}
@@ -499,7 +539,7 @@ class Ai{
 						}
 					}
 					if(amass_deep_formula(amass_counter(temp_map),chain_point) > best_point){
-						trace("find best amass(" + w + "," + h + ")");
+						//trace("find best amass(" + w + "," + h + ")");
 						best_point = amass_deep_formula(amass_counter(temp_map),chain_point);
 						best_cube = map.lookup(w,h);
 					}
@@ -518,18 +558,6 @@ class Ai{
 			amass_deep_point += chain_points[i];
 		}
 		return amass_deep_point;
-	}
-	
-	//暴搜初落下方塊找出會造成誤消去的方塊並打掉
-	public function dropping_travel(map: Map){
-		var del_arr = Dropping_checker(map);
-		if(del_arr != null){
-			trace_map_rgb(map);
-			for(var del_i = 0; del_i < del_arr.length; ++del_i){
-				shooting(map,del_arr[del_i]);
-				trace("**********shoot_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")**********");
-			}
-		}
 	}
 	
 	//計算此盤面的兩兩相臨方塊個數 並回傳

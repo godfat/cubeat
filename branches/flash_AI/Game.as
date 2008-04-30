@@ -29,14 +29,16 @@ class Game{
         }*/
 		
 		//new AI
-		Ai_1 = new Ai(this,maps_[0]);
+		//Ai_1 = new Ai(this,maps_[0]);
 		Ai_2 = new Ai(this,maps_[1]);
-		setInterval( Delegate.create(Ai_1, Ai_1.full_process), 1000, maps_[0]);
-		setInterval( Delegate.create(Ai_1, Ai_1.dropping_travel), 3000, maps_[0]);
+		/*setInterval( Delegate.create(Ai_1, Ai_1.process_rtc), 1000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.process_mix), 2000, maps_[0]);
+		setInterval( Delegate.create(Ai_1, Ai_1.process_drop), 3000, maps_[0]);
 		setInterval( Delegate.create(Ai_1, Ai_1.combo_rank_update), 10000, maps_[0]);
-		setInterval( Delegate.create(Ai_1, Ai_1.update_ai_state), 500, maps_[0]);
-		setInterval( Delegate.create(Ai_2, Ai_2.full_process), 1001, maps_[1]);
-		setInterval( Delegate.create(Ai_2, Ai_2.dropping_travel), 3001, maps_[1]);
+		setInterval( Delegate.create(Ai_1, Ai_1.update_ai_state), 500, maps_[0]);*/
+		setInterval( Delegate.create(Ai_2, Ai_2.process_rtc), 1001, maps_[1]);
+		setInterval( Delegate.create(Ai_2, Ai_2.process_mix), 2001, maps_[1]);
+		setInterval( Delegate.create(Ai_2, Ai_2.process_drop), 501, maps_[1]);
 		setInterval( Delegate.create(Ai_2, Ai_2.combo_rank_update), 10001, maps_[1]);
 		setInterval( Delegate.create(Ai_2, Ai_2.update_ai_state), 501, maps_[1]);
 		
@@ -44,13 +46,13 @@ class Game{
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
-							   [9,0,9,9,9,9],
-							   [9,1,3,9,9,9],
-							   [9,1,2,1,9,9],
-							   [9,2,2,1,9,9],
-							   [0,1,0,0,9,9],
-							   [1,3,2,3,3,9],
-							   [1,2,0,0,3,9]];
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [9,9,9,9,9,9],
+							   [1,2,0,0,3,2]];
 		
 		var testcase2: Array = [[9,9,9,9,9,9],
 							   [9,9,9,9,9,9],
@@ -232,7 +234,7 @@ class Game{
 	//added
 	public static function change_main_player_to(i: Number): Void { 
 		if( players_[i] != null ){
-			trace("change_main_player_to >> " + i);
+			//trace("change_main_player_to >> " + i);
 			main_player_ = players_[i];
 		}
 	}

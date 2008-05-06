@@ -453,3 +453,23 @@ bool Map::all_waiting() const {
     }
     return true;
 }
+
+Map::pointer_type Map::clone() const{
+    pointer_type result = Map::create(owner_, map_setting_);
+
+    std::transform(cubes_.flatten_begin(), cubes_.flatten_end(),
+        result->cubes_.flatten_begin(), &clone_cube);
+
+    result->garbage_left_ = garbage_left_;
+    result->score_ = score_;
+    result->current_sum_of_attack_ = current_sum_of_attack_;
+    result->dropping_creatable_ = dropping_creatable_;
+    result->garbage_dumpable_ = garbage_dumpable_;
+    result->chains_ = result->chains_;
+    result->cubes_preview_ = cubes_preview_;
+    result->warning_level_ = warning_level_;
+
+    return result;
+}
+
+pCube Map::clone_cube(pCube cube){ return cube->clone(); }

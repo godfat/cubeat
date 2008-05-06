@@ -14,6 +14,10 @@ public:
         boost::multi_array<T, 2>(boost::extents[width][height]){}
     size_type width() const{ return this->shape()[0]; }
     size_type height() const{ return this->shape()[1]; }
+    T const* flatten_begin() const{ return this->data(); }
+    T const* flatten_end() const{ return this->data() + this->num_elements(); }
+    T* flatten_begin(){ return this->data(); }
+    T* flatten_end(){ return this->data() + this->num_elements(); }
 };
 
 template <typename T, typename Fun>

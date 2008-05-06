@@ -11,7 +11,7 @@ class Ai: public AIPlayer{
     typedef model::Map::pointer_type pMap;
     typedef model::Cube::pointer_type pCube;
 
-    pMap map_;
+    cpMap map_;
     int travel_limit_;
     std::vector<int> best_amass_point;
     std::vector<int> best_chain_point;

@@ -1,8 +1,6 @@
 
 <% header_guard do %>
 
-#include "model/Cube.hpp"
-
 #include "all_fwd.hpp"
 
 #include "data/MapSetting.hpp"
@@ -15,9 +13,14 @@
 
 #include <ctime>
 
-namespace psc{ namespace model{
+namespace psc{
+namespace ctrl{
+    class Ai;
+}
+namespace model{
 
 class Map : public std::tr1::enable_shared_from_this<Map>{
+    friend class Ai;
 public:
     typedef pMap pointer_type;
     typedef utils::vector_2d<pCube> container_type;
@@ -118,6 +121,12 @@ private:
     bool is_below_empty(cpCube) const;
     void update_chains();
     presenter::pMap owner() const{ return owner_.lock(); }
+
+private: // methods for Ai
+    pCube lookup(int x, int y){ return cubes_[x][y]; }
+    Map& setup(int x, int y, pCube cube){ cubes_[x][y] = cube; return *this; }
+    pointer_type clone() const; // NOTE: this is not a real clone...
+    static pCube clone_cube(pCube cube);
 
 private:
     presenter::wpMap owner_; // should be weak_ptr;

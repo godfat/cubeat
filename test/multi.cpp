@@ -3,6 +3,12 @@
 #include <boost/multi_array.hpp>
 #include <boost/array.hpp>
 
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
+#include <boost/lambda/lambda.hpp>
+
 using std::cout;
 using std::endl;
 using boost::multi_array;
@@ -35,4 +41,9 @@ int main(){
     cout << a.origin()[10] << endl;
     a.origin()[50] = -1;
     cout << a.origin()[50] << endl;
+
+    std::vector<int> aa(a.data(), a.data()+a.num_elements());
+    transform(aa.begin(), aa.end(), aa.begin(), boost::lambda::_1 * 2);
+    copy(aa.begin(), aa.end(), std::ostream_iterator<int>(cout, " "));
+    cout << endl;
 }

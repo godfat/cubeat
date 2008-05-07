@@ -1,9 +1,6 @@
 
 #include "model/state/Dropping.hpp"
-#include "model/Map.hpp"
-#include "EventDispatcher.hpp"
-
-#include <tr1/functional>
+#include "model/Cube.hpp"
 
 <%= debug_include %>
 

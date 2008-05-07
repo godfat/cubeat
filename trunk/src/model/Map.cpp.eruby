@@ -472,4 +472,4 @@ Map::pointer_type Map::clone() const{
     return result;
 }
 
-pCube Map::clone_cube(pCube cube){ return cube->clone(); }
+pCube Map::clone_cube(pCube cube){ return cube; }// ->clone(); }

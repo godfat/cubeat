@@ -7,6 +7,7 @@
 #include "utils/vector_2d.hpp"
 #include "utils/dictionary.hpp"
 #include "utils/to_s.hpp"
+#include "utils/Random.hpp"
 
 #include <string>
 #include <fstream>
@@ -24,8 +25,13 @@ public:
         return load("tmp/puzzle.zzml");
     }
 
-    static presenter::Map::pointer_type load(int id){
-        create_config(id);
+    static presenter::Map::pointer_type load(int level){
+        map_any m = map_any::construct(utils::fetchConfig("config/puzzles/max.zzml"));
+        return load(level, random(m.I(to_s(level))));
+    }
+
+    static presenter::Map::pointer_type load(int level, int id){
+        create_config(level, id);
         return load("tmp/puzzle.zzml");
     }
 
@@ -78,9 +84,16 @@ public:
     }
 
 private:
-    static void create_config(int id){
+    static void create_config(int level, int id){
         char const* delimiter = "---------------------------------------";
-        std::ifstream from("config/puzzles.zzml");
+        // std::ifstream from("config/puzzles.zzml");
+
+        std::ifstream from;
+        if(level < 10)
+            from.open(("config/puzzles/level0" + to_s(level) + ".zzml").c_str());
+        else
+            from.open(("config/puzzles/level" + to_s(level) + ".zzml").c_str());
+
         std::string buffer;
         for(int i=0; i<id; ++i)
             while(buffer != delimiter)

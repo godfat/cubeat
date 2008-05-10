@@ -1,0 +1,146 @@
+
+Rice - Ruby Interface for C++ Extensions
+
+一年半前（天啊，有這麼早嗎？）曾經介紹過 swig, 一個專門產生各種介於 C/C++
+與其他語言 interface 的產生器。他是利用一個自訂的表示法，藉由讀取該表示法，
+產生出各種不同真正的 binding 程式。其中也有內建不少 STL 的 binding,
+所以想用 STL 的東西並不見得需要自己寫，只要叫他內部的東西出來即可。
+
+swig 很厲害，不過他有個麻煩。雖然說 DSL 的威力強大，但是對於想要快速上手而言，
+其實有時候反而會是種阻礙。另一方面，我 swig 手冊翻了翻，要把 C++ port 到
+ruby 很容易，但反之不亦然，要在 C++ 中使用 ruby object, 就不是那麼方便。
+（雖然也許這樣做是奇怪了點...）
+
+所以後來我試了 Rice.
+http://rice.rubyforge.org/
+rice 的官方手冊也說了，rice 並不是要來取代 swig 的。swig 有他的不足，而 rice
+大抵上又是模仿 boost.python 而作成的，所以兩者並不同。他自己也做過不少東西
+是同時使用 swig 和 rice. 不過也不能說 rice 是 ruby 版的 boost.python.
+因為他的目的也不是完全模仿 boost.python.
+
+anyway, 之所以會想試用，是出自於找不太到良好的 C++ yaml parser. 我有看到兩個
+C 版本的實作，但是真不好意思啊，個人實在不太喜歡純 C 的東西...。所以想說如果
+可以把 ruby 的 yaml 搬過來就太好了。以下就是測試結果：
+
+> sudo gem install rice
+
+理論上這樣安裝是最方便的。要在 C++ 裡執行 ruby, 一樣會需要 ruby.h.
+一般來說，他會在 lib/ruby/1.8/your_architecture/ 裡面。
+在我的電腦上，他是：/opt/local/lib/ruby/1.8/i686-darwin9.1.0/
+
+而 rice 呢，則是在 lib/ruby/gems/1.8/gems/rice-x.y.z/,
+librice.a 則是在 lib/ruby/gems/1.8/gems/rice-x.y.z/rice/ 下。
+
+所以在我的電腦裡，g++ options 是這樣下：
+
+-I/opt/local/lib/ruby/1.8/i686-darwin9.1.0/ \
+-I/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/ \
+-L/opt/local/lib/ruby/gems/1.8/gems/rice-1.0.1/rice/ \
+-lrice -lruby -std=c++98 -Wall -w
+
+主程式大概是長這樣：
+
+int main(){
+    using Rice::Hash;
+    using Rice::protect;
+
+    ruby_init(); // 使用 ruby 前一定要呼叫
+    // 設定 load path, 否則 load path 會是 []
+    rb_eval_string("$LOAD_PATH << '/opt/local/lib/ruby/1.8'");
+    rb_eval_string("$LOAD_PATH << '/opt/local/lib/ruby/1.8/i686-darwin9.1.0'");
+
+    // require yaml 進來。當然也可以用上面的方式 require. 不過之所以會這樣寫，
+    // 是因為我不知道 load path 要怎麼直接從 rb_ function 中設定？
+    // 否則我是覺得能用 rb_ 去跑盡量用，evil eval 不是叫假的...
+    rb_require("yaml");
+
+    // protect 我猜是把所有的錯誤都轉成 rice 本身的 exception.
+    // Hash, 則是 ruby 的 hash 在 C++ 裡的 wrapper,
+    // 所以我是把 YAML 的讀取結果存入這份 C++ Hash 中。
+    Hash h(protect(rb_eval_string, "YAML.load(File.read('database.yml'))"));
+
+    // 這邊，我要做的事只是展現如何使用這份 hash.
+    Extractor e;
+    e.extract(h);
+    std::cout << std::endl;
+}
+
+雖然我覺得 doxygen 生出來的東西常常很難閱讀，不過 rice 的 doxygen 文件還算
+不錯，有什麼東西都很清楚。就算不夠清楚，也能去直接看他的原始檔。他原始檔的東西
+並不多，稍微翻一下，有什麼疑惑我想都可以解決。根據我 C++ 的經驗，rice 這份程式
+也算是寫得非常漂亮的了，應該滿有參考價值。
+
+我的 extractor 是把整個 hash 都走過一次，如果不需要這麼複雜的操作，其實也可以很
+單純地這樣呼叫：
+
+std::cout << static_cast<Hash>(h[String("development")])[String("adapter")];
+
+這樣會輸出：
+
+sqlite1
+
+這樣實在是有點囉唆沒錯，不過我想這可以靠擴充 rice 解決。他有個 from_ruby 和
+to_ruby 的 template, 擴充那個東西，好像就能把很多東西從 explicit 法轉成
+implicit 法。不過我暫時懶得去做那麼多研究，這應該都是小問題。不過 down cast
+就比較麻煩了。他有個 get method, 好像是能做一些 down cast, 但我測試都會有
+runtime error, 大概是用法不對吧。有興趣的人歡迎去研究看看要怎麼做。
+
+extractor 我想就不解釋了，就只是單純把抓出的 yaml 再輸出回 yaml.
+其實那都已經差不多單純是 C++ 的問題了。僅列出程式碼與附註的一些註解：
+（不過我沒測試過比較複雜的 yaml, 我想一定會有問題，當作業自己試著改好吧 :p）
+
+#include <ruby.h>
+#include <rice/Hash.hpp>
+#include <rice/Array.hpp>
+#include <iostream>
+
+using Rice::Object;
+using Rice::Class;
+using Rice::Hash;
+using Rice::Array;
+using Rice::String;
+
+// 排版算空格用的
+std::string spacer(int depth){
+    std::string result;
+    for(int i=0; i<depth; ++i)
+        result += "  ";
+    return result;
+}
+
+class Extractor{
+public:
+    // 他 class 判斷法有點麻煩，所以我先把這三個 class instance cache 起來
+    Extractor(): hash_class_(Hash().class_of()),
+                 array_class_(Array().class_of()),
+                 string_class_(String().class_of())
+    {}
+    void extract(Object const& obj, int depth = 0) const{
+        if(obj.is_instance_of(hash_class_))
+            extract_hash(obj, depth);
+        else if(obj.is_instance_of(array_class_))
+            extract_array(obj, depth);
+        else if(obj.is_instance_of(string_class_))
+            std::cout << spacer(depth) << obj << "\n";
+        else // 這表示他是 Fixnum or Float?
+            std::cout << spacer(depth) << obj << "\n";
+    }
+private:
+    void extract_array(Array const& obj, int depth) const{
+        for(Array::const_iterator i=obj.begin(), iend=obj.end(); i!=iend; ++i)
+            extract(*i, depth);
+    }
+    void extract_hash(Hash const& obj, int depth) const{
+        for(Hash::const_iterator i=obj.begin(), iend=obj.end(); i!=iend; ++i){
+            std::cout << spacer(depth) << i->key << ":";
+
+        // i->value 結果會是 ruby 上 C 的 VALUE, 所以要 cast 成 Rice::Object
+            if(static_cast<Object>(i->value).is_instance_of(hash_class_))
+                std::cout << "\n", extract(i->value, depth+1);
+            else // 單純的值
+                std::cout << " ", extract(i->value, 0);
+        }
+    }
+private:
+    Class hash_class_, array_class_, string_class_;
+};

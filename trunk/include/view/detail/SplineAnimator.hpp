@@ -77,7 +77,7 @@ public:
          waypoints_(points), spline_index_(0), isClosed_(isClosed)
     {
         if( waypoints_.size() < 2 ) {
-            std::cout << "SplineAnimator: no point to go! (you at least need 2 points!)\n";
+            std::cout << "SplineAnimator: no point to go! (you at least need 2 points!)" << std::endl;
             return;
         }
         buildEndPoints();

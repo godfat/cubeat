@@ -23,6 +23,7 @@ class Player : public std::tr1::enable_shared_from_this<Player>
 
 public:
     typedef std::tr1::shared_ptr< Player > pointer_type;
+    typedef std::tr1::weak_ptr  < Player > wpointer_type;
     static pointer_type create(Input* input = 0,
                                std::list<int> ally_ids = std::list<int>(),
                                std::list<int> enemy_ids = std::list<int>()) {
@@ -56,8 +57,8 @@ protected:
     pointer_type init();
 
     void normal_shot_delegate(view::pSprite&, HitCallback const&);
-    void shot_delegate(view::pSprite&, HitCallback const&, pointer_type);
-    void repeating_shot_delegate(view::pSprite&, HitCallback const&, pointer_type);
+    void shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
+    void repeating_shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
     void process_input();
 
 protected:

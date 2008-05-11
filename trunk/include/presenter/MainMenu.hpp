@@ -26,6 +26,7 @@ public:
     }
 
     MainMenu(): animating_(false){}
+    ~MainMenu();
 
     virtual void cycle();
 

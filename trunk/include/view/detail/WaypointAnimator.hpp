@@ -32,7 +32,7 @@ public:
          waypoints_(points), now_waypoint_index_(waypoints_.size()/2)
     {
         if( waypoints_.size() < 2 ) {
-            std::cout << "WaypointAnimator: no point to go! (you at least need 2 points!)\n";
+            std::cout << "WaypointAnimator: no point to go! (you at least need 2 points!)" << std::endl;
             return;
         }
         if( isClosed && waypoints_.front() != waypoints_.back() )

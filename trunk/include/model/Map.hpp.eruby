@@ -50,7 +50,8 @@ public:
         garbage_dumpable_ = ms()->garbage_dumpable();
         dropping_creatable_ = ms()->dropping_creatable();
         if(garbage_dumpable_ && dropping_creatable_)
-    		cycle_warning();
+            cycle_warning();
+        else warning_level_.reset();
 
     	update_chains();
         cycle_cubes();

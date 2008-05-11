@@ -32,7 +32,7 @@ public:
          animation_(anime)
     {
         if( anime.size() < 1 ) {
-            std::cout << "Cannot construct animation with no frame, Error!\n";
+            std::cout << "Cannot construct animation with no frame, Error!" << std::endl;
             return;
         }
     }

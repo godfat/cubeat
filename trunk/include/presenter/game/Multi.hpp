@@ -13,6 +13,7 @@ namespace psc {
 namespace ctrl {
 class Player;
 typedef std::tr1::shared_ptr<Player> pPlayer;
+typedef std::tr1::weak_ptr<Player> wpPlayer;
 }
 
 namespace presenter {
@@ -41,7 +42,7 @@ protected:
     void item_creation();
     void item_destruction();
     void setup_ui_by_config( std::string const& path );
-    void eat_item(ctrl::pPlayer, int);
+    void eat_item(ctrl::wpPlayer, int);
 
     void setup_end_button();
     void end_sequence1();

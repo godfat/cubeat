@@ -89,6 +89,7 @@ public:
     EventDispatcher& clear_obj_event(view::pScene const& scene);
 
     void dispatch();
+    ~EventDispatcher();
 
 private:
     struct BE{enum{BTN_CB, BTN, STATE, CALLEE};};

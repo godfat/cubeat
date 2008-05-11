@@ -43,7 +43,7 @@ void Input::update_all()
     //toggle keyboard_mouse_input_ on/off
     if( MastEventReceiver::i().keyPressed( KEY_RETURN ) ) {
         keyboard_mouse_input_ = !keyboard_mouse_input_;
-        std::cout<<"Toggle secondary input "<<(keyboard_mouse_input_?"on":"off")<<"\n";
+        std::cout<<"Toggle secondary input "<<(keyboard_mouse_input_?"on":"off")<< std::endl;
     }
 
     BOOST_FOREACH( Input* it, inputs_ )
@@ -97,7 +97,7 @@ Input::Input(std::string const& path)
     wiimote_.SetLEDs(wiimote::TotalConnected());
     wiimote_.SetReportType(wiimote::IN_BUTTONS_ACCEL_IR);
     //test
-    std::cout << "Wiimote connected: " << wiimote::TotalConnected() << "\n";
+    std::cout << "Wiimote connected: " << wiimote::TotalConnected() << std::endl;
 #endif
     inputs_.push_back( this );
 
@@ -224,5 +224,5 @@ pPlayer Input::player() const { return player_.lock(); }
 
 Input::~Input()
 {
-    //
+    std::cout << "Input destructing ..." << std::endl;
 }

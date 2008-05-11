@@ -1,8 +1,4 @@
 
-/* TODO:
-   Inputs are temporarily declared in this scope,
-   will be removed later. (when player class is out) */
-
 #include "Conf.hpp"
 #include "App.hpp"
 #include "presenter/Transitioner.hpp"
@@ -39,7 +35,6 @@ App::App()
     }
     timer_ = IrrDevice::i().d()->getTimer();
 
-    //these are temporarily here.
     input1_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player1.zzml");
     input2_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player2.zzml");
 
@@ -50,7 +45,7 @@ App::App()
 
 App::~App()
 {
-    //these are temporarily here.
+    std::cout << "App destructing, before deleting inputs" << std::endl;
     delete input1_;
     delete input2_;
 }
@@ -63,20 +58,20 @@ void App::setLoading(int const& cent)
 void App::launchMainMenu()
 {
     temp_presenter_ = presenter::MainMenu::create();
-    std::cout << "MainMenu launched.\n";
+    std::cout << "MainMenu launched." << std::endl;
 }
 
 void App::launchMultiplayer(std::string const& conf1p, std::string const& conf2p,
                             std::string const& stage)
 {
     temp_presenter_ = presenter::game::Multi::create(conf1p, conf2p, stage);
-    std::cout << "game_Multiplayer launched.\n";
+    std::cout << "game_Multiplayer launched." << std::endl;
 }
 
 void App::launchPuzzle(std::string const& conf1p, std::string const& stage, int puzzle_level)
 {
     temp_presenter_ = presenter::game::Puzzle::create(conf1p, stage, puzzle_level);
-    std::cout << "game_puzzle launched.\n";
+    std::cout << "game_puzzle launched." << std::endl;
 }
 
 bool App::update_block()
@@ -138,6 +133,8 @@ int App::run(std::tr1::function<void()> tester)
         //    if( !IrrDevice::i().d()->getTimer()->isStopped() ) //temp for double tasking
         //        IrrDevice::i().d()->getTimer()->stop();        //temp for double tasking
     }
+
+    std::cout << "App main loop has ended." << std::endl;
 
     return 0;
 }

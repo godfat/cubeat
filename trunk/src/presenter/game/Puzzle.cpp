@@ -42,6 +42,8 @@ Puzzle::Puzzle()
 
 Puzzle::~Puzzle()
 {
+    std::cout << "Puzzle Game destructing ..." << std::endl;
+    std::cout << " player0 use count: " << player0_.use_count() << std::endl;
 }
 
 pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_level)
@@ -212,7 +214,7 @@ void Puzzle::end_sequence1()
     Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
     App::i().launchMainMenu();
-    std::cout << "game_puzzle end call finished.\n";
+    std::cout << "game_puzzle end call finished." << std::endl;
 }
 
 void Puzzle::reinit()
@@ -224,7 +226,7 @@ void Puzzle::reinit()
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);
-    std::cout << "game_puzzle end call finished.\n";
+    std::cout << "game_puzzle end call finished." << std::endl;
 }
 
 void Puzzle::cycle()

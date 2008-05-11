@@ -38,6 +38,11 @@ using namespace std::tr1::placeholders;
 
 namespace BLL = boost::lambda;
 
+MainMenu::~MainMenu()
+{
+    std::cout << "MainMenu destructing ..." << std::endl;
+}
+
 pMainMenu MainMenu::init()
 {
     App::i().setLoading(1);
@@ -151,7 +156,7 @@ void MainMenu::end()
         App::i().launchMultiplayer(conf1p_, conf2p_, stage_);
     else if( game_mode_ == PUZZLE )
         App::i().launchPuzzle(conf1p_, stage_, 3);
-    std::cout << "MainMenu end call finished.\n";
+    std::cout << "MainMenu end call finished." << std::endl;
 }
 
 void MainMenu::initDecorator()

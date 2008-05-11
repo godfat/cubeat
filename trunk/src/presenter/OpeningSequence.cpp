@@ -29,7 +29,7 @@ OpeningSequence::OpeningSequence()
 
 OpeningSequence::~OpeningSequence()
 {
-    std::cout << "Did Opening died properly?\n";
+    std::cout << "Did Opening died properly?" << std::endl;
 }
 
 pOpeningSequence OpeningSequence::init()
@@ -47,7 +47,7 @@ void OpeningSequence::end()
 {
     movie_->set<Visible>(false);
     App::i().launchMainMenu();
-    std::cout << "OpeningSequence end call finished.\n";
+    std::cout << "OpeningSequence end call finished." << std::endl;
 }
 
 void OpeningSequence::cycle()
@@ -56,7 +56,7 @@ void OpeningSequence::cycle()
     scene_->redraw();
 
     if( !deletion_scheduled_ && movie_->isEnd() ) {
-        std::cout << "OpeningSequence deletion scheduled.\n";
+        std::cout << "OpeningSequence deletion scheduled." << std::endl;
         function<void()> endcall = bind(&OpeningSequence::end, this);
         movie_->tween<Linear, GradientDiffuse>(0, config.I("fade_period"), 0, endcall);
         deletion_scheduled_ = true;

@@ -49,6 +49,7 @@ pPlayer Player::init()
 
 Player::~Player()
 {
+    std::cout << "  ctrl::player (related input " << input_ << ") destructing..." << std::endl;
     input_->setRangeShapeVisible(false);
     BOOST_FOREACH(Weapon* wp, weplist_)
         delete wp;
@@ -76,7 +77,7 @@ Player& Player::update()
 
 Player& Player::set_active_weapon(int i)
 {
-    std::cout << "switch weapon to " << i << "\n";
+    std::cout << "switch weapon to " << i << std::endl;
     current_wep_ = weplist_[i];
     weplist_idx_ = i;
     if( i == 2 )  //temp: write it dead for now. will expand and refactor it later.
@@ -106,7 +107,7 @@ Player& Player::subscribe_shot_event
 {
     BOOST_FOREACH(int& id, ally_input_ids_) {
         Input*  input = Input::getInputByIndex(id);
-        pPlayer ally  = input->player();
+        wpPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
         sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
     }
@@ -114,7 +115,7 @@ Player& Player::subscribe_shot_event
     if( enemy_cb ) {
         BOOST_FOREACH(int& id, enemy_input_ids_) {
             Input*  input = Input::getInputByIndex(id);
-            pPlayer enemy = input->player();
+            wpPlayer enemy = input->player();
             sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
         }
     }
@@ -128,18 +129,22 @@ void Player::normal_shot_delegate
 }
 
 void Player::shot_delegate
-    (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
+    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 {
-    if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
-        hit_cb( player->weapon()->firepower() ); // if the player is ally OR player can crossfire
+    if( pPlayer p = player.lock() ) {
+        if( p->ally_input_ids_ == ally_input_ids_ || p->can_crossfire() )
+            hit_cb( p->weapon()->firepower() ); // if the player is ally OR player can crossfire
+    }
 }
 
 // note: no use for now?
 //void Player::repeating_shot_delegate
-//    (view::pSprite& sv, HitCallback const& hit_cb, pPlayer player)
+//    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 //{
-//    if( player->ally_input_ids_ == ally_input_ids_ || player->can_crossfire() )
-//        hit_cb( player->weapon()->firepower() );
+//    if( pPlayer p = player.lock() ) {
+    //    if( p->ally_input_ids_ == ally_input_ids_ || p->can_crossfire() )
+    //        hit_cb( p->weapon()->firepower() );
+//    }
 //}
 
 Input const* Player::input()          const { return input_; }

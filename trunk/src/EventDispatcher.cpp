@@ -28,12 +28,17 @@ using irr::ITimer;
 using namespace psc;
 using namespace ctrl;
 
-void free_func_do_nothing_deleter(void*){ std::cerr << "EventDispatcher: deleter: do nothing.\n"; }
+void free_func_do_nothing_deleter(void*){ std::cerr << "EventDispatcher: deleter: do nothing" << std::endl; }
 
 EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
 
 EventDispatcher::EventDispatcher()
 {
+}
+
+EventDispatcher::~EventDispatcher()
+{
+    std::cout << "EventDispatcher destructing..." << std::endl;
 }
 
 EventDispatcher& EventDispatcher::subscribe_btn_event

@@ -46,7 +46,7 @@ void Scene::init(std::string const& name)
     body_->setIsDebugObject(true);
     body_->setName( name.c_str() );
 
-    std::cout << name << "'s collision manager: " << smgr_->getSceneCollisionManager() << "\n";
+    std::cout << "scene: " << name << " created." << std::endl;
 
     scene_ = std::tr1::static_pointer_cast<Scene>(shared_from_this());
 }
@@ -248,7 +248,7 @@ void Scene::removePickMapping(ISceneNode* node)
 
 Scene::~Scene()
 {
-    std::cout << body_->getName() << " scene died.\n";
+    std::cout << body_->getName() << " scene died." << std::endl;
     node2view_.clear();
     smgr_->drop();
     body_ = 0;

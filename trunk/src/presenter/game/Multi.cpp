@@ -41,6 +41,9 @@ Multi::Multi()
 
 Multi::~Multi()
 {
+    std::cout << "Multiplayer Game destructing ..." << std::endl;
+    std::cout << " player0 use count: " << player0_.use_count() << std::endl;
+    std::cout << " player1 use count: " << player1_.use_count() << std::endl;
 }
 
 pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string const& sc)
@@ -65,18 +68,20 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();
     map0_ = presenter::Map::create(set0);
+    //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
     data::pMapSetting set1 = data::MapSetting::create();
     map1_ = presenter::Map::create(set1);
+    //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
     // setup garbage land
     map0_->push_garbage_land(map1_);
     map1_->push_garbage_land(map0_);
-    map0_->lose_event(bind(&Multi::end, this, map0_));
-    map1_->lose_event(bind(&Multi::end, this, map1_));
+    map0_->lose_event(bind(&Multi::end, this, ref(map0_)));
+    map1_->lose_event(bind(&Multi::end, this, ref(map1_)));
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
@@ -228,7 +233,7 @@ void Multi::end_sequence1()
     Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
     App::i().launchMainMenu();
-    std::cout << "game_multiplayer end call finished.\n";
+    std::cout << "game_multiplayer end call finished." << std::endl;
 }
 
 void Multi::reinit()
@@ -237,7 +242,7 @@ void Multi::reinit()
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_), 500);
-    std::cout << "game_multiplayer end call finished.\n";
+    std::cout << "game_multiplayer end call finished." << std::endl;
 }
 
 //note: not very elegant.
@@ -248,8 +253,10 @@ void Multi::item_creation()
     item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
     item_->playAnime("moving", 500, -1).setDepth(-60);
 
-    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, player0_, _1);
-    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, player1_, _1);
+    ctrl::wpPlayer wp0 = player0_;
+    ctrl::wpPlayer wp1 = player1_;
+    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, wp0, _1);
+    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, wp1, _1);
     view::pSprite body_ = item_;
     player0_->subscribe_shot_event(body_, cb1);
     player1_->subscribe_shot_event(body_, cb2);
@@ -263,12 +270,14 @@ void Multi::item_creation()
         item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W-32, y), vec2(-64, y), 4000u, 0, endcall);
 }
 
-void Multi::eat_item(ctrl::pPlayer p, int)
+void Multi::eat_item(ctrl::wpPlayer wp, int)
 {
-    item_->setPickable(false);
-    item_->tween<Linear, Alpha>(0, 400u);
-    item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
-    p->eat_item();
+    if( ctrl::pPlayer p = wp.lock() ) {
+        item_->setPickable(false);
+        item_->tween<Linear, Alpha>(0, 400u);
+        item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
+        p->eat_item();
+    }
 }
 
 void Multi::item_destruction()

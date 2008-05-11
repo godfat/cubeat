@@ -133,7 +133,7 @@ SpriteText& Menu::getSpriteText(std::string const& name)
     if( pSpriteText temp = dynamic_pointer_cast<SpriteText>( sprites_[name] ) )
         return *temp;
 
-    std::cout << "You accessed a SpriteText, which is not in this Menu.\n";
+    std::cout << "You accessed a SpriteText, which is not in this Menu." << std::endl;
     return *pSpriteText();
 }
 
@@ -142,7 +142,7 @@ AnimatedSprite& Menu::getAnimSprite(std::string const& name)
     if( pAnimatedSprite temp = dynamic_pointer_cast<AnimatedSprite>( sprites_[name] ) )
         return *temp;
 
-    std::cout << "You accessed a AnimatedSprite, which is not in this Menu.\n";
+    std::cout << "You accessed a AnimatedSprite, which is not in this Menu." << std::endl;
     return *pAnimatedSprite();
 }
 

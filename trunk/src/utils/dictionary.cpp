@@ -190,7 +190,7 @@ std::string fetchConfig(std::string const& path)
     std::string str;
     infile.open( path.c_str() );
     if( infile.fail() || infile.eof() ) {  //non-existing file exception
-        std::cout << "No such file: " << path << ", Input setup ignored.\n";
+        std::cout << "No such file: " << path << ", Input setup ignored." << std::endl;
         return str;              //empty string
     }
 
@@ -202,7 +202,8 @@ std::string fetchConfig(std::string const& path)
     }
 
     infile.close();
-    std::cout << str << std::endl;
+    //std::cout << str << std::endl;
+    std::cout << "config: " << path << " loaded." << std::endl;
 
     return str;
 }

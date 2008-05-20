@@ -1,0 +1,166 @@
+# stage hospital's configuration
+
+# degree of "Field of View"
+FoV: 36,
+name: 'hospital',
+music: 'hospital/bgm.mp3',
+
+all_items: [
+    # item group 0
+    [
+        # item 0-0
+        {
+            xfile: 'hospital/bg',
+            position: { x: 0, y: -17, z: 50 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 5.0, y: 5.0, z: 1.0 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 1, e: 26, duration: 15000, loop: -1 }
+            }
+        } ,
+        # item 0-1
+        {
+            xfile: 'hospital/building_center',
+            position: { x: 0, y: -4, z: 24 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 1.7, y: 1.7, z: 1.0 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 1, e: 26, duration: 15000, loop: -1 }
+            }
+        } ,
+        # item 0-2
+        {
+            xfile: 'hospital/cloud',
+            position: { x: -14, y: -2, z: 29 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 2.0, y: 2.0, z: 0.01 },
+            diffuse: { a: 128, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 0, e: 50, duration: 15000, loop: -1 }
+            }
+        } ,
+        # item 0-3
+        {
+            xfile: 'hospital/tree1',
+            position: { x: -8, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 12.0, y: 12.0, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 8000, loop: -1 }
+            }
+        } ,
+        # item 0-4
+        {
+            xfile: 'hospital/tree2',
+            position: { x: -6, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 12.5, y: 12.5, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 7000, loop: -1 }
+            }
+        },
+        # item 0-5
+        {
+            xfile: 'hospital/tree2',
+            position: { x: -4, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 13.0, y: 13.0, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 8300, loop: -1 }
+            }
+        },
+        # item 0-6
+        {
+            xfile: 'hospital/tree1',
+            position: { x: 8, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 12.0, y: 12.0, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 8200, loop: -1 }
+            }
+        } ,
+        # item 0-7
+        {
+            xfile: 'hospital/tree2',
+            position: { x: 6, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 12.5, y: 12.5, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 7300, loop: -1 }
+            }
+        },
+        # item 0-8
+        {
+            xfile: 'hospital/tree1',
+            position: { x: 4, y: -2, z: 18 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 13.0, y: 13.0, z: 0.01 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e: 0,  duration: 0,    loop: 0  },
+                idle:    { s: 11, e: 49, duration: 8000, loop: -1 }
+            }
+        }
+    ],
+    # item group 1
+    [
+        # item 1-0
+        {
+            xfile: 'hospital/building_left',
+            position: { x:-10, y: 0, z: 25 },
+            rotation: { x: 0, y:  0, z: 0 },
+            scale: { x: 2.0, y: 2.3, z: 0.1 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e:  0, duration:    0, loop: 0  },
+                idle:    { s: 0, e:  0, duration: 9000, loop: 0 },
+                hit:     { s: 11, e: 25, duration: 1000, loop: 0 },
+                recover: { s: 0, e:  0, duration: 1000, loop: 0 }
+            }
+        }
+    ],
+    # item group 2
+    [
+        # item 2-0
+        {
+            xfile: 'hospital/building_right',
+            position: { x: 12, y: 0, z: 25 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 2.0, y: 2.3, z: 0.1 },
+            diffuse: { a: 255, r: 255, g: 255, b: 255 },
+
+            anim: {
+                emerge:  { s: 0, e:  0, duration:    0, loop: 0  },
+                idle:    { s: 0, e:  0, duration: 9000, loop: 0 },
+                hit:     { s: 11, e: 25, duration: 1000, loop: 0 },
+                recover: { s: 0, e:  0, duration: 1000, loop: 0 }
+            }
+        }
+    ]
+]
+

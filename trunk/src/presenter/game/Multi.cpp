@@ -93,6 +93,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     pview2_->flipPosition();
     pview1_->setMap( map0_ );
     pview2_->setMap( map1_ );
+    pview1_->setInput( ctrl::Input::getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
+    pview2_->setInput( ctrl::Input::getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
@@ -110,6 +112,16 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Multi::item_creation, this), timer_item_, 15000);
+
+    //temp: for killing cubes randomly
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Multi::toggle_auto0, this), shared_from_this(),
+        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Multi::toggle_auto1, this), shared_from_this(),
+        &ctrl::Input::getInputByIndex(1)->pause(), ctrl::BTN_PRESS);
+
     return shared_from_this();
 }
 
@@ -176,6 +188,8 @@ void Multi::end(pMap lose_map)
 {
     timer_item_.reset();
     timer_ui_.reset();
+    timer_auto0_.reset();
+    timer_auto1_.reset();
     if( item_ ) item_->setPickable(false);
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
@@ -282,9 +296,48 @@ void Multi::eat_item(ctrl::wpPlayer wp, int)
 
 void Multi::item_destruction()
 {
+    timer_item_.reset();
     timer_item_ = pDummy(new int);
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Multi::item_creation, this), timer_item_, 15000);
+}
+
+void Multi::toggle_auto0()
+{
+    if( timer_auto0_ ) {
+        timer_auto0_.reset();
+    } else {
+        timer_auto0_ = pDummy(new int);
+        ctrl::EventDispatcher::i().subscribe_timer(
+            bind(&Multi::kill_cube_randomly0, this), timer_auto0_, 678, -1);
+    }
+}
+
+void Multi::toggle_auto1()
+{
+    if( timer_auto1_ ) {
+        timer_auto1_.reset();
+    } else {
+        timer_auto1_ = pDummy(new int);
+        ctrl::EventDispatcher::i().subscribe_timer(
+            bind(&Multi::kill_cube_randomly1, this), timer_auto1_, 500, -1);
+    }
+}
+
+void Multi::kill_cube_randomly0()
+{
+    int x = utils::random(6), y = utils::random(6);
+    map0_->kill_cube_at(x, y);
+    ctrl::Input::getInputByIndex(0)->cursor().x() = 159 + x*64 + 32;
+    ctrl::Input::getInputByIndex(0)->cursor().y() = 684 - y*64 - 32;
+}
+
+void Multi::kill_cube_randomly1()
+{
+    int x = utils::random(6), y = utils::random(10);
+    map1_->kill_cube_at(x, y);
+    ctrl::Input::getInputByIndex(1)->cursor().x() = 740 + x*64 + 32;
+    ctrl::Input::getInputByIndex(1)->cursor().y() = 684 - y*64 - 32;
 }
 
 void Multi::cycle()

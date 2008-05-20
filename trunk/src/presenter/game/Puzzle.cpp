@@ -1,5 +1,4 @@
 
-
 #include "presenter/game/Puzzle.hpp"
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"

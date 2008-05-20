@@ -407,7 +407,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     }
     else if( has_column_full && !warning_level_ ) {
         warning_level_ = std::tr1::shared_ptr<int>(new int(0));
-
+        owner()->warning_counting_event()(0); //added for call warning as soon as column full
         ctrl::EventDispatcher::i().subscribe_timer(
             // boost function is a gcc43 workaround!
             boost::function<void()>(++*var(warning_level_)), warning_level_, 1000, 3);
@@ -452,6 +452,14 @@ bool Map::all_waiting() const {
         }
     }
     return true;
+}
+
+bool Map::kill_cube_at(int x, int y) {
+    if( cubes_[x][y] ) {
+        cubes_[x][y]->go_exploding(3);
+        return true;
+    }
+    return false;
 }
 
 Map::pointer_type Map::clone() const{

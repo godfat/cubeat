@@ -67,8 +67,6 @@ pMainMenu MainMenu::init()
     temp->moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - temp->get<Size2D>().Y/3 )
          .setDepth( title.I("depth") );
 
-    function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
-
     temp->addSpriteText("text", text.S("text"), text.S("font"), 0, m_text_size, true)
          .getSprite("text").set<Pos2D>( vec2( 0, height ) )
          .tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1);
@@ -77,6 +75,7 @@ pMainMenu MainMenu::init()
 
     ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
 
+    function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
     btn_start_ = pDummy(new int);
     BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
         ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
@@ -98,14 +97,14 @@ void MainMenu::setupMenus()
     view::pMenu mode = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("mode_select", mode) );
 
-    function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)MULTI);
-    function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
+    //function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)MULTI);
+    //function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
 
     mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, true);
     mode->getSprite("text").set<Pos2D>( vec2(-150, -160) );
-    mode->addSpriteText("multi", "multiplayer", "Star Jedi", mode1, 40, true);
+    mode->addSpriteText("multi", "multiplayer", "Star Jedi", 0, 40, true);
     mode->getSprite("multi").set<Pos2D>( vec2(-50, -100) );
-    mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", mode2, 40, true);
+    mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, true);
     mode->getSprite("puzzle").set<Pos2D>( vec2(-50, -40) );
 
     view::pMenu temp = view::Menu::create("", mainmenu_scene_, 1, 1, true);
@@ -113,17 +112,22 @@ void MainMenu::setupMenus()
 
     temp->addSpriteText("text", "choose character", "Star Jedi", 0, 40, true);
     temp->getSprite("text").set<Pos2D>( vec2(-150, -160) );
-    for( int i = 1; i <= 3; ++i ) {
+    for( int i = 1; i <= 5; ++i ) {
         pvlist_.push_back(
-            PlayerView::create(("config/char/char"+to_s(i))+".zzml", temp, vec2(-500 + i*200, 20) ) );
+            PlayerView::create(("config/char/char"+to_s(i))+".zzml", temp, vec2(-500 + i*150, 20) ) );
         pvlist_.back()->switchCharacterState( PlayerView::STAND );
         pvlist_.back()->switchCharacterFace( PlayerView::NORMAL );
-        if( i != 3 ) pvlist_.back()->flipPosition();
-        if( i == 3 ) {
-            vec2 pos = pvlist_.back()->getView()->get<Pos2D>(); pos.X += 100;
-            pvlist_.back()->getView()->set<Pos2D>( pos );
+
+        view::pMenu m = pvlist_.back()->getView();
+        m->addSprite("hitarea", 0, 96, 192, true);
+        m->getSprite("hitarea").setDepth(-1).set<Pos2D>(vec2(-48, 0)).set<Alpha>(0);
+        if( i < 3 )
+            pvlist_.back()->flipPosition();
+        else {
+            vec2 pos = m->get<Pos2D>(); pos.X += 100;
+            m->set<Pos2D>( pos );
         }
-        pvlist_.back()->getView()->set<Scale>(vec3(1.3, 1.3, 1.3));
+        m->set<Scale>(vec3(1.2, 1.2, 1.2));
     }
 
     view::pMenu temp2= view::Menu::create("", mainmenu_scene_, 1, 1, true);
@@ -131,12 +135,18 @@ void MainMenu::setupMenus()
 
     function<void(view::pSprite&)> stage1 = bind(&MainMenu::stage_select, this, _1, "jungle");
     function<void(view::pSprite&)> stage2 = bind(&MainMenu::stage_select, this, _1, "school");
+    function<void(view::pSprite&)> stage3 = bind(&MainMenu::stage_select, this, _1, "street");
+    function<void(view::pSprite&)> stage4 = bind(&MainMenu::stage_select, this, _1, "hospital");
     temp2->addSpriteText("text", "choose stage", "Star Jedi", 0, 40, true);
-    temp2->addSprite("jungle_thumb", stage1, 300, 180, true)
-          .addSprite("school_thumb", stage2, 300, 180, true);
+    temp2->addSprite("stage1", stage1, 250, 150, true, "stage_preview/jungle_thumb")
+          .addSprite("stage2", stage2, 250, 150, true, "stage_preview/school_thumb")
+          .addSprite("stage3", stage3, 250, 150, true, "stage_preview/street_thumb")
+          .addSprite("stage4", stage4, 250, 150, true, "stage_preview/hospital_thumb");
     temp2->getSprite("text").set<Pos2D>( vec2(-150, -160) );
-    temp2->getSprite("jungle_thumb").set<Pos2D>( vec2(-200, 50) );
-    temp2->getSprite("school_thumb").set<Pos2D>( vec2(200, 50) );
+    temp2->getSprite("stage1").set<Pos2D>( vec2(-200, -40) );
+    temp2->getSprite("stage2").set<Pos2D>( vec2(200, -40) );
+    temp2->getSprite("stage3").set<Pos2D>( vec2(-200, 130) );
+    temp2->getSprite("stage4").set<Pos2D>( vec2(200, 130) );
 
     temp->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H/2) );
     temp2->set<Pos2D>( vec2(-400, Conf::i().SCREEN_H/2) );
@@ -144,8 +154,8 @@ void MainMenu::setupMenus()
 
     player1text_ = view::SpriteText::create("player1", temp, "Star Jedi", 24, true, data::Color(255,0,0));
     player2text_ = view::SpriteText::create("player2", temp, "Star Jedi", 24, true, data::Color(0,0,255));
-    player1text_->set<Pos2D>( vec2(-250, 150) ).set<Alpha>(128);
-    player2text_->set<Pos2D>( vec2(-250, 180) ).set<Alpha>(128);
+    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
     hideMenu("mode_select").hideMenu("player_select").hideMenu("stage_select");
 }
@@ -241,13 +251,71 @@ void MainMenu::fadeAllOut(int dur)
 
 void MainMenu::push_start()
 {
+    if( animating_ ) return;
+
     Sound::i().play("4/4b.wav");
     btn_start_.reset();
     menus_["start_menu"]->getSprite("text").tween<SineCirc, Alpha>(0, 255, 120u, 2);
 
-    //hideMenu("start_menu").showMenu("player_select");
     hideMenu("start_menu").showMenu("mode_select");
+    setup_mode_selecting_buttons();
+
     animating_ = true;
+}
+
+//temp: button setup
+void MainMenu::setup_mode_selecting_buttons()
+{
+    function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "mode_select", "start_menu");
+    btn_back1_ = pDummy(new int);
+    btn_back2_ = pDummy(new int);
+    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
+
+    function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)MULTI);
+    function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
+    menus_["mode_select"]->setCallbackToSprite("multi", mode1);
+    menus_["mode_select"]->setCallbackToSprite("puzzle", mode2);
+}
+
+void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
+{
+    if( animating_ ) return;
+
+    Sound::i().play("4/4c.wav");
+    hideMenu(from).showMenu(to);
+    animating_ = true;
+    btn_back1_.reset();
+    btn_back2_.reset();
+
+    if( to == "start_menu" ) {
+        function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
+        btn_start_ = pDummy(new int);
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
+            ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
+    }
+    else if( to == "mode_select" ) {
+        player1focus_ = 0;
+        player2focus_ = 0;
+        player1num_ = 0;
+        player2num_ = 0;
+        two_players_ = true;
+        game_mode_ = MULTI;
+        setup_mode_selecting_buttons();
+    }
+    else if( to == "player_select" ) {
+        player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+        player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+        player1focus_ = 0;
+        player2focus_ = 0;
+        player1num_ = 0;
+        player2num_ = 0;
+        setup_player_selecting_buttons();
+    }
+    else if( to == "stage_select" ) {
+    }
 }
 
 void MainMenu::mode_select(view::pSprite& sv, int mode)
@@ -263,12 +331,37 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
     if( game_mode_ == SINGLE || game_mode_ == PUZZLE )
         two_players_ = false;
 
+    player_choosing();
+}
+
+void MainMenu::player_choosing()
+{
     hideMenu("mode_select").showMenu("player_select");
     animating_ = true;
 
-//--------------------------------------------------------------------
+    player1focus_ = 0;
+    player2focus_ = 0;
+    player1num_ = 0;
+    player2num_ = 0;
+
+    setup_player_selecting_buttons();
+}
+
+//temp: very temp =_=
+void MainMenu::setup_player_selecting_buttons()
+{
+    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+
     ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
     ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+
+    //temp: button "back"
+    function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "player_select", "mode_select");
+    btn_back1_ = pDummy(new int);
+    btn_back2_ = pDummy(new int);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 
     btn_choose_player1_ = pDummy(new int);
 
@@ -278,6 +371,13 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
         bind(&MainMenu::player1_select, this, 1), btn_choose_player1_, &input1->wep2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&MainMenu::player1_checked, this), btn_choose_player1_, &input1->trig1(), ctrl::BTN_PRESS);
+
+    int i = 1;
+    BOOST_FOREACH(pPlayerView& pv, pvlist_) {
+        pv->getView()->getSprite("hitarea").onEnterFocus( input1 ) =
+            bind(&MainMenu::player1_getfocus, this, i);
+        ++i;
+    }
 
     player1focus_ = 1;
 
@@ -291,7 +391,15 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&MainMenu::player2_checked, this), btn_choose_player2_, &input2->trig1(), ctrl::BTN_PRESS);
 
+        i = 1;
+        BOOST_FOREACH(pPlayerView& pv, pvlist_) {
+            pv->getView()->getSprite("hitarea").onEnterFocus( input2 ) =
+                bind(&MainMenu::player2_getfocus, this, i);
+            ++i;
+        }
+
         player2focus_ = 1;
+        player2text_->set<Visible>(true);
     }
     else {
         player2text_->set<Visible>(false);
@@ -300,30 +408,47 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
 
 void MainMenu::player1_select(int num)
 {
-    if( animating_ ) return;
     if( player1focus_ + num < 1 ) return;
-    if( player1focus_ + num > 3 ) return;
+    if( player1focus_ + num > 5 ) return;
     Sound::i().play("4/4a.wav");
     player1focus_ += num;
     vec2 pos = player1text_->get<Pos2D>();
-    pos.X += 200 * num;
+    pos.X += 150 * num;
     player1text_->set<Pos2D>(pos);
 }
 
 void MainMenu::player2_select(int num)
 {
-    if( animating_ ) return;
     if( player2focus_ + num < 1 ) return;
-    if( player2focus_ + num > 3 ) return;
+    if( player2focus_ + num > 5 ) return;
     Sound::i().play("4/4a.wav");
     player2focus_ += num;
     vec2 pos = player2text_->get<Pos2D>();
-    pos.X += 200 * num;
+    pos.X += 150 * num;
+    player2text_->set<Pos2D>(pos);
+}
+
+void MainMenu::player1_getfocus(int num)
+{
+    if( player1num_ != 0 ) return; //checked;
+    player1focus_ = num;
+    vec2 pos = player1text_->get<Pos2D>();
+    pos.X = -300 + 150 * (num-1);
+    player1text_->set<Pos2D>(pos);
+}
+
+void MainMenu::player2_getfocus(int num)
+{
+    if( player2num_ != 0 ) return; //checked;
+    player2focus_ = num;
+    vec2 pos = player2text_->get<Pos2D>();
+    pos.X = -300 + 150 * (num-1);
     player2text_->set<Pos2D>(pos);
 }
 
 void MainMenu::player1_checked()
 {
+    if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player1num_ = player1focus_;
     player1text_->set<Alpha>(255);
@@ -338,6 +463,7 @@ void MainMenu::player1_checked()
 
 void MainMenu::player2_checked()
 {
+    if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player2num_ = player2focus_;
     player2text_->set<Alpha>(255);
@@ -350,6 +476,15 @@ void MainMenu::stage_choosing()
 {
     animating_ = true;
     hideMenu("player_select").showMenu("stage_select");
+
+    //temp: button "back"
+    function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
+    btn_back1_ = pDummy(new int);
+    btn_back2_ = pDummy(new int);
+    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 }
 
 void MainMenu::stage_select(view::pSprite& sp, std::string name)
@@ -367,17 +502,35 @@ void MainMenu::stage_select(view::pSprite& sp, std::string name)
     function<void()> cb = bind(&MainMenu::end, this);
     ctrl::EventDispatcher::i().subscribe_timer(cb, shared_from_this(), 1100);
 
-    menus_["stage_select"]->setCallbackToSprite("jungle_thumb", 0);
-    menus_["stage_select"]->setCallbackToSprite("school_thumb", 0);
+    menus_["stage_select"]->setCallbackToSprite("stage1", 0);
+    menus_["stage_select"]->setCallbackToSprite("stage2", 0);
+    menus_["stage_select"]->setCallbackToSprite("stage3", 0);
+    menus_["stage_select"]->setCallbackToSprite("stage4", 0);
 }
 
 MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> const& f = (BLL::var(animating_) = false);
-    sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2), 2000, 0, f );
-    sprite->tweenAll<Linear, Alpha>(255, 1000);
+    int y = Conf::i().SCREEN_H/2;
+    sprite->tweenAll<Linear, Alpha>(255, 1000u);
+    if( name == "start_menu" ) { //temp: special case
+        y = Conf::i().SCREEN_H/2 - sprite->get<Size2D>().Y/3;
+        sprite->getSprite("text")
+               .tween<SineCirc, Alpha>(255, (unsigned int)config.M("text").I("glow_period"), -1);
+    }
+    sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W/2, y), 1000, 0, f );
+
     sprite->set<Visible>(true);
+
+    //temp: special case
+    if( name == "player_select" ) {
+        BOOST_FOREACH(pPlayerView& pv, pvlist_) {
+            pv->getView()->tweenAll<Linear, Alpha>(255, 1000u);
+            //Warning: stupid code: wipe out hitarea's tween..
+            pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
+        }
+    }
     return *this;
 }
 
@@ -385,8 +538,20 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> const& endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    sprite->tween<ICirc, Pos2D>(vec2(-200, Conf::i().SCREEN_H/2), 2000, 0, endcall);
-    sprite->tweenAll<Linear, Alpha>(0, 1000);
+    int y = Conf::i().SCREEN_H/2;
+    if( name == "start_menu" ) //temp: special case
+        y = Conf::i().SCREEN_H/2 - sprite->get<Size2D>().Y/3;
+    sprite->tween<ICirc, Pos2D>(vec2(-200, y), 1000, 0, endcall);
+    sprite->tweenAll<Linear, Alpha>(0, 500u);
+
+    //temp: special case
+    if( name == "player_select" ) {
+        BOOST_FOREACH(pPlayerView& pv, pvlist_) {
+            pv->getView()->tweenAll<Linear, Alpha>(0, 1000u);
+            //Warning: stupid code: wipe out hitarea's tween..
+            pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
+        }
+    }
     return *this;
 }
 

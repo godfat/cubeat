@@ -4,6 +4,7 @@
 */
 
 #include "Input.hpp"
+#include "EventDispatcher.hpp"
 #include "Player.hpp"
 #include "view/Scene.hpp"       //warning: is this really good...?
 #include "view/Sprite.hpp"      //warning: is this really good...?
@@ -119,8 +120,14 @@ void Input::update()
     wiimote_.RefreshState();
 
     if( interpret_ir_data(wiimote_, center_x, center_y, zdepth) ) {
-        cursor_.x() = static_cast<int>(center_x * cursor_.width() * 1.2f);
-        cursor_.y() = static_cast<int>(center_y * cursor_.height() * 1.2f);
+//        int new_x = static_cast<int>(center_x * cursor_.width() * 1.2f);
+//        int new_y = static_cast<int>(center_y * cursor_.height() * 1.2f);
+        int new_x = static_cast<int>(wiimote_.IR.Dot[0].X * cursor_.width());
+        int new_y = static_cast<int>(wiimote_.IR.Dot[0].Y * cursor_.height());
+        cursor_.x() = new_x;
+        cursor_.y() = new_y;
+        cursor_.x() = (cursor_.x() + cursor_.lx()) / 2;
+        cursor_.y() = (cursor_.y() + cursor_.ly()) / 2;
     }
     trig1_.now() |= wiimote_.Button.A();
     trig2_.now() |= wiimote_.Button.B();
@@ -133,6 +140,15 @@ void Input::update()
 
     update_btn_state();
     cursor_.constrain();
+}
+
+void Input::rumbleWiimote(int ms)
+{
+    using std::tr1::bind;
+#ifdef _USE_WIIMOTE_
+    wiimote_.SetRumble(true);
+    EventDispatcher::i().subscribe_timer( bind(&wiimote::SetRumble, &wiimote_, false), ms );
+#endif
 }
 
 void Input::init_graphic()
@@ -151,6 +167,11 @@ void Input::redraw()
     range_shape_->moveTo(cursor_.x(), cursor_.y());
     if( trig1_.pressed() || trig2_.pressed() ) //note: temporary effects
         cursor_mark_->tween<OBack, Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
+}
+
+view::pSprite Input::getCursor()
+{
+    return cursor_mark_;
 }
 
 void Input::setRangeShapeVisible(bool b) {

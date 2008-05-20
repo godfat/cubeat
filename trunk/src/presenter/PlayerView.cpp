@@ -7,6 +7,7 @@
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "Sound.hpp"
+#include "Input.hpp"
 
 using namespace psc;
 using namespace presenter;
@@ -14,7 +15,7 @@ using namespace easing;
 using namespace accessor;
 
 PlayerView::PlayerView()
-    :last_garbage_(0)
+    :input_(0), last_garbage_(0)
 {
 }
 
@@ -105,10 +106,17 @@ void PlayerView::cycle()
 {
     if( pMap map = map_.lock() ) {
         int new_garbage = map->garbage_left() + map->sum_of_all_enemy();
+        int new_attack  = map->current_sum_of_attack();
         int state1p = conf_.I("current_state");
-        if( state1p != HIT && last_garbage_ > new_garbage )
+        if( state1p != HIT && last_garbage_ > new_garbage ) {
+            if( input_ ) {
+                int rumble_factor = last_garbage_ - new_garbage;
+                if( rumble_factor > 10 ) rumble_factor = 10;
+                input_->rumbleWiimote( rumble_factor * 50 ); //unit: millisecond
+            }
             switchCharacterState( HIT );
-        else if( state1p != ATTACK && state1p != HIT && map->current_sum_of_attack() > 1 )
+        }
+        else if( state1p != ATTACK && state1p != HIT && last_attack_ == 0 && new_attack > 0 )
             switchCharacterState( ATTACK );
         else if( state1p == NONE )
             switchCharacterState( STAND );
@@ -119,5 +127,6 @@ void PlayerView::cycle()
         else switchCharacterFace( self_full ? BAD : GOOD );
 
         last_garbage_ = new_garbage;
+        last_attack_  = new_attack;
     }
 }

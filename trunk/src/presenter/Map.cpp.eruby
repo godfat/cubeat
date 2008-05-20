@@ -24,6 +24,16 @@ Map& Map::stop_dropping()
     return *this;
 }
 
+//temp
+Map& Map::kill_cube_at(int x, int y)
+{
+    if( model()->kill_cube_at(x, y) ) {
+        Sound::i().play("1/a/1a-1.mp3");
+        Sound::i().play("1/b/HitB@11.wav");
+    }
+    return *this;
+}
+
 int Map::sum_of_all_enemy() const {
     int sum = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_)
@@ -79,7 +89,7 @@ void Map::speedup(){
     if( map_setting()->speed() < 400.f )
         map_setting()->speed( map_setting()->speed() + 10.f );
     ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up more frequently
-        bind(&Map::speedup, this), shared_from_this(), 10000);
+        bind(&Map::speedup, this), shared_from_this(), 5000);
 }
 
 pMap <% debug_hook 'Map::init' do %>(){
@@ -91,7 +101,7 @@ pMap <% debug_hook 'Map::init' do %>(){
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 30000);
+        std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;
 }
@@ -105,7 +115,7 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 30000);
+        std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;
 }

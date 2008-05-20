@@ -101,6 +101,8 @@ public:
     virtual void <% debug_hook 'go_exploding' do %>(){ <% end %>
         body_->clearAllTween();
         body_->setPickable(false);
+        if( cube_.lock()->is_garbage() )
+            body_->setTexture( "cubes/garbage0" );
         // stupid binding would be a must,
         // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
         body_->setDepth(-40); //so it is not blocked in view;
@@ -129,18 +131,21 @@ public:
     }
 
     virtual void <% debug_hook 'be_garbage' do %>(){ <% end %>
-        body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
-        body_->set<accessor::GradientDiffuse>( 100 );
+        body_->setTexture("cubes/garbage3");
         shot_event(&model::Cube::go_exploding);
     }
 
     virtual void <% debug_hook 'hit' do %>(int /*dmg*/, int hp){ <% end %>
-        int alpha = body_->get<accessor::Alpha>();
-        body_->tween<easing::Linear, accessor::Alpha>(alpha/2 + 30, 300);
         body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
-        if( cube_.lock()->is_garbage() )
+        if( cube_.lock()->is_garbage() ) {
+            body_->setTexture("cubes/garbage" + utils::to_s(hp));
             Sound::i().play("1/c/GlassF@11.wav");
-        else Sound::i().play("1/b/HitB@11.wav");
+        }
+        else {
+            int alpha = body_->get<accessor::Alpha>();
+            body_->tween<easing::Linear, accessor::Alpha>(alpha/2 + 30, 300);
+            Sound::i().play("1/b/HitB@11.wav");
+        }
     }
 
     virtual void <% debug_hook 'get_chain' do %>(){ <% end %>
@@ -228,7 +233,7 @@ public:
         show_warning_at(at, true);
     }
     virtual void <% debug_hook 'column_not_full' do %>(int at){ <% end %>
-        show_warning_at(at, false);        
+        show_warning_at(at, false);
     }
 
     virtual void new_chain(model::pChain chain){
@@ -314,7 +319,7 @@ public:
             view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 32, true);
         alert->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos ).setPickable(false);
 
-        int endalpha = 0 + warning_level * 50;
+        int endalpha = 40 + warning_level * 40;
         alert->tween<SineCirc, Alpha>
             (0, endalpha, 1000u, 0, bind(&view::Object::set<Visible>, alert, false)); //bind copy
     }

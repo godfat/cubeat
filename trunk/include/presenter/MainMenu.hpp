@@ -43,11 +43,17 @@ protected:
 
     void player1_select(int);
     void player2_select(int);
+    void player1_getfocus(int);
+    void player2_getfocus(int);
     void player1_checked();
     void player2_checked();
     void stage_choosing();
     void stage_select(view::pSprite&, std::string);
+    void player_choosing();
     void mode_select(view::pSprite&, int);
+    void go_back_from_to(std::string const&, std::string const&);
+    void setup_player_selecting_buttons();
+    void setup_mode_selecting_buttons();
 
     void fadeAllOut(int);
     void push_start();
@@ -74,7 +80,7 @@ protected:
     std::vector<pPlayerView> pvlist_;
     view::pSpriteText player1text_, player2text_;
     std::string conf1p_, conf2p_, stage_;
-    pDummy btn_start_, btn_choose_player1_, btn_choose_player2_;
+    pDummy btn_start_, btn_choose_player1_, btn_choose_player2_, btn_back1_, btn_back2_;
 };
 
 } //presenter

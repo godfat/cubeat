@@ -63,6 +63,7 @@ public:
     ~Input();
 
     Crosshair const& cursor() const { return cursor_; }
+    Crosshair& cursor() { return cursor_; }
     Button const& trig1() const { return trig1_; }
     Button const& trig2() const { return trig2_; }
     Button const& wep1() const { return wep1_; }
@@ -75,6 +76,8 @@ public:
     pPlayer player() const;
     void setRangeShapeVisible(bool);
     void setCursorVisible(bool);
+    void rumbleWiimote(int ms);
+    view::pSprite getCursor();
 
 private:
     Input(Input const&);    //No copy constructor

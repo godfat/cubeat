@@ -47,6 +47,12 @@ protected:
     void setup_end_button();
     void end_sequence1();
 
+    //temp: for randomly killing cubes
+    void toggle_auto0();
+    void toggle_auto1();
+    void kill_cube_randomly0();
+    void kill_cube_randomly1();
+
 protected:
     view::pScene scene_;
     presenter::pStage stage_;
@@ -64,7 +70,7 @@ protected:
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_;
     view::pSpriteText     end_text_, end_text2_;
-    pDummy timer_item_, timer_ui_, btn_reinit_;
+    pDummy timer_item_, timer_ui_, timer_auto0_, timer_auto1_, btn_reinit_;
     std::string c1p_, c2p_, sconf_;
 
     int min_, sec_;

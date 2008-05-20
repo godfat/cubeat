@@ -10,6 +10,11 @@
 #include <string>
 
 namespace psc {
+
+namespace ctrl {
+class Input;
+}
+
 namespace presenter {
 
 class PlayerView : public Object, public std::tr1::enable_shared_from_this<PlayerView>
@@ -35,6 +40,7 @@ public:
     PlayerView& switchCharacterFace(FACE const&);
     PlayerView& clearFaceState();
     PlayerView& setMap(presenter::wpMap m) { map_ = m; return *this; }
+    PlayerView& setInput(ctrl::Input* i)   { input_ = i; return *this; }
     view::pMenu& getView() { return character_; }
 
     void cycle();
@@ -47,8 +53,10 @@ protected:
     utils::map_any conf_;
     view::pMenu character_;
     presenter::wpMap map_;
+    ctrl::Input* input_;
 
     int last_garbage_;
+    int last_attack_;
 };
 
 }// presenter

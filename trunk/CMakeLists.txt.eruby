@@ -35,30 +35,12 @@ LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib .)
 LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL irrklang)
 
 # setup source codes
-SET (SOURCES <%= Dir.glob('**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \
+SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \
                     .join("\n") %>)
 
 # build target
-ADD_LIBRARY (shooting-cubes SHARED ${SOURCES})
+ADD_LIBRARY (cubeat SHARED ${SOURCES})
 SET (LIBRARY_OUTPUT_PATH bin)
 
-ADD_EXECUTABLE        (bin/shooting-cubes main.cpp)
-TARGET_LINK_LIBRARIES (bin/shooting-cubes shooting-cubes)
-
-ADD_EXECUTABLE        (bin/test-map-cubes src/test/test_map_cubes_main.cpp)
-TARGET_LINK_LIBRARIES (bin/test-map-cubes shooting-cubes)
-
-ADD_EXECUTABLE        (bin/test-map-views src/test/test_map_views_main.cpp)
-TARGET_LINK_LIBRARIES (bin/test-map-views shooting-cubes)
-
-ADD_EXECUTABLE        (bin/test-game-main src/test/test_game_main.cpp)
-TARGET_LINK_LIBRARIES (bin/test-game-main shooting-cubes)
-
-ADD_EXECUTABLE        (bin/puzzle src/test/test_puzzle_main.cpp)
-TARGET_LINK_LIBRARIES (bin/puzzle shooting-cubes)
-
-ADD_EXECUTABLE        (bin/stage src/test/test_stage_main.cpp)
-TARGET_LINK_LIBRARIES (bin/stage shooting-cubes)
-
-ADD_EXECUTABLE        (bin/psc src/test/test_psc_main.cpp)
-TARGET_LINK_LIBRARIES (bin/psc shooting-cubes)
+ADD_EXECUTABLE        (bin/cubeat main.cpp)
+TARGET_LINK_LIBRARIES (bin/cubeat cubeat)

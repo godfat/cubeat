@@ -28,7 +28,7 @@ public:
         //an executable is only executable in that way... you write bin/gen_puzzle won't work.
         //Fuck Microsoft.
 #ifdef WIN32
-        std::system(("bin\\gen_puzzle level=" + to_s(level) +
+        std::system(("bin\\gen_puzzle_win32 level=" + to_s(level) +
 #else
         std::system(("ruby bin/gen_puzzle.rb level=" + to_s(level) +
 #endif

@@ -38,7 +38,7 @@ protected:
     ViewMaster(){}
     ViewMaster(data::pViewSetting view_setting): view_setting_(view_setting){}
     data::pMapSetting map_setting() const{ return map_setting_.lock(); }
-    virtual void derived_init(){};
+    virtual void derived_init(){}
 
     //temporary (hold)
     view::pObject view_orig() const { return view_orig_; }

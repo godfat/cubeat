@@ -7,6 +7,9 @@
 *.dll
 *.o
 *.obj
+*.cbp
+*.layout
+*.workspace
 
 trunk/tmp
 trunk/rc

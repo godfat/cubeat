@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="object" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin\Release\object" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-fno-fast-math" />
+					<Add option="-D_USE_WIIMOTE_" />
+					<Add option="-DBOOST_HAS_GCC_TR1" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="libIrrlicht.a" />
+					<Add library="libirrKlang.a" />
+					<Add library="libwiiurself_gcc.a" />
+					<Add library="winmm" />
+					<Add library="user32" />
+					<Add library="hid" />
+					<Add library="setupapi" />
+					<Add library="vfw32" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-O2" />
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="config.zzml" />
+		<Unit filename="config\char\char1.zzml" />
+		<Unit filename="config\char\char2.zzml" />
+		<Unit filename="config\char\char3.zzml" />
+		<Unit filename="config\char\char4.zzml" />
+		<Unit filename="config\char\char5.zzml" />
+		<Unit filename="config\data\color.zzml" />
+		<Unit filename="config\device.zzml" />
+		<Unit filename="config\input\player1.zzml" />
+		<Unit filename="config\input\player2.zzml" />
+		<Unit filename="config\presenter\mainmenu.zzml" />
+		<Unit filename="config\presenter\opening.zzml" />
+		<Unit filename="config\presenter\transitioner.zzml" />
+		<Unit filename="config\puzzle.zzml" />
+		<Unit filename="config\puzzle_stage.txt" />
+		<Unit filename="config\puzzles.zzml" />
+		<Unit filename="config\stage\hospital.zzml" />
+		<Unit filename="config\stage\jungle.zzml" />
+		<Unit filename="config\stage\school.zzml" />
+		<Unit filename="config\stage\street.zzml" />
+		<Unit filename="config\test.zml" />
+		<Unit filename="config\test2.zml" />
+		<Unit filename="config\test_stage.zzml" />
+		<Unit filename="config\ui\in_game_2p_layout.zzml" />
+		<Unit filename="include\Accessor_proto.hpp" />
+		<Unit filename="include\Accessors.hpp" />
+		<Unit filename="include\App.hpp" />
+		<Unit filename="include\Button.hpp" />
+		<Unit filename="include\ButtonEnum.hpp" />
+		<Unit filename="include\CallbackDelegate.hpp" />
+		<Unit filename="include\Conf.hpp" />
+		<Unit filename="include\Crosshair.hpp" />
+		<Unit filename="include\EasingEquations.hpp" />
+		<Unit filename="include\EventDispatcher.hpp" />
+		<Unit filename="include\Input.hpp" />
+		<Unit filename="include\IrrDevice.hpp" />
+		<Unit filename="include\Player.hpp" />
+		<Unit filename="include\Sound.hpp" />
+		<Unit filename="include\Weapon.hpp" />
+		<Unit filename="include\all_fwd.hpp" />
+		<Unit filename="include\all_fwd.hpp.eruby" />
+		<Unit filename="include\ctrl\Ai.hpp" />
+		<Unit filename="include\ctrl\Ai.hpp.eruby" />
+		<Unit filename="include\data\BasicViewTypes.hpp" />
+		<Unit filename="include\data\Color.hpp" />
+		<Unit filename="include\data\Cube.hpp" />
+		<Unit filename="include\data\Cube.hpp.eruby" />
+		<Unit filename="include\data\MapSetting.hpp" />
+		<Unit filename="include\data\MapSetting.hpp.eruby" />
+		<Unit filename="include\data\TAnimatorParam.hpp" />
+		<Unit filename="include\data\ViewSetting.hpp.eruby" />
+		<Unit filename="include\model\Chain.hpp" />
+		<Unit filename="include\model\Chain.hpp.eruby" />
+		<Unit filename="include\model\Cube.hpp" />
+		<Unit filename="include\model\Cube.hpp.eruby" />
+		<Unit filename="include\model\Map.hpp" />
+		<Unit filename="include\model\Map.hpp.eruby" />
+		<Unit filename="include\model\OneFading.hpp" />
+		<Unit filename="include\model\OneFading.hpp.eruby" />
+		<Unit filename="include\model\detail\MapUtils.hpp" />
+		<Unit filename="include\model\detail\MapUtils.hpp.eruby" />
+		<Unit filename="include\model\state\Dropping.hpp" />
+		<Unit filename="include\model\state\Dropping.hpp.eruby" />
+		<Unit filename="include\model\state\Dying.hpp" />
+		<Unit filename="include\model\state\Dying.hpp.eruby" />
+		<Unit filename="include\model\state\Exploding.hpp" />
+		<Unit filename="include\model\state\Exploding.hpp.eruby" />
+		<Unit filename="include\model\state\Sinking.hpp" />
+		<Unit filename="include\model\state\Sinking.hpp.eruby" />
+		<Unit filename="include\model\state\State.hpp" />
+		<Unit filename="include\model\state\State.hpp.eruby" />
+		<Unit filename="include\model\state\Waiting.hpp" />
+		<Unit filename="include\model\state\Waiting.hpp.eruby" />
+		<Unit filename="include\presenter\Cube.hpp" />
+		<Unit filename="include\presenter\Cube.hpp.eruby" />
+		<Unit filename="include\presenter\MainMenu.hpp" />
+		<Unit filename="include\presenter\Map.hpp" />
+		<Unit filename="include\presenter\Map.hpp.eruby" />
+		<Unit filename="include\presenter\Menu.hpp" />
+		<Unit filename="include\presenter\Object.hpp" />
+		<Unit filename="include\presenter\OpeningSequence.hpp" />
+		<Unit filename="include\presenter\PlayerView.hpp" />
+		<Unit filename="include\presenter\Stage.hpp" />
+		<Unit filename="include\presenter\Transitioner.hpp" />
+		<Unit filename="include\presenter\cube\ViewBase.hpp" />
+		<Unit filename="include\presenter\cube\ViewBase.hpp.eruby" />
+		<Unit filename="include\presenter\cube\ViewMaster.hpp" />
+		<Unit filename="include\presenter\cube\ViewMaster.hpp.eruby" />
+		<Unit filename="include\presenter\cube\ViewSprite.hpp" />
+		<Unit filename="include\presenter\cube\ViewSprite.hpp.eruby" />
+		<Unit filename="include\presenter\cube\ViewStdout.hpp" />
+		<Unit filename="include\presenter\cube\ViewStdout.hpp.eruby" />
+		<Unit filename="include\presenter\game\Multi.hpp" />
+		<Unit filename="include\presenter\game\Puzzle.hpp" />
+		<Unit filename="include\private\AVIVideo.hpp" />
+		<Unit filename="include\private\MastEventReceiver.hpp" />
+		<Unit filename="include\private\Wiimote_IR_internal.hpp" />
+		<Unit filename="include\testcase\AVITest.hpp" />
+		<Unit filename="include\testcase\ViewTest1.hpp" />
+		<Unit filename="include\utils\ChainChecker.hpp" />
+		<Unit filename="include\utils\ChainChecker.hpp.eruby" />
+		<Unit filename="include\utils\GaussLegendre.hpp" />
+		<Unit filename="include\utils\MapLoader.hpp" />
+		<Unit filename="include\utils\MapLoader.hpp.eruby" />
+		<Unit filename="include\utils\ObjectPool.hpp" />
+		<Unit filename="include\utils\ObjectPool.hpp.eruby" />
+		<Unit filename="include\utils\Random.hpp" />
+		<Unit filename="include\utils\Random.hpp.eruby" />
+		<Unit filename="include\utils\TTFont.hpp" />
+		<Unit filename="include\utils\dictionary.hpp" />
+		<Unit filename="include\utils\math.hpp" />
+		<Unit filename="include\utils\math.hpp.eruby" />
+		<Unit filename="include\utils\vector_2d.hpp" />
+		<Unit filename="include\utils\vector_2d.hpp.eruby" />
+		<Unit filename="include\view\All.hpp" />
+		<Unit filename="include\view\AnimatedSceneObject.hpp" />
+		<Unit filename="include\view\AnimatedSprite.hpp" />
+		<Unit filename="include\view\Button.hpp" />
+		<Unit filename="include\view\Cube.hpp" />
+		<Unit filename="include\view\Game.hpp" />
+		<Unit filename="include\view\Map.hpp" />
+		<Unit filename="include\view\Menu.hpp" />
+		<Unit filename="include\view\Object.hpp" />
+		<Unit filename="include\view\SFX.hpp" />
+		<Unit filename="include\view\Scene.hpp" />
+		<Unit filename="include\view\SceneObject.hpp" />
+		<Unit filename="include\view\Sprite.hpp" />
+		<Unit filename="include\view\SpriteMovie.hpp" />
+		<Unit filename="include\view\SpriteText.hpp" />
+		<Unit filename="include\view\detail\CirclingAnimator.hpp" />
+		<Unit filename="include\view\detail\CustomAnimator.hpp" />
+		<Unit filename="include\view\detail\SpeedFuncAnimator.hpp" />
+		<Unit filename="include\view\detail\SplineAnimator.hpp" />
+		<Unit filename="include\view\detail\TextureAnimator.hpp" />
+		<Unit filename="include\view\detail\WaypointAnimator.hpp" />
+		<Unit filename="lib\Color.hpp" />
+		<Unit filename="lib\Singleton.cpp" />
+		<Unit filename="lib\SmallObj.cpp" />
+		<Unit filename="lib\for_each_multi_array.hpp" />
+		<Unit filename="lib\loki\LokiExport.h" />
+		<Unit filename="lib\loki\Pimpl.h" />
+		<Unit filename="lib\loki\Singleton.h" />
+		<Unit filename="lib\loki\SmallObj.h" />
+		<Unit filename="lib\loki\Threads.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src\App.cpp" />
+		<Unit filename="src\Button_vc.cpp" />
+		<Unit filename="src\CallbackDelegate.cpp" />
+		<Unit filename="src\Crosshair.cpp" />
+		<Unit filename="src\EventDispatcher.cpp" />
+		<Unit filename="src\Input.cpp" />
+		<Unit filename="src\IrrDevice.cpp" />
+		<Unit filename="src\Player.cpp" />
+		<Unit filename="src\Sound.cpp" />
+		<Unit filename="src\Weapon.cpp" />
+		<Unit filename="src\data\Color.cpp" />
+		<Unit filename="src\model\Cube.cpp" />
+		<Unit filename="src\model\Cube.cpp.eruby" />
+		<Unit filename="src\model\Map.cpp" />
+		<Unit filename="src\model\Map.cpp.eruby" />
+		<Unit filename="src\model\state\Dropping.cpp" />
+		<Unit filename="src\model\state\Dropping.cpp.eruby" />
+		<Unit filename="src\model\state\Dying.cpp" />
+		<Unit filename="src\model\state\Dying.cpp.eruby" />
+		<Unit filename="src\model\state\Exploding.cpp.eruby.old" />
+		<Unit filename="src\model\state\Sinking.cpp.eruby.old" />
+		<Unit filename="src\model\state\State.cpp" />
+		<Unit filename="src\model\state\State.cpp.eruby" />
+		<Unit filename="src\model\state\Waiting.cpp" />
+		<Unit filename="src\model\state\Waiting.cpp.eruby" />
+		<Unit filename="src\presenter\Cube.cpp" />
+		<Unit filename="src\presenter\Cube.cpp.eruby" />
+		<Unit filename="src\presenter\MainMenu.cpp" />
+		<Unit filename="src\presenter\Map.cpp" />
+		<Unit filename="src\presenter\Map.cpp.eruby" />
+		<Unit filename="src\presenter\Menu.cpp" />
+		<Unit filename="src\presenter\Object.cpp" />
+		<Unit filename="src\presenter\OpeningSequence.cpp" />
+		<Unit filename="src\presenter\PlayerView.cpp" />
+		<Unit filename="src\presenter\Stage.cpp" />
+		<Unit filename="src\presenter\Transitioner.cpp" />
+		<Unit filename="src\presenter\game\Multi.cpp" />
+		<Unit filename="src\presenter\game\Puzzle.cpp" />
+		<Unit filename="src\private\AVIVideo.cpp" />
+		<Unit filename="src\private\MastEventReceiver.cpp" />
+		<Unit filename="src\private\Wiimote_IR_internal.cpp" />
+		<Unit filename="src\test\test_game_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_map_cubes_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_map_views_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_puzzle_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_stage_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\utils\GaussLegendre.cpp" />
+		<Unit filename="src\utils\TTFont.cpp" />
+		<Unit filename="src\utils\dictionary.cpp" />
+		<Unit filename="src\view\AnimatedSceneObject.cpp" />
+		<Unit filename="src\view\AnimatedSprite.cpp" />
+		<Unit filename="src\view\Button.cpp" />
+		<Unit filename="src\view\Cube.cpp" />
+		<Unit filename="src\view\Game.cpp" />
+		<Unit filename="src\view\Map.cpp" />
+		<Unit filename="src\view\Menu.cpp" />
+		<Unit filename="src\view\Object.cpp" />
+		<Unit filename="src\view\SFX.cpp" />
+		<Unit filename="src\view\Scene.cpp" />
+		<Unit filename="src\view\SceneObject.cpp" />
+		<Unit filename="src\view\Sprite.cpp" />
+		<Unit filename="src\view\SpriteMovie.cpp" />
+		<Unit filename="src\view\SpriteText.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -84,6 +84,18 @@ bool App::update_block()
     return false;
 }
 
+void App::pause()
+{
+    if( !IrrDevice::i().d()->getTimer()->isStopped() )
+        IrrDevice::i().d()->getTimer()->stop();
+}
+
+void App::resume()
+{
+    if( IrrDevice::i().d()->getTimer()->isStopped() )
+        IrrDevice::i().d()->getTimer()->start();
+}
+
 int App::run(std::tr1::function<void()> tester)
 {
     using namespace irr;
@@ -98,10 +110,10 @@ int App::run(std::tr1::function<void()> tester)
     int lastFPS = -1;
 
     while( IrrDevice::i().run() ) {
-        //if( IrrDevice::i().d()->isWindowActive() )                   //temp for double tasking
-        //{                                                            //temp for double tasking
-            if( IrrDevice::i().d()->getTimer()->isStopped() )
-                IrrDevice::i().d()->getTimer()->start();
+        //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
+        //{                                                            //comment: temp for double tasking
+        //    if( IrrDevice::i().d()->getTimer()->isStopped() )        //comment: temp for double tasking
+        //        IrrDevice::i().d()->getTimer()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
             Input::update_all();
             EventDispatcher::i().dispatch();
@@ -128,10 +140,10 @@ int App::run(std::tr1::function<void()> tester)
                 master_presenter_ = temp_presenter_;
                 temp_presenter_.reset();
             }
-        //}                                                      //temp for double tasking
-        //else                                                   //temp for double tasking
-        //    if( !IrrDevice::i().d()->getTimer()->isStopped() ) //temp for double tasking
-        //        IrrDevice::i().d()->getTimer()->stop();        //temp for double tasking
+        //}                                                      //comment: temp for double tasking
+        //else                                                   //comment: temp for double tasking
+            //if( !IrrDevice::i().d()->getTimer()->isStopped() ) //comment: temp for double tasking
+                //IrrDevice::i().d()->getTimer()->stop();        //comment: temp for double tasking
     }
 
     std::cout << "App main loop has ended." << std::endl;

@@ -97,6 +97,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     pview2_->setInput( ctrl::Input::getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
+    pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
+    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 60) );
+    pause_text_->set<Visible>(false);
 
     //start music
     stage_->playBGM();
@@ -114,8 +117,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
         bind(&Multi::item_creation, this), timer_item_, 15000);
 
     //temp: for killing cubes randomly
+    //temp: for pause functionality
     ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::toggle_auto0, this), shared_from_this(),
+        bind(&Multi::pause, this), shared_from_this(),
         &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -190,7 +194,7 @@ void Multi::end(pMap lose_map)
     timer_ui_.reset();
     timer_auto0_.reset();
     timer_auto1_.reset();
-    if( item_ ) item_->setPickable(false);
+    if( item_ ) item_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
     Sound::i().stopAll();
@@ -338,6 +342,34 @@ void Multi::kill_cube_randomly1()
     map1_->kill_cube_at(x, y);
     ctrl::Input::getInputByIndex(1)->cursor().x() = 740 + x*64 + 32;
     ctrl::Input::getInputByIndex(1)->cursor().y() = 684 - y*64 - 32;
+}
+
+void Multi::pause()
+{
+    pause_text_->set<Visible>(true);
+
+    App::i().pause();
+    Sound::i().pauseAll(true);
+    scene_->allowPicking(false);
+    if( item_ ) item_->setPickable(false);
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Multi::resume, this), shared_from_this(),
+        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+}
+
+void Multi::resume()
+{
+    pause_text_->set<Visible>(false);
+
+    App::i().resume();
+    Sound::i().pauseAll(false);
+    scene_->allowPicking(true);
+    if( item_ ) item_->setPickable(true);
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Multi::pause, this), shared_from_this(),
+        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 }
 
 void Multi::cycle()

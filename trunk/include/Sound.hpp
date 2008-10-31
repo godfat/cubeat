@@ -60,6 +60,7 @@ public:
 
 	Sound& play(std::string const& path, bool loop = false);
 	Sound& stopAll();
+	Sound& pauseAll(bool);
 
 	void init();
     ~Sound();

@@ -27,6 +27,12 @@ Sound& Sound::stopAll()
     return *this;
 }
 
+Sound& Sound::pauseAll(bool f)
+{
+    engine_->setAllSoundsPaused(f);
+    return *this;
+}
+
 Sound::~Sound()
 {
     engine_->drop();

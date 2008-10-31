@@ -53,6 +53,10 @@ protected:
     void kill_cube_randomly0();
     void kill_cube_randomly1();
 
+    //temp: for pausing
+    void pause();
+    void resume();
+
 protected:
     view::pScene scene_;
     presenter::pStage stage_;
@@ -69,7 +73,7 @@ protected:
 
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_;
-    view::pSpriteText     end_text_, end_text2_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_;
     pDummy timer_item_, timer_ui_, timer_auto0_, timer_auto1_, btn_reinit_;
     std::string c1p_, c2p_, sconf_;
 

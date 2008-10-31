@@ -46,6 +46,7 @@ void Scene::init(std::string const& name)
     body_->setIsDebugObject(true);
     body_->setName( name.c_str() );
 
+    allow_picking_ = true;
     std::cout << "scene: " << name << " created." << std::endl;
 
     scene_ = std::tr1::static_pointer_cast<Scene>(shared_from_this());
@@ -91,6 +92,12 @@ Scene& Scene::setTo3DView(float FoV)
     camera_->setIsOrthogonal(false);
 
     body_->setPosition(vector3df(0,0,0));
+    return *this;
+}
+
+Scene& Scene::allowPicking(bool f)
+{
+    allow_picking_ = f;
     return *this;
 }
 
@@ -150,6 +157,8 @@ void Scene::onDownEvent(int x, int y, ctrl::Button const* bound_button)
 //         because it is not view related.
 void Scene::processHit(int x, int y, ctrl::Button const* btn)
 {
+    if( !allow_picking_ ) return;
+
     vec2 point(x, y);
     ctrl::Weapon* wep = btn->owner()->player()->weapon();
     ObjList picklist = pick(point, wep->areaPredicate());
@@ -213,6 +222,8 @@ void Scene::update_focus_objs_by_input(ctrl::Input const* input)
 std::list<wpObject> const& Scene::pick(vec2 const& p)
 {
     picked_temporary_.clear();
+    if( !allow_picking_ ) return picked_temporary_;
+
     position2di pos(p.X, p.Y);
     ISceneNode* picked = getCollisionMgr()->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
     if( picked ) {
@@ -227,6 +238,8 @@ std::list<wpObject> const& Scene::pick
     if( pred == 0 ) return pick(p);
 
     picked_temporary_.clear();
+    if( !allow_picking_ ) return picked_temporary_;
+
     ISceneCollisionManager* colm = getCollisionMgr();
     BOOST_FOREACH(Node2ViewPair& nv, node2view_) {
         position2di pos = colm->getScreenCoordinatesFrom3DPosition(nv.first->getAbsolutePosition(), camera_);

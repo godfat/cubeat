@@ -37,6 +37,7 @@ public:
     virtual Scene& activate();
     virtual Scene& redraw();
     virtual Scene& deactivate();
+    virtual Scene& allowPicking(bool);
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
 
@@ -58,7 +59,7 @@ protected:
 
 protected:
     typedef std::pair<irr::scene::ISceneNode* const, wpObject> Node2ViewPair;
-
+    bool allow_picking_;
     irr::scene::ICameraSceneNode* camera_;
     irr::scene::ILightSceneNode* light_;
     std::map<irr::scene::ISceneNode*, wpObject> node2view_;

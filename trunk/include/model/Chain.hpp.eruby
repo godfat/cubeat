@@ -38,7 +38,8 @@ public:
 	    if( stepnum == 1 )
             power_factor_ += (new_step_amount - 2);
         else
-            power_factor_ += (new_step_amount - 2)*(stepnum) + utils::power2(stepnum-2);
+            power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;//utils::power2(stepnum-2);
+            //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
 	}
 
     // this returns the score fragment made by the last combo

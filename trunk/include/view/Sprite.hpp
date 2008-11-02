@@ -96,7 +96,6 @@ protected:
     bool center_;
 
     irr::core::dimension2df size_;
-    irr::scene::IMesh* center_aligned_plane_;
     irr::scene::IMesh* upperleft_aligned_plane_;
     irr::scene::IMesh* thismesh_;
 };

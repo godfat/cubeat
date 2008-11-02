@@ -26,8 +26,7 @@ using std::tr1::static_pointer_cast;
 
 Sprite::Sprite(std::string const& name, bool const& center)
     :Object(name),
-     center_(center), center_aligned_plane_(0),
-     upperleft_aligned_plane_(0), thismesh_(0)
+     center_(center), upperleft_aligned_plane_(0), thismesh_(0)
 {
     upperleft_aligned_plane_ =
         IrrDevice::i().d()->getSceneManager()->getMesh( "rc/model/plane_orig.x" );

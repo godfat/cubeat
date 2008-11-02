@@ -69,7 +69,7 @@
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
 // >> Add by zgock for Multilingual start
-#include "CGUITTFont.h"
+#include "IGUITTFont.h" //modified by arch_jslin 2008.11.02, interface class added
 // << Add by zgock for Multilingual end
 #include "IGUIImage.h"
 #include "IGUIInOutFader.h"

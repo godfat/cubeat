@@ -65,11 +65,9 @@ public:
 	s32 offset;
 };
 
-class CGUITTFont : public IGUIFont
+class CGUITTFont : public IGUITTFont
 {
 public:
-	u32 size;
-
 	//! constructor
 	CGUITTFont(IGUIEnvironment *env);
 
@@ -98,14 +96,27 @@ public:
 	virtual s32 getKerningHeight() const;
 // << Add by MadHyde for Ver.1.3 new functions end
 
+// > added by arch_jslin 2008.11.02
+    virtual u32 getFontSize() const { return size; }
+    virtual void setAntiAlias(bool const& flag)   { AntiAlias = flag; }
+    virtual void setTransparent(bool const& flag) { TransParency = flag; }
+    virtual bool isAntiAlias()   const { return AntiAlias; }
+    virtual bool isTransparent() const { return TransParency; }
+    virtual bool isAttached()    const { return attached; }
+
+    irr::video::ITexture* getTextureFromText(const wchar_t* text, const irr::c8* name);
+// < end of arch_jslin modifications
+
 	scene::ISceneNode *createBillboard(const wchar_t* text,scene::ISceneManager *scene,scene::ISceneNode *parent = 0,s32 id = -1);
 
+// changed from private to protected by arch_jslin 2008.02.06
+protected:
+// properties moved to protected scope instead of public.
+	u32 size;
 	bool AntiAlias;
 	bool TransParency;
 	bool attached;
 
-// changed from private to protected by arch_jslin 2008.02.06
-protected:
 	virtual s32  getWidthFromCharacter(const wchar_t c) const;
     virtual u32  getGlyphIndex(const wchar_t c) const;
 	video::IVideoDriver* Driver;

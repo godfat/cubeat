@@ -1,7 +1,6 @@
 
 #include "view/SpriteText.hpp"
 #include "view/Scene.hpp"
-#include "utils/TTFont.hpp"
 #include "utils/to_s.hpp"
 #include "Accessors.hpp"
 #include "IrrDevice.hpp"
@@ -66,10 +65,10 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     std::ostringstream oss;
     oss << "rc/fonts/" << font_path << ".ttf";
 
-	ttfont_ = (utils::TTFont *)gui->getFont(oss.str().c_str(),size); //bad c-cast. need to fix it.
+	ttfont_ = gui->getFont(oss.str().c_str(),size);
 
-    ttfont_->AntiAlias = true;
-    ttfont_->TransParency = true;
+    ttfont_->setAntiAlias(true);
+    ttfont_->setTransparent(true);
 
     changeText( text );
 }

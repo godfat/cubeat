@@ -580,6 +580,66 @@ s32 CGUITTFont::getKerningHeight () const
 }
 // << Add by MadHyde for Ver.1.3 new functions end
 
+//added by arch_jslin 2008.11.02
+video::ITexture* CGUITTFont::getTextureFromText(const wchar_t* text, const c8* name)
+{
+    if( Driver->findTexture(name) ) {    //note: critical fix!!! prevent always writing new texture!!
+        return Driver->getTexture(name); //      have to re-write SpriteText wholly in the future.
+    }
+
+    if( !AntiAlias ) AntiAlias = true;      //force this texture to be 32bit anti-aliased
+    core::dimension2di size = getDimension(text);
+    core::position2di offset= core::position2di(0,0);
+
+    s32 w = 1, h = 1;
+    while( w < size.Width ) {w <<= 1;} size.Width = w;
+    while( h < size.Height) {h <<= 1;} size.Height = h;
+
+    video::ITexture* texture = Driver->addTexture(size, name);
+
+    u32* pixel_o = (u32*)texture->lock();
+    if( !pixel_o ) { texture->unlock(); return texture; } //failed, empty texture
+
+    for( int i = 0; i < size.Height; ++i ) {
+        int yo = i * size.Width;
+        for( int j = 0; j < size.Width; ++j )
+            pixel_o[ yo + j ] = 0;
+    }
+
+    unsigned int n = 0;
+    while( *text ) {
+        if( (n = getGlyphIndex(*text)) ) {
+            n -= 1;  // 0 means no glyph, so all glyph index must dec by 1 to fit 0-based array
+            s32 texw = Glyphs[n].texw;
+            s32 texh = Glyphs[n].texh;
+            s32 offx = Glyphs[n].left;
+            s32 offy = Glyphs[n].size - Glyphs[n].top - 1;
+            u8* pixel_i = Glyphs[n].image;
+            int bound = Glyphs[n].size;
+            for(int h = 0; h < texh; ++h) {
+                int ypos = h + offy;
+                if( ypos < 0 )           ypos = 0;
+                else if( ypos >= bound ) ypos = bound-1;
+                int yo = ypos*size.Width;
+                for(int w = 0; w < texw; ++w) {
+                    int current_pos = yo + offset.X + w + offx;
+                    if( *pixel_i )
+                        pixel_o[ current_pos ] = ((*pixel_i) << 24) | 0x00ffffff;
+                    else
+                        pixel_o[ current_pos ] = 0; //else set to all black & transparent
+                    ++pixel_i;
+                }
+            }
+        }
+        offset.X += getWidthFromCharacter(*text) + GlobalKerningWidth;
+        ++text;
+    }
+
+    texture->unlock();
+
+    return texture;
+}
+
 scene::ISceneNode*
 CGUITTFont::createBillboard(const wchar_t* text,scene::ISceneManager *scene,scene::ISceneNode *parent,s32 id)
 {
@@ -595,7 +655,7 @@ CGUITTFont::createBillboard(const wchar_t* text,scene::ISceneManager *scene,scen
 	u32 n;
 	while(*text)
 	{
-		if (n = getGlyphIndex(*text)){
+		if ( (n = getGlyphIndex(*text)) ){
 			s32 imgw,imgh,texw,texh,offx,offy;
 			video::ITexture *tex;
 			if (AntiAlias){

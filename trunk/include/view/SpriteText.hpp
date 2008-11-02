@@ -6,12 +6,13 @@
 #include "all_fwd.hpp"
 #include <string>
 
-namespace psc {
-
-namespace utils {
-class TTFont;
+namespace irr {
+namespace gui {
+class IGUITTFont;
+}
 }
 
+namespace psc {
 namespace view {
 
 class SpriteText : public Sprite
@@ -48,7 +49,7 @@ protected:
 protected:
     std::string text_;
     irr::video::ITexture* font_texture_;
-    utils::TTFont* ttfont_;
+    irr::gui::IGUITTFont* ttfont_;
     int fsize_;
     std::string fpath_;
 };

@@ -144,7 +144,6 @@
 		<Unit filename="include\utils\ObjectPool.hpp.eruby" />
 		<Unit filename="include\utils\Random.hpp" />
 		<Unit filename="include\utils\Random.hpp.eruby" />
-		<Unit filename="include\utils\TTFont.hpp" />
 		<Unit filename="include\utils\dictionary.hpp" />
 		<Unit filename="include\utils\math.hpp" />
 		<Unit filename="include\utils\math.hpp.eruby" />
@@ -243,7 +242,6 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
-		<Unit filename="src\utils\TTFont.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />
 		<Unit filename="src\view\AnimatedSprite.cpp" />

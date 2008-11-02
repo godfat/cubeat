@@ -116,9 +116,6 @@
 			<Add alias="All" targets="Debug;Release;Release - Fast FPU;" />
 		</VirtualTargets>
 		<Unit filename="..\..\changes.txt" />
-		<Unit filename="..\..\include\CGUITTFont.h">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="..\..\include\CMeshBuffer.h">
 			<Option target="Release" />
 		</Unit>
@@ -700,6 +697,7 @@
 		<Unit filename="CGUITTFont.cpp">
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="CGUITTFont.h" />
 		<Unit filename="CGUITabControl.cpp" />
 		<Unit filename="CGUITabControl.h" />
 		<Unit filename="CGUIToolBar.cpp" />

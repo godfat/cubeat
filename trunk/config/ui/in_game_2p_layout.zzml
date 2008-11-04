@@ -11,7 +11,7 @@ base: {
 misc: {
     gar1p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 600, y: 65 },
     gar2p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 680, y: 65 },
-    stage:  { text: 'STAGE 0', font: 'Star Jedi', fsize: 24, center: 1, x: 640, y:150 },
+    stage:  { text: 'stage 0', font: 'Star Jedi', fsize: 25, center: 1, x: 640, y:150 },
     time :  { text: '00:00',   font: 'Star Jedi', fsize: 30, center: 1, x: 640, y:228 },
     vic1p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 600, y:310 },
     vic2p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 680, y:310 },

@@ -24,15 +24,33 @@ using namespace easing;
 using namespace accessor;
 using std::tr1::static_pointer_cast;
 
+IMesh* Sprite::sprite_plane_ptr_ = 0;
+SMesh  Sprite::sprite_plane_;
+
 Sprite::Sprite(std::string const& name, bool const& center)
-    :Object(name),
-     center_(center), upperleft_aligned_plane_(0), thismesh_(0)
+    :Object(name), center_(center), thismesh_(0)
 {
-    upperleft_aligned_plane_ =
-        IrrDevice::i().d()->getSceneManager()->getMesh( "rc/model/plane_orig.x" );
-    //we don't specify different smgr_ for different scene here,
-    //because smgr_ is not yet defined at this stage, however the resource
-    //will be shared across different SceneManagers.
+    if( !sprite_plane_ptr_ ) {
+        S3DVertex vertices[4];
+        u16 indices[6] = {0,2,3,3,1,0};
+        vertices[0].Pos = vector3df(0,-1,0);  vertices[0].TCoords = vector2df(0,1);
+        vertices[1].Pos = vector3df(1,-1,0);  vertices[1].TCoords = vector2df(1,1);
+        vertices[2].Pos = vector3df(0, 0,0);  vertices[2].TCoords = vector2df(0,0);
+        vertices[3].Pos = vector3df(1, 0,0);  vertices[3].TCoords = vector2df(1,0);
+        vertices[0].Normal = vector3df(0,0,-1);
+        vertices[1].Normal = vector3df(0,0,-1);
+        vertices[2].Normal = vector3df(0,0,-1);
+        vertices[3].Normal = vector3df(0,0,-1);
+
+        SMeshBuffer* buf = new SMeshBuffer();
+        buf->append(vertices, 4, indices, 6);
+
+        sprite_plane_.addMeshBuffer( buf );
+        sprite_plane_.recalculateBoundingBox();
+
+        sprite_plane_ptr_ = &sprite_plane_;
+        buf->drop();
+    }
 }
 
 pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
@@ -64,6 +82,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     setupMeshBase(parent);
     body_->getMaterial(0) = mat;
+    //body_->setDebugDataVisible(EDS_BBOX);
 
     pSprite self = static_pointer_cast<Sprite>( shared_from_this() );
     scene()->addPickMapping( body_, self );
@@ -73,8 +92,8 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 void Sprite::setupMeshBase(pObject const& parent)
 {
     IMeshManipulator* mani = smgr_->getMeshManipulator();
-    thismesh_ = mani->createMeshCopy( upperleft_aligned_plane_ );
-    mani->scaleMesh( thismesh_, vector3df(size_.Width / 100, size_.Height / 100, 1) );
+    thismesh_ = mani->createMeshCopy( sprite_plane_ptr_ );
+    mani->scaleMesh( thismesh_, vector3df(size_.Width, size_.Height, 1) );
 
     if( center_ ) {
         matrix4 mat; mat.setTranslation( vector3df(-size_.Width/2, size_.Height/2, 0) );

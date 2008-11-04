@@ -94,10 +94,12 @@ protected:
     //End of maybe
 
     bool center_;
-
     irr::core::dimension2df size_;
-    irr::scene::IMesh* upperleft_aligned_plane_;
     irr::scene::IMesh* thismesh_;
+
+    //A shared base plane to provide simple mesh for sprite usage
+    static irr::scene::IMesh* sprite_plane_ptr_;
+    static irr::scene::SMesh  sprite_plane_;
 };
 
 } //view

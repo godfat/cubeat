@@ -75,8 +75,10 @@ public:
 
 protected:
     pointer_type init(pObject const&, int const&, int const&);
-    void setupMeshBase(pObject const&);
-    void adjust_texcoord_for_hand_made_texture(int const&, int const&);
+    void setupMeshAndNode(irr::scene::IMesh*&, irr::scene::ISceneNode*&, pObject const&,
+                          irr::core::dimension2df const&, bool const& center = false,
+                          std::string const& debug_name = "sprite_mesh" );
+    void adjust_texcoord_for_hand_made_texture(irr::scene::IMesh const*, int const&, int const&);
 
     //Maybe this feature should move to another class and use multiple inheritance.
     inline ctrl::CallbackDelegate& onButtonEvent(ctrl::Button const*, ctrl::BSTATE const&);

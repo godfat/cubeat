@@ -263,6 +263,6 @@ Scene::~Scene()
 {
     std::cout << body_->getName() << " scene died." << std::endl;
     node2view_.clear();
-    smgr_->drop();
+    std::cout << "scene cleared: " << smgr_->drop() << "\n";
     body_ = 0;
 }

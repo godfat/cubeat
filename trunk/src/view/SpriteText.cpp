@@ -30,26 +30,26 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     setupSceneAndManager(parent);
     fsize_ = size;
     fpath_ = font_path;
-    createText( text, font_path, size );
 
-    setupMeshBase(parent);
+    setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
 
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
-    mat.setTexture(0, font_texture_);
 
     mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
 
     SColor col( color.rgb() );
-    col.setAlpha( 255 );
+    col.setAlpha( 0/*255*/ );
     mat.DiffuseColor = col;
 
     body_->getMaterial(0) = mat;
 
-    adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
+    createText( text, font_path, size );
+
+    //adjust_texcoord_for_hand_made_texture(thismesh_, size_.Width, size_.Height);
 
     pSpriteText self = static_pointer_cast<SpriteText>( shared_from_this() );
     scene()->addPickMapping( body_, self );
@@ -73,24 +73,88 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     changeText( text );
 }
 
+void SpriteText::generateLetter(char const& c, char const& last_c, int& current_xpos)
+                                //current_xpos is modifable
+{
+    wchar_t wc      = std::cin.widen(c); //not toliet ...
+    wchar_t last_wc = std::cin.widen(last_c);
+    std::string texture_name = fpath_+"_"+to_s(fsize_)+"_";
+    texture_name += c;
+
+    ITexture*    current_tex = ttfont_->getTextureFromText(&wc, texture_name.c_str());
+    IMesh*       current_mesh;
+    ISceneNode*  current_node;
+    dimension2di letter_size = ttfont_->getDimension(&wc);
+
+    SMaterial mat;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+    mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat.MaterialTypeParam = 0.01f;
+    mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;
+    mat.DiffuseColor.setAlpha(255);
+    mat.setTexture(0, current_tex);
+
+    vec2 orig = center_ ? vec2(-size_.Width/2, size_.Height/2) : vec2(0,0);
+    orig.X += current_xpos;
+
+    setupMeshAndNode(current_mesh, current_node, shared_from_this(),
+                     dimension2df(letter_size.Width, letter_size.Height) );
+    current_node->setPosition( vec3(orig.X, orig.Y, 0) );
+    Size2D::set( current_node, vec2(letter_size.Width, letter_size.Height) );
+    current_node->getMaterial(0) = mat;
+    current_node->setIsDebugObject(true);
+
+    adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
+
+    letter_mesh_.push_back( current_mesh );
+    letter_node_.push_back( current_node );
+
+    current_xpos += letter_size.Width + ttfont_->getKerningWidth(&wc, &last_wc);
+}
+
+void SpriteText::clearText()
+{
+    for( unsigned int i = 0; i < letter_node_.size(); ++i ) {
+        letter_node_[i]->remove(); //we call remove and it will be dropped.
+        letter_mesh_[i]->drop();
+    }
+    letter_node_.clear();
+    letter_mesh_.clear();
+
+    std::cout << "Trace meshcache count: " << IrrDevice::i().d()->getVideoDriver()->getTextureCount() << "\n";
+}
+
 SpriteText& SpriteText::changeText(std::string const& new_text)
 {
-    if( text_ == new_text ) return *this;
+    if( text_ == new_text )
+        return *this;
+
+    clearText();
     text_ = new_text;
-    std::wstring temp(new_text.length(),L' ');         //so hard to convert between wchar and char @@
-    std::copy(new_text.begin(), new_text.end(), temp.begin()); //so hard to convert between wchar and char @@
+    std::wstring wtext(new_text.length(),L' ');
+    std::copy(new_text.begin(), new_text.end(), wtext.begin());
+    //so hard to convert between wchar and char ....
 
-    font_texture_ =
-        ttfont_->getTextureFromText(temp.c_str(), (new_text+"_"+fpath_+"_"+to_s(fsize_)).c_str());
-
-    dimension2di size_int = ttfont_->getDimension(temp.c_str());
+    dimension2di size_int = ttfont_->getDimension(wtext.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
 
+    int current_xpos = 0; //This will be modified by generateLetter()
+    for( unsigned int i = 0; i < new_text.size(); ++i ) {
+        char c = new_text[i];
+        char lc= (i > 0) ? new_text[i-1] : '\0';
+        generateLetter(c, lc, current_xpos);
+    }
+
+//    font_texture_ =
+//        ttfont_->getTextureFromText(wtext.c_str(), (new_text+"_"+fpath_+"_"+to_s(fsize_)).c_str());
+
     if( body_ ) {
-        body_->setMaterialTexture(0, font_texture_);
+//        body_->setMaterialTexture(0, font_texture_);
         set<Size2D>( vec2(size_.Width, size_.Height) );
-        adjust_texcoord_for_hand_made_texture(size_.Width, size_.Height);
+//        adjust_texcoord_for_hand_made_texture(thismesh_, size_.Width, size_.Height);
     }
     return *this;
 }
@@ -117,4 +181,5 @@ SpriteText& SpriteText::setCenterAligned(bool const& center)
 
 SpriteText::~SpriteText()
 {
+    clearText();
 }

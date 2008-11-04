@@ -33,14 +33,21 @@ Sprite::Sprite(std::string const& name, bool const& center)
     if( !sprite_plane_ptr_ ) {
         S3DVertex vertices[4];
         u16 indices[6] = {0,2,3,3,1,0};
-        vertices[0].Pos = vector3df(0,-1,0);  vertices[0].TCoords = vector2df(0,1);
-        vertices[1].Pos = vector3df(1,-1,0);  vertices[1].TCoords = vector2df(1,1);
-        vertices[2].Pos = vector3df(0, 0,0);  vertices[2].TCoords = vector2df(0,0);
-        vertices[3].Pos = vector3df(1, 0,0);  vertices[3].TCoords = vector2df(1,0);
+
+        vertices[0].Pos = vector3df(0,-1,0);
+        vertices[1].Pos = vector3df(1,-1,0);
+        vertices[2].Pos = vector3df(0, 0,0);
+        vertices[3].Pos = vector3df(1, 0,0);
+
         vertices[0].Normal = vector3df(0,0,-1);
         vertices[1].Normal = vector3df(0,0,-1);
         vertices[2].Normal = vector3df(0,0,-1);
         vertices[3].Normal = vector3df(0,0,-1);
+
+        vertices[0].TCoords = vector2df(0,1);
+        vertices[1].TCoords = vector2df(1,1);
+        vertices[2].TCoords = vector2df(0,0);
+        vertices[3].TCoords = vector2df(1,0);
 
         SMeshBuffer* buf = new SMeshBuffer();
         buf->append(vertices, 4, indices, 6);
@@ -49,7 +56,7 @@ Sprite::Sprite(std::string const& name, bool const& center)
         sprite_plane_.recalculateBoundingBox();
 
         sprite_plane_ptr_ = &sprite_plane_;
-        buf->drop();
+        buf->drop(); //the addMeshBuffer method will grab it, so we can drop this ptr.
     }
 }
 
@@ -74,38 +81,40 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
-
     mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
     mat.MaterialTypeParam = 0.01f;
-
     mat.DiffuseColor.set(255, 255, 255, 255);
 
-    setupMeshBase(parent);
+    setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
+
     body_->getMaterial(0) = mat;
-    //body_->setDebugDataVisible(EDS_BBOX);
 
     pSprite self = static_pointer_cast<Sprite>( shared_from_this() );
     scene()->addPickMapping( body_, self );
+
     return self;
 }
 
-void Sprite::setupMeshBase(pObject const& parent)
+void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
+     pObject const& parent, dimension2df const& size, bool const& center,
+     std::string const& debug_name)
 {
     IMeshManipulator* mani = smgr_->getMeshManipulator();
-    thismesh_ = mani->createMeshCopy( sprite_plane_ptr_ );
-    mani->scaleMesh( thismesh_, vector3df(size_.Width, size_.Height, 1) );
+    out_mesh = mani->createMeshCopy( sprite_plane_ptr_ );
+    mani->scaleMesh( out_mesh, vector3df(size.Width, size.Height, 1) );
 
-    if( center_ ) {
-        matrix4 mat; mat.setTranslation( vector3df(-size_.Width/2, size_.Height/2, 0) );
-        mani->transformMesh( thismesh_, mat );
+    if( center ) {
+        matrix4 mat;
+        mat.setTranslation( vector3df(-size.Width/2, size.Height/2, 0) );
+        mani->transformMesh( out_mesh, mat );
     }
 
-    body_ = smgr_->addMeshSceneNode( thismesh_, parent->body(), -1, vector3df(0,0,0) );
-    body_->setAutomaticCulling(EAC_OFF);
-    body_->setName( name_.c_str() );
+    out_node = smgr_->addMeshSceneNode( out_mesh, parent->body(), -1, vector3df(0,0,0) );
+    out_node->setAutomaticCulling(EAC_OFF);
+    out_node->setName( debug_name.c_str() );
 }
 
-void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
+void Sprite::adjust_texcoord_for_hand_made_texture(IMesh const* mesh, int const& w, int const& h)
 {
     //texture ratio adjustment because the texture is sized at power of 2.
     //have to do this for hand made texture like Movie Texture or Text Texture.
@@ -113,7 +122,7 @@ void Sprite::adjust_texcoord_for_hand_made_texture(int const& w, int const& h)
     while( x < w ){x*=2;} float tex_coord_ratio_x = w / x;
     while( y < h ){y*=2;} float tex_coord_ratio_y = h / y;
 
-    S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+    S3DVertex* ptr = static_cast<S3DVertex*>(mesh->getMeshBuffer(0)->getVertices());
     ptr[0].TCoords.Y = tex_coord_ratio_y;
     ptr[1].TCoords.X = tex_coord_ratio_x; ptr[1].TCoords.Y = tex_coord_ratio_y;
     ptr[3].TCoords.X = tex_coord_ratio_x;

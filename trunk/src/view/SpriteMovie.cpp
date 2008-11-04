@@ -24,6 +24,7 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
 
     avi = new AVIVideo(name_.c_str());
 
+    /////////////// I'll keep this part for future reference /////////////////
     SMaterial mat;
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
@@ -34,12 +35,13 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
         video::pack_texureBlendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA, EMFN_MODULATE_1X);
 
     mat.DiffuseColor.set(255,255,255,255);
+    /////////////// End of this part /////////////////////////////////////////
 
-    setupMeshBase(parent);
+    setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
     body_->getMaterial(0) = mat;
 
     dimension2di avi_actual_size = avi->getSize();
-    adjust_texcoord_for_hand_made_texture( avi_actual_size.Width, avi_actual_size.Height );
+    adjust_texcoord_for_hand_made_texture( thismesh_, avi_actual_size.Width, avi_actual_size.Height );
 
     pSpriteMovie self = static_pointer_cast<SpriteMovie>( shared_from_this() );
     scene()->addPickMapping( body_, self );

@@ -122,8 +122,6 @@ void SpriteText::clearText()
     }
     letter_node_.clear();
     letter_mesh_.clear();
-
-    std::cout << "Trace meshcache count: " << IrrDevice::i().d()->getVideoDriver()->getTextureCount() << "\n";
 }
 
 SpriteText& SpriteText::changeText(std::string const& new_text)

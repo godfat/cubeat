@@ -27,11 +27,13 @@ public:
     virtual void cycle();
     Stage& hitGroup(int const&);
     Stage& playBGM();
+    Stage& releaseResource(); //tell engine to release some of the cached resources.
 
 protected:
     pointer_type init( std::string const& );
 
 protected:
+    bool need_release_;
     view::pScene scene_;
     utils::map_any conf_;
     std::vector< SceneObjList > slists_;

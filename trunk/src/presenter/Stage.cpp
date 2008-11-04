@@ -8,18 +8,47 @@
 
 #include <boost/foreach.hpp>
 
+using namespace irr;
+using namespace video;
+using namespace scene;
+
 using namespace psc;
 using namespace presenter;
 using namespace easing;
 using namespace accessor;
 
-Stage::Stage()
+Stage::Stage() : need_release_(false)
 {
     Sound::i().stopAll();
 }
 
 Stage::~Stage()
 {
+    if( need_release_ ) {
+        IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+        IMeshCache*   mcache = IrrDevice::i().d()->getSceneManager()->getMeshCache();
+
+        BOOST_FOREACH(SceneObjList& slist, slists_) {
+            BOOST_FOREACH(view::pAnimatedSceneObject& obj, slist) {
+                IAnimatedMeshSceneNode* body = static_cast<IAnimatedMeshSceneNode*>(obj->body());
+                for(unsigned int i=0; i < body->getMaterialCount(); ++i ) {
+                    for(unsigned int j=0; j < MATERIAL_MAX_TEXTURES; ++j ){
+                        ITexture* tex = body->getMaterial(i).getTexture(j);
+                        if( tex )
+                            driver->removeTexture( tex );
+                    }
+                }
+                mcache->removeMesh( body->getMesh() );
+            }
+        }
+    }
+}
+
+//tell engine to release some of the cached resources.
+Stage& Stage::releaseResource()
+{
+    need_release_ = true;
+    return *this;
 }
 
 pStage Stage::init( std::string const& path )

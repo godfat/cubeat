@@ -212,6 +212,7 @@ void Puzzle::end_sequence1()
 {
     Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
+    stage_->releaseResource(); //release when player isn't going to replay
     App::i().launchMainMenu();
     std::cout << "game_puzzle end call finished." << std::endl;
 }
@@ -225,6 +226,7 @@ void Puzzle::reinit()
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);
+
     std::cout << "game_puzzle end call finished." << std::endl;
 }
 

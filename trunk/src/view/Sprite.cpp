@@ -76,14 +76,8 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     size_.Width  = w;
     size_.Height = h;
 
-    SMaterial mat;
-    mat.setFlag(video::EMF_LIGHTING, true);
-    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
-    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+    SMaterial mat = create_std_material_for_sprite();
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
-    mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-    mat.MaterialTypeParam = 0.01f;
-    mat.DiffuseColor.set(255, 255, 255, 255);
 
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
 
@@ -93,6 +87,19 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     scene()->addPickMapping( body_, self );
 
     return self;
+}
+
+SMaterial Sprite::create_std_material_for_sprite()
+{
+    SMaterial mat;
+    mat.setFlag(video::EMF_LIGHTING, true);
+    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
+    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+    mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+    mat.MaterialTypeParam = 0.01f;
+    mat.DiffuseColor.set(255, 255, 255, 255);
+
+    return mat;
 }
 
 void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,

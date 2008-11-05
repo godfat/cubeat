@@ -33,23 +33,11 @@ SpriteText::init(std::string const& text, std::string const& font_path,
 
     setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
 
-    SMaterial mat;
-    mat.setFlag(video::EMF_LIGHTING, true);
-    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
-    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
-
-    mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
-    mat.MaterialTypeParam = 0.01f;
-
-    SColor col( color.rgb() );
-    col.setAlpha( 0/*255*/ );
-    mat.DiffuseColor = col;
-
+    SMaterial mat = create_std_material_for_sprite();
+    mat.DiffuseColor = SColor( color.rgb() );
     body_->getMaterial(0) = mat;
 
     createText( text, font_path, size );
-
-    //adjust_texcoord_for_hand_made_texture(thismesh_, size_.Width, size_.Height);
 
     pSpriteText self = static_pointer_cast<SpriteText>( shared_from_this() );
     scene()->addPickMapping( body_, self );
@@ -86,12 +74,7 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     ISceneNode*  current_node;
     dimension2di letter_size = ttfont_->getDimension(&wc);
 
-    SMaterial mat;
-    mat.setFlag(video::EMF_LIGHTING, true);
-    mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
-    mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
-    mat.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
-    mat.MaterialTypeParam = 0.01f;
+    SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;
     mat.DiffuseColor.setAlpha(255);
     mat.setTexture(0, current_tex);
@@ -146,14 +129,9 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
         generateLetter(c, lc, current_xpos);
     }
 
-//    font_texture_ =
-//        ttfont_->getTextureFromText(wtext.c_str(), (new_text+"_"+fpath_+"_"+to_s(fsize_)).c_str());
-
-    if( body_ ) {
-//        body_->setMaterialTexture(0, font_texture_);
+    if( body_ )
         set<Size2D>( vec2(size_.Width, size_.Height) );
-//        adjust_texcoord_for_hand_made_texture(thismesh_, size_.Width, size_.Height);
-    }
+
     return *this;
 }
 

@@ -19,6 +19,9 @@ public:
     void updateStartTime() {
         startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime_;
     }
+
+    virtual AnimatorBase* clone() const = 0;
+
 protected:
     s32 startTime_;
     s32 delayTime_;
@@ -80,6 +83,11 @@ public:
 
 	//! Returns type of the scene node animator
     virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return (ESCENE_NODE_ANIMATOR_TYPE)Accessor::TYPE; }
+
+    //! Returns a deep clone of this animator (but it dosen't clone the callback function)
+    virtual AnimatorBase* clone() const {
+        return new CustomAnimator<Eq, Accessor>(smgr_, start_, end_, duration_, loop_, 0, delayTime_);
+    }
 
 protected:
     inline T updatePos(ISceneNode* node, u32 const& timeMs) {

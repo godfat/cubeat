@@ -68,8 +68,9 @@ pMainMenu MainMenu::init()
          .setDepth( title.I("depth") );
 
     temp->addSpriteText("text", text.S("text"), text.S("font"), 0, m_text_size, true)
-         .getSprite("text").set<Pos2D>( vec2( 0, height ) )
-         .tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1);
+         .getSpriteText("text").tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1)
+         .set<Pos2D>( vec2( 0, height ) );
+
 
     setupMenus();
 
@@ -154,8 +155,8 @@ void MainMenu::setupMenus()
 
     player1text_ = view::SpriteText::create("player1", temp, "Star Jedi", 24, true, data::Color(255,0,0));
     player2text_ = view::SpriteText::create("player2", temp, "Star Jedi", 24, true, data::Color(0,0,255));
-    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
-    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+    player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
+    player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
 
     hideMenu("mode_select").hideMenu("player_select").hideMenu("stage_select");
 }
@@ -255,7 +256,7 @@ void MainMenu::push_start()
 
     Sound::i().play("4/4b.wav");
     btn_start_.reset();
-    menus_["start_menu"]->getSprite("text").tween<SineCirc, Alpha>(0, 255, 120u, 2);
+    //menus_["start_menu"]->getSpriteText("text").tween<SineCirc, Alpha>(0, 255, 120u, 2);
 
     hideMenu("start_menu").showMenu("mode_select");
     setup_mode_selecting_buttons();
@@ -306,8 +307,8 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         setup_mode_selecting_buttons();
     }
     else if( to == "player_select" ) {
-        player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
-        player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+        player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
+        player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
         player1focus_ = 0;
         player2focus_ = 0;
         player1num_ = 0;
@@ -350,8 +351,8 @@ void MainMenu::player_choosing()
 //temp: very temp =_=
 void MainMenu::setup_player_selecting_buttons()
 {
-    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
-    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+    player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
+    player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
 
     ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
     ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
@@ -451,7 +452,7 @@ void MainMenu::player1_checked()
     if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player1num_ = player1focus_;
-    player1text_->set<Alpha>(255);
+    player1text_->setTextAlpha(255);
     btn_choose_player1_.reset();
     if( two_players_ ) {
         if( player1num_ != 0 && player2num_ != 0 )
@@ -466,7 +467,7 @@ void MainMenu::player2_checked()
     if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player2num_ = player2focus_;
-    player2text_->set<Alpha>(255);
+    player2text_->setTextAlpha(255);
     btn_choose_player2_.reset();
     if( player1num_ != 0 && player2num_ != 0 )
         stage_choosing();
@@ -516,7 +517,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
     sprite->tweenAll<Linear, Alpha>(255, 1000u);
     if( name == "start_menu" ) { //temp: special case
         y = Conf::i().SCREEN_H/2 - sprite->get<Size2D>().Y/3;
-        sprite->getSprite("text")
+        sprite->getSpriteText("text")
                .tween<SineCirc, Alpha>(255, (unsigned int)config.M("text").I("glow_period"), -1);
     }
     sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W/2, y), 1000, 0, f );

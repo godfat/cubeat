@@ -55,8 +55,8 @@ Transitioner::setLoadingBar(int const& percent)
     if( percent == 1 ) {
         loading_menu_->set<Alpha>(255);
         loading_menu_->getSprite("loading_bar").set<Alpha>(255);
-        loading_menu_->getSprite("text1").set<Alpha>(255);
-        loading_menu_->getSprite("text2").set<Alpha>(255);
+        loading_menu_->getSpriteText("text1").setTextAlpha(255);
+        loading_menu_->getSpriteText("text2").setTextAlpha(255);
     }
 
     loading_menu_->set<Visible>(true);
@@ -67,9 +67,9 @@ Transitioner::setLoadingBar(int const& percent)
         loading_menu_->tween<Linear, Alpha>(0, config.M("background").I("fade_period"), 0, endcall);
         loading_menu_->getSprite("loading_bar")
                       .tween<Linear, Alpha>(0, config.M("bar_setting").I("fade_period") );
-        loading_menu_->getSprite("text1")
+        loading_menu_->getSpriteText("text1")
                       .tween<Linear, Alpha>(0, config.M("text1").I("fade_period") );
-        loading_menu_->getSprite("text2")
+        loading_menu_->getSpriteText("text2")
                       .tween<Linear, Alpha>(0, config.M("text2").I("fade_period") );
     }
     return *this;

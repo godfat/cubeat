@@ -22,6 +22,17 @@ struct AT{
     enum ATEnum {POSITION = irr::scene::ESNAT_UNKNOWN+1,
                  ROTATION, SCALE, DIFFUSE, EMISSIVE, R, G, B, A, RE, GE, BE, AE,
                  FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
+
+    static bool isMatrixTransformationValue(ATEnum const& eType) {
+        switch (eType) {
+            case AT::POSITION:
+            case AT::ROTATION:
+            case AT::SCALE:
+                return true;
+            default:
+                return false;
+        }
+    }
 };
 
 template <class T, int U = AT::UNKNOWN>

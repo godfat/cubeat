@@ -4,6 +4,7 @@
 
 #include "view/detail/CustomAnimator.hpp"
 #include "view/Sprite.hpp"
+#include "view/SpriteText.hpp"
 #include "data/Color.hpp"
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
@@ -17,7 +18,7 @@
 namespace psc { namespace view {
 
 class AnimatedSprite;
-class SpriteText;
+//class SpriteText;
 
 class Menu : public Sprite
 {
@@ -107,8 +108,12 @@ public:
         typename Accessor::value_type start = typename Accessor::value_type();
         Accessor::get(body_, start);
         Object::tween<Eq, Accessor>(start, end, duration, loop, cb, delay);
-        BOOST_FOREACH( SpriteListItem& it, sprites_ )
-            it.second->tween<Eq, Accessor>( end, duration, loop, cb, delay );
+        BOOST_FOREACH( SpriteListItem& it, sprites_ ) {
+            if( pSpriteText st = std::tr1::dynamic_pointer_cast<SpriteText>(it.second) )
+                st->tween<Eq, Accessor>( end, duration, loop, cb, delay );
+            else
+                it.second->tween<Eq, Accessor>( end, duration, loop, cb, delay );
+        }
         //bad usage for map, but heck, I don't want multi_index...
         return *this;
     }

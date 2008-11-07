@@ -3,10 +3,12 @@
 #include "view/Scene.hpp"
 #include "utils/to_s.hpp"
 #include "Accessors.hpp"
+#include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
+#include <boost/foreach.hpp>
 
 using namespace irr;
 using namespace core;
@@ -15,6 +17,7 @@ using namespace video;
 
 using namespace psc;
 using namespace view;
+using namespace easing;
 using namespace accessor;
 using utils::to_s;
 using std::tr1::static_pointer_cast;
@@ -135,6 +138,41 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     return *this;
 }
 
+SpriteText& SpriteText::setTextColor(data::Color const& c) {
+    BOOST_FOREACH(ISceneNode* it, letter_node_) {
+        int orig_alpha = it->getMaterial(0).DiffuseColor.getAlpha();
+        it->getMaterial(0).DiffuseColor = SColor( orig_alpha<<24 | c.rgb() );
+    }
+    return *this;
+}
+SpriteText& SpriteText::setTextColor(irr::video::SColor const& c) {
+    BOOST_FOREACH(ISceneNode* it, letter_node_) {
+        it->getMaterial(0).DiffuseColor = c;
+    }
+    return *this;
+}
+
+SpriteText& SpriteText::setTextColor(int const& a, int const& r, int const& g, int const& b) {
+    BOOST_FOREACH(ISceneNode* it, letter_node_) {
+        it->getMaterial(0).DiffuseColor = a<<24 | r<<16 | g<<8 | b;
+    }
+    return *this;
+}
+
+SpriteText& SpriteText::setTextColor(int const& col_val) {
+    BOOST_FOREACH(ISceneNode* it, letter_node_) {
+        it->getMaterial(0).DiffuseColor = col_val;
+    }
+    return *this;
+}
+
+SpriteText& SpriteText::setTextAlpha(int const& alpha) {
+    BOOST_FOREACH(ISceneNode* it, letter_node_) {
+        it->getMaterial(0).DiffuseColor.setAlpha(alpha);
+    }
+    return *this;
+}
+
 SpriteText& SpriteText::showNumber(int num, unsigned int digit)
 {
     std::string str = to_s(num);
@@ -149,9 +187,77 @@ SpriteText& SpriteText::setCenterAligned(bool const& center)
 {
     if( center_ == center ) return *this;
     Sprite::setCenterAligned(center);
-    body_->setMaterialTexture(0, font_texture_);
-    body_->getMaterial(0).MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
-    body_->getMaterial(0).MaterialTypeParam = 0.01f;
+
+    if( center_ ) {
+        BOOST_FOREACH(ISceneNode* it, letter_node_) {
+            vec3 orig;
+            Pos3D::get(it, orig);
+            orig.X -= size_.Width/2;
+            orig.Y += size_.Height/2;
+            Pos3D::set(it, orig);
+        }
+    }
+    else {
+        BOOST_FOREACH(ISceneNode* it, letter_node_) {
+            vec3 orig;
+            Pos3D::get(it, orig);
+            orig.X += size_.Width/2;
+            orig.Y -= size_.Height/2;
+            Pos3D::set(it, orig);
+        }
+    }
+    return *this;
+}
+
+void SpriteText::startTween()
+{
+    if( anim_queue_.size() > 0 ) {
+        AnimatorBase* anim = anim_queue_.front();
+        anim_queue_.pop_front();
+        anim->updateStartTime();
+        AT::ATEnum e = static_cast<AT::ATEnum>(anim->getType());
+        clearTween( e ); //del all animators of same type
+
+        if( AT::isMatrixTransformationValue( e ) )
+            body_->addAnimator( anim );
+        else {
+            BOOST_FOREACH(ISceneNode* it, letter_node_) {
+                AnimatorBase* a = anim->clone();
+                it->addAnimator( a );
+                a->drop();
+            }
+        }
+        anim->drop();
+    }
+}
+
+SpriteText& SpriteText::clearAllTween()
+{
+    clearAllQueuedTween();
+    body_->removeAnimators();
+
+    BOOST_FOREACH(ISceneNode* it, letter_node_)
+        it->removeAnimators();
+
+    return *this;
+}
+
+SpriteText& SpriteText::clearTween(AT::ATEnum const& eType)
+{
+    if( AT::isMatrixTransformationValue(eType) )
+        Object::clearTween(eType);
+    else {
+        BOOST_FOREACH(ISceneNode* it, letter_node_) {
+            typedef core::list< ISceneNodeAnimator* > IrrAnimList;
+            IrrAnimList const& alist = it->getAnimators();
+            for( IrrAnimList::ConstIterator a = alist.begin(), end = alist.end();
+                 a != end; ++a ) {
+                if( static_cast<int>((*a)->getType()) == static_cast<int>(eType) ) {
+                    smgr_->addToAnimatorDeletionQueue(*a, it);
+                }
+            }
+        }
+    }
     return *this;
 }
 

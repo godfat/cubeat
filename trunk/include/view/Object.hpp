@@ -302,9 +302,9 @@ public:
         return *this;
     }
 
-    Object& clearAllTween();
+    virtual Object& clearTween(accessor::AT::ATEnum const&);
+    virtual Object& clearAllTween();
     Object& clearAllQueuedTween();
-    Object& clearTween(accessor::AT::ATEnum const&);
     Object& clearQueuedTween(accessor::AT::ATEnum const&);
 
 #undef START
@@ -326,7 +326,7 @@ public:
 protected:
     void setupSceneAndManager(pointer_type const& parent);
     void init(pointer_type const& parent);
-    void startTween();
+    virtual void startTween();
     void nextTween(std::tr1::function<void()>const& orig_cb);
 
     ///////////////// tween param matching & deducing series ///////////////////

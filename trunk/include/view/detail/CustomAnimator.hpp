@@ -21,6 +21,7 @@ public:
     }
 
     virtual AnimatorBase* clone() const = 0;
+    virtual AnimatorBase* cloneWithoutCallback() const = 0;
 
 protected:
     s32 startTime_;
@@ -84,8 +85,13 @@ public:
 	//! Returns type of the scene node animator
     virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return (ESCENE_NODE_ANIMATOR_TYPE)Accessor::TYPE; }
 
-    //! Returns a deep clone of this animator (but it dosen't clone the callback function)
+    //! Returns a deep clone of this animator
     virtual AnimatorBase* clone() const {
+        return new CustomAnimator<Eq, Accessor>(smgr_, start_, end_, duration_, loop_, cb_, delayTime_);
+    }
+
+    //! Returns a deep clone of this animator (but it dosen't clone the callback function)
+    virtual AnimatorBase* cloneWithoutCallback() const {
         return new CustomAnimator<Eq, Accessor>(smgr_, start_, end_, duration_, loop_, 0, delayTime_);
     }
 

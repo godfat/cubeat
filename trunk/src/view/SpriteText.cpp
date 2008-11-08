@@ -221,10 +221,18 @@ void SpriteText::startTween()
         if( AT::isMatrixTransformationValue( e ) )
             body_->addAnimator( anim );
         else {
-            BOOST_FOREACH(ISceneNode* it, letter_node_) {
-                AnimatorBase* a = anim->clone();
-                it->addAnimator( a );
-                a->drop();
+            for( unsigned int i=0; i < letter_node_.size(); ++i ) {
+                if( i == 0 )
+                    letter_node_[0]->addAnimator( anim );
+                else {
+                    AnimatorBase* a = anim->cloneWithoutCallback();
+                    letter_node_[i]->addAnimator( a );
+                    a->drop();
+                }
+                //the problem here is, we have to make sure only "one of the letters"
+                //have the animator with callback. since the callback semantic is
+                //"do something once when this sprite's animation ends", NOT
+                //"do something as many times as the number of letters when animation ends."
             }
         }
         anim->drop();

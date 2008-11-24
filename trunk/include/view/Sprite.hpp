@@ -48,6 +48,12 @@ public:
 
     Sprite(std::string const& name, bool const& center);
 
+    template <class Accessor>
+    Sprite& set(typename Accessor::value_type const& value) {
+        Accessor::set(body_, value);
+        return *this;
+    }
+
     virtual Sprite* clone() const;
     virtual Sprite& setCenterAligned(bool const&);
     virtual Sprite& setDepth(float);

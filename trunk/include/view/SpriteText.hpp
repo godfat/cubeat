@@ -7,6 +7,7 @@
 
 #include "all_fwd.hpp"
 #include <string>
+#include <boost/foreach.hpp>
 
 namespace irr {
 namespace gui {
@@ -36,6 +37,32 @@ public:
         : Sprite(name, center){}
 
     virtual SpriteText* clone() const { return 0; }
+
+    template <class Accessor>
+    SpriteText& set(typename Accessor::value_type const& value) {
+        accessor::AT::ATEnum e = static_cast<accessor::AT::ATEnum>(Accessor::TYPE);
+
+        if( accessor::AT::isMatrixTransformationValue( e ) )
+            Accessor::set(body_, value);
+        else
+            BOOST_FOREACH(irr::scene::ISceneNode* it, letter_node_)
+                Accessor::set(it, value);
+
+        return *this;
+    }
+
+    template <class Accessor>
+    typename Accessor::value_type get() const {
+        typename Accessor::value_type out = typename Accessor::value_type();
+        accessor::AT::ATEnum e = static_cast<accessor::AT::ATEnum>(Accessor::TYPE);
+
+        if( !accessor::AT::isMatrixTransformationValue( e ) && letter_node_.size() )
+            Accessor::get(letter_node_.front(), out);
+        else
+            Accessor::get(body_, out);
+        return out;
+    }
+
     virtual SpriteText& setCenterAligned(bool const&);
     virtual SpriteText& clearTween(accessor::AT::ATEnum const&);
     virtual SpriteText& clearAllTween();
@@ -48,13 +75,7 @@ public:
                       std::tr1::function<void()>    const& cb = 0,
                       int                           const& delay = 0)
     {
-        typename Accessor::value_type start = typename Accessor::value_type();
-        if( !accessor::AT::isMatrixTransformationValue( static_cast<accessor::AT::ATEnum>(Accessor::TYPE) )
-            && letter_node_.size() )
-            Accessor::get(letter_node_.front(), start);
-        else
-            Accessor::get(body_, start);
-        Object::tween<Eq, Accessor>(start, end, duration, loop, cb, delay);
+        Object::tween<Eq, Accessor>(get<Accessor>(), end, duration, loop, cb, delay);
         return *this;
     }
 
@@ -66,13 +87,7 @@ public:
                       std::tr1::function<void()>    const& cb = 0,
                       int                           const& delay = 0)
     {
-        typename Accessor::value_type start = typename Accessor::value_type();
-        if( !accessor::AT::isMatrixTransformationValue( static_cast<accessor::AT::ATEnum>(Accessor::TYPE) )
-            && letter_node_.size() )
-            Accessor::get(letter_node_.front(), start);
-        else
-            Accessor::get(body_, start);
-        Object::tween<Eq, Accessor>(start, end, speedfunc, loop, cb, delay);
+        Object::tween<Eq, Accessor>(get<Accessor>(), end, speedfunc, loop, cb, delay);
         return *this;
     }
 
@@ -85,13 +100,7 @@ public:
                       int                           const& delay = 0)
     {
         if( duration == 0 ) return *this;
-        typename Accessor::value_type start = typename Accessor::value_type();
-        if( !accessor::AT::isMatrixTransformationValue( static_cast<accessor::AT::ATEnum>(Accessor::TYPE) )
-            && letter_node_.size() )
-            Accessor::get(letter_node_.front(), start);
-        else
-            Accessor::get(body_, start);
-        Object::queue<Eq, Accessor>(start, end, duration, loop, cb, delay);
+        Object::queue<Eq, Accessor>(get<Accessor>(), end, duration, loop, cb, delay);
         return *this;
     }
 
@@ -104,23 +113,12 @@ public:
                       int                           const& delay = 0)
     {
         if( !speedfunc ) return *this;
-        typename Accessor::value_type start = typename Accessor::value_type();
-        if( !accessor::AT::isMatrixTransformationValue( static_cast<accessor::AT::ATEnum>(Accessor::TYPE) )
-            && letter_node_.size() )
-            Accessor::get(letter_node_.front(), start);
-        else
-            Accessor::get(body_, start);
-        Object::queue<Eq, Accessor>(start, end, speedfunc, loop, cb, delay);
+        Object::queue<Eq, Accessor>(get<Accessor>(), end, speedfunc, loop, cb, delay);
         return *this;
     }
 
     SpriteText& changeText(std::string const&);
     SpriteText& showNumber(int, unsigned int digit = 0);
-    SpriteText& setTextColor(data::Color const&);
-    SpriteText& setTextColor(irr::video::SColor const&);
-    SpriteText& setTextColor(int const&, int const&, int const&, int const&);
-    SpriteText& setTextColor(int const&);
-    SpriteText& setTextAlpha(int const&);
 
     virtual ~SpriteText();
 

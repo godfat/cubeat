@@ -55,8 +55,8 @@ Transitioner::setLoadingBar(int const& percent)
     if( percent == 1 ) {
         loading_menu_->set<Alpha>(255);
         loading_menu_->getSprite("loading_bar").set<Alpha>(255);
-        loading_menu_->getSpriteText("text1").setTextAlpha(255);
-        loading_menu_->getSpriteText("text2").setTextAlpha(255);
+        loading_menu_->getSpriteText("text1").set<Alpha>(255);
+        loading_menu_->getSpriteText("text2").set<Alpha>(255);
     }
 
     loading_menu_->set<Visible>(true);

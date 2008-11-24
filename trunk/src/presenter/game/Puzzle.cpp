@@ -188,8 +188,8 @@ void Puzzle::end(pMap lose_map)
     end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 100) );
-    end_text_-> setTextAlpha(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-    end_text2_->setTextAlpha(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+    end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+    end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
     ctrl::EventDispatcher::i().subscribe_timer(bind(&Puzzle::setup_end_button, this), 1000);
 }

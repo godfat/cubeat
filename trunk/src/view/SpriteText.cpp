@@ -8,7 +8,6 @@
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
-#include <boost/foreach.hpp>
 
 using namespace irr;
 using namespace core;
@@ -133,43 +132,8 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     }
 
     if( body_ )
-        set<Size2D>( vec2(size_.Width, size_.Height) );
+        Size2D::set(body_, vec2(size_.Width, size_.Height));
 
-    return *this;
-}
-
-SpriteText& SpriteText::setTextColor(data::Color const& c) {
-    BOOST_FOREACH(ISceneNode* it, letter_node_) {
-        int orig_alpha = it->getMaterial(0).DiffuseColor.getAlpha();
-        it->getMaterial(0).DiffuseColor = SColor( orig_alpha<<24 | c.rgb() );
-    }
-    return *this;
-}
-SpriteText& SpriteText::setTextColor(irr::video::SColor const& c) {
-    BOOST_FOREACH(ISceneNode* it, letter_node_) {
-        it->getMaterial(0).DiffuseColor = c;
-    }
-    return *this;
-}
-
-SpriteText& SpriteText::setTextColor(int const& a, int const& r, int const& g, int const& b) {
-    BOOST_FOREACH(ISceneNode* it, letter_node_) {
-        it->getMaterial(0).DiffuseColor = a<<24 | r<<16 | g<<8 | b;
-    }
-    return *this;
-}
-
-SpriteText& SpriteText::setTextColor(int const& col_val) {
-    BOOST_FOREACH(ISceneNode* it, letter_node_) {
-        it->getMaterial(0).DiffuseColor = col_val;
-    }
-    return *this;
-}
-
-SpriteText& SpriteText::setTextAlpha(int const& alpha) {
-    BOOST_FOREACH(ISceneNode* it, letter_node_) {
-        it->getMaterial(0).DiffuseColor.setAlpha(alpha);
-    }
     return *this;
 }
 

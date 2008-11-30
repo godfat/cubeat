@@ -1,0 +1,52 @@
+# generated executable
+bin/cubeat
+
+# resources and tmp
+tmp
+rc
+
+# cmake generated
+Makefile
+cmake_install.cmake
+CMakeLists.txt
+CMakeScripts
+CMakeCache.txt
+CMakeFiles
+
+# generated source codes
+include/all_fwd.hpp
+include/ctrl/Ai.hpp
+include/data/Cube.hpp
+include/data/MapSetting.hpp
+include/data/ViewSetting.hpp
+include/model/Chain.hpp
+include/model/Cube.hpp
+include/model/Map.hpp
+include/model/OneFading.hpp
+include/model/detail/MapUtils.hpp
+include/model/state/Dropping.hpp
+include/model/state/Dying.hpp
+include/model/state/Exploding.hpp
+include/model/state/Sinking.hpp
+include/model/state/State.hpp
+include/model/state/Waiting.hpp
+include/presenter/Cube.hpp
+include/presenter/Map.hpp
+include/presenter/cube/ViewBase.hpp
+include/presenter/cube/ViewMaster.hpp
+include/presenter/cube/ViewSprite.hpp
+include/presenter/cube/ViewStdout.hpp
+include/utils/ChainChecker.hpp
+include/utils/MapLoader.hpp
+include/utils/ObjectPool.hpp
+include/utils/Random.hpp
+include/utils/math.hpp
+include/utils/vector_2d.hpp
+src/model/Cube.cpp
+src/model/Map.cpp
+src/model/state/Dropping.cpp
+src/model/state/Dying.cpp
+src/model/state/State.cpp
+src/model/state/Waiting.cpp
+src/presenter/Cube.cpp
+src/presenter/Map.cpp

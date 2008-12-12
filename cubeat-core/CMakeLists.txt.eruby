@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 # misc option
 # SET (CMAKE_VERBOSE_MAKEFILE on)
 
-PROJECT (shooting-cubes)
+PROJECT (cubeat)
 
 # compiler option
 SET (CMAKE_CXX_COMPILER "g++-mp-4.3")

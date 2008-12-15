@@ -17,13 +17,16 @@
 #include "private/Wiimote_IR_internal.hpp"
 #endif
 
+#ifdef _USE_MANYMOUSE_
+#include "private/MouseState.hpp"
+#endif
+
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <string>
-#include <fstream>
 
 using namespace irr;
 
@@ -48,6 +51,14 @@ bool InputMgr::createInputs()
 {
     if( inited_ ) return false;
     inited_ = true;
+
+#ifdef _USE_MANYMOUSE_
+    ManyMouse_Init();
+    for( int i = 0; i < MAX_INPUTS; ++i ) {
+        states_.push_back( MouseState::create() );
+    }
+#endif
+
     std::cout << "InputMgr created inputs." << std::endl;
     for( int i = 0; i < MAX_INPUTS; ++i ) {
         std::string name("player");
@@ -67,6 +78,12 @@ bool InputMgr::cleanupInputs()
         if( it != 0 )
             delete it;
     }
+
+#ifdef _USE_MANYMOUSE_
+    states_.clear();
+    ManyMouse_Quit();
+#endif
+
     inited_ = false;
     return true;
 }

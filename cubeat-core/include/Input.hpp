@@ -39,9 +39,16 @@ class Player;
 typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
 
+#ifdef _USE_MANYMOUSE_
+class MouseState;
+typedef std::tr1::shared_ptr<MouseState> pMouseState;
+typedef std::tr1::weak_ptr<MouseState>  wpMouseState;
+#endif //_USE_MANYMOUSE_
+
 class InputMgr
 {
-    typedef std::vector<Input*> InputList;
+    typedef std::vector<Input*>      InputList;
+    typedef std::vector<pMouseState> StateList;
 
 public:
     static InputMgr& i() {
@@ -68,6 +75,7 @@ private:
 
     view::pScene scene_;
     InputList    inputs_;
+    StateList    states_;
     bool keyboard_mouse_input_;
     bool inited_;
 

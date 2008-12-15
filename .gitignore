@@ -13,3 +13,6 @@
 
 # library
 irrKlang-1.0.4
+
+# binary dll on win32
+irrlicht/bin

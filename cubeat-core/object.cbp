@@ -16,6 +16,7 @@
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
 					<Add option="-D_USE_WIIMOTE_" />
+					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_HAS_GCC_TR1" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
@@ -132,6 +133,7 @@
 		<Unit filename="include\presenter\game\Puzzle.hpp" />
 		<Unit filename="include\private\AVIVideo.hpp" />
 		<Unit filename="include\private\MastEventReceiver.hpp" />
+		<Unit filename="include\private\MouseState.hpp" />
 		<Unit filename="include\private\Wiimote_IR_internal.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
@@ -173,12 +175,27 @@
 		<Unit filename="lib\Color.hpp" />
 		<Unit filename="lib\Singleton.cpp" />
 		<Unit filename="lib\SmallObj.cpp" />
-		<Unit filename="lib\for_each_multi_array.hpp" />
 		<Unit filename="lib\loki\LokiExport.h" />
 		<Unit filename="lib\loki\Pimpl.h" />
 		<Unit filename="lib\loki\Singleton.h" />
 		<Unit filename="lib\loki\SmallObj.h" />
 		<Unit filename="lib\loki\Threads.h" />
+		<Unit filename="lib\manymouse\linux_evdev.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib\manymouse\macosx_hidmanager.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib\manymouse\macosx_hidutilities.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib\manymouse\manymouse.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib\manymouse\manymouse.h" />
+		<Unit filename="lib\manymouse\windows_wminput.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />

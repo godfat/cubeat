@@ -109,11 +109,13 @@ void PlayerView::cycle()
         int new_attack  = map->current_sum_of_attack();
         int state1p = conf_.I("current_state");
         if( state1p != HIT && last_garbage_ > new_garbage ) {
+#ifdef _USE_WIIMOTE_
             if( input_ ) {
                 int rumble_factor = last_garbage_ - new_garbage;
                 if( rumble_factor > 10 ) rumble_factor = 10;
                 input_->rumbleWiimote( rumble_factor * 50 ); //unit: millisecond
             }
+#endif //_USE_WIIMOTE_
             switchCharacterState( HIT );
         }
         else if( state1p != ATTACK && state1p != HIT && last_attack_ == 0 && new_attack > 0 )

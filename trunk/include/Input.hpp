@@ -39,25 +39,45 @@ class Player;
 typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
 
+class InputMgr
+{
+    typedef std::vector<Input*> InputList;
+
+public:
+    static InputMgr& i() {
+        static InputMgr singleton;
+        return singleton;
+    }
+
+    bool createInputs();
+    bool cleanupInputs();
+    Input* getInputByIndex(unsigned int);
+    InputList& getInputs() { return inputs_; }
+    view::pScene& scene()  { return scene_; }
+    int count() const      { return static_cast<int>(inputs_.size()); }
+    bool keyboard_mouse_input() const { return keyboard_mouse_input_; }
+    bool inited()               const { return inited_; }
+    void updateAll(); //we can't combine updateAll and redrawAll,
+    void redrawAll(); //because we must update input before everything in the main loop,
+                      //however redraw input after everything (so the cursors won't be covered)
+private:
+    InputMgr();
+    ~InputMgr();
+    InputMgr(InputMgr const&); //singleton don't implement this
+    void initGraphicItems();
+
+    view::pScene scene_;
+    InputList    inputs_;
+    bool keyboard_mouse_input_;
+    bool inited_;
+
+    int const MAX_INPUTS;
+};
+
 class Input
 {
-//static things here
-    typedef std::vector<Input*> InputList;
-public:
-    static void update_all();
-    static void redraw_all();
-    static void init_graphic_items();
-    static Input* getInputByIndex(unsigned int);
-    static InputList& getInputs() { return inputs_; }
-    static int count() { return static_cast<int>(inputs_.size()); }
-    static view::pScene& scene() { return scene_; } //note: bad
+    friend class InputMgr;
 
-private:
-    static view::pScene scene_;
-    static InputList inputs_;
-    static bool keyboard_mouse_input_;
-
-//non-static below
 public:
     Input(std::string const& path);
     ~Input();

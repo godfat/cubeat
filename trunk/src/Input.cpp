@@ -10,6 +10,7 @@
 #include "view/Sprite.hpp"      //warning: is this really good...?
 #include "IrrDevice.hpp"        //warning: is this really good...?
 #include "utils/dictionary.hpp"
+#include "Conf.hpp"
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
@@ -32,12 +33,45 @@ using namespace ctrl;
 using namespace easing;
 using namespace accessor;
 
-//static functions
-view::pScene Input::scene_ = view::pScene();
-Input::InputList Input::inputs_;
-bool Input::keyboard_mouse_input_ = false;
+InputMgr::InputMgr()
+    :keyboard_mouse_input_(false), inited_(false), MAX_INPUTS(2)
+{
+    std::cout << "InputMgr constructed." << std::endl;
+}
 
-void Input::update_all()
+InputMgr::~InputMgr()
+{
+    std::cout << "InputMgr destructed." << std::endl;
+}
+
+bool InputMgr::createInputs()
+{
+    if( inited_ ) return false;
+    inited_ = true;
+    std::cout << "InputMgr created inputs." << std::endl;
+    for( int i = 0; i < MAX_INPUTS; ++i ) {
+        std::string name("player");
+        name += (i+1+48); //ascii-code...
+        name += ".zzml";
+        inputs_.push_back( new Input( Conf::i().CONFIG_INPUT_PATH + name) );
+    }
+    initGraphicItems();
+    return true;
+}
+
+bool InputMgr::cleanupInputs()
+{
+    if( !inited_ ) return false;
+    std::cout << "InputMgr cleared inputs." << std::endl;
+    BOOST_FOREACH(Input* it, inputs_) {
+        if( it != 0 )
+            delete it;
+    }
+    inited_ = false;
+    return true;
+}
+
+void InputMgr::updateAll()
 {
     MastEventReceiver::i().endEventProcess();
 
@@ -53,28 +87,30 @@ void Input::update_all()
     MastEventReceiver::i().startEventProcess();
 }
 
-void Input::init_graphic_items()
+void InputMgr::initGraphicItems()
 {
-    scene_ = view::Scene::create("Input scene");
-    scene_->setTo2DView();
+    if( !scene_ ) {
+        scene_ = view::Scene::create("Input scene");
+        scene_->setTo2DView();
+    }
     BOOST_FOREACH( Input* it, inputs_ )
         it->init_graphic();
 }
 
-void Input::redraw_all()
+void InputMgr::redrawAll()
 {
     BOOST_FOREACH( Input* it, inputs_ )
         it->redraw();
     scene_->redraw();
 }
 
-Input* Input::getInputByIndex(unsigned int i)
+Input* InputMgr::getInputByIndex(unsigned int i)
 {
     if( i >= inputs_.size() ) return 0;
     return inputs_[i];
 }
 
-//end of static functions
+/// InputManager above, Input below ///
 
 Input::Input(std::string const& path)
     :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
@@ -100,7 +136,6 @@ Input::Input(std::string const& path)
     //test
     std::cout << "Wiimote connected: " << wiimote::TotalConnected() << std::endl;
 #endif
-    inputs_.push_back( this );
 
     cursor_texture_name_ = keymap.S("cursor_texture");
     area_texture_name_ = keymap.S("area_rect");
@@ -110,7 +145,7 @@ void Input::update()
 {
     write_state_now_to_last();
 
-    if( keyboard_mouse_input_ ) {
+    if( InputMgr::i().keyboard_mouse_input() ) {
         cursor_by_keyboard_mouse();
         buttons_by_keyboard_mouse();
     }
@@ -153,9 +188,9 @@ void Input::rumbleWiimote(int ms)
 
 void Input::init_graphic()
 {
-    cursor_mark_ = view::Sprite::create(cursor_texture_name_, scene_, 128, 128, true);
+    cursor_mark_ = view::Sprite::create(cursor_texture_name_, InputMgr::i().scene(), 128, 128, true);
     cursor_mark_->tween<Linear, Rotation>(vec3(0,0,360), 3000u, -1);
-    range_shape_ = view::Sprite::create(area_texture_name_, scene_, 191, 191, true);
+    range_shape_ = view::Sprite::create(area_texture_name_, InputMgr::i().scene(), 191, 191, true);
     //must use config or changes dynamically when weapon's area predicate changes.
     range_shape_->set<Alpha>(192);
     range_shape_->set<Visible>(false);

@@ -74,7 +74,7 @@ Menu& Menu::setCallbackToSprite(std::string const& name,
                                 std::tr1::function<void(pSprite&)> cb)
 {
     if( pSprite temp = sprites_[name] ) {
-        BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs())
+        BOOST_FOREACH(ctrl::Input* it, ctrl::InputMgr::i().getInputs())
             temp->onPress( &it->trig1() ) = cb;
     }
     return *this;

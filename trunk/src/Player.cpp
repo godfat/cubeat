@@ -106,7 +106,7 @@ Player& Player::subscribe_shot_event
     (view::pSprite& sv, HitCallback const& ally_cb, HitCallback const& enemy_cb)
 {
     BOOST_FOREACH(int& id, ally_input_ids_) {
-        Input*  input = Input::getInputByIndex(id);
+        Input*  input = InputMgr::i().getInputByIndex(id);
         wpPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
         sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
@@ -114,7 +114,7 @@ Player& Player::subscribe_shot_event
 
     if( enemy_cb ) {
         BOOST_FOREACH(int& id, enemy_input_ids_) {
-            Input*  input = Input::getInputByIndex(id);
+            Input*  input = InputMgr::i().getInputByIndex(id);
             wpPlayer enemy = input->player();
             sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
         }
@@ -165,7 +165,8 @@ bool Player::ammo_all_out() const {
 //temp: not flexible and stupid.
 void Player::normal_weapon_fx() {
     Sound::i().play("1/a/1a-1.mp3");
-    view::SFX::i().normal_weapon_vfx( Input::scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
+    view::SFX::i().normal_weapon_vfx(
+        InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
 }
 
 //note: need fix

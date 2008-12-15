@@ -53,7 +53,7 @@ void Scene::init(std::string const& name)
 }
 
 void Scene::enableGlobalHittingEvent() {
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs()) {
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::Button const* btn = &input->trig2();
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Scene::onPressEvent, this, _1, _2, btn), scene_, btn, ctrl::BTN_PRESS);

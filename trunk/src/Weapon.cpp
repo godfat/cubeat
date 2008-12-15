@@ -29,7 +29,7 @@ void BlockShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         Sound::i().play("1/a/1a-2.mp3");
-        view::SFX::i().weapon_vfx1( Input::scene(), pos );
+        view::SFX::i().weapon_vfx1( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }
 }
@@ -42,7 +42,7 @@ void PowerShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         Sound::i().play("1/a/1a-3.mp3");
-        view::SFX::i().weapon_vfx2( Input::scene(), pos );
+        view::SFX::i().weapon_vfx2( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }
 }
@@ -55,7 +55,7 @@ void AreaShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
         Sound::i().play("1/a/1a-4.mp3");
-        view::SFX::i().weapon_vfx3( Input::scene(), pos );
+        view::SFX::i().weapon_vfx3( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }
 }

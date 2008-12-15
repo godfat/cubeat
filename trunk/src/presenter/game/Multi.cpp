@@ -62,8 +62,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
-    player1_ = ctrl::Player::create(ctrl::Input::getInputByIndex(1), s1->ally_input_ids(), s1->enemy_input_ids());
+    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
+    player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1->ally_input_ids(), s1->enemy_input_ids());
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();
@@ -93,8 +93,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     pview2_->flipPosition();
     pview1_->setMap( map0_ );
     pview2_->setMap( map1_ );
-    pview1_->setInput( ctrl::Input::getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
-    pview2_->setInput( ctrl::Input::getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
+    pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
+    pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
     pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
@@ -120,11 +120,11 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     //temp: for pause functionality
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Multi::pause, this), shared_from_this(),
-        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Multi::toggle_auto1, this), shared_from_this(),
-        &ctrl::Input::getInputByIndex(1)->pause(), ctrl::BTN_PRESS);
+        &ctrl::InputMgr::i().getInputByIndex(1)->pause(), ctrl::BTN_PRESS);
 
     return shared_from_this();
 }
@@ -238,7 +238,7 @@ void Multi::setup_end_button()
     std::tr1::function<void(int, int)> clicka = bind(&Multi::reinit, this);
     std::tr1::function<void(int, int)> clickb = bind(&Multi::end_sequence1, this);
     btn_reinit_ = pDummy(new int);
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs()) {
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
             clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
         ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -333,16 +333,16 @@ void Multi::kill_cube_randomly0()
 {
     int x = utils::random(6), y = utils::random(6);
     map0_->kill_cube_at(x, y);
-    ctrl::Input::getInputByIndex(0)->cursor().x() = 159 + x*64 + 32;
-    ctrl::Input::getInputByIndex(0)->cursor().y() = 684 - y*64 - 32;
+    ctrl::InputMgr::i().getInputByIndex(0)->cursor().x() = 159 + x*64 + 32;
+    ctrl::InputMgr::i().getInputByIndex(0)->cursor().y() = 684 - y*64 - 32;
 }
 
 void Multi::kill_cube_randomly1()
 {
     int x = utils::random(6), y = utils::random(10);
     map1_->kill_cube_at(x, y);
-    ctrl::Input::getInputByIndex(1)->cursor().x() = 740 + x*64 + 32;
-    ctrl::Input::getInputByIndex(1)->cursor().y() = 684 - y*64 - 32;
+    ctrl::InputMgr::i().getInputByIndex(1)->cursor().x() = 740 + x*64 + 32;
+    ctrl::InputMgr::i().getInputByIndex(1)->cursor().y() = 684 - y*64 - 32;
 }
 
 void Multi::pause()
@@ -356,7 +356,7 @@ void Multi::pause()
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Multi::resume, this), shared_from_this(),
-        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 }
 
 void Multi::resume()
@@ -370,7 +370,7 @@ void Multi::resume()
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Multi::pause, this), shared_from_this(),
-        &ctrl::Input::getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 }
 
 void Multi::cycle()

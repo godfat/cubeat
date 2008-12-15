@@ -23,10 +23,10 @@ bool IrrDevice::init(bool test)
     param.Bits             = config.I("bits");
     param.DriverType       = video::EDT_OPENGL;
     param.EventReceiver    = &MastEventReceiver::i();
-    param.Fullscreen       = (bool)config.I("fullscreen");
+    param.Fullscreen       = static_cast<bool>(config.I("fullscreen"));
     param.HighPrecisionFPU = true;
     param.Stencilbuffer    = false;
-    param.Vsync            = (bool)config.I("vsync");
+    param.Vsync            = static_cast<bool>(config.I("vsync"));
     param.WindowSize       = core::dimension2di(Conf::i().SCREEN_W, Conf::i().SCREEN_H);
 
     if( inited_ ) return false;

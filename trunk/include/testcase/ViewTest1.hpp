@@ -58,20 +58,20 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
         button->tween<SineCirc, Alpha>(0, 300);
     }
     void removeFn(view::pButton& button) {
-        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = 0;
+        button->onUp( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = 0;
         std::cout << "pButton onUp removed.\n";
     }
     void addFn(view::pButton& button) {
         std::cout << "global button input2 trig2 press changed.\n";
         std::tr1::function<void(int,int)> btest2_ = bind(&ViewTest1::btn_press_test2, this, _1, _2);
-        EventDispatcher::i().subscribe_btn_event(btest2_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+        EventDispatcher::i().subscribe_btn_event(btest2_, &(InputMgr::i().getInputByIndex(1)->trig2()), BTN_PRESS);
         std::cout << "pButton onUp assigned.\n";
         std::tr1::function<void(view::pSprite&)> test4_ = bind(&ViewTest1::test4, this, _1);
-        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test4_;
+        button->onUp( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = test4_;
     }
     void addFn2(view::pButton& button) {
         std::tr1::function<void(view::pSprite&)> test3_ = bind(&ViewTest1::test3, this, _1);
-        button->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test3_;
+        button->onUp( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = test3_;
     }
     void test(view::pSprite&) {
         std::cout << "test...." << std::endl;
@@ -108,23 +108,23 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void btn_press_test(int, int) {
         std::cout << "BLAHHHH.\n";
         std::tr1::function<void(int,int)> btest2_ = bind(&ViewTest1::btn_press_test2, this, _1, _2);
-        EventDispatcher::i().subscribe_btn_event(btest2_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+        EventDispatcher::i().subscribe_btn_event(btest2_, &(InputMgr::i().getInputByIndex(1)->trig2()), BTN_PRESS);
     }
     void btn_press_test2(int, int) {
         std::cout << "BLOHHHH.\n";
         std::tr1::function<void(int,int)> btest_ = bind(&ViewTest1::btn_press_test, this, _1, _2);
-        EventDispatcher::i().subscribe_btn_event(btest_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+        EventDispatcher::i().subscribe_btn_event(btest_, &(InputMgr::i().getInputByIndex(1)->trig2()), BTN_PRESS);
     }
     void obj_press_test(view::pSprite& sp) {
         std::cout << "BLEHHHH.\n";
         std::tr1::function<void(view::pSprite&)> otest2_ = bind(&ViewTest1::obj_press_test2, this, _1);
-        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest2_; //input2's haste is middle button
+        sp->onPress( &(InputMgr::i().getInputByIndex(1)->haste()) ) = otest2_; //input2's haste is middle button
         sp->setTexture("cubes/cube4");
     }
     void obj_press_test2(view::pSprite& sp) {
         std::cout << "BLIHHHH.\n";
         std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
-        sp->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;  //input2's haste is middle button
+        sp->onPress( &(InputMgr::i().getInputByIndex(1)->haste()) ) = otest_;  //input2's haste is middle button
         sp->setTexture("title");
     }
 
@@ -208,11 +208,11 @@ ViewTest1::ViewTest1()
     something = view::Button::create("title", guiv, 100, 40);
     something->moveTo(100,100).set<GradientDiffuse>(200).tween(param3);
 
-    something->onPress( &(Input::getInputByIndex(1)->trig1()) ) = test_;
-    something->onRelease( &(Input::getInputByIndex(1)->trig1()) ) = test2_;
-    something->onUp( &(Input::getInputByIndex(1)->trig1()) ) = test4_;
-    something->onEnterFocus( Input::getInputByIndex(1) ) = test5_;
-    something->onLeaveFocus( Input::getInputByIndex(1) ) = test6_;
+    something->onPress( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = test_;
+    something->onRelease( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = test2_;
+    something->onUp( &(InputMgr::i().getInputByIndex(1)->trig1()) ) = test4_;
+    something->onEnterFocus( InputMgr::i().getInputByIndex(1) ) = test5_;
+    something->onLeaveFocus( InputMgr::i().getInputByIndex(1) ) = test6_;
 
     anotherthing = view::Sprite::create("title", guiv, 100, 40);
     anotherthing->moveTo(0,0);
@@ -251,10 +251,10 @@ ViewTest1::ViewTest1()
           .queue(paramA).queue(paramB).queue(paramC).tween(paramD);
 
     std::tr1::function<void(int,int)> btest_ = bind(&ViewTest1::btn_press_test, this, _1, _2);
-    EventDispatcher::i().subscribe_btn_event(btest_, &(Input::getInputByIndex(1)->trig2()), BTN_PRESS);
+    EventDispatcher::i().subscribe_btn_event(btest_, &(InputMgr::i().getInputByIndex(1)->trig2()), BTN_PRESS);
 
     std::tr1::function<void(view::pSprite&)> otest_ = bind(&ViewTest1::obj_press_test, this, _1);
-    anotherthing->onPress( &(Input::getInputByIndex(1)->haste()) ) = otest_;
+    anotherthing->onPress( &(InputMgr::i().getInputByIndex(1)->haste()) ) = otest_;
 
     data::AnimatorParam<Linear, Frame> paramAni; paramAni.end(90.f).duration(3000).loop(-1);
     palm1 = view::AnimatedSceneObject::create("jungle/palm1", worldv);

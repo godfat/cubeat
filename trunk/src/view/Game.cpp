@@ -45,7 +45,7 @@ void Game::redraw()
 {
     int i = 0;
     //these are temporarily here.
-    BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
+    BOOST_FOREACH(ctrl::Input* it, ctrl::InputMgr::i().getInputs()) {
         cursors_[i]->moveTo(it->cursor().x()+1, it->cursor().y()+1);
         ++i;
     }

@@ -78,7 +78,7 @@ pMainMenu MainMenu::init()
 
     function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
     btn_start_ = pDummy(new int);
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs())
         ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
 
     player1focus_ = 0;
@@ -270,8 +270,8 @@ void MainMenu::setup_mode_selecting_buttons()
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "mode_select", "start_menu");
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 
@@ -294,7 +294,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
     if( to == "start_menu" ) {
         function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
         btn_start_ = pDummy(new int);
-        BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs())
             ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
     }
     else if( to == "mode_select" ) {
@@ -354,8 +354,8 @@ void MainMenu::setup_player_selecting_buttons()
     player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
     player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
 
     //temp: button "back"
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "player_select", "mode_select");
@@ -482,8 +482,8 @@ void MainMenu::stage_choosing()
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 }

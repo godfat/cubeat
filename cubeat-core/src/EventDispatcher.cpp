@@ -218,7 +218,7 @@ void EventDispatcher::dispatch_focus()
 
 void EventDispatcher::obj_picking(view::pScene const& scene)
 {
-    BOOST_FOREACH(Input const* input, Input::getInputs()) {
+    BOOST_FOREACH(Input const* input, InputMgr::i().getInputs()) {
         if( pickmap_.find(input) == pickmap_.end() )
             pickmap_.insert( make_pair(input, ObjList()) );
 

@@ -61,7 +61,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     s1->x_offset(740).y_offset(684).push_ally(1);//.push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::Input::getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
+    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
     player0_->weapon(0)->ammo(0);
     player0_->weapon(1)->ammo(0);
     player0_->weapon(2)->ammo(0);
@@ -188,8 +188,8 @@ void Puzzle::end(pMap lose_map)
     end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 100) );
-    end_text_-> setTextAlpha(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-    end_text2_->setTextAlpha(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+    end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+    end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
     ctrl::EventDispatcher::i().subscribe_timer(bind(&Puzzle::setup_end_button, this), 1000);
 }
@@ -201,7 +201,7 @@ void Puzzle::setup_end_button()
 
     btn_reinit_ = pDummy(new int);
 
-    ctrl::Input const* input = ctrl::Input::getInputByIndex(0);
+    ctrl::Input const* input = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::EventDispatcher::i().subscribe_btn_event(
         clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event(

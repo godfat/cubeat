@@ -25,6 +25,12 @@ public:
     SpriteMovie(std::string const& name, bool const& center)
         : Sprite(name, center) { avi = 0; }
 
+    template <class Accessor>
+    SpriteMovie& set(typename Accessor::value_type const& value) {
+        Accessor::set(body_, value);
+        return *this;
+    }
+
     virtual SpriteMovie* clone() const { return 0; }
     virtual SpriteMovie& redraw();
     virtual SpriteMovie& play();

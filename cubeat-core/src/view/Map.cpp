@@ -35,7 +35,7 @@ pMap Map::init(pScene const& parent)
     setupSceneAndManager(parent);
 
     int i = 0;
-    BOOST_FOREACH(ctrl::Input* it, ctrl::Input::getInputs()) {
+    BOOST_FOREACH(ctrl::Input* it, ctrl::InputMgr::i().getInputs()) {
         if( index_ == i ) {
             ctrl::EventDispatcher::i().subscribe_btn_event(
                 bind(&Map::ownerHitCallback, this, _1, _2), shared_from_this(),

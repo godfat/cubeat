@@ -53,10 +53,6 @@ private:
     presenter::pObject temp_presenter_;
 
     irr::ITimer* timer_;
-
-    //these are temporarily here.
-    ctrl::Input* input1_;
-    ctrl::Input* input2_;
 };
 
 }  //psc

@@ -78,7 +78,7 @@ pMainMenu MainMenu::init()
 
     function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
     btn_start_ = pDummy(new int);
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs())
         ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
 
     player1focus_ = 0;
@@ -155,8 +155,8 @@ void MainMenu::setupMenus()
 
     player1text_ = view::SpriteText::create("player1", temp, "Star Jedi", 24, true, data::Color(255,0,0));
     player2text_ = view::SpriteText::create("player2", temp, "Star Jedi", 24, true, data::Color(0,0,255));
-    player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
-    player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
+    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
     hideMenu("mode_select").hideMenu("player_select").hideMenu("stage_select");
 }
@@ -270,8 +270,8 @@ void MainMenu::setup_mode_selecting_buttons()
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "mode_select", "start_menu");
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 
@@ -294,7 +294,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
     if( to == "start_menu" ) {
         function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
         btn_start_ = pDummy(new int);
-        BOOST_FOREACH(ctrl::Input const* input, ctrl::Input::getInputs())
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs())
             ctrl::EventDispatcher::i().subscribe_btn_event( clickA, btn_start_, &input->trig1(), ctrl::BTN_PRESS);
     }
     else if( to == "mode_select" ) {
@@ -307,8 +307,8 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         setup_mode_selecting_buttons();
     }
     else if( to == "player_select" ) {
-        player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
-        player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
+        player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+        player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
         player1focus_ = 0;
         player2focus_ = 0;
         player1num_ = 0;
@@ -351,11 +351,11 @@ void MainMenu::player_choosing()
 //temp: very temp =_=
 void MainMenu::setup_player_selecting_buttons()
 {
-    player1text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 150) );
-    player2text_->setTextAlpha(100).set<Pos2D>( vec2(-300, 180) );
+    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
 
     //temp: button "back"
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "player_select", "mode_select");
@@ -452,7 +452,7 @@ void MainMenu::player1_checked()
     if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player1num_ = player1focus_;
-    player1text_->setTextAlpha(255);
+    player1text_->set<Alpha>(255);
     btn_choose_player1_.reset();
     if( two_players_ ) {
         if( player1num_ != 0 && player2num_ != 0 )
@@ -467,7 +467,7 @@ void MainMenu::player2_checked()
     if( animating_ ) return;
     Sound::i().play("4/4b.wav");
     player2num_ = player2focus_;
-    player2text_->setTextAlpha(255);
+    player2text_->set<Alpha>(255);
     btn_choose_player2_.reset();
     if( player1num_ != 0 && player2num_ != 0 )
         stage_choosing();
@@ -482,8 +482,8 @@ void MainMenu::stage_choosing()
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
-    ctrl::Input const* input1 = ctrl::Input::getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::Input::getInputByIndex(1);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 }

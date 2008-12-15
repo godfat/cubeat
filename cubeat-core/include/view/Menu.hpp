@@ -47,6 +47,12 @@ public:
     virtual ~Menu(){}
     virtual Menu* clone() const;
 
+    template <class Accessor>
+    Menu& set(typename Accessor::value_type const& value) {
+        Accessor::set(body_, value);
+        return *this;
+    }
+
     virtual Menu&   addSprite(std::string const& name,
                               std::tr1::function<void(pSprite&)> cb = 0,
                               int const& w = 100,

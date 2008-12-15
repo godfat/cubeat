@@ -34,10 +34,7 @@ App::App()
         return;
     }
     timer_ = IrrDevice::i().d()->getTimer();
-
-    input1_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player1.zzml");
-    input2_ = new Input( Conf::i().CONFIG_INPUT_PATH +"player2.zzml");
-
+    InputMgr::i().createInputs();
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
@@ -46,8 +43,7 @@ App::App()
 App::~App()
 {
     std::cout << "App destructing, before deleting inputs" << std::endl;
-    delete input1_;
-    delete input2_;
+    InputMgr::i().cleanupInputs();
 }
 
 void App::setLoading(int const& cent)
@@ -106,8 +102,9 @@ int App::run(std::tr1::function<void()> tester)
     using namespace ctrl;
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
-    Input::init_graphic_items();
     int lastFPS = -1;
+
+    IrrDevice::i().d()->setResizeAble(true);
 
     while( IrrDevice::i().run() ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
@@ -115,7 +112,7 @@ int App::run(std::tr1::function<void()> tester)
         //    if( timer_->isStopped() )        //comment: temp for double tasking
         //        timer_->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
-            Input::update_all();
+            InputMgr::i().updateAll();
             EventDispatcher::i().dispatch();
 
             driver->beginScene(true, true, video::SColor(0,0,0,0));
@@ -124,7 +121,7 @@ int App::run(std::tr1::function<void()> tester)
             driver->clearZBuffer();
             trans_->cycle();
 
-            Input::redraw_all();
+            InputMgr::i().redrawAll();
 
             driver->endScene();
 

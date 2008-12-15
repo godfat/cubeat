@@ -48,7 +48,6 @@ typedef std::tr1::weak_ptr<MouseState>  wpMouseState;
 class InputMgr
 {
     typedef std::vector<Input*>      InputList;
-    typedef std::vector<pMouseState> StateList;
 
 public:
     static InputMgr& i() {
@@ -57,29 +56,36 @@ public:
     }
 
     bool createInputs();
-    bool cleanupInputs();
     Input* getInputByIndex(unsigned int);
     InputList& getInputs() { return inputs_; }
     view::pScene& scene()  { return scene_; }
     int count() const      { return static_cast<int>(inputs_.size()); }
-    bool keyboard_mouse_input() const { return keyboard_mouse_input_; }
-    bool inited()               const { return inited_; }
+    bool keyboardMouseInput() const { return keyboard_mouse_input_; }
+    bool inited()        const { return inited_; }
+    bool miceNotEnough() const { return MAX_INPUTS > mice_detected_by_manymouse_; }
     void updateAll(); //we can't combine updateAll and redrawAll,
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)
+
+    int const MAX_INPUTS;
+
 private:
     InputMgr();
     ~InputMgr();
     InputMgr(InputMgr const&); //singleton don't implement this
+    bool cleanupInputs();
     void initGraphicItems();
+    void initManyMouse();
+    void quitManyMouse();
+    void pollManyMouseStates();
+    void handleManyMouseDisconnect();
+    void reinitManyMouse();
 
     view::pScene scene_;
     InputList    inputs_;
-    StateList    states_;
     bool keyboard_mouse_input_;
     bool inited_;
-
-    int const MAX_INPUTS;
+    int  mice_detected_by_manymouse_;
 };
 
 class Input
@@ -104,7 +110,6 @@ public:
     pPlayer player() const;
     void setRangeShapeVisible(bool);
     void setCursorVisible(bool);
-    void rumbleWiimote(int ms);
     view::pSprite getCursor();
 
 private:
@@ -143,8 +148,16 @@ private:
     view::pSprite range_shape_;
     std::string cursor_texture_name_;
     std::string area_texture_name_;
+
 #ifdef _USE_WIIMOTE_
+public:
+    void rumbleWiimote(int ms);
+private:
+    void update_by_wiimote();
     wiimote wiimote_;
+#endif
+#ifdef _USE_MANYMOUSE_
+    pMouseState state_;
 #endif
 };
 

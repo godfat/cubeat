@@ -22,14 +22,14 @@ struct MouseState
         return pointer_type(new MouseState);
     }
 
-    int          device_id;
+    bool         device_id;
     bool         connected;
     std::string  name;
     int          x, y;
     unsigned int buttons;
 
 private:
-    MouseState():device_id(-1), connected(false), name(""), x(0), y(0), buttons(0){}
+    MouseState(): connected(false), name(""), x(0), y(0), buttons(0){}
 };
 
 typedef MouseState::pointer_type pMouseState;

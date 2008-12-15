@@ -182,6 +182,8 @@ void InputMgr::updateAll()
         if( keyboard_mouse_input_ )
             reinitManyMouse();
     }
+    if( keyboard_mouse_input_ )
+        IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
 
     BOOST_FOREACH( Input* it, inputs_ )
         it->update();
@@ -261,6 +263,8 @@ void Input::update()
 #endif
     update_btn_state();
     cursor_.constrain();
+    state_->x = cursor_.x();
+    state_->y = cursor_.y();
 }
 
 #ifdef _USE_WIIMOTE_

@@ -43,7 +43,6 @@ App::App()
 App::~App()
 {
     std::cout << "App destructing, before deleting inputs" << std::endl;
-    InputMgr::i().cleanupInputs();
 }
 
 void App::setLoading(int const& cent)

@@ -7,6 +7,7 @@
 #ifdef _USE_MANYMOUSE_
 
 #include "manymouse/manymouse.h"
+#include "Conf.hpp"
 #include <string>
 #include <tr1/memory>
 
@@ -28,8 +29,17 @@ struct MouseState
     int          x, y;
     unsigned int buttons;
 
+    void constrain() {
+        if( x < lbound_ )      x = lbound_;
+        else if( x > rbound_ ) x = rbound_;
+        if( y < ubound_ )      y = ubound_;
+        else if( y > dbound_ ) y = dbound_;
+    }
+
 private:
-    MouseState(): connected(false), name(""), x(0), y(0), buttons(0){}
+    MouseState(): device_id(-1), connected(false), name(""), x(0), y(0), buttons(0),
+                  lbound_(0), rbound_(Conf::i().SCREEN_W), ubound_(0), dbound_(Conf::i().SCREEN_H){}
+    int lbound_, rbound_, ubound_, dbound_;
 };
 
 typedef MouseState::pointer_type pMouseState;

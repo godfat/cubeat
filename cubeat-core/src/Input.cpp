@@ -137,7 +137,7 @@ void InputMgr::pollManyMouseStates()
                 break;
             }
             case MANYMOUSE_EVENT_DISCONNECT: {
-                ms->connected = 0;
+                ms->connected = false;
                 handleManyMouseDisconnect();
                 break;
             }
@@ -163,7 +163,7 @@ void InputMgr::reinitManyMouse()
         pMouseState ms = inputs_[i]->state_;
         ms->name = ManyMouse_DeviceName(i);
         ms->device_id = i;
-        ms->connected = 1;
+        ms->connected = true;
         std::cout << "Mice #" << i << ": " << ms->name << std::endl;
     }
 #endif //_USE_MANYMOUSE_
@@ -260,11 +260,12 @@ void Input::update()
     }
 #ifdef _USE_WIIMOTE_
     update_by_wiimote();
-#endif
+#endif // _USE_WIIMOTE_
     update_btn_state();
     cursor_.constrain();
-    state_->x = cursor_.x();
-    state_->y = cursor_.y();
+#ifdef _USE_MANYMOUSE_
+    state_->constrain();
+#endif // _USE_MANYMOUSE_
 }
 
 #ifdef _USE_WIIMOTE_

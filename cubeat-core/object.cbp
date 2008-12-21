@@ -29,6 +29,8 @@
 					<Add library="hid" />
 					<Add library="setupapi" />
 					<Add library="vfw32" />
+					<Add library="boost_date_time-mgw43-mt-1_38" />
+					<Add library="boost_thread-mgw43-mt-1_38" />
 				</Linker>
 			</Target>
 		</Build>
@@ -196,7 +198,10 @@
 		<Unit filename="lib\manymouse\windows_wminput.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -261,6 +266,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_thread_main.cpp" />
 		<Unit filename="src\utils\GaussLegendre.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />

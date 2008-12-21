@@ -57,12 +57,13 @@ pStage Stage::init( std::string const& path )
     scene_ = view::Scene::create( conf_.S("name") );
     scene_->setTo3DView( conf_.I("FoV") / 180.f * PI );
     utils::vector_any const& lists = conf_.V("all_items");
-    BOOST_FOREACH(boost::any const& list, lists) {
+
+    BOOST_FOREACH(utils::any_type const& list, lists) {
         slists_.push_back( SceneObjList() );
         SceneObjList& slist = slists_.back();
-        utils::vector_any const& items = boost::any_cast<utils::vector_any const>(list);
-        BOOST_FOREACH(boost::any const& it, items) {
-            utils::map_any const& item = boost::any_cast<utils::map_any const>(it);
+        utils::vector_any const& items = utils::anycast_wrapper<utils::vector_any const>(list);
+        BOOST_FOREACH(utils::any_type const& it, items) {
+            utils::map_any const& item = utils::anycast_wrapper<utils::map_any const>(it);
             view::pAnimatedSceneObject obj;
             obj = view::AnimatedSceneObject::create( item.S("xfile") ,scene_ );
 

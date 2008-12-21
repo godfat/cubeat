@@ -32,8 +32,8 @@ pPlayerView PlayerView::init(std::string const& path, view::pObject const& paren
     character_->set<Pos2D>( pos );
 
     BOOST_FOREACH(utils::pair_any const& it, anim) {
-        std::string    const& key  = boost::any_cast<std::string const>(it.first);
-        utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
+        std::string    const& key  = utils::anycast_wrapper<std::string const>(it.first);
+        utils::map_any const& attr = utils::anycast_wrapper<utils::map_any const>(it.second);
         character_->addAnimSprite(key, attr.S("anim"), 0, attr.I("w"), attr.I("h"), true )
                    .getAnimSprite(key).playAnime( attr.S("defanim"), attr.I("ms"), attr.I("loop") )
                                       .set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );

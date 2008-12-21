@@ -120,8 +120,8 @@ void Puzzle::setup_ui_by_config( std::string const& path )
 
     utils::map_any const& misc = uiconf_.M("misc");
     BOOST_FOREACH(utils::pair_any const& it, misc) {
-        std::string    const& key  = boost::any_cast<std::string const>(it.first);
-        utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
+        std::string    const& key  = utils::anycast_wrapper<std::string const>(it.first);
+        utils::map_any const& attr = utils::anycast_wrapper<utils::map_any const>(it.second);
         ui_layout_->
             addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );

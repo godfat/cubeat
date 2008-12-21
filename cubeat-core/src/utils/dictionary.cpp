@@ -9,7 +9,6 @@
 using namespace boost::algorithm;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
-using boost::any;
 using boost::any_cast;
 
 namespace psc {
@@ -103,7 +102,7 @@ map_any map_any::construct(std::string const& str)
 
         if( skip_it( str[i] ) ) { ++i; continue; }
 
-        any key;                         //we don't know what type the key is.
+        any_type key;                         //we don't know what type the key is.
 
         if( is_string( str[i] ) ) {
             key = read_string_at(str, i);
@@ -208,25 +207,20 @@ std::string fetchConfig(std::string const& path)
     return str;
 }
 
-} //utils
-} //psc
+///////////////////////// any hash and equal overloading /////////////////////
 
-////////////////////////// BOOST HASH & ANY /////////////////////////
-
-namespace boost
-{
-std::size_t hash_value(any const& value)
+std::size_t hash_value(any_type const& value)
 {
     using boost::any_cast;
     using boost::bad_any_cast;
     try {
         boost::hash<int> hasher;
-        return hasher( any_cast<int>(value) );
+        return hasher( any_cast<int>(value.imp) );
     }
     catch(bad_any_cast&) {
         try {
             boost::hash<std::string> hasher;
-            return hasher( any_cast<std::string>(value) );
+            return hasher( any_cast<std::string>(value.imp) );
         }
         catch(bad_any_cast&) {
             std::cerr << "bad_any_cast occurred.\n";
@@ -235,15 +229,20 @@ std::size_t hash_value(any const& value)
     }
 }
 
-bool operator==(any const& a, any const& b)
+bool operator==(any_type const& a, any_type const& b)
 {
+    using boost::any_cast;
+    using boost::bad_any_cast;
     if( a.type() == b.type() ) {
         if( a.type() == typeid(int) )
-            return any_cast<int>(a) == any_cast<int>(b);
+            return any_cast<int>(a.imp) == any_cast<int>(b.imp);
         else if( a.type() == typeid(std::string) )
-            return any_cast<std::string>(a) == any_cast<std::string>(b);
+            return any_cast<std::string>(a.imp) == any_cast<std::string>(b.imp);
         else return false;
     }
     return false;
 }
-} //boost
+
+} //utils
+} //psc
+

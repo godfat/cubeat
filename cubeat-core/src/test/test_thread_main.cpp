@@ -31,7 +31,7 @@ public:
         data_needed_to_be_calculated_ = 0;
         is_calculating_ = false;
 
-    let_us_calculate();
+        let_us_calculate();
 
 //  persistently probing data:
         ctrl::EventDispatcher::i().subscribe_timer(

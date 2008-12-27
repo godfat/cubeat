@@ -61,9 +61,9 @@ pStage Stage::init( std::string const& path )
     BOOST_FOREACH(utils::any_type const& list, lists) {
         slists_.push_back( SceneObjList() );
         SceneObjList& slist = slists_.back();
-        utils::vector_any const& items = utils::anycast_wrapper<utils::vector_any const>(list);
+        utils::vector_any const& items = boost::any_cast<utils::vector_any const>(list);
         BOOST_FOREACH(utils::any_type const& it, items) {
-            utils::map_any const& item = utils::anycast_wrapper<utils::map_any const>(it);
+            utils::map_any const& item = boost::any_cast<utils::map_any const>(it);
             view::pAnimatedSceneObject obj;
             obj = view::AnimatedSceneObject::create( item.S("xfile") ,scene_ );
 

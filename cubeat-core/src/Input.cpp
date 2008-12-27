@@ -55,7 +55,6 @@ bool InputMgr::createInputs()
     if( inited_ ) return false;
     inited_ = true;
 
-    IrrDevice::i().d()->getCursorControl()->setVisible(false);
     initManyMouse();
 
     std::cout << "InputMgr created inputs." << std::endl;
@@ -179,8 +178,13 @@ void InputMgr::updateAll()
     if( MastEventReceiver::i().keyPressed( KEY_RETURN ) ) {
         keyboard_mouse_input_ = !keyboard_mouse_input_;
         std::cout<<"Toggle secondary input "<<(keyboard_mouse_input_?"on":"off")<< std::endl;
-        if( keyboard_mouse_input_ )
+        if( keyboard_mouse_input_ ) {
             reinitManyMouse();
+            IrrDevice::i().d()->getCursorControl()->setVisible(false);
+        }
+        else
+            IrrDevice::i().d()->getCursorControl()->setVisible(true);
+
     }
     if( keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor

@@ -215,12 +215,12 @@ std::size_t hash_value(any_type const& value)
     using boost::bad_any_cast;
     try {
         boost::hash<int> hasher;
-        return hasher( any_cast<int>(value.imp) );
+        return hasher( any_cast<int>(value) );
     }
     catch(bad_any_cast&) {
         try {
             boost::hash<std::string> hasher;
-            return hasher( any_cast<std::string>(value.imp) );
+            return hasher( any_cast<std::string>(value) );
         }
         catch(bad_any_cast&) {
             std::cerr << "bad_any_cast occurred.\n";
@@ -235,9 +235,9 @@ bool operator==(any_type const& a, any_type const& b)
     using boost::bad_any_cast;
     if( a.type() == b.type() ) {
         if( a.type() == typeid(int) )
-            return any_cast<int>(a.imp) == any_cast<int>(b.imp);
+            return any_cast<int>(a) == any_cast<int>(b);
         else if( a.type() == typeid(std::string) )
-            return any_cast<std::string>(a.imp) == any_cast<std::string>(b.imp);
+            return any_cast<std::string>(a) == any_cast<std::string>(b);
         else return false;
     }
     return false;

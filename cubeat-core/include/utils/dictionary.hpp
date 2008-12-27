@@ -77,58 +77,17 @@
 namespace psc {
 namespace utils {
 
-struct any_type //boost::any wrapper to avoid add ambigious-prone function
-{               //in the boost namespace.
-    any_type():imp(0){}
+struct any_type : public boost::any
+{
+    any_type():boost::any(0){}
 
     template<typename ValueType>
     any_type(ValueType const& value)
-      : imp(value){}
+      : boost::any(value){}
 
     any_type(any_type const& other)
-      : imp(other.imp){}
-
-    any_type& swap(any_type& rhs) {
-        std::swap(imp, rhs.imp);
-        return *this;
-    }
-
-    template<typename ValueType>
-    any_type& operator=(ValueType const& rhs) {
-        any_type(rhs).swap(*this);
-        return *this;
-    }
-
-    any_type& operator=(any_type const& rhs) {
-        any_type(rhs).swap(*this);
-        return *this;
-    }
-
-    bool empty() const { return imp.empty(); }
-    std::type_info const& type() const { return imp.type(); }
-
-    boost::any imp; //the real boost::any instance
+      : boost::any( static_cast<boost::any const&>(const_cast<any_type&>(other)) ) {} //up-cast
 };
-
-template<typename ValueType> //wrapper of boost::any_cast
-ValueType anycast_wrapper(any_type& op) {
-    return boost::any_cast<ValueType>(op.imp);
-}
-
-template<typename ValueType> //wrapper of boost::any_cast
-ValueType anycast_wrapper(any_type const& op) {
-    return boost::any_cast<ValueType const&>(const_cast<any_type&>(op).imp);
-}
-
-template<typename ValueType> //wrapper of boost::any_cast when the wrapper of any is a pointer
-ValueType anycast_wrapper(any_type* op) {
-    return boost::any_cast<ValueType>(op->imp);
-}
-
-template<typename ValueType> //wrapper of boost::any_cast when the wrapper of any is a pointer
-ValueType anycast_wrapper(any_type const* op) {
-    return boost::any_cast<ValueType const&>(const_cast<any_type*>(op)->imp);
-}
 
 /////////////////////// start of the dictionary definitions /////////////////////
 
@@ -149,22 +108,22 @@ public:
     static vector_any construct( std::string const& str );
 
 public:
-    inline int&         I(int const& i) { return boost::any_cast<int&>        (data_[i].imp); }
-    inline double&      F(int const& i) { return boost::any_cast<double&>     (data_[i].imp); }
-    inline std::string& S(int const& i) { return boost::any_cast<std::string&>(data_[i].imp); }
-    inline vector_any&  V(int const& i) { return boost::any_cast<vector_any&> (data_[i].imp); }
-    inline map_any&     M(int const& i) { return boost::any_cast<map_any&>    (data_[i].imp); }
+    inline int&         I(int const& i) { return boost::any_cast<int&>        (data_[i]); }
+    inline double&      F(int const& i) { return boost::any_cast<double&>     (data_[i]); }
+    inline std::string& S(int const& i) { return boost::any_cast<std::string&>(data_[i]); }
+    inline vector_any&  V(int const& i) { return boost::any_cast<vector_any&> (data_[i]); }
+    inline map_any&     M(int const& i) { return boost::any_cast<map_any&>    (data_[i]); }
 
-    inline int const&         I(int const& i) const { return boost::any_cast<int const&>        (data_[i].imp); }
-    inline double const&      F(int const& i) const { return boost::any_cast<double const&>     (data_[i].imp); }
-    inline std::string const& S(int const& i) const { return boost::any_cast<std::string const&>(data_[i].imp); }
-    inline vector_any const&  V(int const& i) const { return boost::any_cast<vector_any const&> (data_[i].imp); }
-    inline map_any const&     M(int const& i) const { return boost::any_cast<map_any const&>    (data_[i].imp); }
+    inline int const&         I(int const& i) const { return boost::any_cast<int const&>        (data_[i]); }
+    inline double const&      F(int const& i) const { return boost::any_cast<double const&>     (data_[i]); }
+    inline std::string const& S(int const& i) const { return boost::any_cast<std::string const&>(data_[i]); }
+    inline vector_any const&  V(int const& i) const { return boost::any_cast<vector_any const&> (data_[i]); }
+    inline map_any const&     M(int const& i) const { return boost::any_cast<map_any const&>    (data_[i]); }
 
     template<class T>
-    inline T& at(int const& i) { return boost::any_cast<T&>(data_.at(i).imp); }
+    inline T& at(int const& i) { return boost::any_cast<T&>(data_.at(i)); }
     template<class T>
-    inline T const& at(int const& i) const { return boost::any_cast<T const&>(data_.at(i).imp); }
+    inline T const& at(int const& i) const { return boost::any_cast<T const&>(data_.at(i)); }
 
     inline void push_back(int         const& i) { data_.push_back(i); }
     inline void push_back(double      const& i) { data_.push_back(i); }
@@ -212,36 +171,36 @@ public:
     static map_any construct( std::string const& str );
 
 public:
-    inline int&         I(int         const& i) { return boost::any_cast<int&>        (dict_[i].imp); }
-    inline double&      F(int         const& i) { return boost::any_cast<double&>     (dict_[i].imp); }
-    inline std::string& S(int         const& i) { return boost::any_cast<std::string&>(dict_[i].imp); }
-    inline vector_any&  V(int         const& i) { return boost::any_cast<vector_any&> (dict_[i].imp); }
-    inline map_any&     M(int         const& i) { return boost::any_cast<map_any&>    (dict_[i].imp); }
-    inline int&         I(std::string const& i) { return boost::any_cast<int&>        (dict_[i].imp); }
-    inline double&      F(std::string const& i) { return boost::any_cast<double&>     (dict_[i].imp); }
-    inline std::string& S(std::string const& i) { return boost::any_cast<std::string&>(dict_[i].imp); }
-    inline vector_any&  V(std::string const& i) { return boost::any_cast<vector_any&> (dict_[i].imp); }
-    inline map_any&     M(std::string const& i) { return boost::any_cast<map_any&>    (dict_[i].imp); }
+    inline int&         I(int         const& i) { return boost::any_cast<int&>        (dict_[i]); }
+    inline double&      F(int         const& i) { return boost::any_cast<double&>     (dict_[i]); }
+    inline std::string& S(int         const& i) { return boost::any_cast<std::string&>(dict_[i]); }
+    inline vector_any&  V(int         const& i) { return boost::any_cast<vector_any&> (dict_[i]); }
+    inline map_any&     M(int         const& i) { return boost::any_cast<map_any&>    (dict_[i]); }
+    inline int&         I(std::string const& i) { return boost::any_cast<int&>        (dict_[i]); }
+    inline double&      F(std::string const& i) { return boost::any_cast<double&>     (dict_[i]); }
+    inline std::string& S(std::string const& i) { return boost::any_cast<std::string&>(dict_[i]); }
+    inline vector_any&  V(std::string const& i) { return boost::any_cast<vector_any&> (dict_[i]); }
+    inline map_any&     M(std::string const& i) { return boost::any_cast<map_any&>    (dict_[i]); }
 
-    inline int const &         I(int         const& i) const { return boost::any_cast<int const&>        (dict_[i].imp); }
-    inline double const &      F(int         const& i) const { return boost::any_cast<double const&>     (dict_[i].imp); }
-    inline std::string const & S(int         const& i) const { return boost::any_cast<std::string const&>(dict_[i].imp); }
-    inline vector_any const &  V(int         const& i) const { return boost::any_cast<vector_any const&> (dict_[i].imp); }
-    inline map_any const &     M(int         const& i) const { return boost::any_cast<map_any const&>    (dict_[i].imp); }
-    inline int const &         I(std::string const& i) const { return boost::any_cast<int const&>        (dict_[i].imp); }
-    inline double const &      F(std::string const& i) const { return boost::any_cast<double const&>     (dict_[i].imp); }
-    inline std::string const & S(std::string const& i) const { return boost::any_cast<std::string const&>(dict_[i].imp); }
-    inline vector_any const &  V(std::string const& i) const { return boost::any_cast<vector_any const&> (dict_[i].imp); }
-    inline map_any const &     M(std::string const& i) const { return boost::any_cast<map_any const&>    (dict_[i].imp); }
+    inline int const &         I(int         const& i) const { return boost::any_cast<int const&>        (dict_[i]); }
+    inline double const &      F(int         const& i) const { return boost::any_cast<double const&>     (dict_[i]); }
+    inline std::string const & S(int         const& i) const { return boost::any_cast<std::string const&>(dict_[i]); }
+    inline vector_any const &  V(int         const& i) const { return boost::any_cast<vector_any const&> (dict_[i]); }
+    inline map_any const &     M(int         const& i) const { return boost::any_cast<map_any const&>    (dict_[i]); }
+    inline int const &         I(std::string const& i) const { return boost::any_cast<int const&>        (dict_[i]); }
+    inline double const &      F(std::string const& i) const { return boost::any_cast<double const&>     (dict_[i]); }
+    inline std::string const & S(std::string const& i) const { return boost::any_cast<std::string const&>(dict_[i]); }
+    inline vector_any const &  V(std::string const& i) const { return boost::any_cast<vector_any const&> (dict_[i]); }
+    inline map_any const &     M(std::string const& i) const { return boost::any_cast<map_any const&>    (dict_[i]); }
 
     template<class T>
-    inline T& at(int const& i) { return boost::any_cast<T&>(dict_[i].imp); }
+    inline T& at(int const& i) { return boost::any_cast<T&>(dict_[i]); }
     template<class T>
-    inline T& at(std::string const& i) { return boost::any_cast<T&>(dict_[i].imp); }
+    inline T& at(std::string const& i) { return boost::any_cast<T&>(dict_[i]); }
     template<class T>
-    inline T const& at(int const& i) const { return boost::any_cast<T const&>(dict_[i].imp); }
+    inline T const& at(int const& i) const { return boost::any_cast<T const&>(dict_[i]); }
     template<class T>
-    inline T const& at(std::string const& i) const { return boost::any_cast<T const&>(dict_[i].imp); }
+    inline T const& at(std::string const& i) const { return boost::any_cast<T const&>(dict_[i]); }
 
     inline void insert(std::string const& k, int         const& v) { dict_.insert(std::make_pair(k,v)); }
     inline void insert(std::string const& k, double      const& v) { dict_.insert(std::make_pair(k,v)); }

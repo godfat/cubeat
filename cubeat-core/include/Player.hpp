@@ -76,17 +76,6 @@ protected:
 typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
 
-// responsible for AI to Input calling (like button state manipulation),
-// and reacting to map data
-
-class AIPlayer : public Player
-{
-public:
-
-private:
-    //AIBrain here
-};
-
 } //ctrl
 } //psc
 

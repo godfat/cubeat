@@ -222,7 +222,7 @@ Input* InputMgr::getInputByIndex(unsigned int i)
 
 Input::Input(std::string const& path)
     :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
-     haste_(this), pause_(this)
+     haste_(this), pause_(this), ai_controlled_(false)
 {
     map_any keymap = map_any::construct( fetchConfig(path) );
     cursor_key_ = keymap.I("cursor");
@@ -256,16 +256,21 @@ Input::Input(std::string const& path)
 
 void Input::update()
 {
-    write_state_now_to_last();
-
-    if( InputMgr::i().keyboardMouseInput() ) {
-        buttons_by_keyboard_mouse();
-        cursor_by_keyboard_mouse();
+    if( ai_controlled_ ) { //AI integration testing
+        update_btn_state();
+        write_state_now_to_last();
     }
+    else {
+        write_state_now_to_last();
+        if( InputMgr::i().keyboardMouseInput() ) {
+            buttons_by_keyboard_mouse();
+            cursor_by_keyboard_mouse();
+        }
 #ifdef _USE_WIIMOTE_
-    update_by_wiimote();
+        update_by_wiimote();
 #endif // _USE_WIIMOTE_
-    update_btn_state();
+        update_btn_state();
+    }
     cursor_.constrain();
 #ifdef _USE_MANYMOUSE_
     state_->constrain();

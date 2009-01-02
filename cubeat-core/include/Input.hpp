@@ -55,6 +55,7 @@ public:
         return singleton;
     }
 
+    ~InputMgr();
     bool createInputs();
     Input* getInputByIndex(unsigned int);
     InputList& getInputs() { return inputs_; }
@@ -71,7 +72,6 @@ public:
 
 private:
     InputMgr();
-    ~InputMgr();
     InputMgr(InputMgr const&); //singleton don't implement this
     bool cleanupInputs();
     void initGraphicItems();
@@ -105,6 +105,16 @@ public:
     Button const& wep3() const { return wep3_; }
     Button const& haste() const { return haste_; }
     Button const& pause() const { return pause_; }
+
+//<AI integration testing>
+    Button& trig1() { return trig1_; }
+    Button& trig2() { return trig2_; }
+    Button& wep1() { return wep1_; }
+    Button& wep2() { return wep2_; }
+    Button& wep3() { return wep3_; }
+    Button& haste() { return haste_; }
+    Button& pause() { return pause_; }
+//</AI integration testing>
 
     Input&  player(wpPlayer player);
     pPlayer player() const;
@@ -148,6 +158,14 @@ private:
     view::pSprite range_shape_;
     std::string cursor_texture_name_;
     std::string area_texture_name_;
+
+//<AI integration testing>
+public:
+    bool isControlledByAI() const { return ai_controlled_; }
+    void setControlledByAI(bool const& flag) { ai_controlled_ = flag; }
+private:
+    bool ai_controlled_;
+//</AI integration testing>
 
 #ifdef _USE_WIIMOTE_
 public:

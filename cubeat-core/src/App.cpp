@@ -7,6 +7,8 @@
 
 #include "presenter/game/Multi.hpp"
 #include "presenter/game/Puzzle.hpp"
+#include "view/SFX.hpp"
+#include "view/Scene.hpp"
 
 #include "Input.hpp"
 #include "IrrDevice.hpp"
@@ -38,6 +40,9 @@ App::App()
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
+
+    view::pScene preload = view::Scene::create("PreLoad Scene");
+    view::SFX::i().init_textures(preload);
 }
 
 App::~App()
@@ -121,6 +126,7 @@ int App::run(std::tr1::function<void()> tester)
             trans_->cycle();
 
             InputMgr::i().redrawAll();
+            view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
 
             driver->endScene();
 

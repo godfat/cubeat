@@ -11,12 +11,16 @@
 
 #include "all_fwd.hpp"
 #include "data/BasicViewTypes.hpp"
+#include <list>
 
 namespace psc { namespace view {
 
 class SFX
 {
 public:
+    typedef std::list< view::pObject >       FXObjList;
+    typedef std::list< FXObjList::iterator > FXObjRemoval;
+
     static SFX& i() {
         static SFX singleton;
         return singleton;
@@ -28,8 +32,14 @@ public:
     void weapon_vfx1(view::pScene&, vec2 const&);
     void weapon_vfx2(view::pScene&, vec2 const&);
     void weapon_vfx3(view::pScene&, vec2 const&);
+    void init_textures(view::pScene&);
+    void cleanup();
 
 protected:
+    void clear_obj(FXObjList::iterator);
+
+    FXObjList    effects_holder_;
+    FXObjRemoval effects_to_be_deleted_;
 
 private:
     SFX();

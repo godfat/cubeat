@@ -7,6 +7,7 @@
 #include "view/SFX.hpp"
 #include "Sound.hpp"
 #include "utils/Random.hpp"
+#include "data/ViewSetting.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -14,9 +15,9 @@ using namespace ctrl;
 using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
-Player::Player(Input* input, std::list<int> const& ally_ids, std::list<int> const& enemy_ids)
+Player::Player(Input* input, data::pViewSetting const& view_setting)
     :changetime_(500), changing_wep_(false), weplist_idx_(0), input_(input),
-     ally_input_ids_(ally_ids), enemy_input_ids_(enemy_ids)
+     view_setting_(view_setting)
 {
 }
 
@@ -105,7 +106,7 @@ Player& Player::disable_all_wep_reloadability()
 Player& Player::subscribe_shot_event
     (view::pSprite& sv, HitCallback const& ally_cb, HitCallback const& enemy_cb)
 {
-    BOOST_FOREACH(int& id, ally_input_ids_) {
+    BOOST_FOREACH(int const& id, view_setting_->ally_input_ids()) {
         Input*  input = InputMgr::i().getInputByIndex(id);
         wpPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
@@ -113,7 +114,7 @@ Player& Player::subscribe_shot_event
     }
 
     if( enemy_cb ) {
-        BOOST_FOREACH(int& id, enemy_input_ids_) {
+        BOOST_FOREACH(int const& id, view_setting_->enemy_input_ids()) {
             Input*  input = InputMgr::i().getInputByIndex(id);
             wpPlayer enemy = input->player();
             sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
@@ -132,7 +133,9 @@ void Player::shot_delegate
     (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 {
     if( pPlayer p = player.lock() ) {
-        if( p->ally_input_ids_ == ally_input_ids_ || p->can_crossfire() )
+        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
+        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+        if( that_allies == self_allies || p->can_crossfire() )
             hit_cb( p->weapon()->firepower() ); // if the player is ally OR player can crossfire
     }
 }
@@ -142,7 +145,9 @@ void Player::shot_delegate
 //    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 //{
 //    if( pPlayer p = player.lock() ) {
-    //    if( p->ally_input_ids_ == ally_input_ids_ || p->can_crossfire() )
+//        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
+//        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+//        if( that_allies == self_allies || p->can_crossfire() )
     //        hit_cb( p->weapon()->firepower() );
 //    }
 //}

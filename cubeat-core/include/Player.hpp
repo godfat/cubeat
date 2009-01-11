@@ -8,8 +8,6 @@
 #include <list>
 #include <tr1/functional>
 
-//class Item;
-
 namespace psc {
 namespace ctrl {
 
@@ -24,10 +22,9 @@ class Player : public std::tr1::enable_shared_from_this<Player>
 public:
     typedef std::tr1::shared_ptr< Player > pointer_type;
     typedef std::tr1::weak_ptr  < Player > wpointer_type;
-    static pointer_type create(Input* input = 0,
-                               std::list<int> ally_ids = std::list<int>(),
-                               std::list<int> enemy_ids = std::list<int>()) {
-        return pointer_type(new Player(input, ally_ids, enemy_ids))->init();
+    static pointer_type create(Input* input,
+                               data::pViewSetting const& view_setting) {
+        return pointer_type(new Player(input, view_setting))->init();
     }
 	Player& update();
     Player& set_active_weapon(int i);
@@ -53,7 +50,7 @@ public:
     virtual ~Player();
 
 protected:
-    Player(Input* input, std::list<int> const&, std::list<int> const&);
+    Player(Input* input, data::pViewSetting const&);
     pointer_type init();
 
     void normal_shot_delegate(view::pSprite&, HitCallback const&);
@@ -66,10 +63,9 @@ protected:
 	bool      changing_wep_;
     int       weplist_idx_;
 
-    Input*         input_;
-    std::list<int> ally_input_ids_;
-    std::list<int> enemy_input_ids_;
+    Input*               input_;
 	Weapon*              current_wep_;
+	data::pViewSetting   view_setting_;
 	std::vector<Weapon*> weplist_;
 };
 

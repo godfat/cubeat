@@ -62,8 +62,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
-    player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1->ally_input_ids(), s1->enemy_input_ids());
+    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
+    player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1);
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();

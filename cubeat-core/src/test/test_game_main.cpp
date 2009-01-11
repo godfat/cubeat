@@ -34,13 +34,13 @@ public:
         data::pViewSetting s0, s1;
 
         s0 = data::ViewSetting::create(64);   //must use config
-        s0->x_offset(159).y_offset(684).push_ally(1).push_enemy(0);
+        s0->x_offset(159).y_offset(684).push_ally(0).push_enemy(1);
         s1 = data::ViewSetting::create(64);   //must use config
-        s1->x_offset(740).y_offset(684).push_ally(0).push_enemy(1);
+        s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s0->ally_input_ids(), s0->enemy_input_ids());
-        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s1->ally_input_ids(), s1->enemy_input_ids());
+        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
+        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1);
         player0_->debug_reset_all_weapon();
         player1_->debug_reset_all_weapon();
         // setup map0

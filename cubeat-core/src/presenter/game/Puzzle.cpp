@@ -61,7 +61,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     s1->x_offset(740).y_offset(684).push_ally(1);//.push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0->ally_input_ids(), s0->enemy_input_ids());
+    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
     player0_->weapon(0)->ammo(0);
     player0_->weapon(1)->ammo(0);
     player0_->weapon(2)->ammo(0);

@@ -28,8 +28,8 @@ public:
         s1->x_offset(450).y_offset(500).push_ally(0).push_enemy(1);
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s0->ally_input_ids(), s0->enemy_input_ids());
-        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s1->ally_input_ids(), s1->enemy_input_ids());
+        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s0);
+        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s1);
 
         // setup map0
         map0_ = utils::MapLoader::generate(5); // presenter::Map::create();

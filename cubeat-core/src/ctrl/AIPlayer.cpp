@@ -1,15 +1,24 @@
 
 #include "ctrl/AIPlayer.hpp"
+#include "data/ViewSetting.hpp"
 #include "model/AIBrain.hpp"
+#include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
+#include "Accessors.hpp"
+#include "EasingEquations.hpp"
+
+#include <tr1/functional>
 
 using namespace psc;
 using namespace ctrl;
 using std::tr1::bind;
+using std::tr1::static_pointer_cast;
+using std::tr1::ref;
+using std::tr1::function;
 
-AIPlayer::AIPlayer(Input* input, std::list<int> const& ally_ids, std::list<int> const& enemy_ids)
-    :Player(input, ally_ids, enemy_ids), brain_(0), think_interval_(500)
+AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
+    :Player(input, view_setting), brain_(0), think_interval_(500)
 {
 }
 
@@ -23,6 +32,10 @@ pAIPlayer AIPlayer::init()
     Player::init();
     pAIPlayer self = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
     brain_ = new model::AIBrain(self);
+
+    input_->cursor().x() = view_setting_->x_offset();
+    input_->cursor().y() = view_setting_->y_offset(); //designate cursor initial point.
+    input_->getCursor()->set<accessor::Pos2D>(vec2(view_setting_->x_offset(), view_setting_->y_offset()));
 
     return self;
 }
@@ -53,12 +66,50 @@ void AIPlayer::stopThinking()
     }
 }
 
-void AIPlayer::shoot(int x, int y) //we must know ViewSettings here.
+void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
 {
-    std::cout << " .. call shooting: " << x << ", " << y << std::endl;
-    //manipulate input and cursor here
+    using namespace accessor;
+    using namespace easing;
+    vec2 dest(x*view_setting_->cube_size() + view_setting_->x_offset(),
+              -y*view_setting_->cube_size() + view_setting_->y_offset());
+
+    input_->cursor().x() = dest.X;
+    input_->cursor().y() = dest.Y;
+
+    function<void()> cb = bind(&AIPlayer::hold_button, this, ref(input_->trig1()), 1);
+
+    input_->getCursor()->tween<IOExpo, Pos2D>(dest, 200, 0, cb);
+}
+
+void AIPlayer::hold_button(ctrl::Button& btn_ref, int ms)
+{
+    press_button(btn_ref);
+
+    pAIPlayer self = static_pointer_cast<AIPlayer>(shared_from_this());
+    function<void()> cb = bind(&AIPlayer::release_button, this, ref(btn_ref));
+
+    EventDispatcher::i().subscribe_timer(cb, self, ms);
+}
+
+void AIPlayer::press_button(ctrl::Button& btn_ref)
+{
+    btn_ref.now() = true;
+}
+
+void AIPlayer::release_button(ctrl::Button& btn_ref)
+{
+    btn_ref.now() = false;
+}
+
+AIPlayer::pPosition AIPlayer::probing_brain_data()
+{
+    return brain_->getCurrentCmd();
 }
 
 void AIPlayer::cycle()
 {
+    if( pPosition pos = probing_brain_data() ) {
+        shoot( pos->first, pos->second );
+        brain_->popCmdQueue();
+    }
 }

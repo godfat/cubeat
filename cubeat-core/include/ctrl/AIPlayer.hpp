@@ -8,6 +8,8 @@
 #include <list>
 #include <tr1/memory>
 #include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <utility>
 
 namespace psc {
 
@@ -17,18 +19,20 @@ class AIBrain;
 
 namespace ctrl {
 
+class Button;
+
 class AIPlayer : public Player
 {
 public:
     typedef std::tr1::shared_ptr< AIPlayer > pointer_type;
     typedef std::tr1::weak_ptr  < AIPlayer > wpointer_type;
     typedef std::tr1::shared_ptr< boost::thread > pThread;
+    typedef std::tr1::shared_ptr< std::pair<int, int> > pPosition;
     typedef std::tr1::shared_ptr< int >      pDummy;
 
-    static pointer_type create(Input* input = 0,
-                               std::list<int> ally_ids = std::list<int>(),
-                               std::list<int> enemy_ids = std::list<int>()) {
-        return pointer_type(new AIPlayer(input, ally_ids, enemy_ids))->init();
+    static pointer_type create(Input* input,
+                               data::pViewSetting const& view_setting) {
+        return pointer_type(new AIPlayer(input, view_setting))->init();
     }
 
     void cycle();
@@ -37,17 +41,24 @@ public:
     void shoot(int, int);
     void think();
 
+    pPosition probing_brain_data();
+    boost::mutex& getMutex() { return think_mutex_; }
+
     virtual ~AIPlayer();
 
 protected:
-    AIPlayer(Input* input, std::list<int> const&, std::list<int> const&);
+    AIPlayer(Input* input, data::pViewSetting const&);
     pointer_type init();
+    void hold_button(ctrl::Button&, int);
+    void press_button(ctrl::Button&);
+    void release_button(ctrl::Button&);
 
 protected:
     model::AIBrain* brain_;
     int             think_interval_;
     pThread         think_thread_;
     pDummy          think_timer_;
+    boost::mutex    think_mutex_;
 };
 
 typedef AIPlayer::pointer_type  pAIPlayer;

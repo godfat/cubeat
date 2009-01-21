@@ -12,6 +12,7 @@ public:
 public:
     vector_2d(int width, int height):
         boost::multi_array<T, 2>(boost::extents[width][height]){}
+    void resize(int w, int h){ super_type::resize(boost::extents[w][h]); }
     size_type width() const{ return this->shape()[0]; }
     size_type height() const{ return this->shape()[1]; }
     T const* flatten_begin() const{ return this->data(); }

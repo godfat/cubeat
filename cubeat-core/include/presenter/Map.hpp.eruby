@@ -44,8 +44,8 @@ public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
     pCube make_cube_preview(int color_id = -1);
     Map& cycle();
-    Map& cycle_slow();
-    Map& cycle_fast();
+//    Map& cycle_slow();
+//    Map& cycle_fast();
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }
     void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }

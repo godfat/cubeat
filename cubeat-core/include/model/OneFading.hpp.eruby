@@ -1,12 +1,4 @@
 
-/* 2007.11.9
-   Nothing changed.
-
-  These included file are going to be modified:
-  1. Map.hpp
-  2. Square.hpp
-*/
-
 <% header_guard do %>
 
 #include "model/Chain.hpp"
@@ -20,28 +12,29 @@
 
 namespace psc{ namespace model{
 
-class OneFading{
-    typedef Map::cube_list_type cube_list_type;
+template<class MapType>
+class OneFadingT{
+    typedef typename MapType::cube_list_type cube_list_type;
+
 public:
-    typedef std::tr1::shared_ptr<OneFading> pointer_type;
-    static pointer_type create(Map& map, cube_list_type const& list){
-        return utils::ObjectPool<OneFading>::create(map, list);
+    typedef std::tr1::shared_ptr<OneFadingT> pointer_type;
+    static pointer_type create(cube_list_type const& list){
+        return utils::ObjectPool<OneFadingT>::create(list);
     }
 public:
-    // begin only used by Map::next_state
-    <% debug_hook 'OneFading' do %>(Map& map, cube_list_type const& list):
-        map_(map), list_(list)
-    {<%end%>}
-    cube_list_type::size_type size() const{ return list_.size(); }
+    // begin only used by Map::next_state / next_step
+    <% debug_hook 'OneFadingT' do %>(cube_list_type const& list): list_(list) {<%end%>}
+    typename cube_list_type::size_type size() const{ return list_.size(); }
 
-    void <% debug_hook 'fade' do %>(pCube that_would_be_killed_by_map){
+    void <% debug_hook 'fade' do %>(MapType& map,
+                                    typename MapType::cube_type that_would_be_killed_by_map){
 <% end %>
-        pChain chain = get_the_chain();
+        pChain chain = get_the_chain(map);
 
-        for(cube_list_type::iterator i=list_.begin(), iend=list_.end();
+        for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
-            map_.cubes_belong_to_the_chain_from_bottom_to_top(*i, chain);
+            map.attach_chain_bottom_up_from((**i).x(), (**i).y(), chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
             }
@@ -50,11 +43,11 @@ public:
     // end
 
 private:
-    pChain get_the_chain(){
+    pChain get_the_chain(MapType& map){
         pChain chain;
 
         //this for loop will get the first Chain it finds in this column or row
-        for(cube_list_type::iterator i=list_.begin(), iend=list_.end();
+        for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i != iend; ++i)
         {
             if( (**i).chain() ) {
@@ -67,7 +60,7 @@ private:
         if( !chain ) {
             chain = Chain::create();
             chain->step_one();
-            map_.push_chain( chain );
+            map.push_chain( chain );
         }
 
         //and add combo to it
@@ -78,7 +71,6 @@ private:
     }
 
 private:
-    Map& map_;
     cube_list_type list_;
 };
 

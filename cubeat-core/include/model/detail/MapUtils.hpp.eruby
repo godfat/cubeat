@@ -1,34 +1,117 @@
 
 <% header_guard do %>
 
-#include "model/Map.hpp"
-#include "model/Cube.hpp"
 #include <vector>
+#include <tr1/memory>
 
-namespace psc{ namespace model{ namespace detail{
+namespace psc{ namespace model{
 
-bool check_not_continue(std::vector<pCube>& list, pCube that, pCube ya_that){
-    if( ya_that.use_count() == 0 )   return true;
-    else if( *ya_that != *that )     return true;
-    else if( ya_that->is_waiting() ) list.push_back(ya_that);
-    else                             return true;
-    return false;
-}
+class Cube;
+typedef std::tr1::shared_ptr<Cube> pCube;
+
+class SimpleCube;
+typedef std::tr1::shared_ptr<SimpleCube> pSimpleCube;
+
+namespace detail{
+
+bool check_not_continue(
+    std::vector<pSimpleCube>& list,
+    pSimpleCube that,
+    pSimpleCube ya_that); //prototype
+
+bool check_not_continue(
+    std::vector<pCube>& list,
+    pCube that,
+    pCube ya_that); //prototype
 
 // found the chaining! add them into not_traveled and result!
+template<class MapType>
 void process_chaining(
-    std::vector<pCube> const& row_or_column,
-    Map::cube_list_type& not_traveled,
-    Map::cube_list_type& result)
+    std::vector<typename MapType::cube_type> const& row_or_column,
+    typename MapType::cube_list_type& not_traveled,
+    typename MapType::cube_list_type& result)
 {
-        for(std::vector<pCube>::const_iterator i=row_or_column.begin(), iend=row_or_column.end();
-            i!=iend; ++i)
-        {
-            not_traveled.insert(*i);
-            result.insert(*i);
-        }
+    typedef typename MapType::cube_type cube_type;
+    for(typename std::vector<cube_type>::const_iterator i=row_or_column.begin(),
+        iend=row_or_column.end();
+        i!=iend; ++i)
+    {
+        not_traveled.insert(*i);
+        result.insert(*i);
+    }
 }
 
-}}}
+// create a row of chaining cubes,
+// not_traveled indicates that cubes we need to search;
+// result indicates that cubes were successfully built
+template<class MapType>
+void make_row(typename MapType::container_type const& cubes,
+              typename MapType::cube_type that,
+              typename MapType::cube_list_type& not_traveled,
+              typename MapType::cube_list_type& result,
+              int chain_amount)
+{
+    std::vector<typename MapType::cube_type> row;
+
+    for(int i=that->x(); i>=0; --i) // include self
+        if( check_not_continue( row, that, cubes[i][that->y()] ) )
+            break;
+
+    for(int i=that->x()+1, iend=cubes.width(); i!=iend; ++i) // exclude self
+        if( check_not_continue( row, that, cubes[i][that->y()] ) )
+            break;
+
+    if(static_cast<int>(row.size()) >= chain_amount)
+        process_chaining<MapType>(row, not_traveled, result);
+}
+
+// same as make_row, but column instead.
+template<class MapType>
+void make_column(typename MapType::container_type const& cubes,
+                 typename MapType::cube_type that,
+                 typename MapType::cube_list_type& not_traveled,
+                 typename MapType::cube_list_type& result,
+                 int chain_amount)
+{
+    std::vector<typename MapType::cube_type> column;
+
+    for(int i=that->y(); i>=0; --i) // include self
+        if( check_not_continue( column, that, cubes[that->x()][i] ) )
+            break;
+
+    for(int i=that->y()+1, iend=cubes.height(); i!=iend; ++i) // exclude self
+        if( check_not_continue( column, that, cubes[that->x()][i] ) )
+            break;
+
+    if(static_cast<int>(column.size()) >= chain_amount)
+        process_chaining<MapType>(column, not_traveled, result);
+}
+
+// create a cube list that we need for one fading.
+// traveld indicates that the cubes we traveled through the process;
+// not_traveled indicates that the cubes we should travel through the process;
+// result would contain the cubes we need to build one fading.
+template<class MapType>
+void make_clist(typename MapType::container_type const& cubes,
+                typename MapType::cube_list_type& traveled,
+                typename MapType::cube_list_type& not_traveled,
+                typename MapType::cube_list_type& result,
+                int chain_amount)
+{
+    if(not_traveled.size()){
+        typename MapType::cube_list_type::iterator node = not_traveled.begin();
+        typename MapType::cube_type cube = *node;
+
+        if( traveled.count(cube) == 0 ){
+            make_row<MapType>(cubes, cube, not_traveled, result, chain_amount);
+            make_column<MapType>(cubes, cube, not_traveled, result, chain_amount);
+            traveled.insert(cube);
+        }
+        not_traveled.erase(node);
+        make_clist<MapType>(cubes, traveled, not_traveled, result, chain_amount);
+    }
+}
+
+}}} //detail model psc
 
 <% end %>

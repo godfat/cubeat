@@ -23,6 +23,7 @@ include/data/ViewSetting.hpp
 include/model/Chain.hpp
 include/model/Cube.hpp
 include/model/Map.hpp
+include/model/SimpleMap.hpp
 include/model/OneFading.hpp
 include/model/detail/MapUtils.hpp
 include/model/state/Dropping.hpp
@@ -45,6 +46,8 @@ include/utils/math.hpp
 include/utils/vector_2d.hpp
 src/model/Cube.cpp
 src/model/Map.cpp
+src/model/SimpleMap.cpp
+src/model/detail/MapUtils.cpp
 src/model/state/Dropping.cpp
 src/model/state/Dying.cpp
 src/model/state/State.cpp

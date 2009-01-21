@@ -41,22 +41,17 @@ cpSinking Cube::is_sinking() const{ return dynamic_pointer_cast<Sinking>(state_)
 void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
     y(y()-1);
-    map()->update_cube_position(shared_from_this(), x(), y()+1);
+    map()->update_cube_position(self(), x(), y()+1);
     if( is_sinking() )
         sink_a_block_event()();
     else
         drop_a_block_event()();
 }
 
-void <% debug_hook 'Cube::lose_chain_without_event' do %>(){
-<% end %>
-	chain_belonged_to_.reset();
-}
-
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
-    if( chain() && map()->cube_can_lose_chain(shared_from_this()) ){
-        lose_chain_without_event();
+    if( chain() && map()->cube_can_lose_chain(self()) ){
+        SimpleCube::lose_chain();
         lose_chain_event()();
     }
 }
@@ -70,19 +65,19 @@ void <% debug_hook 'Cube::next_state' do %>(){
 // only used by OneFading::fade
 void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
-    state_ = state::Dying::create(shared_from_this());
+    state_ = state::Dying::create(self());
     go_dying_event()();
 }
 
 Cube& <% debug_hook 'Cube::go_dropping' do %>(){
 <% end %>
-    state_ = state::Dropping::create(shared_from_this());
+    state_ = state::Dropping::create(self());
     return *this;
 }
 
 Cube& <% debug_hook 'Cube::go_sinking' do %>(){
 <% end %>
-    state_ = state::Sinking::create(shared_from_this());
+    state_ = state::Sinking::create(self());
     return *this;
 }
 
@@ -117,4 +112,12 @@ void <% debug_hook 'Cube::restore' do %>(int){
     if( state::pWaiting w = is_waiting() )
         w->uncheck();
     restore_event()(color_id());
+}
+
+pSimpleCube Cube::dump_data() const{
+    pSimpleCube result = SimpleCube::create(x(), y(), color_id());
+
+    //start coding here
+
+    return result;
 }

@@ -16,6 +16,7 @@
 #include "utils/ObjectPool.hpp"
 #include "utils/Random.hpp"
 #include "data/Cube.hpp"
+#include "model/SimpleCube.hpp"
 
 #include <tr1/functional>
 
@@ -23,7 +24,7 @@
 
 namespace psc{ namespace model{
 
-class Cube: public std::tr1::enable_shared_from_this<Cube>{
+class Cube: public SimpleCube{
     friend class state::State; // for state_ = ? used by switch_state
     friend class state::Dropping; // for drop_a_block
 public:
@@ -34,10 +35,9 @@ public:
         return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
-        data_(data::Cube::create(x, y, color_id)), map_(map),
-        has_grounded_(false), is_broken_(false), is_garbage_(false), hp_(1)
+        SimpleCube(x, y, color_id), map_(map)
     {}
-    <% debug_hook '~Cube' do %>(){ <% end %> lose_chain_without_event(); }
+    <% debug_hook '~Cube' do %>(){ <% end %> }
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }
@@ -61,7 +61,7 @@ public:
     state::cpDying is_dying() const;
     // end
 
-    // begin only used by Map::cubes_belong_to_the_chain_from_bottom_to_top
+    // begin only used by Map::attach_chain_bottom_up
     void chain(pChain chain){ chain_belonged_to_ = chain; get_chain_event()(); }
     // end
 
@@ -71,7 +71,7 @@ public:
     // end
 
     // begin only used by OneFading::fade
-    void go_dying();
+    virtual void go_dying();
     // end
 
 	// begin only used by State::map
@@ -86,24 +86,15 @@ public:
     }
     // end
 
-    // begin only used by model::Map::color_map
-    // int color_id() const{ return data::Color::for_id(color_); }
-    // end
-
 	// begin only used by Map::insert_garbage,
 	//   which is used by Map::cycle_creation_garbage
 	Cube& be_garbage();
 	// end
 
-    bool is_garbage() const{ return is_garbage_; }
     void be_broken(int);
-    bool is_broken() const{ return is_broken_; }
 	void restore(int);
 
 	void go_exploding(int);
-
-	bool has_grounded() const{ return has_grounded_; }
-	void set_grounded(){ has_grounded_ = true; }
 
     // for Map::insert_garbage
     Cube& go_dropping();
@@ -113,25 +104,25 @@ public:
     // for presenter::Cube
     void next_state();
 
+    pSimpleCube dump_data() const;
+
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>
-        pCube self = shared_from_this();
-        state_ = state::Waiting::create(self);
-        return self;
+        self_ = std::tr1::static_pointer_cast<Cube>(shared_from_this());
+        state_ = state::Waiting::create(self());
+        return self();
     }
     bool is_dead() const{ return state_.use_count() == 0; }
-    void lose_chain_without_event();
     state::cpSinking is_sinking() const;
     void drop_a_block();
+    pCube self() const{ return self_.lock(); }
 
 private:
-<%= accessor :'data::pCube', :data %>
+//  accessor :'data::pCube', :data /////// erb markers deleted by arch.jslin
     wpMap map_;
-    pChain chain_belonged_to_;
     state::pState state_;
-    bool has_grounded_, is_broken_, is_garbage_;
-	int hp_;
+    wpCube self_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event, :sink_a_block_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>

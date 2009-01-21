@@ -5,48 +5,48 @@
 
 #include "data/MapSetting.hpp"
 #include "utils/vector_2d.hpp"
+#include "model/SimpleMap.hpp"
 
 #include <tr1/functional>
 #include <set>
 #include <list>
 #include <vector>
 
-#include <ctime>
-
 namespace psc{
-namespace ctrl{
-    class Ai;
-}
 namespace model{
 
-class Map : public std::tr1::enable_shared_from_this<Map>{
-    friend class Ai;
+class Map;
+
+template<class T>
+class OneFadingT;
+typedef std::tr1::shared_ptr< OneFadingT<Map> > pOneFadingOrig;
+
+class Map : public SimpleMap
+{
 public:
     typedef pMap pointer_type;
+    typedef pCube                        cube_type;
     typedef utils::vector_2d<pCube> container_type;
-    typedef std::set<pCube> cube_list_type;
-    typedef std::list<pChain> chain_list_type;
-    typedef std::vector<pCube> preview_list_type;
-
-    typedef utils::vector_2d<int> color_map_type;
+    typedef utils::vector_2d<int>   color_map_type;
+    typedef std::set<pCube>         cube_list_type;
+    typedef std::list<pChain>      chain_list_type;
+    typedef std::vector<pCube>   preview_list_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
         // map doesn't need a pool
-        return pointer_type(new Map(owner, setting));
+        return pointer_type(new Map(owner, setting))->init();
     }
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        owner_(owner), map_setting_(setting),
-        cubes_(setting->width(), setting->height()),
-        garbage_left_(0), score_(0), current_sum_of_attack_(0)
+        SimpleMap(setting), owner_(owner), cubes_(0, 0)
     {}
     Map& init_cubes();
-    Map& init_cubes(utils::vector_2d<int> const&);
+    Map& init_cubes(color_map_type const&);
     <% debug_hook '~Map' do %>(){<%end%>}
 
-    Map& <% debug_hook 'cycle_slow' do %>(){ <% end %>
+    Map& <% debug_hook 'cycle' do %>(){ <% end %>
         garbage_dumpable_ = ms()->garbage_dumpable();
         dropping_creatable_ = ms()->dropping_creatable();
         if(garbage_dumpable_ && dropping_creatable_)
@@ -56,29 +56,20 @@ public:
     	update_chains();
         cycle_cubes();
 
-        return *this;
-    }
-    Map& <% debug_hook 'cycle_fast' do %>(){ <% end %>
         if( garbage_dumpable_ && garbage_left_ > 0 )
             cycle_creation_garbage();
     	else if( dropping_creatable_ )
     	    cycle_creation();
+
         return *this;
     }
-
-    data::pMapSetting const& ms() const{ return map_setting_; }
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
     // end
 
     // begin only used by OneFading::fade
-    void cubes_belong_to_the_chain_from_bottom_to_top(pCube, pChain);
-    // end
-
-    // begin only used by OneFading::get_the_chain
-    //   which is used by OneFading::fade
-    void push_chain(pChain chain){ chains_.push_back(chain); }
+    void attach_chain_bottom_up_from(int, int, pChain);
     // end
 
     // only used by Game::make_garbage
@@ -91,25 +82,20 @@ public:
     // for Cube#drop_a_block
     Map& update_cube_position(pCube cube, int old_x, int old_y);
 
-    // container_type const& cubes() const{ return cubes_; }
     color_map_type color_map() const;
 
-    //added by arch.jslin
-    int score() const                 { return score_; }
-    int garbage_left() const          { return garbage_left_; }
-    int current_sum_of_attack() const { return current_sum_of_attack_; }
     bool check_column_full() const;
     bool all_empty() const;
     bool all_waiting() const;
 
     //temp: added by arch.jslin only for randomly exploding cubes
     bool kill_cube_at(int x, int y);
+    pSimpleMap dump_data() const;
 
 private:
     Map& insert_cube(pCube);
     Map& insert_garbage(pCube);
     Map& insert_preview(pCube);
-    void refresh_cubes();
     void cycle_cubes();
     void cycle_a_cube(pCube, int x, int y);
     void cycle_creation();
@@ -118,30 +104,25 @@ private:
     void fill_preview_queue();
     int fill_preview_create_color(std::vector<int>&);
 
-    void make_row(pCube that, cube_list_type&, cube_list_type&);
-    void make_column(pCube that, cube_list_type&, cube_list_type&);
-    void make_clist(cube_list_type&, cube_list_type&, cube_list_type&);
-    pOneFading make_OneFading(pCube);
+    pOneFadingOrig make_OneFading(pCube);
     bool is_below_empty(cpCube) const;
     void update_chains();
     presenter::pMap owner() const{ return owner_.lock(); }
-
-private: // methods for Ai
-    pCube lookup(int x, int y){ return cubes_[x][y]; }
-    Map& setup(int x, int y, pCube cube){ cubes_[x][y] = cube; return *this; }
-    pointer_type clone() const; // NOTE: this is not a real clone...
-    static pCube clone_cube(pCube cube);
+    pMap self()             const{ return self_.lock(); }
 
 private:
-    presenter::wpMap owner_; // should be weak_ptr;
-    data::pMapSetting map_setting_;
-    container_type cubes_;
-    int garbage_left_, score_, current_sum_of_attack_;//, dropping_cubes_, grounded_cubes_;
+    pointer_type init() {
+        cubes_.resize(map_setting_->width(), map_setting_->height());
+        self_  = std::tr1::static_pointer_cast<Map>( shared_from_this() );
+        return self();
+    }
+
+private:
+    presenter::wpMap  owner_; // should be weak_ptr
+    wpMap             self_;
+    container_type    cubes_;
     bool dropping_creatable_, garbage_dumpable_;
-    // someday make it to be std::list
-    chain_list_type chains_;
     preview_list_type cubes_preview_;
-    std::tr1::shared_ptr<int> warning_level_; //added by arch.jslin
 };
 
 }} // end of namespace

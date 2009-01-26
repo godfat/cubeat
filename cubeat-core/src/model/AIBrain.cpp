@@ -2,11 +2,13 @@
 #include "ctrl/AIPlayer.hpp"
 #include "model/AIBrain.hpp"
 #include "model/SimpleMap.hpp"
-#include "model/Map.hpp"
+#include "model/SimpleCube.hpp"
 #include "model/detail/AIUtils.hpp"
 #include "utils/Random.hpp"
+#include <boost/foreach.hpp>
 
 #include <iostream>
+
 
 using namespace psc;
 using namespace model;
@@ -37,13 +39,52 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
     pSimpleMap self_map = map_list_[self_index];
     {
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-        map_list_[0]->print_data_for_debug();
-    }
 
-    for( int x = 0; x < self_map->ms()->width(); ++x ) {
-        if( AIUtils::lookup(self_map, x, 4) ) {
-            boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-            shooting_pos_queue_.push_back( pPosition(new std::pair<int, int>(std::make_pair(x, 4))) );
+        if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 10) ) {
+            pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+            shooting_pos_queue_.push_back( pos );
+            if( c->is_broken() )
+                shooting_pos_queue_.push_back( pos );
+            if( c->is_garbage() ) {
+                shooting_pos_queue_.push_back( pos );
+                shooting_pos_queue_.push_back( pos );
+            }
+        }
+        else {
+            std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
+            std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
+            int high_col_threshold = 7;
+            std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
+
+            BOOST_FOREACH(pSimpleCube& c, garbages) {
+                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+                shooting_pos_queue_.push_back( pos );
+                shooting_pos_queue_.push_back( pos );
+                shooting_pos_queue_.push_back( pos );
+            }
+
+            BOOST_FOREACH(pSimpleCube& c, brokens) {
+                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+                shooting_pos_queue_.push_back( pos );
+            }
+
+            BOOST_FOREACH(int& x, high_cols) {
+                pPosition pos = pPosition(
+                    new std::pair<int, int>(std::make_pair(x, utils::random( high_col_threshold ))));
+                shooting_pos_queue_.push_back( pos );
+            }
+
+            if( garbages.empty() && brokens.empty() &&
+                high_cols.empty() && AIUtils::grounded_cube_count(self_map) >= 36 ) {
+                int x, y;
+                do {
+                    x = utils::random(self_map->ms()->width());
+                    y = utils::random(self_map->ms()->height());
+                } while( !AIUtils::lookup_for_grounded(self_map, x, y) );
+
+                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(x, y)));
+                //shooting_pos_queue_.push_back( pos );
+            }
         }
     }
     is_thinking_ = false;

@@ -19,7 +19,7 @@ using std::tr1::ref;
 using std::tr1::function;
 
 AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
-    :Player(input, view_setting), brain_(0), think_interval_(200), is_executing_(false)
+    :Player(input, view_setting), brain_(0), think_interval_(400), is_executing_(false)
 {
 }
 
@@ -124,12 +124,14 @@ AIPlayer::pPosition AIPlayer::probing_brain_data()
 
 void AIPlayer::cycle()
 {
-    input_->haste().now() = true;
     if( !is_executing_ ) {
         if( pPosition pos = probing_brain_data() ) {
             is_executing_ = true; //this indicate executing started.
             shoot( pos->first, pos->second );
             brain_->popCmdQueue();
         }
+        input_->haste().now() = true;
     }
+    else
+        input_->haste().now() = false;
 }

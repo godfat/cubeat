@@ -5,6 +5,7 @@
 //needed by AIBrain for manipulating SimpleMap
 
 #include <tr1/memory>
+#include <vector>
 
 namespace psc {
 namespace model {
@@ -19,9 +20,19 @@ namespace ai_detail {
 class AIUtils {
 public:
     static pSimpleCube lookup(pSimpleMap const&, int x, int y);
+    static pSimpleCube lookup_for_grounded(pSimpleMap const&, int x, int y);
+    static std::vector<int> find_high_column_indexes(pSimpleMap const&, int threshold = 6);
+    static pSimpleCube find_keycube_for_highest_chain_power(pSimpleMap const&, int threshold = 0);
+    static std::vector<pSimpleCube> find_garbages(pSimpleMap const&);
+    static std::vector<pSimpleCube> find_brokens(pSimpleMap const&);
+    static int cube_count(pSimpleMap const&);
+    static int grounded_cube_count(pSimpleMap const& map);
+    static pSimpleMap clone_map(pSimpleMap const&);
     static void setup(pSimpleMap&, int x, int y, pSimpleCube);
     static void kill (pSimpleMap&, int x, int y);
-    static void all_fallen(pSimpleMap&);
+
+private:
+    static int simulate_fire_at(pSimpleMap, int, int); //returns chain's score sum
 };
 
 } //ai_detail

@@ -3,13 +3,122 @@
 #include "model/SimpleMap.hpp"
 #include "model/SimpleCube.hpp"
 
+#include <iostream>
+
 namespace psc {
 namespace model {
 namespace ai_detail {
 
+pSimpleMap AIUtils::clone_map(pSimpleMap const& map)
+{
+    return map->clone();
+}
+
+pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map, int threshold)
+{
+    int highest_score = 0, current_score = 0;
+    pSimpleCube best_cube;
+
+    for( int x=0; x < map->ms()->width(); ++x ) {
+        for( int y=0; y < map->ms()->height(); ++y ) {
+            if( pSimpleCube c = map->simp_cubes_[x][y] ) {
+                current_score = simulate_fire_at( map->clone(), x, y );
+                if( current_score > highest_score && current_score >= threshold ) {
+                    best_cube = c;
+                    highest_score = current_score;
+                }
+            }
+        }
+    }
+
+    if( best_cube )
+        std::cout << " score: " << highest_score << " at " << best_cube->x() << ", " << best_cube->y() << std::endl;
+
+    return best_cube;
+}
+
+std::vector<pSimpleCube> AIUtils::find_garbages(pSimpleMap const& map)
+{
+    std::vector<pSimpleCube> garbages;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( pSimpleCube c = map->simp_cubes_[x][y] )
+                if( c->is_garbage() && !map->is_below_empty(c) ) //don't count garbages in the air
+                    garbages.push_back( c );
+
+    return garbages;
+}
+
+std::vector<pSimpleCube> AIUtils::find_brokens(pSimpleMap const& map)
+{
+    std::vector<pSimpleCube> brokens;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( pSimpleCube c = map->simp_cubes_[x][y] )
+                if( c->is_broken() && !map->is_below_empty(c) ) //don't count brokens in the air
+                    brokens.push_back( c );
+
+    return brokens;
+}
+
+int AIUtils::cube_count(pSimpleMap const& map)
+{
+    int num = 0;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( map->simp_cubes_[x][y] )
+                ++num;
+    return num;
+}
+
+int AIUtils::grounded_cube_count(pSimpleMap const& map)
+{
+    int num = 0;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( pSimpleCube c = map->simp_cubes_[x][y] )
+                if( c->has_grounded() )
+                    ++num;
+    return num;
+}
+
+//private
+//returns chain's score sum
+int AIUtils::simulate_fire_at(pSimpleMap cloned_map, int x, int y)
+{
+    kill(cloned_map, x, y);
+    do {
+        cloned_map->cycle();
+    } while( cloned_map->chains_.size() );
+    //if there is chain going on, we will continue to cycle
+    //if there is not, then end of game.
+    return cloned_map->current_sum_of_attack_;
+}
+
 pSimpleCube AIUtils::lookup(pSimpleMap const& map, int x, int y)
 {
     return map->simp_cubes_[x][y];
+}
+
+pSimpleCube AIUtils::lookup_for_grounded(pSimpleMap const& map, int x, int y)
+{
+    if( pSimpleCube c = lookup(map, x, y) )
+        return !map->is_below_empty(c) ? c : pSimpleCube();
+    else return pSimpleCube();
+}
+
+std::vector<int> AIUtils::find_high_column_indexes(pSimpleMap const& map, int threshold)
+{
+    std::vector<int> high_columns;
+    for( int x = 0; x < map->ms()->width(); ++x ) {
+        int y = 0;
+        for( ; y < map->ms()->height(); ++y )
+            if( !map->simp_cubes_[x][y] )
+                break;
+        if( y >= threshold )
+            high_columns.push_back( x );
+    }
+    return high_columns;
 }
 
 void AIUtils::setup(pSimpleMap& map, int x, int y, pSimpleCube c)
@@ -20,10 +129,6 @@ void AIUtils::setup(pSimpleMap& map, int x, int y, pSimpleCube c)
 void AIUtils::kill (pSimpleMap& map, int x, int y)
 {
     map->simp_cubes_[x][y].reset();
-}
-
-void AIUtils::all_fallen(pSimpleMap& map)
-{
 }
 
 } //ai_detail

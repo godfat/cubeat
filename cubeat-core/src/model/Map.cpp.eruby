@@ -429,14 +429,14 @@ pSimpleMap Map::dump_data() const
             if( pCube orig_c = cubes_[x][y] ) {
                 if( orig_c->is_dying() ) continue; //don't copy dying cubes.
 
-                pSimpleCube c = SimpleCube::create(result, x, y, orig_c->color_id());
+                pSimpleCube c = orig_c->dump_data_to_map(result);
 
                 if( orig_c->chain() ) {
                     chain_list_type::const_iterator j = temp_chains.begin();
                     for( chain_list_type::const_iterator i = chains_.begin(); i != chains_.end(); ++i, ++j )
                     {
-                        if( (*i).use_count() <= 1 ) //if this chain isn't held by any cubes,
-                            continue;               //then skip it
+//                        if( (*i).use_count() <= 1 ) //if this chain isn't held by any cubes,
+//                            continue;               //then skip it
                         if( (*i) == orig_c->chain() )
                             break; //found the correct chain from the original chain list, break loop
                     }

@@ -82,13 +82,14 @@ public:
     SimpleMap& cycle() {
         update_chains();
         cycle_cubes();
-        cleanup_map_and_drop_all();
+        //cleanup_map_and_drop_all();
         return *this;
     }
 
     // these are for AI calculations, chain related.
     void attach_chain_bottom_up_from(int, int, pChain);
     void push_chain(pChain chain){ chains_.push_back(chain); }
+    bool is_all_fallen() const;
     // end
 
     int score() const                 { return score_; }
@@ -112,9 +113,12 @@ private:
         simp_cubes_.resize(map_setting_->width(), map_setting_->height());
         return shared_from_this();
     }
+    bool is_below_empty(pSimpleCube) const;
     void update_chains();
     void cycle_cubes();
     void cycle_a_cube(pSimpleCube, int x, int y);
+    void update_cube_position(pSimpleCube cube, int old_x, int old_y);
+    void drop_cube_to_the_ground(pSimpleCube cube);
     void cleanup_map_and_drop_all();
     pOneFadingSimple make_OneFading(pSimpleCube);
 

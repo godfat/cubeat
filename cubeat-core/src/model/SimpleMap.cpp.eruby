@@ -12,7 +12,7 @@ using namespace model;
 
 SimpleMap::~SimpleMap()
 {
-    std::cout << " simple map destructing..." << std::endl;
+    //std::cout << " simple map destructing..." << std::endl;
 }
 
 //protected
@@ -27,24 +27,94 @@ void SimpleMap::dump_preview_to(pSimpleMap dest, preview_list_type const& cl) co
     dest->simp_cubes_preview_ = cl;
 }
 
+bool SimpleMap::is_below_empty(pSimpleCube cube) const
+{
+    if( cube->y() == 0 ) return false;
+    if( simp_cubes_[cube->x()][cube->y()-1] ) return false;
+    return true;
+}
+
+void SimpleMap::update_cube_position(pSimpleCube cube, int old_x, int old_y)
+{
+    simp_cubes_[cube->x()][cube->y()] = cube;
+    simp_cubes_[old_x][old_y].reset();
+}
+
 void SimpleMap::update_chains()
 {
-    //start coding from here
+    int damage_factor = ms()->damage_factor();
+    for(chain_list_type::iterator i=chains_.begin(); i != chains_.end(); )
+    {
+        // when the Chain's rear is not zero we notify to add a new combo
+        if( (*i)->last_step_amounts() != 0 ){
+            (*i)->update_power_factor();
+            // damage_factor adjustment (1.00 ~ 2.00)
+            int amount = (*i)->attack_of_current_step()*damage_factor;
+            current_sum_of_attack_ += amount;
+            // damage_factor adjustment (1.00 ~ 2.00)
+            score_ += (*i)->score_step() * damage_factor;
+            (*i)->step_one();
+        }
+        // when the Chain's all dead then we fire up the attack and make this one null
+        if( (*i).use_count() == 1 ){
+            // damage_factor adjustment (1.00 ~ 2.00)
+            //int amount = (*i)->power_factor()*damage_factor;
+            //current_sum_of_attack_ -= amount;
+            i = chains_.erase(i);
+        }
+        else{
+            ++i;
+        }
+    }
 }
 
 void SimpleMap::cycle_cubes()
 {
-    //start coding from here
+    using namespace std::tr1::placeholders;
+    using std::tr1::bind;
+    utils::for_each_ignore_null(
+        simp_cubes_, bind(&SimpleMap::cycle_a_cube, this, _1, _2, _3));
 }
 
 void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
 {
-    //start coding from here
+    if( is_below_empty(cube) )
+        drop_cube_to_the_ground(cube);
+    else {
+        pOneFadingSimple one_fading = make_OneFading(cube);
+        if( one_fading )
+            one_fading->fade(*this, cube);
+    }
+    if( cube->cycle_and_die() )
+        simp_cubes_[x][y].reset();
+    else {
+        cube->set_grounded();
+        cube->lose_chain();
+    }
+}
+
+void SimpleMap::drop_cube_to_the_ground(pSimpleCube cube)
+{
+    int x = cube->x(), old_y = cube->y(), y = old_y-1;
+    for( ; y >= 0; --y )
+        if( simp_cubes_[x][y] )
+            break;
+
+    cube->y( y+1 );
+    update_cube_position(cube, x, old_y);
 }
 
 void SimpleMap::cleanup_map_and_drop_all()
 {
     //start coding from here
+}
+
+bool SimpleMap::is_all_fallen() const {
+    for( int x=0; x < ms()->width(); ++x )
+        for( int y=1; y < ms()->height(); ++y )
+            if( simp_cubes_[x][y] && !simp_cubes_[x][y-1] )
+                return false;
+    return true;
 }
 
 //NOTE: in SimpleMap, all the cubes are at waiting state.
@@ -70,7 +140,7 @@ pOneFadingSimple SimpleMap::make_OneFading(pSimpleCube that)
 }
 
 int find_chain_index(SimpleMap::chain_list_type const& chains, pChain const& ch) {
-    int result = 0;
+    unsigned int result = 0;
     for(SimpleMap::chain_list_type::const_iterator i=chains.begin(); i != chains.end(); ++i) {
         ++result;
         if( (*i) == ch )
@@ -89,7 +159,7 @@ void SimpleMap::print_data_for_debug() const
     std::cout << "num_of_chains:" << chains_.size() << std::endl;
 
     for(chain_list_type::const_iterator i=chains_.begin(); i != chains_.end(); ++i)
-        std::cout << "  chain: " << (*i) << "  step: " << ((*i)->step()-1) << "  attack: " << (*i)->power_factor() << std::endl;
+        std::cout << "  chain: " << (*i) << "  step: " << ((*i)->step()-1) << "  attack: " << (*i)->power_factor() << " use_count: " << (*i).use_count() << std::endl;
 
     std::cout << "\npreview_list: " << std::endl;
 
@@ -100,8 +170,8 @@ void SimpleMap::print_data_for_debug() const
 
     std::cout << "\nmap-view: " << std::endl;
 
-    for( int y = simp_cubes_.height()-1; y >= 0; --y ) {
-        for( int x = 0; x < simp_cubes_.width(); ++x )
+    for( int y = ms()->height()-1; y >= 0; --y ) {
+        for( int x = 0; x < ms()->width(); ++x )
             if( simp_cubes_[x][y] ) {
                 int ich = find_chain_index(chains_, simp_cubes_[x][y]->chain());
                 char ch = (ich == 0 ? ' ' : ich+96 );
@@ -138,13 +208,13 @@ pSimpleMap SimpleMap::clone() const
     for( int x=0; x < ms()->width(); ++x ){
         for( int y=0; y < ms()->height(); ++y ){
             if( pSimpleCube orig_c = simp_cubes_[x][y] ) {
-                pSimpleCube c = SimpleCube::create(result, x, y, orig_c->color_id());
+                pSimpleCube c = orig_c->dump_data_to_map(result);
 
                 if( orig_c->chain() ) {
                     chain_list_type::const_iterator j = temp_chains.begin();
                     for( chain_list_type::const_iterator i = chains_.begin(); i != chains_.end(); ++i, ++j )
                     {
-                        if( (*i).use_count() <= 1 )   continue;
+//                        if( (*i).use_count() <= 1 )   continue;
                         if( (*i) == orig_c->chain() ) break;
                     }
                     c->chain( *j );

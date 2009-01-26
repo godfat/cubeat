@@ -226,6 +226,7 @@
 		<Unit filename="src\model\Cube.cpp.eruby" />
 		<Unit filename="src\model\Map.cpp" />
 		<Unit filename="src\model\Map.cpp.eruby" />
+		<Unit filename="src\model\SimpleCube.cpp" />
 		<Unit filename="src\model\SimpleMap.cpp" />
 		<Unit filename="src\model\SimpleMap.cpp.eruby" />
 		<Unit filename="src\model\detail\AIUtils.cpp" />

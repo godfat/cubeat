@@ -58,22 +58,22 @@ Player::~Player()
 }
 
 //note: need fix
-Player& Player::update()
+void Player::cycle()
 {
-    process_input();
-
-    if( current_wep_->update() ) {
-        //do nothing
-    }
-    else {
-        if( weplist_idx_ != 0 ) {
-            //Sound::i().change_wep();
-            current_wep_ = weplist_[0];
-            //if the weapon is "DEAD" then we change it back to the most basic weapon
-            weplist_idx_ = 0;
-        }
-    }
-    return *this;
+//    process_input();
+//
+//    if( current_wep_->update() ) {
+//        //do nothing
+//    }
+//    else {
+//        if( weplist_idx_ != 0 ) {
+//            //Sound::i().change_wep();
+//            current_wep_ = weplist_[0];
+//            //if the weapon is "DEAD" then we change it back to the most basic weapon
+//            weplist_idx_ = 0;
+//        }
+//    }
+//    return *this;
 }
 
 Player& Player::set_active_weapon(int i)

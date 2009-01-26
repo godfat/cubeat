@@ -37,5 +37,7 @@ bool IrrDevice::init(bool test)
     else
         device_ = createDeviceEx(param);
 
+    //device_->getLogger()->setLogLevel(ELL_NONE);
+
     return device_ ? true : false;
 }

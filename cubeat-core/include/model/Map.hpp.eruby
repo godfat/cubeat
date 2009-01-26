@@ -44,7 +44,7 @@ public:
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
-    <% debug_hook '~Map' do %>(){<%end%>}
+    ~Map();
 
     Map& <% debug_hook 'cycle' do %>(){ <% end %>
         garbage_dumpable_ = ms()->garbage_dumpable();

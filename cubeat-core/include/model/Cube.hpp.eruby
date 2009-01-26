@@ -71,7 +71,7 @@ public:
     // end
 
     // begin only used by OneFading::fade
-    virtual void go_dying();
+    void go_dying();
     // end
 
 	// begin only used by State::map

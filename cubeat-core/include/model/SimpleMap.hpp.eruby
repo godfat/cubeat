@@ -38,6 +38,11 @@ template<class T>
 class OneFadingT;
 typedef std::tr1::shared_ptr< OneFadingT<SimpleMap> > pOneFadingSimple;
 
+namespace ai_detail
+{
+class AIUtils;
+}
+
 class SimpleMap : public std::tr1::enable_shared_from_this<SimpleMap>
 {
 public:
@@ -54,14 +59,26 @@ public:
         // map doesn't need a pool
         return pointer_type(new SimpleMap(setting))->init();
     }
+    static pointer_type create(data::pMapSetting setting, int garb, int sc, int soa,
+        std::tr1::shared_ptr<int> warning_lv) {
+        return pointer_type(new SimpleMap(setting, garb, sc, soa, warning_lv))->init();
+    }
 
     SimpleMap(data::pMapSetting setting):
-        map_setting_(setting),
-        garbage_left_(0), score_(0), current_sum_of_attack_(0), simp_cubes_(0, 0)
-    {}
-    ~SimpleMap(){}
+        map_setting_(setting), garbage_left_(0), score_(0),
+        current_sum_of_attack_(0), simp_cubes_(0, 0){}
 
-    SimpleMap& init_cubes(color_map_type const&);
+    SimpleMap(data::pMapSetting setting, int garb, int sc, int soa,
+              std::tr1::shared_ptr<int> warning_lv):
+        map_setting_(setting), garbage_left_(garb), score_(sc),
+        current_sum_of_attack_(soa), simp_cubes_(0, 0)
+    {
+        if( warning_lv )
+            warning_level_ = std::tr1::shared_ptr<int>(new int(*warning_lv));
+    }
+
+    ~SimpleMap();
+
     SimpleMap& cycle() {
         update_chains();
         cycle_cubes();
@@ -79,7 +96,12 @@ public:
     int current_sum_of_attack() const { return current_sum_of_attack_; }
     data::pMapSetting const& ms() const{ return map_setting_; }
 
+    void print_data_for_debug() const;
+
 protected:
+    void dump_cube_to(pointer_type, pSimpleCube) const;
+    void dump_preview_to(pointer_type, preview_list_type const&) const;
+
     data::pMapSetting map_setting_;
     int garbage_left_, score_, current_sum_of_attack_;
     chain_list_type chains_;// someday make it to be std::list
@@ -96,14 +118,12 @@ private:
     void cleanup_map_and_drop_all();
     pOneFadingSimple make_OneFading(pSimpleCube);
 
-//  possibly needed by AI
-//    pCube lookup(int x, int y){ return cubes_[x][y]; }
-//    Map& setup(int x, int y, pCube cube){ cubes_[x][y] = cube; return *this; }
-//    pointer_type clone() const; // NOTE: this is not a real clone...
-//    static pCube clone_cube(pCube cube);
-
     container_type    simp_cubes_;
     preview_list_type simp_cubes_preview_;
+
+private:
+    friend class ai_detail::AIUtils;
+    pointer_type clone() const;
 };
 
 typedef SimpleMap::pointer_type  pSimpleMap;

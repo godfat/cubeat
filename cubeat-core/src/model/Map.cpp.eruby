@@ -25,6 +25,8 @@
 using namespace psc;
 using namespace model;
 
+<% debug_hook 'Map::~Map' do %>() {<%end%>}
+
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
     using boost::lambda::_1; // this would be used in for_each for element
@@ -332,6 +334,9 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
     return result;
 }
 
+// temp
+void inc_warning(int& pw) { assert(pw < 5); pw += 1; }
+
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
@@ -346,8 +351,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
         warning_level_ = std::tr1::shared_ptr<int>(new int(0));
         owner()->warning_counting_event()(0); //added for call warning as soon as column full
         ctrl::EventDispatcher::i().subscribe_timer(
-            // boost function is a gcc43 workaround!
-            boost::function<void()>(++*var(warning_level_)), warning_level_, 1000, 3);
+            bind(inc_warning, ref(*warning_level_)), warning_level_, 1000, 3);
 
         ctrl::EventDispatcher::i().subscribe_timer(
             bind(owner()->warning_counting_event(), ref(*warning_level_)), warning_level_, 1000, 3);
@@ -398,30 +402,54 @@ bool Map::kill_cube_at(int x, int y) {
     return false;
 }
 
-pSimpleMap Map::dump_data() const{
-    pSimpleMap result = SimpleMap::create(map_setting_);
+pSimpleMap Map::dump_data() const
+{
+    pSimpleMap result = SimpleMap::create(
+        map_setting_, garbage_left_, score_, current_sum_of_attack_, warning_level_);
 
-    //start coding here
+    chain_list_type temp_chains;
 
+    for(chain_list_type::const_iterator i=chains_.begin(); i != chains_.end(); ++i) {
+        pChain chain = Chain::create( *i );
+        temp_chains.push_back( chain );
+        result->push_chain( chain );
+    }
+
+    SimpleMap::preview_list_type temp_preview;
+
+    for(preview_list_type::const_iterator i=cubes_preview_.begin(); i != cubes_preview_.end(); ++i) {
+        pSimpleCube c = SimpleCube::create(-1, -1, (*i)->color_id());
+        temp_preview.push_back(c);
+    }
+    SimpleMap::dump_preview_to(result, temp_preview);
+
+    for( int x=0; x < ms()->width(); ++x ) {
+        for( int y=0; y < ms()->height(); ++y ) {
+
+            if( pCube orig_c = cubes_[x][y] ) {
+                if( orig_c->is_dying() ) continue; //don't copy dying cubes.
+
+                pSimpleCube c = SimpleCube::create(result, x, y, orig_c->color_id());
+
+                if( orig_c->chain() ) {
+                    chain_list_type::const_iterator j = temp_chains.begin();
+                    for( chain_list_type::const_iterator i = chains_.begin(); i != chains_.end(); ++i, ++j )
+                    {
+                        if( (*i).use_count() <= 1 ) //if this chain isn't held by any cubes,
+                            continue;               //then skip it
+                        if( (*i) == orig_c->chain() )
+                            break; //found the correct chain from the original chain list, break loop
+                    }
+                    //so, when we are at here, we can make sure j point to a valid and correct chain
+                    //which we created just not so long ago, since chains_ and temp_chains have the
+                    //same order.
+                    c->chain( *j ); //this chain iterator should always be vaild,
+                    //because if no match was found, it means we've got a strange chain object
+                    //in the cubes not recorded by the map's chain list, which is impossible.
+                }
+                SimpleMap::dump_cube_to(result, c);
+            }
+        }
+    }
     return result;
 }
-
-//Map::pointer_type Map::clone() const{
-//    pointer_type result = Map::create(owner_, map_setting_);
-//
-//    std::transform(cubes_.flatten_begin(), cubes_.flatten_end(),
-//        result->cubes_.flatten_begin(), &clone_cube);
-//
-//    result->garbage_left_ = garbage_left_;
-//    result->score_ = score_;
-//    result->current_sum_of_attack_ = current_sum_of_attack_;
-//    result->dropping_creatable_ = dropping_creatable_;
-//    result->garbage_dumpable_ = garbage_dumpable_;
-//    result->chains_ = result->chains_;
-//    result->cubes_preview_ = cubes_preview_;
-//    result->warning_level_ = warning_level_;
-//
-//    return result;
-//}
-//
-//pCube Map::clone_cube(pCube cube){ return cube; }// ->clone(); }

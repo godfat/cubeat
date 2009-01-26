@@ -61,15 +61,18 @@ public:
 
     ~SimpleCube(){ lose_chain(); }
 
-    int x()        const { return data()->x(); }
-    int y()        const { return data()->y(); }
-    int color_id() const { return data()->color_id(); }
+    int x() const{ return data()->x(); }
+    int y() const{ return data()->y(); }
+    int color_id() const{ return data()->color_id(); }
+    SimpleCube& x(int new_x){ data()->x(new_x); return *this; }
+    SimpleCube& y(int new_y){ data()->y(new_y); return *this; }
+    SimpleCube& color_id(int new_color_id){ data()->color_id(new_color_id); return *this; }
 
     // differs from model::Cube
     void chain(pChain chain)   { chain_belonged_to_ = chain; }
     pChain const chain() const { return chain_belonged_to_; }
     void lose_chain()          { chain_belonged_to_.reset(); }
-    virtual void go_dying()    { is_dead_ = true; } //virtual for OneFading reuse
+    void go_dying()            { is_dead_ = true; }
     bool cycle_and_die()       { return is_dead_; }
 
     // differs from model::Cube

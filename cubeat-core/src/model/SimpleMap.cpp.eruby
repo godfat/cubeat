@@ -5,10 +5,27 @@
 #include "model/OneFading.hpp"
 #include "model/detail/MapUtils.hpp"
 
-<%= debug_include %>
+#include <iostream>
 
 using namespace psc;
 using namespace model;
+
+SimpleMap::~SimpleMap()
+{
+    std::cout << " simple map destructing..." << std::endl;
+}
+
+//protected
+void SimpleMap::dump_cube_to(pSimpleMap dest, pSimpleCube c) const
+{
+    dest->simp_cubes_[c->x()][c->y()] = c;
+}
+
+//protected
+void SimpleMap::dump_preview_to(pSimpleMap dest, preview_list_type const& cl) const
+{
+    dest->simp_cubes_preview_ = cl;
+}
 
 void SimpleMap::update_chains()
 {
@@ -35,7 +52,7 @@ void SimpleMap::attach_chain_bottom_up_from(int in_x, int in_y, pChain chain)
 {
 	for(int x=in_x, y=in_y;
         simp_cubes_[x][y].use_count() != 0 && //if it's alive
-		simp_cubes_[x][y]->chain().use_count() == 0 //and if it has a chain property
+		simp_cubes_[x][y]->chain().use_count() == 0 //and if it has no chain property
 		; ++y)
     {
         simp_cubes_[x][y]->chain(chain);
@@ -50,4 +67,91 @@ pOneFadingSimple SimpleMap::make_OneFading(pSimpleCube that)
     not_traveled.insert(that);
     detail::make_clist<SimpleMap>(simp_cubes_, traveled, not_traveled, result, ms()->chain_amounts());
     return result.size() ? OneFadingT<SimpleMap>::create( result ) : pOneFadingSimple();
+}
+
+int find_chain_index(SimpleMap::chain_list_type const& chains, pChain const& ch) {
+    int result = 0;
+    for(SimpleMap::chain_list_type::const_iterator i=chains.begin(); i != chains.end(); ++i) {
+        ++result;
+        if( (*i) == ch )
+            break;
+    }
+    return result >= chains.size() ? 0 : result;
+}
+
+void SimpleMap::print_data_for_debug() const
+{
+    std::cout << "map-width:  " << map_setting_->width() << std::endl;
+    std::cout << "map-height: " << map_setting_->height() << std::endl;
+    std::cout << "garbage_left: " << garbage_left_ << std::endl;
+    std::cout << "score:        " << score_ << std::endl;
+    std::cout << "sum_of_attack:" << current_sum_of_attack_ << std::endl;
+    std::cout << "num_of_chains:" << chains_.size() << std::endl;
+
+    for(chain_list_type::const_iterator i=chains_.begin(); i != chains_.end(); ++i)
+        std::cout << "  chain: " << (*i) << "  step: " << ((*i)->step()-1) << "  attack: " << (*i)->power_factor() << std::endl;
+
+    std::cout << "\npreview_list: " << std::endl;
+
+    for(preview_list_type::const_iterator i=simp_cubes_preview_.begin();
+        i != simp_cubes_preview_.end(); ++i )
+        std::cout << (*i)->color_id() << " ";
+    std::cout << std::endl;
+
+    std::cout << "\nmap-view: " << std::endl;
+
+    for( int y = simp_cubes_.height()-1; y >= 0; --y ) {
+        for( int x = 0; x < simp_cubes_.width(); ++x )
+            if( simp_cubes_[x][y] ) {
+                int ich = find_chain_index(chains_, simp_cubes_[x][y]->chain());
+                char ch = (ich == 0 ? ' ' : ich+96 );
+                int cid = simp_cubes_[x][y]->color_id() == -1 ? 9 : simp_cubes_[x][y]->color_id();
+                printf("%c%d", ch, cid);
+            }
+            else printf("[]");
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+pSimpleMap SimpleMap::clone() const
+{
+    pSimpleMap result = SimpleMap::create(
+        map_setting_, garbage_left_, score_, current_sum_of_attack_, warning_level_);
+
+    chain_list_type temp_chains;
+    for(chain_list_type::const_iterator i=chains_.begin(); i != chains_.end(); ++i) {
+        pChain chain = Chain::create( *i );
+        temp_chains.push_back( chain );
+    }
+    result->chains_ = temp_chains;
+
+    preview_list_type temp_preview;
+    for(preview_list_type::const_iterator i = simp_cubes_preview_.begin();
+        i != simp_cubes_preview_.end(); ++i)
+    {
+        pSimpleCube c = SimpleCube::create(-1, -1, (*i)->color_id());
+        temp_preview.push_back(c);
+    }
+    result->simp_cubes_preview_ = temp_preview;
+
+    for( int x=0; x < ms()->width(); ++x ){
+        for( int y=0; y < ms()->height(); ++y ){
+            if( pSimpleCube orig_c = simp_cubes_[x][y] ) {
+                pSimpleCube c = SimpleCube::create(result, x, y, orig_c->color_id());
+
+                if( orig_c->chain() ) {
+                    chain_list_type::const_iterator j = temp_chains.begin();
+                    for( chain_list_type::const_iterator i = chains_.begin(); i != chains_.end(); ++i, ++j )
+                    {
+                        if( (*i).use_count() <= 1 )   continue;
+                        if( (*i) == orig_c->chain() ) break;
+                    }
+                    c->chain( *j );
+                }
+                result->simp_cubes_[x][y] = c;
+            }
+        }
+    }
+    return result;
 }

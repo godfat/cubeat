@@ -26,6 +26,7 @@ include/model/Map.hpp
 include/model/SimpleMap.hpp
 include/model/OneFading.hpp
 include/model/detail/MapUtils.hpp
+include/model/detail/AIUtils.hpp
 include/model/state/Dropping.hpp
 include/model/state/Dying.hpp
 include/model/state/Exploding.hpp
@@ -48,6 +49,7 @@ src/model/Cube.cpp
 src/model/Map.cpp
 src/model/SimpleMap.cpp
 src/model/detail/MapUtils.cpp
+src/model/detail/AIUtils.cpp
 src/model/state/Dropping.cpp
 src/model/state/Dying.cpp
 src/model/state/State.cpp

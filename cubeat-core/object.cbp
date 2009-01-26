@@ -103,6 +103,8 @@
 		<Unit filename="include\model\SimpleCube.hpp" />
 		<Unit filename="include\model\SimpleMap.hpp" />
 		<Unit filename="include\model\SimpleMap.hpp.eruby" />
+		<Unit filename="include\model\detail\AIUtils.hpp" />
+		<Unit filename="include\model\detail\AIUtils.hpp.eruby" />
 		<Unit filename="include\model\detail\MapUtils.hpp" />
 		<Unit filename="include\model\detail\MapUtils.hpp.eruby" />
 		<Unit filename="include\model\state\Dropping.hpp" />
@@ -226,6 +228,8 @@
 		<Unit filename="src\model\Map.cpp.eruby" />
 		<Unit filename="src\model\SimpleMap.cpp" />
 		<Unit filename="src\model\SimpleMap.cpp.eruby" />
+		<Unit filename="src\model\detail\AIUtils.cpp" />
+		<Unit filename="src\model\detail\AIUtils.cpp.eruby" />
 		<Unit filename="src\model\detail\MapUtils.cpp" />
 		<Unit filename="src\model\detail\MapUtils.cpp.eruby" />
 		<Unit filename="src\model\state\Dropping.cpp" />
@@ -257,7 +261,11 @@
 		<Unit filename="src\private\AVIVideo.cpp" />
 		<Unit filename="src\private\MastEventReceiver.cpp" />
 		<Unit filename="src\private\Wiimote_IR_internal.cpp" />
-		<Unit filename="src\test\test_game_main.cpp" />
+		<Unit filename="src\test\test_game_ai_main.cpp" />
+		<Unit filename="src\test\test_game_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_map_cubes_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

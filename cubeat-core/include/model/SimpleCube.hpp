@@ -73,7 +73,7 @@ public:
     pChain const chain() const { return chain_belonged_to_; }
     void lose_chain()          { chain_belonged_to_.reset(); }
     void go_dying()            { is_dead_ = true; }
-    bool cycle_and_die()       { return is_dead_; }
+    bool cycle_and_die();
 
     // differs from model::Cube
     pSimpleMap map()            { return map_.lock(); }
@@ -93,6 +93,8 @@ public:
 
     data::pCube data() const{ return data_; }
     SimpleCube& data(data::pCube const& new_data){ data_ = new_data; return *this; }
+
+    pointer_type dump_data_to_map(wpSimpleMap) const;
 
 protected:
     data::pCube   data_;

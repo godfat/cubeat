@@ -104,8 +104,6 @@ public:
     // for presenter::Cube
     void next_state();
 
-    pSimpleCube dump_data() const;
-
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>

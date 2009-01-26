@@ -113,11 +113,3 @@ void <% debug_hook 'Cube::restore' do %>(int){
         w->uncheck();
     restore_event()(color_id());
 }
-
-pSimpleCube Cube::dump_data() const{
-    pSimpleCube result = SimpleCube::create(x(), y(), color_id());
-
-    //start coding here
-
-    return result;
-}

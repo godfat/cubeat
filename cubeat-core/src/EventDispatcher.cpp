@@ -282,17 +282,17 @@ void EventDispatcher::dispatch_timer(){
             if( now - get<TE::LASTTIME>(*t) >= get<TE::DURATION>(*t) ) {
 
                 //debug
-                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 ) {
-                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << ", reg-ed duration: " << get<TE::DURATION>(*t) << " loop: " << get<TE::LOOP>(*t) << std::endl;
-                    int* a = reinterpret_cast<int*>((get<TE::CALLEE>(*t).lock().get()));
-                    std::cout << "   " << *a << std::endl;
-                }
+//                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 ) {
+//                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << ", reg-ed duration: " << get<TE::DURATION>(*t) << " loop: " << get<TE::LOOP>(*t) << std::endl;
+//                    int* a = reinterpret_cast<int*>((get<TE::CALLEE>(*t).lock().get()));
+//                    std::cout << "   " << *a << std::endl;
+//                }
 
                 get<TE::TIMER_CB>(*t)();
 
                 //debug
-                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 )
-                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << std::endl;
+//                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 )
+//                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << std::endl;
 
                 get<TE::LASTTIME>(*t) = now; //or should be += get<TE::DURATION>(*t) ?
                 int& looptimes = get<TE::LOOP>(*t);

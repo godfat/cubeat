@@ -32,7 +32,7 @@ public:
 #else
         std::system(("ruby bin/gen_puzzle.rb level=" + to_s(level) +
 #endif
-             " color_amounts=4 chain_amounts=3 starting_line=4 chaining_duration=500 cube_dying_duration=250 cube_sinking_duration=500 cube_dropping_duration=250 speed=0.75 damage_factor=1.0 width=6 height=10 dropping_creatable=0 garbage_dumpable=0" +
+             " color_amounts=4 chain_amounts=3 starting_line=4 chaining_duration=300 cube_dying_duration=300 cube_sinking_duration=500 cube_dropping_duration=150 speed=80.0 damage_factor=1.0 width=6 height=11 dropping_creatable=0 garbage_dumpable=0" +
             " > tmp/puzzle.zzml").c_str());
         return load("tmp/puzzle.zzml");
     }

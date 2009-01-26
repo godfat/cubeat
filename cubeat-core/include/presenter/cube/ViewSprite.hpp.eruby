@@ -70,7 +70,7 @@ public:
 
     //note: this is temporary speed function
     float speed(ctrl::Button const* btn){
-         return btn->state() == ctrl::BTN_DOWN ? 400.f : map_setting()->speed();
+         return btn->state() == ctrl::BTN_DOWN ? 450.f : map_setting()->speed();
     }
 
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>

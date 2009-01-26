@@ -1,5 +1,6 @@
 
 #include "model/Cube.hpp"
+#include "model/detail/MapUtils.hpp"
 
 namespace psc {
 namespace model {

@@ -1,0 +1,31 @@
+
+<% header_guard do %>
+
+//This ai_detail namespace contains all the dirty work
+//needed by AIBrain for manipulating SimpleMap
+
+#include <tr1/memory>
+
+namespace psc {
+namespace model {
+
+class SimpleMap;
+class SimpleCube;
+typedef std::tr1::shared_ptr<SimpleMap > pSimpleMap;
+typedef std::tr1::shared_ptr<SimpleCube> pSimpleCube;
+
+namespace ai_detail {
+
+class AIUtils {
+public:
+    static pSimpleCube lookup(pSimpleMap const&, int x, int y);
+    static void setup(pSimpleMap&, int x, int y, pSimpleCube);
+    static void kill (pSimpleMap&, int x, int y);
+    static void all_fallen(pSimpleMap&);
+};
+
+} //ai_detail
+} //model
+} //psc
+
+<% end %>

@@ -1,0 +1,31 @@
+
+#include "model/detail/AIUtils.hpp"
+#include "model/SimpleMap.hpp"
+#include "model/SimpleCube.hpp"
+
+namespace psc {
+namespace model {
+namespace ai_detail {
+
+pSimpleCube AIUtils::lookup(pSimpleMap const& map, int x, int y)
+{
+    return map->simp_cubes_[x][y];
+}
+
+void AIUtils::setup(pSimpleMap& map, int x, int y, pSimpleCube c)
+{
+    map->simp_cubes_[x][y] = c;
+}
+
+void AIUtils::kill (pSimpleMap& map, int x, int y)
+{
+    map->simp_cubes_[x][y].reset();
+}
+
+void AIUtils::all_fallen(pSimpleMap& map)
+{
+}
+
+} //ai_detail
+} //model
+} //psc

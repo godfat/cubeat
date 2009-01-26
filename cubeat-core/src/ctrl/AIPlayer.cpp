@@ -2,6 +2,7 @@
 #include "ctrl/AIPlayer.hpp"
 #include "data/ViewSetting.hpp"
 #include "model/AIBrain.hpp"
+#include "presenter/Map.hpp"
 #include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
@@ -18,7 +19,7 @@ using std::tr1::ref;
 using std::tr1::function;
 
 AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
-    :Player(input, view_setting), brain_(0), think_interval_(500)
+    :Player(input, view_setting), brain_(0), think_interval_(200), is_executing_(false)
 {
 }
 
@@ -30,20 +31,32 @@ AIPlayer::~AIPlayer()
 pAIPlayer AIPlayer::init()
 {
     Player::init();
-    pAIPlayer self = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
-    brain_ = new model::AIBrain(self);
+    self_ = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
+    brain_ = new model::AIBrain(self());
 
     input_->cursor().x() = view_setting_->x_offset();
     input_->cursor().y() = view_setting_->y_offset(); //designate cursor initial point.
     input_->getCursor()->set<accessor::Pos2D>(vec2(view_setting_->x_offset(), view_setting_->y_offset()));
 
-    return self;
+    return self();
 }
 
 void AIPlayer::think()
 {
-    if( !brain_->isThinking() )
-        think_thread_ = pThread(new boost::thread( bind( &model::AIBrain::think, brain_)));
+    if( !brain_->isThinking() && brain_->needThinking() ) {
+        if( think_thread_ )
+            think_thread_->join();
+
+        std::vector< model::pSimpleMap > model_list;
+        model_list.push_back( map_list_[0].lock()->model()->dump_data() );
+        model_list.push_back( map_list_[1].lock()->model()->dump_data() );
+
+        think_thread_ = pThread(
+            new boost::thread( bind(&model::AIBrain::think, brain_,
+                                    model_list,
+                                    view_setting_->ally_input_ids(),
+                                    view_setting_->enemy_input_ids()) ));
+    }
 }
 
 bool AIPlayer::startThinking()
@@ -70,8 +83,9 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
 {
     using namespace accessor;
     using namespace easing;
-    vec2 dest(x*view_setting_->cube_size() + view_setting_->x_offset(),
-              -y*view_setting_->cube_size() + view_setting_->y_offset());
+    int c_size = view_setting_->cube_size();
+    vec2 dest(x*c_size + c_size/2 + view_setting_->x_offset(),
+              -y*c_size - c_size/2 + view_setting_->y_offset());
 
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;
@@ -99,17 +113,23 @@ void AIPlayer::press_button(ctrl::Button& btn_ref)
 void AIPlayer::release_button(ctrl::Button& btn_ref)
 {
     btn_ref.now() = false;
+    is_executing_ = false; //this indicate executing finished.
 }
 
 AIPlayer::pPosition AIPlayer::probing_brain_data()
 {
     return brain_->getCurrentCmd();
+    return pPosition();
 }
 
 void AIPlayer::cycle()
 {
-    if( pPosition pos = probing_brain_data() ) {
-        shoot( pos->first, pos->second );
-        brain_->popCmdQueue();
+    input_->haste().now() = true;
+    if( !is_executing_ ) {
+        if( pPosition pos = probing_brain_data() ) {
+            is_executing_ = true; //this indicate executing started.
+            shoot( pos->first, pos->second );
+            brain_->popCmdQueue();
+        }
     }
 }

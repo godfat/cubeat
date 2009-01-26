@@ -26,7 +26,11 @@ public:
                                data::pViewSetting const& view_setting) {
         return pointer_type(new Player(input, view_setting))->init();
     }
-	Player& update();
+    virtual void cycle();
+    virtual bool startThinking() { return false; }
+    virtual void stopThinking() {}
+    void setMapList(std::vector<presenter::wpMap> const& mlist) { map_list_ = mlist; }
+
     Player& set_active_weapon(int i);
     Player& debug_reset_all_weapon();
     Player& disable_all_wep_reloadability();
@@ -67,6 +71,7 @@ protected:
 	Weapon*              current_wep_;
 	data::pViewSetting   view_setting_;
 	std::vector<Weapon*> weplist_;
+	std::vector<presenter::wpMap> map_list_;
 };
 
 typedef std::tr1::shared_ptr<Player> pPlayer;

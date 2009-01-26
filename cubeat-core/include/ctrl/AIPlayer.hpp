@@ -35,13 +35,10 @@ public:
         return pointer_type(new AIPlayer(input, view_setting))->init();
     }
 
-    void cycle();
-    bool startThinking();
-    void stopThinking();
-    void shoot(int, int);
-    void think();
+    virtual void cycle();
+    virtual bool startThinking();
+    virtual void stopThinking();
 
-    pPosition probing_brain_data();
     boost::mutex& getMutex() { return think_mutex_; }
 
     virtual ~AIPlayer();
@@ -49,16 +46,23 @@ public:
 protected:
     AIPlayer(Input* input, data::pViewSetting const&);
     pointer_type init();
+
+    pPosition probing_brain_data();
+    void think();
+    void shoot(int, int);
     void hold_button(ctrl::Button&, int);
     void press_button(ctrl::Button&);
     void release_button(ctrl::Button&);
+    pointer_type self() { return self_.lock(); }
 
 protected:
+    wpointer_type   self_;
     model::AIBrain* brain_;
     int             think_interval_;
     pThread         think_thread_;
     pDummy          think_timer_;
     boost::mutex    think_mutex_;
+    bool            is_executing_;
 };
 
 typedef AIPlayer::pointer_type  pAIPlayer;

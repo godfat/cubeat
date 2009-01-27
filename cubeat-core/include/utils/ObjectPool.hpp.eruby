@@ -2,6 +2,9 @@
 <% header_guard do %>
 
 #include <boost/pool/object_pool.hpp>
+#include <boost/thread/mutex.hpp>
+
+#define LOKI_CLASS_LEVEL_THREADING
 #include <loki/Singleton.h>
 
 namespace psc{ namespace utils{
@@ -12,17 +15,36 @@ public:
     typedef typename boost::object_pool<T, UserAllocator>::element_type element_type;
     using boost::object_pool<T, UserAllocator>::construct;
 
-<% for_template_parameters_within(4..5, []){ |args_list| %>
+    void destroy_mt(element_type* const chunk){
+        chunk->~T();
+        free_mt(chunk);
+    }
+
+<% for_template_parameters_within(1..5, []){ |args_list| %>
     template <%= template_parameters args_list %>
     element_type * construct(<%= forward_parameters args_list %>){
-      element_type * const ret = this->malloc();
+      element_type * const ret = this->malloc_mt();
       if (ret == 0)
         return ret;
       try { new (ret) element_type(<%= arguments args_list %>); }
-      catch (...) { this->free(ret); throw; }
+      catch (...) { this->free_mt(ret); throw; }
       return ret;
     }
 <% } %>
+
+public:
+    boost::mutex& mutex(){ return mutex_; }
+
+private:
+    element_type* malloc_mt(){
+        boost::mutex::scoped_lock lock(mutex());
+        return this->malloc();
+    }
+    void free_mt(element_type* p){
+        boost::mutex::scoped_lock lock(mutex());
+        this->free(p);
+    }
+    boost::mutex mutex_;
 };
 
 template <class T>
@@ -51,7 +73,7 @@ private:
     typedef Loki::SingletonHolder<pool_type, Loki::CreateUsingNew, Loki::DeletableSingleton> SPool;
 
     static void destroy(T* t){
-        SPool::Instance().destroy(t);
+        SPool::Instance().destroy_mt(t);
     }
     static bool is_from(T* t){
         return SPool::Instance().is_from(t);

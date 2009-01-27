@@ -32,7 +32,7 @@ ENDIF(APPLE)
 LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib .)
 
 # setup linking
-LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL irrklang)
+LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL irrklang boost_thread-mt)
 
 # setup source codes
 SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \

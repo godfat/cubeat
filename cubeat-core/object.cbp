@@ -149,6 +149,7 @@
 		<Unit filename="include\utils\ChainChecker.hpp" />
 		<Unit filename="include\utils\ChainChecker.hpp.eruby" />
 		<Unit filename="include\utils\GaussLegendre.hpp" />
+		<Unit filename="include\utils\Logger.hpp" />
 		<Unit filename="include\utils\MapLoader.hpp" />
 		<Unit filename="include\utils\MapLoader.hpp.eruby" />
 		<Unit filename="include\utils\ObjectPool.hpp" />
@@ -288,6 +289,7 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
+		<Unit filename="src\utils\Logger.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />
 		<Unit filename="src\view\AnimatedSprite.cpp" />

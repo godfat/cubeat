@@ -8,6 +8,7 @@
 #include "Input.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "utils/Logger.hpp"
 
 #include <tr1/functional>
 
@@ -17,6 +18,7 @@ using std::tr1::bind;
 using std::tr1::static_pointer_cast;
 using std::tr1::ref;
 using std::tr1::function;
+using utils::Logger;
 
 AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
     :Player(input, view_setting), brain_(0), think_interval_(400), is_executing_(false)
@@ -44,12 +46,18 @@ pAIPlayer AIPlayer::init()
 void AIPlayer::think()
 {
     if( !brain_->isThinking() && brain_->needThinking() ) {
-        if( think_thread_ )
+
+        Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
+        if( think_thread_ ) {
+            Logger::i().buf("player ").buf(this).buf(" call joining thread. ").endl();
             think_thread_->join();
+            Logger::i().buf("player ").buf(this).buf(" thread joined. ").endl();
+        }
 
         std::vector< model::pSimpleMap > model_list;
         model_list.push_back( map_list_[0].lock()->model()->dump_data() );
         model_list.push_back( map_list_[1].lock()->model()->dump_data() );
+        Logger::i().buf("player ").buf(this).buf(" before creating thread, map ").buf(model_list[0]).buf(" is created").endl();
 
         think_thread_ = pThread(
             new boost::thread( bind(&model::AIBrain::think, brain_,
@@ -119,7 +127,6 @@ void AIPlayer::release_button(ctrl::Button& btn_ref)
 AIPlayer::pPosition AIPlayer::probing_brain_data()
 {
     return brain_->getCurrentCmd();
-    return pPosition();
 }
 
 void AIPlayer::cycle()

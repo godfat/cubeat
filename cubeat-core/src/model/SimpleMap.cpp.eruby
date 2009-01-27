@@ -4,15 +4,16 @@
 #include "model/Chain.hpp"
 #include "model/OneFading.hpp"
 #include "model/detail/MapUtils.hpp"
-
+#include "utils/Logger.hpp"
 #include <iostream>
 
 using namespace psc;
 using namespace model;
+using utils::Logger;
 
 SimpleMap::~SimpleMap()
 {
-    //std::cout << " simple map destructing..." << std::endl;
+    //Logger::i().buf(" simple map ").buf(this).buf(" destructing...").endl();
 }
 
 //protected
@@ -186,8 +187,15 @@ void SimpleMap::print_data_for_debug() const
 
 pSimpleMap SimpleMap::clone() const
 {
+//    Logger::i().buf(this).buf(" started cloning ..").endl();
+    data::pMapSetting cloned_ms = map_setting_->clone();
+
+    //Logger::i().buf(this).buf(" checkpoint 1 ").endl();
+
     pSimpleMap result = SimpleMap::create(
-        map_setting_, garbage_left_, score_, current_sum_of_attack_, warning_level_);
+        cloned_ms, garbage_left_, score_, current_sum_of_attack_, warning_level_);
+
+    //Logger::i().buf(this).buf(" checkpoint 2: map ").buf(result).buf(" created via clone.").endl();
 
     chain_list_type temp_chains;
     for(chain_list_type::const_iterator i=chains_.begin(); i != chains_.end(); ++i) {
@@ -195,15 +203,20 @@ pSimpleMap SimpleMap::clone() const
         temp_chains.push_back( chain );
     }
     result->chains_ = temp_chains;
-
+//
+    //Logger::i().buf(this).buf(" checkpoint 3 ").endl();
+//
     preview_list_type temp_preview;
     for(preview_list_type::const_iterator i = simp_cubes_preview_.begin();
         i != simp_cubes_preview_.end(); ++i)
     {
+        //Logger::i().buf(this).buf(" is cloning preview cube ").buf(*i).endl();
         pSimpleCube c = SimpleCube::create(-1, -1, (*i)->color_id());
         temp_preview.push_back(c);
     }
     result->simp_cubes_preview_ = temp_preview;
+
+    Logger::i().buf(this).buf(" checkpoint 4 ").endl();
 
     for( int x=0; x < ms()->width(); ++x ){
         for( int y=0; y < ms()->height(); ++y ){
@@ -223,5 +236,6 @@ pSimpleMap SimpleMap::clone() const
             }
         }
     }
+    Logger::i().buf(this).buf(" end cloning ..").endl();
     return result;
 }

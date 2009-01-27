@@ -22,10 +22,15 @@
 
 <%= debug_include %>
 
+#include <iostream>
+
 using namespace psc;
 using namespace model;
 
-<% debug_hook 'Map::~Map' do %>() {<%end%>}
+<% debug_hook 'Map::~Map' do %>() {
+<%end%>
+    std::cout << "map destructing... " << std::endl;
+}
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
@@ -292,7 +297,7 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 	std::vector<int> preview_set; // color set
     preview_set.push_back(utils::random( ms()->color_amounts() )+1);
 
-	if( utils::random(2) ) // need two?
+    if( utils::random(2) ) // need two?
         preview_set.push_back(preview_set.front());
 
     while( preview_set.size() != width ){
@@ -404,8 +409,11 @@ bool Map::kill_cube_at(int x, int y) {
 
 pSimpleMap Map::dump_data() const
 {
+    data::pMapSetting cloned_ms = map_setting_->clone();
+    //data::pMapSetting cloned_ms = data::MapSetting::create();
+
     pSimpleMap result = SimpleMap::create(
-        map_setting_, garbage_left_, score_, current_sum_of_attack_, warning_level_);
+        cloned_ms, garbage_left_, score_, current_sum_of_attack_, warning_level_);
 
     chain_list_type temp_chains;
 

@@ -5,14 +5,15 @@
 #include "model/SimpleCube.hpp"
 #include "model/detail/AIUtils.hpp"
 #include "utils/Random.hpp"
+#include "utils/Logger.hpp"
 #include <boost/foreach.hpp>
 
 #include <iostream>
 
-
 using namespace psc;
 using namespace model;
 using ai_detail::AIUtils;
+using utils::Logger;
 
 AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
     :owner_(owner), is_thinking_(false)

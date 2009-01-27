@@ -30,6 +30,24 @@ public:
         return reset_size();
     }
 
+    pointer_type clone() const {
+        pointer_type result = MapSetting::create();
+        result->color_amounts(color_amounts_)
+               .chain_amounts(chain_amounts_)
+               .starting_line(starting_line_)
+               .chaining_duration(chaining_duration_)
+               .cube_dying_duration(cube_dying_duration_)
+               .cube_dropping_duration(cube_dropping_duration_)
+               .warning_check_delay(warning_check_delay_)
+               .speed(speed_)
+               .damage_factor(damage_factor_)
+               .width(width_)
+               .height(height_)
+               .dropping_creatable(dropping_creatable_)
+               .garbage_dumpable(garbage_dumpable_);
+        return result;
+    }
+
     <% debug_hook '~MapSetting' do %>(){<%end%>}
 
 private:

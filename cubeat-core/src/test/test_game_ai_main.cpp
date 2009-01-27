@@ -45,11 +45,12 @@ public:
 
         ctrl::Input* ppl_input = ctrl::InputMgr::i().getInputByIndex(0);
         ctrl::Input* cpu_input = ctrl::InputMgr::i().getInputByIndex(1);
+        ppl_input->setControlledByAI(true);
         cpu_input->setControlledByAI(true);
-        player1_ = ctrl::AIPlayer::create(cpu_input, s1);
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        player0_ = ctrl::Player::create(ppl_input, s0);
+        //player0_ = ctrl::Player::create(ppl_input, s0);
+        player0_ = ctrl::AIPlayer::create(ppl_input, s0);
         player1_ = ctrl::AIPlayer::create(cpu_input, s1);
         player0_->debug_reset_all_weapon();
         player1_->debug_reset_all_weapon();
@@ -95,8 +96,11 @@ public:
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
 
+        if( !player0_->startThinking() )
+            std::cout << " cpu player 0 AI failed the initialization." << std::endl;
+
         if( !player1_->startThinking() )
-            std::cout << "CPU AI failed the initialization." << std::endl;
+            std::cout << " cpu player 1 AI failed the initialization." << std::endl;
     }
 
     void setup_ui_by_config( std::string const& path ) {

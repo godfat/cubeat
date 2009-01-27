@@ -3,6 +3,7 @@
 #include "model/SimpleMap.hpp"
 #include "model/SimpleCube.hpp"
 
+#include <boost/thread/mutex.hpp>
 #include <iostream>
 
 namespace psc {
@@ -30,9 +31,6 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map,
             }
         }
     }
-
-    if( best_cube )
-        std::cout << " score: " << highest_score << " at " << best_cube->x() << ", " << best_cube->y() << std::endl;
 
     return best_cube;
 }

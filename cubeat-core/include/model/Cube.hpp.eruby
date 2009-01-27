@@ -74,7 +74,7 @@ public:
     void go_dying();
     // end
 
-	// begin only used by State::map
+    // begin only used by State::map
     pMap map(){ return map_.lock(); }
     pMap const map() const{ return map_.lock(); }
     // end
@@ -90,20 +90,20 @@ public:
     // int color_id() const{ return data::Color::for_id(color_); }
     // end
 
-	// begin only used by Map::insert_garbage,
-	//   which is used by Map::cycle_creation_garbage
-	Cube& be_garbage();
-	// end
+    // begin only used by Map::insert_garbage,
+    //   which is used by Map::cycle_creation_garbage
+    Cube& be_garbage();
+    // end
 
     bool is_garbage() const{ return is_garbage_; }
     void be_broken(int);
     bool is_broken() const{ return is_broken_; }
-	void restore(int);
+    void restore(int);
 
-	void go_exploding(int);
+    void go_exploding(int);
 
-	bool has_grounded() const{ return has_grounded_; }
-	void set_grounded(){ has_grounded_ = true; }
+    bool has_grounded() const{ return has_grounded_; }
+    void set_grounded(){ has_grounded_ = true; }
 
     // for Map::insert_garbage
     Cube& go_dropping();
@@ -131,7 +131,7 @@ private:
     pChain chain_belonged_to_;
     state::pState state_;
     bool has_grounded_, is_broken_, is_garbage_;
-	int hp_;
+    int hp_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event, :sink_a_block_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>

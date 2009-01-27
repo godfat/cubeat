@@ -122,7 +122,7 @@ protected:
     }
     inline int clamp_close(int idx, int size)
     {
-	    return ( idx<0 ? size+idx : ( idx>=size ? idx-size : idx ) );
+        return ( idx<0 ? size+idx : ( idx>=size ? idx-size : idx ) );
     }
     void calculateDistances() {
         float full_length = 0;

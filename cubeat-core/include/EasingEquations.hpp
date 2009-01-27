@@ -17,8 +17,8 @@
  * Equations
  * Main equations for the Tweener class
  *
- * @author		Zeh Fernando, Nate Chatellier
- * @version		1.0.2
+ * @author        Zeh Fernando, Nate Chatellier
+ * @version        1.0.2
  */
 
 /*
@@ -62,18 +62,18 @@ namespace psc {
 namespace easing {
 
     // ==================================================================================================================================
-	// TWEENING EQUATIONS functions -----------------------------------------------------------------------------------------------------
-	// (the original equations are Robert Penner's work as mentioned on the disclaimer)
+    // TWEENING EQUATIONS functions -----------------------------------------------------------------------------------------------------
+    // (the original equations are Robert Penner's work as mentioned on the disclaimer)
 
-	/**
-	 * Easing equation function for a simple linear tweening, with no easing.
-	 *
-	 * @param t		Current time (in frames or seconds).
-	 * @param b		Starting value.
-	 * @param c		Change needed in value.
-	 * @param d		Expected easing duration (in frames or seconds).
-	 * @return		The correct value.
-	 */
+    /**
+     * Easing equation function for a simple linear tweening, with no easing.
+     *
+     * @param t        Current time (in frames or seconds).
+     * @param b        Starting value.
+     * @param c        Change needed in value.
+     * @param d        Expected easing duration (in frames or seconds).
+     * @return        The correct value.
+     */
     template<class T>
     class Linear
     {
@@ -83,22 +83,22 @@ namespace easing {
         }
     };
 
-	/**
-	 * Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class IQuad
     {
     public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
-			return c*t*t + b;
-		}
+            return c*t*t + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quadratic (t^2) easing out: decelerating to zero velocity.
-	 */
+    /**
+     * Easing equation function for a quadratic (t^2) easing out: decelerating to zero velocity.
+     */
     template<class T>
     class OQuad
     {
@@ -106,404 +106,404 @@ namespace easing {
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
             t*=(t-2);
-			return -c *t + b;
-		}
+            return -c *t + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quadratic (t^2) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a quadratic (t^2) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOQuad
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d/2) < 1) return c/2*t*t + b;
-			--t;
-			return -c/2 * (t*(t-2) - 1) + b;
-		}
+            if ((t/=d/2) < 1) return c/2*t*t + b;
+            --t;
+            return -c/2 * (t*(t-2) - 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OIQuad
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d, node);
-			return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OQuad<T>::calculate(t*2, b, c/2, d, node);
+            return IQuad<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
-	/**
-	 * Easing equation function for a cubic (t^3) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a cubic (t^3) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class ICubic
     {
     public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
-			return c*t*t*t + b;
-		}
+            return c*t*t*t + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a cubic (t^3) easing out: decelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a cubic (t^3) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OCubic
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
-			return c*(t*t*t + 1) + b;
-		}
+            return c*(t*t*t + 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a cubic (t^3) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a cubic (t^3) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOCubic
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d/2) < 1) return c/2*t*t*t + b;
-			t-=2;
-			return c/2*(t*t*t + 2) + b;
-		}
+            if ((t/=d/2) < 1) return c/2*t*t*t + b;
+            t-=2;
+            return c/2*(t*t*t + 2) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a cubic (t^3) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a cubic (t^3) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OICubic
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OCubic<T>::calculate(t*2, b, c/2, d, node);
-			return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            return ICubic<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
-	/**
-	 * Easing equation function for a quartic (t^4) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a quartic (t^4) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class IQuart
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
-			return c*t*t*t*t + b;
-		}
+            return c*t*t*t*t + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quartic (t^4) easing out: decelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a quartic (t^4) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OQuart
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
-			return -c * (t*t*t*t - 1) + b;
-		}
+            return -c * (t*t*t*t - 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quartic (t^4) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a quartic (t^4) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOQuart
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
-			t-=2;
-			return -c/2 * (t*t*t*t - 2) + b;
-		}
+            if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+            t-=2;
+            return -c/2 * (t*t*t*t - 2) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quartic (t^4) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a quartic (t^4) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OIQuart
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d, node);
-			return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OQuart<T>::calculate(t*2, b, c/2, d, node);
+            return IQuart<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
-	/**
-	 * Easing equation function for a quintic (t^5) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a quintic (t^5) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class IQuint
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
-			return c*t*t*t*t*t + b;
-		}
+            return c*t*t*t*t*t + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quintic (t^5) easing out: decelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a quintic (t^5) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OQuint
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
-			return c*(t*t*t*t*t + 1) + b;
-		}
+            return c*(t*t*t*t*t + 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quintic (t^5) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a quintic (t^5) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOQuint
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
-			t-=2;
-			return c/2*(t*t*t*t*t + 2) + b;
-		}
+            if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+            t-=2;
+            return c/2*(t*t*t*t*t + 2) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a quintic (t^5) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a quintic (t^5) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OIQuint
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d, node);
-			return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OQuint<T>::calculate(t*2, b, c/2, d, node);
+            return IQuint<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class ISine
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return -c * cosf(t/d * (irr::core::PI/2)) + c + b;
-		}
+        }
     };
 
     //Added by arch_jslin
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
-	 */
+     */
     template<class T>
     class SineCirc
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>(c * (-cosf(t/d * (irr::core::PI*2))+1)/2 + b);
-		}
+        }
     };
 
     //Added by arch_jslin
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
-	 */
+     */
     template<class T>
     class SineCircX
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b);
-		}
+        }
     };
 
     //Added by arch_jslin
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
-	 */
+     */
     template<class T>
     class SineCircY
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
            return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b);
-		}
+        }
     };
 
     //Added by arch_jslin
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
      *                                                               (back to the original point)
-	 */
+     */
     template<class T>
     class SineCircZ
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b);
-		}
+        }
     };
 
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OSine
     {
     public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			return c * sinf(t/d * (irr::core::PI/2)) + b;
-		}
+            return c * sinf(t/d * (irr::core::PI/2)) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOSine
     {
     public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			return -c/2 * (cosf(irr::core::PI*t/d) - 1) + b;
-		}
+            return -c/2 * (cosf(irr::core::PI*t/d) - 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a sinusoidal (sin(t)) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a sinusoidal (sin(t)) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OISine
     {
     public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d, node);
-			return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OSine<T>::calculate(t*2, b, c/2, d, node);
+            return ISine<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
     /**
-	 * Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
-	 */
+     * Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class IExpo
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b - c * 0.001f;
-		}
+            return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b - c * 0.001f;
+        }
     };
 
     /**
-	 * Easing equation function for an exponential (2^t) easing out: decelerating from zero velocity.
-	 */
+     * Easing equation function for an exponential (2^t) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OExpo
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			return (t==d) ? b+c : c * 1.001f * (-pow(2, -10 * t/d) + 1) + b;
-		}
+            return (t==d) ? b+c : c * 1.001f * (-pow(2, -10 * t/d) + 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for an exponential (2^t) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for an exponential (2^t) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOExpo
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t==0) return b;
-			if (t==d) return b+c;
-			if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b - c * 0.0005f;
-			return c/2 * 1.0005f * (-pow(2, -10 * --t) + 2) + b;
-		}
+            if (t==0) return b;
+            if (t==d) return b+c;
+            if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b - c * 0.0005f;
+            return c/2 * 1.0005f * (-pow(2, -10 * --t) + 2) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for an exponential (2^t) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for an exponential (2^t) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OIExpo
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d, node);
-			return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OExpo<T>::calculate(t*2, b, c/2, d, node);
+            return IExpo<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
-	/**
-	 * Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class ICirc
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t/=d;
-			return -c * (sqrt(1 - t*t) - 1) + b;
-		}
+            return -c * (sqrt(1 - t*t) - 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating from zero velocity.
-	 */
+    /**
+     * Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating from zero velocity.
+     */
     template<class T>
     class OCirc
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             t=(t/d)-1;
-			return c * sqrt(1 - t*t) + b;
-		}
+            return c * sqrt(1 - t*t) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOCirc
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d/2) < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
-			t-=2;
-			return c/2 * (sqrt(1 - t*t) + 1) + b;
-		}
+            if ((t/=d/2) < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
+            t-=2;
+            return c/2 * (sqrt(1 - t*t) + 1) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OICirc
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d, node);
-			return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
+            if (t < d/2) return OCirc<T>::calculate(t*2, b, c/2, d, node);
+            return ICirc<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
     };
 
 //helper function
@@ -514,220 +514,220 @@ inline float length<vec2>(vec2 const& t) { return t.getLength(); }
 template <>
 inline float length<vec3>(vec3 const& t) { return t.getLength(); }
 
-	/**
-	 * Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
-     * @param a		Amplitude.
-     * @param p		Period.
-	 */
+    /**
+     * Easing equation function for an elastic (exponentially decaying sine wave) easing in: accelerating from zero velocity.
+     * @param a        Amplitude.
+     * @param p        Period.
+     */
     template<class T>
     class IElastic
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
                            T a = T(), float p=.0f) //additional param.
         {
-			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
-			float s = .0f;
-			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
-			if( la==.0f || la < lc ) { a=c; s=p/4; }
-			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
-			t-=1;
-			return -(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
-		}
-    };
-
-	/**
-	 * Easing equation function for an elastic (exponentially decaying sine wave) easing out: decelerating from zero velocity.
-     * @param a		Amplitude.
-     * @param p		Period.
-	 */
-    template<class T>
-    class OElastic
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           T a = T(), float p=.0f) //additional param.
-        {
-			if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
-			float s = .0f;
-			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
-			if( la==.0f || la < lc ) { a=c; s=p/4; }
-			else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
-			return (a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p ) + c + b);
-		}
-    };
-
-	/**
-	 * EEasing equation function for an elastic (exponentially decaying sine wave) easing in/out: acceleration until halfway, then deceleration.
-     * @param a		Amplitude.
-     * @param p		Period.
-	 */
-    template<class T>
-    class IOElastic
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           T a = T(), float p=.0f) //additional param.
-        {
-			if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if(p==.0f) p=d*(.3*1.5);
-			float s = .0f;
-			float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
-			if ( length(a)==.0f || length(a) < length(c) ) { a=c; s=p/4; }
-			else s = p/(2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
-			t-=1;
-			if (t < 1) return -.5*(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
-			return a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )*.5 + c + b;
-		}
-    };
-
-	/**
-	 * Easing equation function for an elastic (exponentially decaying sine wave) easing out/in: deceleration until halfway, then acceleration.
-     * @param a		Amplitude.
-     * @param p		Period.
-	 */
-    template<class T>
-    class OIElastic
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           T const& a = T(), float const& p=.0f) //additional param.
-        {
-			if (t < d/2) return OElastic<T>::calculate(t*2, b, c/2, d, node, a, p);
-			return IElastic<T>::calculate((t*2)-d, b+c/2, c/2, d, node, a, p);
-		}
-    };
-
-	/**
-	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in: accelerating from zero velocity.
-     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
-     *              and the default value of 1.70158 produces an overshoot of 10 percent).
-	 */
-    template<class T>
-    class IBack
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           float s=.0f) //additional param.
-        {
-			if (s==.0f) s = 1.70158f;
-			t/=d;
-			return c*t*t*((s+1)*t - s) + b;
-		}
-    };
-
-	/**
-	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out: decelerating from zero velocity.
-     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
-     *              and the default value of 1.70158 produces an overshoot of 10 percent).
-	 */
-    template<class T>
-    class OBack
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           float s=.0f) //additional param.
-        {
-			if (s==.0f) s = 1.70158f;
-			t=(t/d)-1;
-			return c*(t*t*((s+1)*t + s) + 1) + b;
-		}
-    };
-
-	/**
-	 * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out: acceleration until halfway, then deceleration.
-     * @param s		Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
-     *              and the default value of 1.70158 produces an overshoot of 10 percent).
-	 */
-    template<class T>
-    class IOBack
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           float s=.0f) //additional param.
-        {
-			if (s==.0f) s = 1.70158f;
-			s*=1.525;
-			if ((t/=d/2) < 1) return c/2*(t*t*((s+1)*t - s)) + b;
-			t-=2;
-			return c/2*(t*t*((s+1)*t + s) + 2) + b;
-		}
-    };
-
-	/**
-	 *  Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out/in: deceleration until halfway, then acceleration.
-	 */
-    template<class T>
-    class OIBack
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
-                           float s=.0f) //additional param.
-        {
-			if (t < d/2) return OBack<T>::calculate(t*2, b, c/2, d, node, s);
-			return IBack<T>::calculate((t*2)-d, b+c/2, c/2, d, node, s);
-		}
-    };
-
-	/**
-	 * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out: decelerating from zero velocity.
-	 */
-    template<class T>
-    class OBounce
-    {
-	public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if ((t/=d) < (1/2.75f)) {
-				return c*(7.5625f*t*t) + b;
-			} else if (t < (2/2.75f)) {
-			    t-=(1.5f/2.75f);
-				return c*(7.5625f*t*t + .75f) + b;
-			} else if (t < (2.5f/2.75f)) {
-			    t-=(2.25f/2.75f);
-				return c*(7.5625f*t*t + .9375f) + b;
-			} else {
-			    t-=(2.625f/2.75f);
-				return c*(7.5625f*t*t + .984375f) + b;
-			}
-		}
+            if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
+            float s = .0f;
+            float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+            if( la==.0f || la < lc ) { a=c; s=p/4; }
+            else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+            t-=1;
+            return -(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
+        }
     };
 
     /**
-	 * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in: accelerating from zero velocity.
-	 */
+     * Easing equation function for an elastic (exponentially decaying sine wave) easing out: decelerating from zero velocity.
+     * @param a        Amplitude.
+     * @param p        Period.
+     */
+    template<class T>
+    class OElastic
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), float p=.0f) //additional param.
+        {
+            if(t==0) return b;  if((t/=d)==1) return b+c;  if(p==.0f) p=d*.3;
+            float s = .0f;
+            float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+            if( la==.0f || la < lc ) { a=c; s=p/4; }
+            else s = p / (2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+            return (a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p ) + c + b);
+        }
+    };
+
+    /**
+     * EEasing equation function for an elastic (exponentially decaying sine wave) easing in/out: acceleration until halfway, then deceleration.
+     * @param a        Amplitude.
+     * @param p        Period.
+     */
+    template<class T>
+    class IOElastic
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T a = T(), float p=.0f) //additional param.
+        {
+            if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if(p==.0f) p=d*(.3*1.5);
+            float s = .0f;
+            float la = length(a), lc = length(c); bool sign = ((c/a) >= T()) ? true : false;
+            if ( length(a)==.0f || length(a) < length(c) ) { a=c; s=p/4; }
+            else s = p/(2*irr::core::PI) * asinf (lc/la * (sign?1:-1));
+            t-=1;
+            if (t < 1) return -.5*(a*pow(2,10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )) + b;
+            return a*pow(2,-10*t) * sinf( (t*d-s)*(2*irr::core::PI)/p )*.5 + c + b;
+        }
+    };
+
+    /**
+     * Easing equation function for an elastic (exponentially decaying sine wave) easing out/in: deceleration until halfway, then acceleration.
+     * @param a        Amplitude.
+     * @param p        Period.
+     */
+    template<class T>
+    class OIElastic
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           T const& a = T(), float const& p=.0f) //additional param.
+        {
+            if (t < d/2) return OElastic<T>::calculate(t*2, b, c/2, d, node, a, p);
+            return IElastic<T>::calculate((t*2)-d, b+c/2, c/2, d, node, a, p);
+        }
+    };
+
+    /**
+     * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in: accelerating from zero velocity.
+     * @param s        Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+     */
+    template<class T>
+    class IBack
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
+        {
+            if (s==.0f) s = 1.70158f;
+            t/=d;
+            return c*t*t*((s+1)*t - s) + b;
+        }
+    };
+
+    /**
+     * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out: decelerating from zero velocity.
+     * @param s        Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+     */
+    template<class T>
+    class OBack
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
+        {
+            if (s==.0f) s = 1.70158f;
+            t=(t/d)-1;
+            return c*(t*t*((s+1)*t + s) + 1) + b;
+        }
+    };
+
+    /**
+     * Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out: acceleration until halfway, then deceleration.
+     * @param s        Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
+     *              and the default value of 1.70158 produces an overshoot of 10 percent).
+     */
+    template<class T>
+    class IOBack
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
+        {
+            if (s==.0f) s = 1.70158f;
+            s*=1.525;
+            if ((t/=d/2) < 1) return c/2*(t*t*((s+1)*t - s)) + b;
+            t-=2;
+            return c/2*(t*t*((s+1)*t + s) + 2) + b;
+        }
+    };
+
+    /**
+     *  Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing out/in: deceleration until halfway, then acceleration.
+     */
+    template<class T>
+    class OIBack
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0,
+                           float s=.0f) //additional param.
+        {
+            if (t < d/2) return OBack<T>::calculate(t*2, b, c/2, d, node, s);
+            return IBack<T>::calculate((t*2)-d, b+c/2, c/2, d, node, s);
+        }
+    };
+
+    /**
+     * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out: decelerating from zero velocity.
+     */
+    template<class T>
+    class OBounce
+    {
+    public:
+        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
+            if ((t/=d) < (1/2.75f)) {
+                return c*(7.5625f*t*t) + b;
+            } else if (t < (2/2.75f)) {
+                t-=(1.5f/2.75f);
+                return c*(7.5625f*t*t + .75f) + b;
+            } else if (t < (2.5f/2.75f)) {
+                t-=(2.25f/2.75f);
+                return c*(7.5625f*t*t + .9375f) + b;
+            } else {
+                t-=(2.625f/2.75f);
+                return c*(7.5625f*t*t + .984375f) + b;
+            }
+        }
+    };
+
+    /**
+     * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in: accelerating from zero velocity.
+     */
     template<class T>
     class IBounce
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			return c - OBounce<T>::calculate(d-t, T(), c, d, node) + b;
-		}
+            return c - OBounce<T>::calculate(d-t, T(), c, d, node) + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in/out: acceleration until halfway, then deceleration.
-	 */
+    /**
+     * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in/out: acceleration until halfway, then deceleration.
+     */
     template<class T>
     class IOBounce
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-			if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d, node) * .5 + b;
-			else return OBounce<T>::calculate(t*2-d, T(), c, d, node) * .5 + c*.5 + b;
-		}
+            if (t < d/2) return IBounce<T>::calculate(t*2, T(), c, d, node) * .5 + b;
+            else return OBounce<T>::calculate(t*2-d, T(), c, d, node) * .5 + c*.5 + b;
+        }
     };
 
-	/**
-	 * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out/in: deceleration until halfway, then acceleration.
-	 */
+    /**
+     * Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out/in: deceleration until halfway, then acceleration.
+     */
     template<class T>
     class OIBounce
     {
-	public:
+    public:
         static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
             if (t < d/2) return OBounce<T>::calculate(t*2, b, c/2, d, node);
-			return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
-		}
-	};
+            return IBounce<T>::calculate((t*2)-d, b+c/2, c/2, d, node);
+        }
+    };
 
 } //easing
 } //psc

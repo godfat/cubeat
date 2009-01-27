@@ -19,44 +19,44 @@ public:
     int last_step_amounts() const{ return chain_step_.back(); }
 
     void add_last_step_amounts(int num){
-		chain_step_.back() += num;
-		// always add onto the rear element
-		// map will be responsible to notify Chain to push new elements to Chains.
-	}
+        chain_step_.back() += num;
+        // always add onto the rear element
+        // map will be responsible to notify Chain to push new elements to Chains.
+    }
 
-	void step_one(){
-		chain_step_.push_back(0);
-	}
+    void step_one(){
+        chain_step_.push_back(0);
+    }
 
     int power_factor() const{ return power_factor_; }
 
-	void update_power_factor() {
-	    last_power_factor_ = power_factor_;
-	    int new_step_amount = chain_step_.back();
-	    if( new_step_amount < 3 ) return;
-	    int stepnum = chain_step_.size();
-	    if( stepnum == 1 )
+    void update_power_factor() {
+        last_power_factor_ = power_factor_;
+        int new_step_amount = chain_step_.back();
+        if( new_step_amount < 3 ) return;
+        int stepnum = chain_step_.size();
+        if( stepnum == 1 )
             power_factor_ += (new_step_amount - 2);
         else
             power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;//utils::power2(stepnum-2);
             //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
-	}
+    }
 
     // this returns the score fragment made by the last combo
-	int score_step() const{
-		return chain_step_.back() * 20 * chain_step_.size();
-	}
+    int score_step() const{
+        return chain_step_.back() * 20 * chain_step_.size();
+    }
 
-	int step() const{
-	    return chain_step_.size();
-	}
+    int step() const{
+        return chain_step_.size();
+    }
 
-	void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
-	int last_step_x() const { return last_step_x_; }
-	int last_step_y() const { return last_step_y_; }
-	int attack_of_current_step() const {
-	    return power_factor_ - last_power_factor_;
-	}
+    void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
+    int last_step_x() const { return last_step_x_; }
+    int last_step_y() const { return last_step_y_; }
+    int attack_of_current_step() const {
+        return power_factor_ - last_power_factor_;
+    }
 
     Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
 

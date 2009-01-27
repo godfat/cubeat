@@ -17,7 +17,7 @@ class Ai: public AIPlayer{
     std::vector<int> best_chain_point;
     std::vector<pCube> best_chain_cubes;
 
-	bool shooted_;
+    bool shooted_;
     bool chaining_;
 public:
     Ai(pMap map):
@@ -46,13 +46,13 @@ public:
     }
 
 private:
-	//射擊目標方塊,對最佳發火點分數進行更新
-	void shooting(pMap map, pCube cube){
+    //射擊目標方塊,對最佳發火點分數進行更新
+    void shooting(pMap map, pCube cube){
         cube->i_am_hit(1); // ?
         best_chain_point_update(map);
-	}
+    }
 
-	//更新最佳的3個發火點
+    //更新最佳的3個發火點
     void combo_rank_update(pMap map){...}
 
     void best_chain_point_update(pMap map){
@@ -100,388 +100,388 @@ private:
 
     pCube rtc_checker(pMap){}
 
-	std::vector<std::vector<pCube> > too_high_travel(pMap map){
-		std::vector<int> map_tops = top_checker(map);// get high of each column
+    std::vector<std::vector<pCube> > too_high_travel(pMap map){
+        std::vector<int> map_tops = top_checker(map);// get high of each column
         std::vector<std::vector<pCube> > del_list(width(map)); // to save cubes that need delete
-		for(int w = width(map)-1; w > 0; --w){
-			//如此列高度超過平均值2
-			if(map_tops[w] - map_tops[width(map)-1+1] > 2){
-				// travel this column
-				// NOTE: tracing
-				std::cout << "column(" << w << ")too high";
-				del_list[w] = column_travel(map, w);
-			}
-		}
-		for(int j = 0; j < del_list.size(); ++j){
-			if( del_list[j].size() ){
-				return del_list;
-			}
-		}
-		return std::vector<std::vector<pCube> >();
-	}
+        for(int w = width(map)-1; w > 0; --w){
+            //如此列高度超過平均值2
+            if(map_tops[w] - map_tops[width(map)-1+1] > 2){
+                // travel this column
+                // NOTE: tracing
+                std::cout << "column(" << w << ")too high";
+                del_list[w] = column_travel(map, w);
+            }
+        }
+        for(int j = 0; j < del_list.size(); ++j){
+            if( del_list[j].size() ){
+                return del_list;
+            }
+        }
+        return std::vector<std::vector<pCube> >();
+    }
 
     std::vector<pCube> column_travel(pMap map, int w){
-		std::vector<pCube> del_list; // to save cubes that need delete
-		for(int h = height(map)-1; h > 0; --h){
-			if( map->lookup(w, h) && map->lookup(w, h)->is_waiting() ){
-				// // trace("check(" + h + ")>>" + map.make_column(map->lookup(w,h)).size());
-				// find 2-contact at this column
-				if(count_same_color_column(map, map->lookup(w, h)) >= 1){
-					// check which one is higher than the other
-					// map.make_column(map->lookup(w,h))[0] always higher(<) than h
-					// NOTE: tracing
-					std::cout << "find 2-contact at(" << w << "," << h << ")";
-					std::vector<pCube> del_list_up;
-					std::vector<pCube> del_list_down;
-					for(int ph = 1; h + ph < 11 && h - 1 - ph > 0 && ph < 3; ++ph){
-						if(map->lookup(w, h + ph) == map->lookup(w, h) && map->lookup(w, h + ph)->is_waiting()){
-						    // NOTE: tracing
-							std::cout << "column_travel_dw find!";
-							del_list = del_list_down;
-							break;
-						}else{
-							std::cout << "push_dw: " << w << "," << (h + ph);
-							del_list_down.push_back(map->lookup(w, h + ph));
-						}
-						if(map->lookup(w,h - 1 - ph) == map->lookup(w, h) && map->lookup(w, h - 1 - ph)->is_waiting()){
-							// // trace("column_travel_up find!");
-							del_list = del_list_up;
-							break;
-						}else{
-							// // trace("push_up: " + w + "," + (h - 1 - ph));
-							del_list_up.push_back(map->lookup(w, h - 1 - ph));
-						}
-					}
-					if(del_list.size() != 0){
-						break;
-					}
-					--h;
-				}
-			}
-		}
-		return del_list;
-	}
+        std::vector<pCube> del_list; // to save cubes that need delete
+        for(int h = height(map)-1; h > 0; --h){
+            if( map->lookup(w, h) && map->lookup(w, h)->is_waiting() ){
+                // // trace("check(" + h + ")>>" + map.make_column(map->lookup(w,h)).size());
+                // find 2-contact at this column
+                if(count_same_color_column(map, map->lookup(w, h)) >= 1){
+                    // check which one is higher than the other
+                    // map.make_column(map->lookup(w,h))[0] always higher(<) than h
+                    // NOTE: tracing
+                    std::cout << "find 2-contact at(" << w << "," << h << ")";
+                    std::vector<pCube> del_list_up;
+                    std::vector<pCube> del_list_down;
+                    for(int ph = 1; h + ph < 11 && h - 1 - ph > 0 && ph < 3; ++ph){
+                        if(map->lookup(w, h + ph) == map->lookup(w, h) && map->lookup(w, h + ph)->is_waiting()){
+                            // NOTE: tracing
+                            std::cout << "column_travel_dw find!";
+                            del_list = del_list_down;
+                            break;
+                        }else{
+                            std::cout << "push_dw: " << w << "," << (h + ph);
+                            del_list_down.push_back(map->lookup(w, h + ph));
+                        }
+                        if(map->lookup(w,h - 1 - ph) == map->lookup(w, h) && map->lookup(w, h - 1 - ph)->is_waiting()){
+                            // // trace("column_travel_up find!");
+                            del_list = del_list_up;
+                            break;
+                        }else{
+                            // // trace("push_up: " + w + "," + (h - 1 - ph));
+                            del_list_up.push_back(map->lookup(w, h - 1 - ph));
+                        }
+                    }
+                    if(del_list.size() != 0){
+                        break;
+                    }
+                    --h;
+                }
+            }
+        }
+        return del_list;
+    }
 
-	//暴搜盤面,找出broken或是garbage方塊並回傳
-	std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bk_gbg_travel(pMap map){
-	     //儲存broken_cubes //儲存garbage_cubes
-		std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bg_cubes;
-		for(int h = height(map)-1; h > 0; --h){
-			for(int w = width(map)-1; w >= 0; --w){
-				if(map->lookup(w, h)->is_waiting() && map->lookup(w, h)->is_broken() == true){
-					// trace("push broken(" + w + "," + h +")");
-					get<0>(bg_cubes).push_back(map->lookup(w,h));
-				}else if(map->lookup(w, h)->is_waiting() && map->lookup(w, h).is_garbage() == true){
-					// // trace("push garbage(" + w + "," + h +")");
-					get<1>(bg_cubes).push_back(map->lookup(w,h));
-				}
-			}
-		}
-		if(get<0>(bg_cubes).size()!=0 || get<1>(bg_cubes).size()!=0){
-			return bg_cubes;
-		}else{
-			return std::tr1::tuple< std::vector<pCube>, std::vector<pCube> >();
-		}
-	}
+    //暴搜盤面,找出broken或是garbage方塊並回傳
+    std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bk_gbg_travel(pMap map){
+         //儲存broken_cubes //儲存garbage_cubes
+        std::tr1::tuple< std::vector<pCube>, std::vector<pCube> > bg_cubes;
+        for(int h = height(map)-1; h > 0; --h){
+            for(int w = width(map)-1; w >= 0; --w){
+                if(map->lookup(w, h)->is_waiting() && map->lookup(w, h)->is_broken() == true){
+                    // trace("push broken(" + w + "," + h +")");
+                    get<0>(bg_cubes).push_back(map->lookup(w,h));
+                }else if(map->lookup(w, h)->is_waiting() && map->lookup(w, h).is_garbage() == true){
+                    // // trace("push garbage(" + w + "," + h +")");
+                    get<1>(bg_cubes).push_back(map->lookup(w,h));
+                }
+            }
+        }
+        if(get<0>(bg_cubes).size()!=0 || get<1>(bg_cubes).size()!=0){
+            return bg_cubes;
+        }else{
+            return std::tr1::tuple< std::vector<pCube>, std::vector<pCube> >();
+        }
+    }
 
-	//暴搜盤面找出最佳發火點並回傳
-	pCube combo_travel(pMap map){
-		int combo_point = 0;
+    //暴搜盤面找出最佳發火點並回傳
+    pCube combo_travel(pMap map){
+        int combo_point = 0;
         pCube best_cube;
-		for(int h = height(map)-1; h > travel_limit_; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				if(map->lookup(w, h) && map->lookup(w, h)->is_waiting()){
-					Map tmp_map = map->clone();
-					del_block(tmp_map, w, h, true);
-					if(combo_counter(tmp_map) > combo_point){
-						combo_point = combo_counter(tmp_map);
-						best_cube = map->lookup(w, h);
-					}
-				}
-			}
-		}
-		return best_cube;
-	}
+        for(int h = height(map)-1; h > travel_limit_; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                if(map->lookup(w, h) && map->lookup(w, h)->is_waiting()){
+                    Map tmp_map = map->clone();
+                    del_block(tmp_map, w, h, true);
+                    if(combo_counter(tmp_map) > combo_point){
+                        combo_point = combo_counter(tmp_map);
+                        best_cube = map->lookup(w, h);
+                    }
+                }
+            }
+        }
+        return best_cube;
+    }
 
-	//暴搜盤面找出最佳發火點並回傳(使用combo_rank_udate)
-	pCube combo_travel_ver2(pMap map){
-		combo_rank_update(map);
-		return best_chain_cubes[2];
-	}
+    //暴搜盤面找出最佳發火點並回傳(使用combo_rank_udate)
+    pCube combo_travel_ver2(pMap map){
+        combo_rank_update(map);
+        return best_chain_cubes[2];
+    }
 
-	//計算此盤面的兩兩相臨方塊個數 並回傳
-	int amass_counter(pMap map){
-		if(contact_checker(map, 3).size() == 0){
-			int get_point = 0;
-			get_point = contact_checker(map, 2).size();
-			return get_point;
-		}
-		return 0;
-	}
+    //計算此盤面的兩兩相臨方塊個數 並回傳
+    int amass_counter(pMap map){
+        if(contact_checker(map, 3).size() == 0){
+            int get_point = 0;
+            get_point = contact_checker(map, 2).size();
+            return get_point;
+        }
+        return 0;
+    }
 
-	pCube amass_travel(pMap map){
-		int get_point = 0;
-		pCube best_cube;
-		int amass_point = amass_counter(map);
-		for(int h = height(map)-1; h > travel_limit_; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				if(map->lookup(w, h) && map->lookup(w, h)->is_waiting()){
-					pMap tmp_map = map->clone();
-					del_block(tmp_map, w, h, true);
-					get_point = amass_counter(tmp_map);
-					if(get_point > amass_point){
-						amass_point = get_point;
-						best_cube = map->lookup(w, h);
-					}
-				}
-			}
-		}
-		return best_cube;
-	}
+    pCube amass_travel(pMap map){
+        int get_point = 0;
+        pCube best_cube;
+        int amass_point = amass_counter(map);
+        for(int h = height(map)-1; h > travel_limit_; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                if(map->lookup(w, h) && map->lookup(w, h)->is_waiting()){
+                    pMap tmp_map = map->clone();
+                    del_block(tmp_map, w, h, true);
+                    get_point = amass_counter(tmp_map);
+                    if(get_point > amass_point){
+                        amass_point = get_point;
+                        best_cube = map->lookup(w, h);
+                    }
+                }
+            }
+        }
+        return best_cube;
+    }
 
-	//深層暴搜盤面找出最佳排列點並回傳
-	pCube amass_travel_deep(pMap map){
-		pCube best_cube;//最佳排列點方塊
-		bool in_best_cubes = false;
-		int best_point = 0;
-		best_point = amass_deep_formula(amass_counter(map), best_chain_point_);
-		for(int h = height(map)-1; h > travel_limit_; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				for(int i = best_chain_cubes_.size(); i >=0; --i){
-					if(w == best_chain_cubes_[a]->x() && h == best_chain_cubes_[a]->y()){
-						in_best_cubes = true;
-						break;
-					}
-				}
-				if(map->lookup(w,h) && map->lookup(w,h)->is_waiting() && in_best_cubes != true){
-					pMap tmp_map = map->clone();//temp_map為消去被評價點(w,h)之後的map
+    //深層暴搜盤面找出最佳排列點並回傳
+    pCube amass_travel_deep(pMap map){
+        pCube best_cube;//最佳排列點方塊
+        bool in_best_cubes = false;
+        int best_point = 0;
+        best_point = amass_deep_formula(amass_counter(map), best_chain_point_);
+        for(int h = height(map)-1; h > travel_limit_; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                for(int i = best_chain_cubes_.size(); i >=0; --i){
+                    if(w == best_chain_cubes_[a]->x() && h == best_chain_cubes_[a]->y()){
+                        in_best_cubes = true;
+                        break;
+                    }
+                }
+                if(map->lookup(w,h) && map->lookup(w,h)->is_waiting() && in_best_cubes != true){
+                    pMap tmp_map = map->clone();//temp_map為消去被評價點(w,h)之後的map
                     std::vector<pCube> tmp_best_chain_cubes(3);
-					//暫存最佳發火點,以防消去被評價點後造成最佳發火點位址變動
-					for(int a = 0; a < best_chain_cubes_.size(); ++a){
-						tmp_best_chain_cubes_[a] =
-						    tmp_map->lookup(best_chain_cubes_[a]->x(), best_chain_cubes_[a]->y());
-					}
-					del_block(tmp_map, w, h, true);//消去被評價點(w,h)
-					std::vector<int> chain_point(3);
-					for(int j = best_chain_cubes_.size(); j >=0; --j){
-						if(tmp_best_chain_cubes[j]){
-							pMap tmp_map_2 = tmp_map->clone();
-							del_block(tmp_map_2, tmp_best_chain_cubes[j]->x(),
-							    tmp_best_chain_cubes[j]->y(), true);
-							chain_point[j] = combo_counter(tmp_map_2);
-						}
-					}
-					if(amass_deep_formula(amass_counter(tmp_map), chain_point) > best_point){
-						// trace("find best amass(" + w + "," + h + ")");
-						best_point = amass_deep_formula(amass_counter(tmp_map), chain_point);
-						best_cube = map->lookup(w, h);
-					}
-				}
-				in_best_cubes = false;
-			}
-		}
-		return best_cube;
-	}
+                    //暫存最佳發火點,以防消去被評價點後造成最佳發火點位址變動
+                    for(int a = 0; a < best_chain_cubes_.size(); ++a){
+                        tmp_best_chain_cubes_[a] =
+                            tmp_map->lookup(best_chain_cubes_[a]->x(), best_chain_cubes_[a]->y());
+                    }
+                    del_block(tmp_map, w, h, true);//消去被評價點(w,h)
+                    std::vector<int> chain_point(3);
+                    for(int j = best_chain_cubes_.size(); j >=0; --j){
+                        if(tmp_best_chain_cubes[j]){
+                            pMap tmp_map_2 = tmp_map->clone();
+                            del_block(tmp_map_2, tmp_best_chain_cubes[j]->x(),
+                                tmp_best_chain_cubes[j]->y(), true);
+                            chain_point[j] = combo_counter(tmp_map_2);
+                        }
+                    }
+                    if(amass_deep_formula(amass_counter(tmp_map), chain_point) > best_point){
+                        // trace("find best amass(" + w + "," + h + ")");
+                        best_point = amass_deep_formula(amass_counter(tmp_map), chain_point);
+                        best_cube = map->lookup(w, h);
+                    }
+                }
+                in_best_cubes = false;
+            }
+        }
+        return best_cube;
+    }
 
-	static int amass_deep_formula(int amass_point, std::vector<int> const& chain_points){
-		int amass_deep_point = amass_point;
-		for(int i = 0; i < chain_points.size(); ++i){
-			amass_deep_point += chain_points[i];
-		}
-		return amass_deep_point;
-	}
+    static int amass_deep_formula(int amass_point, std::vector<int> const& chain_points){
+        int amass_deep_point = amass_point;
+        for(int i = 0; i < chain_points.size(); ++i){
+            amass_deep_point += chain_points[i];
+        }
+        return amass_deep_point;
+    }
 
-	void dropping_travel(pMap map){
-		std::vector<pCube> del_arr = Dropping_checker(map);
-		if(del_arr.size() != 0){
-			// trace_map_rgb(map);
-			for(int del_i = 0; del_i < del_arr.size(); ++del_i){
-				shooting(map, del_arr[del_i]);
-				// trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
-			}
-		}
-	}
+    void dropping_travel(pMap map){
+        std::vector<pCube> del_arr = Dropping_checker(map);
+        if(del_arr.size() != 0){
+            // trace_map_rgb(map);
+            for(int del_i = 0; del_i < del_arr.size(); ++del_i){
+                shooting(map, del_arr[del_i]);
+                // trace("del_dropping(" + del_arr[del_i].x + "," + del_arr[del_i].y + ")");
+            }
+        }
+    }
 
-	//計算此盤面的連鎖分數並回傳
-	int combo_counter(pMap map){
-		std::vector<int> square_count;
-		int chain_count = 0;
-		int get_point = 0;
-		while(contact_checker(map, 3)){
-			//use Array to save contace_checker
-			std::vector<int> chain_arr;
-			chain_arr = contact_checker(map, 3);
-			++chain_count;
-			square_count.push_back(chain_arr.size());
-			chain_del(map, chain_arr);
-		}
-		//point_formula : (del_square_in_each_chain-3)*each_chain_Num+2^(each_chain_Num-2)
-		for(int i = 0; i < square_count.size(); ++i){
-			get_point += (square_count[i]-3)*i+1;
-			if( i == 0 ){
-				get_point += (square_count[i]-3)*(i+1);
-			}else{
-				get_point += (square_count[i]-3)*(i+1) + utils::power2(i-1);
-			}
-		}
-		return get_point;
-	}
+    //計算此盤面的連鎖分數並回傳
+    int combo_counter(pMap map){
+        std::vector<int> square_count;
+        int chain_count = 0;
+        int get_point = 0;
+        while(contact_checker(map, 3)){
+            //use Array to save contace_checker
+            std::vector<int> chain_arr;
+            chain_arr = contact_checker(map, 3);
+            ++chain_count;
+            square_count.push_back(chain_arr.size());
+            chain_del(map, chain_arr);
+        }
+        //point_formula : (del_square_in_each_chain-3)*each_chain_Num+2^(each_chain_Num-2)
+        for(int i = 0; i < square_count.size(); ++i){
+            get_point += (square_count[i]-3)*i+1;
+            if( i == 0 ){
+                get_point += (square_count[i]-3)*(i+1);
+            }else{
+                get_point += (square_count[i]-3)*(i+1) + utils::power2(i-1);
+            }
+        }
+        return get_point;
+    }
 
-	//暴搜盤面,找出兩兩相鄰或是可連鎖消去的方塊並回傳,以contact_Num決定有幾個同色相連才要回傳
-	std::vector<pCube> contact_checker(pMap map, int contact_Num){
-		std::vector<pCube> tmp_arr;
-		std::vector<pCube> push_arr;
-		for(int h = height(map)-1; h > 0; --h){
-			for(int w = width(map)-1; w >= 0; --w){
-				tmp_arr = contact_checker_unit(map, map->lookup(w, h), tmp_arr, contact_Num);
-			}
-		}
-		if(tmp_arr.size() == 0){
-			return std::vector<pCube>();
-		}else{
-			return tmp_arr;
-		}
-	}
+    //暴搜盤面,找出兩兩相鄰或是可連鎖消去的方塊並回傳,以contact_Num決定有幾個同色相連才要回傳
+    std::vector<pCube> contact_checker(pMap map, int contact_Num){
+        std::vector<pCube> tmp_arr;
+        std::vector<pCube> push_arr;
+        for(int h = height(map)-1; h > 0; --h){
+            for(int w = width(map)-1; w >= 0; --w){
+                tmp_arr = contact_checker_unit(map, map->lookup(w, h), tmp_arr, contact_Num);
+            }
+        }
+        if(tmp_arr.size() == 0){
+            return std::vector<pCube>();
+        }else{
+            return tmp_arr;
+        }
+    }
 
-	std::vector<pCube> contact_checker_unit(pMap map, pCube cube,
-	    std::vector<pCube> const& list, int contact_Num)
-	{
+    std::vector<pCube> contact_checker_unit(pMap map, pCube cube,
+        std::vector<pCube> const& list, int contact_Num)
+    {
         typedef std::list<pCube> cube_list_type;
-		cube_list_type tmp_list, dummy;
+        cube_list_type tmp_list, dummy;
         bool map_cycled[6][11] = {0};
 
-		if(count_same_color_row(map, cube) >= contact_Num-1){;
+        if(count_same_color_row(map, cube) >= contact_Num-1){;
             map->make_row( cube, dummy, tmp_list );
             tmp_list.push_back( cube );
-			for(cube_list_type::iterator i = tmp_list.begin(), iend = tmp_list.end();
-			    i != iend; ++i)
-			{
-				if(map_cycled[(*i)->x()][(*i)->y()] == false){
+            for(cube_list_type::iterator i = tmp_list.begin(), iend = tmp_list.end();
+                i != iend; ++i)
+            {
+                if(map_cycled[(*i)->x()][(*i)->y()] == false){
                     map_cycled[(*i)->x()][(*i)->y()] = true;
-					list.push_back(*i);
-				}
-			}
-		}
+                    list.push_back(*i);
+                }
+            }
+        }
 
-		if(count_same_color_column(map, cube) >= contact_Num-1){
-			map->make_column( cube, dummy, tmp_list );
-			tmp_list.push_back( cube );
-			for(cube_list_type::iterator i = tmp_list.begin(), iend = tmp_list.end();
-			    i != iend; ++i)
-			{
-				if(map_cycled[(*i)->x()][(*i)->y()] == false){
-					map_cycled[(*i)->x()][(*i)->y()] = true;
-					list.push_back(*i);
-				}
-			}
-		}
-		return l2v(list);
-	}
+        if(count_same_color_column(map, cube) >= contact_Num-1){
+            map->make_column( cube, dummy, tmp_list );
+            tmp_list.push_back( cube );
+            for(cube_list_type::iterator i = tmp_list.begin(), iend = tmp_list.end();
+                i != iend; ++i)
+            {
+                if(map_cycled[(*i)->x()][(*i)->y()] == false){
+                    map_cycled[(*i)->x()][(*i)->y()] = true;
+                    list.push_back(*i);
+                }
+            }
+        }
+        return l2v(list);
+    }
 
-	//檢查初落下方塊是否會造成誤消去,有則return一組cube array
-	std::vector<pCube> Dropping_checker(pMap map){
-		Map tmp_map = map->clone();
+    //檢查初落下方塊是否會造成誤消去,有則return一組cube array
+    std::vector<pCube> Dropping_checker(pMap map){
+        Map tmp_map = map->clone();
         std::vector<pCube> check_arr;
         std::vector<pCube> dropping_arr;
         std::vector<pCube> del_arr;
-		for(int h = height(map)-1; h > 0; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				if(map->lookup(w, h)->is_dropping() && map->lookup(w, h)->has_grounded() == false)
-				{
-					dropping_arr.push_back(map->lookup(w, h));
-					check_arr.push_back(tmp_map->lookup(w, h));
-				}
-			}
-		}
-		failing_dropping(tmp_map, true);
-		if(contact_checker(tmp_map, 3).size() == 0){
-			return std::vector<pCube>();
-		}else{
-			for(int check_i = 0; check_i < check_arr.size(); ++check_i){
-				if(count_same_color_row(tmp_map, check_arr[check_i]) >= 2){
-					del_arr.push_back(dropping_arr[check_i]);
-				}else if(count_same_color_column(tmp_map, check_arr[check_i]) >= 2){
-					del_arr.push_back(dropping_arr[check_i]);
-				}
-			}
-			return del_arr;
-		}
-	}
+        for(int h = height(map)-1; h > 0; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                if(map->lookup(w, h)->is_dropping() && map->lookup(w, h)->has_grounded() == false)
+                {
+                    dropping_arr.push_back(map->lookup(w, h));
+                    check_arr.push_back(tmp_map->lookup(w, h));
+                }
+            }
+        }
+        failing_dropping(tmp_map, true);
+        if(contact_checker(tmp_map, 3).size() == 0){
+            return std::vector<pCube>();
+        }else{
+            for(int check_i = 0; check_i < check_arr.size(); ++check_i){
+                if(count_same_color_row(tmp_map, check_arr[check_i]) >= 2){
+                    del_arr.push_back(dropping_arr[check_i]);
+                }else if(count_same_color_column(tmp_map, check_arr[check_i]) >= 2){
+                    del_arr.push_back(dropping_arr[check_i]);
+                }
+            }
+            return del_arr;
+        }
+    }
 
-	//傳入一cube array,先消去這些cube,再將消去後造成的空格填滿
-	void chain_del(pMap map, std::vector<pCube> const& del_arr){
-		//delete del_arr
-		for(int cube_Num = 0; cube_Num < del_arr.size(); ++cube_Num){
-			del_block(map, del_arr[cube_Num]->x(), del_arr[cube_Num]->y(), false);
-		}
-		//sort map
-		for(int h = height(map)-1; h > 0; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				if(map->lookup(w, h).use_count() == 0){
-					move_block(map, w, h, false);
-				}
-			}
-		}
-	}
+    //傳入一cube array,先消去這些cube,再將消去後造成的空格填滿
+    void chain_del(pMap map, std::vector<pCube> const& del_arr){
+        //delete del_arr
+        for(int cube_Num = 0; cube_Num < del_arr.size(); ++cube_Num){
+            del_block(map, del_arr[cube_Num]->x(), del_arr[cube_Num]->y(), false);
+        }
+        //sort map
+        for(int h = height(map)-1; h > 0; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                if(map->lookup(w, h).use_count() == 0){
+                    move_block(map, w, h, false);
+                }
+            }
+        }
+    }
 
-	//消去map中位於(x,y)的cube,由need_move傳入之值決定是否要將消去後造成的空格填起
-	void del_block(pMap map, int x, int y, bool need_move){
-		int del_x = x;
-		int del_y = y;
+    //消去map中位於(x,y)的cube,由need_move傳入之值決定是否要將消去後造成的空格填起
+    void del_block(pMap map, int x, int y, bool need_move){
+        int del_x = x;
+        int del_y = y;
         map[del_y][del_x].reset();
-		if(need_move == true){
-			move_block(map, del_x, del_y, false);
-		}
-	}
+        if(need_move == true){
+            move_block(map, del_x, del_y, false);
+        }
+    }
 
-	//傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填滿空格
-	void move_block(pMap map, int x, int y){
-		int locx = x;
-		int locy = y;
-		for(int target_y = locy-1;
-			target_y > 0 &&
-			map->lookup(locx, locy).use_count() == 0;
-			--target_y)
-		{
-			if(map->lookup(locx, target_y)){
-				if(map->lookup(locx, target_y)->is_waiting()){
-					map->setup(locx, locy, map->lookup(locx, target_y));
+    //傳入map中之空格座標(x,y),向(x,y)上方進行搜尋,將(x,y)上方之方塊強制下移填滿空格
+    void move_block(pMap map, int x, int y){
+        int locx = x;
+        int locy = y;
+        for(int target_y = locy-1;
+            target_y > 0 &&
+            map->lookup(locx, locy).use_count() == 0;
+            --target_y)
+        {
+            if(map->lookup(locx, target_y)){
+                if(map->lookup(locx, target_y)->is_waiting()){
+                    map->setup(locx, locy, map->lookup(locx, target_y));
                     map->lookup(locx, locy)->y(locy);
-					//// trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
-					del_block(map, locx, target_y, true);
-				}
-			}
-		}
-	}
+                    //// trace("move dorpping cube(" + locx + "," + target_y + ") to (" + locx + "," + locy + ")");
+                    del_block(map, locx, target_y, true);
+                }
+            }
+        }
+    }
 
-	//將落下中方塊強制落下,由first_drop決定目標是否為初落下方塊
-	void failing_dropping(pMap map, bool first_drop){
-		for(int h = height(map)-1; h > 0; --h){
-			for(int w = width(map)-1; w >= 0 ; --w){
-				if(map->lookup(w,h)->is_dropping() && map->lookup(w,h)->has_grounded() == false && first_drop){
-					for(int move_to = h+1; move_to < height(map) && map->lookup(w, move_to).use_count() == 0; ++move_to){
-						map->setup(w, move_to, map->lookup(w, h));
-						map->lookup(w, move_to)->y(move_to);
-						del_block(map, w, move_to, false);
-						if(move_to+1 == height(map) || map->lookup(w, move_to+1)){
-						    // NOTE: ?
+    //將落下中方塊強制落下,由first_drop決定目標是否為初落下方塊
+    void failing_dropping(pMap map, bool first_drop){
+        for(int h = height(map)-1; h > 0; --h){
+            for(int w = width(map)-1; w >= 0 ; --w){
+                if(map->lookup(w,h)->is_dropping() && map->lookup(w,h)->has_grounded() == false && first_drop){
+                    for(int move_to = h+1; move_to < height(map) && map->lookup(w, move_to).use_count() == 0; ++move_to){
+                        map->setup(w, move_to, map->lookup(w, h));
+                        map->lookup(w, move_to)->y(move_to);
+                        del_block(map, w, move_to, false);
+                        if(move_to+1 == height(map) || map->lookup(w, move_to+1)){
+                            // NOTE: ?
                             map->lookup(w, move_to)->go_waiting();
-						}
-					}
-				}else if(map->lookup(w,h)->is_dropping() && map->lookup(w,h)->has_grounded() && first_drop == false ){
-					for(int move_to = h+1; move_to < height(map) && map->lookup(w, move_to) == null; ++move_to){
-						map->setup(w, move_to, map->lookup(w, h));
-						map->lookup(w, move_to)->y(move_to);
-						del_block(map, w, move_to, false);
-						if(move_to+1 == height(map) || map->lookup(w, move_to+1)){
-						    // NOTE: ?
+                        }
+                    }
+                }else if(map->lookup(w,h)->is_dropping() && map->lookup(w,h)->has_grounded() && first_drop == false ){
+                    for(int move_to = h+1; move_to < height(map) && map->lookup(w, move_to) == null; ++move_to){
+                        map->setup(w, move_to, map->lookup(w, h));
+                        map->lookup(w, move_to)->y(move_to);
+                        del_block(map, w, move_to, false);
+                        if(move_to+1 == height(map) || map->lookup(w, move_to+1)){
+                            // NOTE: ?
                             map->lookup(w, move_to)->go_waiting();
-						}
-					}
-				}
-			}
-		}
-	}
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     int <% debug_hook 'count_same_color_row' do %>(pCube that, pMap map){
     <% end %>

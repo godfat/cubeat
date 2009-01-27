@@ -55,7 +55,7 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     std::ostringstream oss;
     oss << "rc/fonts/" << font_path << ".ttf";
 
-	ttfont_ = gui->getFont(oss.str().c_str(),size);
+    ttfont_ = gui->getFont(oss.str().c_str(),size);
 
     ttfont_->setAntiAlias(true);
     ttfont_->setTransparent(true);

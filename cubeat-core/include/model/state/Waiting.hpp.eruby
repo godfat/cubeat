@@ -23,11 +23,11 @@ public:
 
     // begin only used by Map::next_state
     bool need_check() const{ return checked_ == false; }
-	void checked(){ checked_ = true; }
+    void checked(){ checked_ = true; }
     // end
 
     // for Cube#restore
-	void uncheck(){ checked_ = false; }
+    void uncheck(){ checked_ = false; }
 
 protected:
     virtual pState init();

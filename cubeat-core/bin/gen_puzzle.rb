@@ -26,5 +26,5 @@ p PuzzleGenerator::Puzzle.new(:level => opts[:level], :timeout => 7200).generate
 # dropping_creatable: 0,
 # garbage_dumpable: 0,
 # cube_colors:'
-# 
+#
 # p PuzzleGenerator::Puzzle.new(:timeout => 7200, :level => ARGV.first.to_i).generate.transpose.reverse

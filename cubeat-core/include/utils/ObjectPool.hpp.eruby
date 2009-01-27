@@ -32,19 +32,16 @@ public:
     }
 <% } %>
 
-public:
-    boost::mutex& mutex(){ return mutex_; }
-
 private:
     element_type* malloc_mt(){
-        boost::mutex::scoped_lock lock(mutex());
+        boost::mutex::scoped_lock lock(mutex_malloc_);
         return this->malloc();
     }
     void free_mt(element_type* p){
-        boost::mutex::scoped_lock lock(mutex());
+        boost::mutex::scoped_lock lock(mutex_free_);
         this->free(p);
     }
-    boost::mutex mutex_;
+    boost::mutex mutex_malloc_, mutex_free_;
 };
 
 template <class T>

@@ -216,8 +216,6 @@ pSimpleMap SimpleMap::clone() const
     }
     result->simp_cubes_preview_ = temp_preview;
 
-    Logger::i().buf(this).buf(" checkpoint 4 ").endl();
-
     for( int x=0; x < ms()->width(); ++x ){
         for( int y=0; y < ms()->height(); ++y ){
             if( pSimpleCube orig_c = simp_cubes_[x][y] ) {
@@ -236,6 +234,5 @@ pSimpleMap SimpleMap::clone() const
             }
         }
     }
-    Logger::i().buf(this).buf(" end cloning ..").endl();
     return result;
 }

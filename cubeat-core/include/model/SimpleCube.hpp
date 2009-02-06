@@ -89,6 +89,7 @@ public:
     bool is_garbage()   const{ return is_garbage_; }
     bool is_broken()    const{ return is_broken_; }
 	bool has_grounded() const{ return has_grounded_; }
+	int  hp()           const{ return hp_; }
 	void set_grounded() { has_grounded_ = true; }
 
     data::pCube data() const{ return data_; }

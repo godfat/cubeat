@@ -22,15 +22,10 @@
 
 <%= debug_include %>
 
-#include <iostream>
-
 using namespace psc;
 using namespace model;
 
-<% debug_hook 'Map::~Map' do %>() {
-<%end%>
-    std::cout << "map destructing... " << std::endl;
-}
+<% debug_hook 'Map::~Map' do %>() {<%end%>}
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>

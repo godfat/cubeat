@@ -42,14 +42,14 @@ public:
 
 private:
     element_type* malloc_mt(){
-        boost::mutex::scoped_lock lock(mutex_malloc_);
+        boost::mutex::scoped_lock lock(mutex_);
         return this->malloc();
     }
     void free_mt(element_type* p){
-        boost::mutex::scoped_lock lock(mutex_free_);
+        boost::mutex::scoped_lock lock(mutex_);
         this->free(p);
     }
-    boost::mutex mutex_malloc_, mutex_free_;
+    boost::mutex mutex_;
 };
 
 template <class T>

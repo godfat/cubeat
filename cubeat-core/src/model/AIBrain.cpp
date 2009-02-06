@@ -7,7 +7,7 @@
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
 #include <boost/foreach.hpp>
-
+#include <algorithm>
 #include <iostream>
 
 using namespace psc;
@@ -56,23 +56,28 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
             std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
             int high_col_threshold = 7;
             std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
-
-            BOOST_FOREACH(pSimpleCube& c, garbages) {
-                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
-                shooting_pos_queue_.push_back( pos );
-                shooting_pos_queue_.push_back( pos );
-                shooting_pos_queue_.push_back( pos );
-            }
-
-            BOOST_FOREACH(pSimpleCube& c, brokens) {
-                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
-                shooting_pos_queue_.push_back( pos );
-            }
+            std::random_shuffle(high_cols.begin(), high_cols.end());
+            std::random_shuffle(garbages.begin(), garbages.end());
+            std::random_shuffle(brokens.begin(), brokens.end());
 
             BOOST_FOREACH(int& x, high_cols) {
                 pPosition pos = pPosition(
                     new std::pair<int, int>(std::make_pair(x, utils::random( high_col_threshold ))));
                 shooting_pos_queue_.push_back( pos );
+                if( shooting_pos_queue_.size() > 2 ) break;
+            }
+
+            BOOST_FOREACH(pSimpleCube& c, garbages) {
+                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+                for( int i = 0; i < c->hp(); ++i )
+                    shooting_pos_queue_.push_back( pos );
+                if( shooting_pos_queue_.size() > 5 ) break;
+            }
+
+            BOOST_FOREACH(pSimpleCube& c, brokens) {
+                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+                shooting_pos_queue_.push_back( pos );
+                if( shooting_pos_queue_.size() > 6 ) break;
             }
 
             if( garbages.empty() && brokens.empty() &&

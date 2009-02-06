@@ -29,7 +29,7 @@ protected:
     virtual pState init(); // covariant return type... invalid for shared_ptr?
 
 private:
-	int dying_step_;
+    int dying_step_;
 };
 
 }}} // end of namespace

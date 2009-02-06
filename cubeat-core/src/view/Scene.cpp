@@ -35,8 +35,8 @@ void Scene::init(std::string const& name)
     camera_ = smgr_->addCameraSceneNode(0);
     camera_->setIsDebugObject(true);
 
-	light_ =
-		smgr_->addLightSceneNode(0, core::vector3df(0.0,0.0,-1.0), video::SColorf(1.0f, 1.0f, 1.0f), 100.0f);
+    light_ =
+        smgr_->addLightSceneNode(0, core::vector3df(0.0,0.0,-1.0), video::SColorf(1.0f, 1.0f, 1.0f), 100.0f);
     light_->setIsDebugObject(true);
     light_->setRotation(vector3df(0.f, 0.f, 0.f));
     light_->getLightData().Type = video::ELT_DIRECTIONAL;

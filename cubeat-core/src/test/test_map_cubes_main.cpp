@@ -41,11 +41,11 @@ int main(){
     // for(int i=0; i<25; ++i)
     //     map->cycle();
     // display(map);
-    // 
+    //
     // for(int i=0; i<25; ++i)
     //     map->cycle();
     // display(map);
-    // 
+    //
     // for(int i=0; i<25; ++i)
     //     map->cycle();
     // display(map);

@@ -1,12 +1,4 @@
 
-/*2007.11.9
-  cleaned up things which were coupled with VtMovieClip
-
-  These included file is going to be heavily modified or deleted:
-  1. VtMovieClip.hpp
-  2. MovieClip.hpp
-*/
-
 <% header_guard do %>
 
 #include "model/Map.hpp"
@@ -74,7 +66,7 @@ public:
     void go_dying();
     // end
 
-	// begin only used by State::map
+    // begin only used by State::map
     pMap map(){ return map_.lock(); }
     pMap const map() const{ return map_.lock(); }
     // end
@@ -94,7 +86,7 @@ public:
     void be_broken(int);
 	void restore(int);
 
-	void go_exploding(int);
+    void go_exploding(int);
 
     // for Map::insert_garbage
     Cube& go_dropping();

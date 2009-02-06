@@ -46,9 +46,9 @@ public:
 
     virtual ~CirclingAnimator(){}
 
-	//! animates a scene node
+    //! animates a scene node
     virtual void animateNode(ISceneNode* node, u32 timeMs) {
-	    if ( !node ) return;
+        if ( !node ) return;
         if ( static_cast<s32>(timeMs) < this->startTime_ ) return;
 
         if( timeMs - this->startTime_ >= this->duration_ ) {

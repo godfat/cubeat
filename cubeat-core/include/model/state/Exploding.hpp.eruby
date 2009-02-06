@@ -15,15 +15,15 @@ public:
 
 public:
     static pExploding create(wpCube owner){ return utils::ObjectPool<Exploding>::create(owner); }
- 
+
 public:
     Exploding(wpCube owner): State(owner), explosion_started_(false), exploding_step_(0){}
     virtual <% debug_hook '~Exploding' do %>(){<%end%>}
     virtual void cycle();
 
 private:
-	bool explosion_started_;
-	int exploding_step_;
+    bool explosion_started_;
+    int exploding_step_;
 };
 
 }}} // end of namespace

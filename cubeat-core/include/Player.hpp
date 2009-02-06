@@ -36,17 +36,17 @@ public:
     Player& disable_all_wep_reloadability();
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
-	//I'd better refactor this afterwards.
-	void eat_item();
+    //I'd better refactor this afterwards.
+    void eat_item();
 
     Input const* input()          const;
-	Weapon* weapon()              const;
-	Weapon* weapon(int id)        const;
-	bool is_changing_wep()        const;
-	bool can_fire()               const;
-	bool can_crossfire()          const;
-	bool can_fire_repeatedly()    const;
-	int  wepid()                  const;
+    Weapon* weapon()              const;
+    Weapon* weapon(int id)        const;
+    bool is_changing_wep()        const;
+    bool can_fire()               const;
+    bool can_crossfire()          const;
+    bool can_fire_repeatedly()    const;
+    int  wepid()                  const;
     bool ammo_all_out()           const;
 
     void normal_weapon_fx();
@@ -63,8 +63,8 @@ protected:
     void process_input();
 
 protected:
-	int const changetime_;
-	bool      changing_wep_;
+    int const changetime_;
+    bool      changing_wep_;
     int       weplist_idx_;
 
     Input*               input_;

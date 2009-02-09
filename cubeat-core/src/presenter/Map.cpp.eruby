@@ -4,6 +4,7 @@
 #include "model/Map.hpp"
 
 #include "utils/to_s.hpp"
+#include "utils/Logger.hpp"
 
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
@@ -133,6 +134,8 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
         std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
     warning_counting_event(
         std::tr1::bind(&cube::ViewMaster::warning_counting, view.get(), _1));
+    alert_bar_update_event(
+        std::tr1::bind(&cube::ViewMaster::alert_bar_update, view.get(), _1));
 }
 
 void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){

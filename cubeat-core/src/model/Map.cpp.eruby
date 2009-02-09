@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utils/Logger.hpp>
 
 <%= debug_include %>
 
@@ -26,6 +27,13 @@ using namespace psc;
 using namespace model;
 
 <% debug_hook 'Map::~Map' do %>() {<%end%>}
+
+pMap <% debug_hook 'Map::init' do %>() { <%end%>
+    cubes_.resize(map_setting_->width(), map_setting_->height());
+    self_          = std::tr1::static_pointer_cast<Map>( shared_from_this() );
+    //warning_level_ = std::tr1::shared_ptr<int>(new int(0));
+    return self();
+}
 
 Map& <% debug_hook 'Map::init_cubes' do %>(){
 <% end %>
@@ -335,30 +343,51 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 }
 
 // temp
-void inc_warning(int& pw) { assert(pw < 5); pw += 1; }
+void Map::inc_warning(int& warning_lv) {
+    if( has_column_full_ && chains_.empty() && warning_lv < 100 )
+        warning_lv += 1;
+    else if( !has_column_full_ && warning_lv > 0 ) {
+        warning_lv -= 2;
+        if( warning_lv < 0 )
+            warning_lv = 0;
+    }
+}
 
 // added: split warning check from cycle_creation:
 void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
-    using boost::lambda::var;
     using std::tr1::bind; using std::tr1::ref;
 
-    bool has_column_full = check_column_full();
-    if( !has_column_full && warning_level_ ) {
-        warning_level_.reset();
+    has_column_full_ = check_column_full();
+
+    if( !has_column_full_ ) {
+        if( warning_level_ && *warning_level_ == 0 )
+            warning_level_.reset();
+        alarm_sound_.reset();
     }
-    else if( has_column_full && !warning_level_ ) {
-        warning_level_ = std::tr1::shared_ptr<int>(new int(0));
-        owner()->warning_counting_event()(0); //added for call warning as soon as column full
-        ctrl::EventDispatcher::i().subscribe_timer(
-            bind(inc_warning, ref(*warning_level_)), warning_level_, 1000, 3);
+    //else if( has_column_full_ && !warning_level_ ) {
+    else {
+        if( !warning_level_ ) {
+            warning_level_ = std::tr1::shared_ptr<int>(new int(0));
 
-        ctrl::EventDispatcher::i().subscribe_timer(
-            bind(owner()->warning_counting_event(), ref(*warning_level_)), warning_level_, 1000, 3);
-
-        if( owner()->lose_event() )
+            owner()->warning_counting_event()(0); //added for call warning as soon as column full
             ctrl::EventDispatcher::i().subscribe_timer(
-                owner()->lose_event(), warning_level_, 5000);
+                bind(&Map::inc_warning, this, ref(*warning_level_)), warning_level_, 50u, -1);
+
+            ctrl::EventDispatcher::i().subscribe_timer(
+                bind(owner()->alert_bar_update_event(), ref(*warning_level_)), warning_level_, 50u, -1);
+        }
+        if( !alarm_sound_ ) {
+            alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
+
+            ctrl::EventDispatcher::i().subscribe_timer(
+                bind(owner()->warning_counting_event(), ref(*warning_level_)), alarm_sound_, 1000u, -1);
+        }
+    }
+
+    if( warning_level_ && *warning_level_ >= 100 && owner()->lose_event() ) {
+        ctrl::EventDispatcher::i().subscribe_timer(
+            owner()->lose_event(), warning_level_, 10u);
     }
 }
 

@@ -16,6 +16,7 @@
 
 #include "utils/Random.hpp"
 #include "utils/to_s.hpp"
+#include "utils/Logger.hpp"
 
 #include "EventDispatcher.hpp"
 
@@ -308,21 +309,21 @@ public:
 
     virtual void <% debug_hook 'warning_counting' do %>(int warning_level){ <% end %>
         using std::tr1::bind; using namespace accessor; using namespace easing;
-        Sound::i().play("3/3d/alarm.mp3");
-        int w = map_setting()->width();
-        int h = map_setting()->height() - 1;
-        vec2 pos;
-        if( w % 2 == 0 )
-            pos = (pos_vec2(w/2, h) + pos_vec2(w/2-1, h)) / 2;
-        else pos = pos_vec2(w/2, h);
-        pos.Y += 16;
-        view::pAnimatedSprite alert =
-            view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 32, true);
-        alert->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos ).setPickable(false);
 
-        int endalpha = 40 + warning_level * 40;
-        alert->tween<SineCirc, Alpha>
-            (0, endalpha, 1000u, 0, bind(&view::Object::set<Visible>, alert, false)); //bind copy
+        Sound::i().play("3/3d/alarm.mp3");
+        alert_bar_->playAnime("moving", 1000);
+        alert_bar_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
+    }
+
+    virtual void <% debug_hook 'alert_bar_update' do %>(int warning_level){ <% end %>
+        using namespace accessor;
+        if( warning_level < 1 ) {
+            alert_bar_->set< Visible >( false );
+            alert_bar_->set< ScaleWithUV >( vec2(1, 1) );
+        } else {
+            alert_bar_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+            alert_bar_->set< Visible >( true );
+        }
     }
 
 private:
@@ -354,6 +355,19 @@ private:
     }
 
     virtual void derived_init(){
+        using namespace accessor;
+        int w = map_setting()->width();
+        int h = map_setting()->height() - 1;
+        vec2 pos;
+        if( w % 2 == 0 )
+            pos = (pos_vec2(w/2, h) + pos_vec2(w/2-1, h)) / 2;
+        else pos = pos_vec2(w/2, h);
+        pos.Y += 16;
+
+        alert_bar_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 32, true);
+        alert_bar_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
+                   .set<Visible>(false).setPickable(false);
+
         create_warning_strips();
     }
 
@@ -391,6 +405,7 @@ private:
 private:
     view::wpScene scene_;
     ctrl::wpPlayer player_;
+    view::pAnimatedSprite alert_bar_;
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;

@@ -51,7 +51,10 @@ public:
         dropping_creatable_ = ms()->dropping_creatable();
         if(garbage_dumpable_ && dropping_creatable_)
             cycle_warning();
-        else warning_level_.reset();
+        else {
+            warning_level_.reset();
+            alarm_sound_.reset();
+        }
 
         update_chains();
         cycle_cubes();
@@ -107,21 +110,19 @@ private:
     pOneFadingOrig make_OneFading(pCube);
     bool is_below_empty(cpCube) const;
     void update_chains();
+    void inc_warning(int&);
     presenter::pMap owner() const{ return owner_.lock(); }
     pMap self()             const{ return self_.lock(); }
 
 private:
-    pointer_type init() {
-        cubes_.resize(map_setting_->width(), map_setting_->height());
-        self_  = std::tr1::static_pointer_cast<Map>( shared_from_this() );
-        return self();
-    }
+    pointer_type init();
 
 private:
     presenter::wpMap  owner_; // should be weak_ptr
     wpMap             self_;
     container_type    cubes_;
-    bool dropping_creatable_, garbage_dumpable_;
+    bool dropping_creatable_, garbage_dumpable_, has_column_full_;
+    std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy
     preview_list_type cubes_preview_;
 };
 

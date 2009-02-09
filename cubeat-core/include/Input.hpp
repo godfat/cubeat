@@ -63,7 +63,7 @@ public:
     int count() const      { return static_cast<int>(inputs_.size()); }
     bool keyboardMouseInput() const { return keyboard_mouse_input_; }
     bool inited()        const { return inited_; }
-    bool miceNotEnough() const { return MAX_INPUTS > mice_detected_by_manymouse_; }
+    bool manyMouseCount() const { return mice_detected_by_manymouse_; }
     void updateAll(); //we can't combine updateAll and redrawAll,
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)

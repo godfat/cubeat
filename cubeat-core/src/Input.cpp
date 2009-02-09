@@ -158,7 +158,9 @@ void InputMgr::reinitManyMouse()
     quitManyMouse();
     initManyMouse();
 
-    for( int i = 0; i < MAX_INPUTS; ++i ) {
+    int total_inputs = (mice_detected_by_manymouse_ > MAX_INPUTS) ? MAX_INPUTS : mice_detected_by_manymouse_;
+
+    for( int i = 0; i < total_inputs; ++i ) {
         pMouseState ms = inputs_[i]->state_;
         ms->name = ManyMouse_DeviceName(i);
         ms->device_id = i;
@@ -244,10 +246,16 @@ Input::Input(std::string const& path)
 #endif //_USE_WIIMOTE_
 #ifdef _USE_MANYMOUSE_
     state_ = MouseState::create();
-    state_->name = ManyMouse_DeviceName( InputMgr::i().count() );
-    state_->device_id = InputMgr::i().count();
-    state_->connected = true;
-    std::cout << "Mice #" << InputMgr::i().count() << ": " << state_->name << std::endl;
+    if( InputMgr::i().count() >= InputMgr::i().manyMouseCount() ) {
+        state_->name = "Mouse-like control not found for this Input object.";
+        state_->device_id = -1;
+        state_->connected = false;
+    } else {
+        state_->name = ManyMouse_DeviceName( InputMgr::i().count() );
+        state_->device_id = InputMgr::i().count();
+        state_->connected = true;
+    }
+    std::cout<< "Mice #" << InputMgr::i().count() << ": " << state_->name << std::endl;
 #endif //_USE_MANYMOUSE_
 
     cursor_texture_name_ = keymap.S("cursor_texture");

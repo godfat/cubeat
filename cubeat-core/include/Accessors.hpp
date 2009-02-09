@@ -210,29 +210,81 @@ namespace accessor {
 
     struct Size2D : Accessor<vec2, AT::SIZE2D>{
         static void set(irr::scene::ISceneNode* node, value_type const& val ) {
-            if( node->getType() == irr::scene::ESNT_BILLBOARD )
-                static_cast<irr::scene::IBillboardSceneNode*>(node)->setSize(
-                    irr::core::dimension2df(val.X, val.Y) );
-            else {
-                vec2 ori;
-                get(node, ori);
-                irr::scene::IMeshManipulator* mani =
-                    IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
-                mani->scaleMesh( static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(),
-                    vec3(val.X / ori.X, val.Y / ori.Y, 1) );
-            }
+            vec2 ori;
+            get(node, ori);
+            irr::scene::IMeshManipulator* mani =
+                IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
+            mani->scaleMesh( static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(),
+                vec3(val.X / ori.X, val.Y / ori.Y, 1) );
         }
         static void get(irr::scene::ISceneNode* node, value_type& out) {
-            if( node->getType() == irr::scene::ESNT_BILLBOARD ) {
-                irr::core::dimension2df size = static_cast<irr::scene::IBillboardSceneNode*>(node)->getSize();
-                out.X = size.Width; out.Y = size.Height;
+            irr::core::aabbox3df box =
+                static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh()->getBoundingBox();
+            out.X = (box.MaxEdge.X - box.MinEdge.X);
+            out.Y = (box.MaxEdge.Y - box.MinEdge.Y);
+        }
+    };
+
+    //This only work with 2D objects like view::Sprite, and it won't have hierarchical effects.
+    //it will go wrong with objects using hand-made textures
+    //so don't use this with SpriteText and SpriteMovie
+    struct ScaleWithUV : Accessor<vec2, AT::SCALE>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            vec2 ori;
+            get(node, ori);
+            irr::scene::IMeshManipulator* mani =
+                IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
+            irr::scene::IMesh* mesh = static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh();
+            mani->scaleMesh( mesh, vec3(val.X / ori.X, val.Y / ori.Y, 1) );
+
+            irr::video::S3DVertex* ptr = static_cast<irr::video::S3DVertex*>(
+                mesh->getMeshBuffer(0)->getVertices());
+
+            /*
+                2___3
+                |  /|
+                | / |    <-- plane mesh is like this, point 2 is (0,0), point 0 is (0, -1)
+                |/  |    <-- the texture coords of point 2 is (0,0, point 0 is (0, 1)
+                0---1
+            */
+
+            if( ptr[2].Pos.X < 0 ) { //means this mesh is center-aligned
+                if( ptr[2].TCoords.X > ptr[3].TCoords.X ) { // means this mesh's texture was flipped horizontally once.
+                    ptr[2].TCoords.X = ptr[0].TCoords.X = 0.5 + (val.X/2);
+                    ptr[3].TCoords.X = ptr[1].TCoords.X = 0.5 - (val.X/2);
+                }
+                else {
+                    ptr[2].TCoords.X = ptr[0].TCoords.X = 0.5 - (val.X/2);
+                    ptr[3].TCoords.X = ptr[1].TCoords.X = 0.5 + (val.X/2);
+                }
+                if( ptr[2].TCoords.Y > ptr[0].TCoords.Y ) { // means this mesh's texture was flipped vertically once.
+                    ptr[2].TCoords.Y = ptr[3].TCoords.Y = 0.5 + (val.Y/2);
+                    ptr[0].TCoords.Y = ptr[1].TCoords.Y = 0.5 - (val.Y/2);
+                }
+                else {
+                    ptr[2].TCoords.Y = ptr[3].TCoords.Y = 0.5 - (val.Y/2);
+                    ptr[0].TCoords.Y = ptr[1].TCoords.Y = 0.5 + (val.Y/2);
+                }
             }
-            else {
-                irr::core::aabbox3df box =
-                    static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh()->getBoundingBox();
-                out.X = (box.MaxEdge.X - box.MinEdge.X);
-                out.Y = (box.MaxEdge.Y - box.MinEdge.Y);
+            else { //means this mesh is NOT center-aligned
+                if( ptr[2].TCoords.X > 0 ) // means this mesh's texture was flipped horizontally once.
+                    ptr[2].TCoords.X = ptr[0].TCoords.X = val.X;
+                else
+                    ptr[3].TCoords.X = ptr[1].TCoords.X = val.X;
+
+                if( ptr[2].TCoords.Y > 0 ) // means this mesh's texture was flipped vertically once.
+                    ptr[2].TCoords.Y = ptr[3].TCoords.Y = val.Y;
+                else
+                    ptr[0].TCoords.Y = ptr[1].TCoords.Y = val.Y;
             }
+        }
+        static void get(irr::scene::ISceneNode* node, value_type& out ) {
+            irr::scene::IMesh* mesh = static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh();
+            irr::video::S3DVertex* ptr = static_cast<irr::video::S3DVertex*>(
+                mesh->getMeshBuffer(0)->getVertices());
+
+            out.X = std::abs(ptr[2].TCoords.X - ptr[3].TCoords.X);
+            out.Y = std::abs(ptr[0].TCoords.Y - ptr[2].TCoords.Y);
         }
     };
 

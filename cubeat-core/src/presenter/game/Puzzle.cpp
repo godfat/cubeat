@@ -24,6 +24,7 @@
 #include "utils/dictionary.hpp"
 #include "utils/MapLoader.hpp"
 #include "utils/to_s.hpp"
+#include "utils/Logger.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -83,11 +84,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
-    setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
-
-    vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
-    pview1_->setMap( map0_ );
+    setup_ui_by_config( c1p, std::string(), "config/ui/in_game_2p_layout.zzml" );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
     win_ = false, fired_ = false, end_ = false;
@@ -111,7 +108,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     return shared_from_this();
 }
 
-void Puzzle::setup_ui_by_config( std::string const& path )
+void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
 {
     uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
     utils::map_any const& base = uiconf_.M("base");
@@ -126,6 +123,10 @@ void Puzzle::setup_ui_by_config( std::string const& path )
             addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
+
+    vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
+    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
+    pview1_->setMap( map0_ );
 }
 
 void Puzzle::update_ui(){

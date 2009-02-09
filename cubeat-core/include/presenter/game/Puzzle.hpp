@@ -38,7 +38,7 @@ protected:
     void reinit();
     void update_ui_by_second();
     void update_ui();
-    void setup_ui_by_config( std::string const& path );
+    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path );
     void single_shot();
 
     void setup_end_button();

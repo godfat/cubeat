@@ -15,6 +15,7 @@
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
+#include "ctrl/AIPlayer.hpp"
 #include "Weapon.hpp"
 #include "Sound.hpp"
 #include "Conf.hpp"
@@ -46,13 +47,14 @@ Multi::~Multi()
     std::cout << " player1 use count: " << player1_.use_count() << std::endl;
 }
 
-pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string const& sc)
+pMulti Multi::init(std::string const& c1p, std::string const& c2p,
+                   std::string const& sc, int num_of_cpu)
 {
     //App::i().setLoading(1);
     scene_ = psc::view::Scene::create("Multiplayer game");
     scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
-    c1p_ = c1p; c2p_ = c2p; sconf_ = sc;
+    c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu;
 
     data::pViewSetting s0, s1;
 
@@ -62,8 +64,23 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
-    player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1);
+    ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
+    if( num_of_cpu == 0 ) {
+        player0_ = ctrl::Player::create(input0, s0);
+        player1_ = ctrl::Player::create(input1, s1);
+    }
+    else if( num_of_cpu == 1 ) {
+        input1->setControlledByAI(true);
+        player0_ = ctrl::Player::create(input0, s0);
+        player1_ = ctrl::AIPlayer::create(input1, s1);
+    }
+    else {
+        input0->setControlledByAI(true);
+        input1->setControlledByAI(true);
+        player0_ = ctrl::AIPlayer::create(input0, s0);
+        player1_ = ctrl::AIPlayer::create(input1, s1);
+    }
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create();
@@ -83,23 +100,18 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     map0_->lose_event(bind(&Multi::end, this, ref(map0_)));
     map1_->lose_event(bind(&Multi::end, this, ref(map1_)));
 
+    ///NEW: MAKE PLAYER KNOWS ABOUT MAP
+    std::vector< presenter::wpMap > map_list;
+    map_list.push_back(map0_);
+    map_list.push_back(map1_);
+    player0_->setMapList( map_list );
+    player1_->setMapList( map_list );
+
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
-    setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
-
-    vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
-    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
-    pview2_->flipPosition();
-    pview1_->setMap( map0_ );
-    pview2_->setMap( map1_ );
-    pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
-    pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
+    setup_ui_by_config( c1p, c2p, "config/ui/in_game_2p_layout.zzml" );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
-    pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
-    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 60) );
-    pause_text_->set<Visible>(false);
 
     //start music
     stage_->playBGM();
@@ -116,20 +128,24 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p, std::string c
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Multi::item_creation, this), timer_item_, 15000);
 
-    //temp: for killing cubes randomly
     //temp: for pause functionality
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Multi::pause, this), shared_from_this(),
         &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::toggle_auto1, this), shared_from_this(),
+        bind(&Multi::pause, this), shared_from_this(),
         &ctrl::InputMgr::i().getInputByIndex(1)->pause(), ctrl::BTN_PRESS);
+
+    if( num_of_cpu_ > 0 )
+        player1_->startThinking();
+    if( num_of_cpu_ > 1 )
+        player0_->startThinking();
 
     return shared_from_this();
 }
 
-void Multi::setup_ui_by_config( std::string const& path )
+void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
 {
     uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
     utils::map_any const& base = uiconf_.M("base");
@@ -143,6 +159,51 @@ void Multi::setup_ui_by_config( std::string const& path )
         ui_layout_->
             addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
+    }
+
+    vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
+    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
+    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
+    pview2_->flipPosition();
+    pview1_->setMap( map0_ );
+    pview2_->setMap( map1_ );
+    pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
+    pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
+
+    pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
+    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 60) );
+    pause_text_->set<Visible>(false);
+
+    utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
+    vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
+    vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
+    heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+    heatgauge2_ = view::Sprite::create("heatgauge2", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+    heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+    heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+
+    gauge1_flag_ = gauge2_flag_ = false;
+}
+
+void Multi::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag) {
+    gauge->set<Scale>( vec3(player->heat(), 1, 1) );
+
+    if( !player->is_overheat() ) {
+        out_flag = false;
+        if( player->heat() < 0.5 ) {
+            gauge->set<Green>(255);
+            gauge->set<Red>( player->heat()*2*255 );
+        }
+        else {
+            gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
+            gauge->set<Red>(255);
+        }
+    }
+    else if( !out_flag ) {
+        out_flag = true;
+        gauge->tween<SineCirc, ColorDiffuseVec3>(vec3(255,255,255), player->overheat_downtime()/4, 3);
     }
 }
 
@@ -175,6 +236,9 @@ void Multi::update_ui(){
     if( pview2_->getState() == presenter::PlayerView::HIT &&
         last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
+    update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
+    update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
+
     last_garbage_1p_ = new_garbage_1p_;
     last_garbage_2p_ = new_garbage_2p_;
 }
@@ -200,6 +264,11 @@ void Multi::end(pMap lose_map)
     Sound::i().stopAll();
     map0_->stop_dropping();
     map1_->stop_dropping();
+
+    ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
+    ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
+    player0_->stopThinking();
+    player1_->stopThinking();
 
     Sound::i().play("3/3c/win.mp3");
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);
@@ -260,22 +329,21 @@ void Multi::reinit()
     Sound::i().play("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_), 500);
+        bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_), 500);
     std::cout << "game_multiplayer end call finished." << std::endl;
 }
 
 //note: not very elegant.
 void Multi::item_creation()
 {
-    using namespace std::tr1::placeholders;
     Sound::i().play("3/3f/item.mp3");
     item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
     item_->playAnime("moving", 500, -1).setDepth(-60);
 
     ctrl::wpPlayer wp0 = player0_;
     ctrl::wpPlayer wp1 = player1_;
-    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, wp0, _1);
-    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, wp1, _1);
+    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, wp0, std::tr1::placeholders::_1);
+    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, wp1, std::tr1::placeholders::_1);
     view::pSprite body_ = item_;
     player0_->subscribe_shot_event(body_, cb1);
     player1_->subscribe_shot_event(body_, cb2);
@@ -305,44 +373,6 @@ void Multi::item_destruction()
     timer_item_ = pDummy(new int);
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Multi::item_creation, this), timer_item_, 15000);
-}
-
-void Multi::toggle_auto0()
-{
-    if( timer_auto0_ ) {
-        timer_auto0_.reset();
-    } else {
-        timer_auto0_ = pDummy(new int);
-        ctrl::EventDispatcher::i().subscribe_timer(
-            bind(&Multi::kill_cube_randomly0, this), timer_auto0_, 678, -1);
-    }
-}
-
-void Multi::toggle_auto1()
-{
-    if( timer_auto1_ ) {
-        timer_auto1_.reset();
-    } else {
-        timer_auto1_ = pDummy(new int);
-        ctrl::EventDispatcher::i().subscribe_timer(
-            bind(&Multi::kill_cube_randomly1, this), timer_auto1_, 500, -1);
-    }
-}
-
-void Multi::kill_cube_randomly0()
-{
-    int x = utils::random(6), y = utils::random(6);
-    map0_->kill_cube_at(x, y);
-    ctrl::InputMgr::i().getInputByIndex(0)->cursor().x() = 159 + x*64 + 32;
-    ctrl::InputMgr::i().getInputByIndex(0)->cursor().y() = 684 - y*64 - 32;
-}
-
-void Multi::kill_cube_randomly1()
-{
-    int x = utils::random(6), y = utils::random(10);
-    map1_->kill_cube_at(x, y);
-    ctrl::InputMgr::i().getInputByIndex(1)->cursor().x() = 740 + x*64 + 32;
-    ctrl::InputMgr::i().getInputByIndex(1)->cursor().y() = 684 - y*64 - 32;
 }
 
 void Multi::pause()
@@ -382,5 +412,7 @@ void Multi::cycle()
     scene_->redraw();
     map0_->redraw().cycle();
     map1_->redraw().cycle();
+    player0_->cycle();
+    player1_->cycle();
 }
 

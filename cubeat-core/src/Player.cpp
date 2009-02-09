@@ -16,8 +16,9 @@ using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
 Player::Player(Input* input, data::pViewSetting const& view_setting)
-    :changetime_(500), changing_wep_(false), weplist_idx_(0), input_(input),
-     view_setting_(view_setting)
+    :changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
+     cooling_speed_(0.06), accumulate_speed_(0.16), overheat_downtime_(2000),
+     overheat_(false), input_(input), view_setting_(view_setting)
 {
 }
 
@@ -45,6 +46,10 @@ pPlayer Player::init()
 //      do it when have time.
 
     }
+
+    EventDispatcher::i().subscribe_timer(
+        bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
+
     return shared_from_this();
 }
 
@@ -74,6 +79,17 @@ void Player::cycle()
 //        }
 //    }
 //    return *this;
+}
+
+void Player::heat_cooling()
+{
+    if( !overheat_ ) {
+        if( accumulated_heat_ > 0 ) {
+            accumulated_heat_ -= cooling_speed_;
+            if( accumulated_heat_ < 0 )
+                accumulated_heat_ = 0;
+        }
+    }
 }
 
 Player& Player::set_active_weapon(int i)
@@ -126,7 +142,9 @@ Player& Player::subscribe_shot_event
 void Player::normal_shot_delegate
     (view::pSprite& sv, HitCallback const& hit_cb)
 {
-    hit_cb(1); //normal_shot's firepower is always 1.
+    if( !overheat_ ) {
+        hit_cb(1); //normal_shot's firepower is always 1.
+    }
 }
 
 void Player::shot_delegate
@@ -160,6 +178,9 @@ bool Player::can_fire()               const { return current_wep_->can_fire(); }
 bool Player::can_crossfire()          const { return current_wep_->can_crossfire(); }
 bool Player::can_fire_repeatedly()    const { return current_wep_->can_fire_repeatedly(); }
 int  Player::wepid()                  const { return weplist_idx_; }
+double Player::heat()                 const { return accumulated_heat_; }
+bool Player::is_overheat()            const { return overheat_; }
+int  Player::overheat_downtime()      const { return overheat_downtime_; }
 bool Player::ammo_all_out() const {
     int count = 0;
     BOOST_FOREACH(Weapon* wp, weplist_)
@@ -167,11 +188,28 @@ bool Player::ammo_all_out() const {
     return count == 0;
 }
 
+//free func helper
+void end_overheat(bool& heat) { heat = false; }
+
 //temp: not flexible and stupid.
 void Player::normal_weapon_fx() {
-    Sound::i().play("1/a/1a-1.mp3");
-    view::SFX::i().normal_weapon_vfx(
-        InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
+    using std::tr1::ref;
+    if( !overheat_ ) {
+        Sound::i().play("1/a/1a-1.mp3");
+        view::SFX::i().normal_weapon_vfx(
+            InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
+
+        accumulated_heat_ += accumulate_speed_;
+        if( accumulated_heat_ > 1 ) {
+            accumulated_heat_ = 1;
+            overheat_ = true;
+            EventDispatcher::i().subscribe_timer(
+                bind(&end_overheat, ref(overheat_)), shared_from_this(), overheat_downtime_);
+        }
+    }
+    else {
+        /* special effects of attempting to fire when overheated */
+    }
 }
 
 //note: need fix

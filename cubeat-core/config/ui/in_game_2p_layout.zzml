@@ -29,4 +29,6 @@ misc: {
 
 # 1p & 2p character sprite positions
 character_center_x: 640,
-character_center_y: 580
+character_center_y: 610,
+
+heatgauge: { x_1p: 585, x_2p: 665, y: 510, w: 80, h: 30, rotation: 90 }

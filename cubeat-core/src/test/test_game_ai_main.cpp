@@ -79,14 +79,9 @@ public:
         // setup stage & ui & player's view objects:
         utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
         stage_ = presenter::Stage::create( stage.S("test_stage") );
-        setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
-
-        vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-        pview1_ = presenter::PlayerView::create( "config/char/char1.zzml", scene_, center_pos );
-        pview2_ = presenter::PlayerView::create( "config/char/char2.zzml", scene_, center_pos );
-        pview2_->flipPosition();
-        pview1_->setMap( map0_ );
-        pview2_->setMap( map1_ );
+        setup_ui_by_config( "config/char/char1.zzml",
+                            "config/char/char2.zzml",
+                            "config/ui/in_game_2p_layout.zzml" );
 
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
@@ -103,7 +98,7 @@ public:
             std::cout << " cpu player 1 AI failed the initialization." << std::endl;
     }
 
-    void setup_ui_by_config( std::string const& path ) {
+    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path ) {
         uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
         utils::map_any const& base = uiconf_.M("base");
         ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
@@ -117,6 +112,25 @@ public:
                 addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
                .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
         }
+
+        vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
+        pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
+        pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
+        pview2_->flipPosition();
+        pview1_->setMap( map0_ );
+        pview2_->setMap( map1_ );
+
+        utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
+        vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
+        vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
+        heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+        heatgauge2_ = view::Sprite::create("heatgauge2", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+        heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+                    .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+        heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+                    .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+
+        gauge1_flag_ = gauge2_flag_ = false;
     }
 
     void cycle(){
@@ -151,8 +165,31 @@ public:
         if( pview2_->getState() == presenter::PlayerView::HIT &&
             last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
+        update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
+        update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
+
         last_garbage_1p_ = new_garbage_1p_;
         last_garbage_2p_ = new_garbage_2p_;
+    }
+
+    void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag) {
+        gauge->set<Scale>( vec3(player->heat(), 1, 1) );
+
+        if( !player->is_overheat() ) {
+            out_flag = false;
+            if( player->heat() < 0.5 ) {
+                gauge->set<Green>(255);
+                gauge->set<Red>( player->heat()*2*255 );
+            }
+            else {
+                gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
+                gauge->set<Red>(255);
+            }
+        }
+        else if( !out_flag ) {
+            out_flag = true;
+            gauge->tween<SineCirc, ColorDiffuseVec3>(vec3(255,255,255), player->overheat_downtime()/4, 3);
+        }
     }
 
     void update_ui_by_second(){
@@ -176,8 +213,11 @@ private:
 
     presenter::pPlayerView pview1_;
     presenter::pPlayerView pview2_;
+    view::pSprite heatgauge1_;
+    view::pSprite heatgauge2_;
 
     int min_, sec_;
+    bool gauge1_flag_, gauge2_flag_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
 };
 

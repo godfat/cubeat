@@ -45,7 +45,7 @@ pAIPlayer AIPlayer::init()
 
 void AIPlayer::think()
 {
-    if( !brain_->isThinking() && brain_->needThinking() ) {
+    if( !brain_->isThinking() && brain_->needThinking() && heat() < 0.7 ) {
 
         Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
         if( think_thread_ ) {

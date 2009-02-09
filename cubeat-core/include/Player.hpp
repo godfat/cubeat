@@ -48,6 +48,9 @@ public:
     bool can_fire_repeatedly()    const;
     int  wepid()                  const;
     bool ammo_all_out()           const;
+    double heat()                 const;
+    bool is_overheat()            const;
+    int  overheat_downtime()      const;
 
     void normal_weapon_fx();
 
@@ -61,11 +64,15 @@ protected:
     void shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
     void repeating_shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
     void process_input();
+    void heat_cooling();
 
 protected:
     int const changetime_;
     bool      changing_wep_;
     int       weplist_idx_;
+    double    accumulated_heat_, cooling_speed_, accumulate_speed_;
+    int       overheat_downtime_;
+    bool      overheat_;
 
     Input*               input_;
 	Weapon*              current_wep_;

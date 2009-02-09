@@ -61,14 +61,9 @@ public:
         // setup stage & ui & player's view objects:
         utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
         stage_ = presenter::Stage::create( stage.S("test_stage") );
-        setup_ui_by_config( "config/ui/in_game_2p_layout.zzml" );
-
-        vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-        pview1_ = presenter::PlayerView::create( "config/char/char1.zzml", scene_, center_pos );
-        pview2_ = presenter::PlayerView::create( "config/char/char2.zzml", scene_, center_pos );
-        pview2_->flipPosition();
-        pview1_->setMap( map0_ );
-        pview2_->setMap( map1_ );
+        setup_ui_by_config( "config/char/char1.zzml",
+                            "config/char/char2.zzml",
+                            "config/ui/in_game_2p_layout.zzml" );
 
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
@@ -79,7 +74,7 @@ public:
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
     }
 
-    void setup_ui_by_config( std::string const& path ) {
+    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path ) {
         uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
         utils::map_any const& base = uiconf_.M("base");
         ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
@@ -93,6 +88,13 @@ public:
                 addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
                .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
         }
+
+        vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
+        pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
+        pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
+        pview2_->flipPosition();
+        pview1_->setMap( map0_ );
+        pview2_->setMap( map1_ );
     }
 
     void cycle(){

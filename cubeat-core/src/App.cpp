@@ -62,9 +62,9 @@ void App::launchMainMenu()
 }
 
 void App::launchMultiplayer(std::string const& conf1p, std::string const& conf2p,
-                            std::string const& stage)
+                            std::string const& stage, int num_of_cpu)
 {
-    temp_presenter_ = presenter::game::Multi::create(conf1p, conf2p, stage);
+    temp_presenter_ = presenter::game::Multi::create(conf1p, conf2p, stage, num_of_cpu);
     std::cout << "game_Multiplayer launched." << std::endl;
 }
 

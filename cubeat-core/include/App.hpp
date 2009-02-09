@@ -31,7 +31,7 @@ public:
 
     void setLoading(int const& cent);
     void launchMainMenu();
-    void launchMultiplayer(std::string const&, std::string const&, std::string const&);
+    void launchMultiplayer(std::string const&, std::string const&, std::string const&, int);
     void launchPuzzle     (std::string const&, std::string const&, int);
     void pause();
     void resume();

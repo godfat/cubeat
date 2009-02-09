@@ -73,7 +73,7 @@ protected:
     utils::map_any config;
     std::vector<std::string> paths;
 
-    enum { SINGLE, MULTI, PUZZLE };
+    enum { SINGLE, PPL_VS_PPL, PPL_VS_CPU, CPU_VS_CPU, PUZZLE };
     int player1focus_, player2focus_, player1num_, player2num_, stagenum_;
     bool two_players_;
     int game_mode_;

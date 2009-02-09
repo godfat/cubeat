@@ -86,7 +86,7 @@ pMainMenu MainMenu::init()
     player1num_ = 0;
     player2num_ = 0;
     stagenum_ = 0;
-    game_mode_ = MULTI;
+    game_mode_ = PPL_VS_PPL;
     two_players_ = true;
 
     return shared_from_this();
@@ -98,15 +98,16 @@ void MainMenu::setupMenus()
     view::pMenu mode = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("mode_select", mode) );
 
-    //function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)MULTI);
-    //function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
-
-    mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, true);
-    mode->getSprite("text").set<Pos2D>( vec2(-150, -160) );
-    mode->addSpriteText("multi", "multiplayer", "Star Jedi", 0, 40, true);
-    mode->getSprite("multi").set<Pos2D>( vec2(-50, -100) );
-    mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, true);
-    mode->getSprite("puzzle").set<Pos2D>( vec2(-50, -40) );
+    mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, false);
+    mode->getSprite("text").set<Pos2D>( vec2(-300, -160) );
+    mode->addSpriteText("multi_no_cpu", "player vs player", "Star Jedi", 0, 40, false);
+    mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -100) );
+    mode->addSpriteText("multi_one_cpu", "player vs cpu", "Star Jedi", 0, 40, false);
+    mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -40) );
+    mode->addSpriteText("multi_two_cpu", "cpu vs cpu demo", "Star Jedi", 0, 40, false);
+    mode->getSprite("multi_two_cpu").set<Pos2D>( vec2(-150, 20) );
+    mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, false);
+    mode->getSprite("puzzle").set<Pos2D>( vec2(-150, 80) );
 
     view::pMenu temp = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("player_select", temp) );
@@ -163,8 +164,12 @@ void MainMenu::setupMenus()
 
 void MainMenu::end()
 {
-    if( game_mode_ == MULTI )
-        App::i().launchMultiplayer(conf1p_, conf2p_, stage_);
+    if( game_mode_ == PPL_VS_PPL )
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 0);
+    else if( game_mode_ == PPL_VS_CPU )
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 1);
+    else if( game_mode_ == CPU_VS_CPU )
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 2);
     else if( game_mode_ == PUZZLE )
         App::i().launchPuzzle(conf1p_, stage_, 3);
     std::cout << "MainMenu end call finished." << std::endl;
@@ -275,10 +280,14 @@ void MainMenu::setup_mode_selecting_buttons()
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 
-    function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)MULTI);
-    function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
-    menus_["mode_select"]->setCallbackToSprite("multi", mode1);
-    menus_["mode_select"]->setCallbackToSprite("puzzle", mode2);
+    function<void(view::pSprite&)> mode1 = bind(&MainMenu::mode_select, this, _1, (int)PPL_VS_PPL);
+    function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PPL_VS_CPU);
+    function<void(view::pSprite&)> mode3 = bind(&MainMenu::mode_select, this, _1, (int)CPU_VS_CPU);
+    function<void(view::pSprite&)> mode4 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
+    menus_["mode_select"]->setCallbackToSprite("multi_no_cpu", mode1);
+    menus_["mode_select"]->setCallbackToSprite("multi_one_cpu", mode2);
+    menus_["mode_select"]->setCallbackToSprite("multi_two_cpu", mode3);
+    menus_["mode_select"]->setCallbackToSprite("puzzle", mode4);
 }
 
 void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
@@ -303,7 +312,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player1num_ = 0;
         player2num_ = 0;
         two_players_ = true;
-        game_mode_ = MULTI;
+        game_mode_ = PPL_VS_PPL;
         setup_mode_selecting_buttons();
     }
     else if( to == "player_select" ) {
@@ -326,7 +335,9 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
     game_mode_ = mode;
     Sound::i().play("4/4b.wav");
 
-    menus_["mode_select"]->setCallbackToSprite("multi", 0);
+    menus_["mode_select"]->setCallbackToSprite("multi_no_cpu", 0);
+    menus_["mode_select"]->setCallbackToSprite("multi_one_cpu", 0);
+    menus_["mode_select"]->setCallbackToSprite("multi_two_cpu", 0);
     menus_["mode_select"]->setCallbackToSprite("puzzle", 0);
 
     if( game_mode_ == SINGLE || game_mode_ == PUZZLE )

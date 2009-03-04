@@ -30,13 +30,6 @@ typedef std::tr1::weak_ptr<SimpleMap>  wpSimpleMap;
 class Chain;
 typedef std::tr1::shared_ptr<Chain> pChain;
 
-namespace state {
-class State;
-typedef std::tr1::shared_ptr<State>   pState;
-class Waiting;
-typedef std::tr1::shared_ptr<Waiting> pWaiting;
-}
-
 class SimpleCube: public std::tr1::enable_shared_from_this<SimpleCube>
 {
 public:

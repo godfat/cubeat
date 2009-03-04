@@ -1,6 +1,7 @@
 
 #include "ctrl/AIPlayer.hpp"
 #include "model/AIBrain.hpp"
+#include "model/AICommand.hpp"
 #include "model/SimpleMap.hpp"
 #include "model/SimpleCube.hpp"
 #include "model/detail/AIUtils.hpp"
@@ -24,7 +25,7 @@ AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
 bool AIBrain::needThinking()
 {
     boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-    return shooting_pos_queue_.size() < 2;
+    return cmd_queue_.size() < 2;
 }
 
 void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
@@ -42,13 +43,14 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
         if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 10) ) {
-            pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
-            shooting_pos_queue_.push_back( pos );
+            pAICommand cmd = AICommand::create();
+            cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
+            cmd_queue_.push_back( cmd );
             if( c->is_broken() )
-                shooting_pos_queue_.push_back( pos );
+                cmd_queue_.push_back( cmd );
             if( c->is_garbage() ) {
-                shooting_pos_queue_.push_back( pos );
-                shooting_pos_queue_.push_back( pos );
+                cmd_queue_.push_back( cmd );
+                cmd_queue_.push_back( cmd );
             }
         }
         else {
@@ -61,23 +63,25 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
             std::random_shuffle(brokens.begin(), brokens.end());
 
             BOOST_FOREACH(int& x, high_cols) {
-                pPosition pos = pPosition(
-                    new std::pair<int, int>(std::make_pair(x, utils::random( high_col_threshold ))));
-                shooting_pos_queue_.push_back( pos );
-                if( shooting_pos_queue_.size() > 2 ) break;
+                pAICommand cmd = AICommand::create();
+                cmd->delay(200).weight(1).normal_shot(x, utils::random( high_col_threshold ) );
+                cmd_queue_.push_back( cmd );
+                if( cmd_queue_.size() > 2 ) break;
             }
 
             BOOST_FOREACH(pSimpleCube& c, garbages) {
-                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
+                pAICommand cmd = AICommand::create();
+                cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
                 for( int i = 0; i < c->hp(); ++i )
-                    shooting_pos_queue_.push_back( pos );
-                if( shooting_pos_queue_.size() > 5 ) break;
+                    cmd_queue_.push_back( cmd );
+                if( cmd_queue_.size() > 5 ) break;
             }
 
             BOOST_FOREACH(pSimpleCube& c, brokens) {
-                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(c->x(), c->y())));
-                shooting_pos_queue_.push_back( pos );
-                if( shooting_pos_queue_.size() > 6 ) break;
+                pAICommand cmd = AICommand::create();
+                cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
+                cmd_queue_.push_back( cmd );
+                if( cmd_queue_.size() > 6 ) break;
             }
 
             if( garbages.empty() && brokens.empty() &&
@@ -88,8 +92,9 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     y = utils::random(self_map->ms()->height());
                 } while( !AIUtils::lookup_for_grounded(self_map, x, y) );
 
-                pPosition pos = pPosition(new std::pair<int, int>(std::make_pair(x, y)));
-                //shooting_pos_queue_.push_back( pos );
+                pAICommand cmd = AICommand::create();
+                cmd->delay(200).weight(1).normal_shot(x, y);
+                cmd_queue_.push_back( cmd );
             }
         }
     }
@@ -97,20 +102,20 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
 //  owner_.lock()->stopThinking();
 }
 
-AIBrain::pPosition AIBrain::getCurrentCmd()
+pAICommand AIBrain::getCurrentCmd()
 {
     boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-    if( !shooting_pos_queue_.empty() ) {
-        return shooting_pos_queue_.front();
+    if( !cmd_queue_.empty() ) {
+        return cmd_queue_.front();
     }
     else
-        return pPosition();
+        return pAICommand();
 }
 
 void AIBrain::popCmdQueue()
 {
     boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-    if( !shooting_pos_queue_.empty() ) {
-        shooting_pos_queue_.pop_front();
+    if( !cmd_queue_.empty() ) {
+        cmd_queue_.pop_front();
     }
 }

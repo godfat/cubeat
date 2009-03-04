@@ -15,6 +15,8 @@ namespace psc {
 
 namespace model {
 class AIBrain;
+class AICommand;
+typedef std::tr1::shared_ptr<AICommand> pAICommand;
 }
 
 namespace ctrl {
@@ -27,7 +29,6 @@ public:
     typedef std::tr1::shared_ptr< AIPlayer > pointer_type;
     typedef std::tr1::weak_ptr  < AIPlayer > wpointer_type;
     typedef std::tr1::shared_ptr< boost::thread > pThread;
-    typedef std::tr1::shared_ptr< std::pair<int, int> > pPosition;
     typedef std::tr1::shared_ptr< int >      pDummy;
 
     static pointer_type create(Input* input,
@@ -47,8 +48,8 @@ protected:
     AIPlayer(Input* input, data::pViewSetting const&);
     pointer_type init();
 
-    pPosition probing_brain_data();
     void think();
+    void issue_command(model::pAICommand const&);
     void shoot(int, int);
     void hold_button(ctrl::Button&, int);
     void press_button(ctrl::Button&);

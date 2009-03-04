@@ -2,6 +2,7 @@
 #include "ctrl/AIPlayer.hpp"
 #include "data/ViewSetting.hpp"
 #include "model/AIBrain.hpp"
+#include "model/AICommand.hpp"
 #include "presenter/Map.hpp"
 #include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
@@ -87,6 +88,24 @@ void AIPlayer::stopThinking()
     }
 }
 
+void AIPlayer::issue_command( model::pAICommand const& cmd )
+{
+    typedef model::AICommand::pPosition pPosition;
+    typedef model::AICommand::pButton   pButton;
+    typedef model::AICommand::BtnID     BtnID;
+    if( pPosition pos = cmd->pos() ) {
+        if( pButton btn = cmd->btn() ) {
+            switch( *btn ) {
+                case BtnID::TRIG_1:
+                    shoot( pos->first, pos->second );
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
 void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
 {
     using namespace accessor;
@@ -124,17 +143,12 @@ void AIPlayer::release_button(ctrl::Button& btn_ref)
     is_executing_ = false; //this indicate executing finished.
 }
 
-AIPlayer::pPosition AIPlayer::probing_brain_data()
-{
-    return brain_->getCurrentCmd();
-}
-
 void AIPlayer::cycle()
 {
     if( !is_executing_ ) {
-        if( pPosition pos = probing_brain_data() ) {
+        if( model::pAICommand cmd = brain_->getCurrentCmd() ) {
             is_executing_ = true; //this indicate executing started.
-            shoot( pos->first, pos->second );
+            issue_command( cmd );
             brain_->popCmdQueue();
         }
         input_->haste().now() = true;

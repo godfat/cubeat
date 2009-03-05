@@ -1,0 +1,63 @@
+
+#This file is for adjusting some basic MapSettings in the Multiplayer games.
+
+player1: {
+    #How many cube colors do we have: (suggestion: 3 ~ 6)
+    color_amounts: 4,
+
+    #How many cubes needed to invoke chains: (suggestion: 3 ~ 5)
+    chain_amounts: 3,
+
+    #How many lines does the player have when game starts: (suggestion: 0 ~ 9)
+    starting_line: 4,
+
+    #How long does the chain property of the cubes hold
+    #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
+    chaining_duration: 300,
+
+    #How long is the visual effect when the cubes invoke chains
+    #and disappear (the effect duration could possibly affect gameplay,
+    #because 'DYING cubes' still block other cubes from above.
+    #(suggestion: 200 ~ 1000 milliseconds)
+    cube_dying_duration: 300,
+
+    #How fast does the cube sink from one block to another
+    #This only affect newly created cubes, and determines
+    #only the speed of the very beginning of the game. the speed will acclerate over time.
+    #(suggestion: 50.0 ~ 100.0)
+    speed: 80.0,
+
+    #How much time does a cube need to drop from one block to another
+    #This does not affect newly created cubes, only affects garbages
+    #and cubes that already dropped.
+    #(suggestion: 120 ~ 200 milliseconds)
+    cube_dropping_duration: 135,
+
+    #currently not controllable or thing that should not be changed:
+    cube_sinking_duration: 500,
+    warning_check_delay: 100,
+    damage_factor: 1.0,
+    width: 6,
+    height: 11,
+    dropping_creatable: 1,
+    garbage_dumpable: 1
+},
+
+player2: {
+    color_amounts: 4,
+    chain_amounts: 3,
+    starting_line: 4,
+    chaining_duration: 300,
+    cube_dying_duration: 300,
+    speed: 80.0,
+    cube_dropping_duration: 135,
+
+    #currently not controllable or thing that should not be changed:
+    cube_sinking_duration: 500,
+    warning_check_delay: 100,
+    damage_factor: 1.0,
+    width: 6,
+    height: 11,
+    dropping_creatable: 1,
+    garbage_dumpable: 1
+}

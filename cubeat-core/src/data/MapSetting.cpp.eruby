@@ -1,0 +1,25 @@
+
+#include "data/MapSetting.hpp"
+#include "utils/dictionary.hpp"
+
+using namespace psc;
+using namespace data;
+
+MapSetting::MapSetting(utils::map_any const& conf):
+    color_amounts_( conf.I("color_amounts") ),
+    chain_amounts_( conf.I("chain_amounts") ),
+    starting_line_( conf.I("starting_line") ),
+    chaining_duration_( conf.I("chaining_duration") ),
+    cube_dying_duration_( conf.I("cube_dying_duration") ),
+    cube_sinking_duration_( conf.I("cube_sinking_duration") ),
+    cube_dropping_duration_( conf.I("cube_dropping_duration") ),
+    warning_check_delay_( conf.I("warning_check_delay") ),
+    speed_( conf.F("speed") ),
+    damage_factor_( conf.F("damage_factor") ),
+    width_( conf.I("width") ),
+    height_( conf.I("height") ),
+    dropping_creatable_( static_cast<bool>(conf.I("dropping_creatable")) ),
+    garbage_dumpable_( static_cast<bool>(conf.I("garbage_dumpable")) )
+{
+    reset_size();
+}

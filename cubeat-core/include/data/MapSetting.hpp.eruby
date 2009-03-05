@@ -4,13 +4,23 @@
 
 #include <tr1/memory>
 
-namespace psc{ namespace data{
+namespace psc{
+
+namespace utils {
+class map_any;
+}
+
+namespace data{
 
 class MapSetting{<%# @prefix = ' '*4 %>
 public:
     typedef std::tr1::shared_ptr<MapSetting> pointer_type;
     static pointer_type create(){
         return pointer_type(new MapSetting);
+    }
+
+    static pointer_type create(utils::map_any const& conf) {
+        return pointer_type(new MapSetting(conf));
     }
 
 <%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay %>
@@ -58,6 +68,8 @@ private:
         speed_(80.0), damage_factor_(1.00),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true)
     { reset_size(); }
+
+    MapSetting(utils::map_any const& conf);
 
 private:
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }

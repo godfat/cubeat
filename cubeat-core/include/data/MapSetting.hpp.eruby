@@ -27,7 +27,7 @@ public:
 <%= accessor :double, :speed, :damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
-<%= accessor :bool, :dropping_creatable, :garbage_dumpable %>
+<%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage %>
 public:
     MapSetting& <% debug_hook 'width' do %>(int const& new_width){
 <% end %>
@@ -54,7 +54,8 @@ public:
                .width(width_)
                .height(height_)
                .dropping_creatable(dropping_creatable_)
-               .garbage_dumpable(garbage_dumpable_);
+               .garbage_dumpable(garbage_dumpable_)
+               .use_broken_as_garbage(use_broken_as_garbage_);
         return result;
     }
 
@@ -66,7 +67,8 @@ private:
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
         cube_dropping_duration_(135), warning_check_delay_(100),
         speed_(80.0), damage_factor_(1.00),
-        width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true)
+        width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
+        use_broken_as_garbage_(false)
     { reset_size(); }
 
     MapSetting(utils::map_any const& conf);

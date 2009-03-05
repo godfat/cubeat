@@ -79,7 +79,7 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
 <% end %>
     if( !c->has_grounded() ){
         dropping_creatable_ = false;
-        if( !c->is_garbage() ) garbage_dumpable_ = false;
+        if( !c->is_garbage() && !c->is_broken() ) garbage_dumpable_ = false;
     }
     if(  c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
 }
@@ -92,7 +92,12 @@ Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
 
 Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
 <% end %>
-    cube->be_garbage().go_dropping();
+    if( ms()->use_broken_as_garbage() ) {
+        cube->be_broken(0);
+        cube->go_dropping();
+    }
+    else
+        cube->be_garbage().go_dropping();
     return insert_cube(cube);
 }
 

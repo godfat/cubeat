@@ -118,7 +118,7 @@ public:
         body_->set<accessor::GradientDiffuse>( 255 );
         body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         shot_event(&model::Cube::restore, &model::Cube::go_exploding);
-        Sound::i().play("1/d/ShotA@11.wav");
+        //Sound::i().play("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'restore' do %>(int color_id){ <% end %>

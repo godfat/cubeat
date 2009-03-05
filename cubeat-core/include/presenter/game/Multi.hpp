@@ -67,6 +67,7 @@ protected:
     ctrl::pPlayer player0_;
     ctrl::pPlayer player1_;
 
+    utils::map_any gameplay_;
     utils::map_any uiconf_;
     view::pMenu ui_layout_;
 

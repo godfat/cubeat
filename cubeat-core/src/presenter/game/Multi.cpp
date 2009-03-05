@@ -25,6 +25,7 @@
 #include "utils/dictionary.hpp"
 #include "utils/MapLoader.hpp"
 #include "utils/to_s.hpp"
+#include "utils/Logger.hpp"
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -56,6 +57,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu;
 
+    gameplay_ =
+        utils::map_any::construct( utils::fetchConfig("config/gameplay/multi.zzml") );
+
     data::pViewSetting s0, s1;
 
     s0 = data::ViewSetting::create(64);   //must use config
@@ -82,17 +86,22 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
         player1_ = ctrl::AIPlayer::create(input1, s1);
     }
 
-    utils::map_any gameplay =
-        utils::map_any::construct( utils::fetchConfig("config/gameplay/multi.zzml") );
+    // setup player settings
+    player0_->weapon(0)->ammo( gameplay_.M("player1").I("wep1_start_ammo") );
+    player0_->weapon(1)->ammo( gameplay_.M("player1").I("wep2_start_ammo") );
+    player0_->weapon(2)->ammo( gameplay_.M("player1").I("wep3_start_ammo") );
+    player1_->weapon(0)->ammo( gameplay_.M("player2").I("wep1_start_ammo") );
+    player1_->weapon(1)->ammo( gameplay_.M("player2").I("wep2_start_ammo") );
+    player1_->weapon(2)->ammo( gameplay_.M("player2").I("wep3_start_ammo") );
 
     // setup map0
-    data::pMapSetting set0 = data::MapSetting::create( gameplay.M("player1") );
+    data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
     map0_ = presenter::Map::create(set0);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
-    data::pMapSetting set1 = data::MapSetting::create( gameplay.M("player2") );
+    data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
     map1_ = presenter::Map::create(set1);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
@@ -366,7 +375,20 @@ void Multi::eat_item(ctrl::wpPlayer wp, int)
         item_->setPickable(false);
         item_->tween<Linear, Alpha>(0, 400u);
         item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
-        p->eat_item();
+
+        utils::map_any iset = gameplay_.M("item");
+        int percent = utils::random(100);
+
+        if( percent < iset.I("wep1_chance") ) {
+            p->weapon(0)->ammo( p->weapon(0)->ammo()+iset.I("wep1_ammo") );
+        }
+        else if( percent < iset.I("wep1_chance") + iset.I("wep2_chance") ) {
+            p->weapon(0)->ammo( p->weapon(1)->ammo()+iset.I("wep2_ammo") );
+        }
+        else {
+            p->weapon(0)->ammo( p->weapon(2)->ammo()+iset.I("wep3_ammo") );
+        }
+        Sound::i().play("1/e/getitem.mp3");
     }
 }
 

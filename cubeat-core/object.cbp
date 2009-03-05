@@ -47,6 +47,7 @@
 		<Unit filename="config\char\char5.zzml" />
 		<Unit filename="config\data\color.zzml" />
 		<Unit filename="config\device.zzml" />
+		<Unit filename="config\gameplay\multi.zzml" />
 		<Unit filename="config\input\player1.zzml" />
 		<Unit filename="config\input\player2.zzml" />
 		<Unit filename="config\presenter\mainmenu.zzml" />
@@ -92,6 +93,7 @@
 		<Unit filename="include\data\TAnimatorParam.hpp" />
 		<Unit filename="include\data\ViewSetting.hpp.eruby" />
 		<Unit filename="include\model\AIBrain.hpp" />
+		<Unit filename="include\model\AICommand.hpp" />
 		<Unit filename="include\model\Chain.hpp" />
 		<Unit filename="include\model\Chain.hpp.eruby" />
 		<Unit filename="include\model\Cube.hpp" />
@@ -220,6 +222,7 @@
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
 		<Unit filename="src\data\Color.cpp" />
 		<Unit filename="src\model\AIBrain.cpp" />
+		<Unit filename="src\model\AICommand.cpp" />
 		<Unit filename="src\model\Cube.cpp" />
 		<Unit filename="src\model\Cube.cpp.eruby" />
 		<Unit filename="src\model\Map.cpp" />

@@ -45,6 +45,7 @@ include/utils/ObjectPool.hpp
 include/utils/Random.hpp
 include/utils/math.hpp
 include/utils/vector_2d.hpp
+src/data/MapSetting.cpp
 src/model/Cube.cpp
 src/model/Map.cpp
 src/model/SimpleMap.cpp

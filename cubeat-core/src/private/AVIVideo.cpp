@@ -164,7 +164,7 @@ bool AVIVideo::open(std::string const& path)
 #endif
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
-    texture_ = driver->addTexture(dimension2di(w,h), "AVI_Texture", ECF_A8R8G8B8);
+    texture_ = driver->addTexture(dimension2d<u32>(w,h), "AVI_Texture", ECF_A8R8G8B8);
     if( !texture_ ) {
         printf("Error creating Irrlicht texture.\n");
         return false;

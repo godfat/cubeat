@@ -108,8 +108,6 @@ int App::run(std::tr1::function<void()> tester)
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
 
-    IrrDevice::i().d()->setResizeAble(true);
-
     while( IrrDevice::i().run() ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
         //{                                                            //comment: temp for double tasking

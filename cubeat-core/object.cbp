@@ -221,6 +221,8 @@
 		<Unit filename="src\Weapon.cpp" />
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
 		<Unit filename="src\data\Color.cpp" />
+		<Unit filename="src\data\MapSetting.cpp" />
+		<Unit filename="src\data\MapSetting.cpp.eruby" />
 		<Unit filename="src\model\AIBrain.cpp" />
 		<Unit filename="src\model\AICommand.cpp" />
 		<Unit filename="src\model\Cube.cpp" />

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -47,10 +47,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceLinux(video::E_DRIVER_TYPE deviceType,
-			const core::dimension2d<s32>& windowSize, u32 bits,
-			bool fullscreen, bool stencilbuffer, bool vsync, bool antiAlias, IEventReceiver* receiver,
-			const char* version);
+		CIrrDeviceLinux(const SIrrlichtCreationParameters& param);
 
 		//! destructor
 		virtual ~CIrrDeviceLinux();
@@ -71,8 +68,17 @@ namespace irr
 		//! returns if window is active. if not, nothing need to be drawn
 		virtual bool isWindowActive() const;
 
+		//! returns if window has focus.
+		virtual bool isWindowFocused() const;
+
+		//! returns if window is minimized.
+		virtual bool isWindowMinimized() const;
+
+		//! returns color format of the window.
+		virtual video::ECOLOR_FORMAT getColorFormat() const;
+
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, s32 windowId = 0, core::rect<s32>* src=0 );
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 );
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
@@ -81,18 +87,25 @@ namespace irr
 		//! supported by the gfx adapter.
 		video::IVideoModeList* getVideoModeList();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
+
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
 	private:
 
 		//! create the driver
-		void createDriver(const core::dimension2d<s32>& windowSize,
-					bool vsync);
+		void createDriver();
 
-		bool createWindow(const core::dimension2d<s32>& windowSize, u32 bits);
+		bool createWindow();
 
 		void createKeyMap();
+
+		void pollJoysticks(); 
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -137,6 +150,8 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
+				if (visible==IsVisible)
+					return;
 				IsVisible = visible;
 #ifdef _IRR_COMPILE_WITH_X11_
 				if (!Null)
@@ -184,20 +199,20 @@ namespace irr
 					{
 						XWarpPointer(Device->display,
 							None,
-				 			Device->window, 0, 0,
-				 			Device->Width,
-				 			Device->Height, 
+							Device->window, 0, 0,
+							Device->Width,
+							Device->Height,
 							ReferenceRect.UpperLeftCorner.X + x,
 							ReferenceRect.UpperLeftCorner.Y + y);
-						
+
 					}
 					else
 					{
 						XWarpPointer(Device->display,
 							None,
-				 			Device->window, 0, 0,
-				 			Device->Width,
-				 			Device->Height, x, y);
+							Device->window, 0, 0,
+							Device->Width,
+							Device->Height, x, y);
 					}
 					XFlush(Device->display);
 				}
@@ -217,7 +232,7 @@ namespace irr
 			virtual core::position2d<f32> getRelativePosition()
 			{
 				updateCursorPos();
-				
+
 				if (!UseReferenceRect)
 				{
 					return core::position2d<f32>(CursorPos.X / (f32)Device->Width,
@@ -274,15 +289,15 @@ namespace irr
 #endif
 			}
 
-			core::position2d<s32> CursorPos;
 			CIrrDeviceLinux* Device;
-			bool IsVisible;
-			bool Null;
-			bool UseReferenceRect;
+			core::position2d<s32> CursorPos;
 			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
 			Cursor invisCursor;
 #endif
+			bool IsVisible;
+			bool Null;
+			bool UseReferenceRect;
 		};
 
 		friend class CCursorControl;
@@ -307,14 +322,9 @@ namespace irr
 		GLXContext Context;
 		#endif
 #endif
-		bool Fullscreen;
-		bool StencilBuffer;
-		bool AntiAlias;
-		video::E_DRIVER_TYPE DriverType;
-
-		u32 Width, Height, Depth;
+		u32 Width, Height;
 		bool Close;
-		bool WindowActive;
+		bool WindowHasFocus;
 		bool WindowMinimized;
 		bool UseXVidMode;
 		bool UseXRandR;
@@ -339,6 +349,20 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+		struct JoystickInfo
+		{
+			int	fd;
+			int	axes;
+			int	buttons;
+
+			SEvent persistentData;
+
+			JoystickInfo() : fd(-1), axes(0), buttons(0) { }
+		};
+		core::array<JoystickInfo> ActiveJoysticks;
+#endif
 	};
 
 

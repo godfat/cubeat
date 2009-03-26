@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,6 +16,11 @@ CParticleFadeOutAffector::CParticleFadeOutAffector(
 	const video::SColor& targetColor, u32 fadeOutTime)
 	: IParticleFadeOutAffector(), TargetColor(targetColor)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CParticleFadeOutAffector");
+	#endif
+
 	FadeOutTime = fadeOutTime ? static_cast<f32>(fadeOutTime) : 1.0f;
 }
 
@@ -53,24 +58,10 @@ void CParticleFadeOutAffector::serializeAttributes(io::IAttributes* out, io::SAt
 //! scripting languages, editors, debuggers or xml deserialization purposes.
 //! \param startIndex: start index where to start reading attributes.
 //! \return: returns last index of an attribute read by this affector
-s32 CParticleFadeOutAffector::deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+void CParticleFadeOutAffector::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	const char* name = in->getAttributeName(startIndex);
-
-	if (!name || strcmp(name, "TargetColor"))
-		return startIndex; // attribute not valid
-
-	TargetColor = in->getAttributeAsColor(startIndex);
-	++startIndex;
-
-	name = in->getAttributeName(startIndex);
-	if (!name || strcmp(name, "FadeOutTime"))
-		return startIndex; // attribute not valid
-
-	FadeOutTime = in->getAttributeAsFloat(startIndex);
-
-	++startIndex;
-	return startIndex;
+	TargetColor = in->getAttributeAsColor("TargetColor");
+	FadeOutTime = in->getAttributeAsFloat("FadeOutTime");
 }
 
 

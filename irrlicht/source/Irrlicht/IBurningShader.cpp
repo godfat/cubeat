@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -29,7 +29,7 @@ namespace video
 		setDebugName("IBurningShader");
 		#endif
 
-		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{
 			IT[i].Texture = 0;
 		}
@@ -48,7 +48,7 @@ namespace video
 		if (DepthBuffer)
 			DepthBuffer->drop();
 
-		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{
 			if ( IT[i].Texture )
 				IT[i].Texture->drop();
@@ -61,14 +61,14 @@ namespace video
 		if (RenderTarget)
 			RenderTarget->drop();
 
-		RenderTarget = surface;
+		RenderTarget = (video::CImage* ) surface;
 
 		if (RenderTarget)
 		{
 			RenderTarget->grab();
 
-			//lockedSurface = (tVideoSample*)RenderTarget->lock();
-			//lockedDepthBuffer = DepthBuffer->lock();
+			//(tVideoSample*)RenderTarget->lock() = (tVideoSample*)RenderTarget->lock();
+			//(fp24*) DepthBuffer->lock() = DepthBuffer->lock();
 		}
 
 	}
@@ -78,9 +78,6 @@ namespace video
 	void IBurningShader::setTextureParam( u32 stage, video::CSoftwareTexture2* texture, s32 lodLevel)
 	{
 		sInternalTexture *it = &IT[stage];
-
-		if ( it->Texture == texture )
-			return;
 
 		if ( it->Texture)
 			it->Texture->drop();
@@ -101,8 +98,9 @@ namespace video
 			// prepare for optimal fixpoint
 			it->pitchlog2 = s32_log2_s32 ( it->Texture->getPitch() );
 
-			it->textureXMask = s32_to_fixPoint ( it->Texture->getSize().Width - 1 ) & FIX_POINT_UNSIGNED_MASK;
-			it->textureYMask = s32_to_fixPoint ( it->Texture->getSize().Height - 1 ) & FIX_POINT_UNSIGNED_MASK;
+			const core::dimension2d<u32> &dim = it->Texture->getSize();
+			it->textureXMask = s32_to_fixPoint ( dim.Width - 1 ) & FIX_POINT_UNSIGNED_MASK;
+			it->textureYMask = s32_to_fixPoint ( dim.Height - 1 ) & FIX_POINT_UNSIGNED_MASK;
 			it->data = (tVideoSample*) it->Texture->lock();
 		}
 	}

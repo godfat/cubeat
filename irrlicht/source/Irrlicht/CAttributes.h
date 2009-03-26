@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -350,29 +350,6 @@ public:
 	//! Sets an attribute as floating point color
 	virtual void setAttribute(s32 index, video::SColorf color);
 
-	/*
-
-		Vector2d Attribute
-
-	*/
-
-	//! Adds an attribute as 2d vector
-	virtual void addVector2d(const c8* attributeName, core::vector2df value);
-
-	//! Sets a attribute as 2d vector
-	virtual void setAttribute(const c8* attributeName, core::vector2df v);
-
-	//! Gets an attribute as 2d vector
-	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName);
-
-	//! Gets an attribute as 2d vector
-	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector2df getAttributeAsVector2d(s32 index);
-
-	//! Sets an attribute as vector
-	virtual void setAttribute(s32 index, core::vector2df v);
 
 	/*
 
@@ -705,7 +682,7 @@ public:
 	virtual core::line2di getLine2di()		{ return core::line2di(); }
 	virtual core::line3df getLine3d()		{ return core::line3df(); }
 	virtual core::line3di getLine3di()		{ return core::line3di(); }
-	virtual core::dimension2di getDimension2d()	{ return core::dimension2di(); }
+	virtual core::dimension2du getDimension2d()	{ return core::dimension2du(); }
 	virtual core::aabbox3d<f32> getBBox()		{ return core::aabbox3d<f32>(); }
 	virtual core::plane3df getPlane()		{ return core::plane3df(); }
 
@@ -734,7 +711,7 @@ public:
 	virtual void setLine2d(core::line2di v) {};
 	virtual void setLine3d(core::line3df v) {};
 	virtual void setLine3d(core::line3di v) {};
-	virtual void setDimension2d(core::dimension2di v) {};
+	virtual void setDimension2d(core::dimension2du v) {};
 	virtual void setBBox(core::aabbox3d<f32> v) {};
 	virtual void setPlane(core::plane3df v) {};
 	virtual void setUserPointer(void* v)	{};

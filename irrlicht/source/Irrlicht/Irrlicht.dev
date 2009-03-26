@@ -7,10 +7,10 @@ Type=3
 Compiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIRRLICHT_EXPORTS_@@_
 CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIRRLICHT_EXPORTS_@@_
 Includes=..\..\include;zlib
-Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lopengl32_@@_
+Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lwinmm -lopengl32_@@_
 Libs=
-UnitCount=595
-Folders=doc,gui_impl,include,include/core,include/gui,include/io,include/scene,include/video,io_impl,other_impl,other_impl/extern,other_impl/extern/jpeglib,other_impl/extern/libpng,other_impl/extern/zlib,scene_impl,scene_impl/animators,scene_impl/collision,scene_impl/mesh,scene_impl/mesh/loaders,scene_impl/mesh/writers,scene_impl/nodes,scene_impl/nodes/particles,video_impl,"video_impl/Burning Video",video_impl/DirectX8,video_impl/DirectX9,video_impl/Null,video_impl/OpenGL,video_impl/Software
+UnitCount=621
+Folders=doc,include,include/core,include/gui,include/io,include/scene,include/video,Irrlicht,Irrlicht/extern,Irrlicht/extern/jpeglib,Irrlicht/extern/libpng,Irrlicht/extern/zlib,Irrlicht/gui,Irrlicht/io,Irrlicht/io/archive,Irrlicht/io/attributes,Irrlicht/io/file,Irrlicht/io/xml,Irrlicht/irr,Irrlicht/irr/IrrlichtDevice,Irrlicht/scene,Irrlicht/scene/animators,Irrlicht/scene/collision,Irrlicht/scene/mesh,Irrlicht/scene/mesh/loaders,Irrlicht/scene/mesh/writers,Irrlicht/scene/nodes,Irrlicht/scene/nodes/particles,Irrlicht/video,"Irrlicht/video/Burning Video",Irrlicht/video/DirectX8,Irrlicht/video/DirectX9,Irrlicht/video/Null,Irrlicht/video/Null/Loader,Irrlicht/video/Null/Writer,Irrlicht/video/OpenGL,Irrlicht/video/Software
 ObjFiles=
 PrivateResource=
 ResourceIncludes=
@@ -611,7 +611,7 @@ BuildCmd=
 
 [Unit59]
 FileName=BuiltInFont.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -621,7 +621,7 @@ BuildCmd=
 
 [Unit60]
 FileName=CGUIButton.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -631,7 +631,7 @@ BuildCmd=
 
 [Unit61]
 FileName=CGUIButton.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -641,7 +641,7 @@ BuildCmd=
 
 [Unit62]
 FileName=CGUICheckbox.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -651,7 +651,7 @@ BuildCmd=
 
 [Unit63]
 FileName=CGUICheckbox.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -661,7 +661,7 @@ BuildCmd=
 
 [Unit64]
 FileName=CGUIComboBox.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -671,7 +671,7 @@ BuildCmd=
 
 [Unit65]
 FileName=CGUIComboBox.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -681,7 +681,7 @@ BuildCmd=
 
 [Unit66]
 FileName=CGUIContextMenu.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -691,7 +691,7 @@ BuildCmd=
 
 [Unit67]
 FileName=CGUIContextMenu.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -701,7 +701,7 @@ BuildCmd=
 
 [Unit68]
 FileName=CGUIEditBox.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -711,7 +711,7 @@ BuildCmd=
 
 [Unit69]
 FileName=CGUIEditBox.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -721,7 +721,7 @@ BuildCmd=
 
 [Unit70]
 FileName=CGUIEnvironment.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -731,7 +731,7 @@ BuildCmd=
 
 [Unit71]
 FileName=CGUIEnvironment.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -741,7 +741,7 @@ BuildCmd=
 
 [Unit72]
 FileName=CGUIFileOpenDialog.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -751,7 +751,7 @@ BuildCmd=
 
 [Unit73]
 FileName=CGUIFileOpenDialog.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -761,7 +761,7 @@ BuildCmd=
 
 [Unit74]
 FileName=CGUIFont.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -771,7 +771,7 @@ BuildCmd=
 
 [Unit75]
 FileName=CGUIFont.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -781,7 +781,7 @@ BuildCmd=
 
 [Unit76]
 FileName=CGUIImage.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -791,7 +791,7 @@ BuildCmd=
 
 [Unit77]
 FileName=CGUIImage.H
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -801,7 +801,7 @@ BuildCmd=
 
 [Unit78]
 FileName=CGUIInOutFader.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -811,7 +811,7 @@ BuildCmd=
 
 [Unit79]
 FileName=CGUIInOutFader.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -821,7 +821,7 @@ BuildCmd=
 
 [Unit80]
 FileName=CGUIListBox.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -831,7 +831,7 @@ BuildCmd=
 
 [Unit81]
 FileName=CGUIListBox.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -841,7 +841,7 @@ BuildCmd=
 
 [Unit82]
 FileName=CGUIMenu.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -851,7 +851,7 @@ BuildCmd=
 
 [Unit83]
 FileName=CGUIMenu.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -861,7 +861,7 @@ BuildCmd=
 
 [Unit84]
 FileName=CGUIMeshViewer.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -871,7 +871,7 @@ BuildCmd=
 
 [Unit85]
 FileName=CGUIMeshViewer.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -881,7 +881,7 @@ BuildCmd=
 
 [Unit86]
 FileName=CGUIMessageBox.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -891,7 +891,7 @@ BuildCmd=
 
 [Unit87]
 FileName=CGUIMessageBox.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -901,7 +901,7 @@ BuildCmd=
 
 [Unit88]
 FileName=CGUIModalScreen.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -911,7 +911,7 @@ BuildCmd=
 
 [Unit89]
 FileName=CGUIModalScreen.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -921,7 +921,7 @@ BuildCmd=
 
 [Unit90]
 FileName=CGUIScrollBar.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -931,7 +931,7 @@ BuildCmd=
 
 [Unit91]
 FileName=CGUIScrollBar.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -941,7 +941,7 @@ BuildCmd=
 
 [Unit92]
 FileName=CGUISkin.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -951,7 +951,7 @@ BuildCmd=
 
 [Unit93]
 FileName=CGUISkin.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -961,7 +961,7 @@ BuildCmd=
 
 [Unit94]
 FileName=CGUIStaticText.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -971,7 +971,7 @@ BuildCmd=
 
 [Unit95]
 FileName=CGUIStaticText.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -981,7 +981,7 @@ BuildCmd=
 
 [Unit96]
 FileName=CGUITabControl.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -991,7 +991,7 @@ BuildCmd=
 
 [Unit97]
 FileName=CGUITabControl.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -1001,7 +1001,7 @@ BuildCmd=
 
 [Unit98]
 FileName=CGUIToolBar.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -1011,7 +1011,7 @@ BuildCmd=
 
 [Unit99]
 FileName=CGUIToolBar.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -1021,7 +1021,7 @@ BuildCmd=
 
 [Unit100]
 FileName=CGUIWindow.cpp
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -1031,7 +1031,7 @@ BuildCmd=
 
 [Unit101]
 FileName=CGUIWindow.h
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -1041,7 +1041,7 @@ BuildCmd=
 
 [Unit102]
 FileName=CSoftwareDriver.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1051,7 +1051,7 @@ BuildCmd=
 
 [Unit103]
 FileName=CSoftwareDriver.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1061,7 +1061,7 @@ BuildCmd=
 
 [Unit104]
 FileName=CSoftwareTexture.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1071,7 +1071,7 @@ BuildCmd=
 
 [Unit105]
 FileName=CSoftwareTexture.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1081,7 +1081,7 @@ BuildCmd=
 
 [Unit106]
 FileName=CTRFlat.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1091,7 +1091,7 @@ BuildCmd=
 
 [Unit107]
 FileName=CTRFlatWire.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1101,7 +1101,7 @@ BuildCmd=
 
 [Unit108]
 FileName=CTRGouraud.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1111,7 +1111,7 @@ BuildCmd=
 
 [Unit109]
 FileName=CTRGouraudWire.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1121,7 +1121,7 @@ BuildCmd=
 
 [Unit110]
 FileName=CTRTextureFlat.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1131,7 +1131,7 @@ BuildCmd=
 
 [Unit111]
 FileName=CTRTextureFlatWire.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1141,7 +1141,7 @@ BuildCmd=
 
 [Unit112]
 FileName=CTRTextureGouraud.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1151,7 +1151,7 @@ BuildCmd=
 
 [Unit113]
 FileName=CTRTextureGouraud.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1161,7 +1161,7 @@ BuildCmd=
 
 [Unit114]
 FileName=CTRTextureGouraudAdd.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1171,7 +1171,7 @@ BuildCmd=
 
 [Unit115]
 FileName=CTRTextureGouraudNoZ.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1181,7 +1181,7 @@ BuildCmd=
 
 [Unit116]
 FileName=CTRTextureGouraudWire.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1191,7 +1191,7 @@ BuildCmd=
 
 [Unit117]
 FileName=CZBuffer.cpp
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1201,7 +1201,7 @@ BuildCmd=
 
 [Unit118]
 FileName=CZBuffer.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1211,7 +1211,7 @@ BuildCmd=
 
 [Unit119]
 FileName=IZBuffer.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1221,7 +1221,7 @@ BuildCmd=
 
 [Unit120]
 FileName=S2DVertex.h
-Folder=video_impl/Software
+Folder=Irrlicht/video/Software
 Compile=1
 CompileCpp=1
 Link=1
@@ -1231,7 +1231,7 @@ BuildCmd=
 
 [Unit121]
 FileName=COpenGLDriver.cpp
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1241,7 +1241,7 @@ BuildCmd=
 
 [Unit122]
 FileName=COpenGLDriver.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1251,7 +1251,7 @@ BuildCmd=
 
 [Unit123]
 FileName=COpenGLMaterialRenderer.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1261,7 +1261,7 @@ BuildCmd=
 
 [Unit124]
 FileName=COpenGLNormalMapRenderer.cpp
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1271,7 +1271,7 @@ BuildCmd=
 
 [Unit125]
 FileName=COpenGLNormalMapRenderer.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1281,7 +1281,7 @@ BuildCmd=
 
 [Unit126]
 FileName=COpenGLParallaxMapRenderer.cpp
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1291,7 +1291,7 @@ BuildCmd=
 
 [Unit127]
 FileName=COpenGLParallaxMapRenderer.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1301,7 +1301,7 @@ BuildCmd=
 
 [Unit128]
 FileName=COpenGLShaderMaterialRenderer.cpp
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1311,7 +1311,7 @@ BuildCmd=
 
 [Unit129]
 FileName=COpenGLShaderMaterialRenderer.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1321,7 +1321,7 @@ BuildCmd=
 
 [Unit130]
 FileName=COpenGLTexture.cpp
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1331,7 +1331,7 @@ BuildCmd=
 
 [Unit131]
 FileName=COpenGLTexture.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1341,7 +1341,7 @@ BuildCmd=
 
 [Unit132]
 FileName=glext.h
-Folder=video_impl/OpenGL
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -1351,7 +1351,7 @@ BuildCmd=
 
 [Unit133]
 FileName=CD3D8Driver.cpp
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1361,7 +1361,7 @@ BuildCmd=
 
 [Unit134]
 FileName=CD3D8Driver.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1371,7 +1371,7 @@ BuildCmd=
 
 [Unit135]
 FileName=CD3D8MaterialRenderer.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1381,7 +1381,7 @@ BuildCmd=
 
 [Unit136]
 FileName=CD3D8NormalMapRenderer.cpp
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1391,7 +1391,7 @@ BuildCmd=
 
 [Unit137]
 FileName=CD3D8NormalMapRenderer.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1401,7 +1401,7 @@ BuildCmd=
 
 [Unit138]
 FileName=CD3D8ParallaxMapRenderer.cpp
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1411,7 +1411,7 @@ BuildCmd=
 
 [Unit139]
 FileName=CD3D8ParallaxMapRenderer.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1421,7 +1421,7 @@ BuildCmd=
 
 [Unit140]
 FileName=CD3D8ShaderMaterialRenderer.cpp
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1431,7 +1431,7 @@ BuildCmd=
 
 [Unit141]
 FileName=CD3D8ShaderMaterialRenderer.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1441,7 +1441,7 @@ BuildCmd=
 
 [Unit142]
 FileName=CD3D8Texture.cpp
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1451,7 +1451,7 @@ BuildCmd=
 
 [Unit143]
 FileName=CD3D8Texture.h
-Folder=video_impl/DirectX8
+Folder=Irrlicht/video/DirectX8
 Compile=1
 CompileCpp=1
 Link=1
@@ -1461,7 +1461,7 @@ BuildCmd=
 
 [Unit144]
 FileName=CColorConverter.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1471,7 +1471,7 @@ BuildCmd=
 
 [Unit145]
 FileName=CColorConverter.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1481,7 +1481,7 @@ BuildCmd=
 
 [Unit146]
 FileName=CFPSCounter.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1491,7 +1491,7 @@ BuildCmd=
 
 [Unit147]
 FileName=CFPSCounter.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1501,7 +1501,7 @@ BuildCmd=
 
 [Unit148]
 FileName=CImage.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1511,7 +1511,7 @@ BuildCmd=
 
 [Unit149]
 FileName=CImage.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1521,7 +1521,7 @@ BuildCmd=
 
 [Unit150]
 FileName=CImageLoaderBMP.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1531,7 +1531,7 @@ BuildCmd=
 
 [Unit151]
 FileName=CImageLoaderBMP.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1541,7 +1541,7 @@ BuildCmd=
 
 [Unit152]
 FileName=CImageLoaderJPG.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1551,7 +1551,7 @@ BuildCmd=
 
 [Unit153]
 FileName=CImageLoaderJPG.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1561,7 +1561,7 @@ BuildCmd=
 
 [Unit154]
 FileName=CImageLoaderPCX.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1571,7 +1571,7 @@ BuildCmd=
 
 [Unit155]
 FileName=CImageLoaderPCX.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1581,7 +1581,7 @@ BuildCmd=
 
 [Unit156]
 FileName=CImageLoaderPNG.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1591,7 +1591,7 @@ BuildCmd=
 
 [Unit157]
 FileName=CImageLoaderPNG.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1601,7 +1601,7 @@ BuildCmd=
 
 [Unit158]
 FileName=CImageLoaderPSD.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1611,7 +1611,7 @@ BuildCmd=
 
 [Unit159]
 FileName=CImageLoaderPSD.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1621,7 +1621,7 @@ BuildCmd=
 
 [Unit160]
 FileName=CImageLoaderTGA.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1631,7 +1631,7 @@ BuildCmd=
 
 [Unit161]
 FileName=CImageLoaderTGA.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -1641,7 +1641,7 @@ BuildCmd=
 
 [Unit162]
 FileName=CNullDriver.cpp
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1651,7 +1651,7 @@ BuildCmd=
 
 [Unit163]
 FileName=CNullDriver.h
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null
 Compile=1
 CompileCpp=1
 Link=1
@@ -1661,7 +1661,7 @@ BuildCmd=
 
 [Unit164]
 FileName=CD3D9Driver.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1671,7 +1671,7 @@ BuildCmd=
 
 [Unit165]
 FileName=CD3D9Driver.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1681,7 +1681,7 @@ BuildCmd=
 
 [Unit166]
 FileName=CD3D9HLSLMaterialRenderer.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1691,7 +1691,7 @@ BuildCmd=
 
 [Unit167]
 FileName=CD3D9HLSLMaterialRenderer.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1701,7 +1701,7 @@ BuildCmd=
 
 [Unit168]
 FileName=CD3D9MaterialRenderer.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1711,7 +1711,7 @@ BuildCmd=
 
 [Unit169]
 FileName=CD3D9NormalMapRenderer.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1721,7 +1721,7 @@ BuildCmd=
 
 [Unit170]
 FileName=CD3D9NormalMapRenderer.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1731,7 +1731,7 @@ BuildCmd=
 
 [Unit171]
 FileName=CD3D9ParallaxMapRenderer.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1741,7 +1741,7 @@ BuildCmd=
 
 [Unit172]
 FileName=CD3D9ParallaxMapRenderer.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1751,7 +1751,7 @@ BuildCmd=
 
 [Unit173]
 FileName=CD3D9ShaderMaterialRenderer.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1761,7 +1761,7 @@ BuildCmd=
 
 [Unit174]
 FileName=CD3D9ShaderMaterialRenderer.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1771,7 +1771,7 @@ BuildCmd=
 
 [Unit175]
 FileName=CD3D9Texture.cpp
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1781,7 +1781,7 @@ BuildCmd=
 
 [Unit176]
 FileName=CD3D9Texture.h
-Folder=video_impl/DirectX9
+Folder=Irrlicht/video/DirectX9
 Compile=1
 CompileCpp=1
 Link=1
@@ -1791,7 +1791,7 @@ BuildCmd=
 
 [Unit177]
 FileName=CVideoModeList.cpp
-Folder=video_impl
+Folder=Irrlicht/video
 Compile=1
 CompileCpp=1
 Link=1
@@ -1801,7 +1801,7 @@ BuildCmd=
 
 [Unit178]
 FileName=CVideoModeList.h
-Folder=video_impl
+Folder=Irrlicht/video
 Compile=1
 CompileCpp=1
 Link=1
@@ -1811,7 +1811,7 @@ BuildCmd=
 
 [Unit179]
 FileName=C3DSMeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1821,7 +1821,7 @@ BuildCmd=
 
 [Unit180]
 FileName=C3DSMeshFileLoader.h
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1831,7 +1831,7 @@ BuildCmd=
 
 [Unit181]
 FileName=CAnimatedMeshMD2.cpp
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1841,7 +1841,7 @@ BuildCmd=
 
 [Unit182]
 FileName=CAnimatedMeshMD2.h
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1851,7 +1851,7 @@ BuildCmd=
 
 [Unit183]
 FileName=CAnimatedMeshSceneNode.cpp
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1861,7 +1861,7 @@ BuildCmd=
 
 [Unit184]
 FileName=CAnimatedMeshSceneNode.h
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1871,7 +1871,7 @@ BuildCmd=
 
 [Unit185]
 FileName=CBillboardSceneNode.cpp
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1881,7 +1881,7 @@ BuildCmd=
 
 [Unit186]
 FileName=CBillboardSceneNode.h
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1890,8 +1890,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit187]
-FileName=CCameraFPSSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CCameraSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1900,8 +1900,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit188]
-FileName=CCameraFPSSceneNode.h
-Folder=scene_impl/nodes
+FileName=CCameraSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1910,8 +1910,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit189]
-FileName=CCameraMayaSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CColladaFileLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1920,8 +1920,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit190]
-FileName=CCameraMayaSceneNode.h
-Folder=scene_impl/nodes
+FileName=CColladaFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1930,8 +1930,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit191]
-FileName=CCameraSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CCSMLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1940,8 +1940,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit192]
-FileName=CCameraSceneNode.h
-Folder=scene_impl/nodes
+FileName=CCSMLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1950,8 +1950,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit193]
-FileName=CColladaFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CDMFLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1960,8 +1960,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit194]
-FileName=CColladaFileLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CDMFLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -1970,8 +1970,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit195]
-FileName=CCSMLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CDummyTransformationSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1980,8 +1980,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit196]
-FileName=CCSMLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CDummyTransformationSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -1990,8 +1990,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit197]
-FileName=CDMFLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CEmptySceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2000,8 +2000,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit198]
-FileName=CDMFLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CEmptySceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2010,8 +2010,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit199]
-FileName=CDummyTransformationSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CGeometryCreator.cpp
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2020,8 +2020,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit200]
-FileName=CDummyTransformationSceneNode.h
-Folder=scene_impl/nodes
+FileName=CGeometryCreator.h
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2030,8 +2030,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit201]
-FileName=CEmptySceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CLightSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2040,8 +2040,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit202]
-FileName=CEmptySceneNode.h
-Folder=scene_impl/nodes
+FileName=CLightSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2050,8 +2050,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit203]
-FileName=CGeometryCreator.cpp
-Folder=scene_impl/mesh
+FileName=CLMTSMeshFileLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2060,8 +2060,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit204]
-FileName=CGeometryCreator.h
-Folder=scene_impl/mesh
+FileName=CLMTSMeshFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2070,8 +2070,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit205]
-FileName=CLightSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CMeshManipulator.cpp
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2080,8 +2080,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit206]
-FileName=CLightSceneNode.h
-Folder=scene_impl/nodes
+FileName=CMeshManipulator.h
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2090,8 +2090,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit207]
-FileName=CLMTSMeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CMeshSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2100,8 +2100,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit208]
-FileName=CLMTSMeshFileLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CMeshSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2110,8 +2110,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit209]
-FileName=CMeshManipulator.cpp
-Folder=scene_impl/mesh
+FileName=CMetaTriangleSelector.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2120,8 +2120,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit210]
-FileName=CMeshManipulator.h
-Folder=scene_impl/mesh
+FileName=CMetaTriangleSelector.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2130,8 +2130,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit211]
-FileName=CMeshSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CMY3DHelper.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2140,8 +2140,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit212]
-FileName=CMeshSceneNode.h
-Folder=scene_impl/nodes
+FileName=CMY3DMeshFileLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2150,8 +2150,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit213]
-FileName=CMetaTriangleSelector.cpp
-Folder=scene_impl/collision
+FileName=CMY3DMeshFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2160,8 +2160,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit214]
-FileName=CMetaTriangleSelector.h
-Folder=scene_impl/collision
+FileName=..\..\include\EGUIAlignment.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -2170,8 +2170,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit215]
-FileName=CMY3DHelper.h
-Folder=scene_impl/mesh/loaders
+FileName=COCTLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2180,8 +2180,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit216]
-FileName=CMY3DMeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=COCTLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2190,8 +2190,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit217]
-FileName=CMY3DMeshFileLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=COctTreeSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2200,8 +2200,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit218]
-FileName=CMY3DStuff.h
-Folder=scene_impl/mesh/loaders
+FileName=COctTreeSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2210,8 +2210,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit219]
-FileName=COCTLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=COctTreeTriangleSelector.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2220,8 +2220,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit220]
-FileName=COCTLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=COctTreeTriangleSelector.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2230,8 +2230,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit221]
-FileName=COctTreeSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CParticleBoxEmitter.cpp
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2240,8 +2240,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit222]
-FileName=COctTreeSceneNode.h
-Folder=scene_impl/nodes
+FileName=CParticleBoxEmitter.h
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2250,8 +2250,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit223]
-FileName=COctTreeTriangleSelector.cpp
-Folder=scene_impl/collision
+FileName=CParticleFadeOutAffector.cpp
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2260,8 +2260,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit224]
-FileName=COctTreeTriangleSelector.h
-Folder=scene_impl/collision
+FileName=CParticleFadeOutAffector.h
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2270,8 +2270,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit225]
-FileName=CParticleBoxEmitter.cpp
-Folder=scene_impl/nodes/particles
+FileName=CParticleGravityAffector.cpp
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2280,8 +2280,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit226]
-FileName=CParticleBoxEmitter.h
-Folder=scene_impl/nodes/particles
+FileName=CParticleGravityAffector.h
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2290,8 +2290,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit227]
-FileName=CParticleFadeOutAffector.cpp
-Folder=scene_impl/nodes/particles
+FileName=CParticlePointEmitter.cpp
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2300,8 +2300,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit228]
-FileName=CParticleFadeOutAffector.h
-Folder=scene_impl/nodes/particles
+FileName=CParticlePointEmitter.h
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2310,8 +2310,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit229]
-FileName=CParticleGravityAffector.cpp
-Folder=scene_impl/nodes/particles
+FileName=CParticleSystemSceneNode.cpp
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2320,8 +2320,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit230]
-FileName=CParticleGravityAffector.h
-Folder=scene_impl/nodes/particles
+FileName=CParticleSystemSceneNode.h
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 CompileCpp=1
 Link=1
@@ -2330,8 +2330,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit231]
-FileName=CParticlePointEmitter.cpp
-Folder=scene_impl/nodes/particles
+FileName=CQ3LevelMesh.cpp
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2340,8 +2340,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit232]
-FileName=CParticlePointEmitter.h
-Folder=scene_impl/nodes/particles
+FileName=CQ3LevelMesh.h
+Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1
 Link=1
@@ -2350,8 +2350,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit233]
-FileName=CParticleSystemSceneNode.cpp
-Folder=scene_impl/nodes/particles
+FileName=CSceneCollisionManager.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2360,8 +2360,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit234]
-FileName=CParticleSystemSceneNode.h
-Folder=scene_impl/nodes/particles
+FileName=CSceneCollisionManager.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2370,8 +2370,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit235]
-FileName=CQ3LevelMesh.cpp
-Folder=scene_impl/mesh
+FileName=CSceneManager.cpp
+Folder=Irrlicht/scene
 Compile=1
 CompileCpp=1
 Link=1
@@ -2380,8 +2380,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit236]
-FileName=CQ3LevelMesh.h
-Folder=scene_impl/mesh
+FileName=CSceneManager.h
+Folder=Irrlicht/scene
 Compile=1
 CompileCpp=1
 Link=1
@@ -2390,8 +2390,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit237]
-FileName=CSceneCollisionManager.cpp
-Folder=scene_impl/collision
+FileName=CSceneNodeAnimatorCollisionResponse.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2400,8 +2400,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit238]
-FileName=CSceneCollisionManager.h
-Folder=scene_impl/collision
+FileName=CSceneNodeAnimatorCollisionResponse.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2410,8 +2410,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit239]
-FileName=CSceneManager.cpp
-Folder=scene_impl
+FileName=CSceneNodeAnimatorDelete.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2420,8 +2420,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit240]
-FileName=CSceneManager.h
-Folder=scene_impl
+FileName=CSceneNodeAnimatorDelete.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2430,8 +2430,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit241]
-FileName=CSceneNodeAnimatorCollisionResponse.cpp
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFlyCircle.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2440,8 +2440,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit242]
-FileName=CSceneNodeAnimatorCollisionResponse.h
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFlyCircle.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2450,8 +2450,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit243]
-FileName=CSceneNodeAnimatorDelete.cpp
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFlyStraight.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2460,8 +2460,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit244]
-FileName=CSceneNodeAnimatorDelete.h
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFlyStraight.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2470,8 +2470,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit245]
-FileName=CSceneNodeAnimatorFlyCircle.cpp
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFollowSpline.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2480,8 +2480,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit246]
-FileName=CSceneNodeAnimatorFlyCircle.h
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorFollowSpline.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2490,8 +2490,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit247]
-FileName=CSceneNodeAnimatorFlyStraight.cpp
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorRotation.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2500,8 +2500,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit248]
-FileName=CSceneNodeAnimatorFlyStraight.h
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorRotation.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2510,8 +2510,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit249]
-FileName=CSceneNodeAnimatorFollowSpline.cpp
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorTexture.cpp
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2520,8 +2520,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit250]
-FileName=CSceneNodeAnimatorFollowSpline.h
-Folder=scene_impl/animators
+FileName=CSceneNodeAnimatorTexture.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
 Link=1
@@ -2530,8 +2530,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit251]
-FileName=CSceneNodeAnimatorRotation.cpp
-Folder=scene_impl/animators
+FileName=CShadowVolumeSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2540,8 +2540,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit252]
-FileName=CSceneNodeAnimatorRotation.h
-Folder=scene_impl/animators
+FileName=CShadowVolumeSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2550,8 +2550,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit253]
-FileName=CSceneNodeAnimatorTexture.cpp
-Folder=scene_impl/animators
+FileName=CSkyBoxSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2560,8 +2560,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit254]
-FileName=CSceneNodeAnimatorTexture.h
-Folder=scene_impl/animators
+FileName=CSkyBoxSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2570,8 +2570,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit255]
-FileName=CShadowVolumeSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=COBJMeshFileLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2580,8 +2580,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit256]
-FileName=CShadowVolumeSceneNode.h
-Folder=scene_impl/nodes
+FileName=COBJMeshFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -2590,8 +2590,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit257]
-FileName=CSkyBoxSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CTerrainSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2600,8 +2600,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit258]
-FileName=CSkyBoxSceneNode.h
-Folder=scene_impl/nodes
+FileName=CTerrainSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2610,8 +2610,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit259]
-FileName=COBJMeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CTerrainTriangleSelector.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2620,8 +2620,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit260]
-FileName=COBJMeshFileLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CTerrainTriangleSelector.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2630,8 +2630,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit261]
-FileName=CTerrainSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CTextSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2640,8 +2640,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit262]
-FileName=CTerrainSceneNode.h
-Folder=scene_impl/nodes
+FileName=CTextSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2650,8 +2650,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit263]
-FileName=CTerrainTriangleSelector.cpp
-Folder=scene_impl/collision
+FileName=CTriangleBBSelector.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2660,8 +2660,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit264]
-FileName=CTerrainTriangleSelector.h
-Folder=scene_impl/collision
+FileName=CTriangleBBSelector.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2670,8 +2670,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit265]
-FileName=CTextSceneNode.cpp
-Folder=scene_impl/nodes
+FileName=CTriangleSelector.cpp
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2680,8 +2680,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit266]
-FileName=CTextSceneNode.h
-Folder=scene_impl/nodes
+FileName=CTriangleSelector.h
+Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
 Link=1
@@ -2690,8 +2690,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit267]
-FileName=CTriangleBBSelector.cpp
-Folder=scene_impl/collision
+FileName=CWaterSurfaceSceneNode.cpp
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2700,8 +2700,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit268]
-FileName=CTriangleBBSelector.h
-Folder=scene_impl/collision
+FileName=CWaterSurfaceSceneNode.h
+Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
 Link=1
@@ -2710,46 +2710,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit269]
-FileName=CTriangleSelector.cpp
-Folder=scene_impl/collision
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit270]
-FileName=CTriangleSelector.h
-Folder=scene_impl/collision
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit271]
-FileName=CWaterSurfaceSceneNode.cpp
-Folder=scene_impl/nodes
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit272]
-FileName=CWaterSurfaceSceneNode.h
-Folder=scene_impl/nodes
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit273]
 FileName=..\..\include\SExposedVideoData.h
 Folder=include/video
 Compile=1
@@ -2759,7 +2719,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit274]
+[Unit270]
 FileName=..\..\include\SKeyMap.h
 Folder=include
 Compile=1
@@ -2769,7 +2729,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit275]
+[Unit271]
 FileName=..\..\include\SMeshBufferTangents.h
 Folder=include/video
 Compile=1
@@ -2779,7 +2739,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit276]
+[Unit272]
 FileName=..\..\include\SParticle.h
 Folder=include/scene
 Compile=1
@@ -2789,9 +2749,49 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit277]
+[Unit273]
 FileName=CXMeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit274]
+FileName=CXMeshFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit275]
+FileName=OctTree.h
+Folder=Irrlicht/scene/mesh
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit276]
+FileName=CFileList.cpp
+Folder=Irrlicht/io
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit277]
+FileName=CFileList.h
+Folder=Irrlicht/io
 Compile=1
 CompileCpp=1
 Link=1
@@ -2800,9 +2800,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit278]
-FileName=CXMeshFileLoader.h
+FileName=CFileSystem.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/io
 Compile=1
 Link=1
 Priority=1000
@@ -2810,9 +2810,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit279]
-FileName=OctTree.h
+FileName=CFileSystem.h
 CompileCpp=1
-Folder=scene_impl/mesh
+Folder=Irrlicht/io
 Compile=1
 Link=1
 Priority=1000
@@ -2820,9 +2820,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit280]
-FileName=CFileList.cpp
+FileName=CLimitReadFile.cpp
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/io/file
 Compile=1
 Link=1
 Priority=1000
@@ -2830,9 +2830,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit281]
-FileName=CFileList.h
+FileName=CLimitReadFile.h
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/io/file
 Compile=1
 Link=1
 Priority=1000
@@ -2840,8 +2840,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit282]
-FileName=CFileSystem.cpp
-Folder=io_impl
+FileName=CMemoryFile.cpp
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2850,8 +2850,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit283]
-FileName=CFileSystem.h
-Folder=io_impl
+FileName=CMemoryFile.h
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2860,8 +2860,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit284]
-FileName=CLimitReadFile.cpp
-Folder=io_impl
+FileName=CReadFile.cpp
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2870,8 +2870,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit285]
-FileName=CLimitReadFile.h
-Folder=io_impl
+FileName=CReadFile.h
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2880,8 +2880,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit286]
-FileName=CMemoryReadFile.cpp
-Folder=io_impl
+FileName=CWriteFile.cpp
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2890,8 +2890,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit287]
-FileName=CMemoryReadFile.h
-Folder=io_impl
+FileName=CWriteFile.h
+Folder=Irrlicht/io/file
 Compile=1
 CompileCpp=1
 Link=1
@@ -2900,8 +2900,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit288]
-FileName=CReadFile.cpp
-Folder=io_impl
+FileName=CXMLReader.cpp
+Folder=Irrlicht/io/xml
 Compile=1
 CompileCpp=1
 Link=1
@@ -2910,8 +2910,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit289]
-FileName=CReadFile.h
-Folder=io_impl
+FileName=CXMLReader.h
+Folder=Irrlicht/io/xml
 Compile=1
 CompileCpp=1
 Link=1
@@ -2920,8 +2920,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit290]
-FileName=CWriteFile.cpp
-Folder=io_impl
+FileName=CXMLWriter.cpp
+Folder=Irrlicht/io/xml
 Compile=1
 CompileCpp=1
 Link=1
@@ -2930,8 +2930,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit291]
-FileName=CWriteFile.h
-Folder=io_impl
+FileName=CXMLWriter.h
+Folder=Irrlicht/io/xml
 Compile=1
 CompileCpp=1
 Link=1
@@ -2940,8 +2940,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit292]
-FileName=CXMLReader.cpp
-Folder=io_impl
+FileName=CZipReader.cpp
+Folder=Irrlicht/io/archive
 Compile=1
 CompileCpp=1
 Link=1
@@ -2950,8 +2950,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit293]
-FileName=CXMLReader.h
-Folder=io_impl
+FileName=CZipReader.h
+Folder=Irrlicht/io/archive
 Compile=1
 CompileCpp=1
 Link=1
@@ -2960,8 +2960,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit294]
-FileName=CXMLWriter.cpp
-Folder=io_impl
+FileName=irrXML.cpp
+Folder=Irrlicht/io/xml
 Compile=1
 CompileCpp=1
 Link=1
@@ -2970,38 +2970,38 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit295]
-FileName=CXMLWriter.h
-Folder=io_impl
+FileName=zlib\adler32.c
+Folder=Irrlicht/extern/zlib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit296]
-FileName=CZipReader.cpp
-Folder=io_impl
+FileName=zlib\compress.c
+Folder=Irrlicht/extern/zlib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit297]
-FileName=CZipReader.h
-Folder=io_impl
+FileName=zlib\crc32.c
+Folder=Irrlicht/extern/zlib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit298]
-FileName=irrXML.cpp
-Folder=io_impl
+FileName=zlib\crc32.h
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3010,8 +3010,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit299]
-FileName=zlib\adler32.c
-Folder=other_impl/extern/zlib
+FileName=zlib\deflate.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3020,18 +3020,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit300]
-FileName=zlib\compress.c
-Folder=other_impl/extern/zlib
+FileName=zlib\deflate.h
+Folder=Irrlicht/extern/zlib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit301]
-FileName=zlib\crc32.c
-Folder=other_impl/extern/zlib
+FileName=zlib\inffast.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3040,8 +3040,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit302]
-FileName=zlib\crc32.h
-Folder=other_impl/extern/zlib
+FileName=zlib\inffast.h
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3050,8 +3050,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit303]
-FileName=zlib\deflate.c
-Folder=other_impl/extern/zlib
+FileName=zlib\inflate.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3060,28 +3060,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit304]
-FileName=zlib\deflate.h
-Folder=other_impl/extern/zlib
+FileName=zlib\inftrees.c
+Folder=Irrlicht/extern/zlib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit305]
-FileName=zlib\inffast.c
-Folder=other_impl/extern/zlib
-Compile=1
-CompileCpp=0
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit306]
-FileName=zlib\inffast.h
-Folder=other_impl/extern/zlib
+FileName=zlib\inftrees.h
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3089,9 +3079,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit307]
-FileName=zlib\inflate.c
-Folder=other_impl/extern/zlib
+[Unit306]
+FileName=zlib\trees.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3099,9 +3089,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit307]
+FileName=zlib\trees.h
+Folder=Irrlicht/extern/zlib
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit308]
-FileName=zlib\inftrees.c
-Folder=other_impl/extern/zlib
+FileName=zlib\uncompr.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3110,8 +3110,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit309]
-FileName=zlib\inftrees.h
-Folder=other_impl/extern/zlib
+FileName=zlib\zconf.h
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3120,18 +3120,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit310]
-FileName=zlib\trees.c
-Folder=other_impl/extern/zlib
-Compile=1
-CompileCpp=0
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit311]
-FileName=zlib\trees.h
-Folder=other_impl/extern/zlib
+FileName=zlib\zlib.h
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3139,9 +3129,9 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit312]
-FileName=zlib\uncompr.c
-Folder=other_impl/extern/zlib
+[Unit311]
+FileName=zlib\zutil.c
+Folder=Irrlicht/extern/zlib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3149,9 +3139,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit312]
+FileName=zlib\zutil.h
+Folder=Irrlicht/extern/zlib
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit313]
-FileName=zlib\zconf.h
-Folder=other_impl/extern/zlib
+FileName=jpeglib\cderror.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3160,18 +3160,28 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit314]
-FileName=zlib\zlib.h
-Folder=other_impl/extern/zlib
-Compile=1
+FileName=CSceneNodeAnimatorCameraFPS.h
 CompileCpp=1
+Folder=Irrlicht/scene/animators
+Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit315]
-FileName=zlib\zutil.c
-Folder=other_impl/extern/zlib
+FileName=CSceneNodeAnimatorCameraMaya.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/animators
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit316]
+FileName=jpeglib\jcapimin.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3179,29 +3189,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit316]
-FileName=zlib\zutil.h
-Folder=other_impl/extern/zlib
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit317]
-FileName=jpeglib\cderror.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcapistd.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit318]
-FileName=jpeglib\cdjpeg.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jccoefct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3210,18 +3210,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit319]
-FileName=jpeglib\cdjpeg.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jccolor.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit320]
-FileName=jpeglib\jcapimin.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcdctmgr.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3230,8 +3230,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit321]
-FileName=jpeglib\jcapistd.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jchuff.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3240,18 +3240,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit322]
-FileName=jpeglib\jccoefct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jchuff.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit323]
-FileName=jpeglib\jccolor.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcinit.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3260,8 +3260,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit324]
-FileName=jpeglib\jcdctmgr.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcmainct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3270,8 +3270,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit325]
-FileName=jpeglib\jchuff.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcmarker.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3280,18 +3280,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit326]
-FileName=jpeglib\jchuff.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcmaster.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit327]
-FileName=jpeglib\jcinit.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcomapi.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3300,18 +3300,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit328]
-FileName=jpeglib\jcmainct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jconfig.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit329]
-FileName=jpeglib\jcmarker.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcparam.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3320,8 +3320,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit330]
-FileName=jpeglib\jcmaster.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcphuff.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3330,8 +3330,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit331]
-FileName=jpeglib\jcomapi.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcprepct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3340,18 +3340,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit332]
-FileName=jpeglib\jconfig.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jcsample.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit333]
-FileName=jpeglib\jcparam.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jctrans.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3360,8 +3360,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit334]
-FileName=jpeglib\jcphuff.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdapimin.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3370,8 +3370,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit335]
-FileName=jpeglib\jcprepct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdapistd.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3380,8 +3380,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit336]
-FileName=jpeglib\jcsample.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdatadst.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3390,8 +3390,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit337]
-FileName=jpeglib\jctrans.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdatasrc.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3400,8 +3400,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit338]
-FileName=jpeglib\jdapimin.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdcoefct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3410,8 +3410,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit339]
-FileName=jpeglib\jdapistd.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdcolor.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3420,18 +3420,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit340]
-FileName=jpeglib\jdatadst.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdct.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit341]
-FileName=jpeglib\jdatasrc.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jddctmgr.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3440,8 +3440,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit342]
-FileName=jpeglib\jdcoefct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdhuff.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3450,18 +3450,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit343]
-FileName=jpeglib\jdcolor.c
-Folder=other_impl/extern/jpeglib
-Compile=1
-CompileCpp=0
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit344]
-FileName=jpeglib\jdct.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdhuff.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3469,9 +3459,19 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit344]
+FileName=jpeglib\jdinput.c
+Folder=Irrlicht/extern/jpeglib
+Compile=1
+CompileCpp=0
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit345]
-FileName=jpeglib\jddctmgr.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdmainct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3480,8 +3480,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit346]
-FileName=jpeglib\jdhuff.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdmarker.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3490,18 +3490,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit347]
-FileName=jpeglib\jdhuff.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdmaster.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit348]
-FileName=jpeglib\jdinput.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdmerge.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3510,8 +3510,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit349]
-FileName=jpeglib\jdmainct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdphuff.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3520,8 +3520,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit350]
-FileName=jpeglib\jdmarker.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdpostct.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3530,8 +3530,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit351]
-FileName=jpeglib\jdmaster.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdsample.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3540,8 +3540,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit352]
-FileName=jpeglib\jdmerge.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jdtrans.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3550,8 +3550,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit353]
-FileName=jpeglib\jdphuff.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jerror.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3560,18 +3560,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit354]
-FileName=jpeglib\jdpostct.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jerror.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit355]
-FileName=jpeglib\jdsample.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jfdctflt.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3580,8 +3580,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit356]
-FileName=jpeglib\jdtrans.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jfdctfst.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3590,8 +3590,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit357]
-FileName=jpeglib\jerror.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jfdctint.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3600,18 +3600,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit358]
-FileName=jpeglib\jerror.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jidctflt.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit359]
-FileName=jpeglib\jfdctflt.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jidctfst.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3620,8 +3620,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit360]
-FileName=jpeglib\jfdctfst.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jidctint.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3630,8 +3630,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit361]
-FileName=jpeglib\jfdctint.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jidctred.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3640,18 +3640,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit362]
-FileName=jpeglib\jidctflt.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jinclude.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit363]
-FileName=jpeglib\jidctfst.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jmemmgr.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3660,8 +3660,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit364]
-FileName=jpeglib\jidctint.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jmemnobs.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3670,18 +3670,18 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit365]
-FileName=jpeglib\jidctred.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jmemsys.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit366]
-FileName=jpeglib\jinclude.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jmorecfg.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3690,18 +3690,28 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit367]
-FileName=jpeglib\jmemmgr.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jpegint.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit368]
-FileName=jpeglib\jmemnobs.c
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jpeglib.h
+Folder=Irrlicht/extern/jpeglib
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit369]
+FileName=jpeglib\jquant1.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
 Link=1
@@ -3709,39 +3719,29 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit369]
-FileName=jpeglib\jmemsys.h
-Folder=other_impl/extern/jpeglib
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit370]
-FileName=jpeglib\jmorecfg.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jquant2.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit371]
-FileName=jpeglib\jpegint.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jutils.c
+Folder=Irrlicht/extern/jpeglib
 Compile=1
-CompileCpp=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit372]
-FileName=jpeglib\jpeglib.h
-Folder=other_impl/extern/jpeglib
+FileName=jpeglib\jversion.h
+Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=1
 Link=1
@@ -3750,38 +3750,38 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit373]
-FileName=jpeglib\jquant1.c
-Folder=other_impl/extern/jpeglib
+FileName=CMD3MeshFileLoader.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit374]
-FileName=jpeglib\jquant2.c
-Folder=other_impl/extern/jpeglib
+FileName=CMD3MeshFileLoader.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit375]
-FileName=jpeglib\jutils.c
-Folder=other_impl/extern/jpeglib
+FileName=CAnimatedMeshMD3.h
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit376]
-FileName=jpeglib\jversion.h
-Folder=other_impl/extern/jpeglib
+FileName=CAnimatedMeshMD3.cpp
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 CompileCpp=1
 Link=1
@@ -3790,8 +3790,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit377]
-FileName=CMD3MeshFileLoader.h
-Folder=scene_impl/mesh/loaders
+FileName=CGUISpriteBank.h
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -3800,8 +3800,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit378]
-FileName=CMD3MeshFileLoader.cpp
-Folder=scene_impl/mesh/loaders
+FileName=CGUISpriteBank.cpp
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -3810,8 +3810,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit379]
-FileName=CAnimatedMeshMD3.h
-Folder=scene_impl/mesh/loaders
+FileName=..\..\include\IGUIFontBitmap.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -3820,8 +3820,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit380]
-FileName=CAnimatedMeshMD3.cpp
-Folder=scene_impl/mesh/loaders
+FileName=..\..\include\IGUISpriteBank.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -3830,8 +3830,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit381]
-FileName=CGUISpriteBank.h
-Folder=gui_impl
+FileName=COpenGLExtensionHandler.cpp
+Folder=Irrlicht/video/OpenGL
 Compile=1
 CompileCpp=1
 Link=1
@@ -3840,9 +3840,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit382]
-FileName=CGUISpriteBank.cpp
+FileName=CGUISpinBox.h
 CompileCpp=1
-Folder=gui_impl
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -3850,9 +3850,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit383]
-FileName=..\..\include\IGUIFontBitmap.h
+FileName=CGUISpinBox.cpp
 CompileCpp=1
-Folder=include/gui
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -3860,46 +3860,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit384]
-FileName=..\..\include\IGUISpriteBank.h
-CompileCpp=1
-Folder=include/gui
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit385]
-FileName=COpenGLExtensionHandler.cpp
-CompileCpp=1
-Folder=video_impl/OpenGL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit386]
-FileName=CGUISpinBox.h
-CompileCpp=1
-Folder=gui_impl
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit387]
-FileName=CGUISpinBox.cpp
-CompileCpp=1
-Folder=gui_impl
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit388]
 FileName=..\..\include\IGUISpinBox.h
 CompileCpp=1
 Folder=include/gui
@@ -3909,7 +3869,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit389]
+[Unit385]
 FileName=..\..\include\SViewFrustum.h
 CompileCpp=1
 Folder=include/scene
@@ -3919,20 +3879,60 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit390]
+[Unit386]
 FileName=..\..\include\triangle3d.h
+CompileCpp=1
 Folder=include/core
 Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit387]
+FileName=libpng\png.c
+CompileCpp=0
+Folder=Irrlicht/extern/libpng
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit388]
+FileName=libpng\png.h
 CompileCpp=1
+Folder=Irrlicht/extern/libpng
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit389]
+FileName=libpng\pngconf.h
+CompileCpp=1
+Folder=Irrlicht/extern/libpng
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit390]
+FileName=libpng\pngerror.c
+Folder=Irrlicht/extern/libpng
+Compile=1
+CompileCpp=0
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit391]
-FileName=libpng\png.c
+FileName=libpng\pngget.c
 CompileCpp=0
-Folder=other_impl/extern/libpng
+Folder=Irrlicht/extern/libpng
 Compile=1
 Link=1
 Priority=1000
@@ -3940,9 +3940,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit392]
-FileName=libpng\png.h
-CompileCpp=1
-Folder=other_impl/extern/libpng
+FileName=libpng\pngmem.c
+CompileCpp=0
+Folder=Irrlicht/extern/libpng
 Compile=1
 Link=1
 Priority=1000
@@ -3950,9 +3950,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit393]
-FileName=libpng\pngconf.h
-CompileCpp=1
-Folder=other_impl/extern/libpng
+FileName=libpng\pngpread.c
+CompileCpp=0
+Folder=Irrlicht/extern/libpng
 Compile=1
 Link=1
 Priority=1000
@@ -3960,9 +3960,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit394]
-FileName=libpng\pngerror.c
+FileName=libpng\pngread.c
 CompileCpp=0
-Folder=other_impl/extern/libpng
+Folder=Irrlicht/extern/libpng
 Compile=1
 Link=1
 Priority=1000
@@ -3970,9 +3970,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit395]
-FileName=libpng\pngget.c
+FileName=libpng\pngrio.c
 CompileCpp=0
-Folder=other_impl/extern/libpng
+Folder=Irrlicht/extern/libpng
 Compile=1
 Link=1
 Priority=1000
@@ -3980,8 +3980,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit396]
-FileName=libpng\pngmem.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngrtran.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -3990,8 +3990,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit397]
-FileName=libpng\pngpread.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngrutil.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4000,8 +4000,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit398]
-FileName=libpng\pngread.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngset.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4010,8 +4010,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit399]
-FileName=libpng\pngrio.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngtrans.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4020,8 +4020,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit400]
-FileName=libpng\pngrtran.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngwio.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4030,8 +4030,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit401]
-FileName=libpng\pngrutil.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngwrite.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4040,8 +4040,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit402]
-FileName=libpng\pngset.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngwtran.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4050,8 +4050,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit403]
-FileName=libpng\pngtrans.c
-Folder=other_impl/extern/libpng
+FileName=libpng\pngwutil.c
+Folder=Irrlicht/extern/libpng
 Compile=1
 CompileCpp=0
 Link=1
@@ -4060,48 +4060,48 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit404]
-FileName=libpng\pngwio.c
-Folder=other_impl/extern/libpng
+FileName=CIrrDeviceLinux.cpp
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit405]
-FileName=libpng\pngwrite.c
-Folder=other_impl/extern/libpng
+FileName=CIrrDeviceLinux.h
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit406]
-FileName=libpng\pngwtran.c
-Folder=other_impl/extern/libpng
+FileName=CIrrDeviceStub.cpp
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit407]
-FileName=libpng\pngwutil.c
-Folder=other_impl/extern/libpng
+FileName=CIrrDeviceStub.h
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit408]
-FileName=CIrrDeviceLinux.cpp
-Folder=other_impl
+FileName=CIrrDeviceWin32.cpp
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
 CompileCpp=1
 Link=1
@@ -4110,8 +4110,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit409]
-FileName=CIrrDeviceLinux.h
-Folder=other_impl
+FileName=CIrrDeviceWin32.h
+Folder=Irrlicht/irr/IrrlichtDevice
 Compile=1
 CompileCpp=1
 Link=1
@@ -4120,8 +4120,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit410]
-FileName=CIrrDeviceStub.cpp
-Folder=other_impl
+FileName=CLogger.cpp
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4130,8 +4130,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit411]
-FileName=CIrrDeviceStub.h
-Folder=other_impl
+FileName=CLogger.h
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4140,8 +4140,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit412]
-FileName=CIrrDeviceWin32.cpp
-Folder=other_impl
+FileName=COSOperator.cpp
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4150,8 +4150,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit413]
-FileName=CIrrDeviceWin32.h
-Folder=other_impl
+FileName=COSOperator.h
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4160,8 +4160,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit414]
-FileName=CLogger.cpp
-Folder=other_impl
+FileName=CTimer.h
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4170,8 +4170,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit415]
-FileName=CLogger.h
-Folder=other_impl
+FileName=IImagePresenter.h
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4180,8 +4180,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit416]
-FileName=COSOperator.cpp
-Folder=other_impl
+FileName=Irrlicht.cpp
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4190,8 +4190,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit417]
-FileName=COSOperator.h
-Folder=other_impl
+FileName=os.cpp
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4200,8 +4200,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit418]
-FileName=CTimer.h
-Folder=other_impl
+FileName=os.h
+Folder=Irrlicht/irr
 Compile=1
 CompileCpp=1
 Link=1
@@ -4210,46 +4210,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit419]
-FileName=IImagePresenter.h
-Folder=other_impl
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit420]
-FileName=Irrlicht.cpp
-Folder=other_impl
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit421]
-FileName=os.cpp
-Folder=other_impl
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit422]
-FileName=os.h
-Folder=other_impl
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit423]
 FileName=..\..\include\IrrCompileConfig.h
 Folder=include
 Compile=1
@@ -4259,9 +4219,49 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit424]
+[Unit420]
 FileName=CMeshCache.h
-Folder=scene_impl/mesh
+Folder=Irrlicht/scene/mesh
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit421]
+FileName=CMeshCache.cpp
+Folder=Irrlicht/scene/mesh
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit422]
+FileName=COpenGLSLMaterialRenderer.h
+Folder=Irrlicht/video/OpenGL
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit423]
+FileName=COpenGLSLMaterialRenderer.cpp
+Folder=Irrlicht/video/OpenGL
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit424]
+FileName=CSoftwareTexture2.h
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4270,8 +4270,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit425]
-FileName=CMeshCache.cpp
-Folder=scene_impl/mesh
+FileName=S4DVertex.h
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4280,8 +4280,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit426]
-FileName=COpenGLSLMaterialRenderer.h
-Folder=video_impl/OpenGL
+FileName=SoftwareDriver2_compile_config.h
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4290,8 +4290,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit427]
-FileName=COpenGLSLMaterialRenderer.cpp
-Folder=video_impl/OpenGL
+FileName=CSoftwareDriver2.h
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4300,8 +4300,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit428]
-FileName=CSoftwareTexture2.h
-Folder=video_impl/Burning Video
+FileName=CTRTextureGouraudNoZ2.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4310,8 +4310,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit429]
-FileName=S4DVertex.h
-Folder=video_impl/Burning Video
+FileName=CTRTextureLightMap2_M2.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4320,8 +4320,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit430]
-FileName=SoftwareDriver2_compile_config.h
-Folder=video_impl/Burning Video
+FileName=CTRTextureLightMap2_M4.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4330,8 +4330,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit431]
-FileName=CSoftwareDriver2.h
-Folder=video_impl/Burning Video
+FileName=CTRTextureLightMap2_M1.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4340,8 +4340,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit432]
-FileName=CTRTextureGouraudNoZ2.cpp
-Folder=video_impl/Burning Video
+FileName=SoftwareDriver2_helper.h
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4350,8 +4350,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit433]
-FileName=CTRTextureLightMap2_M2.cpp
-Folder=video_impl/Burning Video
+FileName=CSoftwareDriver2.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4360,8 +4360,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit434]
-FileName=CTRTextureLightMap2_M4.cpp
-Folder=video_impl/Burning Video
+FileName=CSoftwareTexture2.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4370,8 +4370,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit435]
-FileName=CTRTextureLightMap2_M1.cpp
-Folder=video_impl/Burning Video
+FileName=CTRTextureGouraud2.cpp
+Folder=Irrlicht/video/Burning Video
 Compile=1
 CompileCpp=1
 Link=1
@@ -4398,9 +4398,9 @@ ProductVersion=0.1
 AutoIncBuildNr=0
 
 [Unit436]
-FileName=SoftwareDriver2_helper.h
+FileName=COgreMeshFileLoader.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -4408,9 +4408,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit437]
-FileName=CSoftwareDriver2.cpp
+FileName=COgreMeshFileLoader.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -4418,9 +4418,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit438]
-FileName=CSoftwareTexture2.cpp
+FileName=CDefaultSceneNodeFactory.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4428,9 +4428,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit439]
-FileName=CTRTextureGouraud2.cpp
+FileName=CDefaultSceneNodeAnimatorFactory.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/animators
 Compile=1
 Link=1
 Priority=1000
@@ -4438,9 +4438,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit440]
-FileName=COgreMeshFileLoader.h
+FileName=CDefaultSceneNodeAnimatorFactory.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/animators
 Compile=1
 Link=1
 Priority=1000
@@ -4448,9 +4448,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit441]
-FileName=COgreMeshFileLoader.cpp
+FileName=CDefaultSceneNodeFactory.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4458,9 +4458,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit442]
-FileName=CDefaultSceneNodeFactory.h
+FileName=CAttributes.h
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/io/attributes
 Compile=1
 Link=1
 Priority=1000
@@ -4468,9 +4468,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit443]
-FileName=CDefaultSceneNodeAnimatorFactory.cpp
+FileName=CAttributeImpl.h
 CompileCpp=1
-Folder=scene_impl/animators
+Folder=Irrlicht/io/attributes
 Compile=1
 Link=1
 Priority=1000
@@ -4478,9 +4478,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit444]
-FileName=CDefaultSceneNodeAnimatorFactory.h
+FileName=CAttributes.cpp
 CompileCpp=1
-Folder=scene_impl/animators
+Folder=Irrlicht/io/attributes
 Compile=1
 Link=1
 Priority=1000
@@ -4488,9 +4488,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit445]
-FileName=CDefaultSceneNodeFactory.cpp
+FileName=CCubeSceneNode.h
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4498,9 +4498,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit446]
-FileName=CAttributes.h
+FileName=CCubeSceneNode.cpp
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4508,9 +4508,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit447]
-FileName=CAttributeImpl.h
+FileName=CTRTextureGouraudAddNoZ2.cpp
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4518,9 +4518,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit448]
-FileName=CAttributes.cpp
+FileName=CTRTextureGouraudAdd2.cpp
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4528,9 +4528,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit449]
-FileName=CCubeSceneNode.h
+FileName=CTRGouraud2.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4538,9 +4538,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit450]
-FileName=CCubeSceneNode.cpp
+FileName=CTRGouraudAlpha2.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4548,9 +4548,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit451]
-FileName=CTRTextureGouraudAddNoZ2.cpp
+FileName=CTRGouraudAlphaNoZ2.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4558,9 +4558,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit452]
-FileName=CTRTextureGouraudAdd2.cpp
+FileName=CTRTextureDetailMap2.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4568,9 +4568,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit453]
-FileName=CTRGouraud2.cpp
+FileName=CTRTextureLightMap2_Add.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4578,9 +4578,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit454]
-FileName=CTRGouraudAlpha2.cpp
+FileName=CTRTextureWire2.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4588,9 +4588,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit455]
-FileName=CTRGouraudAlphaNoZ2.cpp
+FileName=CTRTextureGouraudVertexAlpha2.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4598,46 +4598,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit456]
-FileName=CTRTextureDetailMap2.cpp
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit457]
-FileName=CTRTextureLightMap2_Add.cpp
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit458]
-FileName=CTRTextureWire2.cpp
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit459]
-FileName=CTRTextureGouraudVertexAlpha2.cpp
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit460]
 FileName=..\..\changes.txt
 CompileCpp=1
 Folder=doc
@@ -4647,7 +4607,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit461]
+[Unit457]
 FileName=..\..\readme.txt
 CompileCpp=1
 Folder=doc
@@ -4657,10 +4617,50 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit462]
+[Unit458]
 FileName=CSphereSceneNode.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit459]
+FileName=CSphereSceneNode.h
+CompileCpp=1
+Folder=Irrlicht/scene/nodes
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit460]
+FileName=CPakReader.h
+CompileCpp=1
+Folder=Irrlicht/io/archive
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit461]
+FileName=CPakReader.cpp
+CompileCpp=1
+Folder=Irrlicht/io/archive
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit462]
+FileName=CSkyDomeSceneNode.h
+CompileCpp=1
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4668,9 +4668,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit463]
-FileName=CSphereSceneNode.h
+FileName=CSkyDomeSceneNode.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4678,9 +4678,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit464]
-FileName=CPakReader.h
+FileName=CImageWriterTGA.h
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4688,9 +4688,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit465]
-FileName=CPakReader.cpp
+FileName=CImageWriterBMP.cpp
 CompileCpp=1
-Folder=io_impl
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4698,9 +4698,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit466]
-FileName=CSkyDomeSceneNode.h
+FileName=CImageWriterBMP.h
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4708,9 +4708,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit467]
-FileName=CSkyDomeSceneNode.cpp
+FileName=CImageWriterJPG.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4718,9 +4718,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit468]
-FileName=CImageWriterTGA.h
+FileName=CImageWriterJPG.h
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4728,9 +4728,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit469]
-FileName=CImageWriterBMP.cpp
+FileName=CImageWriterPCX.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4738,9 +4738,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit470]
-FileName=CImageWriterBMP.h
+FileName=CImageWriterPCX.h
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4748,8 +4748,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit471]
-FileName=CImageWriterJPG.cpp
-Folder=video_impl/Null
+FileName=CImageWriterPNG.cpp
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4758,8 +4758,8 @@ BuildCmd=
 CompileCpp=1
 
 [Unit472]
-FileName=CImageWriterJPG.h
-Folder=video_impl/Null
+FileName=CImageWriterPNG.h
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4768,9 +4768,9 @@ BuildCmd=
 CompileCpp=1
 
 [Unit473]
-FileName=CImageWriterPCX.cpp
+FileName=CImageWriterPPM.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4778,9 +4778,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit474]
-FileName=CImageWriterPCX.h
+FileName=CImageWriterPPM.h
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4788,9 +4788,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit475]
-FileName=CImageWriterPNG.cpp
+FileName=CImageWriterPSD.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4798,9 +4798,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit476]
-FileName=CImageWriterPNG.h
+FileName=CImageWriterPSD.h
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4808,9 +4808,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit477]
-FileName=CImageWriterPPM.cpp
+FileName=CImageWriterTGA.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Null/Writer
 Compile=1
 Link=1
 Priority=1000
@@ -4818,9 +4818,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit478]
-FileName=CImageWriterPPM.h
+FileName=CTRTextureLightMapGouraud2_M4.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4828,9 +4828,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit479]
-FileName=CImageWriterPSD.cpp
+FileName=CGUIColorSelectDialog.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -4838,9 +4838,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit480]
-FileName=CImageWriterPSD.h
+FileName=IBurningShader.h
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4848,9 +4848,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit481]
-FileName=CImageWriterTGA.cpp
+FileName=IBurningShader.cpp
 CompileCpp=1
-Folder=video_impl/Null
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4858,9 +4858,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit482]
-FileName=CTRTextureLightMapGouraud2_M4.cpp
+FileName=IDepthBuffer.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4868,9 +4868,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit483]
-FileName=CGUIColorSelectDialog.cpp
+FileName=CDepthBuffer.h
 CompileCpp=1
-Folder=gui_impl
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4878,9 +4878,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit484]
-FileName=IBurningShader.h
+FileName=CDepthBuffer.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4888,9 +4888,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit485]
-FileName=IBurningShader.cpp
+FileName=CQuake3ShaderSceneNode.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4898,9 +4898,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit486]
-FileName=IDepthBuffer.h
+FileName=CQuake3ShaderSceneNode.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -4908,46 +4908,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit487]
-FileName=CDepthBuffer.h
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit488]
-FileName=CDepthBuffer.cpp
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit489]
-FileName=CQuake3ShaderSceneNode.h
-CompileCpp=1
-Folder=scene_impl/nodes
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit490]
-FileName=CQuake3ShaderSceneNode.cpp
-CompileCpp=1
-Folder=scene_impl/nodes
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit491]
 FileName=..\..\include\fast_atof.h
 CompileCpp=1
 Folder=include
@@ -4957,10 +4917,50 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit492]
+[Unit488]
 FileName=CTRTextureBlend.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit489]
+FileName=CTRTextureGouraudAlpha.cpp
+CompileCpp=1
+Folder=Irrlicht/video/Burning Video
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit490]
+FileName=CTRTextureGouraudAlphaNoZ.cpp
+CompileCpp=1
+Folder=Irrlicht/video/Burning Video
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit491]
+FileName=CDefaultGUIElementFactory.cpp
+CompileCpp=1
+Folder=Irrlicht/gui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit492]
+FileName=CDefaultGUIElementFactory.h
+CompileCpp=1
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -4968,9 +4968,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit493]
-FileName=CTRTextureGouraudAlpha.cpp
+FileName=CGUIColorSelectDialog.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -4978,9 +4978,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit494]
-FileName=CTRTextureGouraudAlphaNoZ.cpp
+FileName=CSoftware2MaterialRenderer.h
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -4988,9 +4988,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit495]
-FileName=CDefaultGUIElementFactory.cpp
+FileName=CXMLReaderImpl.h
 CompileCpp=1
-Folder=gui_impl
+Folder=Irrlicht/io/xml
 Compile=1
 Link=1
 Priority=1000
@@ -4998,9 +4998,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit496]
-FileName=CDefaultGUIElementFactory.h
+FileName=ITriangleRenderer.h
 CompileCpp=1
-Folder=gui_impl
+Folder=Irrlicht/video/Software
 Compile=1
 Link=1
 Priority=1000
@@ -5008,8 +5008,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit497]
-FileName=CGUIColorSelectDialog.h
-Folder=gui_impl
+FileName=..\..\include\EGUIElementTypes.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -5018,46 +5018,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit498]
-FileName=CSoftware2MaterialRenderer.h
-CompileCpp=1
-Folder=video_impl/Burning Video
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit499]
-FileName=CXMLReaderImpl.h
-CompileCpp=1
-Folder=io_impl
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit500]
-FileName=ITriangleRenderer.h
-CompileCpp=1
-Folder=video_impl/Software
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit501]
-FileName=..\..\include\EGUIElementTypes.h
-CompileCpp=1
-Folder=include/gui
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit502]
 FileName=..\..\include\ESceneNodeAnimatorTypes.h
 CompileCpp=1
 Folder=include/scene
@@ -5067,7 +5027,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit503]
+[Unit499]
 FileName=..\..\include\ESceneNodeTypes.h
 CompileCpp=1
 Folder=include/scene
@@ -5077,7 +5037,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit504]
+[Unit500]
 FileName=..\..\include\ETerrainElements.h
 CompileCpp=1
 Folder=include/scene
@@ -5087,7 +5047,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit505]
+[Unit501]
 FileName=..\..\include\IAnimatedMeshMD2.h
 CompileCpp=1
 Folder=include/scene
@@ -5097,7 +5057,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit506]
+[Unit502]
 FileName=..\..\include\IAttributeExchangingObject.h
 CompileCpp=1
 Folder=include/io
@@ -5107,7 +5067,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit507]
+[Unit503]
 FileName=..\..\include\IAttributes.h
 CompileCpp=1
 Folder=include/io
@@ -5117,7 +5077,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit508]
+[Unit504]
 FileName=..\..\include\IDummyTransformationSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -5127,7 +5087,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit509]
+[Unit505]
 FileName=..\..\include\IGPUProgrammingServices.h
 CompileCpp=1
 Folder=include/video
@@ -5137,7 +5097,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit510]
+[Unit506]
 FileName=..\..\include\IGUIColorSelectDialog.h
 CompileCpp=1
 Folder=include/gui
@@ -5147,7 +5107,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit511]
+[Unit507]
 FileName=..\..\include\IGUIComboBox.h
 CompileCpp=1
 Folder=include/gui
@@ -5157,7 +5117,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit512]
+[Unit508]
 FileName=..\..\include\IGUIContextMenu.h
 CompileCpp=1
 Folder=include/gui
@@ -5167,7 +5127,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit513]
+[Unit509]
 FileName=..\..\include\IGUIEditBox.h
 CompileCpp=1
 Folder=include/gui
@@ -5177,7 +5137,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit514]
+[Unit510]
 FileName=..\..\include\IGUIElementFactory.h
 CompileCpp=1
 Folder=include/gui
@@ -5187,7 +5147,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit515]
+[Unit511]
 FileName=..\..\include\IGUIInOutFader.h
 CompileCpp=1
 Folder=include/gui
@@ -5197,7 +5157,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit516]
+[Unit512]
 FileName=..\..\include\IGUIStaticText.h
 CompileCpp=1
 Folder=include/gui
@@ -5207,7 +5167,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit517]
+[Unit513]
 FileName=..\..\include\IGUITabControl.h
 CompileCpp=1
 Folder=include/gui
@@ -5217,7 +5177,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit518]
+[Unit514]
 FileName=..\..\include\IGUIToolbar.h
 CompileCpp=1
 Folder=include/gui
@@ -5227,7 +5187,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit519]
+[Unit515]
 FileName=..\..\include\IImage.h
 CompileCpp=1
 Folder=include/video
@@ -5237,7 +5197,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit520]
+[Unit516]
 FileName=..\..\include\IImageLoader.h
 CompileCpp=1
 Folder=include/video
@@ -5247,7 +5207,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit521]
+[Unit517]
 FileName=..\..\include\IImageWriter.h
 CompileCpp=1
 Folder=include/video
@@ -5257,7 +5217,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit522]
+[Unit518]
 FileName=..\..\include\ILogger.h
 CompileCpp=1
 Folder=include/io
@@ -5267,7 +5227,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit523]
+[Unit519]
 FileName=..\..\include\IMaterialRenderer.h
 CompileCpp=1
 Folder=include/video
@@ -5277,7 +5237,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit524]
+[Unit520]
 FileName=..\..\include\IMaterialRendererServices.h
 CompileCpp=1
 Folder=include/video
@@ -5287,7 +5247,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit525]
+[Unit521]
 FileName=..\..\include\IMeshCache.h
 CompileCpp=1
 Folder=include/scene
@@ -5297,7 +5257,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit526]
+[Unit522]
 FileName=..\..\include\IMeshLoader.h
 CompileCpp=1
 Folder=include/io
@@ -5307,7 +5267,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit527]
+[Unit523]
 FileName=..\..\include\IMeshManipulator.h
 CompileCpp=1
 Folder=include/scene
@@ -5317,7 +5277,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit528]
+[Unit524]
 FileName=..\..\include\IMeshSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -5327,7 +5287,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit529]
+[Unit525]
 FileName=..\..\include\IMetaTriangleSelector.h
 CompileCpp=1
 Folder=include/scene
@@ -5337,7 +5297,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit530]
+[Unit526]
 FileName=..\..\include\IOSOperator.h
 CompileCpp=1
 Folder=include/io
@@ -5347,7 +5307,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit531]
+[Unit527]
 FileName=..\..\include\IParticleAffector.h
 CompileCpp=1
 Folder=include/scene
@@ -5357,7 +5317,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit532]
+[Unit528]
 FileName=..\..\include\IParticleEmitter.h
 CompileCpp=1
 Folder=include/scene
@@ -5367,7 +5327,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit533]
+[Unit529]
 FileName=..\..\include\IParticleSystemSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -5377,7 +5337,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit534]
+[Unit530]
 FileName=..\..\include\IQ3Shader.h
 CompileCpp=1
 Folder=include/scene
@@ -5387,7 +5347,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit535]
+[Unit531]
 FileName=..\..\include\irrAllocator.h
 CompileCpp=1
 Folder=include/core
@@ -5397,7 +5357,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit536]
+[Unit532]
 FileName=..\..\include\irrMap.h
 CompileCpp=1
 Folder=include/core
@@ -5407,7 +5367,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit537]
+[Unit533]
 FileName=..\..\include\irrXML.h
 CompileCpp=1
 Folder=include/io
@@ -5417,7 +5377,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit538]
+[Unit534]
 FileName=..\..\include\ISceneCollisionManager.h
 CompileCpp=1
 Folder=include/scene
@@ -5427,7 +5387,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit539]
+[Unit535]
 FileName=..\..\include\ISceneNodeAnimatorCollisionResponse.h
 CompileCpp=1
 Folder=include/scene
@@ -5437,7 +5397,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit540]
+[Unit536]
 FileName=..\..\include\ISceneNodeAnimatorFactory.h
 CompileCpp=1
 Folder=include/scene
@@ -5447,7 +5407,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit541]
+[Unit537]
 FileName=..\..\include\ISceneNodeFactory.h
 CompileCpp=1
 Folder=include/scene
@@ -5457,7 +5417,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit542]
+[Unit538]
 FileName=..\..\include\ISceneUserDataSerializer.h
 CompileCpp=1
 Folder=include/scene
@@ -5467,7 +5427,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit543]
+[Unit539]
 FileName=..\..\include\IShaderConstantSetCallBack.h
 CompileCpp=1
 Folder=include/video
@@ -5477,7 +5437,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit544]
+[Unit540]
 FileName=..\..\include\IShadowVolumeSceneNode.h
 CompileCpp=1
 Folder=include/video
@@ -5487,7 +5447,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit545]
+[Unit541]
 FileName=..\..\include\ITerrainSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -5497,7 +5457,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit546]
+[Unit542]
 FileName=..\..\include\ITextSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -5507,7 +5467,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit547]
+[Unit543]
 FileName=..\..\include\ITimer.h
 CompileCpp=1
 Folder=include
@@ -5517,7 +5477,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit548]
+[Unit544]
 FileName=..\..\include\ITriangleSelector.h
 CompileCpp=1
 Folder=include/scene
@@ -5527,7 +5487,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit549]
+[Unit545]
 FileName=..\..\include\IVideoModeList.h
 CompileCpp=1
 Folder=include/video
@@ -5537,7 +5497,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit550]
+[Unit546]
 FileName=..\..\include\IWriteFile.h
 CompileCpp=1
 Folder=include/io
@@ -5547,7 +5507,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit551]
+[Unit547]
 FileName=..\..\include\IXMLReader.h
 CompileCpp=1
 Folder=include/io
@@ -5557,7 +5517,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit552]
+[Unit548]
 FileName=..\..\include\IXMLWriter.h
 CompileCpp=1
 Folder=include/io
@@ -5567,7 +5527,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit553]
+[Unit549]
 FileName=..\..\include\quaternion.h
 CompileCpp=1
 Folder=include/core
@@ -5577,7 +5537,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit554]
+[Unit550]
 FileName=..\..\include\SAnimatedMesh.h
 CompileCpp=1
 Folder=include/scene
@@ -5587,7 +5547,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit555]
+[Unit551]
 FileName=..\..\include\SceneParameters.h
 CompileCpp=1
 Folder=include/scene
@@ -5597,7 +5557,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit556]
+[Unit552]
 FileName=..\..\include\IReferenceCounted.h
 CompileCpp=1
 Folder=include
@@ -5607,10 +5567,50 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit557]
+[Unit553]
 FileName=CParticleAnimatedMeshSceneNodeEmitter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit554]
+FileName=CParticleAnimatedMeshSceneNodeEmitter.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit555]
+FileName=CParticleSphereEmitter.h
+CompileCpp=1
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit556]
+FileName=CParticleAttractionAffector.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit557]
+FileName=CParticleAttractionAffector.h
+CompileCpp=1
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5618,9 +5618,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit558]
-FileName=CParticleAnimatedMeshSceneNodeEmitter.cpp
+FileName=CParticleCylinderEmitter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5628,9 +5628,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit559]
-FileName=CParticleSphereEmitter.h
+FileName=CParticleCylinderEmitter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5638,9 +5638,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit560]
-FileName=CParticleAttractionAffector.cpp
+FileName=CParticleMeshEmitter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5648,9 +5648,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit561]
-FileName=CParticleAttractionAffector.h
+FileName=CParticleMeshEmitter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5658,9 +5658,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit562]
-FileName=CParticleCylinderEmitter.cpp
+FileName=CParticleRingEmitter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5668,9 +5668,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit563]
-FileName=CParticleCylinderEmitter.h
+FileName=CParticleRingEmitter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5678,9 +5678,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit564]
-FileName=CParticleMeshEmitter.cpp
+FileName=CParticleRotationAffector.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5688,9 +5688,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit565]
-FileName=CParticleMeshEmitter.h
+FileName=CParticleRotationAffector.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5698,9 +5698,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit566]
-FileName=CParticleRingEmitter.cpp
+FileName=CParticleSphereEmitter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/nodes/particles
 Compile=1
 Link=1
 Priority=1000
@@ -5708,9 +5708,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit567]
-FileName=CParticleRingEmitter.h
+FileName=CIrrMeshWriter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/mesh/writers
 Compile=1
 Link=1
 Priority=1000
@@ -5718,9 +5718,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit568]
-FileName=CParticleRotationAffector.cpp
+FileName=CIrrMeshWriter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/mesh/writers
 Compile=1
 Link=1
 Priority=1000
@@ -5728,9 +5728,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit569]
-FileName=CParticleRotationAffector.h
+FileName=CColladaMeshWriter.h
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/mesh/writers
 Compile=1
 Link=1
 Priority=1000
@@ -5738,9 +5738,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit570]
-FileName=CParticleSphereEmitter.cpp
+FileName=CColladaMeshWriter.cpp
 CompileCpp=1
-Folder=scene_impl/nodes/particles
+Folder=Irrlicht/scene/mesh/writers
 Compile=1
 Link=1
 Priority=1000
@@ -5748,9 +5748,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit571]
-FileName=CIrrMeshWriter.h
+FileName=CIrrMeshFileLoader.h
 CompileCpp=1
-Folder=scene_impl/mesh/writers
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5758,9 +5758,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit572]
-FileName=CIrrMeshWriter.cpp
+FileName=CIrrMeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/writers
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5768,9 +5768,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit573]
-FileName=CColladaMeshWriter.h
+FileName=CBSPMeshFileLoader.h
 CompileCpp=1
-Folder=scene_impl/mesh/writers
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5778,9 +5778,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit574]
-FileName=CColladaMeshWriter.cpp
+FileName=CBSPMeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/writers
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5788,9 +5788,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit575]
-FileName=CIrrMeshFileLoader.h
+FileName=CMD2MeshFileLoader.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5798,9 +5798,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit576]
-FileName=CIrrMeshFileLoader.cpp
+FileName=CMD2MeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5808,9 +5808,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit577]
-FileName=CBSPMeshFileLoader.h
+FileName=CMS3DMeshFileLoader.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5818,9 +5818,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit578]
-FileName=CBSPMeshFileLoader.cpp
+FileName=CMS3DMeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5828,9 +5828,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit579]
-FileName=CMD2MeshFileLoader.h
+FileName=CB3DMeshFileLoader.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5838,9 +5838,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit580]
-FileName=CMD2MeshFileLoader.cpp
+FileName=CB3DMeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5848,9 +5848,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit581]
-FileName=CMS3DMeshFileLoader.h
+FileName=CSkinnedMesh.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh
 Compile=1
 Link=1
 Priority=1000
@@ -5858,9 +5858,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit582]
-FileName=CMS3DMeshFileLoader.cpp
+FileName=CSkinnedMesh.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/mesh
 Compile=1
 Link=1
 Priority=1000
@@ -5868,9 +5868,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit583]
-FileName=CB3DMeshFileLoader.h
+FileName=CBoneSceneNode.h
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -5878,9 +5878,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit584]
-FileName=CB3DMeshFileLoader.cpp
+FileName=CBoneSceneNode.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/scene/nodes
 Compile=1
 Link=1
 Priority=1000
@@ -5888,9 +5888,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit585]
-FileName=CSkinnedMesh.h
+FileName=CSTLMeshWriter.cpp
 CompileCpp=1
-Folder=scene_impl/mesh
+Folder=Irrlicht/scene/mesh/writers
 Compile=1
 Link=1
 Priority=1000
@@ -5898,9 +5898,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit586]
-FileName=CSkinnedMesh.cpp
+FileName=CSTLMeshFileLoader.cpp
 CompileCpp=1
-Folder=scene_impl/mesh
+Folder=Irrlicht/scene/mesh/loaders
 Compile=1
 Link=1
 Priority=1000
@@ -5908,9 +5908,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit587]
-FileName=CBoneSceneNode.h
+FileName=CImageLoaderPPM.cpp
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 Link=1
 Priority=1000
@@ -5918,9 +5918,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit588]
-FileName=CBoneSceneNode.cpp
+FileName=CImageLoaderPPM.h
 CompileCpp=1
-Folder=scene_impl/nodes
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 Link=1
 Priority=1000
@@ -5928,9 +5928,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit589]
-FileName=CSTLMeshWriter.cpp
+FileName=CBurningShader_Raster_Reference.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/writers
+Folder=Irrlicht/video/Burning Video
 Compile=1
 Link=1
 Priority=1000
@@ -5938,9 +5938,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit590]
-FileName=CSTLMeshFileLoader.cpp
+FileName=CImageLoaderWAL.cpp
 CompileCpp=1
-Folder=scene_impl/mesh/loaders
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 Link=1
 Priority=1000
@@ -5948,8 +5948,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit591]
-FileName=CImageLoaderPPM.cpp
-Folder=video_impl/Null
+FileName=CImageLoaderWAL.h
+Folder=Irrlicht/video/Null/Loader
 Compile=1
 CompileCpp=1
 Link=1
@@ -5958,8 +5958,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit592]
-FileName=CImageLoaderPPM.h
-Folder=video_impl/Null
+FileName=CGUITable.h
+Folder=Irrlicht/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -5968,9 +5968,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit593]
-FileName=CBurningShader_Raster_Reference.cpp
+FileName=CGUITable.cpp
 CompileCpp=1
-Folder=video_impl/Burning Video
+Folder=Irrlicht/gui
 Compile=1
 Link=1
 Priority=1000
@@ -5978,8 +5978,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit594]
-FileName=CImageLoaderWAL.cpp
-Folder=video_impl/Null
+FileName=..\..\include\IGUITable.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -5988,10 +5988,270 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit595]
-FileName=CImageLoaderWAL.h
-Folder=video_impl/Null
+FileName=CVolumeLightSceneNode.h
+CompileCpp=1
+Folder=Irrlicht/scene/nodes
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit596]
+FileName=CVolumeLightSceneNode.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/nodes
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit597]
+FileName=..\..\include\IVolumeLightSceneNode.h
+CompileCpp=1
+Folder=include/scene
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit598]
+FileName=CLWOMeshFileLoader.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit599]
+FileName=CLWOMeshFileLoader.h
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit600]
+FileName=..\..\include\ISceneNodeAnimatorCameraMaya.h
+CompileCpp=1
+Folder=include/scene
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit601]
+FileName=..\..\include\ISceneNodeAnimatorCameraFPS.h
+CompileCpp=1
+Folder=include/scene
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit602]
+FileName=CSceneNodeAnimatorCameraMaya.h
+Folder=Irrlicht/scene/animators
 Compile=1
 CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit603]
+FileName=CSceneNodeAnimatorCameraFPS.cpp
+Folder=Irrlicht/scene/animators
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit604]
+FileName=COBJMeshWriter.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/writers
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit605]
+FileName=..\..\include\SSkinMeshBuffer.h
+Folder=include/scene
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit606]
+FileName=CParticleScaleAffector.cpp
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit607]
+FileName=CParticleScaleAffector.h
+Folder=Irrlicht/scene/nodes/particles
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit608]
+FileName=CGUIImageList.cpp
+CompileCpp=1
+Folder=Irrlicht/gui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit609]
+FileName=CGUIImageList.h
+CompileCpp=1
+Folder=Irrlicht/gui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit610]
+FileName=CGUITreeView.cpp
+CompileCpp=1
+Folder=Irrlicht/gui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit611]
+FileName=CGUITreeView.h
+CompileCpp=1
+Folder=Irrlicht/gui
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit612]
+FileName=CIrrDeviceConsole.cpp
+CompileCpp=1
+Folder=Irrlicht/irr/IrrlichtDevice
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit613]
+FileName=CIrrDeviceConsole.h
+CompileCpp=1
+Folder=Irrlicht/irr/IrrlichtDevice
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit614]
+FileName=CPLYMeshWriter.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/writers
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit615]
+FileName=CPLYMeshWriter.h
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/writers
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit616]
+FileName=CPLYMeshFileLoader.cpp
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit617]
+FileName=CPLYMeshFileLoader.h
+CompileCpp=1
+Folder=Irrlicht/scene/mesh/loaders
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit618]
+FileName=CIrrDeviceSDL.cpp
+CompileCpp=1
+Folder=Irrlicht/irr/IrrlichtDevice
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit619]
+FileName=CIrrDeviceSDL.h
+CompileCpp=1
+Folder=Irrlicht/irr/IrrlichtDevice
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit620]
+FileName=CImageLoaderRGB.cpp
+CompileCpp=1
+Folder=Irrlicht/video/Null/Loader
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit621]
+FileName=CImageLoaderRGB.h
+CompileCpp=1
+Folder=Irrlicht/video/Null/Loader
+Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0

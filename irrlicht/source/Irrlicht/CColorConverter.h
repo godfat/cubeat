@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -66,6 +66,8 @@ public:
 	static void convert_R8G8B8toA8R8G8B8(const void* sP, s32 sN, void* dP);
 	static void convert_R8G8B8toA1R5G5B5(const void* sP, s32 sN, void* dP);
 	static void convert_R8G8B8toR5G6B5(const void* sP, s32 sN, void* dP);
+	static void convert_B8G8R8toA8R8G8B8(const void* sP, s32 sN, void* dP);
+	static void convert_B8G8R8A8toA8R8G8B8(const void* sP, s32 sN, void* dP);
 
 	static void convert_R5G6B5toR5G6B5(const void* sP, s32 sN, void* dP);
 	static void convert_R5G6B5toR8G8B8(const void* sP, s32 sN, void* dP);

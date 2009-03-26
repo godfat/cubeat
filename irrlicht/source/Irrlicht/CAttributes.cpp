@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -416,29 +416,7 @@ core::rect<s32> CAttributes::getAttributeAsRect(const c8* attributeName)
 		return core::rect<s32>();
 }
 
-//! Sets a attribute as vector2df
-void CAttributes::setAttribute(const c8* attributeName, core::vector2df value)
-{
-	IAttribute* att = getAttributeP(attributeName);
-	if (att)
-		att->setVector2d(value);
-	else
-		Attributes.push_back(new CVector2DAttribute(attributeName, value));
-}
-
-//! Gets an attribute as vector2df
-//! \param attributeName: Name of the attribute to get.
-//! \return Returns value of the attribute previously set by setAttribute()
-core::vector2df CAttributes::getAttributeAsVector2d(const c8* attributeName)
-{
-	IAttribute* att = getAttributeP(attributeName);
-	if (att)
-		return att->getVector2d();
-	else
-		return core::vector2df();
-}
-
-//! Sets a attribute as vector3df
+//! Sets a attribute as vector
 void CAttributes::setAttribute(const c8* attributeName, core::vector3df value)
 {
 	IAttribute* att = getAttributeP(attributeName);
@@ -448,7 +426,7 @@ void CAttributes::setAttribute(const c8* attributeName, core::vector3df value)
 		Attributes.push_back(new CVector3DAttribute(attributeName, value));
 }
 
-//! Gets an attribute as vector3df
+//! Gets an attribute as vector
 //! \param attributeName: Name of the attribute to get.
 //! \return Returns value of the attribute previously set by setAttribute()
 core::vector3df CAttributes::getAttributeAsVector3d(const c8* attributeName)
@@ -676,16 +654,6 @@ video::SColorf CAttributes::getAttributeAsColorf(s32 index)
 	return video::SColorf();
 }
 
-//! Gets an attribute as 2d vector
-//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-core::vector2df CAttributes::getAttributeAsVector2d(s32 index)
-{
-	if ((u32)index < Attributes.size())
-		return Attributes[index]->getVector2d();
-	else
-		return core::vector2df();
-}
-
 //! Gets an attribute as 3d vector
 //! \param index: Index value, must be between 0 and getAttributeCount()-1.
 core::vector3df CAttributes::getAttributeAsVector3d(s32 index)
@@ -825,12 +793,6 @@ void CAttributes::addColorf(const c8* attributeName, video::SColorf value)
 	Attributes.push_back(new CColorfAttribute(attributeName, value));
 }
 
-//! Adds an attribute as 2d vector
-void CAttributes::addVector2d(const c8* attributeName, core::vector2df value)
-{
-	Attributes.push_back(new CVector2DAttribute(attributeName, value));
-}
-
 //! Adds an attribute as 3d vector
 void CAttributes::addVector3d(const c8* attributeName, core::vector3df value)
 {
@@ -918,14 +880,7 @@ void CAttributes::setAttribute(s32 index, video::SColorf color)
 		Attributes[index]->setColor(color);
 }
 
-//! Sets a attribute as a 2d vector
-void CAttributes::setAttribute(s32 index, core::vector2df v)
-{
-	if ((u32)index < Attributes.size())
-		Attributes[index]->setVector2d(v);
-}
-
-//! Sets a attribute as a 3d vector
+//! Sets a attribute as vector
 void CAttributes::setAttribute(s32 index, core::vector3df v)
 {
 	if ((u32)index < Attributes.size())
@@ -1522,7 +1477,7 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 		const core::stringw tmpName(L"value");
 		for (; n<count; ++n)
 		{
-			tmpArray.push_back(reader->getAttributeValue((tmpName+n).c_str()));
+			tmpArray.push_back(reader->getAttributeValue((tmpName+core::stringw(n)).c_str()));
 		}
 		addArray(name.c_str(),tmpArray);
 	}
@@ -1568,7 +1523,7 @@ bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader,
 			const core::stringw tmpName(L"value");
 			for (; n < arrayinput.size(); ++n)
 			{
-				arraynames.push_back((tmpName+n).c_str());
+				arraynames.push_back((tmpName+core::stringw(n)).c_str());
 				arrayvalues.push_back(arrayinput[n]);
 			}
 

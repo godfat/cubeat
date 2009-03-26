@@ -1,9 +1,7 @@
-/*
-  CImageLoaderWAL by Murphy McCauley (December 2004)
-  An Irrlicht image loader for Quake engine WAL textures
-
-  See the header file for additional information including use and distribution rights.
-*/
+// Copyright (C) 2004 Murphy McCauley
+// Copyright (C) 2007-2009 Christian Stehno
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderWAL.h"
 #include "CColorConverter.h"
@@ -21,7 +19,7 @@ namespace video
 {
 
 // May or may not be fully implemented
-#define TRY_LOADING_PALETTE_FROM_FILE 0 
+#define TRY_LOADING_PALETTE_FROM_FILE 0
 
 // Default palette for Q2 WALs.
 
@@ -53,15 +51,15 @@ s32 CImageLoaderWAL::DefaultPaletteQ2[256] = {
 };
 
 
-bool CImageLoaderWAL::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderWAL::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".wal") != 0;
+	return core::hasFileExtension ( filename, "wal" );
 }
 
 
 bool CImageLoaderWAL::isALoadableFileFormat(irr::io::IReadFile* file) const
 {
-	return (file!=0);
+	return (false); // no recognition possible, use a proper file ending
 }
 
 
@@ -69,17 +67,24 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 {
 	// Try to get the color palette from elsewhere (usually in a pak along with the WAL).
 	// If this fails we use the DefaultPaletteQ2.
-	static s32 * palette = NULL;
+	static s32 * palette = 0;
 #if TRY_LOADING_PALETTE_FROM_FILE
-	if (!palette) {
+	s32 loadedPalette[256];
+#endif
+	if (!palette)
+	{
+#if TRY_LOADING_PALETTE_FROM_FILE
 		IImage * paletteImage;
 		// Look in a couple different places...
-		/* ........... */	paletteImage = createImageFromFile("pics/colormap.pcx");
-		if (!paletteImage)	paletteImage = createImageFromFile("pics/colormap.tga");
-		if (!paletteImage)	paletteImage = createImageFromFile("colormap.pcx");
-		if (!paletteImage)	paletteImage = createImageFromFile("colormap.tga");
+		paletteImage = createImageFromFile("pics/colormap.pcx");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("pics/colormap.tga");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("colormap.pcx");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("colormap.tga");
 		if (paletteImage && (paletteImage->getDimension().Width == 256) ) {
-			palette = new s32[256]; //FIXME: Never gets freed 
+			palette = &loadedPalette;
 			for (u32 i = 0; i < 256; ++i) {
 				palette[i] = paletteImage->getPixel(i, 0).color;
 			}
@@ -87,36 +92,42 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 			//FIXME: try reading a simple palette from "wal.pal"
 			palette = DefaultPaletteQ2;
 		}
-		if (paletteImage) paletteImage->drop();
-	} else {
-		palette = DefaultPaletteQ2;
-	}		
-#else
-	palette = DefaultPaletteQ2;
+		if (paletteImage)
+			paletteImage->drop();
 #endif
+	}
+	else
+	{
+		palette = DefaultPaletteQ2;
+	}
 
 	SWALHeader header;
 
 	file->seek(0);
-	file->read(&header, sizeof(SWALHeader));
+	if (file->read(&header, sizeof(SWALHeader)) != sizeof(SWALHeader) )
+		return 0;
 
+	if (file->getSize() < header.MipmapOffset[0])
+		return 0;
 	file->seek(header.MipmapOffset[0]);
 
 	// read image
 
 	const u32 imageSize = header.ImageHeight * header.ImageWidth;
+	if (file->getSize() < (long)(imageSize + header.MipmapOffset[0]))
+		return 0;
+
 	u8* data = new u8[imageSize];
 	file->read(data, imageSize);
 
 	IImage* image = 0;
 
 	image = new CImage(ECF_A1R5G5B5,
-		core::dimension2d<s32>(header.ImageWidth, header.ImageHeight));
+		core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
 
 	// I wrote an 8 to 32 converter, but this works with released Irrlicht code.
 	CColorConverter::convert8BitTo16Bit(data,
-		(s16*)image->lock(), header.ImageWidth, header.ImageHeight, DefaultPaletteQ2);
-
+		(s16*)image->lock(), header.ImageWidth, header.ImageHeight, palette);
 	image->unlock();
 
 	delete [] data;
@@ -133,4 +144,5 @@ IImageLoader* createImageLoaderWAL()
 
 }
 }
+
 

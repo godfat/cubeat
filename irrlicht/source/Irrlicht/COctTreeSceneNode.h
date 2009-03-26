@@ -1,12 +1,11 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __C_OCT_TREE_SCENE_NODE_H_INCLUDED__
 #define __C_OCT_TREE_SCENE_NODE_H_INCLUDED__
 
-#include "ISceneNode.h"
-#include "IMesh.h"
+#include "IMeshSceneNode.h"
 #include "OctTree.h"
 
 namespace irr
@@ -14,13 +13,13 @@ namespace irr
 namespace scene
 {
 	//! implementation of the IBspTreeSceneNode
-	class COctTreeSceneNode : public ISceneNode
+	class COctTreeSceneNode : public IMeshSceneNode
 	{
 	public:
 
 		//! constructor
 		COctTreeSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
-			s32 minimalPolysPerNode=128);
+			s32 minimalPolysPerNode=512);
 
 		//! destructor
 		virtual ~COctTreeSceneNode();
@@ -55,6 +54,18 @@ namespace scene
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_OCT_TREE; }
 
+		//! Sets a new mesh to display
+		virtual void setMesh(IMesh* mesh);
+
+		//! Get the currently defined mesh for display.
+		virtual IMesh* getMesh(void);
+
+		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
+		virtual void setReadOnlyMaterials(bool readonly);
+
+		//! Check if the scene node should not copy the materials of the mesh but use them in a read only style
+		virtual bool isReadOnlyMaterials() const;
+
 	private:
 
 		void deleteTree();
@@ -67,13 +78,17 @@ namespace scene
 		OctTree<video::S3DVertex2TCoords>* LightMapOctTree;
 		core::array< OctTree<video::S3DVertex2TCoords>::SMeshChunk > LightMapMeshes;
 
+		OctTree<video::S3DVertexTangents>* TangentsOctTree;
+		core::array< OctTree<video::S3DVertexTangents>::SMeshChunk > TangentsMeshes;
+
 		video::E_VERTEX_TYPE vertexType;
 		core::array< video::SMaterial > Materials;
 
-		//IMesh* Mesh;
 		core::stringc MeshName;
 		s32 MinimalPolysPerNode;
 		s32 PassCount;
+
+		IMesh * Mesh;
 	};
 
 } // end namespace scene

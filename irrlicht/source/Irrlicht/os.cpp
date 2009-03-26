@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -21,13 +21,16 @@
 		#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
 	#endif
 #else
-	#ifdef MACOSX
+	#if defined(_IRR_OSX_PLATFORM_)
+		#include <libkern/OSByteOrder.h>
 		#define bswap_16(X) OSReadSwapInt16(&X,0)
 		#define bswap_32(X) OSReadSwapInt32(&X,0)
 	#elif defined(__FreeBSD__)
 		#include <sys/endian.h>
 		#define bswap_16(X) bswap16(X)
 		#define bswap_32(X) bswap32(X)
+	#elif !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__PPC__)
+		#include <byteswap.h>
 	#else
 		#define bswap_16(X) ((((X)&0xFF) << 8) | (((X)&=0xFF00) >> 8))
 		#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
@@ -43,6 +46,9 @@ namespace os
 	u32 Byteswap::byteswap(u32 num) {return bswap_32(num);}
 	s32 Byteswap::byteswap(s32 num) {return bswap_32(num);}
 	f32 Byteswap::byteswap(f32 num) {u32 tmp=bswap_32(*((u32*)&num)); return *((f32*)&tmp);}
+	// prevent accidental byte swapping of chars
+	u8  Byteswap::byteswap(u8 num)  {return num;}
+	c8  Byteswap::byteswap(c8 num)  {return num;}
 }
 }
 
@@ -65,45 +71,30 @@ namespace os
 	//! prints a debuginfo string
 	void Printer::print(const c8* message)
 	{
-		c8* tmp = new c8[strlen(message) + 2];
-		sprintf(tmp, "%s\n", message);
-		OutputDebugString(tmp);
-		printf(tmp);
-		delete [] tmp;
+#if defined (_WIN32_WCE )
+		core::stringw tmp(message);
+		tmp += L"\n";
+		OutputDebugStringW(tmp.c_str());
+#else
+		OutputDebugString(message);
+		OutputDebugString("\n");
+		printf("%s\n", message);
+#endif
 	}
 
-	LARGE_INTEGER HighPerformanceFreq;
-	BOOL HighPerformanceTimerSupport = FALSE;
+	static LARGE_INTEGER HighPerformanceFreq;
+	static BOOL HighPerformanceTimerSupport = FALSE;
+	static BOOL MultiCore = FALSE;
 
 	void Timer::initTimer()
 	{
+#if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
 		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
-		DWORD affinity, sysaffinity;
 		GetSystemInfo(&sysinfo);
-		s32 affinityCount = 0;
-
-/* >> enable HiRes Timer, unless QueryPerformanceFrequency says "no". by arch.jslin 2007.12.15
-
-        // count the processors that can be used by this process
-		if (GetProcessAffinityMask( GetCurrentProcess(), &affinity, &sysaffinity ))
-		{
-			for (u32 i=0; i<32; ++i)
-			{
-				if ((1<<i) & affinity)
-					affinityCount++;
-			}
-		}
-
-		if (sysinfo.dwNumberOfProcessors == 1 || affinityCount == 1)
-		{
-			HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
-		}
-		else
-		{
-			HighPerformanceTimerSupport = false;
-		} */
-        HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+		MultiCore = (sysinfo.dwNumberOfProcessors > 1);	
+#endif
+		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
 		initVirtualTimer();
 	}
 
@@ -111,10 +102,26 @@ namespace os
 	{
 		if (HighPerformanceTimerSupport)
 		{
+#if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
+			// Avoid potential timing inaccuracies across multiple cores by 
+			// temporarily setting the affinity of this process to one core.
+			DWORD_PTR affinityMask;
+			if(MultiCore)
+				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1); 
+#endif
 			LARGE_INTEGER nTime;
-			QueryPerformanceCounter(&nTime);
-			return u32((nTime.QuadPart) * 1000 / HighPerformanceFreq.QuadPart);
+			BOOL queriedOK = QueryPerformanceCounter(&nTime);
+
+#if !defined(_WIN32_WCE)  && !defined (_IRR_XBOX_PLATFORM_)
+			// Restore the true affinity.
+			if(MultiCore)
+				(void)SetThreadAffinityMask(GetCurrentThread(), affinityMask);
+#endif
+			if(queriedOK)
+				return u32((nTime.QuadPart) * 1000 / HighPerformanceFreq.QuadPart);
+
 		}
+
 		return GetTickCount();
 	}
 
@@ -171,10 +178,14 @@ namespace os
 
 	void Printer::log(const c8* message, const c8* hint, ELOG_LEVEL ll)
 	{
-		if (!Logger)
-			return;
+		if (Logger)
+			Logger->log(message, hint, ll);
+	}
 
-		Logger->log(message, hint, ll);
+	void Printer::log(const c8* message, const core::string<c16>& hint, ELOG_LEVEL ll)
+	{
+		if (Logger)
+			Logger->log(message, hint.c_str(), ll);
 	}
 
 	void Printer::log(const wchar_t* message, ELOG_LEVEL ll)
@@ -297,4 +308,5 @@ namespace os
 
 } // end namespace os
 } // end namespace irr
+
 

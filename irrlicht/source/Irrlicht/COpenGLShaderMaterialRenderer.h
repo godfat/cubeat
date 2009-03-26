@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,7 +16,7 @@
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	#define GL_GLEXT_LEGACY 1
 #endif
-#if defined(MACOSX)
+#if defined(_IRR_OSX_PLATFORM_)
 	#include <OpenGL/gl.h>
 #else
 	#include <GL/gl.h>
@@ -72,7 +72,7 @@ protected:
 		const c8* pixelShaderProgram, E_VERTEX_TYPE type);
 
 	bool createPixelShader(const c8* pxsh);
-	bool createVertexShader(const char* vtxsh);
+	bool createVertexShader(const c8* vtxsh);
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;

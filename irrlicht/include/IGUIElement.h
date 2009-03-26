@@ -1,4 +1,4 @@
- // Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -11,6 +11,7 @@
 #include "irrString.h"
 #include "IEventReceiver.h"
 #include "EGUIElementTypes.h"
+#include "EGUIAlignment.h"
 #include "IAttributes.h"
 
 namespace irr
@@ -19,28 +20,6 @@ namespace gui
 {
 
 class IGUIEnvironment;
-
-enum EGUI_ALIGNMENT
-{
-	//! Aligned to parent's top or left side (default)
-	EGUIA_UPPERLEFT=0,
-	//! Aligned to parent's bottom or right side
-	EGUIA_LOWERRIGHT,
-	//! Aligned to the center of parent
-	EGUIA_CENTER,
-	//! Scaled within its parent
-	EGUIA_SCALE
-};
-
-//! Names for alignments
-const c8* const GUIAlignmentNames[] =
-{
-	"upperLeft",
-	"lowerRight",
-	"center",
-	"scale",
-	0
-};
 
 //! Base class of all GUI elements.
 class IGUIElement : public virtual io::IAttributeExchangingObject, public IEventReceiver
@@ -65,14 +44,6 @@ public:
 		if (parent)
 			parent->addChild(this);
 
-		// if we succeeded in becoming a child
-		if (Parent)
-		{
-			LastParentRect = Parent->getAbsolutePosition();
-			AbsoluteRect += LastParentRect.UpperLeftCorner;
-			AbsoluteClippingRect = AbsoluteRect;
-			AbsoluteClippingRect.clipAgainst(Parent->AbsoluteClippingRect);
-		}
 	}
 
 
@@ -104,6 +75,7 @@ public:
 
 
 	//! Sets the relative rectangle of this element.
+	/** \param r The absolute position to set */
 	void setRelativePosition(const core::rect<s32>& r)
 	{
 		if (Parent)
@@ -126,19 +98,33 @@ public:
 		updateAbsolutePosition();
 	}
 
+	//! Sets the relative rectangle of this element, maintaining its current width and height
+	/** \param position The new relative position to set. Width and height will not be changed. */
+	void setRelativePosition(const core::position2di & position)
+	{
+		const core::dimension2di mySize = RelativeRect.getSize();
+		const core::rect<s32> rectangle(position.X, position.Y,
+						position.X + mySize.Width, position.Y + mySize.Height);
+		setRelativePosition(rectangle);
+	}
 
-	//! Sets the relative rectangle of this element.
-	void setRelativePosition(const core::rect<f32>& r)
+
+	//! Sets the relative rectangle of this element as a proportion of its parent's area.
+	/** \note This method used to be 'void setRelativePosition(const core::rect<f32>& r)'
+	\param r  The rectangle to set, interpreted as a proportion of the parent's area.
+	Meaningful values are in the range [0...1], unless you intend this element to spill
+	outside its parent. */
+	void setRelativePositionProportional(const core::rect<f32>& r)
 	{
 		if (!Parent)
 			return;
-		
+
 		const core::dimension2di& d = Parent->getAbsolutePosition().getSize();
-		
-		DesiredRect = core::rect<s32>( 
-					core::floor32((f32)d.Width  * r.UpperLeftCorner.X),
+
+		DesiredRect = core::rect<s32>(
+					core::floor32((f32)d.Width * r.UpperLeftCorner.X),
 					core::floor32((f32)d.Height * r.UpperLeftCorner.Y),
-					core::floor32((f32)d.Width  * r.LowerRightCorner.X),
+					core::floor32((f32)d.Width * r.LowerRightCorner.X),
 					core::floor32((f32)d.Height * r.LowerRightCorner.Y));
 
 		ScaleRect = r;
@@ -147,7 +133,7 @@ public:
 	}
 
 
-	//! Returns the absolute rectangle of element.
+	//! Gets the absolute rectangle of this element
 	core::rect<s32> getAbsolutePosition() const
 	{
 		return AbsoluteRect;
@@ -162,13 +148,16 @@ public:
 
 
 	//! Sets whether the element will ignore its parent's clipping rectangle
+	/** \param noClip If true, the element will not be clipped by its parent's clipping rectangle. */
 	void setNotClipped(bool noClip)
 	{
 		NoClip = noClip;
+		updateAbsolutePosition();
 	}
 
 
 	//! Gets whether the element will ignore its parent's clipping rectangle
+	/** \return true if the element is not clipped by its parent's clipping rectangle. */
 	bool isNotClipped() const
 	{
 		return NoClip;
@@ -177,7 +166,7 @@ public:
 
 	//! Sets the maximum size allowed for this element
 	/** If set to 0,0, there is no maximum size */
-	void setMaxSize(core::dimension2di size)
+	void setMaxSize(core::dimension2du size)
 	{
 		MaxSize = size;
 		updateAbsolutePosition();
@@ -185,7 +174,7 @@ public:
 
 
 	//! Sets the minimum size allowed for this element
-	void setMinSize(core::dimension2di size)
+	void setMinSize(core::dimension2du size)
 	{
 		MinSize = size;
 		if (MinSize.Width < 1)
@@ -206,7 +195,7 @@ public:
 		if (Parent)
 		{
 			core::rect<s32> r(Parent->getAbsolutePosition());
-		
+
 			core::dimension2df d((f32)r.getSize().Width, (f32)r.getSize().Height);
 
 			if (AlignLeft   == EGUIA_SCALE)
@@ -226,7 +215,6 @@ public:
 	{
 		core::rect<s32> parentAbsolute(0,0,0,0);
 		core::rect<s32> parentAbsoluteClip;
-		s32 diffx, diffy;
 		f32 fw=0.f, fh=0.f;
 
 		if (Parent)
@@ -236,27 +224,22 @@ public:
 			if (NoClip)
 			{
 				IGUIElement* p=this;
-				while (p && p->NoClip && p->Parent)
-						p = p->Parent;
-				if (p->Parent)
-					parentAbsoluteClip = p->Parent->AbsoluteClippingRect;
-				else
-					parentAbsoluteClip = p->AbsoluteClippingRect;
+				while (p && p->Parent)
+					p = p->Parent;
+				parentAbsoluteClip = p->AbsoluteClippingRect;
 			}
 			else
 				parentAbsoluteClip = Parent->AbsoluteClippingRect;
 		}
 
+		const s32 diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
+		const s32 diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
 
-		diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
-		diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
-		
 		if (AlignLeft == EGUIA_SCALE || AlignRight == EGUIA_SCALE)
 			fw = (f32)parentAbsolute.getWidth();
 
 		if (AlignTop == EGUIA_SCALE || AlignBottom == EGUIA_SCALE)
 			fh = (f32)parentAbsolute.getHeight();
-
 
 		switch (AlignLeft)
 		{
@@ -320,21 +303,21 @@ public:
 
 		RelativeRect = DesiredRect;
 
-		s32 w = RelativeRect.getWidth();
-		s32 h = RelativeRect.getHeight();
+		const s32 w = RelativeRect.getWidth();
+		const s32 h = RelativeRect.getHeight();
 
 		// make sure the desired rectangle is allowed
-		if (w < MinSize.Width)
+		if (w < (s32)MinSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MinSize.Width;
-		if (h < MinSize.Height)
+		if (h < (s32)MinSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MinSize.Height;
-		if (MaxSize.Width && w > MaxSize.Width)
+		if (MaxSize.Width && w > (s32)MaxSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MaxSize.Width;
-		if (MaxSize.Height && h > MaxSize.Height)
+		if (MaxSize.Height && h > (s32)MaxSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MaxSize.Height;
 
 		RelativeRect.repair();
-		
+
 		AbsoluteRect = RelativeRect + parentAbsolute.UpperLeftCorner;
 
 		if (!Parent)
@@ -354,7 +337,18 @@ public:
 	}
 
 
-	//! Returns the child element, which is at the position of the point.
+	//! Returns the topmost GUI element at the specific position.
+	/**
+	This will check this GUI element and all of its descendants, so it
+	may return this GUI element.  To check all GUI elements, call this
+	function on device->getGUIEnvironment()->getRootGUIElement(). Note
+	that the root element is the size of the screen, so doing so (with
+	an on-screen point) will always return the root element if no other
+	element is above it at that point.
+	\param point: The point at which to find a GUI element.
+	\return The topmost GUI element at that point, or 0 if there are
+	no candidate elements at this point.
+	 */
 	IGUIElement* getElementFromPoint(const core::position2d<s32>& point)
 	{
 		IGUIElement* target = 0;
@@ -365,6 +359,7 @@ public:
 		core::list<IGUIElement*>::Iterator it = Children.getLast();
 
 		if (IsVisible)
+		{
 			while(it != Children.end())
 			{
 				target = (*it)->getElementFromPoint(point);
@@ -373,16 +368,17 @@ public:
 
 				--it;
 			}
+		}
 
 		if (IsVisible && isPointInside(point))
 			target = this;
-		
+
 		return target;
 	}
 
 
 	//! Returns true if a point is within this element.
-	//! Elements with a shape other than a rectangle will override this method
+	/** Elements with a shape other than a rectangle should override this method */
 	virtual bool isPointInside(const core::position2d<s32>& point) const
 	{
 		return AbsoluteClippingRect.isPointInside(point);
@@ -394,14 +390,14 @@ public:
 	{
 		if (child)
 		{
-			child->grab();
-			child->remove();  // remove from old parent
+			child->grab(); // prevent destruction when removed
+			child->remove(); // remove from old parent
 			child->LastParentRect = getAbsolutePosition();
 			child->Parent = this;
-			Children.push_back(child);			
+			Children.push_back(child);
+			child->updateAbsolutePosition();
 		}
 	}
-
 
 	//! Removes a child.
 	virtual void removeChild(IGUIElement* child)
@@ -429,24 +425,24 @@ public:
 	//! Draws the element and its children.
 	virtual void draw()
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->draw();
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->draw();
+		}
 	}
 
 
 	//! animate the element and its children.
 	virtual void OnPostRender(u32 timeMs)
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->OnPostRender( timeMs );
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->OnPostRender( timeMs );
+		}
 	}
 
 
@@ -480,19 +476,18 @@ public:
 	}
 
 
-	//! Sets whether this control was created as part of its parent, 
-	//! for example when a scrollbar is part of a listbox. 
-	//! SubElements are not saved to disk when calling guiEnvironment->saveGUI()
+	//! Sets whether this control was created as part of its parent.
+	/** For example, it is true when a scrollbar is part of a listbox.
+	SubElements are not saved to disk when calling guiEnvironment->saveGUI() */
 	virtual void setSubElement(bool subElement)
 	{
 		IsSubElement = subElement;
 	}
 
 
-	//! If set to true, the focus will visit this element when using 
-	//! the tab key to cycle through elements.
-	//! If this element is a tab group (see isTabGroup/setTabGroup) then
-	//! ctrl+tab will be used instead.
+	//! If set to true, the focus will visit this element when using the tab key to cycle through elements.
+	/** If this element is a tab group (see isTabGroup/setTabGroup) then
+	ctrl+tab will be used instead. */
 	void setTabStop(bool enable)
 	{
 		IsTabStop = enable;
@@ -507,9 +502,9 @@ public:
 	}
 
 
-	//! Sets the priority of focus when using the tab key to navigate between a group 
-	//! of elements. See setTabGroup, isTabGroup and getTabGroup for information on tab groups.
-	//! Elements with a lower number are focused first
+	//! Sets the priority of focus when using the tab key to navigate between a group of elements.
+	/** See setTabGroup, isTabGroup and getTabGroup for information on tab groups.
+	Elements with a lower number are focused first */
 	void setTabOrder(s32 index)
 	{
 		// negative = autonumber
@@ -519,7 +514,7 @@ public:
 			IGUIElement *el = getTabGroup();
 			while (IsTabGroup && el && el->Parent)
 				el = el->Parent;
-				
+
 			IGUIElement *first=0, *closest=0;
 			if (el)
 			{
@@ -544,9 +539,9 @@ public:
 	}
 
 
-	//! Sets whether this element is a container for a group of elements which
-	//! can be navigated using the tab key. For example, windows are tab groups.
-	//! Groups can be navigated using ctrl+tab, providing isTabStop is true.
+	//! Sets whether this element is a container for a group of elements which can be navigated using the tab key.
+	/** For example, windows are tab groups.
+	Groups can be navigated using ctrl+tab, providing isTabStop is true. */
 	void setTabGroup(bool isGroup)
 	{
 		IsTabGroup = isGroup;
@@ -561,12 +556,11 @@ public:
 	}
 
 
-	//! Returns the container element which holds all elements in this element's
-	//! tab group. 
+	//! Returns the container element which holds all elements in this element's tab group.
 	IGUIElement* getTabGroup()
 	{
 		IGUIElement *ret=this;
-		
+
 		while (ret && !ret->isTabGroup())
 			ret = ret->getParent();
 
@@ -639,7 +633,7 @@ public:
 
 
 	//! Brings a child to front
-	/** \return Returns true if successful, false if not. */
+	/** \return True if successful, false if not. */
 	virtual bool bringToFront(IGUIElement* element)
 	{
 		core::list<IGUIElement*>::Iterator it = Children.begin();
@@ -667,11 +661,11 @@ public:
 
 	//! Finds the first element with the given id.
 	/** \param id: Id to search for.
-	 \param searchchildren: Set this to true, if also children of this 
-	 element may contain the element with the searched id and they 
-	 should be searched too.
-	 \return Returns the first element with the given id. If no element
-	 with this id was found, 0 is returned. */
+	\param searchchildren: Set this to true, if also children of this
+	element may contain the element with the searched id and they
+	should be searched too.
+	\return Returns the first element with the given id. If no element
+	with this id was found, 0 is returned. */
 	virtual IGUIElement* getElementFromId(s32 id, bool searchchildren=false) const
 	{
 		IGUIElement* e = 0;
@@ -687,7 +681,7 @@ public:
 
 			if (e)
 				return e;
-		}		
+		}
 
 		return e;
 	}
@@ -699,7 +693,7 @@ public:
 	{
 		if (!child)
 			return false;
-		do 
+		do
 		{
 			if (child->Parent)
 				child = child->Parent;
@@ -712,14 +706,14 @@ public:
 
 
 	//! searches elements to find the closest next element to tab to
-	//! \param startOrder: The TabOrder of the current element, -1 if none
-	//! \param reverse: true if searching for a lower number
-	//! \param group: true if searching for a higher one
-	//! \param first: element with the highest/lowest known tab order depending on search direction
-	//! \param closest: the closest match, depending on tab order and direction
-	//! \param includeInvisible: includes invisible elements in the search (default=false)
-	//! \return true if successfully found an element, false to continue searching/fail
-	bool getNextElement(s32 startOrder, bool reverse, bool group, 
+	/** \param startOrder: The TabOrder of the current element, -1 if none
+	\param reverse: true if searching for a lower number
+	\param group: true if searching for a higher one
+	\param first: element with the highest/lowest known tab order depending on search direction
+	\param closest: the closest match, depending on tab order and direction
+	\param includeInvisible: includes invisible elements in the search (default=false)
+	\return true if successfully found an element, false to continue searching/fail */
+	bool getNextElement(s32 startOrder, bool reverse, bool group,
 		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false) const
 	{
 		// we'll stop searching if we find this number
@@ -748,18 +742,18 @@ public:
 						closest = *it;
 						return true;
 					}
-					
+
 					// is it closer than the current closest?
 					if (closest)
 					{
 						closestOrder = closest->getTabOrder();
-						if (  ( reverse && currentOrder > closestOrder && currentOrder < startOrder) 
+						if ( ( reverse && currentOrder > closestOrder && currentOrder < startOrder)
 							||(!reverse && currentOrder < closestOrder && currentOrder > startOrder))
 						{
 							closest = *it;
 						}
 					}
-					else 
+					else
 					if ( (reverse && currentOrder < startOrder) || (!reverse && currentOrder > startOrder) )
 					{
 						closest = *it;
@@ -794,7 +788,7 @@ public:
 	}
 
 
-	//! Returns the type of the gui element. 
+	//! Returns the type of the gui element.
 	/** This is needed for the .NET wrapper but will be used
 	later for serializing and deserializing.
 	If you wrote your own GUIElements, you need to set the type for your element as first parameter
@@ -805,8 +799,8 @@ public:
 	}
 
 
-	//! Returns the type name of the gui element. 
-	/** This is needed serializing elements. For serializing your own elements, override this function 
+	//! Returns the type name of the gui element.
+	/** This is needed serializing elements. For serializing your own elements, override this function
 	and return your own type name which is created by your IGUIElementFactory */
 	virtual const c8* getTypeName() const
 	{
@@ -815,8 +809,8 @@ public:
 
 
 	//! Writes attributes of the scene node.
-	//! Implement this to expose the attributes of your scene node for
-	//! scripting languages, editors, debuggers or xml serialization purposes.
+	/** Implement this to expose the attributes of your scene node for
+	scripting languages, editors, debuggers or xml serialization purposes. */
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 	{
 		out->addInt("Id", ID );
@@ -824,7 +818,6 @@ public:
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
-		out->addBool("NoClip", NoClip);
 		out->addEnum("LeftAlign", AlignLeft, GUIAlignmentNames);
 		out->addEnum("RightAlign", AlignRight, GUIAlignmentNames);
 		out->addEnum("TopAlign", AlignTop, GUIAlignmentNames);
@@ -834,12 +827,13 @@ public:
 		out->addBool("TabStop", IsTabStop);
 		out->addBool("TabGroup", IsTabGroup);
 		out->addInt("TabOrder", TabOrder);
+		out->addBool("NoClip", NoClip);
 	}
 
 
 	//! Reads attributes of the scene node.
-	//! Implement this to set the attributes of your scene node for
-	//! scripting languages, editors, debuggers or xml deserialization purposes.
+	/** Implement this to set the attributes of your scene node for
+	scripting languages, editors, debuggers or xml deserialization purposes. */
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 	{
 		setID(in->getAttributeAsInt("Id"));
@@ -851,18 +845,19 @@ public:
 		TabOrder = in->getAttributeAsInt("TabOrder");
 
 		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
-		setMaxSize(core::dimension2di(p.X,p.Y));
+		setMaxSize(core::dimension2du(p.X,p.Y));
 
 		p = in->getAttributeAsPosition2d("MinSize");
-		setMinSize(core::dimension2di(p.X,p.Y));
+		setMinSize(core::dimension2du(p.X,p.Y));
 
-		setNotClipped(in->getAttributeAsBool("NoClip"));
 		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames));
 
 		setRelativePosition(in->getAttributeAsRect("Rect"));
+
+		setNotClipped(in->getAttributeAsBool("NoClip"));
 	}
 
 protected:
@@ -882,7 +877,7 @@ protected:
 	//! absolute clipping rect of element
 	core::rect<s32> AbsoluteClippingRect;
 
-	//! the rectangle the element would prefer to be, 
+	//! the rectangle the element would prefer to be,
 	//! if it was not constrained by parent or max/min size
 	core::rect<s32> DesiredRect;
 
@@ -893,7 +888,7 @@ protected:
 	core::rect<f32> ScaleRect;
 
 	//! maximum and minimum size of the element
-	core::dimension2di MaxSize, MinSize;
+	core::dimension2du MaxSize, MinSize;
 
 	//! is visible?
 	bool IsVisible;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,6 +6,7 @@
 #define __C_TEXT_SCENE_NODE_H_INCLUDED__
 
 #include "ITextSceneNode.h"
+#include "IBillboardTextSceneNode.h"
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
 #include "ISceneCollisionManager.h"
@@ -25,8 +26,7 @@ namespace scene
 		CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font, scene::ISceneCollisionManager* coll,
 			const core::vector3df& position = core::vector3df(0,0,0), const wchar_t* text=0,
-			video::SColor color=video::SColor(100,0,0,0),
-			const bool& hcenter = false, const bool& vcenter = false);
+			video::SColor color=video::SColor(100,0,0,0));
 
 		//! destructor
 		virtual ~CTextSceneNode();
@@ -44,15 +44,7 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-
-// >> add by arch_jslin 2008.02.02
-        //! gets the color of the text
-        virtual video::SColor& getTextColor();
-
-// >> add by arch_jslin 2008.02.03
-        //! sets the center alignment of the text
-        virtual void setCenter(const bool& hcenter, const bool& vcenter);
-
+		
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
 
@@ -63,17 +55,16 @@ namespace scene
 		gui::IGUIFont* Font;
 		scene::ISceneCollisionManager* Coll;
 		core::aabbox3d<f32> Box;
-		bool HCenter, VCenter;
 	};
 
-	class CBillboardTextSceneNode : public ITextSceneNode
+	class CBillboardTextSceneNode : public IBillboardTextSceneNode
 	{
 	public:
 
-		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
+		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
 			gui::IGUIFont* font,const wchar_t* text,
 			const core::vector3df& position, const core::dimension2d<f32>& size,
-			video::SColor shade_top, video::SColor shade_bottom);
+			video::SColor colorTop, video::SColor shade_bottom);
 
 		//! destructor
 		virtual ~CBillboardTextSceneNode();
@@ -91,27 +82,34 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-
-// >> add by arch_jslin 2008.02.02
-        virtual video::SColor& getTextColor();
-
-// >> add by arch_jslin 2008.02.03
-        //! sets the center alignment of the text (not implemented)
-        virtual void setCenter(const bool& hcenter, const bool& vcenter){}
-
+		
 		//! sets the size of the billboard
 		virtual void setSize(const core::dimension2d<f32>& size);
 
 		//! gets the size of the billboard
-		virtual const core::dimension2d<f32>& getSize();
+		virtual const core::dimension2d<f32>& getSize() const;
 
 		virtual video::SMaterial& getMaterial(u32 i);
-
+		
 		//! returns amount of materials used by this scene node.
 		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
+
+		//! Set the color of all vertices of the billboard
+		//! \param overallColor: the color to set
+		virtual void setColor(const video::SColor & overallColor);
+
+		//! Set the color of the top and bottom vertices of the billboard
+		//! \param topColor: the color to set the top vertices
+		//! \param bottomColor: the color to set the bottom vertices
+		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor);
+
+		//! Gets the color of the top and bottom vertices of the billboard
+		//! \param topColor: stores the color of the top vertices
+		//! \param bottomColor: stores the color of the bottom vertices
+		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const;
 
 	private:
 
@@ -123,8 +121,8 @@ namespace scene
 		core::aabbox3d<f32> BBox;
 		video::SMaterial Material;
 
-		video::SColor Shade_top;
-		video::SColor Shade_bottom;
+		video::SColor ColorTop;
+		video::SColor ColorBottom;
 		struct SSymbolInfo
 		{
 			u32 bufNo;

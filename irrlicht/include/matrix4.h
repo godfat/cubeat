@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,15 +13,30 @@
 #include "rect.h"
 #include "irrString.h"
 
+//#define USE_MATRIX_TEST
+//#define USE_MATRIX_TEST_DEBUG
+
+#if defined( USE_MATRIX_TEST_DEBUG )
+	#include <windows.h>
+
+	struct MatrixTest
+	{
+		MatrixTest () : ID(0), Calls(0) {}
+		char buf[256];
+		int Calls;
+		int ID;
+	};
+	static MatrixTest MTest;
+
+#endif
+
 namespace irr
 {
 namespace core
 {
 
 	//! 4x4 matrix. Mostly used as transformation matrix for 3d calculations.
-	/* Matrix4 is mainly used by the Irrlicht engine for doing transformations.
-	The matrix is a D3D style matrix, row major with translations in the 4th row.
-	*/
+	/** The matrix is a D3D style matrix, row major with translations in the 4th row. */
 	template <class T>
 	class CMatrix4
 	{
@@ -38,17 +53,34 @@ namespace core
 				EM4CONST_INVERSE_TRANSPOSED
 			};
 
+			//! Default constructor
+			/** \param constructor Choose the initialization style */
 			CMatrix4( eConstructor constructor = EM4CONST_IDENTITY );
+			//! Copy constructor
+			/** \param other Other matrix to copy from
+			\param constructor Choose the initialization style */
 			CMatrix4( const CMatrix4<T>& other,eConstructor constructor = EM4CONST_COPY);
 
 			//! Simple operator for directly accessing every element of the matrix.
-			T& operator()(const s32 row, const s32 col) { definitelyIdentityMatrix=false; return M[ row * 4 + col ]; }
+			T& operator()(const s32 row, const s32 col)
+			{ 
+#if defined ( USE_MATRIX_TEST )
+				definitelyIdentityMatrix=false;
+#endif
+				return M[ row * 4 + col ];
+			}
 
 			//! Simple operator for directly accessing every element of the matrix.
 			const T& operator()(const s32 row, const s32 col) const { return M[row * 4 + col]; }
 
 			//! Simple operator for linearly accessing every element of the matrix.
-			T& operator[](u32 index) { definitelyIdentityMatrix=false; return M[index]; }
+			T& operator[](u32 index)
+			{ 
+#if defined ( USE_MATRIX_TEST )
+				definitelyIdentityMatrix=false; 
+#endif
+				return M[index];
+			}
 
 			//! Simple operator for linearly accessing every element of the matrix.
 			const T& operator[](u32 index) const { return M[index]; }
@@ -61,7 +93,13 @@ namespace core
 
 			//! Returns pointer to internal array
 			const T* pointer() const { return M; }
-			T* pointer() { definitelyIdentityMatrix=false; return M; }
+			T* pointer() 
+			{ 
+#if defined ( USE_MATRIX_TEST )
+				definitelyIdentityMatrix=false;
+#endif
+				return M;
+			}
 
 			//! Returns true if other matrix is equal to this matrix.
 			bool operator==(const CMatrix4<T> &other) const;
@@ -82,11 +120,12 @@ namespace core
 			CMatrix4<T>& operator-=(const CMatrix4<T>& other);
 
 			//! set this matrix to the product of two matrices
-			inline void setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
+			inline CMatrix4<T>& setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
-			//! set this matrix to the product of two matrices, no logical optimation
-			//! use it if you know you never have a identity matrix
-			void setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
+			//! Set this matrix to the product of two matrices
+			/** no optimization used,
+			use it if you know you never have a identity matrix */
+			CMatrix4<T>& setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
 			//! Multiply by another matrix.
 			CMatrix4<T> operator*(const CMatrix4<T>& other) const;
@@ -101,40 +140,49 @@ namespace core
 			CMatrix4<T>& operator*=(const T& scalar);
 
 			//! Set matrix to identity.
-			inline void makeIdentity();
+			inline CMatrix4<T>& makeIdentity();
 
 			//! Returns true if the matrix is the identity matrix
 			inline bool isIdentity() const;
+
+			//! Returns true if the matrix is orthogonal
+			inline bool isOrthogonal() const;
 
 			//! Returns true if the matrix is the identity matrix
 			bool isIdentity_integer_base () const;
 
 			//! Set the translation of the current matrix. Will erase any previous values.
-			void setTranslation( const vector3d<T>& translation );
+			CMatrix4<T>& setTranslation( const vector3d<T>& translation );
 
 			//! Gets the current translation
 			vector3d<T> getTranslation() const;
 
 			//! Set the inverse translation of the current matrix. Will erase any previous values.
-			void setInverseTranslation( const vector3d<T>& translation );
+			CMatrix4<T>& setInverseTranslation( const vector3d<T>& translation );
 
 			//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
-			inline void setRotationRadians( const vector3d<T>& rotation );
+			inline CMatrix4<T>& setRotationRadians( const vector3d<T>& rotation );
 
 			//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
-			void setRotationDegrees( const vector3d<T>& rotation );
+			CMatrix4<T>& setRotationDegrees( const vector3d<T>& rotation );
 
-			//! Returns the rotation, as set by setRotation(). This code was orginally written by by Chev.
+			//! Returns the rotation, as set by setRotation().
+			/** This code was orginally written by by Chev. */
 			core::vector3d<T> getRotationDegrees() const;
 
-			//! Make an inverted rotation matrix from Euler angles. The 4th row and column are unmodified.
-			inline void setInverseRotationRadians( const vector3d<T>& rotation );
+			//! Make an inverted rotation matrix from Euler angles.
+			/** The 4th row and column are unmodified. */
+			inline CMatrix4<T>& setInverseRotationRadians( const vector3d<T>& rotation );
 
-			//! Make an inverted rotation matrix from Euler angles. The 4th row and column are unmodified.
-			void setInverseRotationDegrees( const vector3d<T>& rotation );
+			//! Make an inverted rotation matrix from Euler angles.
+			/** The 4th row and column are unmodified. */
+			CMatrix4<T>& setInverseRotationDegrees( const vector3d<T>& rotation );
 
 			//! Set Scale
-			void setScale( const vector3d<T>& scale );
+			CMatrix4<T>& setScale( const vector3d<T>& scale );
+
+			//! Set Scale
+			CMatrix4<T>& setScale( const T scale ) { return setScale(core::vector3d<T>(scale,scale,scale)); }
 
 			//! Get Scale
 			core::vector3d<T> getScale() const;
@@ -149,7 +197,7 @@ namespace core
 			void rotateVect( vector3df& vect ) const;
 
 			//! An alternate transform vector method, writing into a second vector
-			void rotateVect(vector3df& out,const core::vector3df& in) const;
+			void rotateVect(core::vector3df& out, const core::vector3df& in) const;
 
 			//! An alternate transform vector method, writing into an array of 3 floats
 			void rotateVect(T *out,const core::vector3df &in) const;
@@ -169,19 +217,16 @@ namespace core
 			//! Transforms a plane by this matrix
 			void transformPlane( core::plane3d<f32> &plane) const;
 
-			//! Transforms a plane by this matrix ( some problems to solve..)
-			void transformPlane_new( core::plane3d<f32> &plane) const;
-
 			//! Transforms a plane by this matrix
 			void transformPlane( const core::plane3d<f32> &in, core::plane3d<f32> &out) const;
 
 			//! Transforms a axis aligned bounding box
-			/** The result box of this operation may not be very accurate. For
-			accurate results, use transformBoxEx() */
+			/** The result box of this operation may not be accurate at all. For
+			correct results, use transformBoxEx() */
 			void transformBox(core::aabbox3d<f32>& box) const;
 
-			//! Transforms a axis aligned bounding box more accurately than transformBox()
-			/** The result box of this operation should by quite accurate, but this operation
+			//! Transforms a axis aligned bounding box
+			/** The result box of this operation should by accurate, but this operation
 			is slower than transformBox(). */
 			void transformBoxEx(core::aabbox3d<f32>& box) const;
 
@@ -189,99 +234,174 @@ namespace core
 			void multiplyWith1x4Matrix(T* matrix) const;
 
 			//! Calculates inverse of matrix. Slow.
-			//! \return Returns false if there is no inverse matrix.
+			/** \return Returns false if there is no inverse matrix.*/
 			bool makeInverse();
 
 
 			//! Inverts a primitive matrix which only contains a translation and a rotation
-			//! \param out: where result matrix is written to.
+			/** \param out: where result matrix is written to. */
 			bool getInversePrimitive ( CMatrix4<T>& out ) const;
 
-			//! returns the inversed matrix of this one
-			//! \param out: where result matrix is written to.
-			//! \return Returns false if there is no inverse matrix.
+			//! Gets the inversed matrix of this one
+			/** \param out: where result matrix is written to.
+			\return Returns false if there is no inverse matrix. */
 			bool getInverse(CMatrix4<T>& out) const;
 
 			//! Builds a right-handed perspective projection matrix based on a field of view
-			void buildProjectionMatrixPerspectiveFovRH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixPerspectiveFovRH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
 
 			//! Builds a left-handed perspective projection matrix based on a field of view
-			void buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
 
 			//! Builds a right-handed perspective projection matrix.
-			void buildProjectionMatrixPerspectiveRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixPerspectiveRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
 
 			//! Builds a left-handed perspective projection matrix.
-			void buildProjectionMatrixPerspectiveLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixPerspectiveLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
 
 			//! Builds a left-handed orthogonal projection matrix.
-			void buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
 
 			//! Builds a right-handed orthogonal projection matrix.
-			void buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
 
 			//! Builds a left-handed look-at matrix.
-			void buildCameraLookAtMatrixLH(const vector3df& position, const vector3df& target, const vector3df& upVector);
+			CMatrix4<T>& buildCameraLookAtMatrixLH(
+					const vector3df& position,
+					const vector3df& target,
+					const vector3df& upVector);
 
 			//! Builds a right-handed look-at matrix.
-			void buildCameraLookAtMatrixRH(const vector3df& position, const vector3df& target, const vector3df& upVector);
+			CMatrix4<T>& buildCameraLookAtMatrixRH(
+					const vector3df& position,
+					const vector3df& target,
+					const vector3df& upVector);
 
 			//! Builds a matrix that flattens geometry into a plane.
-			//! \param light: light source
-			//! \param plane: plane into which the geometry if flattened into
-			//! \param point: value between 0 and 1, describing the light source.
-			//! If this is 1, it is a point light, if it is 0, it is a directional light.
-			void buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point=1.0f);
+			/** \param light: light source
+			\param plane: plane into which the geometry if flattened into
+			\param point: value between 0 and 1, describing the light source.
+			If this is 1, it is a point light, if it is 0, it is a directional light. */
+			CMatrix4<T>& buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point=1.0f);
 
 			//! Builds a matrix which transforms a normalized Device Coordinate to Device Coordinates.
 			/** Used to scale <-1,-1><1,1> to viewport, for example from von <-1,-1> <1,1> to the viewport <0,0><0,640> */
-			void buildNDCToDCMatrix( const core::rect<s32>& area, f32 zScale);
+			CMatrix4<T>& buildNDCToDCMatrix( const core::rect<s32>& area, f32 zScale);
 
-			//! creates a new matrix as interpolated matrix from two other ones.
-			//! \param b: other matrix to interpolate with
-			//! \param time: Must be a value between 0 and 1.
+			//! Creates a new matrix as interpolated matrix from two other ones.
+			/** \param b: other matrix to interpolate with
+			\param time: Must be a value between 0 and 1. */
 			CMatrix4<T> interpolate(const core::CMatrix4<T>& b, f32 time) const;
 
-			//! returns transposed matrix
+			//! Gets transposed matrix
 			CMatrix4<T> getTransposed() const;
 
-			//! returns transposed matrix to a plain 4x4 float matrix
+			//! Gets transposed matrix
 			inline void getTransposed( CMatrix4<T>& dest ) const;
 
-			/*!
+			//! Builds a matrix that rotates from one vector to another
+			/** \param from: vector to rotate from
+			\param to: vector to rotate to
+			 */
+			CMatrix4<T>& buildRotateFromTo(const core::vector3df& from, const core::vector3df& to);
+
+			//! Builds a combined matrix which translate to a center before rotation and translate afterwards
+			/** \param from: vector to rotate from
+			\param to: vector to rotate to
+			 */
+			void setRotationCenter(const core::vector3df& center, const core::vector3df& translate);
+
+			//! Builds a matrix which rotates a source vector to a look vector over an arbitrary axis
+			/** \param camPos: viewer position in world coo
+			\param center: object position in world-coo and rotation pivot
+			\param translation: object final translation from center
+			\param axis: axis to rotate about
+			\param from: source vector to rotate from
+			 */
+			void buildAxisAlignedBillboard(	const core::vector3df& camPos,
+											const core::vector3df& center,
+											const core::vector3df& translation,
+											const core::vector3df& axis,
+											const core::vector3df& from
+										);
+
+			/*
 				construct 2D Texture transformations
 				rotate about center, scale, and transform.
 			*/
-			void setTextureScale( f32 sx, f32 sy );
-
-			void setTextureRotationCenter( f32 radAngle );
-			void setTextureScaleCenter( f32 sx, f32 sy );
-
-			void setTextureTranslate( f32 x, f32 y );
-			void setTextureTranslateTransposed( f32 x, f32 y );
-
-			void buildTextureTransform( f32 rotateRad,
+			//! Set to a texture transformation matrix with the given parameters.
+			CMatrix4<T>& buildTextureTransform( f32 rotateRad,
 					const core::vector2df &rotatecenter,
 					const core::vector2df &translate,
 					const core::vector2df &scale);
 
-			//! sets all matrix data members at once
-			void setM(const T* data);
+			//! Set texture transformation rotation
+			/** Rotate about z axis, recenter at (0.5,0.5).
+			Doesn't clear other elements than those affected
+			\param radAngle Angle in radians
+			\return Altered matrix */
+			CMatrix4<T>& setTextureRotationCenter( f32 radAngle );
 
-			//! sets if the matrix is definitely identity matrix
+			//! Set texture transformation translation
+			/** Doesn't clear other elements than those affected.
+			\param x Offset on x axis
+			\param y Offset on y axis
+			\return Altered matrix */
+			CMatrix4<T>& setTextureTranslate( f32 x, f32 y );
+
+			//! Set texture transformation translation, using a transposed representation
+			/** Doesn't clear other elements than those affected.
+			\param x Offset on x axis
+			\param y Offset on y axis
+			\return Altered matrix */
+			CMatrix4<T>& setTextureTranslateTransposed( f32 x, f32 y );
+
+			//! Set texture transformation scale
+			/** Doesn't clear other elements than those affected.
+			\param sx Scale factor on x axis
+			\param sy Scale factor on y axis
+			\return Altered matrix. */
+			CMatrix4<T>& setTextureScale( f32 sx, f32 sy );
+
+			//! Set texture transformation scale, and recenter at (0.5,0.5)
+			/** Doesn't clear other elements than those affected.
+			\param sx Scale factor on x axis
+			\param sy Scale factor on y axis
+			\return Altered matrix. */
+			CMatrix4<T>& setTextureScaleCenter( f32 sx, f32 sy );
+
+			//! Sets all matrix data members at once
+			CMatrix4<T>& setM(const T* data);
+
+			//! Sets if the matrix is definitely identity matrix
 			void setDefinitelyIdentityMatrix( bool isDefinitelyIdentityMatrix);
 
-			//! gets if the matrix is definitely identity matrix
+			//! Gets if the matrix is definitely identity matrix
 			bool getDefinitelyIdentityMatrix() const;
 
 		private:
 			//! Matrix data, stored in row-major order
 			T M[16];
-			mutable bool definitelyIdentityMatrix;
+#if defined ( USE_MATRIX_TEST )
+			//! Flag is this matrix is identity matrix
+			mutable u32 definitelyIdentityMatrix;
+#endif
+#if defined ( USE_MATRIX_TEST_DEBUG )
+			u32 id;
+			mutable u32 calls;
+#endif
+
 	};
 
+	// Default constructor
 	template <class T>
-	inline CMatrix4<T>::CMatrix4( eConstructor constructor ) : definitelyIdentityMatrix(false)
+	inline CMatrix4<T>::CMatrix4( eConstructor constructor )
+#if defined ( USE_MATRIX_TEST )
+		: definitelyIdentityMatrix(BIT_UNTESTED)
+#endif
+#if defined ( USE_MATRIX_TEST_DEBUG )
+		,id ( MTest.ID++), calls ( 0 )
+#endif
 	{
 		switch ( constructor )
 		{
@@ -296,8 +416,15 @@ namespace core
 		}
 	}
 
+	// Copy constructor
 	template <class T>
-	inline CMatrix4<T>::CMatrix4( const CMatrix4<T>& other, eConstructor constructor) : definitelyIdentityMatrix(false)
+	inline CMatrix4<T>::CMatrix4( const CMatrix4<T>& other, eConstructor constructor)
+#if defined ( USE_MATRIX_TEST )
+		: definitelyIdentityMatrix(BIT_UNTESTED)
+#endif
+#if defined ( USE_MATRIX_TEST_DEBUG )
+		,id ( MTest.ID++), calls ( 0 )
+#endif
 	{
 		switch ( constructor )
 		{
@@ -479,27 +606,32 @@ namespace core
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::operator*=(const CMatrix4<T>& other)
 	{
-		// do chacks on your own in order to avoid copy creation
+#if defined ( USE_MATRIX_TEST )
+		// do checks on your own in order to avoid copy creation
 		if ( !other.isIdentity() )
 		{
 			if ( this->isIdentity() )
 			{
-				*this = other;
+				return (*this = other);
 			}
 			else
 			{
 				CMatrix4<T> temp ( *this );
-				setbyproduct_nocheck( temp, other );
+				return setbyproduct_nocheck( temp, other );
 			}
 		}
 		return *this;
+#else
+		CMatrix4<T> temp ( *this );
+		return setbyproduct_nocheck( temp, other );
+#endif
 	}
 
 	//! multiply by another matrix
 	// set this matrix to the product of two other matrices
 	// goal is to reduce stack use and copy
 	template <class T>
-	inline void CMatrix4<T>::setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b )
+	inline CMatrix4<T>& CMatrix4<T>::setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b )
 	{
 		const T *m1 = other_a.M;
 		const T *m2 = other_b.M;
@@ -523,7 +655,10 @@ namespace core
 		M[13] = m1[1]*m2[12] + m1[5]*m2[13] + m1[9]*m2[14] + m1[13]*m2[15];
 		M[14] = m1[2]*m2[12] + m1[6]*m2[13] + m1[10]*m2[14] + m1[14]*m2[15];
 		M[15] = m1[3]*m2[12] + m1[7]*m2[13] + m1[11]*m2[14] + m1[15]*m2[15];
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
@@ -531,31 +666,32 @@ namespace core
 	// set this matrix to the product of two other matrices
 	// goal is to reduce stack use and copy
 	template <class T>
-	inline void CMatrix4<T>::setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b )
+	inline CMatrix4<T>& CMatrix4<T>::setbyproduct(const CMatrix4<T>& other_a, const CMatrix4<T>& other_b )
 	{
+#if defined ( USE_MATRIX_TEST )
 		if ( other_a.isIdentity () )
-		{
-			*this = other_b;
-			return;
-		}
+			return (*this = other_b);
 		else
 		if ( other_b.isIdentity () )
-		{
-			*this = other_a;
-			return;
-		}
-		setbyproduct_nocheck(other_a,other_b);
+			return (*this = other_a);
+		else
+			return setbyproduct_nocheck(other_a,other_b);
+#else
+		return setbyproduct_nocheck(other_a,other_b);
+#endif
 	}
 
 	//! multiply by another matrix
 	template <class T>
 	inline CMatrix4<T> CMatrix4<T>::operator*(const CMatrix4<T>& m2) const
 	{
+#if defined ( USE_MATRIX_TEST )
 		// Testing purpose..
 		if ( this->isIdentity() )
 			return m2;
 		if ( m2.isIdentity() )
 			return *this;
+#endif
 
 		CMatrix4<T> m3 ( EM4CONST_NOTHING );
 
@@ -593,66 +729,95 @@ namespace core
 
 
 	template <class T>
-	inline void CMatrix4<T>::setTranslation( const vector3d<T>& translation )
+	inline CMatrix4<T>& CMatrix4<T>::setTranslation( const vector3d<T>& translation )
 	{
 		M[12] = translation.X;
 		M[13] = translation.Y;
 		M[14] = translation.Z;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setInverseTranslation( const vector3d<T>& translation )
+	inline CMatrix4<T>& CMatrix4<T>::setInverseTranslation( const vector3d<T>& translation )
 	{
 		M[12] = -translation.X;
 		M[13] = -translation.Y;
 		M[14] = -translation.Z;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setScale( const vector3d<T>& scale )
+	inline CMatrix4<T>& CMatrix4<T>::setScale( const vector3d<T>& scale )
 	{
 		M[0] = scale.X;
 		M[5] = scale.Y;
 		M[10] = scale.Z;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
+	//! Returns the absolute values of the scales of the matrix.
+	/** 
+	Note that this always returns the absolute (positive) values.  Unfortunately it
+	does not appear to be possible to extract any original negative values.  The best
+	that we could do would be to arbitrarily make one scale negative if one or three
+	of them were negative.
+	FIXME - return the original values.
+	*/
 	template <class T>
 	inline vector3d<T> CMatrix4<T>::getScale() const
 	{
-		return vector3d<T>(M[0],M[5],M[10]);
+		// See http://www.robertblum.com/articles/2005/02/14/decomposing-matrices
+
+		// Deal with the 0 rotation case first
+		// Prior to Irrlicht 1.6, we always returned this value.
+		if(core::iszero(M[1]) && core::iszero(M[2]) &&
+			core::iszero(M[4]) && core::iszero(M[6]) &&
+			core::iszero(M[8]) && core::iszero(M[9]))
+			return vector3d<T>(M[0], M[5], M[10]);
+
+		// We have to do the full calculation.
+		return vector3d<T>(sqrtf(M[0] * M[0] + M[1] * M[1] + M[2] * M[2]),
+							sqrtf(M[4] * M[4] + M[5] * M[5] + M[6] * M[6]),
+							sqrtf(M[8] * M[8] + M[9] * M[9] + M[10] * M[10]));
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setRotationDegrees( const vector3d<T>& rotation )
+	inline CMatrix4<T>& CMatrix4<T>::setRotationDegrees( const vector3d<T>& rotation )
 	{
-		setRotationRadians( rotation * core::DEGTORAD );
+		return setRotationRadians( rotation * core::DEGTORAD );
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setInverseRotationDegrees( const vector3d<T>& rotation )
+	inline CMatrix4<T>& CMatrix4<T>::setInverseRotationDegrees( const vector3d<T>& rotation )
 	{
-		setInverseRotationRadians( rotation * core::DEGTORAD );
+		return setInverseRotationRadians( rotation * core::DEGTORAD );
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setRotationRadians( const vector3d<T>& rotation )
+	inline CMatrix4<T>& CMatrix4<T>::setRotationRadians( const vector3d<T>& rotation )
 	{
-		f64 cr = cos( rotation.X );
-		f64 sr = sin( rotation.X );
-		f64 cp = cos( rotation.Y );
-		f64 sp = sin( rotation.Y );
-		f64 cy = cos( rotation.Z );
-		f64 sy = sin( rotation.Z );
+		const f64 cr = cos( rotation.X );
+		const f64 sr = sin( rotation.X );
+		const f64 cp = cos( rotation.Y );
+		const f64 sp = sin( rotation.Y );
+		const f64 cy = cos( rotation.Z );
+		const f64 sy = sin( rotation.Z );
 
 		M[0] = (T)( cp*cy );
 		M[1] = (T)( cp*sy );
 		M[2] = (T)( -sp );
 
-		f64 srsp = sr*sp;
-		f64 crsp = cr*sp;
+		const f64 srsp = sr*sp;
+		const f64 crsp = cr*sp;
 
 		M[4] = (T)( srsp*cy-cr*sy );
 		M[5] = (T)( srsp*sy+cr*cy );
@@ -661,31 +826,36 @@ namespace core
 		M[8] = (T)( crsp*cy+sr*sy );
 		M[9] = (T)( crsp*sy-sr*cy );
 		M[10] = (T)( cr*cp );
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-
-	//! Returns the rotation, as set by setRotation(). This code was sent
-	//! in by Chev.
+	//! Returns a rotation that is equivalent to that set by setRotationDegrees().
+	/** This code was sent in by Chev.  Note that it does not necessarily return
+	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
+	be equivalent, i.e. will have the same result when used to rotate a vector or node. */
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
 		const CMatrix4<T> &mat = *this;
 
 		f64 Y = -asin(mat(0,2));
-		f64 C = cos(Y);
+		const f64 C = cos(Y);
 		Y *= RADTODEG64;
 
 		f64 rotx, roty, X, Z;
 
-		if (fabs(C)>0.0005f)
+		if (fabs(C)>ROUNDING_ERROR_f64)
 		{
-			rotx = mat(2,2) / C;
-			roty = mat(1,2) / C;
+			const T invC = (T)(1.0/C);
+			rotx = mat(2,2) * invC;
+			roty = mat(1,2) * invC;
 			X = atan2( roty, rotx ) * RADTODEG64;
-			rotx = mat(0,0) / C;
-			roty = mat(0,1) / C;
+			rotx = mat(0,0) * invC;
+			roty = mat(0,1) * invC;
 			Z = atan2( roty, rotx ) * RADTODEG64;
 		}
 		else
@@ -703,11 +873,12 @@ namespace core
 		if (Y < 0.0) Y += 360.0;
 		if (Z < 0.0) Z += 360.0;
 
-		return vector3d<T>((f32)X,(f32)Y,(f32)Z);
+		return vector3d<T>((T)X,(T)Y,(T)Z);
 	}
 
+
 	template <class T>
-	inline void CMatrix4<T>::setInverseRotationRadians( const vector3d<T>& rotation )
+	inline CMatrix4<T>& CMatrix4<T>::setInverseRotationRadians( const vector3d<T>& rotation )
 	{
 		f64 cr = cos( rotation.X );
 		f64 sr = sin( rotation.X );
@@ -730,18 +901,24 @@ namespace core
 		M[2] = (T)( crsp*cy+sr*sy );
 		M[6] = (T)( crsp*sy-sr*cy );
 		M[10] = (T)( cr*cp );
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
 	/*!
 	*/
 	template <class T>
-	inline void CMatrix4<T>::makeIdentity()
+	inline CMatrix4<T>& CMatrix4<T>::makeIdentity()
 	{
 		memset(M, 0, 16*sizeof(T));
 		M[0] = M[5] = M[10] = M[15] = (T)1;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=true;
+#endif
+		return *this;
 	}
 
 
@@ -752,24 +929,51 @@ namespace core
 	template <class T>
 	inline bool CMatrix4<T>::isIdentity() const
 	{
+#if defined ( USE_MATRIX_TEST )
 		if (definitelyIdentityMatrix)
 			return true;
-		if (	!equals ( M[ 0], (T)1 ) ||
-				!equals ( M[ 5], (T)1 ) ||
-				!equals ( M[10], (T)1 ) ||
-				!equals ( M[15], (T)1 )
-			)
+#endif
+		if (!equals( M[ 0], (T)1 ) ||
+				!equals( M[ 5], (T)1 ) ||
+				!equals( M[10], (T)1 ) ||
+				!equals( M[15], (T)1 ))
 			return false;
 
 		for (s32 i=0; i<4; ++i)
 			for (s32 j=0; j<4; ++j)
-				if (j != i)
-					if (!iszero((*this)(i,j)))
-						return false;
+				if ((j != i) && (!iszero((*this)(i,j))))
+					return false;
 
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=true;
+#endif
 		return true;
 	}
+
+
+	/* Check orthogonality of matrix. */
+	template <class T>
+	inline bool CMatrix4<T>::isOrthogonal() const
+	{
+		T dp=M[0] * M[4 ] + M[1] * M[5 ] + M[2 ] * M[6 ] + M[3 ] * M[7 ];
+		if (!iszero(dp))
+			return false;
+		dp = M[0] * M[8 ] + M[1] * M[9 ] + M[2 ] * M[10] + M[3 ] * M[11];
+		if (!iszero(dp))
+			return false;
+		dp = M[0] * M[12] + M[1] * M[13] + M[2 ] * M[14] + M[3 ] * M[15];
+		if (!iszero(dp))
+			return false;
+		dp = M[4] * M[8 ] + M[5] * M[9 ] + M[6 ] * M[10] + M[7 ] * M[11];
+		if (!iszero(dp))
+			return false;
+		dp = M[4] * M[12] + M[5] * M[13] + M[6 ] * M[14] + M[7 ] * M[15];
+		if (!iszero(dp))
+			return false;
+		dp = M[8] * M[12] + M[9] * M[13] + M[10] * M[14] + M[11] * M[15];
+		return (iszero(dp));
+	}
+
 
 	/*
 		doesn't solve floating range problems..
@@ -780,8 +984,10 @@ namespace core
 	template <class T>
 	inline bool CMatrix4<T>::isIdentity_integer_base() const
 	{
+#if defined ( USE_MATRIX_TEST )
 		if (definitelyIdentityMatrix)
 			return true;
+#endif
 		if(IR(M[0])!=F32_VALUE_1)	return false;
 		if(IR(M[1])!=0)			return false;
 		if(IR(M[2])!=0)			return false;
@@ -801,10 +1007,12 @@ namespace core
 		if(IR(M[13])!=0)		return false;
 		if(IR(M[13])!=0)		return false;
 		if(IR(M[15])!=F32_VALUE_1)	return false;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=true;
+#endif
 		return true;
 	}
-
 
 
 	template <class T>
@@ -867,7 +1075,7 @@ namespace core
 
 
 	template <class T>
-	inline void CMatrix4<T>::transformVect(T *out,const vector3df &in) const
+	inline void CMatrix4<T>::transformVect(T *out, const core::vector3df &in) const
 	{
 		out[0] = in.X*M[0] + in.Y*M[4] + in.Z*M[8] + M[12];
 		out[1] = in.X*M[1] + in.Y*M[5] + in.Z*M[9] + M[13];
@@ -881,31 +1089,15 @@ namespace core
 	inline void CMatrix4<T>::transformPlane( core::plane3d<f32> &plane) const
 	{
 		vector3df member;
+		// Transform the plane member point, i.e. rotate, translate and scale it.
 		transformVect(member, plane.getMemberPoint());
 
-		vector3df origin(0,0,0);
-		transformVect(plane.Normal);
-		transformVect(origin);
+		// Transform the normal by the transposed inverse of the matrix
+		CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED);
+		vector3df normal = plane.Normal;
+		transposedInverse.transformVect(normal);
 
-		plane.Normal -= origin;
-		plane.D = - member.dotProduct(plane.Normal);
-	}
-
-	//! Transforms a plane by this matrix
-	template <class T>
-	inline void CMatrix4<T>::transformPlane_new( core::plane3d<f32> &plane) const
-	{
-		// rotate normal -> rotateVect ( plane.n );
-		vector3df n;
-		n.X = plane.Normal.X*M[0] + plane.Normal.Y*M[4] + plane.Normal.Z*M[8];
-		n.Y = plane.Normal.X*M[1] + plane.Normal.Y*M[5] + plane.Normal.Z*M[9];
-		n.Z = plane.Normal.X*M[2] + plane.Normal.Y*M[6] + plane.Normal.Z*M[10];
-
-		// compute new d. -> getTranslation(). dotproduct ( plane.n )
-		plane.D -= M[12] * n.X + M[13] * n.Y + M[14] * n.Z;
-		plane.Normal.X = n.X;
-		plane.Normal.Y = n.Y;
-		plane.Normal.Z = n.Z;
+		plane.setPlane(member, normal);
 	}
 
 	//! Transforms a plane by this matrix
@@ -920,8 +1112,10 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::transformBox(core::aabbox3d<f32>& box) const
 	{
-		if (isIdentity() )
+#if defined ( USE_MATRIX_TEST )
+		if (isIdentity())
 			return;
+#endif
 
 		transformVect(box.MinEdge);
 		transformVect(box.MaxEdge);
@@ -932,32 +1126,29 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::transformBoxEx(core::aabbox3d<f32>& box) const
 	{
-		f32 Amin[3];
-		f32 Amax[3];
+#if defined ( USE_MATRIX_TEST )
+		if (isIdentity())
+			return;
+#endif
+
+		const f32 Amin[3] = {box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z};
+		const f32 Amax[3] = {box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z};
+
 		f32 Bmin[3];
 		f32 Bmax[3];
-
-		Amin[0] = box.MinEdge.X;
-		Amin[1] = box.MinEdge.Y;
-		Amin[2] = box.MinEdge.Z;
-
-		Amax[0] = box.MaxEdge.X;
-		Amax[1] = box.MaxEdge.Y;
-		Amax[2] = box.MaxEdge.Z;
 
 		Bmin[0] = Bmax[0] = M[12];
 		Bmin[1] = Bmax[1] = M[13];
 		Bmin[2] = Bmax[2] = M[14];
 
-		u32 i, j;
 		const CMatrix4<T> &m = *this;
 
-		for (i = 0; i < 3; ++i)
+		for (u32 i = 0; i < 3; ++i)
 		{
-			for (j = 0; j < 3; ++j)
+			for (u32 j = 0; j < 3; ++j)
 			{
-				f32 a = m(j,i) * Amin[j];
-				f32 b = m(j,i) * Amax[j];
+				const f32 a = m(j,i) * Amin[j];
+				const f32 b = m(j,i) * Amax[j];
 
 				if (a < b)
 				{
@@ -1029,12 +1220,13 @@ namespace core
 		/// The inverse is calculated using Cramers rule.
 		/// If no inverse exists then 'false' is returned.
 
+#if defined ( USE_MATRIX_TEST )
 		if ( this->isIdentity() )
 		{
 			out=*this;
 			return true;
 		}
-
+#endif
 		const CMatrix4<T> &m = *this;
 
 		f32 d = (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0)) * (m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2)) -
@@ -1049,23 +1241,58 @@ namespace core
 
 		d = core::reciprocal ( d );
 
-		out(0, 0) = d * (m(1, 1) * (m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2)) + m(1, 2) * (m(2, 3) * m(3, 1) - m(2, 1) * m(3, 3)) + m(1, 3) * (m(2, 1) * m(3, 2) - m(2, 2) * m(3, 1)));
-		out(0, 1) = d * (m(2, 1) * (m(0, 2) * m(3, 3) - m(0, 3) * m(3, 2)) + m(2, 2) * (m(0, 3) * m(3, 1) - m(0, 1) * m(3, 3)) + m(2, 3) * (m(0, 1) * m(3, 2) - m(0, 2) * m(3, 1)));
-		out(0, 2) = d * (m(3, 1) * (m(0, 2) * m(1, 3) - m(0, 3) * m(1, 2)) + m(3, 2) * (m(0, 3) * m(1, 1) - m(0, 1) * m(1, 3)) + m(3, 3) * (m(0, 1) * m(1, 2) - m(0, 2) * m(1, 1)));
-		out(0, 3) = d * (m(0, 1) * (m(1, 3) * m(2, 2) - m(1, 2) * m(2, 3)) + m(0, 2) * (m(1, 1) * m(2, 3) - m(1, 3) * m(2, 1)) + m(0, 3) * (m(1, 2) * m(2, 1) - m(1, 1) * m(2, 2)));
-		out(1, 0) = d * (m(1, 2) * (m(2, 0) * m(3, 3) - m(2, 3) * m(3, 0)) + m(1, 3) * (m(2, 2) * m(3, 0) - m(2, 0) * m(3, 2)) + m(1, 0) * (m(2, 3) * m(3, 2) - m(2, 2) * m(3, 3)));
-		out(1, 1) = d * (m(2, 2) * (m(0, 0) * m(3, 3) - m(0, 3) * m(3, 0)) + m(2, 3) * (m(0, 2) * m(3, 0) - m(0, 0) * m(3, 2)) + m(2, 0) * (m(0, 3) * m(3, 2) - m(0, 2) * m(3, 3)));
-		out(1, 2) = d * (m(3, 2) * (m(0, 0) * m(1, 3) - m(0, 3) * m(1, 0)) + m(3, 3) * (m(0, 2) * m(1, 0) - m(0, 0) * m(1, 2)) + m(3, 0) * (m(0, 3) * m(1, 2) - m(0, 2) * m(1, 3)));
-		out(1, 3) = d * (m(0, 2) * (m(1, 3) * m(2, 0) - m(1, 0) * m(2, 3)) + m(0, 3) * (m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0)) + m(0, 0) * (m(1, 2) * m(2, 3) - m(1, 3) * m(2, 2)));
-		out(2, 0) = d * (m(1, 3) * (m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0)) + m(1, 0) * (m(2, 1) * m(3, 3) - m(2, 3) * m(3, 1)) + m(1, 1) * (m(2, 3) * m(3, 0) - m(2, 0) * m(3, 3)));
-		out(2, 1) = d * (m(2, 3) * (m(0, 0) * m(3, 1) - m(0, 1) * m(3, 0)) + m(2, 0) * (m(0, 1) * m(3, 3) - m(0, 3) * m(3, 1)) + m(2, 1) * (m(0, 3) * m(3, 0) - m(0, 0) * m(3, 3)));
-		out(2, 2) = d * (m(3, 3) * (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0)) + m(3, 0) * (m(0, 1) * m(1, 3) - m(0, 3) * m(1, 1)) + m(3, 1) * (m(0, 3) * m(1, 0) - m(0, 0) * m(1, 3)));
-		out(2, 3) = d * (m(0, 3) * (m(1, 1) * m(2, 0) - m(1, 0) * m(2, 1)) + m(0, 0) * (m(1, 3) * m(2, 1) - m(1, 1) * m(2, 3)) + m(0, 1) * (m(1, 0) * m(2, 3) - m(1, 3) * m(2, 0)));
-		out(3, 0) = d * (m(1, 0) * (m(2, 2) * m(3, 1) - m(2, 1) * m(3, 2)) + m(1, 1) * (m(2, 0) * m(3, 2) - m(2, 2) * m(3, 0)) + m(1, 2) * (m(2, 1) * m(3, 0) - m(2, 0) * m(3, 1)));
-		out(3, 1) = d * (m(2, 0) * (m(0, 2) * m(3, 1) - m(0, 1) * m(3, 2)) + m(2, 1) * (m(0, 0) * m(3, 2) - m(0, 2) * m(3, 0)) + m(2, 2) * (m(0, 1) * m(3, 0) - m(0, 0) * m(3, 1)));
-		out(3, 2) = d * (m(3, 0) * (m(0, 2) * m(1, 1) - m(0, 1) * m(1, 2)) + m(3, 1) * (m(0, 0) * m(1, 2) - m(0, 2) * m(1, 0)) + m(3, 2) * (m(0, 1) * m(1, 0) - m(0, 0) * m(1, 1)));
-		out(3, 3) = d * (m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1)) + m(0, 1) * (m(1, 2) * m(2, 0) - m(1, 0) * m(2, 2)) + m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0)));
+		out(0, 0) = d * (m(1, 1) * (m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2)) +
+				m(1, 2) * (m(2, 3) * m(3, 1) - m(2, 1) * m(3, 3)) +
+				m(1, 3) * (m(2, 1) * m(3, 2) - m(2, 2) * m(3, 1)));
+		out(0, 1) = d * (m(2, 1) * (m(0, 2) * m(3, 3) - m(0, 3) * m(3, 2)) +
+				m(2, 2) * (m(0, 3) * m(3, 1) - m(0, 1) * m(3, 3)) +
+				m(2, 3) * (m(0, 1) * m(3, 2) - m(0, 2) * m(3, 1)));
+		out(0, 2) = d * (m(3, 1) * (m(0, 2) * m(1, 3) - m(0, 3) * m(1, 2)) +
+				m(3, 2) * (m(0, 3) * m(1, 1) - m(0, 1) * m(1, 3)) +
+				m(3, 3) * (m(0, 1) * m(1, 2) - m(0, 2) * m(1, 1)));
+		out(0, 3) = d * (m(0, 1) * (m(1, 3) * m(2, 2) - m(1, 2) * m(2, 3)) +
+				m(0, 2) * (m(1, 1) * m(2, 3) - m(1, 3) * m(2, 1)) +
+				m(0, 3) * (m(1, 2) * m(2, 1) - m(1, 1) * m(2, 2)));
+		out(1, 0) = d * (m(1, 2) * (m(2, 0) * m(3, 3) - m(2, 3) * m(3, 0)) +
+				m(1, 3) * (m(2, 2) * m(3, 0) - m(2, 0) * m(3, 2)) +
+				m(1, 0) * (m(2, 3) * m(3, 2) - m(2, 2) * m(3, 3)));
+		out(1, 1) = d * (m(2, 2) * (m(0, 0) * m(3, 3) - m(0, 3) * m(3, 0)) +
+				m(2, 3) * (m(0, 2) * m(3, 0) - m(0, 0) * m(3, 2)) +
+				m(2, 0) * (m(0, 3) * m(3, 2) - m(0, 2) * m(3, 3)));
+		out(1, 2) = d * (m(3, 2) * (m(0, 0) * m(1, 3) - m(0, 3) * m(1, 0)) +
+				m(3, 3) * (m(0, 2) * m(1, 0) - m(0, 0) * m(1, 2)) +
+				m(3, 0) * (m(0, 3) * m(1, 2) - m(0, 2) * m(1, 3)));
+		out(1, 3) = d * (m(0, 2) * (m(1, 3) * m(2, 0) - m(1, 0) * m(2, 3)) +
+				m(0, 3) * (m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0)) +
+				m(0, 0) * (m(1, 2) * m(2, 3) - m(1, 3) * m(2, 2)));
+		out(2, 0) = d * (m(1, 3) * (m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0)) +
+				m(1, 0) * (m(2, 1) * m(3, 3) - m(2, 3) * m(3, 1)) +
+				m(1, 1) * (m(2, 3) * m(3, 0) - m(2, 0) * m(3, 3)));
+		out(2, 1) = d * (m(2, 3) * (m(0, 0) * m(3, 1) - m(0, 1) * m(3, 0)) +
+				m(2, 0) * (m(0, 1) * m(3, 3) - m(0, 3) * m(3, 1)) +
+				m(2, 1) * (m(0, 3) * m(3, 0) - m(0, 0) * m(3, 3)));
+		out(2, 2) = d * (m(3, 3) * (m(0, 0) * m(1, 1) - m(0, 1) * m(1, 0)) +
+				m(3, 0) * (m(0, 1) * m(1, 3) - m(0, 3) * m(1, 1)) +
+				m(3, 1) * (m(0, 3) * m(1, 0) - m(0, 0) * m(1, 3)));
+		out(2, 3) = d * (m(0, 3) * (m(1, 1) * m(2, 0) - m(1, 0) * m(2, 1)) +
+				m(0, 0) * (m(1, 3) * m(2, 1) - m(1, 1) * m(2, 3)) +
+				m(0, 1) * (m(1, 0) * m(2, 3) - m(1, 3) * m(2, 0)));
+		out(3, 0) = d * (m(1, 0) * (m(2, 2) * m(3, 1) - m(2, 1) * m(3, 2)) +
+				m(1, 1) * (m(2, 0) * m(3, 2) - m(2, 2) * m(3, 0)) +
+				m(1, 2) * (m(2, 1) * m(3, 0) - m(2, 0) * m(3, 1)));
+		out(3, 1) = d * (m(2, 0) * (m(0, 2) * m(3, 1) - m(0, 1) * m(3, 2)) +
+				m(2, 1) * (m(0, 0) * m(3, 2) - m(0, 2) * m(3, 0)) +
+				m(2, 2) * (m(0, 1) * m(3, 0) - m(0, 0) * m(3, 1)));
+		out(3, 2) = d * (m(3, 0) * (m(0, 2) * m(1, 1) - m(0, 1) * m(1, 2)) +
+				m(3, 1) * (m(0, 0) * m(1, 2) - m(0, 2) * m(1, 0)) +
+				m(3, 2) * (m(0, 1) * m(1, 0) - m(0, 0) * m(1, 1)));
+		out(3, 3) = d * (m(0, 0) * (m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1)) +
+				m(0, 1) * (m(1, 2) * m(2, 0) - m(1, 0) * m(2, 2)) +
+				m(0, 2) * (m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0)));
+
+#if defined ( USE_MATRIX_TEST )
 		out.definitelyIdentityMatrix = definitelyIdentityMatrix;
+#endif
 		return true;
 	}
 
@@ -1075,26 +1302,29 @@ namespace core
 	template <class T>
 	inline bool CMatrix4<T>::getInversePrimitive ( CMatrix4<T>& out ) const
 	{
-		out.M[0 ]	= M[0];
-		out.M[1 ]	= M[4];
-		out.M[2 ]	= M[8];
-		out.M[3 ]	= 0;
+		out.M[0 ] = M[0];
+		out.M[1 ] = M[4];
+		out.M[2 ] = M[8];
+		out.M[3 ] = 0;
 
-		out.M[4 ]	= M[1];
-		out.M[5 ]	= M[5];
-		out.M[6 ]	= M[9];
-		out.M[7 ]	= 0;
+		out.M[4 ] = M[1];
+		out.M[5 ] = M[5];
+		out.M[6 ] = M[9];
+		out.M[7 ] = 0;
 
-		out.M[8 ]	= M[2];
-		out.M[9 ]	= M[6];
-		out.M[10]	= M[10];
-		out.M[11]	= 0;
+		out.M[8 ] = M[2];
+		out.M[9 ] = M[6];
+		out.M[10] = M[10];
+		out.M[11] = 0;
 
-		out.M[12]	= (T)-(M[12]*M[0] + M[13]*M[1] + M[14]*M[2]);
-		out.M[13]	= (T)-(M[12]*M[4] + M[13]*M[5] + M[14]*M[6]);
-		out.M[14]	= (T)-(M[12]*M[8] + M[13]*M[9] + M[14]*M[10]);
-		out.M[15]	= 1;
+		out.M[12] = (T)-(M[12]*M[0] + M[13]*M[1] + M[14]*M[2]);
+		out.M[13] = (T)-(M[12]*M[4] + M[13]*M[5] + M[14]*M[6]);
+		out.M[14] = (T)-(M[12]*M[8] + M[13]*M[9] + M[14]*M[10]);
+		out.M[15] = 1;
+
+#if defined ( USE_MATRIX_TEST )
 		out.definitelyIdentityMatrix = definitelyIdentityMatrix;
+#endif
 		return true;
 	}
 
@@ -1103,9 +1333,10 @@ namespace core
 	template <class T>
 	inline bool CMatrix4<T>::makeInverse()
 	{
+#if defined ( USE_MATRIX_TEST )
 		if (definitelyIdentityMatrix)
 			return true;
-
+#endif
 		CMatrix4<T> temp ( EM4CONST_NOTHING );
 
 		if (getInverse(temp))
@@ -1118,17 +1349,17 @@ namespace core
 	}
 
 
-
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::operator=(const CMatrix4<T> &other)
 	{
 		if (this==&other)
 			return *this;
 		memcpy(M, other.M, 16*sizeof(T));
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=other.definitelyIdentityMatrix;
+#endif
 		return *this;
 	}
-
 
 
 	template <class T>
@@ -1136,24 +1367,27 @@ namespace core
 	{
 		for (s32 i = 0; i < 16; ++i)
 			M[i]=scalar;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
 		return *this;
 	}
-
 
 
 	template <class T>
 	inline bool CMatrix4<T>::operator==(const CMatrix4<T> &other) const
 	{
+#if defined ( USE_MATRIX_TEST )
 		if (definitelyIdentityMatrix && other.definitelyIdentityMatrix)
 			return true;
+#endif
 		for (s32 i = 0; i < 16; ++i)
 			if (M[i] != other.M[i])
 				return false;
 
 		return true;
 	}
-
 
 
 	template <class T>
@@ -1163,13 +1397,13 @@ namespace core
 	}
 
 
-
-	//! Builds a right-handed perspective projection matrix based on a field of view
+	// Builds a right-handed perspective projection matrix based on a field of view
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixPerspectiveFovRH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovRH(
+			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
 	{
-		f64 h = 1.0/tan(fieldOfViewRadians/2.0);
-		T w = h / aspectRatio;
+		const f64 h = 1.0/tan(fieldOfViewRadians/2.0);
+		const T w = h / aspectRatio;
 
 		M[0] = w;
 		M[1] = 0;
@@ -1192,17 +1426,21 @@ namespace core
 		M[14] = (T)(zNear*zFar/(zNear-zFar)); // DirectX version
 //		M[14] = (T)(2.0f*zNear*zFar/(zNear-zFar)); // OpenGL version
 		M[15] = 0;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-
-	//! Builds a left-handed perspective projection matrix based on a field of view
+	// Builds a left-handed perspective projection matrix based on a field of view
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovLH(
+			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
 	{
-		f64 h = 1.0/tan(fieldOfViewRadians/2.0);
-		T w = (T)(h / aspectRatio);
+		const f64 h = 1.0/tan(fieldOfViewRadians/2.0);
+		const T w = (T)(h / aspectRatio);
 
 		M[0] = w;
 		M[1] = 0;
@@ -1223,14 +1461,18 @@ namespace core
 		M[13] = 0;
 		M[14] = (T)(-zNear*zFar/(zFar-zNear));
 		M[15] = 0;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-
-	//! Builds a left-handed orthogonal projection matrix.
+	// Builds a left-handed orthogonal projection matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoLH(
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
 		M[0] = (T)(2/widthOfViewVolume);
 		M[1] = 0;
@@ -1251,14 +1493,18 @@ namespace core
 		M[13] = 0;
 		M[14] = (T)(zNear/(zNear-zFar));
 		M[15] = 1;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-
-	//! Builds a right-handed orthogonal projection matrix.
+	// Builds a right-handed orthogonal projection matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoRH(
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
 		M[0] = (T)(2/widthOfViewVolume);
 		M[1] = 0;
@@ -1279,13 +1525,18 @@ namespace core
 		M[13] = 0;
 		M[14] = (T)(zNear/(zNear-zFar));
 		M[15] = -1;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-	//! Builds a right-handed perspective projection matrix.
+	// Builds a right-handed perspective projection matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixPerspectiveRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveRH(
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
 		M[0] = (T)(2*zNear/widthOfViewVolume);
 		M[1] = 0;
@@ -1306,13 +1557,18 @@ namespace core
 		M[13] = 0;
 		M[14] = (T)(zNear*zFar/(zNear-zFar));
 		M[15] = 0;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-	//! Builds a left-handed perspective projection matrix.
+	// Builds a left-handed perspective projection matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildProjectionMatrixPerspectiveLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveLH(
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
 		M[0] = (T)(2*zNear/widthOfViewVolume);
 		M[1] = 0;
@@ -1333,16 +1589,19 @@ namespace core
 		M[13] = 0;
 		M[14] = (T)(zNear*zFar/(zNear-zFar));
 		M[15] = 0;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-	//! Builds a matrix that flattens geometry into a plane.
+	// Builds a matrix that flattens geometry into a plane.
 	template <class T>
-	inline void CMatrix4<T>::buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point)
+	inline CMatrix4<T>& CMatrix4<T>::buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point)
 	{
 		plane.Normal.normalize();
-		f32 d = plane.Normal.dotProduct(light);
+		const f32 d = plane.Normal.dotProduct(light);
 
 		M[ 0] = (T)(-plane.Normal.X * light.X + d);
 		M[ 1] = (T)(-plane.Normal.X * light.Y);
@@ -1363,12 +1622,15 @@ namespace core
 		M[13] = (T)(-plane.D * light.Y);
 		M[14] = (T)(-plane.D * light.Z);
 		M[15] = (T)(-plane.D * point + d);
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
-	//! Builds a left-handed look-at matrix.
+	// Builds a left-handed look-at matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildCameraLookAtMatrixLH(
+	inline CMatrix4<T>& CMatrix4<T>::buildCameraLookAtMatrixLH(
 				const vector3df& position,
 				const vector3df& target,
 				const vector3df& upVector)
@@ -1400,14 +1662,16 @@ namespace core
 		M[13] = (T)-yaxis.dotProduct(position);
 		M[14] = (T)-zaxis.dotProduct(position);
 		M[15] = 1;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-
-	//! Builds a right-handed look-at matrix.
+	// Builds a right-handed look-at matrix.
 	template <class T>
-	inline void CMatrix4<T>::buildCameraLookAtMatrixRH(
+	inline CMatrix4<T>& CMatrix4<T>::buildCameraLookAtMatrixRH(
 				const vector3df& position,
 				const vector3df& target,
 				const vector3df& upVector)
@@ -1439,12 +1703,14 @@ namespace core
 		M[13] = (T)-yaxis.dotProduct(position);
 		M[14] = (T)-zaxis.dotProduct(position);
 		M[15] = 1;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
 
-	//! creates a new matrix as interpolated matrix from to other ones.
-	//! \param time: Must be a value between 0 and 1.
+	// creates a new matrix as interpolated matrix from this and the passed one.
 	template <class T>
 	inline CMatrix4<T> CMatrix4<T>::interpolate(const core::CMatrix4<T>& b, f32 time) const
 	{
@@ -1460,7 +1726,8 @@ namespace core
 		return mat;
 	}
 
-	//! returns transposed matrix
+
+	// returns transposed matrix
 	template <class T>
 	inline CMatrix4<T> CMatrix4<T>::getTransposed() const
 	{
@@ -1469,7 +1736,8 @@ namespace core
 		return t;
 	}
 
-	//! returns transposed matrix
+
+	// returns transposed matrix
 	template <class T>
 	inline void CMatrix4<T>::getTransposed( CMatrix4<T>& o ) const
 	{
@@ -1492,27 +1760,160 @@ namespace core
 		o[13] = M[ 7];
 		o[14] = M[11];
 		o[15] = M[15];
+#if defined ( USE_MATRIX_TEST )
 		o.definitelyIdentityMatrix=definitelyIdentityMatrix;
+#endif
 	}
 
 
 	// used to scale <-1,-1><1,1> to viewport
 	template <class T>
-	inline void CMatrix4<T>::buildNDCToDCMatrix( const core::rect<s32>& viewport, f32 zScale)
+	inline CMatrix4<T>& CMatrix4<T>::buildNDCToDCMatrix( const core::rect<s32>& viewport, f32 zScale)
 	{
-		f32 scaleX = (viewport.getWidth() - 0.75f ) / 2.0f;
-		f32 scaleY = -(viewport.getHeight() - 0.75f ) / 2.0f;
+		const f32 scaleX = (viewport.getWidth() - 0.75f ) / 2.0f;
+		const f32 scaleY = -(viewport.getHeight() - 0.75f ) / 2.0f;
 
-		f32 dx = -0.5f + ( (viewport.UpperLeftCorner.X + viewport.LowerRightCorner.X ) / 2.0f );
-		f32 dy = -0.5f + ( (viewport.UpperLeftCorner.Y + viewport.LowerRightCorner.Y ) / 2.0f );
+		const f32 dx = -0.5f + ( (viewport.UpperLeftCorner.X + viewport.LowerRightCorner.X ) / 2.0f );
+		const f32 dy = -0.5f + ( (viewport.UpperLeftCorner.Y + viewport.LowerRightCorner.Y ) / 2.0f );
 
 		makeIdentity();
-		M[0] = (T)scaleX;
-		M[5] = (T)scaleY;
-		M[10] = (T)zScale;
 		M[12] = (T)dx;
 		M[13] = (T)dy;
+		return setScale(core::vector3d<T>((T)scaleX, (T)scaleY, (T)zScale));
+	}
+
+	//! Builds a matrix that rotates from one vector to another
+	/** \param from: vector to rotate from
+	\param to: vector to rotate to
+
+		http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/index.htm
+	 */
+	template <class T>
+	inline CMatrix4<T>& CMatrix4<T>::buildRotateFromTo(const core::vector3df& from, const core::vector3df& to)
+	{
+		// unit vectors
+		core::vector3df f ( from );
+		core::vector3df t ( to );
+		f.normalize ();
+		t.normalize ();
+
+		// axis multiplication by sin
+		core::vector3df vs ( t.crossProduct ( f ) );
+
+		// axis of rotation
+		core::vector3df v ( vs );
+		v.normalize();
+
+		// cosinus angle
+		T ca = f.dotProduct ( t );	
+
+		core::vector3df vt ( v * ( (T) 1 - ca ) );
+
+		M[0] = vt.X * v.X + ca;
+		M[5] = vt.Y * v.Y + ca;
+		M[10] = vt.Z * v.Z + ca;
+
+		vt.X *= v.Y;
+		vt.Z *= v.X;
+		vt.Y *= v.Z;
+
+		M[1] = vt.X - vs.Z;
+		M[2] = vt.Z + vs.Y;
+		M[3] = (T) 0;
+
+		M[4] = vt.X + vs.Z;
+		M[6] = vt.Y - vs.X;
+		M[7] = (T) 0;
+
+		M[8] = vt.Z - vs.Y;
+		M[9] = vt.Y + vs.X;
+		M[11] = (T) 0;
+
+		M[12] = (T) 0;
+		M[13] = (T) 0;
+		M[14] = (T) 0;
+		M[15] = (T) 1;
+
+		return *this;
+	}
+
+	//! Builds a matrix which rotates a source vector to a look vector over an arbitrary axis
+	/** \param camPos: viewer position in world coo
+	\param center: object position in world-coo and rotation pivot
+	\param translation: object final translation from center
+	\param axis: axis to rotate about
+	\param from: source vector to rotate from
+	 */
+	template <class T>
+	inline void CMatrix4<T>::buildAxisAlignedBillboard(	const core::vector3df& camPos,
+											const core::vector3df& center,
+											const core::vector3df& translation,
+											const core::vector3df& axis,
+											const core::vector3df& from
+										)
+	{
+		// axis of rotation
+		core::vector3df up = axis;
+		up.normalize ();
+
+		core::vector3df forward = camPos - center;
+		forward.normalize();
+
+		core::vector3df right = up.crossProduct ( forward );
+		right.normalize ();
+
+		// correct look vector
+		core::vector3df look = right.crossProduct ( up );
+
+		// rotate from to
+
+		// axis multiplication by sin
+		core::vector3df vs = look.crossProduct ( from );
+
+		// cosinus angle
+		f32 ca = from.dotProduct ( look );	
+
+		core::vector3df vt ( up * ( 1.f - ca ) );
+
+		M[0] = vt.X * up.X + ca;
+		M[5] = vt.Y * up.Y + ca;
+		M[10] = vt.Z * up.Z + ca;
+
+		vt.X *= up.Y;
+		vt.Z *= up.X;
+		vt.Y *= up.Z;
+
+		M[1] = vt.X - vs.Z;
+		M[2] = vt.Z + vs.Y;
+		M[3] = (T) 0;
+
+		M[4] = vt.X + vs.Z;
+		M[6] = vt.Y - vs.X;
+		M[7] = (T) 0;
+
+		M[8] = vt.Z - vs.Y;
+		M[9] = vt.Y + vs.X;
+		M[11] = (T) 0;
+
+		setRotationCenter ( center, translation );
+
+	}
+
+
+	//! Builds a combined matrix which translate to a center before rotation and translate afterwards
+	/** \param from: vector to rotate from
+	\param to: vector to rotate to
+	 */
+	template <class T>
+	inline void CMatrix4<T>::setRotationCenter(const core::vector3df& center, const core::vector3df& translation)
+	{
+		M[12] = -M[0]*center.X - M[4]*center.Y - M[8]*center.Z + (center.X - translation.X );
+		M[13] = -M[1]*center.X - M[5]*center.Y - M[9]*center.Z + (center.Y - translation.Y );
+		M[14] = -M[2]*center.X - M[6]*center.Y - M[10]*center.Z + (center.Z - translation.Z );
+		M[15] = (T) 1.0;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
 	}
 
 	/*!
@@ -1526,11 +1927,12 @@ namespace core
 			Uw  Vw  0  0
 	*/
 
+
 	template <class T>
-	inline void CMatrix4<T>::buildTextureTransform( f32 rotateRad,
-					const core::vector2df &rotatecenter,
-					const core::vector2df &translate,
-					const core::vector2df &scale)
+	inline CMatrix4<T>& CMatrix4<T>::buildTextureTransform( f32 rotateRad,
+			const core::vector2df &rotatecenter,
+			const core::vector2df &translate,
+			const core::vector2df &scale)
 	{
 		const f32 c = cosf(rotateRad);
 		const f32 s = sinf(rotateRad);
@@ -1554,92 +1956,135 @@ namespace core
 		M[13] = 0;
 		M[14] = 0;
 		M[15] = 1;
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
-	//! rotate about z axis, center ( 0.5, 0.5 )
+
+	// rotate about z axis, center ( 0.5, 0.5 )
 	template <class T>
-	inline void CMatrix4<T>::setTextureRotationCenter( f32 rotateRad )
+	inline CMatrix4<T>& CMatrix4<T>::setTextureRotationCenter( f32 rotateRad )
 	{
 		const f32 c = cosf(rotateRad);
 		const f32 s = sinf(rotateRad);
 		M[0] = (T)c;
 		M[1] = (T)s;
-		M[2] = (T)(-0.5f * ( c + s) + 0.5f);
 
 		M[4] = (T)-s;
 		M[5] = (T)c;
-		M[6] = (T)(-0.5f * (-s + c) + 0.5f);
-		definitelyIdentityMatrix=false;
+
+		M[8] = (T)(0.5f * ( s - c) + 0.5f);
+		M[9] = (T)(-0.5f * ( s + c) + 0.5f);
+
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (rotateRad==0.0f);
+#endif
+		return *this;
 	}
 
+
 	template <class T>
-	inline void CMatrix4<T>::setTextureTranslate ( f32 x, f32 y )
+	inline CMatrix4<T>& CMatrix4<T>::setTextureTranslate ( f32 x, f32 y )
 	{
 		M[8] = (T)x;
 		M[9] = (T)y;
-		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
+
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f);
+#endif
+		return *this;
 	}
 
+
 	template <class T>
-	inline void CMatrix4<T>::setTextureTranslateTransposed ( f32 x, f32 y )
+	inline CMatrix4<T>& CMatrix4<T>::setTextureTranslateTransposed ( f32 x, f32 y )
 	{
 		M[2] = (T)x;
 		M[6] = (T)y;
+
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
+#endif
+		return *this;
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setTextureScale ( f32 sx, f32 sy )
+	inline CMatrix4<T>& CMatrix4<T>::setTextureScale ( f32 sx, f32 sy )
 	{
 		M[0] = (T)sx;
 		M[5] = (T)sy;
-		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f) ;
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f);
+#endif
+		return *this;
 	}
 
+
 	template <class T>
-	inline void CMatrix4<T>::setTextureScaleCenter( f32 sx, f32 sy )
+	inline CMatrix4<T>& CMatrix4<T>::setTextureScaleCenter( f32 sx, f32 sy )
 	{
 		M[0] = (T)sx;
-		M[2] = (T)(-0.5f * sx + 0.5f);
 		M[5] = (T)sy;
-		M[6] = (T)(-0.5f * sy + 0.5f);
-		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f) ;
+		M[8] = (T)(0.5f - 0.5f * sx);
+		M[9] = (T)(0.5f - 0.5f * sy);
+
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f);
+#endif
+		return *this;
 	}
 
-	//! sets all matrix data members at once
+
+	// sets all matrix data members at once
 	template <class T>
-	inline void CMatrix4<T>::setM(const T* data)
+	inline CMatrix4<T>& CMatrix4<T>::setM(const T* data)
 	{
-		for (u32 i = 0; i < 16; ++i)
-			M[i] = data[i];
+		memcpy(M,data, 16*sizeof(T));
 
-		definitelyIdentityMatrix = false;
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix=false;
+#endif
+		return *this;
 	}
 
-	//! sets if the matrix is definitely identity matrix
+
+	// sets if the matrix is definitely identity matrix
 	template <class T>
 	inline void CMatrix4<T>::setDefinitelyIdentityMatrix( bool isDefinitelyIdentityMatrix)
 	{
+#if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix = isDefinitelyIdentityMatrix;
+#endif
 	}
 
-	//! gets if the matrix is definitely identity matrix
+
+	// gets if the matrix is definitely identity matrix
 	template <class T>
 	inline bool CMatrix4<T>::getDefinitelyIdentityMatrix() const
 	{
+#if defined ( USE_MATRIX_TEST )
 		return definitelyIdentityMatrix;
+#else
+		return false;
+#endif
 	}
 
-	//! Multiply by scalar.
+
+	// Multiply by scalar.
 	template <class T>
 	inline CMatrix4<T> operator*(const T scalar, const CMatrix4<T>& mat)
 	{
 		return mat*scalar;
 	}
 
+
+	//! Typedef for f32 matrix
 	typedef CMatrix4<f32> matrix4;
-	const matrix4 IdentityMatrix(matrix4::EM4CONST_IDENTITY);
+
+	//! global const identity matrix
+	IRRLICHT_API extern const matrix4 IdentityMatrix;
 
 } // end namespace core
 } // end namespace irr

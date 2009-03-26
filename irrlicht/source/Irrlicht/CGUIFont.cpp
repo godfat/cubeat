@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,7 +19,7 @@ namespace gui
 {
 
 //! constructor
-CGUIFont::CGUIFont(IGUIEnvironment *env, const c8* filename)
+CGUIFont::CGUIFont(IGUIEnvironment *env, const core::string<c16>& filename)
 : Driver(0), SpriteBank(0), Environment(env), WrongCharacter(0),
 	MaxHeight(0), GlobalKerningWidth(0), GlobalKerningHeight(0)
 {
@@ -33,10 +33,14 @@ CGUIFont::CGUIFont(IGUIEnvironment *env, const c8* filename)
 		Driver = Environment->getVideoDriver();
 
 		SpriteBank = Environment->addEmptySpriteBank(filename);
+		if (SpriteBank)
+			SpriteBank->grab();
 	}
 
 	if (Driver)
 		Driver->grab();
+
+	setInvisibleCharacters ( L" " );
 }
 
 
@@ -48,7 +52,6 @@ CGUIFont::~CGUIFont()
 
 	if (SpriteBank)
 		SpriteBank->drop();
-
 }
 
 
@@ -77,7 +80,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 				// load texture
-				SpriteBank->setTexture(i, Driver->getTexture(fn.c_str()));
+				SpriteBank->setTexture(i, Driver->getTexture(fn));
 
 				// set previous mip-map+filter state
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, mipmap);
@@ -95,7 +98,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 					if (alpha == core::stringw("false"))
 						Driver->makeColorKeyTexture(SpriteBank->getTexture(i), core::position2di(0,0));
 				}
-			} 
+			}
 			else if (core::stringw(L"c") == xml->getNodeName())
 			{
 				// adding a character to this font
@@ -111,45 +114,45 @@ bool CGUIFont::load(io::IXMLReader* xml)
 
 				// parse rectangle
 				core::stringc rectstr	= xml->getAttributeValue(L"r");
-				wchar_t ch				= xml->getAttributeValue(L"c")[0];
+				wchar_t ch		= xml->getAttributeValue(L"c")[0];
 
 				const c8 *c = rectstr.c_str();
 				s32 val;
 				val = 0;
-				while (*c >= '0' && *c <= '9') 
-				{ 
-					val *= 10; 
-					val += *c - '0'; 
+				while (*c >= '0' && *c <= '9')
+				{
+					val *= 10;
+					val += *c - '0';
 					c++;
 				}
 				rectangle.UpperLeftCorner.X = val;
 				while (*c == L' ' || *c == L',') c++;
 
 				val = 0;
-				while (*c >= '0' && *c <= '9') 
-				{ 
-					val *= 10; 
-					val += *c - '0'; 
+				while (*c >= '0' && *c <= '9')
+				{
+					val *= 10;
+					val += *c - '0';
 					c++;
 				}
 				rectangle.UpperLeftCorner.Y = val;
 				while (*c == L' ' || *c == L',') c++;
 
 				val = 0;
-				while (*c >= '0' && *c <= '9') 
-				{ 
-					val *= 10; 
-					val += *c - '0'; 
+				while (*c >= '0' && *c <= '9')
+				{
+					val *= 10;
+					val += *c - '0';
 					c++;
 				}
 				rectangle.LowerRightCorner.X = val;
 				while (*c == L' ' || *c == L',') c++;
 
 				val = 0;
-				while (*c >= '0' && *c <= '9') 
-				{ 
-					val *= 10; 
-					val += *c - '0'; 
+				while (*c >= '0' && *c <= '9')
+				{
+					val *= 10;
+					val += *c - '0';
 					c++;
 				}
 				rectangle.LowerRightCorner.Y = val;
@@ -157,7 +160,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 				CharacterMap.insert(ch,Areas.size());
 
 				// make frame
-				f.rectNumber = 	SpriteBank->getPositions().size();
+				f.rectNumber = SpriteBank->getPositions().size();
 				f.textureNumber = texno;
 
 				// add frame to sprite
@@ -215,7 +218,7 @@ bool CGUIFont::load(io::IReadFile* file)
 
 
 //! loads a font file, native file needed, for texture parsing
-bool CGUIFont::load(const c8* filename)
+bool CGUIFont::load(const core::string<c16>& filename)
 {
 	if (!Driver)
 		return false;
@@ -225,7 +228,7 @@ bool CGUIFont::load(const c8* filename)
 
 
 //! load & prepare font from ITexture
-bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
+bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 {
 	if (!image)
 		return false;
@@ -254,7 +257,7 @@ bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
 
 	// output warnings
 	if (!lowerRightPositions || !SpriteBank->getSprites().size())
-		os::Printer::log("The amount of upper corner pixels or lower corner pixels is == 0, font file may be corrupted.", ELL_ERROR);
+		os::Printer::log("Either no upper or lower corner pixels in the font file. If this font was made using the new font tool, please load the XML file instead. If not, the font may be corrupted.", ELL_ERROR);
 	else
 	if (lowerRightPositions != (s32)SpriteBank->getPositions().size())
 		os::Printer::log("The amount of upper corner pixels and the lower corner pixels is not equal, font file may be corrupted.", ELL_ERROR);
@@ -264,7 +267,17 @@ bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
 
 	if ( ret )
 	{
+		bool flag[2];
+		flag[0] = Driver->getTextureCreationFlag ( video::ETCF_ALLOW_NON_POWER_2 );
+		flag[1] = Driver->getTextureCreationFlag ( video::ETCF_CREATE_MIP_MAPS );
+
+		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, true);
+		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false );
+
 		SpriteBank->addTexture(Driver->addTexture(name, tmpImage));
+
+		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, flag[0] );
+		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flag[1] );
 	}
 	if (deleteTmpImage)
 		tmpImage->drop();
@@ -278,7 +291,7 @@ bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
 
 void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions)
 {
-	const core::dimension2d<s32>& size = image->getDimension();
+	const core::dimension2d<u32>& size = image->getDimension();
 
 	s32* p = (s32*)image->lock();
 	if (!p)
@@ -300,9 +313,9 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 	// start parsing
 
 	core::position2d<s32> pos(0,0);
-	for (pos.Y=0; pos.Y<size.Height; ++pos.Y)
+	for (pos.Y=0; pos.Y<(s32)size.Height; ++pos.Y)
 	{
-		for (pos.X=0; pos.X<size.Width; ++pos.X)
+		for (pos.X=0; pos.X<(s32)size.Width; ++pos.X)
 		{
 			if ( *p == colorTopLeft)
 			{
@@ -359,7 +372,7 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 
 void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions)
 {
-	core::dimension2d<s32> size = image->getDimension();
+	core::dimension2d<u32> size = image->getDimension();
 
 	s16* p = (s16*)image->lock();
 	if (!p)
@@ -381,9 +394,9 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 	// start parsing
 
 	core::position2d<s32> pos(0,0);
-	for (pos.Y=0; pos.Y<size.Height; ++pos.Y)
+	for (pos.Y=0; pos.Y<(s32)size.Height; ++pos.Y)
 	{
-		for (pos.X=0; pos.X<size.Width; ++pos.X)
+		for (pos.X=0; pos.X<(s32)size.Width; ++pos.X)
 		{
 			if (*p == colorTopLeft)
 			{
@@ -437,11 +450,75 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 }
 
 
-//! returns the dimension of text
-core::dimension2d<s32> CGUIFont::getDimension(const wchar_t* text) const
+
+
+//! set an Pixel Offset on Drawing ( scale position on width )
+void CGUIFont::setKerningWidth(s32 kerning)
 {
-	core::dimension2d<s32> dim(0, 0);
-	core::dimension2d<s32> thisLine(0, MaxHeight);
+	GlobalKerningWidth = kerning;
+}
+
+
+//! set an Pixel Offset on Drawing ( scale position on width )
+s32 CGUIFont::getKerningWidth(const wchar_t* thisLetter, const wchar_t* previousLetter) const
+{
+	s32 ret = GlobalKerningWidth;
+
+	if (thisLetter)
+	{
+		ret += Areas[getAreaFromCharacter(*thisLetter)].overhang;
+
+		if (previousLetter)
+		{
+			ret += Areas[getAreaFromCharacter(*previousLetter)].underhang;
+		}
+	}
+
+	return ret;
+}
+
+
+//! set an Pixel Offset on Drawing ( scale position on height )
+void CGUIFont::setKerningHeight(s32 kerning)
+{
+	GlobalKerningHeight = kerning;
+}
+
+
+//! set an Pixel Offset on Drawing ( scale position on height )
+s32 CGUIFont::getKerningHeight () const
+{
+	return GlobalKerningHeight;
+}
+
+
+//! returns the sprite number from a given character
+u32 CGUIFont::getSpriteNoFromChar(const wchar_t *c) const
+{
+	return Areas[getAreaFromCharacter(*c)].spriteno;
+}
+
+
+s32 CGUIFont::getAreaFromCharacter(const wchar_t c) const
+{
+	core::map<wchar_t, s32>::Node* n = CharacterMap.find(c);
+	if (n)
+		return n->getValue();
+	else
+		return WrongCharacter;
+}
+
+void CGUIFont::setInvisibleCharacters( const wchar_t *s )
+{
+	Invisible = s;
+}
+
+
+//! returns the dimension of text
+core::dimension2d<u32> CGUIFont::getDimension(const wchar_t* text) const
+{
+	core::dimension2d<u32> dim(0, 0);
+	core::dimension2d<u32> thisLine(0, MaxHeight);
 
 	for (const wchar_t* p = text; *p; ++p)
 	{
@@ -478,119 +555,26 @@ core::dimension2d<s32> CGUIFont::getDimension(const wchar_t* text) const
 	return dim;
 }
 
-
-//! set an Pixel Offset on Drawing ( scale position on width )
-void CGUIFont::setKerningWidth ( s32 kerning )
-{
-	GlobalKerningWidth = kerning;
-}
-
-
-//! set an Pixel Offset on Drawing ( scale position on width )
-s32 CGUIFont::getKerningWidth(const wchar_t* thisLetter, const wchar_t* previousLetter) const
-{
-	s32 ret = GlobalKerningWidth;
-
-	if (thisLetter)
-	{
-		ret += Areas[getAreaFromCharacter(*thisLetter)].overhang;
-
-		if (previousLetter)
-		{
-			ret += Areas[getAreaFromCharacter(*previousLetter)].underhang;
-		}
-	}
-
-	return ret;
-}
-
-
-//! set an Pixel Offset on Drawing ( scale position on height )
-void CGUIFont::setKerningHeight ( s32 kerning )
-{
-	GlobalKerningHeight = kerning;
-}
-
-
-//! set an Pixel Offset on Drawing ( scale position on height )
-s32 CGUIFont::getKerningHeight () const
-{
-	return GlobalKerningHeight;
-}
-
-
-//! returns the sprite number from a given character
-u32 CGUIFont::getSpriteNoFromChar(const wchar_t *c) const
-{
-	return Areas[getAreaFromCharacter(*c)].spriteno;
-}
-
-
-s32 CGUIFont::getAreaFromCharacter(const wchar_t c) const
-{
-	core::map<wchar_t, s32>::Node* n = CharacterMap.find(c);
-	if (n)
-		return n->getValue();
-	else
-		return WrongCharacter;
-}
-
-
-/*
-//! draws an text and clips it to the specified rectangle if wanted
-void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
-{
-	if (!Driver)
-		return;
-
-	core::dimension2d<s32> textDimension;
-	core::position2d<s32> offset = position.UpperLeftCorner;
-
-	if (hcenter || vcenter)
-	{
-		textDimension = getDimension(text);
-
-		if (hcenter)
-			offset.X = ((position.getWidth() - textDimension.Width)>>1) + offset.X;
-
-		if (vcenter)
-			offset.Y = ((position.getHeight() - textDimension.Height)>>1) + offset.Y;
-	}
-
-	core::array<s32> indices;
-	indices.reallocate(core::stringw(text).size());
-	u32 n;
-	while(*text)
-	{
-		n = (*text) - 32;
-		if ( n > Positions.size())
-			n = WrongCharacter;
-		indices.push_back(n);
-		++text;
-	}
-	Driver->draw2DImage(Texture, offset, Positions, indices, GlobalKerningWidth, clip, color, true);
-}
-*/
-
-
 //! draws some text and clips it to the specified rectangle if wanted
-void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
+					video::SColor color,
+					bool hcenter, bool vcenter, const core::rect<s32>* clip
+				)
 {
 	if (!Driver)
 		return;
 
 	core::dimension2d<s32> textDimension;
 	core::position2d<s32> offset = position.UpperLeftCorner;
-	core::rect<s32> pos;
 
 	if (hcenter || vcenter || clip)
 		textDimension = getDimension(text);
 
 	if (hcenter)
-		offset.X = ((position.getWidth() - textDimension.Width)>>1) + offset.X;
+		offset.X += (position.getWidth() - textDimension.Width) >> 1;
 
 	if (vcenter)
-		offset.Y = ((position.getHeight() - textDimension.Height)>>1) + offset.Y;
+		offset.Y += (position.getHeight() - textDimension.Height) >> 1;
 
 	if (clip)
 	{
@@ -600,17 +584,41 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video:
 			return;
 	}
 
-	while(*text)
+	wchar_t c;
+	while (( c = *text++))
 	{
-		SFontArea& area = Areas[getAreaFromCharacter(*text)];
+		bool lineBreak=false;
+		if ( c == L'\r') // Mac or Windows breaks
+		{
+			lineBreak = true;
+			if ( *text == L'\n') // Windows breaks
+				++text;
+		}
+		else if ( c == L'\n') // Unix breaks
+		{
+			lineBreak = true;
+		}
+
+		if (lineBreak)
+		{
+			offset.Y += MaxHeight;
+			offset.X = position.UpperLeftCorner.X;
+
+			if ( hcenter )
+			{
+				core::dimension2d<u32> lineDim = getDimension(text);
+				offset.X += (position.getWidth() - lineDim.Width) >> 1;
+			}
+			continue;
+		}
+
+		SFontArea& area = Areas[getAreaFromCharacter(c)];
 
 		offset.X += area.underhang;
-
-		SpriteBank->draw2DSprite(area.spriteno, offset, clip, color);
-
+		if ( Invisible.findFirst ( c ) < 0 )
+			SpriteBank->draw2DSprite(area.spriteno, offset, clip, color);
 		offset.X += area.width + area.overhang + GlobalKerningWidth;
 
-		++text;
 	}
 }
 
@@ -646,3 +654,4 @@ IGUISpriteBank* CGUIFont::getSpriteBank() const
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

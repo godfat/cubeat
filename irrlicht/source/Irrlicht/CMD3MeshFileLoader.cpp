@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,22 +15,21 @@ namespace scene
 {
 
 //! Constructor
-CMD3MeshFileLoader::CMD3MeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver)
+CMD3MeshFileLoader::CMD3MeshFileLoader( scene::ISceneManager* smgr)
+: SceneManager(smgr)
 {
 }
-
 
 //! destructor
 CMD3MeshFileLoader::~CMD3MeshFileLoader()
 {
 }
 
-
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMD3MeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CMD3MeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".md3") != 0;
+	return core::hasFileExtension ( filename, "md3" );
 }
 
 
@@ -38,7 +37,7 @@ IAnimatedMesh* CMD3MeshFileLoader::createMesh(io::IReadFile* file)
 {
 	CAnimatedMeshMD3 * mesh = new CAnimatedMeshMD3();
 
-	if ( mesh->loadModelFile ( 0, file ) )
+	if ( mesh->loadModelFile ( 0, file, SceneManager->getFileSystem(), SceneManager->getVideoDriver() ) )
 		return mesh;
 	
 	mesh->drop ();

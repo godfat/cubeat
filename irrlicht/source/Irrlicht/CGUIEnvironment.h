@@ -1,9 +1,9 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_GUI_ENVIRNMENT_H_INCLUDED__
-#define __C_GUI_ENVIRNMENT_H_INCLUDED__
+#ifndef __C_GUI_ENVIRONMENT_H_INCLUDED__
+#define __C_GUI_ENVIRONMENT_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
@@ -73,8 +73,12 @@ public:
 	See IReferenceCounted::drop() for more information. */
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type);
 
+	//! Creates the image list from the given texture.
+	virtual IGUIImageList* createImageList( video::ITexture* texture,
+					core::dimension2d<s32>	imageSize, bool useAlphaChannel );
+
 	//! returns the font
-	virtual IGUIFont* getFont(const c8* filename);
+	virtual IGUIFont* getFont(const core::string<c16>& filename);
 
 // >> add by zgock for Multilingual start
 	//! returns the font
@@ -82,10 +86,10 @@ public:
 // << add by zgock for Multilingual end
 
 	//! returns the sprite bank
-	virtual IGUISpriteBank* getSpriteBank(const c8* filename);
+	virtual IGUISpriteBank* getSpriteBank(const core::string<c16>& filename);
 
 	//! returns the sprite bank
-	virtual IGUISpriteBank* addEmptySpriteBank(const c8* name);
+	virtual IGUISpriteBank* addEmptySpriteBank(const core::string<c16>& name);
 
 	//! adds an button. The returned pointer must not be dropped.
 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0,const wchar_t* tooltiptext = 0);
@@ -102,7 +106,8 @@ public:
 		bool modal = true, s32 flag = EMBF_OK, IGUIElement* parent=0, s32 id=-1);
 
 	//! adds a scrollbar. The returned pointer must not be dropped.
-	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1);
+	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1);
 
 	//! Adds an image element.
 	virtual IGUIImage* addImage(video::ITexture* image, core::position2d<s32> pos,
@@ -118,6 +123,11 @@ public:
 	//! adds a list box
 	virtual IGUIListBox* addListBox(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false);
+
+	//! adds a tree view
+	virtual IGUITreeView* addTreeView(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false,
+		bool scrollBarVertical = true, bool scrollBarHorizontal = false);
 
 	//! adds an mesh viewer. The returned pointer must not be dropped.
 	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0);
@@ -138,7 +148,7 @@ public:
 
 	//! Adds a spin box to the environment
 	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1);
+		bool border=false,IGUIElement* parent=0, s32 id=-1);
 
 	//! Adds a tab control to the environment.
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
@@ -162,6 +172,10 @@ public:
 	//! Adds a combo box to the environment.
 	virtual IGUIComboBox* addComboBox(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1);
+
+	//! Adds a table element.
+	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false);
 
 	//! sets the focus to an element
 	virtual bool setFocus(IGUIElement* element);
@@ -207,7 +221,7 @@ public:
 	/** \param filename: Name of the file.
 	\param start: The element to start saving from.
 	if not specified, the root element will be used */
-	virtual bool saveGUI(const c8* filename, IGUIElement* start=0);
+	virtual bool saveGUI( const core::string<c16>& filename, IGUIElement* start=0);
 
 	//! Saves the current gui into a file.
 	/** \param file: The file to save the GUI to.
@@ -219,7 +233,7 @@ public:
 	/** \param filename: Name of the file.
 	\param parent: The parent of all loaded GUI elements,
 	if not specified, the root element will be used */
-	virtual bool loadGUI(const c8* filename, IGUIElement* parent=0);
+	virtual bool loadGUI(const c16* filename, IGUIElement* parent=0);
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param file: IReadFile to load the GUI from
@@ -237,8 +251,7 @@ public:
 	virtual void writeGUIElement(io::IXMLWriter* writer, IGUIElement* node);
 
 	//! reads an element
-	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* parent);
-
+	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node);
 
 private:
 
@@ -250,7 +263,7 @@ private:
 
 	struct SFont
 	{
-		core::stringc Filename;
+		core::string<c16> Filename;
 		IGUIFont* Font;
 
 		bool operator < (const SFont& other) const
@@ -301,9 +314,9 @@ private:
 
 	struct SToolTip
 	{
+		IGUIStaticText* Element;
 		u32 LastTime;
 		u32 LaunchTime;
-		IGUIStaticText* Element;
 	};
 
 	SToolTip ToolTip;
@@ -331,5 +344,6 @@ private:
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
-#endif // __C_GUI_ENVIRNMENT_H_INCLUDED__
+#endif // __C_GUI_ENVIRONMENT_H_INCLUDED__
+
 

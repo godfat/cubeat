@@ -1,11 +1,10 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CSphereSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
-#include "CGeometryCreator.h"
 #include "S3DVertex.h"
 #include "os.h"
 
@@ -17,14 +16,14 @@ namespace scene
 //! constructor
 CSphereSceneNode::CSphereSceneNode(f32 radius, u32 polyCountX, u32 polyCountY, ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
-: ISceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
+: IMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
 	Radius(radius), PolyCountX(polyCountX), PolyCountY(polyCountY)
 {
 	#ifdef _DEBUG
 	setDebugName("CSphereSceneNode");
 	#endif
 
-	Mesh = CGeometryCreator::createSphereMesh(radius, polyCountX, polyCountY);
+	Mesh = SceneManager->getGeometryCreator()->createSphereMesh(radius, polyCountX, polyCountY);
 }
 
 
@@ -128,7 +127,7 @@ void CSphereSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	{
 		if (Mesh)
 			Mesh->drop();
-		Mesh = CGeometryCreator::createSphereMesh(Radius, PolyCountX, PolyCountY);
+		Mesh = SceneManager->getGeometryCreator()->createSphereMesh(Radius, PolyCountX, PolyCountY);
 	}
 
 	ISceneNode::deserializeAttributes(in, options);

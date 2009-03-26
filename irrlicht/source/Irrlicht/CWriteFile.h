@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -22,8 +22,7 @@ namespace io
 	{
 	public:
 
-		CWriteFile(const wchar_t* fileName, bool append);
-		CWriteFile(const c8* fileName, bool append);
+		CWriteFile(const core::string<c16>& fileName, bool append);
 
 		virtual ~CWriteFile();
 
@@ -37,7 +36,7 @@ namespace io
 		virtual long getPos() const;
 
 		//! Returns name of file.
-		virtual const c8* getFileName() const;
+		virtual const core::string<c16>& getFileName() const;
 
 		//! returns if file is open
 		bool isOpen() const;
@@ -47,7 +46,7 @@ namespace io
 		//! opens the file
 		void openFile(bool append);
 
-		core::stringc Filename;
+		core::string<c16> Filename;
 		FILE* File;
 		long FileSize;
 	};

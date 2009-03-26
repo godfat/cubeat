@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -34,6 +34,9 @@ public:
 	
 	//! Prints out a text into the log
 	virtual void log(const c8* text, const c8* hint, ELOG_LEVEL ll=ELL_INFORMATION);
+
+	//! Prints out a text into the log
+	virtual void log(const c8* text, const wchar_t* hint, ELOG_LEVEL ll=ELL_INFORMATION);
 
 	//! Prints out a text into the log
 	virtual void log(const wchar_t* text, const wchar_t* hint, ELOG_LEVEL ll=ELL_INFORMATION);

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -9,6 +9,7 @@
 #ifdef _IRR_COMPILE_WITH_GUI_
 
 #include "IGUIComboBox.h"
+#include "IGUIStaticText.h"
 #include "irrString.h"
 #include "irrArray.h"
 
@@ -34,8 +35,14 @@ namespace gui
 		//! returns string of an item. the idx may be a value from 0 to itemCount-1
 		virtual const wchar_t* getItem(u32 idx) const;
 
+		//! Returns item data of an item. the idx may be a value from 0 to itemCount-1
+		virtual u32 getItemData(u32 idx) const;
+
+		//! Returns index based on item data
+		virtual s32 getIndexForItemData( u32 data ) const;
+
 		//! adds an item and returns the index of it
-		virtual u32 addItem(const wchar_t* text);
+		virtual u32 addItem(const wchar_t* text, u32 data);
 
 		//! Removes an item from the combo box.
 		virtual void removeItem(u32 id);
@@ -50,10 +57,10 @@ namespace gui
 		virtual s32 getSelected() const;
 
 		//! sets the selected item. Set this to -1 if no item should be selected
-		virtual void setSelected(s32 id);
+		virtual void setSelected(s32 idx);
 
-		//! update the position
-		virtual void updateAbsolutePosition();
+		//! sets the text alignment of the text part
+		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
@@ -73,11 +80,24 @@ namespace gui
 		void sendSelectionChangedEvent();
 
 		IGUIButton* ListButton;
+		IGUIStaticText* SelectedText;
 		IGUIListBox* ListBox;
-		core::array< core::stringw > Items;
-		s32 Selected;
-		bool HasFocus;
 		IGUIElement *LastFocus;
+
+
+		struct SComboData
+		{
+			SComboData ( const wchar_t * text, u32 data )
+				: Name (text), Data ( data ) {}
+
+			core::stringw Name;
+			u32 Data;
+		};
+		core::array< SComboData > Items;
+
+		s32 Selected;
+		EGUI_ALIGNMENT HAlign, VAlign;
+		bool HasFocus;
 	};
 
 

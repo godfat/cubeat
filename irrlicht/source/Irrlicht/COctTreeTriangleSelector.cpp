@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,8 +13,8 @@ namespace scene
 {
 
 //! constructor
-COctTreeTriangleSelector::COctTreeTriangleSelector(IMesh* mesh,
-		ISceneNode* node, s32 minimalPolysPerNode)
+COctTreeTriangleSelector::COctTreeTriangleSelector(const IMesh* mesh,
+		const ISceneNode* node, s32 minimalPolysPerNode)
 	: CTriangleSelector(mesh, node), Root(0), NodeCount(0),
 	 MinimalPolysPerNode(minimalPolysPerNode)
 {
@@ -108,27 +108,30 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 }
 
 
-
 //! Gets all triangles which lie within a specific bounding box.
 void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, 
 					s32 arraySize, s32& outTriangleCount, 
 					const core::aabbox3d<f32>& box,
 					const core::matrix4* transform) const
 {
-	core::matrix4 mat;
+	core::matrix4 mat ( core::matrix4::EM4CONST_NOTHING );
 	core::aabbox3d<f32> invbox = box;
 
 	if (SceneNode)
 	{
-		mat = SceneNode->getAbsoluteTransformation();
-		mat.makeInverse();
-		mat.transformBox(invbox);
+		SceneNode->getAbsoluteTransformation().getInverse ( mat );
+		mat.transformBoxEx(invbox);
 	}
 
-	mat.makeIdentity();
-
 	if (transform)
+	{
 		mat = *transform;
+	}
+	else
+	{
+		mat.makeIdentity();
+	}
+
 
 	if (SceneNode)
 		mat *= SceneNode->getAbsoluteTransformation();
@@ -159,10 +162,9 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 	
 	for (i=0; i<cnt; ++i)
 	{
-		triangles[trianglesWritten] = node->Triangles[i];
-		mat->transformVect(triangles[trianglesWritten].pointA);
-		mat->transformVect(triangles[trianglesWritten].pointB);
-		mat->transformVect(triangles[trianglesWritten].pointC);
+		mat->transformVect(triangles[trianglesWritten].pointA, node->Triangles[i].pointA );
+		mat->transformVect(triangles[trianglesWritten].pointB, node->Triangles[i].pointB );
+		mat->transformVect(triangles[trianglesWritten].pointC, node->Triangles[i].pointC );
 		++trianglesWritten;
 	}
 
@@ -174,16 +176,87 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
+// new version: from user Piraaate
 void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
 		const core::matrix4* transform) const
 {
+#if 0
 	core::aabbox3d<f32> box(line.start);
 	box.addInternalPoint(line.end);
 
 	// TODO: Could be optimized for line a little bit more.
 	COctTreeTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,
 		box, transform);
+#else
+
+	core::matrix4 mat ( core::matrix4::EM4CONST_NOTHING );
+
+	core::vector3df vectStartInv ( line.start ), vectEndInv ( line.end );
+	if (SceneNode)
+	{
+		mat = SceneNode->getAbsoluteTransformation();
+		mat.makeInverse();
+		mat.transformVect(vectStartInv, line.start);
+		mat.transformVect(vectEndInv, line.end);
+	}
+	core::line3d<f32> invline(vectStartInv, vectEndInv);
+
+	mat.makeIdentity();
+
+	if (transform)
+		mat = (*transform);
+
+	if (SceneNode)
+		mat *= SceneNode->getAbsoluteTransformation();
+
+	s32 trianglesWritten = 0;
+
+	if (Root)
+		getTrianglesFromOctTree(Root, trianglesWritten, arraySize, invline, &mat, triangles);
+
+	outTriangleCount = trianglesWritten; 
+#endif
+}
+
+void COctTreeTriangleSelector::getTrianglesFromOctTree(SOctTreeNode* node, s32& trianglesWritten, s32 maximumSize,
+													   const core::line3d<f32>& line, const core::matrix4* transform,
+													   core::triangle3df* triangles)const
+{
+	if (!node->Box.intersectsWithLine(line))
+		return;
+
+	s32 cnt = node->Triangles.size();
+	if (cnt + trianglesWritten > maximumSize)
+		cnt -= cnt + trianglesWritten - maximumSize;
+
+	s32 i;
+
+	if ( transform->isIdentity() )
+	{
+		for (i=0; i<cnt; ++i)
+		{
+			triangles[trianglesWritten] = node->Triangles[i];
+			++trianglesWritten;
+		}
+	}
+	else
+	{
+		for (i=0; i<cnt; ++i)
+		{
+			triangles[trianglesWritten] = node->Triangles[i];
+			transform->transformVect(triangles[trianglesWritten].pointA);
+			transform->transformVect(triangles[trianglesWritten].pointB);
+			transform->transformVect(triangles[trianglesWritten].pointC);
+			++trianglesWritten;
+		}
+	}
+
+	for (i=0; i<8; ++i)
+		if (node->Child[i])
+			getTrianglesFromOctTree(node->Child[i], trianglesWritten,
+			maximumSize, line, transform, triangles);
+
 }
 
 

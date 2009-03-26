@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -72,15 +72,15 @@ void CGUIMessageBox::refreshControls()
 	const IGUISkin* skin = Environment->getSkin();
 	IGUIElement* focusMe = 0;
 
-	const s32 buttonHeight = skin->getSize(EGDS_BUTTON_HEIGHT);
-	const s32 buttonWidth = skin->getSize(EGDS_BUTTON_WIDTH);
-	const s32 titleHeight = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
+	const s32 buttonHeight   = skin->getSize(EGDS_BUTTON_HEIGHT);
+	const s32 buttonWidth    = skin->getSize(EGDS_BUTTON_WIDTH);
+	const s32 titleHeight    = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
 	const s32 buttonDistance = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	// add static multiline text
 
 	core::dimension2d<s32> dim(AbsoluteClippingRect.getWidth() - buttonWidth,
-		AbsoluteClippingRect.getHeight() - (buttonHeight * 3));
+		AbsoluteClippingRect.getHeight() - (buttonHeight * 2));
 	const core::position2d<s32> pos((AbsoluteClippingRect.getWidth() - dim.Width) / 2,
 		buttonHeight / 2 + titleHeight);
 
@@ -100,20 +100,21 @@ void CGUIMessageBox::refreshControls()
 
 	// adjust static text height
 
-	const s32 textHeight = StaticText->getTextHeight();
-	core::rect<s32> tmp = StaticText->getRelativePosition();
+	const s32 textHeight   = StaticText->getTextHeight();
+	core::rect<s32> tmp    = StaticText->getRelativePosition();
 	tmp.LowerRightCorner.Y = tmp.UpperLeftCorner.Y + textHeight;
 	StaticText->setRelativePosition(tmp);
-	dim.Height = textHeight;
+	dim.Height = dim.Height - buttonHeight < tmp.getHeight() ? tmp.getHeight() : dim.Height - buttonHeight;
 
-	// adjust message box height
+	// adjust message box height if required
 
 	tmp = getRelativePosition();
 	s32 msgBoxHeight = textHeight +	core::floor32(2.5f * buttonHeight) + titleHeight;
+	msgBoxHeight     = tmp.getHeight() < msgBoxHeight ? msgBoxHeight : tmp.getHeight();
 
 	// adjust message box position
 
-	tmp.UpperLeftCorner.Y = (Parent->getAbsolutePosition().getHeight() - msgBoxHeight) / 2;
+	tmp.UpperLeftCorner.Y  = (Parent->getAbsolutePosition().getHeight() - msgBoxHeight) / 2;
 	tmp.LowerRightCorner.Y = tmp.UpperLeftCorner.Y + msgBoxHeight;
 	setRelativePosition(tmp);
 
@@ -130,10 +131,11 @@ void CGUIMessageBox::refreshControls()
 		++countButtons;
 
 	core::rect<s32> btnRect;
-	btnRect.UpperLeftCorner.Y = pos.Y + dim.Height + buttonHeight / 2;
+	btnRect.UpperLeftCorner.Y  = pos.Y + dim.Height + buttonHeight / 2;
 	btnRect.LowerRightCorner.Y = btnRect.UpperLeftCorner.Y + buttonHeight;
-	btnRect.UpperLeftCorner.X = (AbsoluteClippingRect.getWidth() -
-		((buttonWidth + buttonDistance)*countButtons)) / 2;
+	btnRect.UpperLeftCorner.X  = (AbsoluteClippingRect.getWidth() -
+		(buttonWidth*countButtons + (buttonDistance*countButtons+1))) / 2 + 
+		buttonDistance / 2;
 	btnRect.LowerRightCorner.X = btnRect.UpperLeftCorner.X + buttonWidth;
 
 	// add/remove ok button
@@ -151,7 +153,7 @@ void CGUIMessageBox::refreshControls()
 		OkButton->setText(skin->getDefaultText(EGDT_MSG_BOX_OK));
 
 		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
-		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
+		btnRect.UpperLeftCorner.X  += buttonWidth + buttonDistance;
 
 		focusMe = OkButton;
 	}
@@ -254,145 +256,149 @@ void CGUIMessageBox::refreshControls()
 //! called if an event happened.
 bool CGUIMessageBox::OnEvent(const SEvent& event)
 {
-	SEvent outevent;
-	outevent.EventType = EET_GUI_EVENT;
-	outevent.GUIEvent.Caller = this;
-	outevent.GUIEvent.Element = 0;
-
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_KEY_INPUT_EVENT:
+		SEvent outevent;
+		outevent.EventType = EET_GUI_EVENT;
+		outevent.GUIEvent.Caller = this;
+		outevent.GUIEvent.Element = 0;
 
-		if (event.KeyInput.PressedDown)
+		switch(event.EventType)
 		{
-			switch (event.KeyInput.Key)
+		case EET_KEY_INPUT_EVENT:
+
+			if (event.KeyInput.PressedDown)
 			{
-			case KEY_RETURN:
-				if (OkButton)
+				switch (event.KeyInput.Key)
 				{
-					OkButton->setPressed(true);
-					Pressed = true;
+				case KEY_RETURN:
+					if (OkButton)
+					{
+						OkButton->setPressed(true);
+						Pressed = true;
+					}
+					break;
+				case KEY_KEY_Y:
+					if (YesButton)
+					{
+						YesButton->setPressed(true);
+						Pressed = true;
+					}
+					break;
+				case KEY_KEY_N:
+					if (NoButton)
+					{
+						NoButton->setPressed(true);
+						Pressed = true;
+					}
+					break;
+				case KEY_ESCAPE:
+					if (Pressed)
+					{
+						// cancel press
+						if (OkButton) OkButton->setPressed(false);
+						if (YesButton) YesButton->setPressed(false);
+						if (NoButton) NoButton->setPressed(false);
+						Pressed = false;
+					}
+					else
+					if (CancelButton)
+					{
+						CancelButton->setPressed(true);
+						Pressed = true;
+					}
+					else
+					if (CloseButton && CloseButton->isVisible())
+					{
+						CloseButton->setPressed(true);
+						Pressed = true;
+					}
+					break;
+				default: // no other key is handled here
+					break;
 				}
-				break;
-			case KEY_KEY_Y:
-				if (YesButton)
+			}
+			else
+			if (Pressed)
+			{
+				if (OkButton && event.KeyInput.Key == KEY_RETURN)
 				{
-					YesButton->setPressed(true);
-					Pressed = true;
-				}
-				break;
-			case KEY_KEY_N:
-				if (NoButton)
-				{
-					NoButton->setPressed(true);
-					Pressed = true;
-				}
-				break;
-			case KEY_ESCAPE:
-				if (Pressed)
-				{
-					// cancel press
-					if (OkButton) OkButton->setPressed(false);
-					if (YesButton) OkButton->setPressed(false);
-					if (NoButton) OkButton->setPressed(false);
-					Pressed = false;
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_OK;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
 				}
 				else
-				if (CancelButton)
+				if ((CancelButton || CloseButton) && event.KeyInput.Key == KEY_ESCAPE)
 				{
-					CancelButton->setPressed(true);
-					Pressed = true;
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_CANCEL;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
 				}
 				else
-				if (CloseButton && CloseButton->isVisible())
+				if (YesButton && event.KeyInput.Key == KEY_KEY_Y)
 				{
-					CloseButton->setPressed(true);
-					Pressed = true;
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_YES;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
 				}
-				break;
-			default: // no other key is handled here
-				break;
+				else
+				if (NoButton && event.KeyInput.Key == KEY_KEY_N)
+				{
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_NO;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
+				}
 			}
+			break;
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
+			{
+				if (event.GUIEvent.Caller == OkButton)
+				{
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_OK;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
+				}
+				else
+				if (event.GUIEvent.Caller == CancelButton ||
+					event.GUIEvent.Caller == CloseButton)
+				{
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_CANCEL;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
+				}
+				else
+				if (event.GUIEvent.Caller == YesButton)
+				{
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_YES;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
+				}
+				else
+				if (event.GUIEvent.Caller == NoButton)
+				{
+					outevent.GUIEvent.EventType = EGET_MESSAGEBOX_NO;
+					Parent->OnEvent(outevent);
+					remove();
+					return true;
+				}
+			}
+			break;
+		default:
+			break;
 		}
-		else
-		if (Pressed)
-		{
-			if (OkButton && event.KeyInput.Key == KEY_RETURN)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_OK;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if ((CancelButton || CloseButton) && event.KeyInput.Key == KEY_ESCAPE)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_CANCEL;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if (YesButton && event.KeyInput.Key == KEY_KEY_Y)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_YES;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if (NoButton && event.KeyInput.Key == KEY_KEY_N)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_NO;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-		}
-		break;
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
-		{
-			if (event.GUIEvent.Caller == OkButton)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_OK;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if (event.GUIEvent.Caller == CancelButton ||
-				event.GUIEvent.Caller == CloseButton)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_CANCEL;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if (event.GUIEvent.Caller == YesButton)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_YES;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-			else
-			if (event.GUIEvent.Caller == NoButton)
-			{
-				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_NO;
-				Parent->OnEvent(outevent);
-				remove();
-				return true;
-			}
-		}
-		break;
-	default:
-		break;
 	}
 
 	return CGUIWindow::OnEvent(event);
 }
+
 
 //! Writes attributes of the element.
 void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
@@ -406,6 +412,7 @@ void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 	out->addString	("MessageText",		MessageText.c_str());
 }
+
 
 //! Reads attributes of the element
 void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
@@ -427,7 +434,6 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 
 } // end namespace gui
 } // end namespace irr
-
 
 #endif // _IRR_COMPILE_WITH_GUI_
 

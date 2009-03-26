@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -418,7 +418,7 @@ namespace video
 	{
 		BD3DZB_FALSE                 = 0,	// Disable depth buffering
 		BD3DZB_TRUE                  = 1,	// Enable z-buffering
-		BD3DZB_USEW                  = 2,	//Enable w-buffering.
+		BD3DZB_USEW                  = 2	//Enable w-buffering.
 	};
 
 	//! Defines the supported compare functions.
@@ -438,7 +438,7 @@ namespace video
 	{
 		BD3DMCS_MATERIAL = 0,	// Use the color from the current material. 
 		BD3DMCS_COLOR1 = 1,		// Use the diffuse vertex color. 
-		BD3DMCS_COLOR2 = 2,		// Use the specular vertex color. 
+		BD3DMCS_COLOR2 = 2		// Use the specular vertex color. 
 	};
 
 
@@ -462,7 +462,7 @@ namespace video
 		/*!	BD3DSHADE_PHONG
 			Not supported. 
 		*/
-		BD3DSHADE_PHONG = 3,
+		BD3DSHADE_PHONG = 3
 	};
 
 	/*!	Defines constants describing the fill mode
@@ -472,7 +472,7 @@ namespace video
 	{
 		BD3DFILL_POINT = 1,		// Fill points.
 		BD3DFILL_WIREFRAME = 2,	// Fill wireframes.
-		BD3DFILL_SOLID = 3,		// Fill solids.
+		BD3DFILL_SOLID = 3		// Fill solids.
 	};
 
 
@@ -485,7 +485,7 @@ namespace video
 	{
 		BD3DCULL_NONE = 1,	// Do not cull back faces. 
 		BD3DCULL_CW = 2,	// Cull back faces with clockwise vertices. 
-		BD3DCULL_CCW = 3,	// Cull back faces with counterclockwise vertices. 
+		BD3DCULL_CCW = 3	// Cull back faces with counterclockwise vertices. 
 	};
 
 	struct SShaderParam
@@ -554,8 +554,8 @@ void CBurningShader_Raster_Reference::pShader_EMT_LIGHTMAP_M4 ()
 
 	f32 inversew = fix_inverse32 ( line.w[0] );
 
-	getSample_texture ( r0, g0, b0, &IT[0], f32_to_fixPoint ( line.t[0][0].x,inversew), f32_to_fixPoint ( line.t[0][0].y,inversew) );
-	getSample_texture ( r1, g1, b1, &IT[1], f32_to_fixPoint ( line.t[1][0].x,inversew), f32_to_fixPoint ( line.t[1][0].y,inversew) );
+	getSample_texture ( r0, g0, b0, &IT[0], tofix ( line.t[0][0].x,inversew), tofix ( line.t[0][0].y,inversew) );
+	getSample_texture ( r1, g1, b1, &IT[1], tofix ( line.t[1][0].x,inversew), tofix ( line.t[1][0].y,inversew) );
 
 
 	pShader.dst[pShader.i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
@@ -574,8 +574,8 @@ void CBurningShader_Raster_Reference::pShader_1 ()
 
 	const f32 inversew = fix_inverse32 ( line.w[0] );
 
-	tx0 = f32_to_fixPoint ( line.t[0][0].x, inversew );
-	ty0 = f32_to_fixPoint ( line.t[0][0].y, inversew );
+	tx0 = tofix ( line.t[0][0].x, inversew );
+	ty0 = tofix ( line.t[0][0].y, inversew );
 
 	getSample_texture ( r0, g0, b0, &IT[0], tx0, ty0 );
 	pShader.dst[pShader.i] = fix_to_color ( r0, g0, b0 );
@@ -594,7 +594,7 @@ void CBurningShader_Raster_Reference::setMaterial ( const SBurningShaderMaterial
 
 	ShaderParam.ColorUnits = 0;
 	ShaderParam.TextureUnits = 0;
-	for ( i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+	for ( i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 	{
 		if ( m.getTexture( i ) )
 			ShaderParam.TextureUnits = i;
@@ -625,13 +625,37 @@ void CBurningShader_Raster_Reference::setMaterial ( const SBurningShaderMaterial
 	ShaderParam.SetRenderState( BD3DRS_SPECULARMATERIALSOURCE, BD3DMCS_MATERIAL);
 
 	// depth buffer enable and compare
-	ShaderParam.SetRenderState( BD3DRS_ZENABLE, material.org.ZBuffer ? BD3DZB_USEW : BD3DZB_FALSE);
-	ShaderParam.SetRenderState( BD3DRS_ZFUNC, material.org.ZBuffer == 2 ? BD3DCMP_EQUAL : BD3DCMP_LESSEQUAL );
+	ShaderParam.SetRenderState( BD3DRS_ZENABLE, (material.org.ZBuffer==video::ECFN_NEVER) ? BD3DZB_FALSE : BD3DZB_USEW);
+	switch (material.org.ZBuffer)
+	{
+	case ECFN_NEVER:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_NEVER);
+		break;
+	case ECFN_LESSEQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_LESSEQUAL);
+		break;
+	case ECFN_EQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_EQUAL);
+		break;
+	case ECFN_LESS:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_LESSEQUAL);
+		break;
+	case ECFN_NOTEQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_NOTEQUAL);
+		break;
+	case ECFN_GREATEREQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_GREATEREQUAL);
+		break;
+	case ECFN_GREATER:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_GREATER);
+		break;
+	case ECFN_ALWAYS:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_ALWAYS);
+		break;
+	}
 
 	// depth buffer write
 	ShaderParam.SetRenderState( BD3DRS_ZWRITEENABLE, m.ZWriteEnable );
-
-
 }
 
 /*!
@@ -683,11 +707,13 @@ REALINLINE void CBurningShader_Raster_Reference::scanline2()
 
 	u32 i;
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 	for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 	{
 		line.c[i][1] = (line.c[i][1] - line.c[i][0]) * invDeltaX;
 		line.c[i][0] += line.c[i][1] * subPixel;
 	}
+#endif
 
 	for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 	{
@@ -708,10 +734,12 @@ REALINLINE void CBurningShader_Raster_Reference::scanline2()
 		// advance next pixel
 		line.w[0] += line.w[1];
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			line.c[i][0] += line.c[i][1];
 		}
+#endif
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			line.t[i][0] += line.t[i][1];
@@ -780,11 +808,13 @@ REALINLINE void CBurningShader_Raster_Reference::scanline ()
 
 	a = (f32) pShader.i + subPixel;
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 	for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 	{
 		line.c[i][1] = (line.c[i][1] - line.c[i][0]) * invDeltaX;
 		line.c[i][0] += line.c[i][1] * a;
 	}
+#endif
 
 	for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 	{
@@ -803,11 +833,12 @@ REALINLINE void CBurningShader_Raster_Reference::scanline ()
 
 		line.w[0] += line.w[1];
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			line.c[i][0] += line.c[i][1];
 		}
-
+#endif
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			line.t[i][0] += line.t[i][1];
@@ -825,8 +856,8 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -856,11 +887,13 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 	scan.slopeW[0] = (c->Pos.w - a->Pos.w) * scan.invDeltaY[0];
 	scan.w[0] = a->Pos.w;
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 	for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 	{
 		scan.c[i][0] = a->Color[i];
 		scan.slopeC[i][0] = (c->Color[i] - a->Color[i]) * scan.invDeltaY[0];
 	}
+#endif
 
 	for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 	{
@@ -884,12 +917,13 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 		scan.slopeW[1] = (b->Pos.w - a->Pos.w) * scan.invDeltaY[1];
 		scan.w[1] = a->Pos.w;
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			scan.c[i][1] = a->Color[i];
 			scan.slopeC[i][1] = (b->Color[i] - a->Color[i]) * scan.invDeltaY[1];
 		}
-
+#endif
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			scan.t[i][1] = a->Tex[i];
@@ -930,12 +964,13 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 			line.x[scan.right] = scan.x[1];
 			line.w[scan.right] = scan.w[1];
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 			for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 			{
 				line.c[i][scan.left] = scan.c[i][0];
 				line.c[i][scan.right] = scan.c[i][1];
 			}
-
+#endif
 			for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 			{
 				line.t[i][scan.left] = scan.t[i][0];
@@ -977,11 +1012,12 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 			scan.x[0] = a->Pos.x + scan.slopeX[0] * temp[0];
 			scan.w[0] = a->Pos.w + scan.slopeW[0] * temp[0];
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 			for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 			{
 				scan.c[i][0] = a->Color[i] + scan.slopeC[i][0] * temp[0];
 			}
-
+#endif
 			for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 			{
 				scan.t[i][0] = a->Tex[i] + scan.slopeT[i][0] * temp[0];
@@ -995,12 +1031,13 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 		scan.slopeW[1] = (c->Pos.w - b->Pos.w) * scan.invDeltaY[2];
 		scan.w[1] = b->Pos.w;
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			scan.c[i][1] = b->Color[i];
 			scan.slopeC[i][1] = (c->Color[i] - b->Color[i]) * scan.invDeltaY[2];
 		}
-
+#endif
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			scan.t[i][1] = b->Tex[i];
@@ -1042,12 +1079,13 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 			line.x[scan.right] = scan.x[1];
 			line.w[scan.right] = scan.w[1];
 
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 			for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 			{
 				line.c[i][scan.left] = scan.c[i][0];
 				line.c[i][scan.right] = scan.c[i][1];
 			}
-
+#endif
 			for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 			{
 				line.t[i][scan.left] = scan.t[i][0];

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -22,9 +22,9 @@ public:
 	//! Constructor
 	CMS3DMeshFileLoader(video::IVideoDriver* driver);
 
-	//! returns true if the file maybe is able to be loaded by this class
+	//! returns true if the file might be loadable by this class
 	//! based on the file extension (e.g. ".bsp")
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -39,16 +39,6 @@ private:
 	bool load(io::IReadFile* file);
 	video::IVideoDriver* Driver;
 	CSkinnedMesh* AnimatedMesh;
-
-	struct SGroup
-	{
-		core::stringc Name;
-		core::array<u16> VertexIds;
-		u16 MaterialIdx;
-	};
-
-	core::array<SGroup> Groups;
-
 };
 
 } // end namespace scene

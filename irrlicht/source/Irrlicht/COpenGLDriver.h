@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -6,9 +6,8 @@
 #define __C_VIDEO_OPEN_GL_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#include "CNullDriver.h"
-#include "IMaterialRendererServices.h"
-#include "COpenGLExtensionHandler.h"
+
+#include "SIrrCreationParameters.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -16,14 +15,24 @@
 	// include windows headers for HWND
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
+#elif defined(_IRR_USE_OSX_DEVICE_)
+	#include "CIrrDeviceMacOSX.h"
+#endif
+
+
+#include "CNullDriver.h"
+#include "IMaterialRendererServices.h"
+#include "COpenGLExtensionHandler.h"
+
+#if defined(_IRR_WINDOWS_API_)
 	#include <GL/gl.h>
 	#include "glext.h"
+	#include "wglext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 	#pragma comment(lib, "GLu32.lib")
 #endif
-#elif defined(MACOSX)
-	#include "CIrrDeviceMacOSX.h"
+#elif defined(_IRR_USE_OSX_DEVICE_)
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
 	#endif
@@ -39,8 +48,8 @@
 		#define GL_GLEXT_PROTOTYPES 1
 		#define GLX_GLXEXT_PROTOTYPES 1
 	#endif
-	#include <SDL/SDL_opengl.h>
 	#define NO_SDL_GLEXT
+	#include <SDL/SDL_opengl.h>
 	#include "glext.h"
 #else
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
@@ -69,39 +78,31 @@ namespace video
 	{
 	public:
 
+		#if defined(_IRR_WINDOWS_API_) || defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		#endif
+
+		#ifdef _IRR_USE_OSX_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io, CIrrDeviceMacOSX *device);
+		#endif
+
 		#ifdef _IRR_WINDOWS_API_
-		//! win32 constructor
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window, bool fullscreen,
-			bool stencilBuffer, io::IFileSystem* io, bool antiAlias);
-
 		//! inits the windows specific parts of the open gl driver
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
-		#endif
-
-		#ifdef _IRR_USE_LINUX_DEVICE_
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
-		#endif
-
-		#ifdef MACOSX
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, CIrrDeviceMacOSX *device,io::IFileSystem* io, bool vsync, bool antiAlias);
-		#endif
-
-		#ifdef _IRR_USE_SDL_DEVICE_
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
+		bool initDriver(SIrrlichtCreationParameters params);
 		#endif
 
 		//! destructor
 		virtual ~COpenGLDriver();
 
 		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
 		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( s32 windowId, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene();
 
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
@@ -113,10 +114,10 @@ namespace video
 
 			GLuint vbo_verticesID; //tmp
 			GLuint vbo_indicesID; //tmp
-		};
 
-		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
-		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+			GLuint vbo_verticesSize; //tmp
+			GLuint vbo_indicesSize; //tmp
+		};
 
 		//! updates hardware buffer if needed
 		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
@@ -131,12 +132,14 @@ namespace video
 		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer);
 
 		//! draws a vertex primitive list
-		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		{
-			return COpenGLExtensionHandler::queryFeature(feature);
+			return FeatureEnabled[feature] && COpenGLExtensionHandler::queryFeature(feature);
 		}
 
 		//! Sets a material. All 3d drawing functions draw geometry now
@@ -176,7 +179,7 @@ namespace video
 		//! Draws a part of the texture into the rectangle.
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			video::SColor* colors=0, bool useAlphaChannelOfTexture=false);
+			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
 		//! draw an 2d rectangle
 		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -192,6 +195,9 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a single pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
 					const core::vector3df& end,
@@ -204,8 +210,15 @@ namespace video
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
 
-		//! adds a dynamic light
-		virtual void addDynamicLight(const SLight& light);
+		//! adds a dynamic light, returning an index to the light
+		//! \param light: the light data to use to create the light
+		//! \return An index to the light, or -1 if an error occurs
+		virtual s32 addDynamicLight(const SLight& light);
+
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn);
 
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
@@ -238,10 +251,13 @@ namespace video
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const;
+
+		//! get color format of the current color buffer
+		virtual ECOLOR_FORMAT getColorFormat() const;
 
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
@@ -270,8 +286,9 @@ namespace video
 		//! Returns whether disabling was successful or not.
 		bool disableTextures(u32 fromStage=0);
 
-		//! Adds a new material renderer to the VideoDriver, using extGLGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status) pixel and/or
-		//! vertex shaders to render geometry.
+		//! Adds a new material renderer to the VideoDriver, using
+		//! extGLGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status)
+		//! pixel and/or vertex shaders to render geometry.
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
 
@@ -293,8 +310,14 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount() const;
 
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+				const core::string<c16>& name);
 
+		//! set or reset render target
+		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color);
+
+		//! set or reset render target texture
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
 
@@ -322,20 +345,32 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return vendorName;}
+
+		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
+		void removeDepthTexture(ITexture* texture);
 
 	private:
+
+		//! clears the zbuffer and color buffer
+		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
+
+		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 
 		void uploadClipPlane(u32 index);
 
 		//! inits the parts of the open gl driver used on all platforms
-		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
+		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		inline void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+
+		//! Set GL pipeline to desired texture wrap modes of the material
+		void setWrapMode(const SMaterial& material);
 
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
@@ -344,13 +379,14 @@ namespace video
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
 		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		void createMaterialRenderers();
 
-
-
-
+		//! Assign a hardware light to the specified requested light, if any
+		//! free hardware lights exist.
+		//! \param[in] lightIndex: the index of the requesting light
+		void assignHardwareLight(u32 lightIndex);
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -368,27 +404,51 @@ namespace video
 		//! bool to make all renderstates reset if set to true.
 		bool ResetRenderStates;
 		bool Transformation3DChanged;
-		bool AntiAlias;
+		u8 AntiAlias;
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		core::array<ITexture*> DepthTextures;
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
 
-		core::dimension2d<s32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentRendertargetSize;
 
 		core::stringc vendorName;
+
+		core::matrix4 TextureFlipMatrix;
+
+		//! Color buffer format
+		ECOLOR_FORMAT ColorFormat;
+
+		//! Render target type for render operations
+		E_RENDER_TARGET CurrentTarget;
+
+		bool Doublebuffer;
+		bool Stereo;
+
+		//! All the lights that have been requested; a hardware limited
+		//! number of them will be used at once.
+		struct RequestedLight
+		{
+			RequestedLight(SLight const & lightData)
+				: LightData(lightData), HardwareLightIndex(-1), DesireToBeOn(true) { }
+
+			SLight	LightData;
+			s32		HardwareLightIndex; // GL_LIGHT0 - GL_LIGHT7
+			bool	DesireToBeOn;
+		};
+		core::array<RequestedLight> RequestedLights;
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 			HGLRC HRc; // Permanent Rendering Context
 		#elif defined(_IRR_USE_LINUX_DEVICE_)
-			GLXDrawable XWindow;
-			Display* XDisplay;
-		#elif defined(MACOSX)
+			GLXDrawable Drawable;
+		#elif defined(_IRR_USE_OSX_DEVICE_)
 			CIrrDeviceMacOSX *_device;
 		#endif
 	};
@@ -399,6 +459,4 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
 #endif
-
-
 

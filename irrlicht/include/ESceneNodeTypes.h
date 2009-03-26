@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -36,6 +36,9 @@ namespace scene
 		//! Sky Box Scene Node
 		ESNT_SKY_BOX        = MAKE_IRR_ID('s','k','y','_'),
 
+		//! Sky Dome Scene Node
+		ESNT_SKY_DOME       = MAKE_IRR_ID('s','k','y','d'),
+
 		//! Shadow Volume Scene Node
 		ESNT_SHADOW_VOLUME  = MAKE_IRR_ID('s','h','d','w'),
 
@@ -57,12 +60,6 @@ namespace scene
 		//! Camera Scene Node
 		ESNT_CAMERA         = MAKE_IRR_ID('c','a','m','_'),
 
-		//! Maya Camera Scene Node
-		ESNT_CAMERA_MAYA    = MAKE_IRR_ID('c','a','m','M'),
-
-		//! First Person Shooter style Camera
-		ESNT_CAMERA_FPS	    = MAKE_IRR_ID('c','a','m','F'),
-
 		//! Billboard Scene Node
 		ESNT_BILLBOARD      = MAKE_IRR_ID('b','i','l','l'),
 
@@ -72,11 +69,25 @@ namespace scene
 		//! Particle System Scene Node
 		ESNT_PARTICLE_SYSTEM = MAKE_IRR_ID('p','t','c','l'),
 
+		//! Quake3 Shader Scene Node
+		ESNT_Q3SHADER_SCENE_NODE  = MAKE_IRR_ID('q','3','s','h'),
+
 		//! Quake3 Model Scene Node ( has tag to link to )
-		ESNT_MD3_SCENE_NODE	= MAKE_IRR_ID('m','d','3','_'),
+		ESNT_MD3_SCENE_NODE  = MAKE_IRR_ID('m','d','3','_'),
+
+		//! Maya Camera Scene Node
+		/** Legacy, for loading version <= 1.4.x .irr files */
+		ESNT_CAMERA_MAYA    = MAKE_IRR_ID('c','a','m','M'),
+
+		//! First Person Shooter Camera
+		/** Legacy, for loading version <= 1.4.x .irr files */
+		ESNT_CAMERA_FPS     = MAKE_IRR_ID('c','a','m','F'),
 
 		//! Unknown scene node
-		ESNT_UNKNOWN        = MAKE_IRR_ID('u','n','k','n')
+		ESNT_UNKNOWN        = MAKE_IRR_ID('u','n','k','n'),
+
+		//! Will match with any scene node when checking types
+		ESNT_ANY            = MAKE_IRR_ID('a','n','y','_')
 	};
 
 

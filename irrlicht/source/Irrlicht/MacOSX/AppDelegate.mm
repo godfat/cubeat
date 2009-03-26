@@ -1,8 +1,10 @@
-// Copyright (C) 2005 Etienne Petitjean
+// Copyright (C) 2005-2009 Etienne Petitjean
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #import "AppDelegate.h"
+
+#ifdef _IRR_USE_OSX_DEVICE_
 
 @implementation AppDelegate
 
@@ -20,22 +22,22 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-	[NSApp orderFrontStandardAboutPanel:sender];	
+	[NSApp orderFrontStandardAboutPanel:sender];
 }
 
 - (void)unhideAllApplications:(id)sender
 {
-	[NSApp unhideAllApplications:sender];	
+	[NSApp unhideAllApplications:sender];
 }
 
 - (void)hide:(id)sender
 {
-	[NSApp hide:sender];	
+	[NSApp hide:sender];
 }
 
 - (void)hideOtherApplications:(id)sender
 {
-	[NSApp hideOtherApplications:sender];	
+	[NSApp hideOtherApplications:sender];
 }
 
 - (void)terminate:(id)sender
@@ -43,11 +45,24 @@
 	_quit = TRUE;
 }
 
+- (void)windowWillClose:(id)sender
+{
+	_quit = TRUE;
+}
+
+- (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)proposedFrameSize
+{
+	if (_device->isResizable())
+		return proposedFrameSize;
+	else
+		return [window frame].size;
+}
+
 - (void)windowDidResize:(NSNotification *)aNotification
 {
 	NSWindow	*window;
 	NSRect		frame;
-	
+
 	window = [aNotification object];
 	frame = [window frame];
 	_device->setResize((int)frame.size.width,(int)frame.size.height);
@@ -59,3 +74,5 @@
 }
 
 @end
+
+#endif // _IRR_USE_OSX_DEVICE_

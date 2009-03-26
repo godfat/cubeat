@@ -81,7 +81,7 @@ public:
 	virtual void draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter=false, bool vcenter=false, const core::rect<s32>* clip=0);
 
     //! returns the dimension of a text
-	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const;
+	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const;
 
 	//! Calculates the index of the character in the text which is on a specific position.
 	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const;
@@ -95,6 +95,8 @@ public:
 	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const;
 	virtual s32 getKerningHeight() const;
 // << Add by MadHyde for Ver.1.3 new functions end
+
+	virtual void setInvisibleCharacters( const wchar_t *s );
 
 // > added by arch_jslin 2008.11.02
     virtual u32 getFontSize() const { return size; }
@@ -125,6 +127,8 @@ protected:
 // >> Add by MadHyde for Ver.1.3 new functions begin
 	s32 GlobalKerningWidth, GlobalKerningHeight;
 // << Add by MadHyde for Ver.1.3 new functions end
+
+    core::stringw Invisible;
 };
 
 } // end namespace gui

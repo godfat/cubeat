@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -36,7 +36,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2,
 					(parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2+FOD_WIDTH,
 					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2+FOD_HEIGHT)),
-	Dragging(false), FileNameText(0), FileList(0)
+	FileNameText(0), FileList(0), Dragging(false)
 {
 	#ifdef _DEBUG
 	IGUIElement::setDebugName("CGUIFileOpenDialog");
@@ -53,8 +53,8 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 	}
 
-	s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
-	s32 posx = RelativeRect.getWidth() - buttonw - 4;
+	const s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");
@@ -88,7 +88,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 	FileBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	FileBox->grab();
 
-	FileNameText = Environment->addStaticText(0, core::rect<s32>(10, 30, RelativeRect.getWidth()-90, 50), true, false, this);
+	FileNameText = Environment->addEditBox(0, core::rect<s32>(10, 30, RelativeRect.getWidth()-90, 50), true, this);
 	FileNameText->setSubElement(true);
 	FileNameText->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	FileNameText->grab();
@@ -136,111 +136,151 @@ const wchar_t* CGUIFileOpenDialog::getFileName() const
 	return FileName.c_str();
 }
 
+//! Returns the directory of the selected file. Returns NULL, if no directory was selected.
+const core::string<c16>& CGUIFileOpenDialog::getDirectoryName()
+{
+	FileSystem->flattenFilename ( FileDirectory );
+	return FileDirectory;
+}
+
 
 //! called if an event happened.
 bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		switch(event.GUIEvent.EventType)
+		switch(event.EventType)
 		{
-		case EGET_ELEMENT_FOCUS_LOST:
-			Dragging = false;
-			break;
-		case EGET_BUTTON_CLICKED:
-			if (event.GUIEvent.Caller == CloseButton ||
-				event.GUIEvent.Caller == CancelButton)
+		case EET_GUI_EVENT:
+			switch(event.GUIEvent.EventType)
 			{
-				sendCancelEvent();
-				remove();
-				return true;
-			}
-			else
-			if (event.GUIEvent.Caller == OKButton && FileName != L"")
-			{
-				sendSelectedEvent();
-				remove();
-				return true;
-			}
-			break;
-
-		case EGET_LISTBOX_CHANGED:
-			{
-				s32 selected = FileBox->getSelected();
-				if (FileList && FileSystem)
+			case EGET_ELEMENT_FOCUS_LOST:
+				Dragging = false;
+				break;
+			case EGET_BUTTON_CLICKED:
+				if (event.GUIEvent.Caller == CloseButton ||
+					event.GUIEvent.Caller == CancelButton)
 				{
-					if (FileList->isDirectory(selected))
-						FileName = L"";
-					else
-						FileName = FileList->getFullFileName(selected);
+					sendCancelEvent();
+					remove();
+					return true;
 				}
-			}
-			break;
-
-		case EGET_LISTBOX_SELECTED_AGAIN:
-			{
-				const s32 selected = FileBox->getSelected();
-				if (FileList && FileSystem)
+				else
+				if (event.GUIEvent.Caller == OKButton )
 				{
-					if (FileList->isDirectory(selected))
+					if ( FileDirectory != L"" )
 					{
-						FileSystem->changeWorkingDirectoryTo(FileList->getFileName(selected));
+						sendSelectedEvent( EGET_DIRECTORY_SELECTED );
+					}
+					if ( FileName != L"" )
+					{
+						sendSelectedEvent( EGET_FILE_SELECTED );
+						remove();
+						return true;
+					}
+				}
+				break;
+
+			case EGET_LISTBOX_CHANGED:
+				{
+					s32 selected = FileBox->getSelected();
+					if (FileList && FileSystem)
+					{
+						if (FileList->isDirectory(selected))
+						{
+							FileName = L"";
+							FileDirectory = FileList->getFullFileName(selected);
+						}
+						else
+						{
+							FileDirectory = L"";
+							FileName = FileList->getFullFileName(selected);
+						}
+					}
+				}
+				break;
+
+			case EGET_LISTBOX_SELECTED_AGAIN:
+				{
+					const s32 selected = FileBox->getSelected();
+					if (FileList && FileSystem)
+					{
+						if (FileList->isDirectory(selected))
+						{
+							FileDirectory = FileList->getFullFileName(selected);
+							FileSystem->changeWorkingDirectoryTo(FileList->getFileName(selected));
+							fillListBox();
+							FileName = "";
+						}
+						else
+						{
+							FileName = FileList->getFullFileName(selected);
+							return true;
+						}
+					}
+				}
+				break;
+			case EGET_EDITBOX_ENTER:
+				if (event.GUIEvent.Caller == FileNameText)
+				{
+					core::string<c16> dir( FileNameText->getText () );
+					if ( FileSystem->changeWorkingDirectoryTo( dir ) )
+					{
 						fillListBox();
 						FileName = L"";
 					}
-					else
-					{
-						FileName = FileList->getFullFileName(selected);
-						return true;
-					}
+					return true;
 				}
+			break;
+			default:
+				break;
 			}
 			break;
-		default:
-			break;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
-		{
-		case EMIE_MOUSE_WHEEL:
-			return FileBox->OnEvent(event);
-		case EMIE_LMOUSE_PRESSED_DOWN:
-			DragStart.X = event.MouseInput.X;
-			DragStart.Y = event.MouseInput.Y;
-			Dragging = true;
-			Environment->setFocus(this);
-			return true;
-		case EMIE_LMOUSE_LEFT_UP:
-			Dragging = false;
-			return true;
-		case EMIE_MOUSE_MOVED:
-			if (Dragging)
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
 			{
-				// gui window should not be dragged outside its parent
-				if (Parent)
-					if (event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
-						event.MouseInput.Y < Parent->getAbsolutePosition().UpperLeftCorner.Y +1 ||
-						event.MouseInput.X > Parent->getAbsolutePosition().LowerRightCorner.X -1 ||
-						event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
-
-						return true;
-
-				move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
+			case EMIE_MOUSE_WHEEL:
+				return FileBox->OnEvent(event);
+			case EMIE_LMOUSE_PRESSED_DOWN:
 				DragStart.X = event.MouseInput.X;
 				DragStart.Y = event.MouseInput.Y;
+				Dragging = true;
+				Environment->setFocus(this);
 				return true;
+			case EMIE_LMOUSE_LEFT_UP:
+				Dragging = false;
+				return true;
+			case EMIE_MOUSE_MOVED:
+
+				if ( !event.MouseInput.isLeftPressed () )
+					Dragging = false;
+
+				if (Dragging)
+				{
+					// gui window should not be dragged outside its parent
+					if (Parent)
+						if (event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
+							event.MouseInput.Y < Parent->getAbsolutePosition().UpperLeftCorner.Y +1 ||
+							event.MouseInput.X > Parent->getAbsolutePosition().LowerRightCorner.X -1 ||
+							event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
+
+							return true;
+
+					move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
+					DragStart.X = event.MouseInput.X;
+					DragStart.Y = event.MouseInput.Y;
+					return true;
+				}
+				break;
+			default:
+				break;
 			}
-			break;
 		default:
 			break;
 		}
-	default:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 
@@ -298,28 +338,29 @@ void CGUIFileOpenDialog::fillListBox()
 
 	for (u32 i=0; i<FileList->getFileCount(); ++i)
 	{
+		//s = FileList->getFileName(i);
 // >> modified by zgock for Multilingual start
-		c8 *d = (c8 *)FileList->getFileName(i);
+		c8 *d = (c8 *)FileList->getFileName(i).c_str();
 		wchar_t *ws = new wchar_t[strlen(d) + 1];
 		int len = mbstowcs(ws,d,strlen(d));
 		ws[len] = 0;
 		s = ws;
 		delete ws;
-//		s = FileList->getFileName(i);
 // << modified by zgock for Multilingual end
 		FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
 	}
 
 	if (FileNameText)
 	{
+//		s = FileSystem->getWorkingDirectory();
+//		FileDirectory = s;
 // >> modified by zgock for Multilingual start
-		c8 *d = (c8 *)FileSystem->getWorkingDirectory();
+		c8 *d = (c8 *)FileSystem->getWorkingDirectory().c_str();
 		wchar_t *ws = new wchar_t[strlen(d) + 1];
 		int len = mbstowcs(ws,d,strlen(d));
 		ws[len] = 0;
 		s = ws;
 		delete ws;
-//		s = FileSystem->getWorkingDirectory();
 // << modified by zgock for Multilingual end
 		FileNameText->setText(s.c_str());
 	}
@@ -331,13 +372,13 @@ void CGUIFileOpenDialog::fillListBox()
 
 
 //! sends the event that the file has been selected.
-void CGUIFileOpenDialog::sendSelectedEvent()
+void CGUIFileOpenDialog::sendSelectedEvent( EGUI_EVENT_TYPE type)
 {
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
 	event.GUIEvent.Element = 0;
-	event.GUIEvent.EventType = EGET_FILE_SELECTED;
+	event.GUIEvent.EventType = type;
 	Parent->OnEvent(event);
 }
 

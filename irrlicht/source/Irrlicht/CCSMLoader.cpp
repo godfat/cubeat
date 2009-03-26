@@ -1,11 +1,11 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 //
 // This file was written by Saurav Mohapatra and modified by Nikolaus Gebhardt.
 // See CCSMLoader.h for details.
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 
 #include "CCSMLoader.h"
@@ -360,6 +360,10 @@ namespace scene
 	CCSMLoader::CCSMLoader(scene::ISceneManager* manager, io::IFileSystem* fs)
 		: FileSystem(fs), SceneManager(manager)
 	{
+
+		#ifdef _DEBUG
+		setDebugName("CCSMLoader");
+		#endif
 	}
 
 	CCSMLoader::~CCSMLoader()
@@ -368,9 +372,9 @@ namespace scene
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	bool CCSMLoader::isALoadableFileExtension(const c8* fileName) const
+	bool CCSMLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 	{
-		return strstr(fileName, ".csm")!=0;
+		return core::hasFileExtension ( filename, "csm" );
 	}
 
 	//! creates/loads an animated mesh from the file.
@@ -405,7 +409,7 @@ namespace scene
 
 			scene::IMesh* pMesh = createIrrlichtMesh(&csmFile,
 				SceneManager->getParameters()->getAttributeAsString(CSM_TEXTURE_PATH),
-				file->getFileName());
+				core::stringc ( file->getFileName() ).c_str() );
 			return pMesh;
 		}
 
@@ -429,7 +433,7 @@ namespace scene
 
 			video::IImage* lmapImg = driver->createImageFromData(
 				video::ECF_A8R8G8B8,
-				core::dimension2d<s32>(lmap->getWidth(),lmap->getHeight()),
+				core::dimension2d<u32>(lmap->getWidth(),lmap->getHeight()),
 				(void *)(lmap->getPixelData()));
 
 			driver->addTexture(lmapName.c_str(), lmapImg);
@@ -449,7 +453,7 @@ namespace scene
 				texName+= "/";
 				texName+= surface->getTextureName();
 
-				video::ITexture* texture = driver->getTexture(texName.c_str());
+				video::ITexture* texture = driver->getTexture(texName);
 				scene::SMeshBufferLightMap *buffer = new scene::SMeshBufferLightMap();
 
 				//material
@@ -458,7 +462,7 @@ namespace scene
 				lmapName += (int)surface->getLightMapId();
 
 				buffer->Material.setTexture(0, texture);
-				buffer->Material.setTexture(1, driver->getTexture(lmapName.c_str()));
+				buffer->Material.setTexture(1, driver->getTexture(lmapName));
 				buffer->Material.Lighting = false;
 				buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
 

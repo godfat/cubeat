@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -10,17 +10,15 @@ namespace io
 {
 
 
-CReadFile::CReadFile(const c8* fileName)
-: File(0), FileSize(0)
+CReadFile::CReadFile(const core::string<c16>& fileName)
+: File(0), FileSize(0), Filename(fileName)
 {
 	#ifdef _DEBUG
 	setDebugName("CReadFile");
 	#endif
 
-	Filename = fileName;
 	openFile();
 }
-
 
 
 CReadFile::~CReadFile()
@@ -30,16 +28,14 @@ CReadFile::~CReadFile()
 }
 
 
-
 //! returns how much was read
 s32 CReadFile::read(void* buffer, u32 sizeToRead)
 {
 	if (!isOpen())
 		return 0;
 
-	return fread(buffer, 1, sizeToRead, File);
+	return (s32)fread(buffer, 1, sizeToRead, File);
 }
-
 
 
 //! changes position in file, returns true if successful
@@ -54,7 +50,6 @@ bool CReadFile::seek(long finalPos, bool relativeMovement)
 }
 
 
-
 //! returns size of file
 long CReadFile::getSize() const
 {
@@ -62,13 +57,11 @@ long CReadFile::getSize() const
 }
 
 
-
 //! returns where in the file we are.
 long CReadFile::getPos() const
 {
 	return ftell(File);
 }
-
 
 
 //! opens the file
@@ -80,7 +73,11 @@ void CReadFile::openFile()
 		return;
 	}
 
+#if defined ( _IRR_WCHAR_FILESYSTEM )
+	File = _wfopen(Filename.c_str(), L"rb");
+#else
 	File = fopen(Filename.c_str(), "rb");
+#endif
 
 	if (File)
 	{
@@ -94,14 +91,14 @@ void CReadFile::openFile()
 
 
 //! returns name of file
-const c8* CReadFile::getFileName() const
+const core::string<c16>& CReadFile::getFileName() const
 {
-	return Filename.c_str();
+	return Filename;
 }
 
 
 
-IReadFile* createReadFile(const c8* fileName)
+IReadFile* createReadFile(const core::string<c16>& fileName)
 {
 	CReadFile* file = new CReadFile(fileName);
 	if (file->isOpen())

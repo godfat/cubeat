@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -9,6 +9,7 @@
 #include "SMaterial.h"
 #include "aabbox3d.h"
 #include "S3DVertex.h"
+#include "SVertexIndex.h"
 #include "EHardwareBufferFlags.h"
 
 namespace irr
@@ -56,50 +57,70 @@ namespace scene
 	};
 
 	//! Struct for holding a mesh with a single material
-	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
+	/** SMeshBuffer is a simple implementation of a MeshBuffer.
+
+	Since meshbuffers are used for drawing, and hence will be exposed
+	to the driver, chances are high that they are grab()'ed from somewhere.
+	It's therefore required to dynamically allocate meshbuffers which are
+	passed to a video driver and only drop hte buffer once it's not used in
+	the current code block anymore.
+	*/
 	class IMeshBuffer : public virtual IReferenceCounted
 	{
 	public:
 
-		//! destructor
-		virtual ~IMeshBuffer() { }
-
-		//! returns the material of this meshbuffer
+		//! Get the material of this meshbuffer
+		/** \return Material of this buffer. */
 		virtual video::SMaterial& getMaterial() = 0;
 
-		//! returns the material of this meshbuffer
+		//! Get the material of this meshbuffer
+		/** \return Material of this buffer. */
 		virtual const video::SMaterial& getMaterial() const = 0;
 
-		//! returns which type of vertex data is stored.
+		//! Get type of vertex data which is stored in this meshbuffer.
+		/** \return Vertex type of this buffer. */
 		virtual video::E_VERTEX_TYPE getVertexType() const = 0;
 
-		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
-		//! type is used can be determined with getVertexType().
+		//! Get access to vertex data. The data is an array of vertices.
+		/** Which vertex type is used can be determined by getVertexType().
+		\return Pointer to array of vertices. */
 		virtual const void* getVertices() const = 0;
 
-		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
-		//! type is used can be determined with getVertexType().
+		//! Get access to vertex data. The data is an array of vertices.
+		/** Which vertex type is used can be determined by getVertexType().
+		\return Pointer to array of vertices. */
 		virtual void* getVertices() = 0;
 
-		//! returns amount of vertices
+		//! Get amount of vertices in meshbuffer.
+		/** \return Number of vertices in this buffer. */
 		virtual u32 getVertexCount() const = 0;
 
-		//! returns pointer to Indices
+		//! Get type of index data which is stored in this meshbuffer.
+		/** \return Index type of this buffer. */
+		virtual video::E_INDEX_TYPE getIndexType() const =0;
+
+		//! Get access to Indices.
+		/** \return Pointer to indices array. */
 		virtual const u16* getIndices() const = 0;
 
-		//! returns pointer to Indices
+		//! Get access to Indices.
+		/** \return Pointer to indices array. */
 		virtual u16* getIndices() = 0;
 
-		//! returns amount of indices
+		//! Get amount of indices in this meshbuffer.
+		/** \return Number of indices in this buffer. */
 		virtual u32 getIndexCount() const = 0;
 
-		//! returns an axis aligned bounding box
+		//! Get the axis aligned bounding box of this meshbuffer.
+		/** \return Axis aligned bounding box of this buffer. */
 		virtual const core::aabbox3df& getBoundingBox() const = 0;
 
-		//! set user axis aligned bounding box
-		virtual void setBoundingBox( const core::aabbox3df& box) = 0;
+		//! Set axis aligned bounding box
+		/** \param box User defined axis aligned bounding box to use
+		for this buffer. */
+		virtual void setBoundingBox(const core::aabbox3df& box) = 0;
 
-		//! recalculates the bounding box. should be called if the mesh changed.
+		//! Recalculates the bounding box. Should be called if the mesh changed.
 		virtual void recalculateBoundingBox() = 0;
 
 		//! returns position of vertex i
@@ -114,28 +135,50 @@ namespace scene
 		//! returns normal of vertex i
 		virtual core::vector3df& getNormal(u32 i) = 0;
 
-		//! append the vertices and indices to the current buffer
+		//! returns texture coord of vertex i
+		virtual const core::vector2df& getTCoords(u32 i) const = 0;
+
+		//! returns texture coord of vertex i
+		virtual core::vector2df& getTCoords(u32 i) = 0;
+
+		//! Append the vertices and indices to the current buffer
+		/** Only works for compatible vertex types.
+		\param vertices Pointer to a vertex array.
+		\param numVertices Number of vertices in the array.
+		\param indices Pointer to index array.
+		\param numIndices Number of indices in array. */
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
 
-		//! append the meshbuffer to the current buffer
+		//! Append the meshbuffer to the current buffer
+		/** Only works for compatible vertex types
+		\param other Buffer to append to this one. */
 		virtual void append(const IMeshBuffer* const other) = 0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const = 0;
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
+
+		//! get the current hardware mapping hint
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX ) = 0;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty() = 0;
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) = 0;
 
-		virtual const u32 getChangedID() const = 0;
+		//to be spit into vertex and index buffers:
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual u32 getChangedID_Vertex() const = 0;
 
-		u32 HardwareHint;
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual u32 getChangedID_Index() const = 0;
 	};
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
+
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -23,6 +23,10 @@ namespace scene
 CSTLMeshWriter::CSTLMeshWriter(scene::ISceneManager* smgr)
 	: SceneManager(smgr)
 {
+	#ifdef _DEBUG
+	setDebugName("CSTLMeshWriter");
+	#endif
+
 	if (SceneManager)
 		SceneManager->grab();
 }
@@ -86,7 +90,7 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer)
 		{
-			const u16 indexCount = buffer->getIndexCount();
+			const u32 indexCount = buffer->getIndexCount();
 			const u16 attributes = 0;
 			for (u32 j=0; j<indexCount; j+=3)
 			{
@@ -122,9 +126,7 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer)
 		{
-			const u16 indexCount = buffer->getIndexCount();
-
-			
+			const u32 indexCount = buffer->getIndexCount();
 			for (u32 j=0; j<indexCount; j+=3)
 			{
 				writeFace(file,
@@ -145,11 +147,11 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 
 void CSTLMeshWriter::getVectorAsStringLine(const core::vector3df& v, core::stringc& s) const
 {
-	s = v.X;
+	s = core::stringc(v.X);
 	s += " ";
-	s += v.Y;
+	s += core::stringc(v.Y);
 	s += " ";
-	s += v.Z;
+	s += core::stringc(v.Z);
 	s += "\n";
 }
 

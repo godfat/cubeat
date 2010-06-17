@@ -58,7 +58,7 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-Os" />
-					<Add option="-O3" />
+					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
@@ -72,6 +72,7 @@
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
+					<Add option="-s" />
 					<Add library="kernel32" />
 					<Add library="user32" />
 					<Add library="gdi32" />

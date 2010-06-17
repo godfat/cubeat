@@ -21,15 +21,11 @@
 					<Add option="-DBOOST_HAS_GCC_TR1" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
 					<Add option="-DNDEBUG" />
-<<<<<<< HEAD:cubeat-core/object.cbp
 					<Add directory="include" />
 					<Add directory="lib" />
 					<Add directory="..\irrlicht\include" />
 					<Add directory="C:\libs\cpp\irrKlang-1.3.0\include" />
 					<Add directory="C:\libs\cpp\wiiyourself_1.15" />
-=======
-					<Add directory="..\irrlicht\include" />
->>>>>>> irrlicht-pre-1.6:cubeat-core/object.cbp
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -41,17 +37,12 @@
 					<Add library="hid" />
 					<Add library="setupapi" />
 					<Add library="vfw32" />
-<<<<<<< HEAD:cubeat-core/object.cbp
+					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add library="boost_date_time-mgw45-mt-1_43" />
 					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add directory="..\irrlicht\bin\Win32-gcc" />
 					<Add directory="C:\libs\cpp\irrKlang-1.3.0\lib\Win32-gcc" />
 					<Add directory="C:\libs\cpp\wiiyourself_1.15\lib" />
-=======
-					<Add library="boost_date_time-mgw43-mt-1_38" />
-					<Add library="boost_thread-mgw43-mt-1_38" />
-					<Add directory="..\irrlicht\bin\Win32-gcc" />
->>>>>>> irrlicht-pre-1.6:cubeat-core/object.cbp
 				</Linker>
 			</Target>
 		</Build>

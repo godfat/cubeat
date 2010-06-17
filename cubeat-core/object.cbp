@@ -16,7 +16,6 @@
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
-					<Add option="-D_USE_WIIMOTE_" />
 					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_HAS_GCC_TR1" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />

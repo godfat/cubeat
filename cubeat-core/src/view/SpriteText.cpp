@@ -90,6 +90,7 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     Size2D::set( current_node, vec2(letter_size.Width, letter_size.Height) );
     current_node->getMaterial(0) = mat;
     current_node->setIsDebugObject(true);
+    //current_node->setDebugDataVisible(EDS_BBOX); // de-comment this when debugging
 
     adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
 

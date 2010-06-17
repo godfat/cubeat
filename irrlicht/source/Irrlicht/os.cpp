@@ -92,7 +92,7 @@ namespace os
 		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
-		MultiCore = (sysinfo.dwNumberOfProcessors > 1);	
+		MultiCore = (sysinfo.dwNumberOfProcessors > 1);
 #endif
 		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
 		initVirtualTimer();
@@ -103,11 +103,11 @@ namespace os
 		if (HighPerformanceTimerSupport)
 		{
 #if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
-			// Avoid potential timing inaccuracies across multiple cores by 
+			// Avoid potential timing inaccuracies across multiple cores by
 			// temporarily setting the affinity of this process to one core.
-			DWORD_PTR affinityMask;
+			DWORD_PTR affinityMask = 0;
 			if(MultiCore)
-				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1); 
+				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1);
 #endif
 			LARGE_INTEGER nTime;
 			BOOL queriedOK = QueryPerformanceCounter(&nTime);

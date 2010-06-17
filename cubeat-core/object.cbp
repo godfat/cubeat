@@ -18,7 +18,9 @@
 					<Add option="-D_USE_WIIMOTE_" />
 					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_HAS_GCC_TR1" />
+					<Add option="-DBOOST_DISABLE_ASSERTS" />
 					<Add option="-DNDEBUG" />
+					<Add directory="..\irrlicht\include" />
 				</Compiler>
 				<Linker>
 					<Add library="libIrrlicht.a" />
@@ -31,6 +33,7 @@
 					<Add library="vfw32" />
 					<Add library="boost_date_time-mgw43-mt-1_38" />
 					<Add library="boost_thread-mgw43-mt-1_38" />
+					<Add directory="..\irrlicht\bin\Win32-gcc" />
 				</Linker>
 			</Target>
 		</Build>
@@ -290,6 +293,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_thread_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_view1_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

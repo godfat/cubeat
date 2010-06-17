@@ -32,6 +32,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     std::list<int> const& ally_ids,
                     std::list<int> const& enemy_ids)
 {
+    Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
 
     int self_index = ally_ids.front();
@@ -39,10 +40,13 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
 
     map_list_ = map_list;
     pSimpleMap self_map = map_list_[self_index];
+    Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
     {
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
+        Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
         if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 10) ) {
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
             pAICommand cmd = AICommand::create();
             cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
             cmd_queue_.push_back( cmd );
@@ -52,8 +56,10 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                 cmd_queue_.push_back( cmd );
                 cmd_queue_.push_back( cmd );
             }
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 4a.").endl();
         }
         else {
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
             std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
             std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
             int high_col_threshold = 7;
@@ -62,6 +68,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
             std::random_shuffle(garbages.begin(), garbages.end());
             std::random_shuffle(brokens.begin(), brokens.end());
 
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 4b.").endl();
             BOOST_FOREACH(int& x, high_cols) {
                 pAICommand cmd = AICommand::create();
                 cmd->delay(200).weight(1).normal_shot(x, utils::random( high_col_threshold ) );
@@ -84,6 +91,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                 if( cmd_queue_.size() > 6 ) break;
             }
 
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
             if( garbages.empty() && brokens.empty() &&
                 high_cols.empty() && AIUtils::grounded_cube_count(self_map) >= 36 ) {
                 int x, y;
@@ -96,9 +104,11 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                 cmd->delay(200).weight(1).normal_shot(x, y);
                 cmd_queue_.push_back( cmd );
             }
+            Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();
         }
     }
     is_thinking_ = false;
+    Logger::i().buf("brain ").buf(this).buf(" after thinking block.").endl();
 //  owner_.lock()->stopThinking();
 }
 

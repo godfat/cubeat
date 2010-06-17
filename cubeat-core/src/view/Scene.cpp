@@ -78,7 +78,7 @@ Scene& Scene::setTo2DView()
     camera_->setProjectionMatrix( ortho, true );
 
     body_->setScale(vector3df( (w+bloat)/w, (h+bloat)/h, 1 ));
-    body_->setPosition(vector3df(-(w+bloat)/2, (h+bloat)/2, 500));  //default depth at 500..
+    body_->setPosition(vector3df(-(w+bloat)/2, (h+bloat)/2, 5000));  //default depth at 500..
     return *this;
 }
 

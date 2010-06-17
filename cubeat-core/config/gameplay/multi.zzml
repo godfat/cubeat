@@ -34,7 +34,7 @@ player1: {
     cube_dropping_duration: 135,
 
     #whether it'll use broken cubes as garbage cubes or not:
-    use_broken_as_garbage: 0,
+    use_broken_as_garbage: 1,
 
     #weapon state at game start
     wep1_start_ammo: 10,
@@ -59,7 +59,7 @@ player2: {
     cube_dying_duration: 300,
     speed: 80.0,
     cube_dropping_duration: 135,
-    use_broken_as_garbage: 0,
+    use_broken_as_garbage: 1,
     wep1_start_ammo: 10,
     wep2_start_ammo: 10,
     wep3_start_ammo: 1,

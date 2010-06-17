@@ -1,11 +1,13 @@
 
+* This TODO is basically obselete. please check the wiki on our github page :)
+
 * refactor main.cpp
 * fix ai related methods.
-
 * profiling
-* thread
 * introduce state Waiting_neednt_check
 * add type check for master/slave view. stdout couldn't be a master.
+
+* <del>thread</del>
 
 * <del>need to fix some preprocessing ordering... e.g., CMakeList.txt,
   create it last!!! and all_fwd.hpp is also suffer simlary problem.</del>

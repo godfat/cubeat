@@ -76,7 +76,7 @@ bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
     /* count visible dots */
     ir_num_dots = 0;
     for (i = 0; i < 4; ++i) {
-        if (dot[i].bFound)
+        if (dot[i].bVisible)
             ir_num_dots++;
     }
 
@@ -104,7 +104,7 @@ bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
                  *    Only 1 known dot, so use just that.
                  */
                 for (i = 0; i < 4; ++i) {
-                    if (dot[i].bFound) {
+                    if (dot[i].bVisible) {
                         out_x = dot[i].X;
                         out_y = dot[i].Y;
                         break;
@@ -117,7 +117,7 @@ bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
                  *    should be and use that.
                  */
                 for (i = 0; i < 4; ++i) {
-                    if (dot[i].bFound) {
+                    if (dot[i].bVisible) {
                         float ox, x, y;
 
                         if (dots_order[i] == 1)
@@ -209,7 +209,7 @@ void fix_rotated_ir_dots(wiimote::ir::dot dots[4], float ang)
      */
 
     for (i = 0; i < 4; ++i) {
-        if (!dots[i].bFound)
+        if (!dots[i].bVisible)
             continue;
 
         x = dots[i].X - 0.5f;
@@ -239,7 +239,7 @@ void get_ir_dot_avg(wiimote::ir::dot dots[4], float& x, float& y)
     y = 0.0f;
 
     for (; i < 4; ++i) {
-        if (dots[i].bFound) {
+        if (dots[i].bVisible) {
             x += dots[i].X;
             y += dots[i].Y;
             ++vis;
@@ -267,12 +267,12 @@ void reorder_ir_dots(wiimote::ir::dot dots[4])
     for (order = 1; order < 5; ++order) {
         i = 0;
 
-        for (; !dots[i].bFound || dots_order[i]; ++i)
+        for (; !dots[i].bVisible || dots_order[i]; ++i)
         if (i > 4)
             return;
 
         for (j = 0; j < 4; ++j) {
-            if (dots[j].bFound && !dots_order[j] && (dots[j].X < dots[i].X))
+            if (dots[j].bVisible && !dots_order[j] && (dots[j].X < dots[i].X))
                 i = j;
         }
 
@@ -292,13 +292,13 @@ float cal_ir_distance(wiimote::ir::dot dots[4])
     float xd, yd;
 
     for (i1 = 0; i1 < 4; ++i1)
-        if (dots[i1].bFound)
+        if (dots[i1].bVisible)
             break;
     if (i1 == 4)
         return 0.0f;
 
     for (i2 = i1+1; i2 < 4; ++i2)
-        if (dots[i2].bFound)
+        if (dots[i2].bVisible)
             break;
     if (i2 == 4)
         return 0.0f;

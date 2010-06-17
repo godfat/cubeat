@@ -48,7 +48,6 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-fexpensive-optimizations" />
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
@@ -76,6 +75,7 @@
 					<Add library="opengl32" />
 					<Add library="freetype" />
 					<Add library="imm32" />
+					<Add directory="C:\libs\cpp\freetype-2.3.12\objs" />
 				</Linker>
 			</Target>
 			<Target title="Release - Fast FPU">

@@ -33,6 +33,7 @@ public:
     virtual void new_chain(model::pChain chain){}
     virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_land, int tmp_amounts){}
     virtual void warning_counting(int level){}
+    virtual void alert_bar_update(int level){}
 
 protected:
     ViewMaster(){}

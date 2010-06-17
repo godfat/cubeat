@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
@@ -19,18 +20,27 @@
 					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_HAS_GCC_TR1" />
 					<Add option="-DNDEBUG" />
+					<Add directory="include" />
+					<Add directory="lib" />
+					<Add directory="..\irrlicht\include" />
+					<Add directory="C:\libs\cpp\irrKlang-1.3.0\include" />
+					<Add directory="C:\libs\cpp\wiiyourself_1.15" />
 				</Compiler>
 				<Linker>
-					<Add library="libIrrlicht.a" />
-					<Add library="libirrKlang.a" />
-					<Add library="libwiiurself_gcc.a" />
+					<Add option="-s" />
+					<Add library="Irrlicht" />
+					<Add library="irrKlang" />
+					<Add library="wiiyourself_gcc45" />
 					<Add library="winmm" />
 					<Add library="user32" />
 					<Add library="hid" />
 					<Add library="setupapi" />
 					<Add library="vfw32" />
-					<Add library="boost_date_time-mgw43-mt-1_38" />
-					<Add library="boost_thread-mgw43-mt-1_38" />
+					<Add library="boost_date_time-mgw45-mt-1_43" />
+					<Add library="boost_thread-mgw45-mt-1_43" />
+					<Add directory="..\irrlicht\bin\Win32-gcc" />
+					<Add directory="C:\libs\cpp\irrKlang-1.3.0\lib\Win32-gcc" />
+					<Add directory="C:\libs\cpp\wiiyourself_1.15\lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -221,6 +231,8 @@
 		<Unit filename="src\Weapon.cpp" />
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
 		<Unit filename="src\data\Color.cpp" />
+		<Unit filename="src\data\MapSetting.cpp" />
+		<Unit filename="src\data\MapSetting.cpp.eruby" />
 		<Unit filename="src\model\AIBrain.cpp" />
 		<Unit filename="src\model\AICommand.cpp" />
 		<Unit filename="src\model\Cube.cpp" />

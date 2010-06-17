@@ -48,7 +48,8 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-Os" />
+					<Add option="-O3" />
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
 					<Add option="-DWIN32" />

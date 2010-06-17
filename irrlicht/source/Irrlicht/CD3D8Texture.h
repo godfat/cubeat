@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -10,6 +10,7 @@
 
 #include "ITexture.h"
 #include "IImage.h"
+
 #include <d3d8.h>
 
 namespace irr
@@ -28,25 +29,25 @@ public:
 
 	//! constructor
 	CD3D8Texture(IImage* image, CD3D8Driver* driver,
-		u32 flags, const char* name);
+		u32 flags, const core::string<c16>& name);
 
 	//! rendertarget constructor
-	CD3D8Texture(CD3D8Driver* driver, core::dimension2d<s32> size, const char* name);
+	CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name);
 
 	//! destructor
 	virtual ~CD3D8Texture();
 
 	//! lock function
-	virtual void* lock();
+	virtual void* lock(bool readOnly = false);
 
 	//! unlock function
 	virtual void unlock();
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, who created the texture)
 	virtual E_DRIVER_TYPE getDriverType() const;
@@ -74,17 +75,18 @@ public:
 	IDirect3DSurface8* getRenderTargetSurface();
 
 private:
+	friend class CD3D8Driver;
 
 	void createRenderTarget();
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromImageSize(s32 size) const;
+	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	//! creates the hardware texture
-	bool createTexture(u32 flags);
+	bool createTexture(IImage* Image, u32 flags);
 
 	//! copies the image to the texture
-	bool copyTexture();
+	bool copyTexture(IImage* Image);
 
 	//! convert color formats
 	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
@@ -97,13 +99,12 @@ private:
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height, s32 pitchsrc, s32 pitchtgt) const;
 
-	IImage* Image;
 	IDirect3DDevice8* Device;
 	IDirect3DTexture8* Texture;
 	IDirect3DSurface8* RTTSurface;
 	CD3D8Driver* Driver;
-	core::dimension2d<s32> TextureSize;
-	core::dimension2d<s32> ImageSize;
+	core::dimension2d<u32> TextureSize;
+	core::dimension2d<u32> ImageSize;
 	s32 Pitch;
 	ECOLOR_FORMAT ColorFormat;
 	bool HasMipMaps;

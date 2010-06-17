@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -35,9 +35,9 @@ CImageLoaderJPG::~CImageLoaderJPG()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderJPG::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderJPG::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".jpg") != 0;
+	return core::hasFileExtension ( filename, "jpg", "jpeg" );
 }
 
 
@@ -236,7 +236,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 
 	// convert image
 	IImage* image = new CImage(ECF_R8G8B8,
-		core::dimension2d<s32>(width, height), output);
+		core::dimension2d<u32>(width, height), output);
 
 	delete [] input;
 

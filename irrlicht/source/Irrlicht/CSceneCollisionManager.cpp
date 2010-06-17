@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -10,6 +10,7 @@
 
 #include "os.h"
 #include "irrMath.h"
+#include <float.h> // For FLT_MAX
 
 namespace irr
 {
@@ -42,7 +43,7 @@ CSceneCollisionManager::~CSceneCollisionManager()
 //! Returns the scene node, which is currently visible under the overgiven
 //! screencoordinates, viewed from the currently active camera.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
-	core::position2d<s32> pos, s32 idBitMask, bool bNoDebugObjects)
+	const core::position2d<s32> & pos, s32 idBitMask, bool bNoDebugObjects)
 {
 	core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
 
@@ -56,14 +57,16 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
-ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
-						s32 idBitMask,
-						bool bNoDebugObjects)
+ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32> ray,
+															s32 idBitMask,
+															bool bNoDebugObjects)
 {
 	ISceneNode* best = 0;
-	f32 dist = 9999999999.0f;
+	f32 dist = FLT_MAX;
 
-	getPickedNodeBB(SceneManager->getRootSceneNode(), ray,
+	core::line3d<f32> truncatableRay(ray);
+
+	getPickedNodeBB(SceneManager->getRootSceneNode(), truncatableRay,
 		idBitMask, bNoDebugObjects, dist, best);
 
 	return best;
@@ -72,12 +75,146 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
 
 //! recursive method for going through all scene nodes
 void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
-               const core::line3df& ray,
+               core::line3df& ray,
                s32 bits,
                bool bNoDebugObjects,
                f32& outbestdistance,
                ISceneNode*& outbestnode)
 {
+//   const core::list<ISceneNode*>& children = root->getChildren();
+//   const core::vector3df rayVector = ray.getVector().normalize();
+//
+//   core::list<ISceneNode*>::ConstIterator it = children.begin();
+//   for (; it != children.end(); ++it)
+//   {
+//      ISceneNode* current = *it;
+//
+//      if (current->isVisible())
+//	  {
+//		  if((bNoDebugObjects ? !current->isDebugObject() : true) &&
+//			(bits==0 || (bits != 0 && (current->getID() & bits))))
+//		  {
+//			 // get world to object space transform
+//			 core::matrix4 worldToObject;
+//			 if (!current->getAbsoluteTransformation().getInverse(worldToObject))
+//				continue;
+//
+//			 // transform vector from world space to object space
+//			 core::line3df objectRay(ray);
+//			 worldToObject.transformVect(objectRay.start);
+//			 worldToObject.transformVect(objectRay.end);
+//
+//			 const core::aabbox3df & objectBox = current->getBoundingBox();
+//
+//			 // Do the initial intersection test in object space, since the
+//			 // object space box test is more accurate.
+//			 if(objectBox.isPointInside(objectRay.start))
+//			 {
+//				// If the line starts inside the box, then consider the distance as being
+//				// to the centre of the box.
+//				const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
+//				if(toIntersectionSq < outbestdistance)
+//				{
+//					outbestdistance = toIntersectionSq;
+//					outbestnode = current;
+//
+//					// And we can truncate the ray to stop us hitting further nodes.
+//					ray.end = ray.start + (rayVector * sqrtf(toIntersectionSq));
+//				}
+//			 }
+//			 else if (objectBox.intersectsWithLine(objectRay))
+//			 {
+//				// Now transform into world space, since we need to use world space
+//				// scales and distances.
+//				core::aabbox3df worldBox(objectBox);
+//				current->getAbsoluteTransformation().transformBox(worldBox);
+//
+//				core::vector3df edges[8];
+//				worldBox.getEdges(edges);
+//
+//				/* We need to check against each of 6 faces, composed of these corners:
+//					  /3--------/7
+//					 /  |      / |
+//					/   |     /  |
+//					1---------5  |
+//					|   2- - -| -6
+//					|  /      |  /
+//					|/        | /
+//					0---------4/
+//
+//					Note that we define them as opposite pairs of faces.
+//				*/
+//				static const s32 faceEdges[6][3] =
+//				{
+//					{ 0, 1, 5 }, // Front
+//					{ 6, 7, 3 }, // Back
+//					{ 2, 3, 1 }, // Left
+//					{ 4, 5, 7 }, // Right
+//					{ 1, 3, 7 }, // Top
+//					{ 2, 0, 4 }  // Bottom
+//				};
+//
+//				core::vector3df intersection;
+//				core::plane3df facePlane;
+//
+//				bool gotHit = false;
+//				for(s32 face = 0; face < 6 && !gotHit; ++face)
+//				{
+//					facePlane.setPlane(edges[faceEdges[face][0]],
+//										edges[faceEdges[face][1]],
+//										edges[faceEdges[face][2]]);
+//
+//					// Only consider lines that might be entering through this face, since we
+//					// already know that the start point is outside the box.
+//					if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
+//						continue;
+//
+//					// Don't bother using a limited ray, since we already know that it should be long
+//					// enough to intersect with the box.
+//					if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
+//					{
+//						const f32 toIntersectionSq = ray.start.getDistanceFromSQ(intersection);
+//						if(toIntersectionSq < outbestdistance)
+//						{
+//							// We have to check that the intersection with this plane is actually
+//							// on the box, so need to go back to object space again.  We also
+//							// need to move the intersection very slightly closer to the centre of
+//							// the box to take into account fp precision losses, since the intersection
+//							// will axiomatically be on the very edge of the box.
+//							worldToObject.transformVect(intersection);
+//							intersection *= 0.99f;
+//
+//							if(objectBox.isPointInside(intersection))
+//							{
+//								outbestdistance = toIntersectionSq;
+//								outbestnode = current;
+//
+//								// We can only hit one face, so stop checking now.
+//								gotHit = true;
+//							}
+//						}
+//					}
+//
+//					// If the ray could be entering through the first face of a pair, then it can't
+//					// also be entering through the opposite face, and so we can skip that face.
+//					if(0 == (face % 2))
+//						++face;
+//				}
+//
+//				// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
+//				if(gotHit)
+//					ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
+//			 }
+//		  }
+//
+//		  // Only check the children if this node is visible.
+//	      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+//	  }
+//   }
+
+// >> major rollback to irrlicht 1.5 version's picking method by arch.jslin
+//    because irrlicht 1.6 svn's version above definitely has some bug.
+
    core::vector3df edges[8];
 
    const core::list<ISceneNode*>& children = root->getChildren();
@@ -124,12 +261,128 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
          }
       }
 
-// >> condition added by arch_jslin 2008.01.29
+// >> condition added by arch.jslin 2008.03
       if( current->isVisible() )
-          getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+        getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
    }
 }
 
+
+ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
+						core::line3df ray,
+						core::vector3df & outCollisionPoint,
+						core::triangle3df & outTriangle,
+						s32 idBitMask,
+						ISceneNode * collisionRootNode,
+						bool noDebugObjects)
+{
+	ISceneNode* bestNode = 0;
+	f32 bestDistanceSquared = FLT_MAX;
+
+	if(0 == collisionRootNode)
+		collisionRootNode = SceneManager->getRootSceneNode();
+
+	// We don't try to do anything too clever, like sorting the candidate
+	// nodes by distance to bounding-box. In the example below, we could do the
+	// triangle collision check with node A first, but we'd have to check node B
+	// anyway, as the actual collision point could be (and is) closer than the
+	// collision point in node A.
+	//
+	//    ray end
+	//       |
+	//   AAAAAAAAAA
+	//   A   |
+	//   A   |  B
+	//   A   |  B
+	//   A  BBBBB
+	//   A   |
+	//   A   |
+	//       |
+	//       |
+	//    ray start
+	//
+	// We therefore have to do a full BB and triangle collision on every scene
+	// node in order to find the nearest collision point, so sorting them by
+	// bounding box would be pointless.
+
+	getPickedNodeFromBBAndSelector(collisionRootNode,
+									ray,
+									idBitMask,
+									noDebugObjects,
+									bestDistanceSquared,
+									bestNode,
+									outCollisionPoint,
+									outTriangle);
+	return bestNode;
+}
+
+
+
+void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
+				ISceneNode * root,
+				const core::line3df & ray,
+				s32 bits,
+				bool noDebugObjects,
+				f32 & outBestDistanceSquared,
+				ISceneNode * & outBestNode,
+				core::vector3df & outBestCollisionPoint,
+				core::triangle3df & outBestTriangle)
+{
+   const core::list<ISceneNode*>& children = root->getChildren();
+
+   core::list<ISceneNode*>::ConstIterator it = children.begin();
+   for (; it != children.end(); ++it)
+   {
+	  ISceneNode* current = *it;
+	  ITriangleSelector * selector = current->getTriangleSelector();
+
+	  if (selector && current->isVisible() &&
+		  (noDebugObjects ? !current->isDebugObject() : true) &&
+		  (bits==0 || (bits != 0 && (current->getID() & bits))))
+	  {
+		// get world to object space transform
+		core::matrix4 mat;
+		if (!current->getAbsoluteTransformation().getInverse(mat))
+		continue;
+
+		// transform vector from world space to object space
+		core::line3df line(ray);
+		mat.transformVect(line.start);
+		mat.transformVect(line.end);
+
+		const core::aabbox3df& box = current->getBoundingBox();
+
+		core::vector3df candidateCollisionPoint;
+		core::triangle3df candidateTriangle;
+
+		// do intersection test in object space
+		const ISceneNode * hitNode = 0;
+		if (box.intersectsWithLine(line)
+			&&
+			getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
+		 {
+			 const f32 distanceSquared = (candidateCollisionPoint - ray.start).getLengthSQ();
+
+			 if(distanceSquared < outBestDistanceSquared)
+			 {
+				outBestDistanceSquared = distanceSquared;
+				outBestNode = current;
+				outBestCollisionPoint = candidateCollisionPoint;
+				outBestTriangle = candidateTriangle;
+			 }
+		 }
+	  }
+
+	  getPickedNodeFromBBAndSelector(current,
+									ray,
+									bits,
+									noDebugObjects,
+									outBestDistanceSquared,
+									outBestNode,
+									outBestCollisionPoint,
+									outBestTriangle);
+   }
+}
 
 
 //! Returns the scene node, at which the overgiven camera is looking at and
@@ -154,7 +407,8 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 //! Finds the collision point of a line and lots of triangles, if there is one.
 bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 	ITriangleSelector* selector, core::vector3df& outIntersection,
-	core::triangle3df& outTriangle)
+	core::triangle3df& outTriangle,
+	const ISceneNode*& outNode)
 {
 	if (!selector)
 	{
@@ -170,13 +424,35 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 
 	const core::vector3df linevect = ray.getVector().normalize();
 	core::vector3df intersection;
-	f32 nearest = 9999999999999.0f;
+	f32 nearest = FLT_MAX;
 	bool found = false;
 	const f32 raylength = ray.getLengthSQ();
 
+	const f32 minX = core::min_(ray.start.X, ray.end.X);
+	const f32 maxX = core::max_(ray.start.X, ray.end.X);
+	const f32 minY = core::min_(ray.start.Y, ray.end.Y);
+	const f32 maxY = core::max_(ray.start.Y, ray.end.Y);
+	const f32 minZ = core::min_(ray.start.Z, ray.end.Z);
+	const f32 maxZ = core::max_(ray.start.Z, ray.end.Z);
+
 	for (s32 i=0; i<cnt; ++i)
 	{
-		if (Triangles[i].getIntersectionWithLine(ray.start, linevect, intersection))
+		const core::triangle3df & triangle = Triangles[i];
+
+		if(minX > triangle.pointA.X && minX > triangle.pointB.X && minX > triangle.pointC.X)
+			continue;
+		if(maxX < triangle.pointA.X && maxX < triangle.pointB.X && maxX < triangle.pointC.X)
+			continue;
+		if(minY > triangle.pointA.Y && minY > triangle.pointB.Y && minY > triangle.pointC.Y)
+			continue;
+		if(maxY < triangle.pointA.Y && maxY < triangle.pointB.Y && maxY < triangle.pointC.Y)
+			continue;
+		if(minZ > triangle.pointA.Z && minZ > triangle.pointB.Z && minZ > triangle.pointC.Z)
+			continue;
+		if(maxZ < triangle.pointA.Z && maxZ < triangle.pointB.Z && maxZ < triangle.pointC.Z)
+			continue;
+
+		if (triangle.getIntersectionWithLine(ray.start, linevect, intersection))
 		{
 			const f32 tmp = intersection.getDistanceFromSQ(ray.start);
 			const f32 tmp2 = intersection.getDistanceFromSQ(ray.end);
@@ -184,8 +460,9 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 			if (tmp < raylength && tmp2 < raylength && tmp < nearest)
 			{
 				nearest = tmp;
-				outTriangle = Triangles[i];
+				outTriangle = triangle;
 				outIntersection = intersection;
+				outNode = selector->getSceneNodeForTriangle(i);
 				found = true;
 			}
 		}
@@ -204,26 +481,25 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 	const core::vector3df &position, const core::vector3df& radius,
 	const core::vector3df& direction,
 	core::triangle3df& triout,
+	core::vector3df& hitPosition,
 	bool& outFalling,
+	const ISceneNode*& outNode,
 	f32 slidingSpeed,
 	const core::vector3df& gravity)
 {
-	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
-		return position;
-
 	return collideEllipsoidWithWorld(selector, position,
-		radius, direction, slidingSpeed, gravity, triout, outFalling);
+		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling, outNode);
 }
 
 
-void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
+bool CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			const core::triangle3df& triangle)
 {
 	const core::plane3d<f32> trianglePlane = triangle.getPlane();
 
 	// only check front facing polygons
 	if ( !trianglePlane.isFrontFacing(colData->normalizedVelocity) )
-		return;
+		return false;
 
 	// get interval of plane intersection
 
@@ -242,7 +518,7 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 		// sphere is traveling parallel to plane
 
 		if (fabs(signedDistToTrianglePlane) >= 1.0f)
-			return; // no collision possible
+			return false; // no collision possible
 		else
 		{
 			// sphere is embedded in plane
@@ -264,7 +540,7 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 
 		// check if at least one value is within the range
 		if (t0 > 1.0f || t1 < 0.0f)
-			return; // both t values are outside 1 and 0, no collision possible
+			return false; // both t values are outside 1 and 0, no collision possible
 
 		// clamp to 0 and 1
 		t0 = core::clamp ( t0, 0.f, 1.f );
@@ -288,7 +564,7 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			(colData->basePoint - trianglePlane.Normal)
 			+ (colData->velocity * t0);
 
-		if (triangle.isPointInsideFast(planeIntersectionPoint))
+		if (triangle.isPointInside(planeIntersectionPoint))
 		{
 			foundCollision = true;
 			t = t0;
@@ -457,9 +733,11 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			colData->foundCollision = true;
 			colData->intersectionTriangle = triangle;
 			++colData->triangleHits;
+			return true;
 		}
-
 	}// end found collision
+
+	return false;
 }
 
 
@@ -471,7 +749,10 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	const core::vector3df& radius,  const core::vector3df& velocity,
 	f32 slidingSpeed,
 	const core::vector3df& gravity,
-	core::triangle3df& triout, bool& outFalling)
+	core::triangle3df& triout,
+	core::vector3df& hitPosition,
+	bool& outFalling,
+	const ISceneNode*& outNode)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;
@@ -483,10 +764,11 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	colData.R3Position = position;
 	colData.R3Velocity = velocity;
 	colData.eRadius = radius;
-	colData.nearestDistance = 9999999999999.0f;
+	colData.nearestDistance = FLT_MAX;
 	colData.selector = selector;
 	colData.slidingSpeed = slidingSpeed;
 	colData.triangleHits = 0;
+	colData.triangleIndex = -1;
 
 	core::vector3df eSpacePosition = colData.R3Position / colData.eRadius;
 	core::vector3df eSpaceVelocity = colData.R3Velocity / colData.eRadius;
@@ -520,9 +802,11 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 		triout.pointA *= colData.eRadius;
 		triout.pointB *= colData.eRadius;
 		triout.pointC *= colData.eRadius;
+		outNode = selector->getSceneNodeForTriangle(colData.triangleIndex);
 	}
 
 	finalPos *= colData.eRadius;
+	hitPosition = colData.intersectionPoint * colData.eRadius;
 	return finalPos;
 }
 
@@ -539,7 +823,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 	colData.normalizedVelocity.normalize();
 	colData.basePoint = pos;
 	colData.foundCollision = false;
-	colData.nearestDistance = 9999999999999.0f;
+	colData.nearestDistance = FLT_MAX;
 
 	//------------------ collide with world
 
@@ -561,10 +845,10 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	s32 triangleCnt = 0;
 	colData.selector->getTriangles(Triangles.pointer(), totalTriangleCnt, triangleCnt, box, &scaleMatrix);
-	//colData.selector->getTriangles(Triangles.pointer(), totalTriangleCnt, triangleCnt, &scaleMatrix);
 
 	for (s32 i=0; i<triangleCnt; ++i)
-		testTriangleIntersection(&colData, Triangles[i]);
+		if(testTriangleIntersection(&colData, Triangles[i]))
+			colData.triangleIndex = i;
 
 	//---------------- end collide with world
 
@@ -614,7 +898,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 //! Returns a 3d ray which would go through the 2d screen coodinates.
 core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
-	core::position2d<s32> pos, ICameraSceneNode* camera)
+	const core::position2d<s32> & pos, ICameraSceneNode* camera)
 {
 	core::line3d<f32> ln(0,0,0,0,0,0);
 
@@ -633,8 +917,8 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	core::vector3df lefttoright = f->getFarRightUp() - farLeftUp;
 	core::vector3df uptodown = f->getFarLeftDown() - farLeftUp;
 
-	core::rect<s32> viewPort = Driver->getViewPort();
-	core::dimension2d<s32> screenSize(viewPort.getWidth(), viewPort.getHeight());
+	const core::rect<s32>& viewPort = Driver->getViewPort();
+	core::dimension2d<u32> screenSize(viewPort.getWidth(), viewPort.getHeight());
 
 	f32 dx = pos.X / (f32)screenSize.Width;
 	f32 dy = pos.Y / (f32)screenSize.Height;
@@ -650,51 +934,43 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 }
 
 
-
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
-	core::vector3df pos3d, ICameraSceneNode* camera)
+	const core::vector3df & pos3d, ICameraSceneNode* camera)
 {
-	core::position2d<s32> pos2d(-1000,-1000);
-
 	if (!SceneManager || !Driver)
-		return pos2d;
+		return core::position2d<s32>(-1000,-1000);
 
 	if (!camera)
 		camera = SceneManager->getActiveCamera();
 
 	if (!camera)
-		return pos2d;
+		return core::position2d<s32>(-1000,-1000);
 
-	core::rect<s32> viewPort = Driver->getViewPort();
-	core::dimension2d<s32> dim(viewPort.getWidth(), viewPort.getHeight());
+	const core::rect<s32>& viewPort = Driver->getViewPort();
+	core::dimension2d<u32> dim(viewPort.getWidth(), viewPort.getHeight());
 
 	dim.Width /= 2;
 	dim.Height /= 2;
 
-	f32 transformedPos[4];
-
 	core::matrix4 trans = camera->getProjectionMatrix();
 	trans *= camera->getViewMatrix();
 
-	transformedPos[0] = pos3d.X;
-	transformedPos[1] = pos3d.Y;
-	transformedPos[2] = pos3d.Z;
-	transformedPos[3] = 1.0f;
+	f32 transformedPos[4] = { pos3d.X, pos3d.Y, pos3d.Z, 1.0f };
 
 	trans.multiplyWith1x4Matrix(transformedPos);
 
 	if (transformedPos[3] < 0)
 		return core::position2d<s32>(-10000,-10000);
 
-	f32 zDiv = transformedPos[3] == 0.0f ? 1.0f :
-		(1.0f / transformedPos[3]);
+	const f32 zDiv = transformedPos[3] == 0.0f ? 1.0f :
+		core::reciprocal(transformedPos[3]);
 
-	pos2d.X = (s32)(dim.Width * transformedPos[0] * zDiv) + dim.Width;
-	pos2d.Y = ((s32)(dim.Height - (dim.Height * (transformedPos[1] * zDiv))));
-
-	return pos2d;
+	return core::position2d<s32>(
+			core::round32(dim.Width * transformedPos[0] * zDiv) + dim.Width,
+			dim.Height - core::round32(dim.Height * (transformedPos[1] * zDiv)));
 }
+
 
 inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root)
 {
@@ -736,4 +1012,5 @@ inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR,
 
 } // end namespace scene
 } // end namespace irr
+
 

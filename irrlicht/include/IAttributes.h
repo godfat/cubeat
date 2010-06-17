@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -154,9 +154,10 @@ public:
 	virtual void clear() = 0;
 
 	//! Reads attributes from a xml file.
-	//! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes' or
+	//! \param reader The XML reader to read from
+	//! \param readCurrentElementOnly If set to true, reading only works if current element has the name 'attributes' or
 	//! the name specified using elementName.
-	//! \param elementName: The surrounding element name. If it is null, the default one, "attributes" will be taken.
+	//! \param elementName The surrounding element name. If it is null, the default one, "attributes" will be taken.
 	//! If set to false, the first appearing list of attributes are read.
 	virtual bool read(io::IXMLReader* reader, bool readCurrentElementOnly=false, const wchar_t* elementName=0) = 0;
 
@@ -236,16 +237,17 @@ public:
 	virtual core::stringc getAttributeAsString(const c8* attributeName) = 0;
 
 	//! Gets an attribute as string.
-	//! \param attributeName: Name of the attribute to get.
-	//! \param target: Buffer where the string is copied to.
+	//! \param attributeName Name of the attribute to get.
+	//! \param target Buffer where the string is copied to.
 	virtual void getAttributeAsString(const c8* attributeName, c8* target) = 0;
 
 	//! Returns attribute value as string by index.
-	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	//! \param index Index value, must be between 0 and getAttributeCount()-1.
 	virtual core::stringc getAttributeAsString(s32 index) = 0;
 
 	//! Sets an attribute value as string.
-	//! \param attributeName: Name for the attribute
+	//! \param index Index value, must be between 0 and getAttributeCount()-1.
+	//! \param value String to which the attribute is set.
 	virtual void setAttribute(s32 index, const c8* value) = 0;
 
 	// wide strings
@@ -274,7 +276,8 @@ public:
 	virtual core::stringw getAttributeAsStringW(s32 index) = 0;
 
 	//! Sets an attribute value as string.
-	//! \param attributeName: Name for the attribute
+	//! \param index Index value, must be between 0 and getAttributeCount()-1.
+	//! \param value String to which the attribute is set.
 	virtual void setAttribute(s32 index, const wchar_t* value) = 0;
 
 	/*
@@ -290,11 +293,17 @@ public:
 	virtual void setAttribute(const c8* attributeName, void* data, s32 dataSizeInBytes ) = 0;
 
 	//! Gets an attribute as binary data
-	//! \param attributeName: Name of the attribute to get.
+	/** \param attributeName: Name of the attribute to get.
+	\param outData Pointer to buffer where data shall be stored.
+	\param maxSizeInBytes Maximum number of bytes to write into outData.
+	*/
 	virtual void getAttributeAsBinaryData(const c8* attributeName, void* outData, s32 maxSizeInBytes) = 0;
 
 	//! Gets an attribute as binary data
-	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	/** \param index: Index value, must be between 0 and getAttributeCount()-1.
+	\param outData Pointer to buffer where data shall be stored.
+	\param maxSizeInBytes Maximum number of bytes to write into outData.
+	*/
 	virtual void getAttributeAsBinaryData(s32 index, void* outData, s32 maxSizeInBytes) = 0;
 
 	//! Sets an attribute as binary data
@@ -302,9 +311,7 @@ public:
 
 
 	/*
-
 		Array Attribute
-
 	*/
 
 	//! Adds an attribute as wide string array
@@ -374,15 +381,23 @@ public:
 	virtual const c8* getAttributeAsEnumeration(const c8* attributeName) = 0;
 
 	//! Gets an attribute as enumeration
-	//! \param attributeName: Name of the attribute to get.
-	//! \param enumerationLiteralsToUse: Use these enumeration literals to get the index value instead of the set ones.
-	//! This is useful when the attribute list maybe was read from an xml file, and only contains the enumeration string, but
-	//! no information about its index.
-	//! \return Returns value of the attribute previously set by setAttribute()
+	/** \param attributeName: Name of the attribute to get.
+	\param enumerationLiteralsToUse: Use these enumeration literals to get
+	the index value instead of the set ones. This is useful when the
+	attribute list maybe was read from an xml file, and only contains the
+	enumeration string, but no information about its index.
+	\return Returns value of the attribute previously set by setAttribute()
+	*/
 	virtual s32 getAttributeAsEnumeration(const c8* attributeName, const c8* const* enumerationLiteralsToUse) = 0;
 
 	//! Gets an attribute as enumeration
-	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	/** \param index: Index value, must be between 0 and getAttributeCount()-1.
+	\param enumerationLiteralsToUse: Use these enumeration literals to get
+	the index value instead of the set ones. This is useful when the
+	attribute list maybe was read from an xml file, and only contains the
+	enumeration string, but no information about its index.
+	\return Returns value of the attribute previously set by setAttribute()
+	*/
 	virtual s32 getAttributeAsEnumeration(s32 index, const c8* const* enumerationLiteralsToUse) = 0;
 
 	//! Gets an attribute as enumeration
@@ -390,11 +405,13 @@ public:
 	virtual const c8* getAttributeAsEnumeration(s32 index) = 0;
 
 	//! Gets the list of enumeration literals of an enumeration attribute
-	//! \param attributeName: Name of the attribute to get.
+	//! \param attributeName Name of the attribute to get.
+	//! \param outLiterals Set of strings to choose the enum name from.
 	virtual void getAttributeEnumerationLiteralsOfEnumeration(const c8* attributeName, core::array<core::stringc>& outLiterals) = 0;
 
 	//! Gets the list of enumeration literals of an enumeration attribute
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	//! \param outLiterals Set of strings to choose the enum name from.
 	virtual void getAttributeEnumerationLiteralsOfEnumeration(s32 index, core::array<core::stringc>& outLiterals) = 0;
 
 	//! Sets an attribute as enumeration
@@ -450,29 +467,6 @@ public:
 	//! Sets an attribute as floating point color
 	virtual void setAttribute(s32 index, video::SColorf color) = 0;
 
-	/*
-
-		Vector2d Attribute
-
-	*/
-
-	//! Adds an attribute as 2d vector
-	virtual void addVector2d(const c8* attributeName, core::vector2df value) = 0;
-
-	//! Sets a attribute as 2d vector
-	virtual void setAttribute(const c8* attributeName, core::vector2df v) = 0;
-
-	//! Gets an attribute as 2d vector
-	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName) = 0;
-
-	//! Gets an attribute as 2d vector
-	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector2df getAttributeAsVector2d(s32 index) = 0;
-
-	//! Sets an attribute as vector
-	virtual void setAttribute(s32 index, core::vector2df v) = 0;
 
 	/*
 
@@ -548,9 +542,7 @@ public:
 
 
 	/*
-
 		matrix attribute
-
 	*/
 
 	//! Adds an attribute as matrix

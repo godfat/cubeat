@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -7,25 +7,26 @@
 #ifdef _IRR_COMPILE_WITH_GUI_
 
 #include "IGUIEnvironment.h"
+
 #include "IGUIButton.h"
 #include "IGUICheckBox.h"
+#include "IGUIColorSelectDialog.h"
 #include "IGUIComboBox.h"
 #include "IGUIContextMenu.h"
 #include "IGUIEditBox.h"
-#include "IGUISpinBox.h"
 #include "IGUIFileOpenDialog.h"
-#include "IGUIColorSelectDialog.h"
 #include "IGUIInOutFader.h"
 #include "IGUIImage.h"
 #include "IGUIListBox.h"
 #include "IGUIMeshViewer.h"
 #include "IGUIScrollBar.h"
+#include "IGUISpinBox.h"
 #include "IGUIStaticText.h"
 #include "IGUITabControl.h"
+#include "IGUITable.h"
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
-
-#include <string.h>
+#include "IGUITreeView.h"
 
 namespace irr
 {
@@ -35,6 +36,11 @@ namespace gui
 CDefaultGUIElementFactory::CDefaultGUIElementFactory(IGUIEnvironment* env)
 : Environment(env)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CDefaultGUIElementFactory");
+	#endif
+
 	// don't grab the gui environment here to prevent cyclic references
 }
 
@@ -80,12 +86,16 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 			return Environment->addTab(core::rect<s32>(0,0,100,100),parent);
 		case EGUIET_TAB_CONTROL:
 			return Environment->addTabControl(core::rect<s32>(0,0,100,100),parent);
+		case EGUIET_TABLE:
+			return Environment->addTable(core::rect<s32>(0,0,100,100), parent);
 		case EGUIET_TOOL_BAR:
 			return Environment->addToolBar(parent);
 		case EGUIET_WINDOW:
 			return Environment->addWindow(core::rect<s32>(0,0,100,100),false,0,parent);
 		case EGUIET_SPIN_BOX:
-			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), parent);
+			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), true, parent);
+		case EGUIET_TREE_VIEW:
+			return Environment->addTreeView(core::rect<s32>(0,0,100,100),parent);
 		default:
  			return 0;
 	}

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,22 +16,20 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), ChangedID(1),MappingHint(Never), Vertices(0)
+		SSharedMeshBuffer() : IMeshBuffer(), Vertices(0), ChangedID_Vertex(1), ChangedID_Index(1), MappingHintVertex(EHM_NEVER), MappingHintIndex(EHM_NEVER)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
 			#endif
 		}
 
+		//! constructor
 		SSharedMeshBuffer(core::array<video::S3DVertex> *vertices) : IMeshBuffer(), Vertices(vertices)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
 			#endif
 		}
-
-		//! destructor
-		virtual ~SSharedMeshBuffer() { }
 
 		//! returns the material of this meshbuffer
 		virtual const video::SMaterial& getMaterial() const
@@ -129,33 +127,66 @@ namespace scene
 
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
 		{
-			return MappingHint;
+			return MappingHintVertex;
+		}
+
+		//! get the current hardware mapping hint
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+		{
+			return MappingHintIndex;
 		}
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
 		{
-			MappingHint=NewMappingHint;
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_VERTEX)
+				MappingHintVertex=NewMappingHint;
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
+				MappingHintIndex=NewMappingHint;
 		}
 
 
 		//! flags the mesh as changed, reloads hardware buffers
-		virtual void setDirty() {ChangedID++;}
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
+		{
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_VERTEX)
+				++ChangedID_Vertex;
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
+				++ChangedID_Index;
+		}
 
-		virtual const u32 getChangedID() const {return ChangedID;}
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
 
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual u32 getChangedID_Index() const {return ChangedID_Index;}
 
-		u32 ChangedID;
+		//! Material of this meshBuffer
+		video::SMaterial Material;
 
-		// hardware mapping hint
-		E_HARDWARE_MAPPING MappingHint;
+		//! Shared Array of vertices
+		core::array<video::S3DVertex> *Vertices;
 
-		video::SMaterial Material;		//! material of this meshBuffer
-		core::array<video::S3DVertex> *Vertices;//! Shared Array of vertices
-		core::array<u16> Indices;		//! Array of Indices
-		core::aabbox3df BoundingBox;		//! Bounding box
+		//! Array of Indices
+		core::array<u16> Indices;
+
+		//! ID used for hardware buffer management
+		u32 ChangedID_Vertex;
+
+		//! ID used for hardware buffer management
+		u32 ChangedID_Index;
+
+		//! Bounding box
+		core::aabbox3df BoundingBox;
+
+		//! hardware mapping hint
+		E_HARDWARE_MAPPING MappingHintVertex;
+		E_HARDWARE_MAPPING MappingHintIndex;
+
 	};
 
 

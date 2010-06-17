@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -14,14 +14,17 @@ namespace scene
 {
 
 //! Constructor
-CBSPMeshFileLoader::CBSPMeshFileLoader(io::IFileSystem* fs,video::IVideoDriver* driver, scene::ISceneManager* smgr)
-: FileSystem(fs), Driver(driver), SceneManager(smgr)
+CBSPMeshFileLoader::CBSPMeshFileLoader(scene::ISceneManager* smgr,
+		io::IFileSystem* fs)
+: FileSystem(fs), SceneManager(smgr)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CBSPMeshFileLoader");
+	#endif
+
 	if (FileSystem)
 		FileSystem->grab();
-
-	if (Driver)
-		Driver->grab();
 }
 
 
@@ -30,17 +33,14 @@ CBSPMeshFileLoader::~CBSPMeshFileLoader()
 {
 	if (FileSystem)
 		FileSystem->drop();
-
-	if (Driver)
-		Driver->drop();
 }
 
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CBSPMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".bsp") || strstr(filename, ".shader");
+	return core::hasFileExtension ( filename, "bsp", "shader", "cfg" );
 }
 
 
@@ -50,27 +50,51 @@ bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 //! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 {
-	// load quake 3 bsp
-	if (strstr(file->getFileName(), ".bsp"))
+	s32 type = core::isFileExtension ( file->getFileName(), "bsp", "shader", "cfg" );
+	CQ3LevelMesh* q = 0;
+
+	switch ( type )
 	{
-		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, Driver, SceneManager);
+		case 1:
+			q = new CQ3LevelMesh(FileSystem, SceneManager, LoadParam);
 
-		q->getShader ( "scripts/models.shader", 1 );
-		q->getShader ( "scripts/liquid.shader", 1 );
-		//q->getShader ( "scripts/sky.shader", 1 );
+			// determine real shaders in LoadParam
+			if ( 0 == LoadParam.loadAllShaders )
+			{
+				q->getShader("scripts/common.shader");
+				q->getShader("scripts/sfx.shader");
+				q->getShader("scripts/gfx.shader");
+				q->getShader("scripts/liquid.shader");
+				q->getShader("scripts/models.shader");
+				q->getShader("scripts/walls.shader");
+				//q->getShader("scripts/sky.shader");
+			}
 
-		if ( q->loadFile(file) )
+			if ( q->loadFile(file) )
+				return q;
+
+			q->drop();
+			break;
+
+		case 2:
+			q = new CQ3LevelMesh(FileSystem, SceneManager,LoadParam);
+			q->getShader( file );
 			return q;
+			break;
 
-		q->drop();
-	}
-
-	// load quake 3 shader container
-	if (strstr(file->getFileName(), ".shader"))
-	{
-		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, Driver, SceneManager);
-		q->getShader ( file->getFileName(), 1 );
-		return q;
+		case 3:
+			// load quake 3 loading parameter
+			if ( file->getFileName() == "levelparameter.cfg" )
+			{
+				file->read ( &LoadParam, sizeof ( LoadParam ) );
+			}
+			else
+			{
+				q = new CQ3LevelMesh(FileSystem, SceneManager,LoadParam);
+				q->getConfiguration( file );
+				return q;
+			}
+			break;
 	}
 
 	return 0;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -47,7 +47,7 @@ public:
 	//! scripting languages, editors, debuggers or xml deserialization purposes.
 	//! \param startIndex: start index where to start reading attributes.
 	//! \return: returns last index of an attribute read by this affector
-	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 private:
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -27,7 +27,7 @@ public:
 
    //! returns true if the file maybe is able to be loaded by this class
    //! based on the file extension (e.g. ".png")
-   virtual bool isALoadableFileExtension(const c8* fileName) const;
+   virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
    //! returns true if the file maybe is able to be loaded by this class
    virtual bool isALoadableFileFormat(io::IReadFile* file) const;

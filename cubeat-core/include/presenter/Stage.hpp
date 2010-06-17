@@ -37,6 +37,19 @@ protected:
     view::pScene scene_;
     utils::map_any conf_;
     std::vector< SceneObjList > slists_;
+
+    struct AnimParam {
+        int s; //start frame
+        int e; //end frame
+        int dur; //duration of anim
+        int loop; //loop times (-1 means forever)
+    };
+
+    typedef std::map<std::string, AnimParam> AnimSets;
+    typedef std::vector<AnimSets>            AnimList;
+    typedef std::vector<AnimList>            AnimGroup;
+
+    AnimGroup anim_group_;
 };
 
 } //presenter

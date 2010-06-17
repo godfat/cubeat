@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -22,22 +22,38 @@ namespace irr
 {
 namespace video
 {
+	struct SDepthSurface : public IReferenceCounted
+	{
+		SDepthSurface() : Surface(0) {}
+		virtual ~SDepthSurface()
+		{
+			if (Surface)
+				Surface->Release();
+		}
+
+		IDirect3DSurface9* Surface;
+		core::dimension2du Size;
+	};
+
 	class CD3D9Driver : public CNullDriver, IMaterialRendererServices
 	{
 	public:
 
 		//! constructor
-		CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window, bool fullscreen,
+		CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
 			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false);
 
 		//! destructor
 		virtual ~CD3D9Driver();
 
 		//! applications must call this method before performing any rendering. returns false if failed.
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
 		//! applications must call this method after performing any rendering. returns false if failed.
-		virtual bool endScene( s32 windowId = 0, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene();
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
@@ -59,8 +75,39 @@ namespace video
 		//! gets the area of the current viewport
 		virtual const core::rect<s32>& getViewPort() const;
 
+		struct SHWBufferLink_d3d9 : public SHWBufferLink
+		{
+			SHWBufferLink_d3d9(const scene::IMeshBuffer *_MeshBuffer):
+				SHWBufferLink(_MeshBuffer),
+					vertexBuffer(0), indexBuffer(0),
+					vertexBufferSize(0), indexBufferSize(0) {}
+
+			IDirect3DVertexBuffer9* vertexBuffer;
+			IDirect3DIndexBuffer9* indexBuffer;
+
+			u32 vertexBufferSize;
+            u32 indexBufferSize;
+ 		};
+
+		bool updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);
+		bool updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);
+
+		//! updates hardware buffer if needed
+		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Create hardware buffer from mesh
+		virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer* mb);
+
+		//! Delete hardware buffer (only some drivers can)
+		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Draw hardware buffer
+		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer);
+
 		//! draws a vertex primitive list
-		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -70,7 +117,7 @@ namespace video
 		//! Draws a part of the texture into the rectangle.
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			video::SColor* colors=0, bool useAlphaChannelOfTexture=false);
+			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
 		//!Draws an 2d rectangle with a gradient.
 		virtual void draw2DRectangle(const core::rect<s32>& pos,
@@ -82,14 +129,17 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a pixel.
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color = SColor(255,255,255,255));
 
 		//! initialises the Direct3D API
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd,
+		bool initDriver(const core::dimension2d<u32>& screenSize, HWND hwnd,
 				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, bool antiAlias);
+				bool highPrecisionFPU, bool vsync, u8 antiAlias);
 
 		//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 		//! driver, it would return "Direct3D8.1".
@@ -98,8 +148,15 @@ namespace video
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
 
-		//! adds a dynamic light
-		virtual void addDynamicLight(const SLight& light);
+		//! adds a dynamic light, returning an index to the light
+		//! \param light: the light data to use to create the light
+		//! \return An index to the light, or -1 if an error occurs
+		virtual s32 addDynamicLight(const SLight& light);
+
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn);
 
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
@@ -109,14 +166,10 @@ namespace video
 		//! \param color: New color of the ambient light.
 		virtual void setAmbientLight(const SColorf& color);
 
-		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-		//! this: Frist, draw all geometry. Then use this method, to draw the shadow
-		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
+		//! Draws a shadow volume into the stencil buffer.
 		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
 
-		//! Fills the stencil shadow with color. After the shadow volume has been drawn
-		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
-		//! to draw the color of the shadow.
+		//! Fills the stencil shadow with color.
 		virtual void drawStencilShadow(bool clearStencilBuffer=false,
 			video::SColor leftUpEdge = video::SColor(0,0,0,0),
 			video::SColor rightUpEdge = video::SColor(0,0,0,0),
@@ -137,7 +190,7 @@ namespace video
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial,
@@ -169,7 +222,8 @@ namespace video
 		virtual IVideoDriver* getVideoDriver();
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+				const core::string<c16>& name);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -178,24 +232,37 @@ namespace video
 		virtual IImage* createScreenShot();
 
 		//! Set/unset a clipping plane.
-		//! There are at least 6 clipping planes available for the user to set at will.
-		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-		//! \param plane: The plane itself.
-		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
 
 		//! Enable/disable a clipping plane.
-		//! There are at least 6 clipping planes available for the user to set at will.
-		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return VendorName;}
+
+		//! Check if the driver was recently reset.
+		virtual bool checkDriverReset() {return DriverWasReset;}
+
+		// removes the depth struct from the DepthSurface array
+		void removeDepthSurface(SDepthSurface* depth);
+
+		//! Get the current color format of the color buffer
+		/** \return Color format of the color buffer. */
+		virtual ECOLOR_FORMAT getColorFormat() const;
+
+		//! Get the current color format of the color buffer
+		/** \return Color format of the color buffer as D3D color value. */
+		D3DFORMAT getD3DColorFormat() const;
+
+		//! Get D3D color format from Irrlicht color format.
+		D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
+
+		//! Get Irrlicht color format from D3D color format.
+		ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format) const;
 
 	private:
 
-		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
+		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
 		enum E_RENDER_MODE
 		{
 			ERM_NONE = 0,	// no render state has been set yet.
@@ -229,10 +296,13 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
-		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		//! returns the current size of the screen or rendertarget
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
+
+		//! Check if a proper depth buffer for the RTT is available, otherwise create it.
+		void checkDepthBuffer(ITexture* tex);
 
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
@@ -273,6 +343,7 @@ namespace video
 		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
 		bool Transformation3DChanged;
 		bool StencilBuffer;
+		u8 AntiAliasing;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		bool LastTextureMipMapsAvailable[MATERIAL_MAX_TEXTURES];
 		core::matrix4 Matrices[ETS_COUNT]; // matrizes of the 3d mode we need to restore when we switch back from the 2d mode.
@@ -282,22 +353,34 @@ namespace video
 		IDirect3DDevice9* pID3DDevice;
 
 		IDirect3DSurface9* PrevRenderTarget;
-		core::dimension2d<s32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentDepthBufferSize;
+
+		void* WindowId;
+		core::rect<s32>* SceneSourceRect;
 
 		D3DCAPS9 Caps;
 
 		E_VERTEX_TYPE LastVertexType;
 
+		SColorf AmbientLight;
+
+		core::stringc VendorName;
+		u16 VendorID;
+
+		core::array<SDepthSurface*> DepthBuffers;
+
 		u32 MaxTextureUnits;
 		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
+
+		ECOLOR_FORMAT ColorFormat;
+		D3DFORMAT D3DColorFormat;
 		bool DeviceLost;
 		bool Fullscreen;
-
-		SColorf AmbientLight;
-
-		core::stringc vendorName;
+		bool DriverWasReset;
+		bool AlphaToCoverageSupport;
 	};
 
 
@@ -306,6 +389,5 @@ namespace video
 
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-#endif // __C_VIDEO_DIRECTX_8_H_INCLUDED__
-
+#endif // __C_VIDEO_DIRECTX_9_H_INCLUDED__
 

@@ -147,9 +147,11 @@ void AIPlayer::cycle()
 {
     if( !is_executing_ ) {
         if( model::pAICommand cmd = brain_->getCurrentCmd() ) {
+            Logger::i().buf("player ").buf(this).buf(" issuing command: ").buf(cmd).endl();
             is_executing_ = true; //this indicate executing started.
             issue_command( cmd );
             brain_->popCmdQueue();
+            Logger::i().buf("player ").buf(this).buf(" done issuing command: ").buf(cmd).endl();
         }
         input_->haste().now() = true;
     }

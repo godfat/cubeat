@@ -1,4 +1,4 @@
-// Copyright (C) 2006 Michael Zeilfelder
+// Copyright (C) 2006-2009 Michael Zeilfelder
 // This file uses the licence of the Irrlicht Engine.
 
 #include "CGUISpinBox.h"
@@ -19,7 +19,7 @@ namespace gui
 {
 
 //! constructor
-CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
+CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* environment,
 			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle)
 : IGUISpinBox(environment, parent, id, rectangle),
 	EditBox(0), ButtonSpinUp(0), ButtonSpinDown(0), StepSize(1.f),
@@ -66,7 +66,7 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 	}
 
 	const core::rect<s32> rectEdit(0, 0, rectangle.getWidth() - ButtonWidth - 1, rectangle.getHeight());
-	EditBox = Environment->addEditBox(text, rectEdit, true, this, -1);
+	EditBox = Environment->addEditBox(text, rectEdit, border, this, -1);
 	EditBox->grab();
 	EditBox->setSubElement(true);
 	EditBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
@@ -161,51 +161,69 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 
 bool CGUISpinBox::OnEvent(const SEvent& event)
 {
-	bool changeEvent = false;
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
+		bool changeEvent = false;
+		switch(event.EventType)
 		{
-			if (event.GUIEvent.Caller == ButtonSpinUp)
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
 			{
-				f32 val = getValue();
-				val += StepSize;
-				setValue(val);
-				changeEvent = true;
+			case EMIE_MOUSE_WHEEL:
+				{
+					f32 val = getValue() + (StepSize * event.MouseInput.Wheel);
+					setValue(val);
+					changeEvent = true;
+				}
+				break;
+			default:
+				break;
 			}
-			else if ( event.GUIEvent.Caller == ButtonSpinDown)
+			break;
+
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
 			{
-				f32 val = getValue();
-				val -= StepSize;
-				setValue(val);
-				changeEvent = true;
+				if (event.GUIEvent.Caller == ButtonSpinUp)
+				{
+					f32 val = getValue();
+					val += StepSize;
+					setValue(val);
+					changeEvent = true;
+				}
+				else if ( event.GUIEvent.Caller == ButtonSpinDown)
+				{
+					f32 val = getValue();
+					val -= StepSize;
+					setValue(val);
+					changeEvent = true;
+				}
 			}
-		}
-		if ( event.GUIEvent.EventType == EGET_EDITBOX_ENTER )
-		{
-			if (event.GUIEvent.Caller == EditBox)
+			if ( event.GUIEvent.EventType == EGET_EDITBOX_ENTER )
 			{
-				verifyValueRange();
-				changeEvent = true;
+				if (event.GUIEvent.Caller == EditBox)
+				{
+					verifyValueRange();
+					changeEvent = true;
+				}
 			}
-		}
+			break;
+		default:
 		break;
-	default:
-	break;
-	}
+		}
 
-	if ( changeEvent )
-	{
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = 0;
+		if ( changeEvent )
+		{
+			SEvent e;
+			e.EventType = EET_GUI_EVENT;
+			e.GUIEvent.Caller = this;
+			e.GUIEvent.Element = 0;
 
-		e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
-		if ( Parent )
-			Parent->OnEvent(e);
-		return true;
+			e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
+			if ( Parent )
+				Parent->OnEvent(e);
+			return true;
+		}
 	}
 
 	return IGUIElement::OnEvent(event);
@@ -251,6 +269,7 @@ void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	out->addFloat("Step", getStepSize());
 	out->addInt("DecimalPlaces", DecimalPlaces);
 }
+
 
 //! Reads attributes of the element
 void CGUISpinBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)

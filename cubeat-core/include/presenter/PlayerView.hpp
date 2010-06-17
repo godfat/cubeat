@@ -34,7 +34,8 @@ public:
     PlayerView();
     ~PlayerView();
 
-    int getState() const { return conf_.I("current_state"); }
+    //int getState() const { return conf_.I("current_state"); }
+    int getState() const { return static_cast<int>(current_state_); }
     PlayerView& flipPosition();
     PlayerView& switchCharacterState(STATE const&);
     PlayerView& switchCharacterFace(FACE const&);
@@ -57,6 +58,25 @@ protected:
 
     int last_garbage_;
     int last_attack_;
+    STATE current_state_;
+    FACE  current_face_;
+    int face_pos_idx_;
+
+    struct FaceState {
+        std::string tex;
+        int gdeco;
+        int bdeco;
+    };
+
+    struct CharState {
+        std::string anim;
+        int face_visible;
+        std::string sound;
+    };
+
+    std::vector<FaceState> faces_;
+    std::vector<CharState> states_;
+    std::vector<vec2> face_pos_;
 };
 
 }// presenter

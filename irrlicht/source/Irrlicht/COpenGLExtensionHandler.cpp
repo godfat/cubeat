@@ -1,11 +1,15 @@
-#include "COpenGLExtensionHandler.h"
-#include "irrString.h"
-#include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
-#include "fast_atof.h"
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
+
+#include "COpenGLExtensionHandler.h"
+#include "irrString.h"
+#include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
+#include "fast_atof.h"
 
 namespace irr
 {
@@ -13,12 +17,11 @@ namespace video
 {
 
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
-		StencilBuffer(false),
-		MultiTextureExtension(false), MultiSamplingExtension(false), AnisotropyExtension(false),
+		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
-		MaxAnisotropy(1.0f), MaxUserClipPlanes(0),
-		Version(0), ShaderLanguageVersion(0)
+		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1), MaxUserClipPlanes(0),
+		MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1), MaxTextureLODBias(0.f),
+		MaxMultipleRenderTargets(1), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
@@ -41,6 +44,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlCheckFramebufferStatusEXT(0), pGlFramebufferTexture2DEXT(0),
 	pGlBindRenderbufferEXT(0), pGlDeleteRenderbuffersEXT(0), pGlGenRenderbuffersEXT(0),
 	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0),
+	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
 	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0)
@@ -62,7 +66,7 @@ void COpenGLExtensionHandler::dump() const
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
 	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
-	Version = core::floor32(ogl_ver)*100+core::ceil32(core::fract(ogl_ver)*10.0f);
+	Version = static_cast<u16>(core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f));
 	if ( Version >= 102)
 		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
 	else
@@ -98,8 +102,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 
 	MultiTextureExtension = FeatureAvailable[IRR_ARB_multitexture];
-	MultiSamplingExtension = FeatureAvailable[IRR_ARB_multisample];
-	AnisotropyExtension = FeatureAvailable[IRR_EXT_texture_filter_anisotropic];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
 	StencilBuffer=stencilBuffer;
 
@@ -159,6 +161,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) wglGetProcAddress("glGenRenderbuffersEXT");
 	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) wglGetProcAddress("glRenderbufferStorageEXT");
 	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) wglGetProcAddress("glFramebufferRenderbufferEXT");
+	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC) wglGetProcAddress("glDrawBuffersARB");
+	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC) wglGetProcAddress("glDrawBuffersATI");
 
 	// get vertex buffer extension
 	pGlGenBuffersARB = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
@@ -348,6 +352,12 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glFramebufferRenderbufferEXT"));
 
+	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDrawBuffersARB"));
+
+	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDrawBuffersATI"));
+
 	pGlGenBuffersARB = (PFNGLGENBUFFERSARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenBuffersARB"));
 
@@ -385,25 +395,52 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
 
+	GLint num;
 	// set some properties
 #if defined(GL_ARB_multitexture) || defined(GL_VERSION_1_3)
 	if (Version>102 || FeatureAvailable[IRR_ARB_multitexture])
 	{
-		GLint num;
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &num);
-		MaxTextureUnits=num;
+		MaxTextureUnits=static_cast<u8>(num);
 	}
 #endif
-	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
+	glGetIntegerv(GL_MAX_LIGHTS, &num);
+	MaxLights=static_cast<u8>(num);
 #ifdef GL_EXT_texture_filter_anisotropic
 	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
+		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &num);
+	MaxAnisotropy=static_cast<u8>(num);
 #endif
 #ifdef GL_VERSION_1_2
 	if (Version>101)
-		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
+	{
+		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &num);
+		MaxIndices=num;
+	}
 #endif
-	glGetIntegerv(GL_MAX_CLIP_PLANES, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
+	MaxTextureSize=static_cast<u32>(num);
+#ifdef EXT_texture_lod_bias
+	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
+#endif
+	glGetIntegerv(GL_MAX_CLIP_PLANES, &num);
+	MaxUserClipPlanes=static_cast<u8>(num);
+	glGetIntegerv(GL_AUX_BUFFERS, &num);
+	MaxAuxBuffers=static_cast<u8>(num);
+#ifdef ARB_draw_buffers
+	if (FeatureAvailable[IRR_ARB_draw_buffers])
+	{
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
+		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+	}
+#elif defined(ATI_draw_buffers)
+	if (FeatureAvailable[IRR_ATI_draw_buffers])
+	{
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
+		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+	}
+#endif
 #if defined(GL_ARB_shading_language_100) || defined (GL_VERSION_2_0)
 	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{
@@ -418,7 +455,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		else
 		{
 			const f32 sl_ver = core::fast_atof(reinterpret_cast<const c8*>(shaderVersion));
-			ShaderLanguageVersion = core::floor32(sl_ver)*100+core::ceil32(core::fract(sl_ver)*10.0f);
+			ShaderLanguageVersion = static_cast<u16>(core::floor32(sl_ver)*100+core::round32(core::fract(sl_ver)*10.0f));
 		}
 	}
 #endif
@@ -436,7 +473,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		MultiTextureExtension = false;
 		os::Printer::log("Warning: OpenGL device only has one texture unit. Disabling multitexturing.", ELL_WARNING);
 	}
-	MaxTextureUnits = core::min_(MaxTextureUnits,MATERIAL_MAX_TEXTURES);
+	MaxTextureUnits = core::min_(MaxTextureUnits,static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
 }
 
@@ -461,13 +498,23 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_fragment_program];
 	case EVDF_ARB_GLSL:
-		return FeatureAvailable[IRR_ARB_shading_language_100];
+		return (FeatureAvailable[IRR_ARB_shading_language_100]||Version>=200);
+	case EVDF_TEXTURE_NSQUARE:
+		return true; // non-square is always supported
 	case EVDF_TEXTURE_NPOT:
-		return FeatureAvailable[IRR_ARB_texture_non_power_of_two];
+		// Some ATI cards seem to have only SW support in OpenGL 2.0
+		// drivers if the extension is not exposed, so we skip this
+		// extra test for now!
+		// return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]||Version>=200);
+		return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]);
 	case EVDF_FRAMEBUFFER_OBJECT:
 		return FeatureAvailable[IRR_EXT_framebuffer_object];
 	case EVDF_VERTEX_BUFFER_OBJECT:
 		return FeatureAvailable[IRR_ARB_vertex_buffer_object];
+	case EVDF_COLOR_MASK:
+		return true;
+	case EVDF_ALPHA_TO_COVERAGE:
+		return FeatureAvailable[IRR_ARB_multisample];
 	default:
 		return false;
 	};
@@ -478,5 +525,3 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 #endif
-
-

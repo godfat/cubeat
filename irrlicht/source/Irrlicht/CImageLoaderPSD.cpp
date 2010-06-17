@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -29,9 +29,9 @@ CImageLoaderPSD::CImageLoaderPSD()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPSD::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderPSD::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".psd") != 0;
+	return core::hasFileExtension ( filename, "psd" );
 }
 
 
@@ -152,7 +152,7 @@ IImage* CImageLoaderPSD::loadImage(io::IReadFile* file) const
 	{
 		// create surface
 		image = new CImage(ECF_A8R8G8B8,
-			core::dimension2d<s32>(header.width, header.height), imageData);
+			core::dimension2d<u32>(header.width, header.height), imageData);
 	}
 
 	if (!image)
@@ -175,7 +175,7 @@ bool CImageLoaderPSD::readRawImageData(io::IReadFile* file, const PsdHeader& hea
 			break;
 		}
 
-		s16 shift = getShiftFromChannel(channel, header);
+		s16 shift = getShiftFromChannel((c8)channel, header);
 		if (shift != -1)
 		{
 			u32 mask = 0xff << shift;
@@ -316,7 +316,7 @@ bool CImageLoaderPSD::readRLEImageData(io::IReadFile* file, const PsdHeader& hea
 			}
 		}
 
-		s16 shift = getShiftFromChannel(channel, header);
+		s16 shift = getShiftFromChannel((c8)channel, header);
 
 		if (shift != -1)
 		{

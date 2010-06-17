@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -18,7 +18,8 @@ namespace scene
 		//! constructor
 		CSceneNodeAnimatorFlyCircle(u32 time,
 				const core::vector3df& center, f32 radius,
-				f32 speed, const core::vector3df& direction);
+				f32 speed, const core::vector3df& direction, 
+				f32 radiusEllipsoid);
 
 		//! animates a scene node
 		virtual void animateNode(ISceneNode* node, u32 timeMs);
@@ -31,6 +32,12 @@ namespace scene
 
 		//! Returns type of the scene node animator
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_FLY_CIRCLE; }
+		
+		//! Creates a clone of this animator.
+		/** Please note that you will have to drop
+		(IReferenceCounted::drop()) the returned pointer after calling
+		this. */
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 	private:
 		// do some initial calculations
@@ -44,6 +51,7 @@ namespace scene
 		core::vector3df VecU;
 		core::vector3df VecV;
 		f32 Radius;
+		f32 RadiusEllipsoid;
 		f32 Speed;
 		u32 StartTime;
 	};

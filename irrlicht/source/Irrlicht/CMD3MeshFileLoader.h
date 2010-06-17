@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -8,7 +8,7 @@
 #include "IMeshLoader.h"
 #include "IFileSystem.h"
 #include "IVideoDriver.h"
-#include "IAnimatedMeshMD3.h"
+#include "ISceneManager.h"
 #include "IQ3Shader.h"
 
 namespace irr
@@ -22,14 +22,14 @@ class CMD3MeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CMD3MeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver);
+	CMD3MeshFileLoader( scene::ISceneManager* smgr );
 
 	//! destructor
 	virtual ~CMD3MeshFileLoader();
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -38,6 +38,8 @@ public:
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 private:
+	io::IFileSystem* FileSystem;
+	scene::ISceneManager* SceneManager;
 
 };
 

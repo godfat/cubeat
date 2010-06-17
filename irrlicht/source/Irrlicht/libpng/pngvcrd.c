@@ -1,3 +1,4 @@
+<<<<<<< HEAD:irrlicht/source/Irrlicht/libpng/pngvcrd.c
 
 /* pngvcrd.c - mixed C/assembler version of utilities to read a PNG file
  *
@@ -3902,3 +3903,6 @@ png_read_filter_row(png_structp png_ptr, png_row_infop row_info, png_bytep
 }
 
 #endif /* PNG_ASSEMBLER_CODE_SUPPORTED && PNG_USE_PNGVCRD */
+=======
+/* pnggvrd.c was removed from libpng-1.2.20. */
+>>>>>>> irrlicht-pre-1.6:irrlicht/source/Irrlicht/libpng/pngvcrd.c

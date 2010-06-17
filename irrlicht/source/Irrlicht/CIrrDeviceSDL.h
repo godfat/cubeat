@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // This device code is based on the original SDL device implementation
@@ -17,6 +17,7 @@
 #include "ICursorControl.h"
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
 
 namespace irr
 {
@@ -26,11 +27,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceSDL(video::E_DRIVER_TYPE deviceType, 
-			const core::dimension2d<s32>& windowSize, u32 bits,
-			bool fullscreen, bool stencilbuffer, bool vsync,
-			bool antiAlias, IEventReceiver* receiver,
-			void* windowID, const char* version);
+		CIrrDeviceSDL(const SIrrlichtCreationParameters& param);
 
 		//! destructor
 		virtual ~CIrrDeviceSDL();
@@ -50,8 +47,17 @@ namespace irr
 		//! returns if window is active. if not, nothing need to be drawn
 		virtual bool isWindowActive() const;
 
+		//! returns if window has focus.
+		bool isWindowFocused() const;
+
+		//! returns if window is minimized.
+		bool isWindowMinimized() const;
+			
+		//! returns color format of the window.
+		video::ECOLOR_FORMAT getColorFormat() const;
+
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, s32 windowId = 0, core::rect<s32>* src=0);
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
@@ -59,8 +65,14 @@ namespace irr
 		//! \return Returns a pointer to a list with all video modes supported
 		video::IVideoModeList* getVideoModeList();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
+
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -156,28 +168,27 @@ namespace irr
 	private:
 
 		//! create the driver
-		void createDriver(video::E_DRIVER_TYPE driverType,
-			const core::dimension2d<s32>& windowSize);
+		void createDriver();
 
-		bool createWindow(video::E_DRIVER_TYPE driverType);
+		bool createWindow();
 
 		void createKeyMap();
 
-		s32 MouseX, MouseY;
-		u32 Depth;
-		bool Fullscreen;
-		bool Stencilbuffer;
-		bool Vsync;
-		bool AntiAlias;
-		bool Resizeable;
-		
 		SDL_Surface* Screen;
-		SDL_Event SDL_event;
 		int SDL_Flags;
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+		core::array<SDL_Joystick*> Joysticks;
+#endif
 
+		s32 MouseX, MouseY;
+		u32 MouseButtonStates;
+		
 		u32 Width, Height;
+
 		bool Close;
-		bool WindowActive;
+		bool Resizable;
+		bool WindowHasFocus;
+		bool WindowMinimized;
 
 		struct SKeyMap
 		{
@@ -197,6 +208,7 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+		SDL_SysWMinfo Info;
 	};
 
 } // end namespace irr

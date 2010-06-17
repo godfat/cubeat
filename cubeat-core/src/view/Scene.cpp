@@ -75,21 +75,22 @@ Scene& Scene::setTo2DView()
 
     matrix4 ortho;
     ortho.buildProjectionMatrixOrthoLH( w+bloat, h+bloat, 0, 10000);
-    camera_->setProjectionMatrix( ortho );
-    camera_->setIsOrthogonal(true);
+    camera_->setProjectionMatrix( ortho, true );
 
     body_->setScale(vector3df( (w+bloat)/w, (h+bloat)/h, 1 ));
-    body_->setPosition(vector3df(-(w+bloat)/2, (h+bloat)/2, 500));  //default depth at 500..
+    body_->setPosition(vector3df(-(w+bloat)/2, (h+bloat)/2, 5000));  //default depth at 500..
     return *this;
 }
 
 Scene& Scene::setTo3DView(float FoV)
 {
+    matrix4 proj;
+    proj.buildProjectionMatrixPerspectiveFovLH( FoV, (float)Conf::i().SCREEN_W / Conf::i().SCREEN_H, 0.0, 1000.0 );
+    camera_->setProjectionMatrix( proj );
     camera_->setPosition( vector3df(0,0,0) );
     camera_->setTarget( vector3df(0,0,100) );
     camera_->setFOV( FoV );
     camera_->setAspectRatio( (float)Conf::i().SCREEN_W / Conf::i().SCREEN_H );
-    camera_->setIsOrthogonal(false);
 
     body_->setPosition(vector3df(0,0,0));
     return *this;

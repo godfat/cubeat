@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -26,15 +26,15 @@ public:
 	//! \param useForeignMemory: If true, the image will use the data pointer
 	//! directly and own it from now on, which means it will also try to delete [] the
 	//! data when the image will be destructed. If false, the memory will by copied.
-	CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size,
+	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
 		void* data, bool ownForeignMemory=true, bool deleteMemory = true);
 
 	//! constructor for empty image
-	CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
 
 	//! constructor using a part from another image
 	CImage(IImage* imageToCopy,
-		const core::position2d<s32>& pos, const core::dimension2d<s32>& size);
+		const core::position2d<s32>& pos, const core::dimension2d<u32>& size);
 
 	//! destructor
 	virtual ~CImage();
@@ -43,13 +43,13 @@ public:
 	virtual void* lock()
 	{
 		return Data;
-	};
+	}
 
 	//! Unlock function.
-	virtual void unlock() {};
+	virtual void unlock() {}
 
 	//! Returns width and height of image data.
-	virtual const core::dimension2d<s32>& getDimension() const;
+	virtual const core::dimension2d<u32>& getDimension() const;
 
 	//! Returns bits per pixel.
 	virtual u32 getBitsPerPixel() const;
@@ -79,46 +79,44 @@ public:
 	virtual SColor getPixel(u32 x, u32 y) const;
 
 	//! sets a pixel
-	virtual void setPixel(u32 x, u32 y, const SColor &color );
+	virtual void setPixel(u32 x, u32 y, const SColor &color, bool blend = false );
 
 	//! returns the color format
 	virtual ECOLOR_FORMAT getColorFormat() const;
 
-	//! draws a rectangle
-	void drawRectangle(const core::rect<s32>& rect, const SColor &color);
+	//! returns pitch of image
+	virtual u32 getPitch() const { return Pitch; }
+
+	//! copies this surface into another, scaling it to fit.
+	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch=0);
+
+	//! copies this surface into another, scaling it to fit.
+	virtual void copyToScaling(IImage* target);
 
 	//! copies this surface into another
-	void copyTo(IImage* target, const core::position2d<s32>& pos=core::position2d<s32>(0,0));
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos=core::position2d<s32>(0,0));
 
 	//! copies this surface into another
-	void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0);
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0);
 
 	//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
-	void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect = 0);
-
-	//! copies this surface into another, scaling it to fit.
-	void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format, u32 pitch=0);
-
-	//! copies this surface into another, scaling it to fit.
-	void copyToScaling(IImage* target);
+	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
+			const core::rect<s32>& sourceRect, const SColor &color,
+			const core::rect<s32>* clipRect = 0);
 
 	//! copies this surface into another, scaling it to fit, appyling a box filter
-	void copyToScalingBoxFilter(IImage* target, s32 bias = 0);
+	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false);
+
+	//! fills the surface with black or white
+	virtual void fill(const SColor &color);
+
+	//! draws a rectangle
+	void drawRectangle(const core::rect<s32>& rect, const SColor &color);
 
 	//! draws a line from to
 	void drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color);
 
-	//! fills the surface with black or white
-	void fill(const SColor &color);
-
-	//! returns pitch of image
-	virtual u32 getPitch() const
-	{
-		return Pitch;
-	}
-
 	static u32 getBitsPerPixelFromFormat(ECOLOR_FORMAT format);
-
 
 private:
 
@@ -130,7 +128,7 @@ private:
 	inline SColor getPixelBox ( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const;
 
 	void* Data;
-	core::dimension2d<s32> Size;
+	core::dimension2d<u32> Size;
 	u32 BitsPerPixel;
 	u32 BytesPerPixel;
 	u32 Pitch;

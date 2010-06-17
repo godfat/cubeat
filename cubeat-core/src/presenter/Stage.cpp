@@ -62,6 +62,9 @@ pStage Stage::init( std::string const& path )
         slists_.push_back( SceneObjList() );
         SceneObjList& slist = slists_.back();
         utils::vector_any const& items = boost::any_cast<utils::vector_any const>(list);
+
+        AnimList anim_list;
+
         BOOST_FOREACH(utils::any_type const& it, items) {
             utils::map_any const& item = boost::any_cast<utils::map_any const>(it);
             view::pAnimatedSceneObject obj;
@@ -83,7 +86,20 @@ pStage Stage::init( std::string const& path )
             idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop( iconf.I("loop") );
             obj->queue(emerge).tween(idle);
             slist.push_back( obj );
+
+            //put animation data into the cache:
+            AnimSets anim_sets;
+            BOOST_FOREACH(utils::pair_any const& it, item.M("anim")) {
+                std::string const& k = boost::any_cast<std::string const>(it.first);
+                utils::map_any const& m = boost::any_cast<utils::map_any const>(it.second);
+                anim_sets[k].s = m.I("s");
+                anim_sets[k].e = m.I("e");
+                anim_sets[k].dur = m.I("duration");
+                anim_sets[k].loop= m.I("loop");
+            }
+            anim_list.push_back( anim_sets );
         }
+        anim_group_.push_back( anim_list );
     }
     return shared_from_this();
 }
@@ -91,19 +107,23 @@ pStage Stage::init( std::string const& path )
 Stage& Stage::hitGroup(int const& id)
 {
     SceneObjList& slist = slists_[id];
-    utils::vector_any const& listconf = conf_.V("all_items").V(id);
     for( size_t i = 0; i < slist.size(); ++i ) {
         view::pAnimatedSceneObject& obj = slist[i];
-        utils::map_any const& hconf = listconf.M(i).M("anim").M("hit");
-        utils::map_any const& rconf = listconf.M(i).M("anim").M("recover");
-        utils::map_any const& iconf = listconf.M(i).M("anim").M("idle");
+
+        AnimParam hconf = anim_group_[id][i]["hit"];
+        AnimParam rconf = anim_group_[id][i]["recover"];
+        AnimParam iconf = anim_group_[id][i]["idle"];
+
         data::AnimatorParam<OBounce, Frame> hit;
         data::AnimatorParam<Linear, Frame> recover;
         data::AnimatorParam<Linear, Frame> idle;
-        int fn = obj->get<Frame>(), s = fn < hconf.I("s") ? hconf.I("s") : fn;
-        hit.start( s ).end( hconf.I("e") ).duration( hconf.I("duration") );
-        recover.start( rconf.I("s") ).end( rconf.I("e") ).duration( rconf.I("duration") );
-        idle.start( iconf.I("s") ).end( iconf.I("e") ).duration( iconf.I("duration") ).loop(-1);
+
+        int fn = obj->get<Frame>(), s = fn < hconf.s ? hconf.s : fn;
+
+        hit.start( s ).end( hconf.e ).duration( hconf.dur );
+        recover.start( rconf.s ).end( rconf.e ).duration( rconf.dur );
+        idle.start( iconf.s ).end( iconf.e ).duration( iconf.dur ).loop(-1);
+
         obj->clearAllTween().queue(hit).queue(recover).tween(idle);
     }
     return *this;

@@ -9,13 +9,16 @@
 #include "Sound.hpp"
 #include "Input.hpp"
 
+#include "utils/Logger.hpp"
+
 using namespace psc;
 using namespace presenter;
 using namespace easing;
 using namespace accessor;
+using utils::Logger;
 
 PlayerView::PlayerView()
-    :input_(0), last_garbage_(0)
+    :input_(0), last_garbage_(0), current_state_(NONE), current_face_(NORMAL), face_pos_idx_(0)
 {
 }
 
@@ -28,7 +31,7 @@ pPlayerView PlayerView::init(std::string const& path, view::pObject const& paren
     conf_ = utils::map_any::construct( utils::fetchConfig( path ) );
     utils::map_any const& anim = conf_.M("anim_attr");
 
-    character_ = view::Menu::create("", parent, 1, 1, true);
+    character_ = view::Menu::create("character", parent, 1, 1, true);
     character_->set<Pos2D>( pos );
 
     BOOST_FOREACH(utils::pair_any const& it, anim) {
@@ -43,17 +46,37 @@ pPlayerView PlayerView::init(std::string const& path, view::pObject const& paren
     character_->addSprite("face", 0, conf_.I("face_w"), conf_.I("face_h"), true, face.M(NORMAL).S("tex") )
                .getSprite("face").set<Pos2D>( vec2(fpos.I("x"), fpos.I("y")) );
 
-    clearFaceState();
-    conf_["current_face"] = static_cast<int>(NORMAL);
+    BOOST_FOREACH(utils::pair_any const& it, conf_.M("face")) {
+        utils::map_any const& face = boost::any_cast<utils::map_any const>(it.second);
+        faces_.push_back( FaceState() );
+        faces_.back().tex = face.S("tex");
+        faces_.back().gdeco = face.I("gdeco");
+        faces_.back().bdeco = face.I("bdeco");
+    }
+    BOOST_FOREACH(utils::pair_any const& it, conf_.M("state")) {
+        utils::map_any const& stat = boost::any_cast<utils::map_any const>(it.second);
+        states_.push_back( CharState() );
+        states_.back().anim = stat.S("anim");
+        states_.back().face_visible = stat.I("face_visible");
+        states_.back().sound = stat.S("sound");
+    }
+    BOOST_FOREACH(utils::any_type const& it, conf_.V("face_pos")) {
+        utils::map_any const& pos = boost::any_cast<utils::map_any const>(it);
+        face_pos_.push_back( vec2() );
+        face_pos_.back().X = pos.I("x");
+        face_pos_.back().Y = pos.I("y");
+    }
+    character_->getAnimSprite("bdeco").set<Visible>( false );
+    character_->getAnimSprite("gdeco").set<Visible>( false );
+
     return shared_from_this();
 }
 
 PlayerView& PlayerView::flipPosition()
 {
     character_->flipH();
-    for( size_t i = 0; i < conf_.V("face_pos").size(); ++i ) {
-        utils::map_any& pos = conf_.V("face_pos").M(i);
-        pos.I("x") *= -1;
+    for( size_t i = 0; i < face_pos_.size(); ++i ) {
+        face_pos_[i].X *= -1;
     }
     return *this;
 }
@@ -61,17 +84,20 @@ PlayerView& PlayerView::flipPosition()
 PlayerView& PlayerView::switchCharacterState( STATE const& state )
 {
     using std::tr1::ref; using std::tr1::bind;
-    conf_["current_state"] = static_cast<int>(state);
-    utils::map_any const& attr = conf_.M("state").M(state);
-    character_->getSprite("face").set<Visible>( attr.I("face_visible") );
+
+    current_state_ = state;
+    CharState stat = states_[state];
+
+    character_->getSprite("face").set<Visible>( stat.face_visible );
     character_->getAnimSprite("body")
-               .playAnime( attr.S("anim"), 1000, 0, bind(&PlayerView::clearFaceState, this));
-    if( attr.S("sound") != "" )
-        Sound::i().play( attr.S("sound") );
+               .playAnime( stat.anim, 1000, 0, bind(&PlayerView::clearFaceState, this));
+
+    if( stat.sound != "" )
+        Sound::i().play( stat.sound );
+
     if( state == STAND ) {
-        conf_["face_pos_idx"] = 0;
-        utils::vector_any& face_pos = conf_.V("face_pos");
-        character_->getSprite("face").set<Pos2D>( vec2( face_pos.M(0).I("x"), face_pos.M(0).I("y") ) );
+        face_pos_idx_ = 0;
+        character_->getSprite("face").set<Pos2D>( face_pos_[0] );
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&PlayerView::faceUpdate, this), shared_from_this(), 250, 2);
     }
@@ -80,26 +106,26 @@ PlayerView& PlayerView::switchCharacterState( STATE const& state )
 
 PlayerView& PlayerView::switchCharacterFace( FACE const& fstate )
 {
-    if( conf_["current_face"] == fstate ) return *this;
-    conf_["current_face"] = static_cast<int>(fstate);
-    utils::map_any const& attr = conf_.M("face").M(fstate);
-    character_->getSprite("face").setTexture( attr.S("tex") );
-    character_->getAnimSprite("bdeco").set<Visible>( attr.I("bdeco") );
-    character_->getAnimSprite("gdeco").set<Visible>( attr.I("gdeco") );
+    if( current_face_ == fstate ) return *this;
+    current_face_ = fstate;
+
+    FaceState face = faces_[fstate];
+    character_->getSprite("face").setTexture( face.tex );
+    character_->getAnimSprite("bdeco").set<Visible>( face.bdeco );
+    character_->getAnimSprite("gdeco").set<Visible>( face.gdeco );
     return *this;
 }
 
 PlayerView& PlayerView::clearFaceState() {
-    conf_["current_state"] = static_cast<int>(NONE);
+    current_state_ = NONE;
     return *this;
 }
 
 void PlayerView::faceUpdate() {
-    int& idx = conf_.I("face_pos_idx");
-    utils::vector_any& face_pos = conf_.V("face_pos");
+    int& idx = face_pos_idx_;
     ++idx;
-    if( static_cast<unsigned int>(idx) >= face_pos.size() ) idx = 0;
-    character_->getSprite("face").set<Pos2D>( vec2( face_pos.M(idx).I("x"), face_pos.M(idx).I("y") ) );
+    if( static_cast<unsigned int>(idx) >= face_pos_.size() ) idx = 0;
+    character_->getSprite("face").set<Pos2D>( face_pos_[ face_pos_idx_ ] );
 }
 
 void PlayerView::cycle()
@@ -107,7 +133,8 @@ void PlayerView::cycle()
     if( pMap map = map_.lock() ) {
         int new_garbage = map->garbage_left() + map->sum_of_all_enemy();
         int new_attack  = map->current_sum_of_attack();
-        int state1p = conf_.I("current_state");
+        int state1p = current_state_;
+
         if( state1p != HIT && last_garbage_ > new_garbage ) {
 #ifdef _USE_WIIMOTE_
             if( input_ ) {

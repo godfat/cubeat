@@ -1,20 +1,15 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CFileList.h"
 #include "IrrCompileConfig.h"
 #include "irrArray.h"
+#include "coreutil.h"
 #include <stdlib.h>
 
-namespace irr
-{
-namespace io
-{
-
-#if (defined(_IRR_POSIX_API_) || defined(MACOSX))
+#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <sys/types.h>
@@ -24,21 +19,40 @@ namespace io
 #endif
 
 #ifdef _IRR_WINDOWS_API_
-#include <io.h>
-#include <direct.h>
+	#if !defined ( _WIN32_WCE )
+		#include <io.h>
+		#include <direct.h>
+	#endif
 #endif
 
+namespace irr
+{
+namespace io
+{
 
-CFileList::CFileList()
+CFileList::CFileList( const c8 * param)
 {
 	#ifdef _DEBUG
 	setDebugName("CFileList");
 	#endif
 
+
+	if ( 0 == param )
+		constructNative ();
+}
+
+CFileList::~CFileList()
+{
+	Files.clear ();
+}
+
+
+void CFileList::constructNative ()
+{
 	// --------------------------------------------
 	// Windows version
 	#ifdef _IRR_WINDOWS_API_
-
+	#if !defined ( _WIN32_WCE )
 	char tmp[_MAX_PATH];
 	_getcwd(tmp, _MAX_PATH);
 	Path = tmp;
@@ -60,6 +74,7 @@ CFileList::CFileList()
 
 		_findclose( hFile );
 	}
+	#endif
 
 	//TODO add drives
 	//entry.Name = "E:\\";
@@ -69,7 +84,7 @@ CFileList::CFileList()
 
 	// --------------------------------------------
 	// Linux version
-	#if (defined(_IRR_POSIX_API_) || defined(MACOSX))
+	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 
 	FileEntry entry;
 
@@ -127,8 +142,8 @@ CFileList::CFileList()
 	#endif
 	// sort the list on all platforms
 	Files.sort();
-}
 
+}
 
 u32 CFileList::getFileCount() const
 {
@@ -136,42 +151,42 @@ u32 CFileList::getFileCount() const
 }
 
 
-const c8* CFileList::getFileName(u32 index) const
+static const core::string<c16> emptyFileListEntry;
+
+const core::string<c16>& CFileList::getFileName(u32 index) const
 {
-	if (index < Files.size())
-		return Files[index].Name.c_str();
-	else
-		return 0;
+	if (index >= Files.size())
+		return emptyFileListEntry;
+
+	return Files[index].Name;
 }
 
 
 //! Gets the full name of a file in the list, path included, based on an index.
-const c8* CFileList::getFullFileName(u32 index)
+const core::string<c16>& CFileList::getFullFileName(u32 index)
 {
 	if (index >= Files.size())
-		return 0;
+		return emptyFileListEntry;
 
 	if (Files[index].FullName.size() < Files[index].Name.size())
 	{
 		// create full name
 		Files[index].FullName = Path;
-
-		if (Path.size() > 3)
+		c16 last = lastChar ( Files[index].FullName );
+		if ( last != '/' && last != '\\' )
 			Files[index].FullName.append('/');
 
 		Files[index].FullName.append(Files[index].Name);
 	}
 
-	return Files[index].FullName.c_str();
+	return Files[index].FullName;
 }
 
 
 bool CFileList::isDirectory(u32 index) const
 {
-	bool ret;
-	if (index >= Files.size())
-		ret = false;
-	else
+	bool ret = false;
+	if (index < Files.size())
 		ret = Files[index].isDirectory;
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;

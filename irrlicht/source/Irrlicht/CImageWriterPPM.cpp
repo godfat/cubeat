@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -31,18 +31,18 @@ CImageWriterPPM::CImageWriterPPM()
 }
 
 
-bool CImageWriterPPM::isAWriteableFileExtension(const c8* fileName) const
+bool CImageWriterPPM::isAWriteableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".ppm") != 0;
+	return core::hasFileExtension ( filename, "ppm" );
 }
 
 
 bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param) const
 {
 	char cache[70];
-	char size;
+	int size;
 
-	const core::dimension2d<s32>& imageSize = image->getDimension();
+	const core::dimension2d<u32>& imageSize = image->getDimension();
 
 	const bool binary = false;
 
@@ -64,14 +64,14 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 
 	if (binary)
 	{
-		for (s32 h = 0; h < imageSize.Height; ++h)
+		for (u32 h = 0; h < imageSize.Height; ++h)
 		{
-			for (s32 c = 0; c < imageSize.Width; ++c)
+			for (u32 c = 0; c < imageSize.Width; ++c)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
-				const u8 r = pixel.getRed() & 0xff;
-				const u8 g = pixel.getGreen() & 0xff;
-				const u8 b = pixel.getBlue() & 0xff;
+				const u8 r = (u8)(pixel.getRed() & 0xff);
+				const u8 g = (u8)(pixel.getGreen() & 0xff);
+				const u8 b = (u8)(pixel.getBlue() & 0xff);
 				file->write(&r, 1);
 				file->write(&g, 1);
 				file->write(&b, 1);
@@ -82,12 +82,12 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 	{
 		s32 n = 0;
 
-		for (s32 h = 0; h < imageSize.Height; ++h)
+		for (u32 h = 0; h < imageSize.Height; ++h)
 		{
-			for (s32 c = 0; c < imageSize.Width; ++c, ++n)
+			for (u32 c = 0; c < imageSize.Width; ++c, ++n)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
-				size = snprintf(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");	
+				size = snprintf(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");
 				if (file->write(cache, size) != size)
 					return false;
 			}

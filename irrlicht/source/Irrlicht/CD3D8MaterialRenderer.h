@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -85,7 +85,7 @@ public:
 			E_MODULATE_FUNC modulate;
 			unpack_texureBlendFunc ( srcFact, dstFact, modulate, material.MaterialTypeParam );
 
-			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO) 
+			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO)
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 			else
 			{
@@ -98,7 +98,7 @@ public:
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-			if ( getTexelAlpha ( srcFact ) + getTexelAlpha ( dstFact ) )
+			if ( textureBlendFunc_hasAlpha ( srcFact ) + textureBlendFunc_hasAlpha ( dstFact ) )
 			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
@@ -134,20 +134,6 @@ public:
 				case EBF_DST_ALPHA:				r = D3DBLEND_DESTALPHA; break;
 				case EBF_ONE_MINUS_DST_ALPHA:	r = D3DBLEND_INVDESTALPHA; break;
 				case EBF_SRC_ALPHA_SATURATE:	r = D3DBLEND_SRCALPHASAT; break;
-			}
-			return r;
-		}
-
-		u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
-		{
-			u32 r = 0;
-		switch ( factor )
-			{
-				case EBF_SRC_ALPHA:				r = 1; break;
-				case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
-				case EBF_DST_ALPHA:				r = 1; break;
-				case EBF_ONE_MINUS_DST_ALPHA:	r = 1; break;
-				case EBF_SRC_ALPHA_SATURATE:	r = 1; break;
 			}
 			return r;
 		}
@@ -219,8 +205,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
 		}
 
-		((SMaterial&)material).ZWriteEnable = false;
-
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
@@ -256,8 +240,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
@@ -297,16 +279,10 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 
-			s32 refValue = core::floor32(material.MaterialTypeParam * 255.f);
-			if ( !refValue )
-				refValue = 127; // default value
-
-			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, refValue);
-            pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, core::floor32(material.MaterialTypeParam * 255.f));
+			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
@@ -343,21 +319,16 @@ public:
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 
-			pID3DDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
-			pID3DDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
+			pID3DDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE );
+			pID3DDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
 
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
-			s32 refValue = core::floor32(material.MaterialTypeParam * 255.f);
-			if ( !refValue )
-				refValue = 127; // default value
-
-            pID3DDevice->SetRenderState(D3DRS_ALPHAREF,refValue);
-            pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+			// 127 is required by EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, 127);
+			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}

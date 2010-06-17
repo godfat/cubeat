@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -23,13 +23,20 @@ class CSoftwareTexture2 : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture2(IImage* surface, const char* name, bool generateMipLevels, bool isRenderTarget=false);
+	enum eTex2Flags
+	{
+		GEN_MIPMAP		= 1,
+		IS_RENDERTARGET	= 2,
+		NP2_SIZE		= 4,
+		HAS_ALPHA		= 8
+	};
+	CSoftwareTexture2( IImage* surface, const core::string<c16>& name, u32 flags );
 
 	//! destructor
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock()
+	virtual void* lock(bool readOnly = false)
 	{
 		return MipMap[MipMapLOD]->lock();
 	}
@@ -41,20 +48,20 @@ public:
 	}
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize() const
+	virtual const core::dimension2d<u32>& getOriginalSize() const
 	{
 		//return MipMap[0]->getDimension();
 		return OrigSize;
 	}
 
 	//! Returns the size of the largest mipmap.
-	const core::dimension2d<s32>& getMaxMipMapSize() const
+	f32 getLODFactor( const f32 texArea ) const
 	{
-		return MipMap[0]->getDimension();
+		return MipMap[0]->getImageDataSizeInPixels () * texArea;
 	}
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize() const
+	virtual const core::dimension2d<u32>& getSize() const
 	{
 		return MipMap[MipMapLOD]->getDimension();
 	}
@@ -90,40 +97,42 @@ public:
 		return MipMap[MipMapLOD]->getPitch();
 	}
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and 
+	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
 	virtual void regenerateMipMapLevels();
 
 	//! Select a Mipmap Level
 	virtual void setCurrentMipMapLOD ( s32 lod )
 	{
-		if ( HasMipMaps )
+		if ( Flags & GEN_MIPMAP )
 			MipMapLOD = lod;
 	}
-	
+
 	//! support mipmaps
 	virtual bool hasMipMaps() const
 	{
-		return HasMipMaps;
+		return (Flags & GEN_MIPMAP ) != 0;
+	}
+
+	//! Returns if the texture has an alpha channel
+	virtual bool hasAlpha() const
+	{ 
+		return (Flags & HAS_ALPHA ) != 0;
 	}
 
 	//! is a render target
 	virtual bool isRenderTarget() const
 	{
-		return IsRenderTarget;
+		return (Flags & IS_RENDERTARGET) != 0;
 	}
 
 private:
-
-	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
-
-	core::dimension2d<s32> OrigSize;
+	core::dimension2d<u32> OrigSize;
 
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 
 	s32 MipMapLOD;
-	bool HasMipMaps, IsRenderTarget;
+	u32 Flags;
 };
 
 

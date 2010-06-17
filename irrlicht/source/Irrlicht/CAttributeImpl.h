@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -242,22 +242,6 @@ public:
 		ValueF.push_back(value.Z);
 	}
 
-	CNumbersAttribute(const char* name, core::position2df value) :
-		ValueI(), ValueF(), Count(2), IsFloat(true)
-	{
-		Name = name;
-		ValueF.push_back(value.X);
-		ValueF.push_back(value.Y);
-	}
-
-	CNumbersAttribute(const char* name, core::position2di value) :
-		ValueI(), ValueF(), Count(2), IsFloat(false)
-	{
-		Name = name;
-		ValueI.push_back(value.X);
-		ValueI.push_back(value.Y);
-	}
-
 	CNumbersAttribute(const char* name, core::rect<s32> value) :
 		ValueI(), ValueF(), Count(4), IsFloat(false)
 	{
@@ -382,7 +366,7 @@ public:
 		ValueF.push_back(value.end.Z);
 	}
 
-	CNumbersAttribute(const char* name, core::dimension2di value) :
+	CNumbersAttribute(const char* name, core::dimension2du value) :
 		ValueI(), ValueF(), Count(2), IsFloat(false)
 	{
 		Name = name;
@@ -613,7 +597,7 @@ public:
 			ret.pointB.Y = Count > 4 ? ValueF[4] : 0.0f;
 			ret.pointB.Z = Count > 5 ? ValueF[5] : 0.0f;
 			ret.pointC.X = Count > 6 ? ValueF[6] : 0.0f;
-			ret.pointC.X = Count > 7 ? ValueF[7] : 0.0f;
+			ret.pointC.Y = Count > 7 ? ValueF[7] : 0.0f;
 			ret.pointC.Z = Count > 8 ? ValueF[8] : 0.0f;
 		}
 		else
@@ -625,7 +609,7 @@ public:
 			ret.pointB.Y = Count > 4 ? (f32)ValueI[4] : 0.0f;
 			ret.pointB.Z = Count > 5 ? (f32)ValueI[5] : 0.0f;
 			ret.pointC.X = Count > 6 ? (f32)ValueI[6] : 0.0f;
-			ret.pointC.X = Count > 7 ? (f32)ValueI[7] : 0.0f;
+			ret.pointC.Y = Count > 7 ? (f32)ValueI[7] : 0.0f;
 			ret.pointC.Z = Count > 8 ? (f32)ValueI[8] : 0.0f;
 		}
 
@@ -1082,7 +1066,7 @@ public:
 		}
 	}
 
-	virtual void setDimension2d(core::dimension2di v)
+	virtual void setDimension2d(core::dimension2du v)
 	{
 		reset();
 		if (IsFloat)
@@ -1276,25 +1260,6 @@ public:
 		return L"color";
 	}
 
-};
-
-
-// Attribute implemented for 2d vectors
-class CVector2DAttribute : public CNumbersAttribute
-{
-public:
-
-	CVector2DAttribute(const char* name, core::vector2df value) : CNumbersAttribute(name, value) {}
-
-	virtual E_ATTRIBUTE_TYPE getType() const
-	{
-		return EAT_VECTOR2D;
-	}
-
-	virtual const wchar_t* getTypeString() const
-	{
-		return L"vector2d";
-	}
 };
 
 
@@ -1507,7 +1472,7 @@ public:
 
 
 // vector2df
-// dimension2di
+// dimension2du
 
 /*
 	Special attributes
@@ -1866,14 +1831,6 @@ public:
 		return Value ? Value->getName() : core::stringc();
 	}
 
-	virtual void getString(char* target)
-	{
-		if (Value)
-			strcpy(target, Value->getName().c_str());
-		else
-			target[0] = 0x0;
-	}
-
 	virtual void setString(const char* text)
 	{
 		if (Driver)
@@ -1969,9 +1926,12 @@ public:
 		return (Value != 0);
 	}
 
-	virtual void getString(char* target)
+	virtual core::stringw getStringW()
 	{
-		sprintf(target, "0x%x", *(int*)(&Value));
+		wchar_t buf[32];
+		swprintf(buf, 32, L"0x%x", *(int*)(&Value));
+
+		return core::stringw(buf);
 	}
 
 	virtual void setString(const char* text)

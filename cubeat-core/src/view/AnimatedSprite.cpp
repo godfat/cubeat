@@ -65,16 +65,16 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
 void AnimatedSprite::loadAllAnime()
 {
     IFileSystem* fs = IrrDevice::i().d()->getFileSystem();
-    std::string work_dir( fs->getWorkingDirectory() );
+    std::string work_dir( fs->getWorkingDirectory().c_str() );
     std::string to_path( (work_dir + "/rc/texture/") + name_ );
     fs->changeWorkingDirectoryTo( to_path.c_str() );
     IFileList* flist = fs->createFileList();
     for( unsigned int i = 0; i < flist->getFileCount(); ++i ) {
         if( flist->isDirectory(i) ) {
-            if( std::string( flist->getFileName(i) ) == std::string(".") ||
-                std::string( flist->getFileName(i) ) == std::string("..") ) continue;
+            if( std::string( flist->getFileName(i).c_str() ) == std::string(".") ||
+                std::string( flist->getFileName(i).c_str() ) == std::string("..") ) continue;
 
-            std::string anim_path( flist->getFileName(i) );
+            std::string anim_path( flist->getFileName(i).c_str() );
             fs->changeWorkingDirectoryTo( ((to_path + "/")+anim_path).c_str() );
             IFileList* animlist = fs->createFileList();
             int count_frame = animlist->getFileCount();

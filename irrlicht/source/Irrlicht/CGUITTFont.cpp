@@ -102,7 +102,7 @@ void CGUITTGlyph::cache(u32 idx)
 				}
 				c8 name[128];
 				sprintf(name,"TTFontGlyph%d",idx);
-				video::IImage *img = Driver->createImageFromData(video::ECF_A8R8G8B8,core::dimension2d<s32>(imgw,imgh),texd);
+				video::IImage *img = Driver->createImageFromData(video::ECF_A8R8G8B8,core::dimension2d<u32>(imgw,imgh),texd);
 				bool flg16 = Driver->getTextureCreationFlag(video::ETCF_ALWAYS_16_BIT);
 				bool flg32 = Driver->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
 				bool flgmip = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
@@ -168,7 +168,7 @@ void CGUITTGlyph::cache(u32 idx)
 		}
 		c8 name[128];
 		sprintf(name,"TTFontGlyph%d_16",idx);
-		video::IImage *img = Driver->createImageFromData(video::ECF_A1R5G5B5,core::dimension2d<s32>(imgw16,imgh16),texd16);
+		video::IImage *img = Driver->createImageFromData(video::ECF_A1R5G5B5,core::dimension2d<u32>(imgw16,imgh16),texd16);
 		bool flg16 = Driver->getTextureCreationFlag(video::ETCF_ALWAYS_16_BIT);
 		bool flg32 = Driver->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
 		bool flgmip = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
@@ -396,11 +396,11 @@ u32 CGUITTFont::getGlyphIndex(const wchar_t c) const
 
 
 //! returns the dimension of a text
-core::dimension2d<s32> CGUITTFont::getDimension(const wchar_t* text) const
+core::dimension2d<u32> CGUITTFont::getDimension(const wchar_t* text) const
 {
 // >> Modified by MadHyde for Ver.1.3 begin
-	core::dimension2d<s32> dim(0, 0);
-	core::dimension2d<s32> thisLine(0, Glyphs[0].size);
+	core::dimension2d<u32> dim(0, 0);
+	core::dimension2d<u32> thisLine(0, Glyphs[0].size);
 
 	for (const wchar_t* p = text; *p; ++p)
 	{
@@ -580,6 +580,11 @@ s32 CGUITTFont::getKerningHeight () const
 }
 // << Add by MadHyde for Ver.1.3 new functions end
 
+void CGUITTFont::setInvisibleCharacters( const wchar_t *s )
+{
+	Invisible = s;
+}
+
 //added by arch_jslin 2008.11.02
 video::ITexture* CGUITTFont::getTextureFromText(const wchar_t* text, const c8* name)
 {
@@ -588,10 +593,10 @@ video::ITexture* CGUITTFont::getTextureFromText(const wchar_t* text, const c8* n
     }
 
     if( !AntiAlias ) AntiAlias = true;      //force this texture to be 32bit anti-aliased
-    core::dimension2di size = getDimension(text);
+    core::dimension2d<u32> size = getDimension(text);
     core::position2di offset= core::position2di(0,0);
 
-    s32 w = 1, h = 1;
+    u32 w = 1, h = 1;
     while( w < size.Width ) {w <<= 1;} size.Width = w;
     while( h < size.Height) {h <<= 1;} size.Height = h;
 
@@ -600,9 +605,9 @@ video::ITexture* CGUITTFont::getTextureFromText(const wchar_t* text, const c8* n
     u32* pixel_o = (u32*)texture->lock();
     if( !pixel_o ) { texture->unlock(); return texture; } //failed, empty texture
 
-    for( int i = 0; i < size.Height; ++i ) {
+    for( unsigned int i = 0; i < size.Height; ++i ) {
         int yo = i * size.Width;
-        for( int j = 0; j < size.Width; ++j )
+        for( unsigned int j = 0; j < size.Width; ++j )
             pixel_o[ yo + j ] = 0;
     }
 

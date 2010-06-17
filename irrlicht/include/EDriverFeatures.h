@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -73,6 +73,9 @@ namespace video
 		//! Is HLSL supported?
 		EVDF_HLSL,
 
+		//! Are non-square textures supported?
+		EVDF_TEXTURE_NSQUARE,
+
 		//! Are non-power-of-two textures supported?
 		EVDF_TEXTURE_NPOT,
 
@@ -80,7 +83,16 @@ namespace video
 		EVDF_FRAMEBUFFER_OBJECT,
 
 		//! Are vertex buffer objects supported?
-		EVDF_VERTEX_BUFFER_OBJECT
+		EVDF_VERTEX_BUFFER_OBJECT,
+
+		//! Supports Alpha To Coverage
+		EVDF_ALPHA_TO_COVERAGE,
+
+		//! Supports Color masks (disabling color planes in output)
+		EVDF_COLOR_MASK,
+
+		//! Only used for counting the elements of this enum
+		EVDF_COUNT
 	};
 
 } // end namespace video
@@ -88,5 +100,4 @@ namespace video
 
 
 #endif
-
 

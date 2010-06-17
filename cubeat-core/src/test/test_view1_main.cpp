@@ -1,13 +1,11 @@
 
 /* Testcase */
 #include "testcase/ViewTest1.hpp"
-#include <tr1/memory>
-#include <tr1/functional> // for bind
-
 #include "App.hpp"
-
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
+
+#include <tr1/functional> // for bind
 
 int main()
 {

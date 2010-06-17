@@ -74,7 +74,7 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     ITexture*    current_tex = ttfont_->getTextureFromText(&wc, texture_name.c_str());
     IMesh*       current_mesh;
     ISceneNode*  current_node;
-    dimension2di letter_size = ttfont_->getDimension(&wc);
+    dimension2d<u32> letter_size = ttfont_->getDimension(&wc);
 
     SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;
@@ -90,6 +90,7 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     Size2D::set( current_node, vec2(letter_size.Width, letter_size.Height) );
     current_node->getMaterial(0) = mat;
     current_node->setIsDebugObject(true);
+    //current_node->setDebugDataVisible(EDS_BBOX); // de-comment this when debugging
 
     adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
 
@@ -120,7 +121,7 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     std::copy(new_text.begin(), new_text.end(), wtext.begin());
     //so hard to convert between wchar and char ....
 
-    dimension2di size_int = ttfont_->getDimension(wtext.c_str());
+    dimension2d<u32> size_int = ttfont_->getDimension(wtext.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
 

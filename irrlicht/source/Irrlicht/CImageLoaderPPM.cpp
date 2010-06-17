@@ -1,4 +1,4 @@
-// Copyright (C) 2007 Christian Stehno
+// Copyright (C) 2007-2009 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -30,16 +30,16 @@ CImageLoaderPPM::CImageLoaderPPM()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPPM::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderPPM::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".ppm") || strstr(fileName, ".pgm") || strstr(fileName, ".pbm");
+	return core::hasFileExtension ( filename, "ppm", "pgm", "pbm" );
 }
 
 
 //! returns true if the file maybe is able to be loaded by this class
 bool CImageLoaderPPM::isALoadableFileFormat(io::IReadFile* file) const
 {
-	c8 id[2];
+	c8 id[2]={0};
 	file->read(&id, 2);
 	return (id[0]=='P' && id[1]>'0' && id[1]<'7');
 }
@@ -99,7 +99,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					shift=0;
 			}
 		}
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
+		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 		if (image)
 			CColorConverter::convert1BitTo16Bit(data, (s16*)image->lock(), width, height);
 	}
@@ -120,7 +120,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					return 0;
 				data = new u8[size];
 				file->read(data, size);
-				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
+				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
 					u8* ptr = (u8*)image->lock();
@@ -137,14 +137,14 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			{
 				if (file->getSize()-file->getPos() < (long)(2*size)) // optimistic test
 					return 0;
-				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
+				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
 					u8* ptr = (u8*)image->lock();
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						const u32 num = core::strtol10(token.c_str());
+						const u8 num = (u8)core::strtol10(token.c_str());
 						*ptr++ = num;
 						*ptr++ = num;
 						*ptr++ = num;
@@ -162,7 +162,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					return 0;
 				data = new u8[bytesize];
 				file->read(data, bytesize);
-				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
+				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
 					u8* ptr = (u8*)image->lock();
@@ -179,18 +179,18 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			{
 				if (file->getSize()-file->getPos() < (long)(2*bytesize)) // optimistic test
 					return 0;
-				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
+				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
 					u8* ptr = (u8*)image->lock();
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						*ptr++ = 255;
 					}
 				}

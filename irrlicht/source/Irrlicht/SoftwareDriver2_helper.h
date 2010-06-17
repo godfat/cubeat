@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -36,6 +36,7 @@ namespace irr
 	#define	SHIFT_B	0
 
 	#define	COLOR_MAX					0xFF
+	#define	COLOR_MAX_LOG2				8
 	#define	COLOR_BRIGHT_WHITE			0xFFFFFFFF
 
 	#define VIDEO_SAMPLE_GRANULARITY	2
@@ -54,6 +55,7 @@ namespace irr
 	#define	SHIFT_B	0
 
 	#define	COLOR_MAX					0x1F
+	#define	COLOR_MAX_LOG2				5
 	#define	COLOR_BRIGHT_WHITE			0xFFFF
 	#define VIDEO_SAMPLE_GRANULARITY	1
 
@@ -108,7 +110,7 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 
 	do
 	{
-		((u32*) dest ) [ c + -1 ] = ((u32*) source) [ c + -1 ];
+		((u32*) dest ) [ c-1 ] = ((u32*) source) [ c-1 ];
 	} while ( --c );
 
 }
@@ -118,7 +120,11 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 // integer log2 of a float ieee 754. TODO: non ieee floating point
 static inline s32 s32_log2_f32( f32 f)
 {
+#ifdef IRRLICHT_FAST_MATH
 	u32 x = IR ( f );
+#else
+	u32 x = core::IR ( f );
+#endif
 
 	return ((x & 0x7F800000) >> 23) - 127;
 }
@@ -135,21 +141,11 @@ static inline s32 s32_abs(s32 x)
 }
 
 
-// TODO: don't stick on 32 Bit Pointer
-#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
-
-
 //! conditional set based on mask and arithmetic shift
 REALINLINE u32 if_mask_a_else_b ( const u32 mask, const u32 a, const u32 b )
 {
 	return ( mask & ( a ^ b ) ) ^ b;
 }
-
-inline void setbits ( u32 &state, s32 condition, u32 mask )
-{
-	state ^= ( ( -condition >> 31 ) ^ state ) & mask;
-}
-
 
 // ------------------ Video---------------------------------------
 /*!
@@ -179,24 +175,24 @@ REALINLINE u32 PixelBlend32 ( const u32 c2, const u32 c1, u32 alpha )
 	rb &= 0x00FF00FF;
 	xg &= 0x0000FF00;
 
-	return rb | xg; 
+	return rb | xg;
 }
 
 /*!
 	Pixel = dest * ( 1 - alpha ) + source * alpha
 	alpha [0;32]
 */
-inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u32 alpha )
+inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 {
-	u32 srcRB = c1 & 0x7C1F;
-	u32 srcXG = c1 & 0x03E0;
+	u16 srcRB = c1 & 0x7C1F;
+	u16 srcXG = c1 & 0x03E0;
 
-	u32 dstRB = c2 & 0x7C1F;
-	u32 dstXG = c2 & 0x03E0;
+	u16 dstRB = c2 & 0x7C1F;
+	u16 dstXG = c2 & 0x03E0;
 
 
-	u32 rb = srcRB - dstRB;
-	u32 xg = srcXG - dstXG;
+	u16 rb = srcRB - dstRB;
+	u16 xg = srcXG - dstXG;
 
 	rb *= alpha;
 	xg *= alpha;
@@ -209,7 +205,7 @@ inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u32 alpha )
 	rb &= 0x7C1F;
 	xg &= 0x03E0;
 
-	return rb | xg; 
+	return (u16)(rb | xg);
 }
 
 /*!
@@ -230,12 +226,12 @@ inline u32 PixelLerp32 ( const u32 source, const u32 value )
 	srcXG &= 0xFF00FF00;
 	srcRB &= 0x00FF00FF;
 
-	return srcRB | srcXG; 
+	return srcRB | srcXG;
 }
 
 /*
-	return alpha in [0;256] Granularity
-	 add highbit alpha ( alpha > 127 ? + 1 )
+	return alpha in [0;256] Granularity rom 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
 */
 inline u32 extractAlpha ( const u32 c )
 {
@@ -243,25 +239,34 @@ inline u32 extractAlpha ( const u32 c )
 }
 
 /*
+	return alpha in [0;255] Granularity and 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
+*/
+inline u32 packAlpha ( const u32 c )
+{
+	return (c > 127 ? c - 1 : c) << 24;
+}
+
+/*
 	Pixel = c0 * (c1/31). c0 Alpha retain
 */
 inline u16 PixelMul16 ( const u16 c0, const u16 c1)
 {
-	return ((( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 ) |
+	return (u16)((( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 ) |
 			(( ( (c0 & 0x03E0) * (c1 & 0x03E0) ) & 0x000F8000 ) >> 10 ) |
 			(( ( (c0 & 0x001F) * (c1 & 0x001F) ) & 0x000003E0 ) >> 5 ) |
 			(c0 & 0x8000));
 }
 
 /*
-	Pixel = c0 * (c1/31). 
+	Pixel = c0 * (c1/31).
 */
 inline u16 PixelMul16_2 ( u16 c0, u16 c1)
 {
-	return	( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 |
+	return	(u16)(( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 |
 			( ( (c0 & 0x03E0) * (c1 & 0x03E0) ) & 0x000F8000 ) >> 10 |
 			( ( (c0 & 0x001F) * (c1 & 0x001F) ) & 0x000003E0 ) >> 5  |
-			( c0 & c1 & 0x8000);
+			( c0 & c1 & 0x8000));
 }
 
 /*
@@ -276,7 +281,7 @@ REALINLINE u32 PixelMul32 ( const u32 c0, const u32 c1)
 }
 
 /*
-	Pixel = c0 * (c1/255). 
+	Pixel = c0 * (c1/255).
 */
 REALINLINE u32 PixelMul32_2 ( const u32 c0, const u32 c1)
 {
@@ -299,36 +304,52 @@ REALINLINE u32 PixelAdd32 ( const u32 c2, const u32 c1)
 	return modulo | clamp;
 }
 
+#if 0
 
+// 1 - Bit Alpha Blending
+inline u16 PixelBlend16 ( const u16 destination, const u16 source )
+{
+   if((source & 0x8000) == 0x8000)
+      return source; // The source is visible, so use it.
+   else
+      return destination; // The source is transparent, so use the destination.
+}
+
+// 1 - Bit Alpha Blending 16Bit SIMD
+inline u32 PixelBlend16_simd ( const u32 destination, const u32 source )
+{
+	switch(source & 0x80008000)
+	{
+		case 0x80008000: // Both source pixels are visible
+			return source;
+
+		case 0x80000000: // Only the first source pixel is visible
+			return (source & 0xFFFF0000) | (destination & 0x0000FFFF);
+
+		case 0x00008000: // Only the second source pixel is visible.
+			return (destination & 0xFFFF0000) | (source & 0x0000FFFF);
+
+		default: // Neither source pixel is visible.
+			return destination;
+	}
+}
+#else
 
 // 1 - Bit Alpha Blending
 inline u16 PixelBlend16 ( const u16 c2, const u16 c1 )
 {
-	u16 c = c1 & 0x8000;
-	
-	c >>= 15;
-	c += 0x7fff;
-	
-	c &= c2;
-	c |= c1;
-	
-	return c;
+	u16 mask = ((c1 & 0x8000) >> 15 ) + 0x7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
 }
 
 // 1 - Bit Alpha Blending 16Bit SIMD
 inline u32 PixelBlend16_simd ( const u32 c2, const u32 c1 )
 {
-	u32 c = c1 & 0x80008000;
-	
-	c >>= 15;
-	c += 0x7fff7fff;
-	
-	c &= c2;
-	c |= c1;
-	
-	return c;
+	u32 mask = ((c1 & 0x80008000) >> 15 ) + 0x7fff7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
 }
 
+#endif
 
 /*!
 	Pixel = dest * ( 1 - SourceAlpha ) + source * SourceAlpha
@@ -372,7 +393,7 @@ inline u32 PixelBlend32 ( const u32 c2, const u32 c1 )
 	rb &= 0x00FF00FF;
 	xg &= 0x0000FF00;
 
-	return rb | xg; 
+	return (c1 & 0xFF000000) | rb | xg;
 }
 
 
@@ -437,7 +458,7 @@ REALINLINE f32 fix_inverse32 ( const f32 x )
 	convert float to fixpoint
 	fast convert (fistp on x86) HAS to be used..
 	hints: compileflag /QIfist for msvc7. msvc 8.0 has smth different
-	others should use their favourite assembler.. 
+	others should use their favourite assembler..
 */
 static inline int f_round2(f32 f)
 {
@@ -449,7 +470,7 @@ static inline int f_round2(f32 f)
 	convert f32 to Fix Point.
 	multiply is needed anyway, so scale mulby
 */
-REALINLINE tFixPoint f32_to_fixPoint (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
+REALINLINE tFixPoint tofix (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
 {
 	return (tFixPoint) (x * mulby);
 }
@@ -472,11 +493,20 @@ REALINLINE tFixPoint imulFix(const tFixPoint x, const tFixPoint y)
 }
 
 /*
+	Fix Point , Fix Point Multiply x * y * 2
+*/
+REALINLINE tFixPoint imulFix2(const tFixPoint x, const tFixPoint y)
+{
+	return ( x * y) >> ( FIX_POINT_PRE -1 );
+}
+
+
+/*
 	Multiply x * y * 1
 */
 REALINLINE tFixPoint imulFix_tex1(const tFixPoint x, const tFixPoint y)
 {
-	return ( ( (tFixPointu) x >> 2 ) * ( (tFixPointu) y >> 2 ) ) >> (tFixPointu) ( FIX_POINT_PRE + 1 );
+	return ( ( (tFixPointu) x >> 2 ) * ( (tFixPointu) y >> 2 ) ) >> (tFixPointu) ( FIX_POINT_PRE + 4 );
 }
 
 /*
@@ -504,7 +534,7 @@ REALINLINE tFixPoint imulFix_tex4(const tFixPoint x, const tFixPoint y)
 */
 REALINLINE tFixPoint clampfix_maxcolor ( const tFixPoint a)
 {
-	tFixPoint c = (a - FIXPOINT_COLOR_MAX) >> 31;	
+	tFixPoint c = (a - FIXPOINT_COLOR_MAX) >> 31;
 	return (a & c) | ( FIXPOINT_COLOR_MAX & ~c);
 }
 
@@ -538,29 +568,80 @@ inline s32 f32_to_23Bits(const f32 x)
 REALINLINE tVideoSample fix_to_color ( const tFixPoint r, const tFixPoint g, const tFixPoint b )
 {
 #ifdef __BIG_ENDIAN__
-	return	( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
+	return	FIXPOINT_COLOR_MAX |
+			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
 			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
-			//( g & FIXPOINT_COLOR_MAX) << ( SHIFT_G - FIX_POINT_PRE ) |
 			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
 #else
-	return	( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
+	return	( FIXPOINT_COLOR_MAX & FIXPOINT_COLOR_MAX) << ( SHIFT_A - FIX_POINT_PRE ) |
+			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
 			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
-			//( g & FIXPOINT_COLOR_MAX) << ( SHIFT_G - FIX_POINT_PRE ) |
 			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
 #endif
 }
 
 
 /*!
-	return fixpoint from VideoSample
+	return VideoSample from fixpoint
+*/
+REALINLINE tVideoSample fix4_to_color ( const tFixPoint a, const tFixPoint r, const tFixPoint g, const tFixPoint b )
+{
+#ifdef __BIG_ENDIAN__
+	return	( a & (FIX_POINT_FRACT_MASK - 1 )) >> ( FIX_POINT_PRE ) |
+			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
+			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
+			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
+#else
+	return	( a & (FIX_POINT_FRACT_MASK - 1 )) << ( SHIFT_A - 1 ) |
+			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
+			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
+			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
+#endif
+
+}
+
+/*!
+	return fixpoint from VideoSample granularity COLOR_MAX
 */
 inline void color_to_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
 {
-	r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
-	//g	 =	(t00 & MASK_G) >> ( SHIFT_G - FIX_POINT_PRE );
-	g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
-	b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
+
+/*!
+	return fixpoint from VideoSample granularity COLOR_MAX
+*/
+inline void color_to_fix ( tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) a	 =	(t00 & MASK_A) >> ( SHIFT_A - FIX_POINT_PRE );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+}
+
+/*!
+	return fixpoint from VideoSample granularity 0..FIX_POINT_ONE
+*/
+inline void color_to_fix1 ( tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) >> ( SHIFT_G + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - COLOR_MAX_LOG2 );
+}
+
+/*!
+	return fixpoint from VideoSample granularity 0..FIX_POINT_ONE
+*/
+inline void color_to_fix1 ( tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) a	 =	(t00 & MASK_A) >> ( SHIFT_A + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) >> ( SHIFT_G + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - COLOR_MAX_LOG2 );
+}
+
 
 
 // ----- FP24 ---- floating point z-buffer
@@ -571,7 +652,7 @@ typedef f32 fp24;
 struct fp24
 {
 	u32 v;
-	
+
 	fp24() {}
 
 	fp24 ( const f32 f )
@@ -630,7 +711,7 @@ inline tVideoSample getTexel_plain ( const sInternalTexture * t, const tFixPoint
 }
 
 // get video sample to fix
-inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -650,7 +731,7 @@ inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 }
 
 
-inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 										const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty,
 										const u32 x, const u32 y
 								)
@@ -688,7 +769,7 @@ inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 
 // get Sample linear == getSample_fixpoint
 
-inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -703,14 +784,31 @@ inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 	(tFixPointu &) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE);
 	(tFixPointu &) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
 	(tFixPointu &) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+}
 
+inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
+						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
+								)
+{
+	u32 ofs;
+
+	ofs = ( ( ty & t->textureYMask ) >> FIX_POINT_PRE ) << t->pitchlog2;
+	ofs |= ( tx & t->textureXMask ) >> ( FIX_POINT_PRE - VIDEO_SAMPLE_GRANULARITY );
+
+	// texel
+	const tVideoSample t00 = *((tVideoSample*)( (u8*) t->data + ofs ));
+
+	(tFixPointu &)a	 =	(t00 & MASK_A) >> ( SHIFT_A - FIX_POINT_PRE);
+	(tFixPointu &)r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE);
+	(tFixPointu &)g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu &)b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
 
 
 #else
 
 // get sample linear
-REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -729,7 +827,7 @@ REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b,
 }
 
 // get Sample bilinear
-REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -774,7 +872,7 @@ REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 
 
 // get sample linear
-REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -794,7 +892,7 @@ REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, 
 }
 
 // get Sample bilinear
-REALINLINE void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -854,17 +952,14 @@ struct AbsRectangle
 	s32 y1;
 };
 
-inline void intersect ( AbsRectangle &dest, const AbsRectangle& a, const AbsRectangle& b)
+//! 2D Intersection test
+inline bool intersect ( AbsRectangle &dest, const AbsRectangle& a, const AbsRectangle& b)
 {
 	dest.x0 = core::s32_max( a.x0, b.x0 );
 	dest.y0 = core::s32_max( a.y0, b.y0 );
 	dest.x1 = core::s32_min( a.x1, b.x1 );
 	dest.y1 = core::s32_min( a.y1, b.y1 );
-}
-
-inline bool isValid (const AbsRectangle& a)
-{
-	return a.x0 < a.x1 && a.y0 < a.y1;
+	return dest.x0 < dest.x1 && dest.y0 < dest.y1;
 }
 
 // some 1D defines
@@ -883,5 +978,5 @@ inline s32 intervall_intersect_test( const sIntervall& a, const sIntervall& b)
 
 }	// namespace
 
-#endif 
+#endif
 

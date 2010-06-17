@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -49,14 +49,10 @@ void PNGAPI user_read_data_fcn(png_structp png_ptr, png_bytep data, png_size_t l
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPng::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderPng::isALoadableFileExtension(const core::string<c16>& filename) const
 {
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
-	// added fix for file extension check by jox
-	const c8* ext = strrchr(fileName, '.');
-	if (ext == 0)
-		return false;
-	return (strcmp(ext, ".PNG") == 0) || (strcmp(ext, ".png") == 0);
+	return core::hasFileExtension ( filename, "png" );
 #else
 	return false;
 #endif // _IRR_COMPILE_WITH_LIBPNG_
@@ -184,9 +180,16 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 
 	// Update the changes
 	png_read_update_info(png_ptr, info_ptr);
-	png_get_IHDR(png_ptr, info_ptr,
-		(png_uint_32*)&Width, (png_uint_32*)&Height,
-		&BitDepth, &ColorType, NULL, NULL, NULL);
+	{
+		// Use temporary variables to avoid passing casted pointers
+		png_uint_32 w,h;
+		// Extract info
+		png_get_IHDR(png_ptr, info_ptr,
+			&w, &h,
+			&BitDepth, &ColorType, NULL, NULL, NULL);
+		Width=w;
+		Height=h;
+	}
 
 	// Convert RGBA to BGRA
 	if (ColorType==PNG_COLOR_TYPE_RGB_ALPHA)
@@ -199,15 +202,22 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	}
 
 	// Update the changes
-	png_get_IHDR(png_ptr, info_ptr,
-		(png_uint_32*)&Width, (png_uint_32*)&Height,
-		&BitDepth, &ColorType, NULL, NULL, NULL);
+	{
+		// Use temporary variables to avoid passing casted pointers
+		png_uint_32 w,h;
+		// Extract info
+		png_get_IHDR(png_ptr, info_ptr,
+			&w, &h,
+			&BitDepth, &ColorType, NULL, NULL, NULL);
+		Width=w;
+		Height=h;
+	}
 
 	// Create the image structure to be filled by png data
 	if (ColorType==PNG_COLOR_TYPE_RGB_ALPHA)
-		image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(Width, Height));
+		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(Width, Height));
 	else
-		image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(Width, Height));
+		image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(Width, Height));
 	if (!image)
 	{
 		os::Printer::log("LOAD PNG: Internal PNG create image struct failure\n", file->getFileName(), ELL_ERROR);

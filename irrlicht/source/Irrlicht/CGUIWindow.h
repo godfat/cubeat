@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -44,14 +44,20 @@ namespace gui
 		//! Returns pointer to the maximize button
 		virtual IGUIButton* getMaximizeButton() const;
 
-	protected:
+		//! Returns true if the window is draggable, false if not
+		virtual bool isDraggable() const;
 
-		core::position2d<s32> DragStart;
-		bool Dragging;
+		//! Sets whether the window is draggable
+		virtual void setDraggable(bool draggable);
+
+	protected:
 
 		IGUIButton* CloseButton;
 		IGUIButton* MinButton;
 		IGUIButton* RestoreButton;
+
+		core::position2d<s32> DragStart;
+		bool Dragging, IsDraggable;
 	};
 
 } // end namespace gui
@@ -59,5 +65,5 @@ namespace gui
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
-#endif 
+#endif
 

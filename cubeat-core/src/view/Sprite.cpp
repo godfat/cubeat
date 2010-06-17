@@ -119,6 +119,8 @@ void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
     out_node = smgr_->addMeshSceneNode( out_mesh, parent->body(), -1, vector3df(0,0,0) );
     out_node->setAutomaticCulling(EAC_OFF);
     out_node->setName( debug_name.c_str() );
+
+    //body_->setDebugDataVisible(EDS_BBOX); //de-comment this when debugging.
 }
 
 void Sprite::adjust_texcoord_for_hand_made_texture(IMesh const* mesh, int const& w, int const& h)

@@ -1752,7 +1752,7 @@ void CSceneManager::addToDeletionQueue(ISceneNode* node)
 	DeletionList.push_back(node);
 }
 
-//added by arch_jslin 2007.12.4
+// >> added by arch_jslin 2007.12.4
 //! Adds an animator(which is associated with a scene node) to the deletion queue.
 void CSceneManager::addToAnimatorDeletionQueue(
     irr::scene::ISceneNodeAnimator *anim, irr::scene::ISceneNode *node)

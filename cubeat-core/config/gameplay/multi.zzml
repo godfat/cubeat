@@ -23,7 +23,7 @@ player1: {
 
     #How fast does the cube sink from one block to another
     #This only affect newly created cubes, and determines
-    #only the speed of the very beginning of the game. the speed will acclerate over time.
+    #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
     speed: 80.0,
 

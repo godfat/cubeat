@@ -375,7 +375,7 @@ namespace scene
 		//! Adds a scene node to the deletion queue.
 		virtual void addToDeletionQueue(ISceneNode* node);
 
-        //added by arch_jslin 2007.12.4
+// >> added by arch_jslin 2007.12.4
         //! Adds an animator(which associated with a scene node) to the deletion queue.
         virtual void addToAnimatorDeletionQueue(ISceneNodeAnimator* anim, ISceneNode* node);
 
@@ -491,7 +491,7 @@ namespace scene
 		//! clears the deletion list
 		void clearDeletionList();
 
-        //added by arch_jslin 2007.12.4
+// >> added by arch_jslin 2007.12.4
         //! clears the animator deletion list
         void clearAnimatorDeletionList();
 
@@ -577,7 +577,7 @@ namespace scene
 			f64 Distance;
 		};
 
-        //added by arch_jslin 2007.12.4
+// >> added by arch_jslin 2007.12.4
         struct SAnimatorEntry
         {
             ISceneNode* Node;
@@ -613,7 +613,7 @@ namespace scene
 		core::array<ISceneNodeFactory*> SceneNodeFactoryList;
 		core::array<ISceneNodeAnimatorFactory*> SceneNodeAnimatorFactoryList;
 
-        //added by arch_jslin 2007.12.4
+// >> added by arch_jslin 2007.12.4
         core::array<SAnimatorEntry> AnimatorDeletionList;
 
 		//! current active camera

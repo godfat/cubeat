@@ -38,7 +38,6 @@
 					<Add library="vfw32" />
 					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add library="boost_date_time-mgw45-mt-1_43" />
-					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add directory="..\irrlicht\bin\Win32-gcc" />
 					<Add directory="C:\libs\cpp\irrKlang-1.3.0\lib\Win32-gcc" />
 					<Add directory="C:\libs\cpp\wiiyourself_1.15\lib" />
@@ -219,7 +218,10 @@
 		<Unit filename="lib\manymouse\windows_wminput.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -284,6 +286,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_irr_device_main.cpp" />
 		<Unit filename="src\test\test_map_cubes_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

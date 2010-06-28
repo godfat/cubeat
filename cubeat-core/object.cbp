@@ -218,10 +218,7 @@
 		<Unit filename="lib\manymouse\windows_wminput.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -314,7 +311,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_view1_main.cpp" />
+		<Unit filename="src\test\test_view1_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
 		<Unit filename="src\utils\Logger.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />

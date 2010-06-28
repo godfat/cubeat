@@ -290,6 +290,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_irr_vertex_material_main.cpp" />
 		<Unit filename="src\test\test_map_cubes_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -310,7 +311,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_view1_main.cpp" />
+		<Unit filename="src\test\test_view1_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
 		<Unit filename="src\utils\Logger.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />

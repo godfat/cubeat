@@ -1,6 +1,7 @@
 #ifndef _SHOOTING_CUBES_ACCESSORS_
 #define _SHOOTING_CUBES_ACCESSORS_
 
+#include <cmath>
 #include "Accessor_proto.hpp"
 #include "data/BasicViewTypes.hpp"
 #include "IrrDevice.hpp"

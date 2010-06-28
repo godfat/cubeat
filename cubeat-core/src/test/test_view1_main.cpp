@@ -1,3 +1,12 @@
+/*
+    TODO:
+
+I noticed a glitch in this test case. not sure if old irrlicht/cubeat
+has this problem tho. the timer will be interfered by factor outside of
+the current process. like some resizing or moving of the widget will
+likely break animator effects (especially cyclic ones consist of repetitive
+"Equations", they don't reset to the original value after a full period)
+*/
 
 /* Testcase */
 #include "testcase/ViewTest1.hpp"

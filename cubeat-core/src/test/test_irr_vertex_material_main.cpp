@@ -67,9 +67,19 @@ int main()
     mat.setFlag(video::EMF_LIGHTING, true);
     mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
     mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+
+    //This is important for material usage in cubeat.
+    //ColorMaterial is a added feature in Irrlicht 1.7 so that Vertex Color can be used as
+    //Material colors when doing blending. But if you want the ordinary material color
+    //to be used and not vertex color, this must be set to ECM_NONE.
+    //I think it is a bad naming because you cannot understand the meaning by just looking
+    //at the "ColorMaterial" name...
+    mat.ColorMaterial = video::ECM_NONE;
+
+
     mat.MaterialType = video::EMT_TRANSPARENT_MODULATE;
     mat.MaterialTypeParam = 0.01f;
-    mat.DiffuseColor.set(128, 255, 0, 0);
+    mat.DiffuseColor.set(128, 255, 255, 0);
 
 	scene::ISceneNodeAnimator* anim = smgr->createRotationAnimator(core::vector3df(0.2f, 0, 0));
 

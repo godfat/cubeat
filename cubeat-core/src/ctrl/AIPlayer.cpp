@@ -48,17 +48,17 @@ void AIPlayer::think()
 {
     if( !brain_->isThinking() && brain_->needThinking() && heat() < 0.7 ) {
 
-        Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
+        //Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
         if( think_thread_ ) {
-            Logger::i().buf("player ").buf(this).buf(" call joining thread. ").endl();
+            //Logger::i().buf("player ").buf(this).buf(" call joining thread. ").endl();
             think_thread_->join();
-            Logger::i().buf("player ").buf(this).buf(" thread joined. ").endl();
+            //Logger::i().buf("player ").buf(this).buf(" thread joined. ").endl();
         }
 
         std::vector< model::pSimpleMap > model_list;
         model_list.push_back( map_list_[0].lock()->model()->dump_data() );
         model_list.push_back( map_list_[1].lock()->model()->dump_data() );
-        Logger::i().buf("player ").buf(this).buf(" before creating thread, map ").buf(model_list[0]).buf(" is created").endl();
+        //Logger::i().buf("player ").buf(this).buf(" before creating thread, map ").buf(model_list[0]).buf(" is created").endl();
 
         think_thread_ = pThread(
             new boost::thread( bind(&model::AIBrain::think, brain_,

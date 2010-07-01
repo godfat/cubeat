@@ -55,10 +55,7 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     std::ostringstream oss;
     oss << "rc/fonts/" << font_path << ".ttf";
 
-    ttfont_ = gui->getFont(oss.str().c_str(),size);
-
-    //ttfont_->setAntiAlias(true);
-    //ttfont_->setTransparent(true);
+    ttfont_ = gui->getFont(oss.str().c_str(), size, true);
 
     changeText( text );
 }
@@ -74,7 +71,10 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     ITexture*    current_tex = ttfont_->getTextureFromChar(wc);
     IMesh*       current_mesh;
     ISceneNode*  current_node;
-    dimension2d<u32> letter_size = ttfont_->getDimension(wc);
+    dimension2d<u32> letter_size = ttfont_->getDimension(&wc);
+
+    std::cout << "letter: " << c << ", w: " << letter_size.Width << ", h: " << letter_size.Height << std::endl;
+    letter_size.Width /= 3;
 
     SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;

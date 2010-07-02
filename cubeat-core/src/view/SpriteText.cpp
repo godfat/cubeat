@@ -55,7 +55,7 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     std::ostringstream oss;
     oss << "rc/fonts/" << font_path << ".ttf";
 
-    ttfont_ = gui->getFont(oss.str().c_str(), size, true);
+    ttfont_ = gui->getFont(oss.str().c_str(), size, false);
 
     changeText( text );
 }
@@ -63,18 +63,16 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
 void SpriteText::generateLetter(char const& c, char const& last_c, int& current_xpos)
                                 //current_xpos is modifable
 {
-    wchar_t wc      = std::cin.widen(c); //not toliet ...
-    wchar_t last_wc = std::cin.widen(last_c);
-//    std::string texture_name = fpath_+"_"+to_s(fsize_)+"_";
-//    texture_name += c;
+    wchar_t wc[2] = {'\0','\0'}, last_wc[2] = {'\0','\0'};
+    wc[0]      = std::cin.widen(c);      //a little hack to fit the new getDimension interface.
+    last_wc[0] = std::cin.widen(last_c); //a little hack to fit the new getDimension interface.
 
-    ITexture*    current_tex = ttfont_->getTextureFromChar(wc);
+    ITexture*    current_tex = ttfont_->getTextureFromChar(wc[0]);
     IMesh*       current_mesh;
     ISceneNode*  current_node;
-    dimension2d<u32> letter_size = ttfont_->getDimension(&wc);
+    dimension2d<u32> letter_size = ttfont_->getCharDimension(wc[0]);
 
     std::cout << "letter: " << c << ", w: " << letter_size.Width << ", h: " << letter_size.Height << std::endl;
-    letter_size.Width /= 3;
 
     SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;
@@ -92,12 +90,12 @@ void SpriteText::generateLetter(char const& c, char const& last_c, int& current_
     current_node->setIsDebugObject(true);
     //current_node->setDebugDataVisible(EDS_BBOX); // de-comment this when debugging
 
-    adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
+    //adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
 
     letter_mesh_.push_back( current_mesh );
     letter_node_.push_back( current_node );
 
-    current_xpos += letter_size.Width + ttfont_->getKerningWidth(&wc, &last_wc);
+    current_xpos += letter_size.Width + ttfont_->getKerningWidth(wc, last_wc);
 }
 
 void SpriteText::clearText()
@@ -124,6 +122,8 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     dimension2d<u32> size_int = ttfont_->getDimension(wtext.c_str());
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
+
+    std::cout << "text: " << text_ << ", w: " << size_.Width << ", h: " << size_.Height << std::endl;
 
     int current_xpos = 0; //This will be modified by generateLetter()
     for( unsigned int i = 0; i < new_text.size(); ++i ) {

@@ -60,52 +60,12 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     changeText( text );
 }
 
-void SpriteText::generateLetter(char const& c, char const& last_c, int& current_xpos)
-                                //current_xpos is modifable
-{
-    wchar_t wc[2] = {'\0','\0'}, last_wc[2] = {'\0','\0'};
-    wc[0]      = std::cin.widen(c);      //a little hack to fit the new getDimension interface.
-    last_wc[0] = std::cin.widen(last_c); //a little hack to fit the new getDimension interface.
-
-    ITexture*    current_tex = ttfont_->getTextureFromChar(wc[0]);
-    IMesh*       current_mesh;
-    ISceneNode*  current_node;
-    dimension2d<u32> letter_size = ttfont_->getCharDimension(wc[0]);
-
-    std::cout << "letter: " << c << ", w: " << letter_size.Width << ", h: " << letter_size.Height << std::endl;
-
-    SMaterial mat = create_std_material_for_sprite();
-    mat.DiffuseColor = body_->getMaterial(0).DiffuseColor;
-    mat.DiffuseColor.setAlpha(255);
-    mat.setTexture(0, current_tex);
-
-    vec2 orig = center_ ? vec2(-size_.Width/2, size_.Height/2) : vec2(0,0);
-    orig.X += current_xpos;
-
-    setupMeshAndNode(current_mesh, current_node, shared_from_this(),
-                     dimension2df(letter_size.Width, letter_size.Height) );
-    current_node->setPosition( vec3(orig.X, orig.Y, 0) );
-    Size2D::set( current_node, vec2(letter_size.Width, letter_size.Height) );
-    current_node->getMaterial(0) = mat;
-    current_node->setIsDebugObject(true);
-    //current_node->setDebugDataVisible(EDS_BBOX); // de-comment this when debugging
-
-    //adjust_texcoord_for_hand_made_texture(current_mesh, letter_size.Width, letter_size.Height);
-
-    letter_mesh_.push_back( current_mesh );
-    letter_node_.push_back( current_node );
-
-    current_xpos += letter_size.Width + ttfont_->getKerningWidth(wc, last_wc);
-}
-
 void SpriteText::clearText()
 {
     for( unsigned int i = 0; i < letter_node_.size(); ++i ) {
         letter_node_[i]->remove(); //we call remove and it will be dropped.
-        letter_mesh_[i]->drop();
     }
     letter_node_.clear();
-    letter_mesh_.clear();
 }
 
 SpriteText& SpriteText::changeText(std::string const& new_text)
@@ -123,14 +83,13 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
 
-    std::cout << "text: " << text_ << ", w: " << size_.Width << ", h: " << size_.Height << std::endl;
+    SColor textcolor = body_->getMaterial(0).DiffuseColor;
+    textcolor.setAlpha(255); //do not forget! SpriteText's alpha is ZERO! (because that's just a big white plane in 3D)
+    array<ISceneNode*> irrArray =
+        ttfont_->addTextSceneNode(wtext.c_str(), smgr_, body_, textcolor, center_);
 
-    int current_xpos = 0; //This will be modified by generateLetter()
-    for( unsigned int i = 0; i < new_text.size(); ++i ) {
-        char c = new_text[i];
-        char lc= (i > 0) ? new_text[i-1] : '\0';
-        generateLetter(c, lc, current_xpos);
-    }
+    for( unsigned int i = 0; i < irrArray.size(); ++i)
+        letter_node_.push_back( irrArray[i] );  //irr::core::array and std::vector inconsistency... only way.. *sigh*
 
     if( body_ )
         Size2D::set(body_, vec2(size_.Width, size_.Height));

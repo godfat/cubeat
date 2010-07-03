@@ -126,7 +126,6 @@ protected:
     pointer_type init(std::string const& text, std::string const& font_path,
                       int const& size, data::Color const& color, pObject const& parent);
     void createText(std::string const& text, std::string const& font_path, int const& size);
-    void generateLetter(char const& c, char const& last_c, int& current_xpos);
     void clearText();
 
     virtual void startTween();
@@ -139,7 +138,6 @@ protected:
 
     //added these properties for SpriteText underlying mechanism corrections.
     std::vector< irr::scene::ISceneNode* > letter_node_;
-    std::vector< irr::scene::IMesh* >      letter_mesh_;
 };
 
 } //view

@@ -76,13 +76,15 @@ int main()
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
     textparent->setPosition(vector3df(0,40,80));
-    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 24, true);
-    font->addTextSceneNode(L"star wars\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
+    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 36, true);
+    font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
+    font->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
 
 	while(device->run()) {
 		driver->beginScene(true, true, SColor(255,100,101,140));
 		smgr->drawAll();
 		guienv->drawAll();
+		font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
 		driver->endScene();
 	}
 	device->drop();

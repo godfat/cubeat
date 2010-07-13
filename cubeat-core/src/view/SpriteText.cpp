@@ -56,6 +56,9 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     oss << "rc/fonts/" << font_path << ".ttf";
 
     ttfont_ = gui->getFont(oss.str().c_str(), size);
+    ttfont_->setBatchLoadSize(64);
+    ttfont_->setMaxPageTextureSize( dimension2du(512,512) );
+    //I don't want massive caches, it actually can be as small as possible.
 
     changeText( text );
 }

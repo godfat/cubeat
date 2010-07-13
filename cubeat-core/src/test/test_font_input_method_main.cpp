@@ -14,6 +14,9 @@
  *     provided you link it against the FreeType Library (2.3.12 currently).
  *
  *     Otherwise this test won't compile.
+ *
+ *     WARNING: THIS FILE IS ENCODED IN UTF8 (without BOM of course)
+ *
  */
 
 #include <irrlicht.h>
@@ -65,6 +68,7 @@ wchar_t	jtxtFile[] = {0x30d5,0x30a1,0x30a4,0x30eb,0x3092,0x958b,0x304f,0};
 wchar_t	jtxtLog[] = {0x64cd,0x4f5c,0x30ed,0x30b0,0};
 wchar_t	jtxtTfont[] = {0x900f,0x904e,0x30d5,0x30a9,0x30f3,0x30c8,0};
 wchar_t	jtxtHello[] = {0x3053,0x3093,0x306b,0x3061,0x306f,0x30c8,0x30a5,0x30eb,0x30fc,0x30bf,0x30a4,0x30d7,0};
+wchar_t zhtwHello[] = L"我要測試中文！！！、，？‧。\r一二三一二三個十百千萬鬱鬱蔥蔥\r【歹丸腥爆妓者○○○報導】\r貧果iDAP上市後襲捲平板電腦市場，讓巨硬看了「心癢癢」，\r暨日前與瞎普共同推出「SLAP」之後，\r下半年將再度推出多款搭載暈到頭七\r的平板電腦。巨硬希望藉由暈到頭七\r在PC市場的成功經驗，與「多點式觸控」\r的軟體特色，在市場上重新扳回一城。";
 
 void ChangeCaption(s32 newlang){
 	lang = newlang;
@@ -202,6 +206,11 @@ int main()
  	fonts[4] = env->getFont(FONTPATH3, SIZE_FONT_NORMAL);
  	fonts[5] = env->getFont(FONTPATH3, SIZE_FONT_BIG);
 
+ 	for( int i = 0; i < 6; ++i ) {
+ 	    fonts[i]->setBatchLoadSize(1);
+ 	    fonts[i]->setMaxPageTextureSize( dimension2du(512, 512) );
+ 	}
+
 	font = fonts[0];
 	font2 = fonts[1];
 
@@ -244,7 +253,8 @@ int main()
 		if (!lang){
 			font2->draw(L"Hello TrueType",rect<s32>(250,20,640,100),SColor(255,255,64,64),true);
 		} else {
-			font2->draw(jtxtHello,rect<s32>(250,20,640,100),SColor(255,255,64,64),true);
+			//font2->draw(jtxtHello,rect<s32>(250,20,640,100),SColor(255,255,64,64),true);
+			font2->draw(zhtwHello,rect<s32>(250,20,640,100),SColor(255,255,64,64),true);
 		}
 		env->drawAll();
 		Driver->endScene();

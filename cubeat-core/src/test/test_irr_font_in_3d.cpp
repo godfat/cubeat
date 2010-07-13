@@ -76,9 +76,15 @@ int main()
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
     textparent->setPosition(vector3df(0,40,80));
-    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 36, true);
+    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 24, true);
+    font->setBatchLoadSize(64);
+    font->setMaxPageTextureSize(dimension2du(512,512));
     font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
-    font->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
+
+    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 36, true);
+    font2->setBatchLoadSize(64);
+    font2->setMaxPageTextureSize(dimension2du(512,512));
+    font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
 
 	while(device->run()) {
 		driver->beginScene(true, true, SColor(255,100,101,140));

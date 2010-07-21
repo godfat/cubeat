@@ -46,7 +46,7 @@ int main()
 	dimensions, etc.
 	*/
 	IrrlichtDevice *device =
-		createDevice( video::EDT_OPENGL, dimension2d<u32>(640, 480), 16,
+		createDevice( video::EDT_OPENGL, dimension2d<u32>(800, 600), 32,
 			false, false, false, 0);
 
 	if (!device)
@@ -76,21 +76,40 @@ int main()
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
     textparent->setPosition(vector3df(0,40,80));
-    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 24, true);
+    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 32, true);
     font->setBatchLoadSize(64);
     font->setMaxPageTextureSize(dimension2du(512,512));
     font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
 
-    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 36, true);
-    font2->setBatchLoadSize(64);
+    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 24, true);
+    font2->setBatchLoadSize(1);
     font2->setMaxPageTextureSize(dimension2du(512,512));
     font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
+
+/* THIS PART IS USED TO DEBUG THE FONT PAGE TEXTURE */
+    SMaterial m;
+    m.Lighting = false;
+    m.MaterialType = EMT_TRANSPARENT_MODULATE;
+    m.MaterialTypeParam = 0.01f;
+    m.BackfaceCulling = false;
+    m.ColorMaterial = ECM_NONE;
+
+    IBillboardSceneNode* bbb=
+        smgr->addBillboardSceneNode(smgr->getRootSceneNode(), dimension2df(514, 514), vector3df(-257, 257, 385));
+    bbb->getMaterial(0) = m;
+    bbb->setColor(SColor(128,128,128,128));
+
+    IBillboardSceneNode* bb =
+        smgr->addBillboardSceneNode(smgr->getRootSceneNode(), dimension2df(512, 512), vector3df(-256, 256, 384));
+    bb->getMaterial(0) = m;
+    bb->setMaterialTexture(0, font->createTextureFromChar(0));
+/* ABOVE PART IS USED TO DEBUG THE FONT PAGE TEXTURE */
 
 	while(device->run()) {
 		driver->beginScene(true, true, SColor(255,100,101,140));
 		smgr->drawAll();
 		guienv->drawAll();
-		font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
+		//font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
 		driver->endScene();
 	}
 	device->drop();

@@ -76,15 +76,18 @@ int main()
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
     textparent->setPosition(vector3df(0,40,80));
-    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 32, true);
+    IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 21, true);
     font->setBatchLoadSize(64);
     font->setMaxPageTextureSize(dimension2du(512,512));
     font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
 
-    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 24, true);
+    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 21, true);
     font2->setBatchLoadSize(1);
     font2->setMaxPageTextureSize(dimension2du(512,512));
     font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
+
+    IImage* glyph_image = font->createTextureFromChar('a');
+    ITexture* glyph_tex = driver->addTexture("test", glyph_image);
 
 /* THIS PART IS USED TO DEBUG THE FONT PAGE TEXTURE */
     SMaterial m;
@@ -102,16 +105,23 @@ int main()
     IBillboardSceneNode* bb =
         smgr->addBillboardSceneNode(smgr->getRootSceneNode(), dimension2df(512, 512), vector3df(-256, 256, 384));
     bb->getMaterial(0) = m;
-    bb->setMaterialTexture(0, font->createTextureFromChar(0));
+    bb->setMaterialTexture(0, font->getPageTextureByIndex(0));
+
+    dimension2df s(glyph_tex->getSize()*2);
+    IBillboardSceneNode* bbbb=
+        smgr->addBillboardSceneNode(smgr->getRootSceneNode(), s, vector3df(64, 100, 30) );
+    bbbb->getMaterial(0) = m;
+    bbbb->setMaterialTexture(0, glyph_tex);
 /* ABOVE PART IS USED TO DEBUG THE FONT PAGE TEXTURE */
 
 	while(device->run()) {
 		driver->beginScene(true, true, SColor(255,100,101,140));
 		smgr->drawAll();
 		guienv->drawAll();
-		//font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
-		driver->endScene();
+		font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
+        driver->endScene();
 	}
+	glyph_image->drop();
 	device->drop();
 	return 0;
 }

@@ -60,31 +60,18 @@ int main()
 		rect<s32>(10,10,260,22), true);
     smgr->addLightSceneNode( smgr->getRootSceneNode(), vector3df(0,0,-40), SColor(255,255,255,255));
 
-	IAnimatedMesh* mesh = smgr->getMesh("rc/model/test_cube.x");
-	if (!mesh)
-	{
-		device->drop();
-		return 1;
-	}
-	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
-
-	if (node) {
-		node->setMaterialFlag(EMF_LIGHTING, false);
-		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture("rc/texture/circle.png") );
-	}
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
-    textparent->setPosition(vector3df(0,40,80));
+    textparent->setPosition(vector3df(80,40,80));
     IGUITTFont* font = guienv->getFont("rc/fonts/Star Jedi.ttf", 21, true);
-    font->setBatchLoadSize(64);
+    font->setBatchLoadSize(1);
     font->setMaxPageTextureSize(dimension2du(512,512));
     font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
 
-    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 21, true);
-    font2->setBatchLoadSize(1);
-    font2->setMaxPageTextureSize(dimension2du(512,512));
-    font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
+//    IGUITTFont* font2= guienv->getFont("rc/fonts/Star Jedi.ttf", 21, true);
+//    font2->setBatchLoadSize(1);
+//    font2->setMaxPageTextureSize(dimension2du(512,512));
+//    font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
 
     IImage* glyph_image = font->createTextureFromChar('a');
     ITexture* glyph_tex = driver->addTexture("test", glyph_image);
@@ -118,7 +105,7 @@ int main()
 		driver->beginScene(true, true, SColor(255,100,101,140));
 		smgr->drawAll();
 		guienv->drawAll();
-		font->draw(stringw(L"Hello, world!"), recti(5, 5, 200, 30), SColor(128,255,255,255), false, false);
+		font->draw(stringw(L"Hello, world!"), recti(5, 10, 200, 30), SColor(128,255,255,255), false, false);
         driver->endScene();
 	}
 	glyph_image->drop();

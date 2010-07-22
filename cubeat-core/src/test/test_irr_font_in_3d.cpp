@@ -73,7 +73,7 @@ int main()
 //    font2->setMaxPageTextureSize(dimension2du(512,512));
 //    font2->addTextSceneNode(L"123467890oiuytre\nwqasdfghjkmnbvcxz", smgr);
 
-    IImage* glyph_image = font->createTextureFromChar('a');
+    IImage* glyph_image = font->createImageFromChar('a');
     ITexture* glyph_tex = driver->addTexture("test", glyph_image);
 
 /* THIS PART IS USED TO DEBUG THE FONT PAGE TEXTURE */

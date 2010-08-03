@@ -118,7 +118,7 @@ bool interpret_ir_data(wiimote& wm, float& out_x, float& out_y, float& out_z)
                  */
                 for (i = 0; i < 4; ++i) {
                     if (dot[i].bVisible) {
-                        float ox, x, y;
+                        float ox = .0f, x, y;
 
                         if (dots_order[i] == 1)
                             /* visible is the left dot - estimate where the right is */

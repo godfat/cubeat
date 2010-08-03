@@ -13,9 +13,10 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-Os" />
-					<Add option="-O2" />
+					<Add option="-O1" />
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
+					<Add option="-Wno-missing-braces" />
 					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_HAS_GCC_TR1" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />

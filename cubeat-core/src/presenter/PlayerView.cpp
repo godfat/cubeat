@@ -31,7 +31,7 @@ pPlayerView PlayerView::init(std::string const& path, view::pObject const& paren
     conf_ = utils::map_any::construct( utils::fetchConfig( path ) );
     utils::map_any const& anim = conf_.M("anim_attr");
 
-    character_ = view::Menu::create("character", parent, 1, 1, true);
+    character_ = view::Menu::create("character", parent, 0, 0, true);
     character_->set<Pos2D>( pos );
 
     BOOST_FOREACH(utils::pair_any const& it, anim) {

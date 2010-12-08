@@ -44,9 +44,9 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
     {
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
-        Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
+        //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
         if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 10) ) {
-            Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
+            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
             pAICommand cmd = AICommand::create();
             cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
             cmd_queue_.push_back( cmd );

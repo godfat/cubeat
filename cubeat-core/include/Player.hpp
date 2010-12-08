@@ -4,6 +4,7 @@
 #define _SHOOTING_CUBES_CTRL_PLAYER_
 
 #include "all_fwd.hpp"
+#include "utils/dictionary.hpp"
 #include <vector>
 #include <list>
 #include <tr1/functional>
@@ -33,6 +34,7 @@ public:
 
     Player& set_active_weapon(int i);
     Player& debug_reset_all_weapon();
+    Player& set_config(utils::map_any const& config);
     Player& disable_all_wep_reloadability();
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);

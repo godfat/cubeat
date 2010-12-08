@@ -36,10 +36,18 @@ player1: {
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
 
-    #weapon state at game start
-    wep1_start_ammo: 10,
-    wep2_start_ammo: 10,
-    wep3_start_ammo: 1,
+    #weapon state, cooling event happens every 100ms,
+    #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
+    #if total heat reaches 1 then the normal weapon goes overheated,
+    #and you cannot shoot for <downtime> (millisec)
+    weapon: {
+        heat_rate: 0.16,
+        cool_rate: 0.06,
+        downtime: 2000,
+        item1_start_ammo: 10,
+        item2_start_ammo: 10,
+        item3_start_ammo: 1
+    },
 
     #currently not controllable or thing that should not be changed:
     cube_sinking_duration: 500,
@@ -60,9 +68,15 @@ player2: {
     speed: 80.0,
     cube_dropping_duration: 135,
     use_broken_as_garbage: 1,
-    wep1_start_ammo: 10,
-    wep2_start_ammo: 10,
-    wep3_start_ammo: 1,
+
+    weapon: {
+        heat_rate: 0.16,
+        cool_rate: 0.06,
+        downtime: 2000,
+        item1_start_ammo: 10,
+        item2_start_ammo: 10,
+        item3_start_ammo: 1
+    },
 
     #currently not controllable or thing that should not be changed:
     cube_sinking_duration: 500,

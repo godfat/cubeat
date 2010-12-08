@@ -87,12 +87,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     }
 
     // setup player settings
-    player0_->weapon(0)->ammo( gameplay_.M("player1").I("wep1_start_ammo") );
-    player0_->weapon(1)->ammo( gameplay_.M("player1").I("wep2_start_ammo") );
-    player0_->weapon(2)->ammo( gameplay_.M("player1").I("wep3_start_ammo") );
-    player1_->weapon(0)->ammo( gameplay_.M("player2").I("wep1_start_ammo") );
-    player1_->weapon(1)->ammo( gameplay_.M("player2").I("wep2_start_ammo") );
-    player1_->weapon(2)->ammo( gameplay_.M("player2").I("wep3_start_ammo") );
+    player0_->set_config(gameplay_.M("player1").M("weapon"));
+    player1_->set_config(gameplay_.M("player2").M("weapon"));
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );

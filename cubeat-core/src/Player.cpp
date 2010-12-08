@@ -92,6 +92,17 @@ void Player::heat_cooling()
     }
 }
 
+Player& Player::set_config(utils::map_any const& config)
+{
+    weplist_[0]->ammo( config.I("item1_start_ammo") );
+    weplist_[1]->ammo( config.I("item2_start_ammo") );
+    weplist_[2]->ammo( config.I("item3_start_ammo") );
+    cooling_speed_    = config.F("cool_rate");
+    accumulate_speed_ = config.F("heat_rate");
+    overheat_downtime_= config.I("downtime");
+    return *this;
+}
+
 Player& Player::set_active_weapon(int i)
 {
     std::cout << "switch weapon to " << i << std::endl;

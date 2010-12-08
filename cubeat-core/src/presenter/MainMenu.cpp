@@ -122,7 +122,7 @@ void MainMenu::setupMenus()
 
         view::pMenu m = pvlist_.back()->getView();
         m->addSprite("hitarea", 0, 96, 192, true);
-        m->getSprite("hitarea").setDepth(100).set<Pos2D>(vec2(-48, 48)).set<GradientDiffuse>(128);
+        m->getSprite("hitarea").setDepth(-1).set<Pos2D>(vec2(-48, 0)).set<Alpha>(0);
         if( i < 3 )
             pvlist_.back()->flipPosition();
         else {
@@ -386,7 +386,7 @@ void MainMenu::setup_player_selecting_buttons()
 
     int i = 1;
     BOOST_FOREACH(pPlayerView& pv, pvlist_) {
-        pv->getView()->getSprite("body").onEnterFocus( input1 ) =
+        pv->getView()->getSprite("hitarea").onEnterFocus( input1 ) =
             bind(&MainMenu::player1_getfocus, this, i);
         ++i;
     }
@@ -540,7 +540,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
         BOOST_FOREACH(pPlayerView& pv, pvlist_) {
             pv->getView()->tweenAll<Linear, Alpha>(255, 1000u);
             //Warning: stupid code: wipe out hitarea's tween..
-            //pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
+            pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
         }
     }
     return *this;
@@ -561,7 +561,7 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
         BOOST_FOREACH(pPlayerView& pv, pvlist_) {
             pv->getView()->tweenAll<Linear, Alpha>(0, 1000u);
             //Warning: stupid code: wipe out hitarea's tween..
-            //pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
+            pv->getView()->getSprite("hitarea").tween<Linear, Alpha>(0, 10u);
         }
     }
     return *this;

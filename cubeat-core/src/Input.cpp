@@ -188,8 +188,10 @@ void InputMgr::updateAll()
             IrrDevice::i().d()->getCursorControl()->setVisible(true);
 
     }
+#ifdef _USE_MANYMOUSE_
     if( keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
+#endif //_USE_MANYMOUSE_
 
     BOOST_FOREACH( Input* it, inputs_ )
         it->update();

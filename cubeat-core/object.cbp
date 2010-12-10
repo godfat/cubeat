@@ -61,6 +61,8 @@
 		<Unit filename="config\gameplay\multi.zzml" />
 		<Unit filename="config\input\player1.zzml" />
 		<Unit filename="config\input\player2.zzml" />
+		<Unit filename="config\input\player2_keyboard_enable.zzml" />
+		<Unit filename="config\input\player2_multimice_enable.zzml" />
 		<Unit filename="config\presenter\mainmenu.zzml" />
 		<Unit filename="config\presenter\opening.zzml" />
 		<Unit filename="config\presenter\transitioner.zzml" />

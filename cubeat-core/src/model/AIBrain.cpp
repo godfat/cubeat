@@ -25,7 +25,7 @@ AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
 bool AIBrain::needThinking()
 {
     boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
-    return cmd_queue_.size() < 2;
+    return cmd_queue_.empty();
 }
 
 void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
@@ -39,13 +39,14 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
     //since we only have two map, one for each side, so let the first in ally-list be one's self.
 
     map_list_ = map_list;
-    pSimpleMap self_map = map_list_[self_index];
+    pSimpleMap self_map = map_list_[self_index]->clone();
+    //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
     //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
     {
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
         //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
-        if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 10) ) {
+        if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, 4) ) {
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
             pAICommand cmd = AICommand::create();
             cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
@@ -81,14 +82,14 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                 cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
                 for( int i = 0; i < c->hp(); ++i )
                     cmd_queue_.push_back( cmd );
-                if( cmd_queue_.size() > 5 ) break;
+                if( cmd_queue_.size() > 3 ) break;
             }
 
             BOOST_FOREACH(pSimpleCube& c, brokens) {
                 pAICommand cmd = AICommand::create();
                 cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
                 cmd_queue_.push_back( cmd );
-                if( cmd_queue_.size() > 6 ) break;
+                if( cmd_queue_.size() > 1 ) break;
             }
 
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();

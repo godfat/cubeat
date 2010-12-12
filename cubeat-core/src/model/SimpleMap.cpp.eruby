@@ -31,8 +31,9 @@ void SimpleMap::dump_preview_to(pSimpleMap dest, preview_list_type const& cl) co
 bool SimpleMap::is_below_empty(pSimpleCube cube) const
 {
     if( cube->y() == 0 ) return false;
-    if( simp_cubes_[cube->x()][cube->y()-1] ) return false;
-    return true;
+    else return simp_cubes_[cube->x()][cube->y()-1].use_count() == 0;
+    // throw "impossible flow!";
+    return false;
 }
 
 void SimpleMap::update_cube_position(pSimpleCube cube, int old_x, int old_y)

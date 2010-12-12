@@ -99,6 +99,9 @@ public:
 
     void print_data_for_debug() const;
 
+//private:
+    pointer_type clone() const;
+
 protected:
     void dump_cube_to(pointer_type, pSimpleCube) const;
     void dump_preview_to(pointer_type, preview_list_type const&) const;
@@ -125,9 +128,7 @@ private:
     container_type    simp_cubes_;
     preview_list_type simp_cubes_preview_;
 
-private:
     friend class ai_detail::AIUtils;
-    pointer_type clone() const;
 };
 
 typedef SimpleMap::pointer_type  pSimpleMap;

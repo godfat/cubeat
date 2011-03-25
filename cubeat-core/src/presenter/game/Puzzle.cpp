@@ -136,9 +136,9 @@ void Puzzle::update_ui(){
     ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
-    ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
-    ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
-    ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
 
     last_garbage_1p_ = new_garbage_1p_;
     last_garbage_2p_ = new_garbage_2p_;

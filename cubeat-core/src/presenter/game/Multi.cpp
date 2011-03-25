@@ -222,22 +222,25 @@ void Multi::update_ui(){
     ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
-    ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
-    ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
-    ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
-    ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
-    for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
-        if( i == player0_->wepid() )
-            ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-        else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+    //2011.03.25 weapon temporarily removed
 
-        if( i == player1_->wepid() )
-            ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-        else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
-    }
+    //ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
+    //ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
+
+    //for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
+    //    if( i == player0_->wepid() )
+    //        ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+    //    else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+    //
+    //    if( i == player1_->wepid() )
+    //        ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+    //    else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+    //}
 
     if( pview1_->getState() == presenter::PlayerView::HIT &&
         last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);

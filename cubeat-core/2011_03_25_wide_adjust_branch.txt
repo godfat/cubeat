@@ -22,3 +22,5 @@
 8. pause menu -> can quit or resume game.
 
 9. "Chain" font block shooting  -- fixed. was pickable WTF!?
+
+10. copyright / credits screens.

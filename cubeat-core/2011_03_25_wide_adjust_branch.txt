@@ -1,0 +1,14 @@
+1. heat value
+   -- jama shooting don't use weapon (item) (see 2.)
+   -- haste
+   -- overheat BIG icon over map
+   
+2. no weapon
+   -- no item
+   -- remove from UI
+   
+3. warning not only at top, but also bottom, thicker
+
+4. pause menu -> can quit or resume game.
+
+5. "Chain" font block shooting

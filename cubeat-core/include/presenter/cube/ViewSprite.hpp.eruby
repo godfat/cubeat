@@ -311,18 +311,24 @@ public:
         using std::tr1::bind; using namespace accessor; using namespace easing;
 
         Sound::i().play("3/3d/alarm.mp3");
-        alert_bar_->playAnime("moving", 1000);
-        alert_bar_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
+        alert_bar_top_->playAnime("moving", 1000);
+        alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
+        alert_bar_bottom_->playAnime("moving", 1000);
+        alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
     }
 
     virtual void <% debug_hook 'alert_bar_update' do %>(int warning_level){ <% end %>
         using namespace accessor;
         if( warning_level < 1 ) {
-            alert_bar_->set< Visible >( false );
-            alert_bar_->set< ScaleWithUV >( vec2(1, 1) );
+            alert_bar_top_->set< Visible >( false );
+            alert_bar_top_->set< ScaleWithUV >( vec2(1, 1) );
+            alert_bar_bottom_->set< Visible >( false );
+            alert_bar_bottom_->set< ScaleWithUV >( vec2(1, 1) );
         } else {
-            alert_bar_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
-            alert_bar_->set< Visible >( true );
+            alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+            alert_bar_top_->set< Visible >( true );
+            alert_bar_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+            alert_bar_bottom_->set< Visible >( true );
         }
     }
 
@@ -358,15 +364,22 @@ private:
         using namespace accessor;
         int w = map_setting()->width();
         int h = map_setting()->height() - 1;
-        vec2 pos;
+        vec2 pos, pos2;
         if( w % 2 == 0 )
             pos = (pos_vec2(w/2, h) + pos_vec2(w/2-1, h)) / 2;
         else pos = pos_vec2(w/2, h);
-        pos.Y += 16;
+        pos.Y += 10;
 
-        alert_bar_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 32, true);
-        alert_bar_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
-                   .set<Visible>(false).setPickable(false);
+        //warning: the position and scale data here should be configurable.
+        alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
+        alert_bar_top_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
+                       .set<Visible>(false).setPickable(false);
+
+        pos2 = pos; pos2.Y = 706;
+
+        alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
+        alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
+                          .set<Visible>(false).setPickable(false);
 
         create_warning_strips();
     }
@@ -405,7 +418,8 @@ private:
 private:
     view::wpScene scene_;
     ctrl::wpPlayer player_;
-    view::pAnimatedSprite alert_bar_;
+    view::pAnimatedSprite alert_bar_top_;
+    view::pAnimatedSprite alert_bar_bottom_;
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;

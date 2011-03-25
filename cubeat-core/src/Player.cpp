@@ -31,13 +31,14 @@ pPlayer Player::init()
     current_wep_ = weplist_[0];
 
     if( input_ ) {
+        //2011.03.25 weapon feature removed temporarily
         input_->player( shared_from_this() );
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 0), shared_from_this(), &input_->wep1(), BTN_PRESS);
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 0), shared_from_this(), &input_->wep1(), BTN_PRESS);
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
 
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
@@ -137,14 +138,15 @@ Player& Player::subscribe_shot_event
         Input*  input = InputMgr::i().getInputByIndex(id);
         wpPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
-        sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally);
+        //sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, ally_cb, ally); 2011.03.25 weapon remove
     }
 
     if( enemy_cb ) {
         BOOST_FOREACH(int const& id, view_setting_->enemy_input_ids()) {
             Input*  input = InputMgr::i().getInputByIndex(id);
             wpPlayer enemy = input->player();
-            sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
+            //sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy); 2011.03.25 weapon remove
+            sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, enemy_cb);
         }
     }
     return *this;

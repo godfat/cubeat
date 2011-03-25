@@ -1,6 +1,7 @@
 1. heat value
-   -- jama shooting don't use weapon (item) (see 2.)
-   -- haste
+   -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
+   -- haste produce heat
+   -- jama shooting produce more heat
    -- overheat BIG icon over map, cursor change too.
    
 2. no weapon  -- done

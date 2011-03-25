@@ -9,8 +9,10 @@
    
 3. warning not only at top, but also bottom, thicker  -- done
 
-4. main menu's cubes are too crowded.
+4. main menu's cubes are too crowded.  -- done (there are new designs anyway)
 
-5. pause menu -> can quit or resume game.
+5. press enter to activate player control is weird.
 
-6. "Chain" font block shooting
+6. pause menu -> can quit or resume game.
+
+7. "Chain" font block shooting

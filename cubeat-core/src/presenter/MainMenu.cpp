@@ -184,8 +184,8 @@ void MainMenu::initDecorator()
     int const size = w * deco.F("size_factor");
     int const num_w = (w/size)*2;
     int const num_h = (h/size)*2 + 3;
-    int const outgoing = size * 1.41f;
-    int const contract = size / 4;
+    int const outgoing = size * 1.66f; //1.41f;
+    int const contract = size / 8;
 
     vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
     vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2

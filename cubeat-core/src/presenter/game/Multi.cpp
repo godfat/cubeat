@@ -125,7 +125,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     stage_->playBGM();
 
     //note: bad area
-    timer_item_ = pDummy(new int);
+    //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
     timer_ui_   = pDummy(new int);
     //note: end of bad area
 
@@ -133,8 +133,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
         bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
-    ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&Multi::item_creation, this), timer_item_, 15000);
+    //ctrl::EventDispatcher::i().subscribe_timer(     //2011.03.25 item temporarily removed
+    //    bind(&Multi::item_creation, this), timer_item_, 15000);
 
     //temp: for pause functionality
     ctrl::EventDispatcher::i().subscribe_btn_event(

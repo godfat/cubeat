@@ -4,7 +4,7 @@
    -- overheat BIG icon over map
    
 2. no weapon
-   -- no item
+   -- no item  -- done
    -- remove from UI
    
 3. warning not only at top, but also bottom, thicker

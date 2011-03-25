@@ -1,7 +1,7 @@
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.)
    -- haste
-   -- overheat BIG icon over map
+   -- overheat BIG icon over map, cursor change too.
    
 2. no weapon  -- done
    -- no item  -- done
@@ -15,6 +15,9 @@
 
 6. press enter to activate player control is weird.
 
-7. pause menu -> can quit or resume game.
+7. user control needs to be refined a little. (could jama shooting be combined with normal shooting??)
+   -- remove weapon related controls. 
 
-8. "Chain" font block shooting
+8. pause menu -> can quit or resume game.
+
+9. "Chain" font block shooting

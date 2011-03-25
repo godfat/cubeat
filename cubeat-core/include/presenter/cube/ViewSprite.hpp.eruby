@@ -261,11 +261,12 @@ public:
         m->addSpriteText("chaino",  str, "Star Jedi", 0, 40, true, data::Color(255,0,0))
           .addSpriteText("chain",   str, "Star Jedi", 0, 40, true)
           .addSpriteText("amounto", str2,"Star Jedi", 0, 25, true, data::Color(255,0,0))
-          .addSpriteText("amount",  str2,"Star Jedi", 0, 25, true);
-        m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1));
-        m->getSprite("chain").setDepth(-10);
-        m->getSprite("amounto").set<Pos2D>(vec2(1,39)).set<Scale>(vec3(1.03,1.15,1));
-        m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,40));
+          .addSpriteText("amount",  str2,"Star Jedi", 0, 25, true)
+          .setPickable(false);
+        m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
+        m->getSprite("chain").setDepth(-10).setPickable(false);
+        m->getSprite("amounto").set<Pos2D>(vec2(1,39)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
+        m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,40)).setPickable(false);
         m->setDepth(-100).set<Pos2D>( vec2(x_offset, y_offset) )
           .tween<OElastic, Scale>(vec3(0,0,0), vec3(1 + (0.12*combo),1 + (0.12*combo), 1), 1000, 0,
                                   std::tr1::bind(&ViewSpriteMaster::pop_a_chain_text, this, chain) );

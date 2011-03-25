@@ -7,7 +7,7 @@
    -- no item  -- done
    -- remove from UI  -- done
    
-3. warning not only at top, but also bottom, thicker
+3. warning not only at top, but also bottom, thicker  -- done
 
 4. main menu's cubes are too crowded.
 

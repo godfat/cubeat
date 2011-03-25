@@ -11,8 +11,10 @@
 
 4. main menu's cubes are too crowded.  -- done (there are new designs anyway)
 
-5. press enter to activate player control is weird.
+5. LuaJIT & new puzzle generator integration.
 
-6. pause menu -> can quit or resume game.
+6. press enter to activate player control is weird.
 
-7. "Chain" font block shooting
+7. pause menu -> can quit or resume game.
+
+8. "Chain" font block shooting

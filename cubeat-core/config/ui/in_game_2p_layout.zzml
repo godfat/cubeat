@@ -4,7 +4,7 @@
 base: {
     layout_tex: 'ui/borders2',
     w: 1280,
-    h: 768,
+    h: 720,
 },
 
 # texts setup data

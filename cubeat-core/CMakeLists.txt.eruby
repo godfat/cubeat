@@ -5,11 +5,11 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT (cubeat)
 
 # compiler option
-SET (CMAKE_CXX_COMPILER "clang++")
+SET (CMAKE_CXX_COMPILER "g++")
 
 # setup cxx flags
 IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET (cxx_flag "-std=c++0x -Wall -O3 -ffast-math")
+    SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
     IF(APPLE)
         SET (cxx_flag "${cxx_flag}")
     ENDIF(APPLE)

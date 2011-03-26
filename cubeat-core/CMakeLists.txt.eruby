@@ -5,13 +5,13 @@ cmake_minimum_required(VERSION 2.6)
 PROJECT (cubeat)
 
 # compiler option
-SET (CMAKE_CXX_COMPILER "g++-mp-4.3")
+SET (CMAKE_CXX_COMPILER "g++")
 
 # setup cxx flags
 IF(CMAKE_COMPILER_IS_GNUCXX)
     SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
     IF(APPLE)
-        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib")
+        SET (cxx_flag "${cxx_flag}")
     ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 SET (CMAKE_CXX_FLAGS "${cxx_flag}")
@@ -25,11 +25,11 @@ INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS} ../ir
 
 # setup linking path
 IF(APPLE)
-    SET(irrlicht_lib_path "../irrlicht/source/Irrlicht")
+    SET(irrlicht_lib_path "<%= File.expand_path("#{Dir.pwd}/../irrlicht/source/Irrlicht") %>")
 ELSE(APPLE)
     SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
 ENDIF(APPLE)
-LINK_DIRECTORIES (lib ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib .)
+LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib <%= Dir.pwd %>)
 
 # setup linking
 LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL irrklang boost_thread-mt)

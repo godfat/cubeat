@@ -12,7 +12,8 @@
 
 4. main menu's cubes are too crowded.  -- done (there are new designs anyway)
 
-5. LuaJIT & new puzzle generator integration.
+5. LuaJIT & new puzzle generator integration.  -- half done
+   -- code need clean up. but the integration has been successful.
 
 6. press enter to activate player control is weird.
 

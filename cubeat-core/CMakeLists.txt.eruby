@@ -44,3 +44,4 @@ SET (LIBRARY_OUTPUT_PATH bin)
 
 ADD_EXECUTABLE        (bin/cubeat main.cpp)
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)
+SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS "-pagezero_size 10000 -image_base 100000000")

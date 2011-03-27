@@ -18,7 +18,7 @@
 6. press enter to activate player control is weird.
 
 7. user control needs to be refined a little. (could jama shooting be combined with normal shooting??)
-   -- remove weapon related controls. 
+   -- remove weapon related controls. -- done(, see 1.)
 
 8. pause menu -> can quit or resume game.
 

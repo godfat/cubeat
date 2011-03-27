@@ -29,3 +29,11 @@
 9. "Chain" font block shooting  -- fixed. was pickable WTF!?
 
 10. copyright / credits screens.
+
+11. OpenAL integration, bye bye irrKlang.
+
+12. Manymouse on Mac/Linux doable???
+
+13. investigate about gcc46 to build native app on Mac ... (Apple frameworks not usable?)
+   -- x86_64 irrlicht on Mac? How? 
+   

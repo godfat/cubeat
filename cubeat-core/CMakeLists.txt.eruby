@@ -29,7 +29,7 @@ IF(APPLE)
 ELSE(APPLE)
     SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
 ENDIF(APPLE)
-LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib <%= Dir.pwd %>)
+LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /usr/X11/lib <%= Dir.pwd %>)
 
 # setup linking
 LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL boost_thread-mt luajit-51)

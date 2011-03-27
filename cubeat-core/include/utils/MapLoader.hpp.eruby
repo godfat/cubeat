@@ -37,7 +37,10 @@ public:
 //             " color_amounts=4 chain_amounts=3 starting_line=4 chaining_duration=300 cube_dying_duration=300 cube_sinking_duration=500 cube_dropping_duration=150 speed=80.0 damage_factor=1.0 width=6 height=10 dropping_creatable=0 garbage_dumpable=0" +
 //            " > tmp/puzzle.zzml").c_str());
 
-        puzzle_binding(level);
+        lua_State* L = luaL_newstate();
+        luaL_openlibs(L);
+        puzzle_binding(L, level);
+        lua_close(L);
 
         return load("tmp/puzzle.zzml");
     }

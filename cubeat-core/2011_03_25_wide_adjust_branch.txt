@@ -19,10 +19,12 @@
 
 6. press enter to activate player control is weird.
 
-7. user control needs to be refined a little. (could jama shooting be combined with normal shooting??)
+7. in-game user control needs to be refined a little. 
    -- remove weapon related controls. -- done(, see 1.)
 
 8. pause menu -> can quit or resume game.
+   -- need a formal way to terminate the game from main menu as well!
+      -- quit using OS-dependent operation during a CPU vs CPU game might crash the game. 
 
 9. "Chain" font block shooting  -- fixed. was pickable WTF!?
 

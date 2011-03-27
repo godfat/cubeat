@@ -21,7 +21,7 @@ ADD_DEFINITIONS (-DBOOST_HAS_TR1 -DNDEBUG -DBOOST_DISABLE_ASSERTS)
 FIND_PACKAGE (Boost REQUIRED)
 
 # setup include path
-INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS} ../irrKlang-1.0.4/include)
+INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS} /usr/local/include/luajit-2.0)
 
 # setup linking path
 IF(APPLE)
@@ -32,7 +32,7 @@ ENDIF(APPLE)
 LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /opt/local/lib /usr/X11/lib <%= Dir.pwd %>)
 
 # setup linking
-LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL irrklang boost_thread-mt)
+LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL boost_thread-mt luajit-51)
 
 # setup source codes
 SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \

@@ -221,7 +221,8 @@ void Puzzle::end_sequence1()
 void Puzzle::reinit()
 {
     int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_-1;
-    if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
+    //if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
+    if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
     else if( new_puzzle_lv < 3 ) new_puzzle_lv = 3;
     Sound::i().play("4/4b.wav");
     btn_reinit_.reset();

@@ -15,7 +15,7 @@
 5. LuaJIT & new puzzle generator integration.  -- half done
    -- code need clean up. but the integration has been successful.
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 
-      thus there's a chance "they might get chained in the air."
+      thus there's a chance "they might get chained in the air." -- should be fixed.
 
 6. press enter to activate player control is weird.
 

@@ -338,6 +338,16 @@ void Input::redraw()
     }
     if( trig1_.pressed() ) //note: temporary effects //2011.03.28 right-click effect removed.
         cursor_mark_->tween<OBack, Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
+    if( trig2_.pressed() ) { //2011.03.28 some funny haste effect .. but still, this is temporary.
+        vec3 rot = cursor_mark_->get<Rotation>();
+        rot.Z += 360; //will this overflow eventually?
+        cursor_mark_->tween<Linear, Rotation>(rot, 1000u, -1);
+    }
+    else if( trig2_.released() ) {
+        vec3 rot = cursor_mark_->get<Rotation>();
+        rot.Z += 360;
+        cursor_mark_->tween<Linear, Rotation>(rot, 3000u, -1);
+    }
 }
 
 view::pSprite Input::getCursor()

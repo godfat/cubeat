@@ -1,3 +1,6 @@
+
+** URGENT: Map::next_state might have bug.... cubes are chained even when they are in the air.
+
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
    -- haste produce heat                 -- done
@@ -14,9 +17,9 @@
 
 5. LuaJIT & new puzzle generator integration.  -- half done
    -- code need clean up. but the integration has been successful.
-     -- need enumerate where I used variadic template. fuck apple-gcc...
+     -- need enumerate where I used variadic template. fuck apple-gcc... -- done
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 
-      thus there's a chance "they might get chained in the air."   -- should be fixed by now.
+      thus there's a chance "they might get chained in the air."   -- WRONG, not fixed.
 
 6. press enter to activate player control is weird.
 

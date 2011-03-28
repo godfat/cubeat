@@ -24,6 +24,7 @@ template<> inline double      lua_to_(lua_State* L, int n) { return lua_tonumber
 template<> inline    int      lua_to_(lua_State* L, int n) { return lua_tointeger(L, n); }
 template<> inline char const* lua_to_(lua_State* L, int n) { return lua_tostring(L, n); }
 
+#ifdef __SHOOTING_CUBES_CPP0X__
 inline void push_args_to_stack_(lua_State* L){}
 
 template<typename Head, typename... Tail>
@@ -73,6 +74,176 @@ void call_lua_function(lua_State* L, char const* funcname, Args const&... args)
     if( lua_pcall(L, nargs, 0, 0) )
         error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
 }
+
+#else // __SHOOTING_CUBES_CPP0X__
+
+template<typename Ret> // Return 1 value with no args
+Ret call_lua_function(lua_State* L, char const* funcname)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    //lua_push_(L); // pushs nothing, no calling args.
+
+    if( lua_pcall(L, 0, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+
+template<typename Ret, typename T1> // Return 1 value with 1 args
+Ret call_lua_function(lua_State* L, char const* funcname, T1 a1)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+
+    if( lua_pcall(L, 1, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+template<typename Ret, typename T1, typename T2> // Return 1 value with 2 args
+Ret call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+
+    if( lua_pcall(L, 2, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+template<typename Ret, typename T1, typename T2, typename T3> // Return 1 value with 3 args
+Ret call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+
+    if( lua_pcall(L, 3, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+template<typename Ret, typename T1, typename T2, typename T3, typename T4> // Return 1 value with 4 args
+Ret call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3, T4 a4)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+    lua_push_(L, a4); //arg 4
+
+    if( lua_pcall(L, 4, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+template<typename Ret, typename T1, typename T2, typename T3, typename T4, typename T5> // Return 1 value with 5 args
+Ret call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+    lua_push_(L, a4); //arg 4
+    lua_push_(L, a5); //arg 5
+
+    if( lua_pcall(L, 5, 1, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+
+    return lua_to_<Ret>(L, -1); //support for 1 primitive lua type now.
+}
+
+// no return value with no args
+void call_lua_function(lua_State* L, char const* funcname)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    //lua_push_(L); // pushs nothing, no calling args.
+
+    if( lua_pcall(L, 0, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+
+template<typename T1> // no return value with 1 args
+void call_lua_function(lua_State* L, char const* funcname, T1 a1)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+
+    if( lua_pcall(L, 1, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+template<typename T1, typename T2> // no return value with 2 args
+void call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+
+    if( lua_pcall(L, 2, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+template<typename T1, typename T2, typename T3> // no return value with 4 args
+void call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+
+    if( lua_pcall(L, 3, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+template<typename T1, typename T2, typename T3, typename T4> // no return value with 4 args
+void call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3, T4 a4)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+    lua_push_(L, a4); //arg 4
+
+    if( lua_pcall(L, 4, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+template<typename T1, typename T2, typename T3, typename T4, typename T5> // no return value with 5 args
+void call_lua_function(lua_State* L, char const* funcname, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+
+    lua_push_(L, a1); //arg 1
+    lua_push_(L, a2); //arg 2
+    lua_push_(L, a3); //arg 3
+    lua_push_(L, a4); //arg 4
+    lua_push_(L, a5); //arg 5
+
+    if( lua_pcall(L, 5, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
+}
+
+#endif // __SHOOTING_CUBES_CPP0X__
 
 ///////////////////////////////////////////////////////////////////////////////
 

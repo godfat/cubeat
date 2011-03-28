@@ -336,7 +336,7 @@ void Input::redraw()
         cursor_mark_->moveTo(cursor_.x(), cursor_.y());
         range_shape_->moveTo(cursor_.x(), cursor_.y());
     }
-    if( trig1_.pressed() || trig2_.pressed() ) //note: temporary effects
+    if( trig1_.pressed() ) //note: temporary effects //2011.03.28 right-click effect removed.
         cursor_mark_->tween<OBack, Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
 }
 

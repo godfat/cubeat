@@ -83,7 +83,8 @@ public:
     virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>
         if( ctrl::pPlayer p = player_.lock() ) {
             body_->tween( data::AnimatorParam<easing::Linear, accessor::Pos2D>().end(pos_vec2())
-                  .cb(callback).speedfunc(std::tr1::bind(&ViewSprite::speed, this, &p->input()->haste())) );
+                  .cb(callback).speedfunc(std::tr1::bind(&ViewSprite::speed, this, &p->input()->trig2())) );
+            //2011.03.28 changed from haste() to trig2() for speedup.
         } else {
             body_->tween<easing::Linear, accessor::Pos2D>(
                 pos_vec2(), map_setting()->cube_sinking_duration(), 0,

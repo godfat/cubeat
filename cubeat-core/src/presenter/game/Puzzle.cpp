@@ -50,7 +50,8 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 {
     //App::i().setLoading(1);
     scene_ = psc::view::Scene::create("random Puzzle game");
-    scene_->setTo2DView().enableGlobalHittingEvent();     //important
+    //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
+    scene_->setTo2DView();
 
     c1p_ = c1p; sconf_ = sc; puzzle_level_ = puzzle_level;
 

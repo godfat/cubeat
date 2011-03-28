@@ -55,6 +55,7 @@ public:
     int  overheat_downtime()      const;
 
     void normal_weapon_fx();
+    void generate_heat(double);
 
     virtual ~Player();
 

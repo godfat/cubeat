@@ -146,10 +146,25 @@ Player& Player::subscribe_shot_event
             Input*  input = InputMgr::i().getInputByIndex(id);
             wpPlayer enemy = input->player();
             //sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy); 2011.03.25 weapon remove
-            sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, enemy_cb);
+            sv->onPress( &input->trig1() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy);
         }
     }
     return *this;
+}
+
+//free func helper
+void end_overheat(bool& heat) { heat = false; }
+
+void Player::generate_heat(double heat)
+{
+    using std::tr1::ref;
+    accumulated_heat_ += heat;
+    if( accumulated_heat_ > 1 ) {
+        accumulated_heat_ = 1;
+        overheat_ = true;
+        EventDispatcher::i().subscribe_timer(
+            bind(&end_overheat, ref(overheat_)), shared_from_this(), overheat_downtime_);
+    }
 }
 
 void Player::normal_shot_delegate
@@ -160,14 +175,30 @@ void Player::normal_shot_delegate
     }
 }
 
-void Player::shot_delegate
+//2011.03.28 weapon temporary removal
+//void Player::shot_delegate
+//    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
+//{
+//    if( pPlayer p = player.lock() ) {
+//        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
+//        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+//        if( that_allies == self_allies || p->can_crossfire() )
+//            hit_cb( p->weapon()->firepower() ); // if the player is ally OR player can crossfire
+//    }
+//}
+
+void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
     (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 {
     if( pPlayer p = player.lock() ) {
         std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
         std::list<int> const& self_allies = view_setting_->ally_input_ids();
-        if( that_allies == self_allies || p->can_crossfire() )
-            hit_cb( p->weapon()->firepower() ); // if the player is ally OR player can crossfire
+        if( that_allies == self_allies )
+            hit_cb(1);
+        else {
+            hit_cb(1);
+            p->generate_heat(accumulate_speed_ * 0.5); //if enemy hit, generate extra heat.
+        }
     }
 }
 
@@ -201,24 +232,14 @@ bool Player::ammo_all_out() const {
     return count == 0;
 }
 
-//free func helper
-void end_overheat(bool& heat) { heat = false; }
-
 //temp: not flexible and stupid.
 void Player::normal_weapon_fx() {
-    using std::tr1::ref;
     if( !overheat_ ) {
         Sound::i().play("1/a/1a-1.mp3");
         view::SFX::i().normal_weapon_vfx(
             InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
 
-        accumulated_heat_ += accumulate_speed_;
-        if( accumulated_heat_ > 1 ) {
-            accumulated_heat_ = 1;
-            overheat_ = true;
-            EventDispatcher::i().subscribe_timer(
-                bind(&end_overheat, ref(overheat_)), shared_from_this(), overheat_downtime_);
-        }
+        generate_heat(accumulate_speed_);
     }
     else {
         /* special effects of attempting to fire when overheated */

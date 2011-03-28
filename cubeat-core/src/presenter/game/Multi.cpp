@@ -53,7 +53,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 {
     //App::i().setLoading(1);
     scene_ = psc::view::Scene::create("Multiplayer game");
-    scene_->setTo2DView().enableGlobalHittingEvent();     //important
+    //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
+    scene_->setTo2DView();
 
     c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu;
 

@@ -1,8 +1,8 @@
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
-   -- haste produce heat
-   -- jama shooting produce more heat
-   -- overheat BIG icon over map, cursor change too.
+   -- haste produce heat                 -- done
+   -- jama shooting produce more heat    -- done
+   -- overheat BIG icon over map, cursor change too.  -- not yet coded
    
 2. no weapon  -- done
    -- no item  -- done
@@ -14,12 +14,13 @@
 
 5. LuaJIT & new puzzle generator integration.  -- half done
    -- code need clean up. but the integration has been successful.
+     -- need enumerate where I used variadic template. fuck apple-gcc...
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 
-      thus there's a chance "they might get chained in the air." -- should be fixed.
+      thus there's a chance "they might get chained in the air."   -- should be fixed by now.
 
 6. press enter to activate player control is weird.
 
-7. in-game user control needs to be refined a little. 
+7. in-game user control needs to be refined a little.  -- consider done for now
    -- remove weapon related controls. -- done(, see 1.)
 
 8. pause menu -> can quit or resume game.

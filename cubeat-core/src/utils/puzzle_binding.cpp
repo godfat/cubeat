@@ -9,6 +9,7 @@
 using std::tr1::tuple;
 using std::tr1::get;
 
+inline void lua_push_(lua_State* L, bool const& v)   { lua_pushboolean(L, v); }
 inline void lua_push_(lua_State* L, double const& v) { lua_pushnumber(L, v); }
 inline void lua_push_(lua_State* L, int const& v)    { lua_pushinteger(L, v); }
 inline void lua_push_(lua_State* L, char const*& v)  { lua_pushstring(L, v); }
@@ -44,7 +45,7 @@ inline void get_results_(lua_State* L, ReturnObject& res){}
 
 template<typename... Rets, typename... Args>
 tuple<Rets...>
-call_lua_function(lua_State* L, char const* funcname, Args const&... args)
+call_lua_function_R(lua_State* L, char const* funcname, Args const&... args)
 {
     lua_getglobal(L, funcname); //tell lua to push the function into stack
     int const nargs = sizeof...(args), nrets = sizeof...(Rets);
@@ -58,6 +59,19 @@ call_lua_function(lua_State* L, char const* funcname, Args const&... args)
     tuple<Rets...> results;
     get_results_<sizeof...(Rets), 0, Rets...>(L, results);
     return results;
+}
+
+template<typename... Args>
+void call_lua_function(lua_State* L, char const* funcname, Args const&... args)
+{
+    lua_getglobal(L, funcname); //tell lua to push the function into stack
+    int const nargs = sizeof...(args);
+    luaL_checkstack(L, nargs, "Too many arguments.");
+
+    push_args_to_stack_(L, args...);
+
+    if( lua_pcall(L, nargs, 0, 0) )
+        error(L, "error calling '%s': %s", funcname, lua_tostring(L, -1));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,8 +180,7 @@ int puzzle_binding(lua_State* L, int const& level)
     if( load_lua_script(L, "script/puzzle/puzzle_gen_interface.lua") ) //will execute once globally
         return 1;
 
-    call_lua_function<int>(L, "generate_to_file", level, 6, 10);
-
+    call_lua_function(L, "generate_to_file", level, 6, 10, true); //temp: true for debug
 
     //try to get some table here...
 //    lua_getglobal(L, "config");

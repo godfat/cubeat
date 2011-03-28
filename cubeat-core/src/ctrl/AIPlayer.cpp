@@ -153,8 +153,11 @@ void AIPlayer::cycle()
             brain_->popCmdQueue();
             //Logger::i().buf("player ").buf(this).buf(" done issuing command: ").buf(cmd).endl();
         }
-        input_->haste().now() = true;
+        if( heat() < 0.7 ) {
+            input_->trig2().now() = true;
+            //2011.03.28 AI should use trig2() for hasting. the controls are integrated now.
+        }
     }
     else
-        input_->haste().now() = false;
+        input_->trig2().now() = false;
 }

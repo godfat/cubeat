@@ -69,11 +69,6 @@ public:
             pos_vec2(), map_setting()->cube_sinking_duration());
     }
 
-    //note: this is temporary speed function
-    float speed(ctrl::Button const* btn){
-         return btn->state() == ctrl::BTN_DOWN ? 450.f : map_setting()->speed();
-    }
-
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
         body_->tween<easing::Linear, accessor::Pos2D>(
             pos_vec2(), map_setting()->cube_dropping_duration(), 0,
@@ -83,8 +78,7 @@ public:
     virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>
         if( ctrl::pPlayer p = player_.lock() ) {
             body_->tween( data::AnimatorParam<easing::Linear, accessor::Pos2D>().end(pos_vec2())
-                  .cb(callback).speedfunc(std::tr1::bind(&ViewSprite::speed, this, &p->input()->trig2())) );
-            //2011.03.28 changed from haste() to trig2() for speedup.
+                  .cb(callback).speedfunc( std::tr1::bind(&ctrl::Player::haste_speedfunc, p->shared_from_this(), map_setting()->speed()) ) );
         } else {
             body_->tween<easing::Linear, accessor::Pos2D>(
                 pos_vec2(), map_setting()->cube_sinking_duration(), 0,

@@ -74,6 +74,12 @@ void Player::cycle()
 {
 }
 
+//2011.03.28 This will provide a modifiable speed for ViewSprite
+float Player::haste_speedfunc(float orig_speed) const
+{
+    return hasting_ ? 450.f : orig_speed;
+}
+
 void Player::heat_cooling()
 {
     if( !overheat_ ) { //2011.03.28 when hasting you shouldn't cool

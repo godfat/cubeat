@@ -55,6 +55,7 @@ public:
     int  overheat_downtime()      const;
 
     void generate_heat(double);
+    float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
 

@@ -54,7 +54,6 @@ public:
     bool is_overheat()            const;
     int  overheat_downtime()      const;
 
-    void normal_weapon_fx();
     void generate_heat(double);
 
     virtual ~Player();
@@ -63,6 +62,9 @@ protected:
     Player(Input* input, data::pViewSetting const&);
     pointer_type init();
 
+    void normal_weapon_fx();
+    void start_haste_effect();
+    void remove_haste_effect();
     void normal_shot_delegate(view::pSprite&, HitCallback const&);
     void shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
     void repeating_shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
@@ -73,9 +75,9 @@ protected:
     int const changetime_;
     bool      changing_wep_;
     int       weplist_idx_;
-    double    accumulated_heat_, cooling_speed_, accumulate_speed_;
+    double    accumulated_heat_, cooling_speed_, heat_for_normal_shoot_, heat_for_haste_, heat_for_jama_shoot_;
     int       overheat_downtime_;
-    bool      overheat_;
+    bool      overheat_, hasting_;
 
     Input*               input_;
 	Weapon*              current_wep_;

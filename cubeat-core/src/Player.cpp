@@ -8,6 +8,8 @@
 #include "Sound.hpp"
 #include "utils/Random.hpp"
 #include "data/ViewSetting.hpp"
+#include "Accessors.hpp"        //for some basic visual effects
+#include "EasingEquations.hpp"  //for some basic visual effects
 #include <boost/foreach.hpp>
 
 using namespace psc;
@@ -17,8 +19,8 @@ using namespace std::tr1::placeholders;
 
 Player::Player(Input* input, data::pViewSetting const& view_setting)
     :changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
-     cooling_speed_(0.06), accumulate_speed_(0.16), overheat_downtime_(2000),
-     overheat_(false), input_(input), view_setting_(view_setting)
+     cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
+     overheat_downtime_(2000), overheat_(false), hasting_(false), input_(input), view_setting_(view_setting)
 {
 }
 
@@ -42,6 +44,10 @@ pPlayer Player::init()
 
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
+        EventDispatcher::i().subscribe_btn_event(
+            bind(&Player::start_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_PRESS);
+        EventDispatcher::i().subscribe_btn_event(
+            bind(&Player::remove_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_RELEASE);
 
 //note: maybe I should let different callee have parallel calling button and state...
 //      do it when have time.
@@ -63,32 +69,23 @@ Player::~Player()
     weplist_.clear();
 }
 
-//note: need fix
+//2011.03.28 remove old commented code here.
 void Player::cycle()
 {
-//    process_input();
-//
-//    if( current_wep_->update() ) {
-//        //do nothing
-//    }
-//    else {
-//        if( weplist_idx_ != 0 ) {
-//            //Sound::i().change_wep();
-//            current_wep_ = weplist_[0];
-//            //if the weapon is "DEAD" then we change it back to the most basic weapon
-//            weplist_idx_ = 0;
-//        }
-//    }
-//    return *this;
 }
 
 void Player::heat_cooling()
 {
-    if( !overheat_ ) {
-        if( accumulated_heat_ > 0 ) {
-            accumulated_heat_ -= cooling_speed_;
-            if( accumulated_heat_ < 0 )
-                accumulated_heat_ = 0;
+    if( !overheat_ ) { //2011.03.28 when hasting you shouldn't cool
+        if( !hasting_ ) {
+            if( accumulated_heat_ > 0 ) {
+                accumulated_heat_ -= cooling_speed_;
+                if( accumulated_heat_ < 0 )
+                    accumulated_heat_ = 0;
+            }
+        }
+        else {
+            generate_heat(heat_for_haste_);
         }
     }
 }
@@ -99,8 +96,10 @@ Player& Player::set_config(utils::map_any const& config)
     weplist_[1]->ammo( config.I("item2_start_ammo") );
     weplist_[2]->ammo( config.I("item3_start_ammo") );
     cooling_speed_    = config.F("cool_rate");
-    accumulate_speed_ = config.F("heat_rate");
+    heat_for_normal_shoot_ = config.F("heat_rate");
     overheat_downtime_= config.I("downtime");
+    heat_for_haste_   = config.F("heat_for_haste");
+    heat_for_jama_shoot_ = config.F("heat_for_jama");
     return *this;
 }
 
@@ -162,6 +161,7 @@ void Player::generate_heat(double heat)
     if( accumulated_heat_ > 1 ) {
         accumulated_heat_ = 1;
         overheat_ = true;
+        remove_haste_effect(); // only call this after you're sure about overheat_ is true
         EventDispatcher::i().subscribe_timer(
             bind(&end_overheat, ref(overheat_)), shared_from_this(), overheat_downtime_);
     }
@@ -197,7 +197,7 @@ void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
             hit_cb(1);
         else {
             hit_cb(1);
-            p->generate_heat(accumulate_speed_ * 0.5); //if enemy hit, generate extra heat.
+            p->generate_heat(heat_for_jama_shoot_); //if enemy hit, generate extra heat.
         }
     }
 }
@@ -232,6 +232,31 @@ bool Player::ammo_all_out() const {
     return count == 0;
 }
 
+//2011.03.28 make hasting a player effect.
+void Player::start_haste_effect()
+{
+    using namespace accessor;
+    using namespace easing;
+    if( !overheat_ ) {
+        vec3 rot = input_->getCursor()->get<Rotation>();
+        rot.Z += 360; //will this overflow eventually?
+        input_->getCursor()->tween<Linear, Rotation>(rot, 1000u, -1);
+        hasting_ = true;
+    }
+}
+
+void Player::remove_haste_effect()
+{
+    using namespace accessor;
+    using namespace easing;
+    if( hasting_ ) {
+        vec3 rot = input_->getCursor()->get<accessor::Rotation>();
+        rot.Z += 360; //will this overflow eventually?
+        input_->getCursor()->tween<Linear, Rotation>(rot, 3000u, -1);
+        hasting_ = false;
+    }
+}
+
 //temp: not flexible and stupid.
 void Player::normal_weapon_fx() {
     if( !overheat_ ) {
@@ -239,7 +264,7 @@ void Player::normal_weapon_fx() {
         view::SFX::i().normal_weapon_vfx(
             InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
 
-        generate_heat(accumulate_speed_);
+        generate_heat(heat_for_normal_shoot_);
     }
     else {
         /* special effects of attempting to fire when overheated */

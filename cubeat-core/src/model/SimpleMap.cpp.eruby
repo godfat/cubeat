@@ -31,7 +31,12 @@ void SimpleMap::dump_preview_to(pSimpleMap dest, preview_list_type const& cl) co
 bool SimpleMap::is_below_empty(pSimpleCube cube) const
 {
     if( cube->y() == 0 ) return false;
-    else return simp_cubes_[cube->x()][cube->y()-1].use_count() == 0;
+    else {
+        for( int x = cube->x(), y = cube->y(); y >= 0; --y )
+            if( simp_cubes_[x][y].use_count() == 0 )
+                return true;
+        //return simp_cubes_[cube->x()][cube->y()-1].use_count() == 0;
+    }
     // throw "impossible flow!";
     return false;
 }

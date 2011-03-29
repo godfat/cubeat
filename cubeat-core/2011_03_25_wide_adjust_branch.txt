@@ -1,13 +1,12 @@
 
 ** URGENT: Map::next_state might have bug.... cubes are chained even when they are in the air.
 
-** Map::next_state related crash !? -- no, it's garbage-vfx related.
-
 ** Why sometimes the bottom cubes' chain state isn't taken out?
 
 ** every piece of code that use something like "is_below_empty()" is needed to be checked again.
    they might be all wrong from the very beginning.
    -- might affect OneFading, Garbage creation, Dropping and Waiting states and related things.
+   -- AI's is_below_empty (SimpleMap) seemed to be fixed.
 
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.

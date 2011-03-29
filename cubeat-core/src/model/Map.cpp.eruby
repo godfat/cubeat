@@ -180,15 +180,7 @@ pOneFadingOrig <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 <% end %>
     if( that->y() == 0 ) return false;
-    else {
-//        for( int x = that->x(), y = that->y(); y >= 0; --y )
-//            if( cubes_[x][y].use_count() == 0 )
-//                return true;
-        if( cubes_[that->x()][that->y()-1].use_count() == 0 )
-            return true;
-//        else if( cubes_[that->x()][that->y()-1]->is_dropping() )
-//            return true; //????
-    }
+    else return cubes_[that->x()][that->y()-1].use_count() == 0;
     // throw "impossible flow!";
     return false;
 }
@@ -230,7 +222,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().subscribe_timer(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
-
             o->new_chain_event()(*i);
             o->new_garbage_event()(*i, o->garbage_lands(), amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );

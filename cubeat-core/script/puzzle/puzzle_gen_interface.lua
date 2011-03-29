@@ -1,4 +1,6 @@
 
+local random = require 'script/puzzle/helpers'.random
+local reverse_i = require 'script/puzzle/helpers'.reverse_i
 local MapUtils = require 'script/puzzle/maputils'
 local PuzzleGen = require 'script/puzzle/puzzle_gen'
 
@@ -10,9 +12,9 @@ color_amounts:4,
 chain_amounts:3,
 starting_line:4,
 chaining_duration:300,
-cube_dying_duration:100,
+cube_dying_duration:200,
 cube_sinking_duration:500,
-cube_dropping_duration:1000,
+cube_dropping_duration:300,
 speed:80.0,
 damage_factor:1.0,
 width:6,
@@ -27,6 +29,11 @@ cube_colors:
   file:write("[")
   for x = 1, map.width - 1 do file:write("0, ") end -- important, the real height must be one row higher than logic map
   file:write("0],\n")
+
+  if random(2) == 0 then
+    if de_bug then print(" -- puzzle flipped (50% chance) -- ") end
+    for y = 1, map.height do reverse_i(map[y]) end
+  end
 
   for y = map.height, 1, -1 do
     file:write("[")

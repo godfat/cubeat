@@ -1,12 +1,15 @@
 
-** URGENT: Map::next_state might have bug.... cubes are chained even when they are in the air.
+** Urgent. now versus mode starts crashing. why?
 
-** Why sometimes the bottom cubes' chain state isn't taken out?
+** Map::next_state might have bug.... cubes are chained even when they are in the air.
+   -- the tween mechanism seemed have bug. why it's not FIFO? 
+   -- for puzzle mode, this is fixed for now.
+   -- for versus mode, this will still affect newly created cubes, but should be hard to notice.
 
-** every piece of code that use something like "is_below_empty()" is needed to be checked again.
-   they might be all wrong from the very beginning.
-   -- might affect OneFading, Garbage creation, Dropping and Waiting states and related things.
-   -- AI's is_below_empty (SimpleMap) seemed to be fixed.
+** I think we really need real_y(pixel_y) as a model property, either use this with current State
+   pattern or revamp the state pattern.
+   
+** Why sometimes the bottom cubes' chain state isn't taken out?   -- ignore this for now.
 
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
@@ -27,6 +30,7 @@
      -- need enumerate where I used variadic template. fuck apple-gcc... -- done
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 
       thus there's a chance "they might get chained in the air."   -- WRONG, not fixed.
+   -- Generated answers tend to be on the right side of map.  -- done, horizontal flip for 50% chance
 
 6. press enter to activate player control is weird.
 

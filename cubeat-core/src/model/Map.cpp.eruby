@@ -145,8 +145,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
     else{
         if( cube->is_waiting() )
             return state::pState();
-        else{
-            // Sound::i().cube_dropped();
+        else {
             return state::Waiting::create(cube);
         }
     }
@@ -185,7 +184,10 @@ bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
 //        for( int x = that->x(), y = that->y(); y >= 0; --y )
 //            if( cubes_[x][y].use_count() == 0 )
 //                return true;
-        return cubes_[that->x()][that->y()-1].use_count() == 0;
+        if( cubes_[that->x()][that->y()-1].use_count() == 0 )
+            return true;
+//        else if( cubes_[that->x()][that->y()-1]->is_dropping() )
+//            return true; //????
     }
     // throw "impossible flow!";
     return false;

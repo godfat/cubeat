@@ -70,9 +70,22 @@ public:
     }
 
     virtual void <% debug_hook 'drop_a_block_with_callback' do %>(callback_type callback){ <% end %>
+//        body_->tween<easing::Linear, accessor::Pos2D>(
+//            pos_vec2(), map_setting()->cube_dropping_duration(), 0,
+//            std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
+
+        //hotfix: Map::next_state depends on the execution order of cubes' states in the same frame,
+        //but Irrlicht animator is not reliable (actually we should not depend on this.)
+        //so I am going to use Timer for the callback here, for now. next_state is bound to be revamped.
+        //similar problem will still happen in sink_a_block event, however that's a little harder to notice,
+        //and it won't break puzzle mode. (no one is sinking in puzzle mode.)
+
         body_->tween<easing::Linear, accessor::Pos2D>(
-            pos_vec2(), map_setting()->cube_dropping_duration(), 0,
-            std::tr1::bind(&ViewSprite::check_if_need_callback, shared_from_this(), callback));
+            pos_vec2(), map_setting()->cube_dropping_duration());
+        ctrl::EventDispatcher::i().subscribe_timer(
+            std::tr1::bind( &ViewSprite::check_if_need_callback, this, callback),
+            std::tr1::static_pointer_cast<ViewSprite>( shared_from_this() ),
+            map_setting()->cube_dropping_duration() );
     }
 
     virtual void <% debug_hook 'sink_a_block_with_callback' do %>(callback_type callback){ <% end %>

@@ -171,7 +171,7 @@ void MainMenu::end()
     else if( game_mode_ == CPU_VS_CPU )
         App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 2);
     else if( game_mode_ == PUZZLE )
-        App::i().launchPuzzle(conf1p_, stage_, 19);
+        App::i().launchPuzzle(conf1p_, stage_, 3);
     std::cout << "MainMenu end call finished." << std::endl;
 }
 

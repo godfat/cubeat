@@ -294,7 +294,7 @@ void EventDispatcher::dispatch_timer(){
 //                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 )
 //                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << std::endl;
 
-                get<TE::LASTTIME>(*t) = now; //or should be += get<TE::DURATION>(*t) ?
+                get<TE::LASTTIME>(*t) = now; //get<TE::LASTTIME>(*t) += get<TE::DURATION>(*t);
                 int& looptimes = get<TE::LOOP>(*t);
                 if( looptimes == 0 ) {
                     timers_to_be_deleted_.push_back(t);

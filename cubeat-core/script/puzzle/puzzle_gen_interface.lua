@@ -16,13 +16,18 @@ cube_dropping_duration:1000,
 speed:80.0,
 damage_factor:1.0,
 width:6,
-height:10,
+height:11,
 dropping_creatable:0,
 garbage_dumpable:0,
 cube_colors:
 ]])
   local map = PuzzleGen:generate(chain_limit, w, h, de_bug)
   file:write("[\n")
+
+  file:write("[")
+  for x = 1, map.width - 1 do file:write("0, ") end -- important, the real height must be one row higher than logic map
+  file:write("0],\n")
+
   for y = map.height, 1, -1 do
     file:write("[")
     for x = 1, map.width do

@@ -145,8 +145,9 @@ public:
     }
 
     virtual void <% debug_hook 'get_chain' do %>(){ <% end %>
-        if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() )
-        body_->tween<easing::SineCirc, accessor::GradientEmissive>(100, 500u, -1);
+        if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
+            body_->tween<easing::SineCirc, accessor::GradientEmissive>(100, 500u, -1);
+        }
     }
 
     virtual void <% debug_hook 'lose_chain' do %>(){ <% end %>

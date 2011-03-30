@@ -1,8 +1,8 @@
 
-** Urgent. now versus mode starts crashing. why?
+** new crashing problem caused by changing how next_state is hooked into event flow 
+   should already be fixed. But the threading crashing problem is so far not fixed.
 
 ** Map::next_state might have bug.... cubes are chained even when they are in the air.
-   -- the tween mechanism seemed have bug. why it's not FIFO? 
    -- for puzzle mode, this is fixed for now.
    -- for versus mode, this will still affect newly created cubes, but should be hard to notice.
 
@@ -29,7 +29,7 @@
    -- code need clean up. but the integration has been successful.
      -- need enumerate where I used variadic template. fuck apple-gcc... -- done
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 
-      thus there's a chance "they might get chained in the air."   -- WRONG, not fixed.
+      thus there's a chance "they might get chained in the air."   -- fixed.
    -- Generated answers tend to be on the right side of map.  -- done, horizontal flip for 50% chance
 
 6. press enter to activate player control is weird.
@@ -52,3 +52,7 @@
 13. investigate about gcc46 to build native app on Mac ... (Apple frameworks not usable?)
    -- x86_64 irrlicht on Mac? How? 
    
+14. We need better chaining cubes' indication. we need better indication of attacking and 
+    cubes dropping and those sort of things. In short, we need better UI and user feedback design.
+    
+    

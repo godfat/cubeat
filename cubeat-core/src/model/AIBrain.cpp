@@ -34,95 +34,99 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
 {
     //Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
+    try {
+        int self_index = ally_ids.front();
+        //since we only have two map, one for each side, so let the first in ally-list be one's self.
 
-    int self_index = ally_ids.front();
-    //since we only have two map, one for each side, so let the first in ally-list be one's self.
+        map_list_ = map_list;
+        pSimpleMap self_map = map_list_[self_index]->clone();
+        //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
+        //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
+        {
+            boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
-    map_list_ = map_list;
-    pSimpleMap self_map = map_list_[self_index]->clone();
-    //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
-    //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
-    {
-        boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
+            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
+            int attack_threshold = 10;
+            if( self_map->warning_level() )
+                attack_threshold = 5 - (self_map->warning_level() / 20);
+            else if( AIUtils::grounded_cube_count(self_map) + self_map->garbage_left() >
+                     self_map->ms()->width() * (self_map->ms()->height()-1) )
+                attack_threshold = 1;
 
-        //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
-        int attack_threshold = 10;
-        if( self_map->warning_level() )
-            attack_threshold = 5 - (self_map->warning_level() / 20);
-        else if( AIUtils::grounded_cube_count(self_map) + self_map->garbage_left() >
-                 self_map->ms()->width() * (self_map->ms()->height()-1) )
-            attack_threshold = 1;
-
-        if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, attack_threshold) ) {
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
-            pAICommand cmd = AICommand::create();
-            cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
-            cmd_queue_.push_back( cmd );
-            if( c->is_broken() )
-                cmd_queue_.push_back( cmd );
-            if( c->is_garbage() ) {
-                cmd_queue_.push_back( cmd );
-                cmd_queue_.push_back( cmd );
-            }
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 4a.").endl();
-        }
-        else {
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
-            std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
-            std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
-            int high_col_threshold = 10;
-            std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
-            std::random_shuffle(high_cols.begin(), high_cols.end());
-            std::random_shuffle(garbages.begin(), garbages.end());
-            std::random_shuffle(brokens.begin(), brokens.end());
-
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 4b.").endl();
-
-            BOOST_FOREACH(pSimpleCube& c, brokens) {
+            if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, attack_threshold) ) {
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
                 pAICommand cmd = AICommand::create();
                 cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
                 cmd_queue_.push_back( cmd );
-                break; // only allow 1 target at a time for now
-            }
-
-//            if( cmd_queue_.empty() ) {
-//                BOOST_FOREACH(pSimpleCube& c, garbages) {
-//                    pAICommand cmd = AICommand::create();
-//                    cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
-//                    for( int i = 0; i < c->hp(); ++i )
-//                        cmd_queue_.push_back( cmd );
-//                    break; // only allow 1 target at a time for now
-//                }
-//            }
-
-            BOOST_FOREACH(int& x, high_cols) {
-                pAICommand cmd = AICommand::create();
-                cmd->delay(200).weight(1).normal_shot(x, utils::random( high_col_threshold/2 ) );
-                cmd_queue_.push_back( cmd );
-                break; // only allow 1 target at a time for now
-            }
-
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
-            if( cmd_queue_.empty() ) {
-                if( AIUtils::grounded_cube_count(self_map) >= 42 ) {
-                    int x, y;
-                    do {
-                        x = utils::random(self_map->ms()->width());
-                        y = utils::random(self_map->ms()->height() / 2);
-                    } while( !AIUtils::lookup_for_grounded(self_map, x, y) );
-
-                    pAICommand cmd = AICommand::create();
-                    cmd->delay(200).weight(1).normal_shot(x, y);
+                if( c->is_broken() )
+                    cmd_queue_.push_back( cmd );
+                if( c->is_garbage() ) {
+                    cmd_queue_.push_back( cmd );
                     cmd_queue_.push_back( cmd );
                 }
-                else if( owner_.lock()->heat() < 0.66 ) {
-                    pAICommand cmd = AICommand::create();
-                    cmd->press_trig2(); //haste here
-                    cmd_queue_.push_back( cmd );
-                }
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 4a.").endl();
             }
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();
+            else {
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
+                std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
+                std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
+                int high_col_threshold = 10;
+                std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
+                std::random_shuffle(high_cols.begin(), high_cols.end());
+                std::random_shuffle(garbages.begin(), garbages.end());
+                std::random_shuffle(brokens.begin(), brokens.end());
+
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 4b.").endl();
+
+                BOOST_FOREACH(pSimpleCube& c, brokens) {
+                    pAICommand cmd = AICommand::create();
+                    cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
+                    cmd_queue_.push_back( cmd );
+                    break; // only allow 1 target at a time for now
+                }
+
+    //            if( cmd_queue_.empty() ) {
+    //                BOOST_FOREACH(pSimpleCube& c, garbages) {
+    //                    pAICommand cmd = AICommand::create();
+    //                    cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
+    //                    for( int i = 0; i < c->hp(); ++i )
+    //                        cmd_queue_.push_back( cmd );
+    //                    break; // only allow 1 target at a time for now
+    //                }
+    //            }
+
+                BOOST_FOREACH(int& x, high_cols) {
+                    pAICommand cmd = AICommand::create();
+                    cmd->delay(200).weight(1).normal_shot(x, utils::random( high_col_threshold/2 ) );
+                    cmd_queue_.push_back( cmd );
+                    break; // only allow 1 target at a time for now
+                }
+
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
+                if( cmd_queue_.empty() ) {
+                    if( AIUtils::grounded_cube_count(self_map) >= 42 ) {
+                        int x, y;
+                        do {
+                            x = utils::random(self_map->ms()->width());
+                            y = utils::random(self_map->ms()->height() / 2);
+                        } while( !AIUtils::lookup_for_grounded(self_map, x, y) );
+
+                        pAICommand cmd = AICommand::create();
+                        cmd->delay(200).weight(1).normal_shot(x, y);
+                        cmd_queue_.push_back( cmd );
+                    }
+                    else if( owner_.lock()->heat() < 0.66 ) {
+                        pAICommand cmd = AICommand::create();
+                        cmd->press_trig2(); //haste here
+                        cmd_queue_.push_back( cmd );
+                    }
+                }
+                //Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();
+            }
         }
+    } //try
+    catch( std::exception& e ) {
+        Logger::i().buf(" Exception catched: ").buf(e.what()).endl();
     }
     is_thinking_ = false;
     //Logger::i().buf("brain ").buf(this).buf(" after thinking block.").endl();

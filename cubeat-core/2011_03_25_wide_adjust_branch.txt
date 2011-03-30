@@ -11,6 +11,8 @@
    
 ** Why sometimes the bottom cubes' chain state isn't taken out?   -- ignore this for now.
 
+** URGENT again: well, boost::thread_resource_error exception is getting worse?
+
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
    -- haste produce heat                 -- done
@@ -54,5 +56,4 @@
    
 14. We need better chaining cubes' indication. we need better indication of attacking and 
     cubes dropping and those sort of things. In short, we need better UI and user feedback design.
-    
     

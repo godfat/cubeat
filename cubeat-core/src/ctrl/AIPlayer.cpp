@@ -22,7 +22,8 @@ using std::tr1::function;
 using utils::Logger;
 
 AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
-    :Player(input, view_setting), brain_(0), think_interval_(400), is_executing_(false)
+    :Player(input, view_setting), brain_(0), think_interval_(400), is_executing_(false),
+     trig1_(false), trig2_(false)
 {
 }
 
@@ -120,40 +121,42 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;
 
-    function<void()> cb = bind(&AIPlayer::hold_button, this, ref(input_->trig1()), 1);
+    function<void()> cb = bind(&AIPlayer::hold_button, this, ref(trig1_), 1);
 
     input_->getCursor()->tween<IOExpo, Pos2D>(dest, 200, 0, cb);
 }
 
 void AIPlayer::haste(int ms)
 {
-    std::cout << "player " << this << " is trying to haste" << std::endl;
-    hold_button(input_->trig2(), ms);
+    hold_button(trig2_, ms);
 }
 
-void AIPlayer::hold_button(ctrl::Button& btn_ref, int ms)
+void AIPlayer::hold_button(bool& corresponding_btn_state_, int ms)
 {
-    press_button(btn_ref);
+    press_button(corresponding_btn_state_);
 
     pAIPlayer self = static_pointer_cast<AIPlayer>(shared_from_this());
-    function<void()> cb = bind(&AIPlayer::release_button, this, ref(btn_ref));
+    function<void()> cb = bind(&AIPlayer::release_button, this, ref(corresponding_btn_state_));
 
     EventDispatcher::i().subscribe_timer(cb, self, ms);
 }
 
-void AIPlayer::press_button(ctrl::Button& btn_ref)
+void AIPlayer::press_button(bool& corresponding_btn_state_)
 {
-    btn_ref.now() = true;
+    corresponding_btn_state_ = true;
 }
 
-void AIPlayer::release_button(ctrl::Button& btn_ref)
+void AIPlayer::release_button(bool& corresponding_btn_state_)
 {
-    btn_ref.now() = false;
+    corresponding_btn_state_ = false;
     is_executing_ = false; //this indicate executing finished.
 }
 
 void AIPlayer::cycle()
 {
+    input_->trig1().now() = trig1_;
+    input_->trig2().now() = trig2_;
+
     if( !is_executing_ ) {
         if( model::pAICommand cmd = brain_->getCurrentCmd() ) {
             //Logger::i().buf("player ").buf(this).buf(" issuing command: ").buf(cmd).endl();

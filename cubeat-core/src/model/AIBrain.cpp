@@ -32,7 +32,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     std::list<int> const& ally_ids,
                     std::list<int> const& enemy_ids)
 {
-    Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
+    //Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
 
     int self_index = ally_ids.front();
@@ -95,9 +95,9 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                 }
             }
 
-            Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
+            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
             if( cmd_queue_.empty() ) {
-                if( AIUtils::grounded_cube_count(self_map) >= 42 ) {
+                if( AIUtils::grounded_cube_count(self_map) >= 36 ) {
                     int x, y;
                     do {
                         x = utils::random(self_map->ms()->width());
@@ -107,17 +107,18 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     pAICommand cmd = AICommand::create();
                     cmd->delay(200).weight(1).normal_shot(x, y);
                     cmd_queue_.push_back( cmd );
-                } else {
+                }
+                else if( self_map->garbage_left() == 0 ) {
                     pAICommand cmd = AICommand::create();
                     cmd->press_trig2(); //haste here
                     cmd_queue_.push_back( cmd );
                 }
             }
-            Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();
+            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();
         }
     }
     is_thinking_ = false;
-    Logger::i().buf("brain ").buf(this).buf(" after thinking block.").endl();
+    //Logger::i().buf("brain ").buf(this).buf(" after thinking block.").endl();
 //  owner_.lock()->stopThinking();
 }
 

@@ -52,9 +52,9 @@ protected:
     void issue_command(model::pAICommand const&);
     void shoot(int, int);
     void haste(int);
-    void hold_button(ctrl::Button&, int);
-    void press_button(ctrl::Button&);
-    void release_button(ctrl::Button&);
+    void hold_button(bool&, int);
+    void press_button(bool&);
+    void release_button(bool&);
     pointer_type self() { return self_.lock(); }
 
 protected:
@@ -65,6 +65,7 @@ protected:
     pDummy          think_timer_;
     boost::mutex    think_mutex_;
     bool            is_executing_;
+    bool            trig1_, trig2_;
 };
 
 typedef AIPlayer::pointer_type  pAIPlayer;

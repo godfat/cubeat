@@ -22,7 +22,7 @@ using std::tr1::function;
 using utils::Logger;
 
 AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
-    :Player(input, view_setting), brain_(0), think_interval_(400), is_executing_(false),
+    :Player(input, view_setting), brain_(0), think_interval_(250), is_executing_(false),
      trig1_(false), trig2_(false)
 {
 }
@@ -47,7 +47,7 @@ pAIPlayer AIPlayer::init()
 
 void AIPlayer::think()
 {
-    if( !brain_->isThinking() && brain_->needThinking() && heat() < 0.7 ) {
+    if( !brain_->isThinking() && !is_executing_ && brain_->needThinking() && heat() < 0.75 ) {
 
         //Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
         if( think_thread_ ) {
@@ -102,7 +102,7 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
                 }
                 break;
             case BtnID::TRIG_2:
-                haste( 400 );
+                haste( 200 );
                 break;
             default:
                 break;

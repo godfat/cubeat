@@ -51,6 +51,7 @@ protected:
     void think();
     void issue_command(model::pAICommand const&);
     void shoot(int, int);
+    void haste(int);
     void hold_button(ctrl::Button&, int);
     void press_button(ctrl::Button&);
     void release_button(ctrl::Button&);

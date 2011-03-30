@@ -99,6 +99,9 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
                 case BtnID::TRIG_1:
                     shoot( pos->first, pos->second );
                     break;
+                case BtnID::TRIG_2:
+                    haste( 400 );
+                    break;
                 default:
                     break;
             }
@@ -120,6 +123,11 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
     function<void()> cb = bind(&AIPlayer::hold_button, this, ref(input_->trig1()), 1);
 
     input_->getCursor()->tween<IOExpo, Pos2D>(dest, 200, 0, cb);
+}
+
+void AIPlayer::haste(int ms)
+{
+    hold_button(input_->trig2(), 400);
 }
 
 void AIPlayer::hold_button(ctrl::Button& btn_ref, int ms)
@@ -153,11 +161,5 @@ void AIPlayer::cycle()
             brain_->popCmdQueue();
             //Logger::i().buf("player ").buf(this).buf(" done issuing command: ").buf(cmd).endl();
         }
-        if( heat() < 0.7 ) {
-            input_->trig2().now() = true;
-            //2011.03.28 AI should use trig2() for hasting. the controls are integrated now.
-        }
     }
-    else
-        input_->trig2().now() = false;
 }

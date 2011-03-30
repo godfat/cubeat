@@ -102,7 +102,7 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
                 }
                 break;
             case BtnID::TRIG_2:
-                haste( 200 );
+                haste( 500 );
                 break;
             default:
                 break;

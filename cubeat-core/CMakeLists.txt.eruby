@@ -11,11 +11,12 @@ SET (CMAKE_CXX_COMPILER "g++")
 IF(CMAKE_COMPILER_IS_GNUCXX)
     SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
     IF(APPLE)
-        SET (cxx_flag "${cxx_flag}")
+        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework IOKit -framework OpenGL -framework Carbon")
     ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 SET (CMAKE_CXX_FLAGS "${cxx_flag}")
-ADD_DEFINITIONS (-DBOOST_HAS_TR1 -DNDEBUG -DBOOST_DISABLE_ASSERTS)
+ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS)
+# -DBOOST_HAS_TR1
 
 # setup needed library
 FIND_PACKAGE (Boost REQUIRED)
@@ -25,14 +26,18 @@ INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS} /usr/
 
 # setup linking path
 IF(APPLE)
-    SET(irrlicht_lib_path "<%= File.expand_path("#{Dir.pwd}/../irrlicht/source/Irrlicht") %>")
+    SET(irrlicht_lib_path "<%= File.expand_path("#{Dir.pwd}/../irrlicht/source/Irrlicht/MacOSX/build/Release") %>")
 ELSE(APPLE)
     SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
 ENDIF(APPLE)
 LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /usr/X11/lib <%= Dir.pwd %>)
 
 # setup linking
-LINK_LIBRARIES (Irrlicht freetype X11 Xxf86vm GL boost_thread-mt luajit-51)
+IF(APPLE)
+    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51)
+ELSE(APPLE)
+    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 X11 Xxf86vm GL)
+ENDIF(APPLE)
 
 # setup source codes
 SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \

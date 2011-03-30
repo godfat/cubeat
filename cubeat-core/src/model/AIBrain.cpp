@@ -63,7 +63,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
             std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
             std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
-            int high_col_threshold = 7;
+            int high_col_threshold = 8;
             std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
             std::random_shuffle(high_cols.begin(), high_cols.end());
             std::random_shuffle(garbages.begin(), garbages.end());
@@ -97,7 +97,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
 
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
             if( cmd_queue_.empty() ) {
-                if( AIUtils::grounded_cube_count(self_map) >= 36 ) {
+                if( AIUtils::grounded_cube_count(self_map) >= 42 ) {
                     int x, y;
                     do {
                         x = utils::random(self_map->ms()->width());
@@ -108,7 +108,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     cmd->delay(200).weight(1).normal_shot(x, y);
                     cmd_queue_.push_back( cmd );
                 }
-                else if( self_map->garbage_left() == 0 ) {
+                else if( owner_.lock()->heat() < 0.6 ) {
                     pAICommand cmd = AICommand::create();
                     cmd->press_trig2(); //haste here
                     cmd_queue_.push_back( cmd );

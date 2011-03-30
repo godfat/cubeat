@@ -93,18 +93,18 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
     typedef model::AICommand::pPosition pPosition;
     typedef model::AICommand::pButton   pButton;
     typedef model::AICommand::BtnID     BtnID;
-    if( pPosition pos = cmd->pos() ) {
-        if( pButton btn = cmd->btn() ) {
-            switch( *btn ) {
-                case BtnID::TRIG_1:
+    if( pButton btn = cmd->btn() ) {
+        switch( *btn ) {
+            case BtnID::TRIG_1:
+                if( pPosition pos = cmd->pos() ) {
                     shoot( pos->first, pos->second );
-                    break;
-                case BtnID::TRIG_2:
-                    haste( 400 );
-                    break;
-                default:
-                    break;
-            }
+                }
+                break;
+            case BtnID::TRIG_2:
+                haste( 400 );
+                break;
+            default:
+                break;
         }
     }
 }
@@ -127,7 +127,8 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
 
 void AIPlayer::haste(int ms)
 {
-    hold_button(input_->trig2(), 400);
+    std::cout << "player " << this << " is trying to haste" << std::endl;
+    hold_button(input_->trig2(), ms);
 }
 
 void AIPlayer::hold_button(ctrl::Button& btn_ref, int ms)

@@ -44,8 +44,9 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
     map()->update_cube_position(self(), x(), y()+1);
     if( is_sinking() )
         sink_a_block_event()();
-    else
+    else {
         drop_a_block_event()();
+    }
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
@@ -59,7 +60,8 @@ void <% debug_hook 'Cube::lose_chain' do %>(){
 
 void <% debug_hook 'Cube::next_state' do %>(){
 <% end %>
-    state_->next_state();
+    if( state_.use_count() != 0 ) //2011.3.30 added this check because this might still be called by timer
+        state_->next_state();     //however when you go exploding or dying this will already be reset.
 }
 
 // only used by OneFading::fade

@@ -84,7 +84,7 @@ public:
             pos_vec2(), map_setting()->cube_dropping_duration());
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind( &ViewSprite::check_if_need_callback, this, callback),
-            //std::tr1::static_pointer_cast<ViewSprite>( shared_from_this() ),
+            std::tr1::static_pointer_cast<ViewSprite>( shared_from_this() ),
             map_setting()->cube_dropping_duration() );
     }
 

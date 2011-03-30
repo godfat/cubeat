@@ -92,6 +92,11 @@ public:
     bool is_all_fallen() const;
     // end
 
+    int warning_level() const {
+        if( warning_level_ )
+            return *warning_level_;
+        else return 0;
+    }
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }

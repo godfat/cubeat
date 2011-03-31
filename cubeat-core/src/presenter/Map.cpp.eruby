@@ -90,7 +90,7 @@ void Map::speedup(){
     if( map_setting()->speed() < 400.f )
         map_setting()->speed( map_setting()->speed() + 10.f );
     ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up more frequently
-        bind(&Map::speedup, this), shared_from_this(), 5000);
+        std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
 }
 
 pMap <% debug_hook 'Map::init' do %>(){

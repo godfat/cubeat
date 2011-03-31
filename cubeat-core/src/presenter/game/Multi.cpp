@@ -34,7 +34,6 @@ using namespace game;
 using namespace easing;
 using namespace accessor;
 using utils::to_s;
-using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
 Multi::Multi()
@@ -129,6 +128,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
     timer_ui_   = pDummy(new int);
     //note: end of bad area
+    using std::tr1::bind;
 
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
@@ -339,6 +339,7 @@ void Multi::end_sequence1()
 
 void Multi::reinit()
 {
+    using std::tr1::bind;
     Sound::i().play("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
@@ -355,8 +356,8 @@ void Multi::item_creation()
 
     ctrl::wpPlayer wp0 = player0_;
     ctrl::wpPlayer wp1 = player1_;
-    std::tr1::function<void(int)> const cb1 = bind(&Multi::eat_item, this, wp0, std::tr1::placeholders::_1);
-    std::tr1::function<void(int)> const cb2 = bind(&Multi::eat_item, this, wp1, std::tr1::placeholders::_1);
+    std::tr1::function<void(int)> const cb1 = std::tr1::bind(&Multi::eat_item, this, wp0, std::tr1::placeholders::_1);
+    std::tr1::function<void(int)> const cb2 = std::tr1::bind(&Multi::eat_item, this, wp1, std::tr1::placeholders::_1);
     view::pSprite body_ = item_;
     player0_->subscribe_shot_event(body_, cb1);
     player1_->subscribe_shot_event(body_, cb2);

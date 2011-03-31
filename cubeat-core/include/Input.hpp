@@ -16,7 +16,7 @@
 
 #include <string>
 #include <vector>
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 
 #ifdef _USE_WIIMOTE_
 #include <wiimote.h>

@@ -65,7 +65,8 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
             }
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 4a.").endl();
         }
-        else {
+        else
+        {
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
             std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
             std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);

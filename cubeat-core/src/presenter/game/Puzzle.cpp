@@ -33,7 +33,6 @@ using namespace game;
 using namespace easing;
 using namespace accessor;
 using utils::to_s;
-using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
 Puzzle::Puzzle()
@@ -98,6 +97,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     btn_single_shot_ = pDummy(new int);
     //note: end of bad area
 
+    using std::tr1::bind;
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Puzzle::update_ui_by_second, this), timer_ui_, 1000, -1);
     ctrl::EventDispatcher::i().subscribe_timer(
@@ -156,7 +156,7 @@ void Puzzle::update_ui_by_second(){
 void Puzzle::single_shot(){
     btn_single_shot_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), ref(scene_)), 100);
+        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), std::tr1::ref(scene_)), 100);
     fired_ = true;
     //ctrl::EventDispatcher::i().clear_obj_event( scene_ );
 }
@@ -192,12 +192,13 @@ void Puzzle::end(pMap lose_map)
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-
+    using std::tr1::bind;
     ctrl::EventDispatcher::i().subscribe_timer(bind(&Puzzle::setup_end_button, this), 1000);
 }
 
 void Puzzle::setup_end_button()
 {
+    using std::tr1::bind;
     std::tr1::function<void(int, int)> clicka = bind(&Puzzle::reinit, this);
     std::tr1::function<void(int, int)> clickb = bind(&Puzzle::end_sequence1, this);
 
@@ -221,6 +222,7 @@ void Puzzle::end_sequence1()
 
 void Puzzle::reinit()
 {
+    using std::tr1::bind;
     int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_-1;
     //if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
     if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;

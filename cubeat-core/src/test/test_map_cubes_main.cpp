@@ -12,7 +12,7 @@
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
 
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <tr1/functional>
 #include <iostream>
 

@@ -4,7 +4,7 @@
 //This ai_detail namespace contains all the dirty work
 //needed by AIBrain for manipulating SimpleMap
 
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <vector>
 
 namespace psc {
@@ -32,7 +32,7 @@ public:
     static void kill (pSimpleMap&, int x, int y);
 
 private:
-    static int simulate_fire_at(pSimpleMap, int, int); //returns chain's score sum
+    static int simulate_fire_at(int x, int y, pSimpleMap& cloned_map); //returns chain's score sum
 };
 
 } //ai_detail

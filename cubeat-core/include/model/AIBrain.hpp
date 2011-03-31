@@ -1,7 +1,7 @@
 #ifndef _SHOOTING_CUBES_MODEL_ARTIFICIAL_INTELLIGENCE_BRAIN_
 #define _SHOOTING_CUBES_MODEL_ARTIFICIAL_INTELLIGENCE_BRAIN_
 
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <deque>
 #include <vector>
 #include <utility>

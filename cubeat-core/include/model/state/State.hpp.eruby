@@ -1,6 +1,6 @@
 
 #include "all_fwd.hpp"
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 
 <% header_guard do %>
 

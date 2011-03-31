@@ -52,8 +52,9 @@ void AIPlayer::think()
         //Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
         if( think_thread_ ) {
             //Logger::i().buf("player ").buf(this).buf(" call joining thread. ").endl();
-            think_thread_->join();
+            //think_thread_->join();
             //Logger::i().buf("player ").buf(this).buf(" thread joined. ").endl();
+            //Logger::i().buf("player ").buf(this).buf(" think thread use count: ").buf(think_thread_.use_count()).endl();
         }
 
         std::vector< model::pSimpleMap > model_list;

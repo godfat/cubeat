@@ -10,7 +10,7 @@
 #include "utils/vector_2d.hpp"
 
 #include <tr1/functional>
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <set>
 #include <list>
 #include <vector>

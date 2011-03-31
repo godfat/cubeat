@@ -6,7 +6,7 @@
 
 #include "Player.hpp"
 #include <list>
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <utility>

@@ -9,7 +9,7 @@
 #include "manymouse/manymouse.h"
 #include "Conf.hpp"
 #include <string>
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 
 namespace psc {
 namespace ctrl {

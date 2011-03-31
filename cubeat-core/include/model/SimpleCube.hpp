@@ -13,7 +13,7 @@
 
 #include "data/Cube.hpp"
 #include "utils/ObjectPool.hpp"
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 
 namespace psc {
 

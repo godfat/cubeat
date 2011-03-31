@@ -23,11 +23,13 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map,
     for( int x=0; x < map->ms()->width(); ++x ) {
         for( int y=0; y < map->ms()->height(); ++y ) {
             if( pSimpleCube c = map->simp_cubes_[x][y] ) {
-                current_score = simulate_fire_at( map->clone(), x, y );
+                pSimpleMap clone = map->clone();
+                current_score = simulate_fire_at( x, y, clone );
                 if( current_score > highest_score && current_score >= threshold ) {
                     best_cube = c;
                     highest_score = current_score;
                 }
+                clone.reset();
             }
         }
     }
@@ -82,7 +84,7 @@ int AIUtils::grounded_cube_count(pSimpleMap const& map)
 
 //private
 //returns chain's score sum
-int AIUtils::simulate_fire_at(pSimpleMap cloned_map, int x, int y)
+int AIUtils::simulate_fire_at(int x, int y, pSimpleMap& cloned_map)
 {
     kill(cloned_map, x, y);
     do {

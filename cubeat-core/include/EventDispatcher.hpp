@@ -12,7 +12,7 @@
 #include "ButtonEnum.hpp"
 #include "all_fwd.hpp"
 
-#include <tr1/memory>
+#include <boost/tr1/memory.hpp>
 #include <tr1/tuple>
 #include <tr1/functional>
 #include <map>

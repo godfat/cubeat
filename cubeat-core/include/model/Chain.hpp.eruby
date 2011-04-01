@@ -48,7 +48,7 @@ public:
 
     // this returns the score fragment made by the last combo
     int score_step() const{
-        return chain_step_.back() * 20 * chain_step_.size();
+        return attack_of_current_step() * 50;
     }
 
     int step() const{

@@ -1,17 +1,10 @@
 
-** new crashing problem caused by changing how next_state is hooked into event flow 
-   should already be fixed. But the threading crashing problem is so far not fixed.
-
 ** Map::next_state might have bug.... cubes are chained even when they are in the air.
    -- for puzzle mode, this is fixed for now.
    -- for versus mode, this will still affect newly created cubes, but should be hard to notice.
-
-** I think we really need real_y(pixel_y) as a model property, either use this with current State
-   pattern or revamp the state pattern.
-   
-** Why sometimes the bottom cubes' chain state isn't taken out?   -- ignore this for now.
-
-** URGENT again: well, boost::thread_resource_error exception is getting worse?
+   -- I think we really need real_y(pixel_y) as a model property, either use this with current State
+      pattern or revamp the state pattern.
+   -- Why sometimes the bottom cubes' chain state isn't taken out?   -- ignore this for now.
 
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
@@ -27,7 +20,7 @@
 
 4. main menu's cubes are too crowded.  -- done (there are new designs anyway)
 
-5. LuaJIT & new puzzle generator integration.  -- half done
+5. LuaJIT & new puzzle generator integration.  -- done
    -- code need clean up. but the integration has been successful.
      -- need enumerate where I used variadic template. fuck apple-gcc... -- done
    -- ** GLITCH NOTICED ** The dying delay of chained cubes might block falling cubes, 

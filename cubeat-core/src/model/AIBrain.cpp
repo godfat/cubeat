@@ -45,11 +45,13 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
         //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
-        int attack_threshold = 6;
+        int attack_threshold = 8;
         if( self_map->warning_level() > 50 )
             attack_threshold = 1;
-        else if( self_map->warning_level() > 20 )
-            attack_threshold = 3;
+        else if( self_map->warning_level() > 25 )
+            attack_threshold = 2;
+        else if( self_map->warning_level() > 0 )
+            attack_threshold = 4;
         else if( AIUtils::grounded_cube_count(self_map) + self_map->garbage_left() >
                  self_map->ms()->width() * (self_map->ms()->height()-1) )
             attack_threshold = 1;

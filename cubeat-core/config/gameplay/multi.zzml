@@ -48,7 +48,7 @@ player1: {
         item2_start_ammo: 10,
         item3_start_ammo: 1,
         heat_for_haste: 0.02,
-        heat_for_jama: 0.09
+        heat_for_jama: 0.12
     },
 
     #currently not controllable or thing that should not be changed:
@@ -79,7 +79,7 @@ player2: {
         item2_start_ammo: 10,
         item3_start_ammo: 1,
         heat_for_haste: 0.02,
-        heat_for_jama: 0.09
+        heat_for_jama: 0.12
     },
 
     #currently not controllable or thing that should not be changed:

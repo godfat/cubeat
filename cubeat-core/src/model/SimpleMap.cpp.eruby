@@ -64,9 +64,6 @@ void SimpleMap::update_chains()
         }
         // when the Chain's all dead then we fire up the attack and make this one null
         if( (*i).use_count() == 1 ){
-            // damage_factor adjustment (1.00 ~ 2.00)
-            //int amount = (*i)->power_factor()*damage_factor;
-            //current_sum_of_attack_ -= amount;
             i = chains_.erase(i);
         }
         else{
@@ -89,8 +86,10 @@ void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
         drop_cube_to_the_ground(cube);
     else {
         pOneFadingSimple one_fading = make_OneFading(cube);
-        if( one_fading )
+        if( one_fading ) {
             one_fading->fade(*this, cube);
+            cube->go_dying(); //holy crap.. that_would_be_killed_by_map ..
+        }
     }
     if( cube->cycle_and_die() )
         simp_cubes_[x][y].reset();

@@ -45,15 +45,17 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
         boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 
         //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
-        int attack_threshold = 10;
-        if( self_map->warning_level() )
-            attack_threshold = 5 - (self_map->warning_level() / 20);
+        int attack_threshold = 6;
+        if( self_map->warning_level() > 50 )
+            attack_threshold = 1;
+        else if( self_map->warning_level() > 20 )
+            attack_threshold = 3;
         else if( AIUtils::grounded_cube_count(self_map) + self_map->garbage_left() >
                  self_map->ms()->width() * (self_map->ms()->height()-1) )
             attack_threshold = 1;
 
         if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, attack_threshold) ) {
-            //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3a.").endl();
+            //Logger::i().buf(this).buf(" found highest chain_power at: ").buf(c->x()).buf(", ").buf(c->y()).endl();
             pAICommand cmd = AICommand::create();
             cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
             cmd_queue_.push_back( cmd );
@@ -104,7 +106,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
 
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 5b.").endl();
             if( cmd_queue_.empty() ) {
-                if( AIUtils::grounded_cube_count(self_map) >= 42 ) {
+                if( AIUtils::grounded_cube_count(self_map) >= 48 ) {
                     int x, y;
                     do {
                         x = utils::random(self_map->ms()->width());
@@ -115,7 +117,8 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     cmd->delay(200).weight(1).normal_shot(x, y);
                     cmd_queue_.push_back( cmd );
                 }
-                else if( owner_.lock()->heat() < 0.66 ) {
+                else
+                if( owner_.lock()->heat() < 0.66 ) {
                     pAICommand cmd = AICommand::create();
                     cmd->press_trig2(); //haste here
                     cmd_queue_.push_back( cmd );

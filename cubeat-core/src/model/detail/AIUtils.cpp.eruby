@@ -17,23 +17,28 @@ pSimpleMap AIUtils::clone_map(pSimpleMap const& map)
 
 pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map, int threshold)
 {
-    int highest_score = 0, current_score = 0;
+    int highest_score = get_base_attack( map->clone() ), current_score = 0;
     pSimpleCube best_cube;
 
-    for( int x=0; x < map->ms()->width(); ++x ) {
-        for( int y=0; y < map->ms()->height(); ++y ) {
+//    std::cout << " -------------------------------------- " << std::endl;
+//    std::cout << " current base attack: " << highest_score << std::endl;
+//    std::cout << " -------------------------------------- " << std::endl;
+
+    for( int y=map->ms()->height() - 1; y >= 0; --y ) {
+        for( int x=0; x < map->ms()->width(); ++x ) {
             if( pSimpleCube c = map->simp_cubes_[x][y] ) {
-                pSimpleMap clone = map->clone();
-                current_score = simulate_fire_at( x, y, clone );
+                current_score = simulate_fire_at( x, y, map->clone() );
                 if( current_score > highest_score && current_score >= threshold ) {
                     best_cube = c;
                     highest_score = current_score;
                 }
-                clone.reset();
+                //std::cout << current_score << " ";
             }
+            //else std::cout << "X ";
         }
+        //std::cout << std::endl;
     }
-
+    //std::cout << std::endl;
     return best_cube;
 }
 
@@ -84,14 +89,28 @@ int AIUtils::grounded_cube_count(pSimpleMap const& map)
 
 //private
 //returns chain's score sum
-int AIUtils::simulate_fire_at(int x, int y, pSimpleMap& cloned_map)
+int AIUtils::simulate_fire_at(int x, int y, pSimpleMap cloned_map)
 {
+    //cloned_map->print_data_for_debug();
     kill(cloned_map, x, y);
+    //cloned_map->print_data_for_debug();
+    cloned_map->cycle();
+    cloned_map->cycle();
+    //cloned_map->print_data_for_debug();
+    while( cloned_map->chains_.size() ) {
+        cloned_map->cycle();
+    }
+    //if there is chain going on, we will continue to cycle
+    //if there is not, then end of game.
+    return cloned_map->current_sum_of_attack_;
+}
+
+int AIUtils::get_base_attack(pSimpleMap cloned_map)
+{
+    cloned_map->cycle();
     do {
         cloned_map->cycle();
     } while( cloned_map->chains_.size() );
-    //if there is chain going on, we will continue to cycle
-    //if there is not, then end of game.
     return cloned_map->current_sum_of_attack_;
 }
 

@@ -30,9 +30,10 @@ public:
     static pSimpleMap clone_map(pSimpleMap const&);
     static void setup(pSimpleMap&, int x, int y, pSimpleCube);
     static void kill (pSimpleMap&, int x, int y);
+    static int get_base_attack(pSimpleMap cloned_map);
 
 private:
-    static int simulate_fire_at(int x, int y, pSimpleMap& cloned_map); //returns chain's score sum
+    static int simulate_fire_at(int x, int y, pSimpleMap cloned_map); //returns chain's score sum
 };
 
 } //ai_detail

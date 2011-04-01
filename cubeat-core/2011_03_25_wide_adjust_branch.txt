@@ -50,3 +50,5 @@
 14. We need better chaining cubes' indication. we need better indication of attacking and 
     cubes dropping and those sort of things. In short, we need better UI and user feedback design.
     
+15. Stage number in current puzzle mode.
+    

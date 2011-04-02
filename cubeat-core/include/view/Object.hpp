@@ -10,7 +10,7 @@
 #include "data/BasicViewTypes.hpp"
 #include "data/TAnimatorParam.hpp"
 #include "all_fwd.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <string>
 #include <vector>
 

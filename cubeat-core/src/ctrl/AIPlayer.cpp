@@ -11,7 +11,7 @@
 #include "EasingEquations.hpp"
 #include "utils/Logger.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 using namespace psc;
 using namespace ctrl;

@@ -7,7 +7,7 @@
    will be removed later. (when player class is out) */
 
 #include "all_fwd.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 namespace irr {
 class ITimer;

@@ -7,7 +7,7 @@
 #include "utils/dictionary.hpp"
 #include "data/ViewSetting.hpp"
 
-#include <tr1/functional> // for bind
+#include <boost/tr1/functional.hpp> // for bind
 #include <boost/thread/thread.hpp>
 
 using namespace psc;

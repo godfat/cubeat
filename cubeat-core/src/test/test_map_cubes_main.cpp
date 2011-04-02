@@ -13,7 +13,7 @@
 #include <ctime> // for time, clock
 
 #include <boost/tr1/memory.hpp>
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <iostream>
 
 using namespace psc;

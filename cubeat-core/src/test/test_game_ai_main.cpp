@@ -20,7 +20,7 @@
 #include "utils/MapLoader.hpp"
 #include "utils/to_s.hpp"
 
-#include <tr1/functional> // for bind
+#include <boost/tr1/functional.hpp> // for bind
 #include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
 
@@ -225,7 +225,7 @@ private:
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
 
-#include <tr1/functional> // for bind
+#include <boost/tr1/functional.hpp> // for bind
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...

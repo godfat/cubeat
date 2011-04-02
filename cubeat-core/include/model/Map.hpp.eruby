@@ -7,7 +7,7 @@
 #include "utils/vector_2d.hpp"
 #include "model/SimpleMap.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <set>
 #include <list>
 #include <vector>

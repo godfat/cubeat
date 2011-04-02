@@ -9,7 +9,7 @@
 // the code originally comes from the actionscript Singularity Library by
 // Jim Armstrong. I ported the Gauss-Legendre Integration code to C++.
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 #include <utility>
 #include <algorithm>

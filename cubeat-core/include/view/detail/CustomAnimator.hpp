@@ -4,7 +4,7 @@
 
 #include "ISceneNode.h"
 #include "IrrDevice.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 #include <cmath>
 

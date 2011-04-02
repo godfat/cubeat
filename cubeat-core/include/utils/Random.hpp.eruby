@@ -2,7 +2,7 @@
 <% header_guard do %>
 
 #if (__GNUC__ >= 4) && (__GNUC_MINOR__ >= 3)
-#include <tr1/random>
+#include <boost/tr1/random.hpp>
 #else
 #include <boost/tr1/random.hpp>
 #endif

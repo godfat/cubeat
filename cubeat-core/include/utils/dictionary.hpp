@@ -4,7 +4,7 @@
 
 #include <boost/functional/hash.hpp>
 #include <boost/any.hpp>
-#include <tr1/unordered_map>
+#include <boost/tr1/unordered_map.hpp>
 #include <vector>
 #include <string>
 #include <utility>
@@ -166,8 +166,8 @@ protected:
 class map_any
 {
 public:
-    typedef map_any_::iterator       iterator;
-    typedef map_any_::const_iterator const_iterator;
+    typedef typename map_any_::iterator       iterator;
+    typedef typename map_any_::const_iterator const_iterator;
     static map_any construct( std::string const& str );
 
 public:
@@ -236,8 +236,8 @@ public:
 
     inline size_t count(any_type const& k)  { return dict_.count(k); }
     inline size_t erase(any_type const& k)  { return dict_.erase(k); }
-    inline void erase(iterator loc)           { dict_.erase(loc); }
-    inline void erase(iterator s, iterator e) { dict_.erase(s,e); }
+    inline void erase(const_iterator loc)                 { dict_.erase(loc); }
+    inline void erase(const_iterator s, const_iterator e) { dict_.erase(s,e); }
 
 protected:
     mutable map_any_ dict_; //bad, because there is no any_const_cast() const

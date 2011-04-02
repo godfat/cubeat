@@ -9,7 +9,7 @@
 #include "data/MapSetting.hpp"
 #include "utils/vector_2d.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
 #include <set>
 #include <list>

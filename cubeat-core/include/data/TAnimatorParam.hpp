@@ -2,7 +2,7 @@
 #define _SHOOTING_CUBES_DATA_ANIMATOR_PARAM_
 
 #include "data/BasicViewTypes.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <vector>
 
 namespace psc {

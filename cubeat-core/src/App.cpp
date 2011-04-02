@@ -15,7 +15,7 @@
 #include "EventDispatcher.hpp"
 
 #include <iostream>
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 using namespace irr;
 using namespace core;

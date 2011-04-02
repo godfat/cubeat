@@ -16,7 +16,7 @@
 #include "Input.hpp"
 #include "Sound.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/function.hpp>

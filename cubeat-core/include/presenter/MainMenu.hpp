@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 namespace psc {
 

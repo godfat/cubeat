@@ -3,7 +3,7 @@
 #define _SHOOTING_CUBES_CTRL_WEAPON_
 
 #include "data/BasicViewTypes.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
 
 namespace psc {

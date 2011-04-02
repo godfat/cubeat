@@ -5,7 +5,7 @@
 #include "utils/ObjectPool.hpp"
 #include "EventDispatcher.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 <%= debug_include %>
 

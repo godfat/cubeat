@@ -14,7 +14,7 @@ likely break animator effects (especially cyclic ones consist of repetitive
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
 
-#include <tr1/functional> // for bind
+#include <boost/tr1/functional.hpp> // for bind
 
 int main()
 {

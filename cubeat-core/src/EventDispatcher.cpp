@@ -10,7 +10,7 @@
 #include "view/Scene.hpp"
 
 #include <boost/foreach.hpp>
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <algorithm>
 #include <iostream>
 #include <utility>

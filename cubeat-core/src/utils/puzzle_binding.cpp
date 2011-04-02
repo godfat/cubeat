@@ -1,6 +1,6 @@
 #include "utils/lua_utility.hpp"
 #include "utils/puzzle_binding.hpp"
-#include <tr1/tuple>
+#include <boost/tr1/tuple.hpp>
 #include <cmath>
 #include <dirent.h>
 #include <errno.h>

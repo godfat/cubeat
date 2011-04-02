@@ -7,7 +7,7 @@
 #include "utils/dictionary.hpp"
 #include <vector>
 #include <list>
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 namespace psc {
 namespace ctrl {

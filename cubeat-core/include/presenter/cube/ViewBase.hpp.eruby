@@ -2,7 +2,7 @@
 <% header_guard do %>
 
 #include "model/Cube.hpp"
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
 
 namespace psc{ namespace presenter{ namespace cube{

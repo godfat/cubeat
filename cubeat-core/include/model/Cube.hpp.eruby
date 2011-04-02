@@ -10,7 +10,7 @@
 #include "data/Cube.hpp"
 #include "model/SimpleCube.hpp"
 
-#include <tr1/functional>
+#include <boost/tr1/functional.hpp>
 
 <%= debug_include %>
 

@@ -13,8 +13,8 @@
 #include "all_fwd.hpp"
 
 #include <boost/tr1/memory.hpp>
-#include <tr1/tuple>
-#include <tr1/functional>
+#include <boost/tr1/tuple.hpp>
+#include <boost/tr1/functional.hpp>
 #include <map>
 #include <ctime>
 #include <vector>

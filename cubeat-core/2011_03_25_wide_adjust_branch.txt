@@ -44,11 +44,15 @@
 
 12. Manymouse on Mac/Linux doable???
 
-13. investigate about gcc46 to build native app on Mac ... (Apple frameworks not usable?)
-   -- x86_64 irrlicht on Mac? How? 
+13. On Mac:
+    1. cmake project does not create xcodeproj which build .app by default.
+    2. resource bundle directory.
+    3. absolute path must be fetched upon execution.
    
 14. We need better chaining cubes' indication. we need better indication of attacking and 
     cubes dropping and those sort of things. In short, we need better UI and user feedback design.
     
 15. Stage number in current puzzle mode.
+
+16. ALL MUST USE ABSOLUTE PATH
     

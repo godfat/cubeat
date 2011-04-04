@@ -48,11 +48,12 @@
     1. cmake project does not create xcodeproj which build .app by default.
     2. resource bundle directory.
     3. absolute path must be fetched upon execution.
+    4. do all above to have a working .app on OSX
    
 14. We need better chaining cubes' indication. we need better indication of attacking and 
     cubes dropping and those sort of things. In short, we need better UI and user feedback design.
     
 15. Stage number in current puzzle mode.
 
-16. ALL MUST USE ABSOLUTE PATH
+16. ALL MUST USE ABSOLUTE PATH -- should be done for both Windows and Mac, not sure about Linux.
     

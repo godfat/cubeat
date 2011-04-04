@@ -246,8 +246,6 @@ protected:
 std::size_t hash_value(any_type const& value);
 bool operator==(any_type const& a, any_type const& b);
 
-std::string fetchConfig(std::string const& path);
-
 } //utils
 } //psc
 

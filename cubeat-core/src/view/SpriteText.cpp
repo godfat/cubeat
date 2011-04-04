@@ -5,6 +5,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 #include <algorithm> //for the ugly copy
@@ -53,7 +54,7 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     //so smgr_->getGUIEnvironment() is NULL !? ...well, guess I have to live with that.
 
     std::ostringstream oss;
-    oss << "rc/fonts/" << font_path << ".ttf";
+    oss << Conf::i().expand("rc/fonts/") << font_path << ".ttf";
 
     ttfont_ = gui->getFont(oss.str().c_str(), size);
     ttfont_->setBatchLoadSize(64);

@@ -2,10 +2,9 @@
 <% header_guard do %>
 
 #include "presenter/Map.hpp"
-
+#include "Conf.hpp"
 #include "data/MapSetting.hpp"
 #include "utils/vector_2d.hpp"
-#include "utils/dictionary.hpp"
 #include "utils/to_s.hpp"
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
@@ -46,7 +45,7 @@ public:
     }
 
     static presenter::Map::pointer_type load(int level){
-        map_any m = map_any::construct(utils::fetchConfig("config/puzzles/max.zzml"));
+        map_any m = Conf::i().config_of("puzzles/max");
         return load(level, random(m.I(to_s(level))));
     }
 
@@ -72,7 +71,7 @@ public:
     }
 
     static data::MapSetting::pointer_type load_map_setting(char const* path){
-        map_any m = map_any::construct(utils::fetchConfig(path));
+        map_any m = Conf::i().config_of(path);
         data::MapSetting::pointer_type result = data::MapSetting::create();
 
         result->color_amounts(m.I("color_amounts")).
@@ -93,7 +92,7 @@ public:
     }
 
     static vector_2d<int> load_cube_colors(char const* path){
-        map_any m = map_any::construct(utils::fetchConfig(path));
+        map_any m = Conf::i().config_of(path);
         int width = m.I("width"), height = m.I("height");
         vector_2d<int> result(width, height);
 

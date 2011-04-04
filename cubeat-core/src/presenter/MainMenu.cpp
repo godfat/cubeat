@@ -47,24 +47,23 @@ pMainMenu MainMenu::init()
 {
     App::i().setLoading(1);
 
-    config = utils::map_any::construct(
-        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"mainmenu.zzml" ) );
+    config = Conf::i().config_of("presenter/mainmenu");
 
     utils::map_any title = config.M("title");
     utils::map_any text = config.M("text");
-    int const m_text_size = Conf::i().SCREEN_W/30;
+    int const m_text_size = Conf::i().SCREEN_W()/30;
 
     mainmenu_scene_ = view::Scene::create("MainMenu");
     mainmenu_scene_->setTo2DView();
 
-    int const width = title.I("orig_w") * (Conf::i().SCREEN_W/1280.0f); //1280 is best screen size.
-    int const height= title.I("orig_h") * (Conf::i().SCREEN_W/1280.0f); //1280 is best screen size.
+    int const width = title.I("orig_w") * (Conf::i().SCREEN_W() / 1280.0f); //1280 is best screen size.
+    int const height= title.I("orig_h") * (Conf::i().SCREEN_W() / 1280.0f); //1280 is best screen size.
 
     view::pMenu temp =
         view::Menu::create(title.S("path"), mainmenu_scene_, width, height, true);
 
     menus_.insert( std::make_pair("start_menu", temp) );
-    temp->moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - temp->get<Size2D>().Y/3 )
+    temp->moveTo( Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - temp->get<Size2D>().Y/3 )
          .setDepth( title.I("depth") );
 
     temp->addSpriteText("text", text.S("text"), text.S("font"), 0, m_text_size, true)
@@ -116,7 +115,7 @@ void MainMenu::setupMenus()
     temp->getSprite("text").set<Pos2D>( vec2(-150, -160) );
     for( int i = 1; i <= 5; ++i ) {
         pvlist_.push_back(
-            PlayerView::create(("config/char/char"+to_s(i))+".zzml", temp, vec2(-500 + i*150, 20) ) );
+            PlayerView::create(("char/char"+to_s(i))+".zzml", temp, vec2(-500 + i*150, 20) ) );
         pvlist_.back()->switchCharacterState( PlayerView::STAND );
         pvlist_.back()->switchCharacterFace( PlayerView::NORMAL );
 
@@ -150,9 +149,9 @@ void MainMenu::setupMenus()
     temp2->getSprite("stage3").set<Pos2D>( vec2(-200, 130) );
     temp2->getSprite("stage4").set<Pos2D>( vec2(200, 130) );
 
-    temp->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H/2) );
-    temp2->set<Pos2D>( vec2(-400, Conf::i().SCREEN_H/2) );
-    mode->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H/2) );
+    temp->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H() / 2) );
+    temp2->set<Pos2D>( vec2(-400, Conf::i().SCREEN_H() / 2) );
+    mode->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H() / 2) );
 
     player1text_ = view::SpriteText::create("player1", temp, "Star Jedi", 24, true, data::Color(255,0,0));
     player2text_ = view::SpriteText::create("player2", temp, "Star Jedi", 24, true, data::Color(0,0,255));
@@ -179,8 +178,8 @@ void MainMenu::initDecorator()
 {
     utils::map_any deco = config.M("decorator");
 
-    int const w = Conf::i().SCREEN_W;
-    int const h = Conf::i().SCREEN_H;
+    int const w = Conf::i().SCREEN_W();
+    int const h = Conf::i().SCREEN_H();
     int const size = w * deco.F("size_factor");
     int const num_w = (w/size)*2;
     int const num_h = (h/size)*2 + 3;
@@ -502,11 +501,11 @@ void MainMenu::stage_choosing()
 void MainMenu::stage_select(view::pSprite& sp, std::string name)
 {
     if( animating_ ) return;
-    conf1p_ = "config/char/char"+to_s(player1num_)+".zzml";
-    stage_ = "config/stage/"+name+".zzml";
+    conf1p_ = "char/char"+to_s(player1num_)+".zzml";
+    stage_ = "stage/"+name+".zzml";
 
     if( two_players_ )
-        conf2p_ = "config/char/char"+to_s(player2num_)+".zzml";
+        conf2p_ = "char/char"+to_s(player2num_)+".zzml";
 
     Sound::i().play("4/4b.wav");
 
@@ -524,14 +523,14 @@ MainMenu& MainMenu::showMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     boost::function<void()> const& f = (BLL::var(animating_) = false);
-    int y = Conf::i().SCREEN_H/2;
+    int y = Conf::i().SCREEN_H() / 2;
     sprite->tweenAll<Linear, Alpha>(255, 1000u);
     if( name == "start_menu" ) { //temp: special case
-        y = Conf::i().SCREEN_H/2 - sprite->get<Size2D>().Y/3;
+        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/3;
         sprite->getSpriteText("text")
                .tween<SineCirc, Alpha>(255, (unsigned int)config.M("text").I("glow_period"), -1);
     }
-    sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W/2, y), 1000, 0, f );
+    sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W() / 2, y), 1000, 0, f );
 
     sprite->set<Visible>(true);
 
@@ -550,9 +549,9 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
 {
     view::pMenu sprite = menus_[name];
     function<void()> const& endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
-    int y = Conf::i().SCREEN_H/2;
+    int y = Conf::i().SCREEN_H() / 2;
     if( name == "start_menu" ) //temp: special case
-        y = Conf::i().SCREEN_H/2 - sprite->get<Size2D>().Y/3;
+        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/3;
     sprite->tween<ICirc, Pos2D>(vec2(-200, y), 1000, 0, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 500u);
 

@@ -23,8 +23,7 @@ using namespace std::tr1::placeholders;
 OpeningSequence::OpeningSequence()
     :deletion_scheduled_(false)
 {
-    config = utils::map_any::construct(
-        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"opening.zzml" ) );
+    config = Conf::i().config_of("presenter/opening");
 }
 
 OpeningSequence::~OpeningSequence()
@@ -37,7 +36,7 @@ pOpeningSequence OpeningSequence::init()
     scene_ = view::Scene::create("OpeningSequence");
     scene_->setTo2DView();
     movie_ = view::SpriteMovie::create(config.S("movie_path"), scene_,
-                                       Conf::i().SCREEN_W, Conf::i().SCREEN_H);
+                                       Conf::i().SCREEN_W(), Conf::i().SCREEN_H());
     movie_->setCurrentFrame( config.I("startframe") ); //temp
 
     return shared_from_this();

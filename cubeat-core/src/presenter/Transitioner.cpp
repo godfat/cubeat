@@ -19,32 +19,31 @@ using std::tr1::function;
 
 void Transitioner::init()
 {
-    config = utils::map_any::construct(
-        utils::fetchConfig( Conf::i().CONFIG_PRESENTER_PATH +"transitioner.zzml" ) );
+    config = Conf::i().config_of("presenter/transitioner");
 
     utils::map_any& text1= config.M("text1");
     utils::map_any& text2= config.M("text2");
-    int const b_text_size = Conf::i().SCREEN_W/20;
-    int const m_text_size = Conf::i().SCREEN_W/30;
+    int const b_text_size = Conf::i().SCREEN_W() / 20;
+    int const m_text_size = Conf::i().SCREEN_W() / 30;
 
     transition_scene_ = view::Scene::create("Transitioner");
     transition_scene_->setTo2DView();
 
     loading_menu_ = view::Menu::create("loading", transition_scene_,
-                                       Conf::i().SCREEN_W, Conf::i().SCREEN_H);
+                                       Conf::i().SCREEN_W(), Conf::i().SCREEN_H());
 
     loading_menu_->set<GradientDiffuse>(0);
-    loading_menu_->addSprite("loading_bar", 0, Conf::i().SCREEN_W - 40, Conf::i().SCREEN_H / 20 )
+    loading_menu_->addSprite("loading_bar", 0, Conf::i().SCREEN_W() - 40, Conf::i().SCREEN_H() / 20 )
                   .addSpriteText("text1", text1.S("text"), text1.S("font"),
                                  0, b_text_size, true)
                   .addSpriteText("text2", text2.S("text"), text2.S("font"),
                                  0, m_text_size, true);
-    loading_menu_->getSprite("loading_bar").moveTo( 20, Conf::i().SCREEN_H / 10 * 9 )
+    loading_menu_->getSprite("loading_bar").moveTo( 20, Conf::i().SCREEN_H() / 10 * 9 )
                   .set<GradientDiffuse>(128);
     loading_menu_->getSprite("text1")
-                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - b_text_size );
+                  .moveTo( Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 - b_text_size );
     loading_menu_->getSprite("text2")
-                  .moveTo( Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + m_text_size );
+                  .moveTo( Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + m_text_size );
 
     loading_menu_->set<Visible>(false);
 }

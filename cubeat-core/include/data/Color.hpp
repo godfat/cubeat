@@ -6,7 +6,6 @@
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
 #include "utils/Random.hpp"
-#include "utils/dictionary.hpp"
 #include <algorithm> // for find
 #include <iterator> // for distance
 
@@ -59,7 +58,6 @@ private:
 
 private:
     int rgb_;
-    static utils::vector_any offt_; //color offset table
     enum{
         blue=0xff, green=blue<<8, red=green<<8,
         green_blue = green|blue,

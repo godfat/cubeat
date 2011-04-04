@@ -38,7 +38,7 @@ struct MouseState
 
 private:
     MouseState(): device_id(-1), connected(false), name(""), x(0), y(0), buttons(0),
-                  lbound_(0), rbound_(Conf::i().SCREEN_W), ubound_(0), dbound_(Conf::i().SCREEN_H){}
+                  lbound_(0), rbound_(Conf::i().SCREEN_W()), ubound_(0), dbound_(Conf::i().SCREEN_H()){}
     int lbound_, rbound_, ubound_, dbound_;
 };
 

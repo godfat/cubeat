@@ -1,8 +1,7 @@
 
 #include "utils/dictionary.hpp"
-#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <fstream>
+#include <boost/algorithm/string.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -179,32 +178,6 @@ vector_any vector_any::construct(std::string const& str)
         }
     }
     return vec;
-}
-
-////////////////////////// config reader ////////////////////////////
-
-std::string fetchConfig(std::string const& path)
-{
-    std::ifstream infile;
-    std::string str;
-    infile.open( path.c_str() );
-    if( infile.fail() || infile.eof() ) {  //non-existing file exception
-        std::cout << "No such file: " << path << ", Input setup ignored." << std::endl;
-        return str;              //empty string
-    }
-
-    std::string in;
-    while( getline(infile, in) ) {
-        trim(in);
-        if( in[0] != '#' )
-            str += in;
-    }
-
-    infile.close();
-    //std::cout << str << std::endl;
-    std::cout << "config: " << path << " loaded." << std::endl;
-
-    return str;
 }
 
 ///////////////////////// any hash and equal overloading /////////////////////

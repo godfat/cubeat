@@ -6,6 +6,7 @@
 #include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 #include <boost/foreach.hpp>
@@ -69,7 +70,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     setupSceneAndManager(parent);
 
     std::ostringstream oss;
-    oss << "rc/texture/" << name_ << ".png";
+    oss << Conf::i().expand("rc/texture/") << name_ << ".png";
 
     video::IVideoDriver* driver = smgr_->getVideoDriver();
 

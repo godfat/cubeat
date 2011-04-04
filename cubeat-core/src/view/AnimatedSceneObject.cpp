@@ -2,6 +2,7 @@
 #include "view/AnimatedSceneObject.hpp"
 #include "view/Scene.hpp"
 #include "IrrDevice.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 #include <utility>
@@ -26,7 +27,7 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
     setupSceneAndManager(parent);
 
     std::ostringstream oss;
-    oss << "rc/model/" << name_ << ".x";
+    oss << Conf::i().expand("rc/model/") << name_ << ".x";
     IAnimatedMesh* mesh = smgr_->getMesh( oss.str().c_str() );
     IAnimatedMeshSceneNode* temp = smgr_->addAnimatedMeshSceneNode( mesh, parent->body() );
     temp->setAnimationSpeed(0);

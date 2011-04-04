@@ -5,6 +5,7 @@
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "Sound.hpp"
+#include "Conf.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -53,7 +54,7 @@ Stage& Stage::releaseResource()
 
 pStage Stage::init( std::string const& path )
 {
-    conf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+    conf_ = Conf::i().config_of(path);
     scene_ = view::Scene::create( conf_.S("name") );
     scene_->setTo3DView( conf_.I("FoV") / 180.f * PI );
     utils::vector_any const& lists = conf_.V("all_items");

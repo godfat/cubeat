@@ -5,7 +5,24 @@ local MapUtils = require 'script/puzzle/maputils'
 local PuzzleGen = require 'script/puzzle/puzzle_gen'
 
 function generate_to_file(chain_limit, w, h, de_bug)
-  file = io.open("tmp/puzzle.zzml", "w")
+
+  if de_bug then
+    local ffi = require 'ffi'
+    ffi.cdef[[
+      char* _getcwd(char * buf, size_t size);
+      char*  getcwd(char * buf, size_t size);
+    ]]
+    local getcwd;
+    if jit.os == 'Windows' then
+      getcwd = function(buf, size) return ffi.string( ffi.C._getcwd(buf, size) ) end
+    else
+      getcwd = function(buf, size) return ffi.string( ffi.C.getcwd(buf, size) ) end
+    end
+    local buf = ffi.new("char[256]")
+    print("Debug: getcwd = "..getcwd(buf, 256))
+  end
+
+  file = io.open("config/tmp/puzzle.zzml", "w")
   file:write([[
 level:4,
 color_amounts:4,

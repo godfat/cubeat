@@ -62,7 +62,7 @@ bool InputMgr::createInputs()
         std::string name("player");
         name += (i+1+48); //ascii-code...
         name += ".zzml";
-        inputs_.push_back( new Input( Conf::i().CONFIG_INPUT_PATH + name) );
+        inputs_.push_back( new Input( "input/" + name ) );
     }
     initGraphicItems();
     return true;
@@ -124,8 +124,8 @@ void InputMgr::pollManyMouseStates()
             case MANYMOUSE_EVENT_ABSMOTION: {
                 float val =    static_cast<float>(e.value - e.minval);
                 float maxval = static_cast<float>(e.maxval - e.minval);
-                if (e.item == 0)      ms->x = (val / maxval) * Conf::i().SCREEN_W;
-                else if (e.item == 1) ms->y = (val / maxval) * Conf::i().SCREEN_H;
+                if (e.item == 0)      ms->x = (val / maxval) * Conf::i().SCREEN_W();
+                else if (e.item == 1) ms->y = (val / maxval) * Conf::i().SCREEN_H();
                 break;
             }
             case MANYMOUSE_EVENT_BUTTON: {
@@ -228,7 +228,7 @@ Input::Input(std::string const& path)
     :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
      haste_(this), pause_(this), ai_controlled_(false)
 {
-    map_any keymap = map_any::construct( fetchConfig(path) );
+    map_any keymap = Conf::i().config_of(path);
     cursor_key_ = keymap.I("cursor");
     trig1_key_  = keymap.I("trig1");
     trig2_key_  = keymap.I("trig2");

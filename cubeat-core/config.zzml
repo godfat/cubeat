@@ -1,6 +1,4 @@
 config_path        : 'config/',
-input_conf_path    : 'config/input/',
-presenter_conf_path: 'config/presenter/',
 screenwidth        : 1280,
 screenheight       : 720,
 framerate          : 60

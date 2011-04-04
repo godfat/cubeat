@@ -2,6 +2,7 @@
 #include "view/SceneObject.hpp"
 #include "view/Scene.hpp"
 #include "IrrDevice.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 
@@ -25,7 +26,7 @@ pSceneObject SceneObject::init(pObject const& parent)
     setupSceneAndManager(parent);
 
     std::ostringstream oss;
-    oss << "rc/model/" << name_ << ".x";
+    oss << Conf::i().expand("rc/model/") << name_ << ".x";
     IMesh* mesh = smgr_->getMesh( oss.str().c_str() )->getMesh(0);
     body_ = smgr_->addMeshSceneNode( mesh, parent->body() );
 

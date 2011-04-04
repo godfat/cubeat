@@ -28,7 +28,7 @@ using std::tr1::bind;
 using std::tr1::ref;
 
 App::App()
-    : framerate_( Conf::i().FRAMERATE ), last_timetick_(0)
+    : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0)
 {
     std::cout << "App constructed." << std::endl;
     if( !IrrDevice::i().init(true) ) {

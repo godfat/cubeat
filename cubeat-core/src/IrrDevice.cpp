@@ -16,8 +16,7 @@ bool IrrDevice::inited_ = false;
 
 bool IrrDevice::init(bool test)
 {
-    map_any config = map_any::construct( fetchConfig( Conf::i().CONFIG_PATH +
-                                                      "device.zzml") );
+    map_any config = Conf::i().config_of("device");
     SIrrlichtCreationParameters param;
     param.AntiAlias        = false;
     param.Bits             = config.I("bits");
@@ -27,7 +26,7 @@ bool IrrDevice::init(bool test)
     param.HighPrecisionFPU = true;
     param.Stencilbuffer    = false;
     param.Vsync            = static_cast<bool>(config.I("vsync"));
-    param.WindowSize       = core::dimension2di(Conf::i().SCREEN_W, Conf::i().SCREEN_H);
+    param.WindowSize       = core::dimension2di(Conf::i().SCREEN_W(), Conf::i().SCREEN_H());
 
     if( inited_ ) return false;
     inited_ = true;

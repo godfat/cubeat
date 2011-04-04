@@ -8,6 +8,7 @@
 #include "Accessors.hpp"
 #include "Sound.hpp"
 #include "Input.hpp"
+#include "Conf.hpp"
 
 #include "utils/Logger.hpp"
 
@@ -28,7 +29,7 @@ PlayerView::~PlayerView()
 
 pPlayerView PlayerView::init(std::string const& path, view::pObject const& parent, vec2 const& pos)
 {
-    conf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+    conf_ = Conf::i().config_of(path);
     utils::map_any const& anim = conf_.M("anim_attr");
 
     character_ = view::Menu::create("character", parent, 0, 0, true);

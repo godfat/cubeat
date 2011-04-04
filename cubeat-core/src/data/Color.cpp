@@ -1,5 +1,6 @@
 
 #include "data/Color.hpp"
+#include "Conf.hpp"
 
 using namespace psc;
 using namespace data;
@@ -8,27 +9,26 @@ int const Color::id2rgb[] = {-1, blue,         green,        red,
                                  red_green, red_blue, green_blue,
                                  0,   white};
 
-utils::vector_any Color::offt_ = utils::vector_any::construct( utils::fetchConfig("config/data/color.zzml") );
-
 Color& Color::offset()
 {
+    static utils::map_any offt = Conf::i().config_of("data/color");
     switch ( rgb() ) {
         case Color::red:
-            r( r() + offt_.V(0).I(0) );
-            g( g() + offt_.V(0).I(1) );
-            b( b() + offt_.V(0).I(2) ); break;
+            r( r() + offt.V("red").I(0) );
+            g( g() + offt.V("red").I(1) );
+            b( b() + offt.V("red").I(2) ); break;
         case Color::green:
-            r( r() + offt_.V(1).I(0) );
-            g( g() + offt_.V(1).I(1) );
-            b( b() + offt_.V(1).I(2) ); break;
+            r( r() + offt.V("green").I(0) );
+            g( g() + offt.V("green").I(1) );
+            b( b() + offt.V("green").I(2) ); break;
         case Color::blue:
-            r( r() + offt_.V(2).I(0) );
-            g( g() + offt_.V(2).I(1) );
-            b( b() + offt_.V(2).I(2) ); break;
+            r( r() + offt.V("blue").I(0) );
+            g( g() + offt.V("blue").I(1) );
+            b( b() + offt.V("blue").I(2) ); break;
         case Color::red_green: //yellow
-            r( r() + offt_.V(3).I(0) );
-            g( g() + offt_.V(3).I(1) );
-            b( b() + offt_.V(3).I(2) ); break;
+            r( r() + offt.V("yellow").I(0) );
+            g( g() + offt.V("yellow").I(1) );
+            b( b() + offt.V("yellow").I(2) ); break;
     }
     return *this;
 }

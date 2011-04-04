@@ -3,6 +3,7 @@
 #include "view/Scene.hpp"
 #include "private/AVIVideo.hpp"
 #include "IrrDevice.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 
@@ -22,7 +23,7 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     size_.Width = w;
     size_.Height = h;
 
-    avi = new AVIVideo(name_.c_str());
+    avi = new AVIVideo(Conf::i().expand(name_.c_str()));
 
     /////////////// I'll keep this part for future reference /////////////////
     SMaterial mat;

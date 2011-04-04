@@ -83,8 +83,8 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     //map0_->set_endgame(bind(&Puzzle::end, this, _1)); no endgame right now.. testing
 
     // setup stage & ui & player's view objects:
-    stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
-    setup_ui_by_config( c1p, std::string(), "config/ui/in_game_2p_layout.zzml" );
+    stage_ = presenter::Stage::create( sc.size() ? sc : "stage/jungle" );
+    setup_ui_by_config( c1p, std::string(), "ui/in_game_2p_layout" );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
     win_ = false, fired_ = false, end_ = false;
@@ -111,7 +111,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
 void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
 {
-    uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+    uiconf_ = Conf::i().config_of(path);
     utils::map_any const& base = uiconf_.M("base");
     ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
     ui_layout_->set<Alpha>(192);
@@ -172,14 +172,14 @@ void Puzzle::end(pMap lose_map)
     map1_->stop_dropping();
 
     Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
-    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);
-    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2) );
+    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W(), 350, true);
+    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
 
     win_t_  = view::Sprite::create( win_ ? "win" : "lose" , scene_, 384, 192, true);
     //lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
 
-    vec2 pos = vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 - 50);
+    vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
     win_t_->set<Pos2D>( pos );
 
     vec3 v0(0,0,0), v1(1,1,1);
@@ -188,8 +188,8 @@ void Puzzle::end(pMap lose_map)
 
     end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
     end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
-    end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 50) );
-    end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 100) );
+    end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 50) );
+    end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     using std::tr1::bind;

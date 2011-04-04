@@ -67,8 +67,8 @@ void Scene::enableGlobalHittingEvent() {
 
 Scene& Scene::setTo2DView()
 {
-    float w = (float)Conf::i().SCREEN_W;
-    float h = (float)Conf::i().SCREEN_H;
+    float w = static_cast<float>( Conf::i().SCREEN_W() );
+    float h = static_cast<float>( Conf::i().SCREEN_H() );
     camera_->setPosition( vector3df(0,0,0) );
     camera_->setTarget( vector3df(0,0,100) );
     float const bloat = 0.0f;    //not useful??? set to 0 for now...
@@ -85,12 +85,12 @@ Scene& Scene::setTo2DView()
 Scene& Scene::setTo3DView(float FoV)
 {
     matrix4 proj;
-    proj.buildProjectionMatrixPerspectiveFovLH( FoV, (float)Conf::i().SCREEN_W / Conf::i().SCREEN_H, 0.0, 1000.0 );
+    proj.buildProjectionMatrixPerspectiveFovLH( FoV, (float)Conf::i().SCREEN_W() / Conf::i().SCREEN_H(), 0.0, 1000.0 );
     camera_->setProjectionMatrix( proj );
     camera_->setPosition( vector3df(0,0,0) );
     camera_->setTarget( vector3df(0,0,100) );
     camera_->setFOV( FoV );
-    camera_->setAspectRatio( (float)Conf::i().SCREEN_W / Conf::i().SCREEN_H );
+    camera_->setAspectRatio( (float)Conf::i().SCREEN_W() / Conf::i().SCREEN_H() );
 
     body_->setPosition(vector3df(0,0,0));
     return *this;

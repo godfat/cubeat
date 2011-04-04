@@ -12,30 +12,40 @@ namespace psc {
 struct Conf
 {
 private:
-    utils::map_any config;
-    Conf() :
-        config( utils::map_any::construct(utils::fetchConfig("config.zzml")) ),
-        CONFIG_PATH      ( config.S("config_path") ),
-        CONFIG_INPUT_PATH( config.S("input_conf_path") ),
-        CONFIG_PRESENTER_PATH( config.S("presenter_conf_path") ),
-        SCREEN_W         ( config.I("screenwidth") ),
-        SCREEN_H         ( config.I("screenheight") ),
-        FRAMERATE        ( config.I("framerate") )
-    {
-    }
+    utils::map_any config_;
+    std::string working_path_;
+    std::string config_path_;
+
+    int screen_width_;
+    int screen_height_;
+    int framerate_;
 
 public:
     static Conf& i() {
         static Conf singleton;
         return singleton;
     }
+    //note: call this with null string to specify path relative to executable no matter what,
+    //      or call this with a absolute path to your working path.
+    void init(std::string const& working_path);
 
-    std::string const CONFIG_PATH;
-    std::string const CONFIG_INPUT_PATH;
-    std::string const CONFIG_PRESENTER_PATH;
-    int const SCREEN_W;
-    int const SCREEN_H;
-    int const FRAMERATE;
+    //note: none of these will work if you didn't call init with the correct path.
+    //this will return a path prefixed with your initial working path
+    inline std::string expand(std::string const& path) const {
+    #if defined(_WIN32) || defined(WIN32)
+        return path; //do nothing on win32
+    #else
+        return working_path_ + path;
+    #endif
+    }
+    inline std::string const& WORKING_PATH() const { return working_path_; }
+
+    utils::map_any config_of(std::string const& name) const;
+    std::string read_config_text(std::string const& path) const;
+
+    inline int SCREEN_W() const { return screen_width_; }
+    inline int SCREEN_H() const { return screen_height_; }
+    inline int FRAMERATE() const { return framerate_; }
 };
 
 }

@@ -57,8 +57,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu;
 
-    gameplay_ =
-        utils::map_any::construct( utils::fetchConfig("config/gameplay/multi.zzml") );
+    gameplay_ = Conf::i().config_of("gameplay/multi");
 
     data::pViewSetting s0, s1;
 
@@ -116,8 +115,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     player1_->setMapList( map_list );
 
     // setup stage & ui & player's view objects:
-    stage_ = presenter::Stage::create( sc.size() ? sc : "config/stage/jungle.zzml" );
-    setup_ui_by_config( c1p, c2p, "config/ui/in_game_2p_layout.zzml" );
+    stage_ = presenter::Stage::create( sc.size() ? sc : "stage/jungle" );
+    setup_ui_by_config( c1p, c2p, "ui/in_game_2p_layout" );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
@@ -156,7 +155,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
 void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
 {
-    uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+    uiconf_ = Conf::i().config_of(path);
     utils::map_any const& base = uiconf_.M("base");
     ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
     ui_layout_->set<Alpha>(192);
@@ -171,8 +170,8 @@ void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, 
     }
 
     vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
-    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
+    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "char/char1.zzml", scene_, center_pos );
+    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "char/char2.zzml", scene_, center_pos );
     pview2_->flipPosition();
     pview1_->setMap( map0_ );
     pview2_->setMap( map1_ );
@@ -180,7 +179,7 @@ void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, 
     pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
 
     pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
-    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 60) );
+    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
     pause_text_->set<Visible>(false);
 
     utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
@@ -283,15 +282,15 @@ void Multi::end(pMap lose_map)
     player1_->stopThinking();
 
     Sound::i().play("3/3c/win.mp3");
-    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W, 350, true);
-    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2) );
+    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
 
     win_t_  = view::Sprite::create("win", scene_, 384, 192, true);
     lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
 
-    vec2 pos1 = vec2(Conf::i().SCREEN_W/4,   Conf::i().SCREEN_H/2);
-    vec2 pos2 = vec2(Conf::i().SCREEN_W/4*3, Conf::i().SCREEN_H/2);
+    vec2 pos1 = vec2(Conf::i().SCREEN_W() /4,   Conf::i().SCREEN_H() /2);
+    vec2 pos2 = vec2(Conf::i().SCREEN_W() /4*3, Conf::i().SCREEN_H() /2);
     if( lose_map == map0_ ) {
         lose_t_->set<Pos2D>( pos1 );
         win_t_->set<Pos2D>( pos2 );
@@ -306,8 +305,8 @@ void Multi::end(pMap lose_map)
 
     end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
     end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
-    end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 50) );
-    end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W/2, Conf::i().SCREEN_H/2 + 100) );
+    end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
+    end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
@@ -366,9 +365,9 @@ void Multi::item_creation()
     std::tr1::function<void()> endcall = bind(&Multi::item_destruction, this);
     item_->tween<OElastic, Scale>(vec3(0,0,0), vec3(1,1,1), 1000u);
     if( utils::random(2) )
-        item_->tween<Linear, Pos2D>(vec2(32, y), vec2(Conf::i().SCREEN_W+64, y), 4000u, 0, endcall);
+        item_->tween<Linear, Pos2D>(vec2(32, y), vec2(Conf::i().SCREEN_W() + 64, y), 4000u, 0, endcall);
     else
-        item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W-32, y), vec2(-64, y), 4000u, 0, endcall);
+        item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W() - 32, y), vec2(-64, y), 4000u, 0, endcall);
 }
 
 void Multi::eat_item(ctrl::wpPlayer wp, int)

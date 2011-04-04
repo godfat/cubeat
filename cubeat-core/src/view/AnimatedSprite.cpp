@@ -4,6 +4,7 @@
 #include "view/detail/TextureAnimator.hpp"
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
+#include "Conf.hpp"
 
 #include <sstream>
 
@@ -54,7 +55,7 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
     Animation2D animation;
     for(int i=0; i < total_frames; ++i ) {
         std::ostringstream oss;
-        oss << "rc/texture/" << name_ << "/" << anime_name << "/" << i << ".png";
+        oss << Conf::i().expand("rc/texture/") << name_ << "/" << anime_name << "/" << i << ".png";
         ITexture* tex = driver->getTexture( oss.str().c_str() );
         animation.push_back( tex );
     }
@@ -65,7 +66,8 @@ AnimatedSprite& AnimatedSprite::addAnime(std::string const& anime_name, int tota
 void AnimatedSprite::loadAllAnime()
 {
     IFileSystem* fs = IrrDevice::i().d()->getFileSystem();
-    std::string work_dir( fs->getWorkingDirectory().c_str() );
+    std::string work_dir = Conf::i().WORKING_PATH().empty() ? fs->getWorkingDirectory().c_str() :
+                           Conf::i().WORKING_PATH();
     std::string to_path( (work_dir + "/rc/texture/") + name_ );
     fs->changeWorkingDirectoryTo( to_path.c_str() );
     IFileList* flist = fs->createFileList();

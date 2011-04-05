@@ -9,7 +9,7 @@ player1: {
     chain_amounts: 3,
 
     #How many lines does the player have when game starts: (suggestion: 0 ~ 9)
-    starting_line: 5,
+    starting_line: 3,
 
     #How long does the chain property of the cubes hold
     #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
@@ -64,7 +64,7 @@ player1: {
 player2: {
     color_amounts: 4,
     chain_amounts: 3,
-    starting_line: 5,
+    starting_line: 3,
     chaining_duration: 600,
     cube_dying_duration: 500,
     speed: 65.0,

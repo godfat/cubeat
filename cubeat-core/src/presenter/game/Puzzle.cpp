@@ -124,6 +124,8 @@ void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p,
             addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
+    //2011.04.05 make stage number equal to puzzle level.
+    ui_layout_->getSpriteText("stage").changeText( "level" + to_s(puzzle_level_ - 2) ); //first puzzle have 3 chains.
 
     vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );

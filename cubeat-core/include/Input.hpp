@@ -163,6 +163,7 @@ private:
 public:
     bool isControlledByAI() const { return ai_controlled_; }
     void setControlledByAI(bool const& flag) { ai_controlled_ = flag; }
+
 private:
     bool ai_controlled_;
 //</AI integration testing>

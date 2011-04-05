@@ -10,6 +10,8 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "utils/Logger.hpp"
+#include "utils/Random.hpp"
+#include "Conf.hpp"
 
 #include <boost/tr1/functional.hpp>
 
@@ -21,8 +23,8 @@ using std::tr1::ref;
 using std::tr1::function;
 using utils::Logger;
 
-AIPlayer::AIPlayer(Input* input, data::pViewSetting const& view_setting)
-    :Player(input, view_setting), brain_(0), think_interval_(250), is_executing_(false),
+AIPlayer::AIPlayer(Input* input, int const& id)
+    :Player(input, id), brain_(0), think_interval_(250), is_executing_(false),
      trig1_(false), trig2_(false)
 {
 }
@@ -38,9 +40,11 @@ pAIPlayer AIPlayer::init()
     self_ = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
     brain_ = new model::AIBrain(self());
 
-    input_->cursor().x() = view_setting_->x_offset();
-    input_->cursor().y() = view_setting_->y_offset(); //designate cursor initial point.
-    input_->getCursor()->set<accessor::Pos2D>(vec2(view_setting_->x_offset(), view_setting_->y_offset()));
+    int x = utils::random( Conf::i().SCREEN_W() );
+    int y = utils::random( Conf::i().SCREEN_H() );
+    input_->cursor().x() = x;
+    input_->cursor().y() = y;
+    input_->getCursor()->set<accessor::Pos2D>(vec2(x, y));
 
     return self();
 }
@@ -65,8 +69,8 @@ void AIPlayer::think()
         think_thread_ = pThread(
             new boost::thread( bind(&model::AIBrain::think, brain_,
                                     model_list,
-                                    view_setting_->ally_input_ids(),
-                                    view_setting_->enemy_input_ids()) ));
+                                    ally_input_ids_,
+                                    enemy_input_ids_) ));
     }
 }
 
@@ -81,8 +85,9 @@ bool AIPlayer::startThinking()
     else return false;
 }
 
-void AIPlayer::stopThinking()
+void AIPlayer::stopAllActions()
 {
+    Player::stopAllActions();
     if( think_timer_ && think_thread_ ) {
         std::cout << "AIPlayer stopped thinking." << std::endl;
         think_timer_.reset();
@@ -111,13 +116,21 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
     }
 }
 
+//you can only call this after setMapList is called
+data::pViewSetting AIPlayer::view_setting() const
+{
+    if( presenter::pMap m = map_list_[id_].lock() )
+        return m->view_setting();
+    else return data::pViewSetting();
+}
+
 void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
 {
     using namespace accessor;
     using namespace easing;
-    int c_size = view_setting_->cube_size();
-    vec2 dest(x*c_size + c_size/2 + view_setting_->x_offset(),
-              -y*c_size - c_size/2 + view_setting_->y_offset());
+    int c_size = view_setting()->cube_size();
+    vec2 dest(x*c_size + c_size/2 + view_setting()->x_offset(),
+              -y*c_size - c_size/2 + view_setting()->y_offset());
 
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;

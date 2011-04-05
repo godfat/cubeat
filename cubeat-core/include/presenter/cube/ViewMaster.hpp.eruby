@@ -34,6 +34,7 @@ public:
     virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_land, int tmp_amounts){}
     virtual void warning_counting(int level){}
     virtual void alert_bar_update(int level){}
+    virtual void show_overheat(bool show){}
 
 protected:
     ViewMaster(){}

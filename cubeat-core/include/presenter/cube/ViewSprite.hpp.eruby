@@ -55,7 +55,6 @@ public:
                                      s->cube_size(), s->cube_size(), true);
 
         body_->set<accessor::Pos2D>(pos_vec2());
-
         restore(c->data()->color_id());
     }
 
@@ -342,6 +341,13 @@ public:
         }
     }
 
+    virtual void <% debug_hook 'show_overheat' do %>(bool show){ <% end %>
+        using namespace accessor;
+        //Sound::i().play("overheat_sound");
+        overheat_->set<Visible>(show);
+        overheat_bg_->set<Visible>(show);
+    }
+
 private:
     ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
         ctrl::wpPlayer const& player): ViewMaster(setting),
@@ -364,10 +370,30 @@ private:
                 pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
             else pos = pos_vec2(i, h/2);
             temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-            temp->set<ColorDiffuseVec3>(vec3(255,0,0)).set<Alpha>(64).set<Visible>(false);
+            temp->set<ColorDiffuseVec3>(vec3(255,0,0)).set<Alpha>(96).set<Visible>(false);
             temp->tween<SineCirc, Alpha>(0, 1000u, -1);
             warning_strip_.push_back( temp );
         }
+    }
+
+    void <% debug_hook 'create_overheat_overlay' do %>(){ <% end %>
+        using namespace accessor; using namespace easing;
+        int w = map_setting()->width();
+        int h = map_setting()->height() - 1;
+        vec2 pos;
+        if( w % 2 == 0 )
+            pos = (pos_vec2(w/2, h/2) + pos_vec2(w/2-1, h/2)) / 2;
+        else pos = pos_vec2(w/2, h/2); //memo: can we try to reuse this ..?
+        if( h % 2 == 0 ) pos.Y += 32;
+
+        overheat_ = view::Sprite::create("ui/overheat1", scene_.lock(), 270, 75, true);
+        overheat_->setDepth(-60).set<Pos2D>( pos-vec2(0, 64) ).setPickable(false);
+        overheat_->set<Visible>(false);
+        overheat_->tween<SineCirc, Alpha>(0, 1000u, -1);
+
+        overheat_bg_ = view::Sprite::create("overheat_bg", scene_.lock(), 64*w, 64*h, true);
+        overheat_bg_->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
+        overheat_bg_->set<ColorDiffuseVec3>(vec3(0,0,0)).set<Alpha>(128).set<Visible>(false);
     }
 
     virtual void derived_init(){
@@ -377,7 +403,7 @@ private:
         vec2 pos, pos2;
         if( w % 2 == 0 )
             pos = (pos_vec2(w/2, h) + pos_vec2(w/2-1, h)) / 2;
-        else pos = pos_vec2(w/2, h);
+        else pos = pos_vec2(w/2, h); //memo: can we try to reuse this ..?
         pos.Y += 10;
 
         //warning: the position and scale data here should be configurable.
@@ -391,6 +417,7 @@ private:
         alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
                           .set<Visible>(false).setPickable(false);
 
+        create_overheat_overlay();
         create_warning_strips();
     }
 
@@ -428,6 +455,8 @@ private:
 private:
     view::wpScene scene_;
     ctrl::wpPlayer player_;
+    view::pSprite overheat_;
+    view::pSprite overheat_bg_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
     std::vector< view::pSprite > warning_strip_;

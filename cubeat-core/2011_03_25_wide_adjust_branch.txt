@@ -4,13 +4,17 @@
    -- for versus mode, this will still affect newly created cubes, but should be hard to notice.
    -- I think we really need real_y(pixel_y) as a model property, either use this with current State
       pattern or revamp the state pattern.
-   -- Why sometimes the bottom cubes' chain state isn't taken out?   -- ignore this for now.
+   -- Why sometimes the bottom cubes' chain state isn't taken out?   
+     -- ignore this for now.
 
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
    -- haste produce heat                 -- done
    -- jama shooting produce more heat    -- done
-   -- overheat BIG icon over map, cursor change too.  -- not yet coded
+   -- overheat BIG icon over map, cursor change too.  
+     -- done, but no sound
+     -- fixed a glitch when you pressed haste and end game at the same time, it will keep hasting.
+     -- fixed a glitch when puzzle mode, you can actually cause overheat by hasting.
    
 2. no weapon  -- done
    -- no item  -- done
@@ -53,7 +57,10 @@
 14. We need better chaining cubes' indication. we need better indication of attacking and 
     cubes dropping and those sort of things. In short, we need better UI and user feedback design.
     
-15. Stage number in current puzzle mode.
+15. Stage number in current puzzle mode. -- done
+  -- but actually we need something like puzzle high score that sort of things.
+    -- probably a generic high score record for each of these modes.
 
-16. ALL MUST USE ABSOLUTE PATH -- should be done for both Windows and Mac, not sure about Linux.
+16. ALL MUST USE ABSOLUTE PATH 
+  -- should be done for both Windows and Mac, not sure about Linux.
     

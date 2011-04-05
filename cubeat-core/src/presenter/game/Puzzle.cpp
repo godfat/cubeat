@@ -57,15 +57,16 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     data::pViewSetting s0, s1;
 
     s0 = data::ViewSetting::create(64);   //must use config
-    s0->x_offset(159).y_offset(684).push_ally(0);//.push_enemy(1);
+    s0->x_offset(159).y_offset(684);
     s1 = data::ViewSetting::create(64);   //must use config
-    s1->x_offset(740).y_offset(684).push_ally(1);//.push_enemy(0);
+    s1->x_offset(740).y_offset(684);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
+    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), 0, false);
     player0_->weapon(0)->ammo(0);
     player0_->weapon(1)->ammo(0);
     player0_->weapon(2)->ammo(0);
+    player0_->push_ally(0);
 
     // setup map0
     map0_ = utils::MapLoader::generate( puzzle_level );
@@ -76,6 +77,11 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     set1->starting_line(0).dropping_creatable(false);
     map1_ = presenter::Map::create(set1);
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1) );
+
+    ///NEW: MAKE PLAYER KNOWS ABOUT MAP
+    std::vector< presenter::wpMap > map_list;
+    map_list.push_back(map0_);
+    player0_->setMapList( map_list );
 
     // setup garbage land
     map0_->push_garbage_land(map1_);
@@ -172,6 +178,7 @@ void Puzzle::end(pMap lose_map)
     Sound::i().stopAll();
     map0_->stop_dropping();
     map1_->stop_dropping();
+    player0_->stopAllActions();
 
     Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W(), 350, true);

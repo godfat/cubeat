@@ -32,20 +32,20 @@ public:
     typedef std::tr1::shared_ptr< int >      pDummy;
 
     static pointer_type create(Input* input,
-                               data::pViewSetting const& view_setting) {
-        return pointer_type(new AIPlayer(input, view_setting))->init();
+                               int const& id) {
+        return pointer_type(new AIPlayer(input, id))->init();
     }
 
     virtual void cycle();
     virtual bool startThinking();
-    virtual void stopThinking();
+    virtual void stopAllActions();
 
     boost::mutex& getMutex() { return think_mutex_; }
 
     virtual ~AIPlayer();
 
 protected:
-    AIPlayer(Input* input, data::pViewSetting const&);
+    AIPlayer(Input* input, int const&);
     pointer_type init();
 
     void think();
@@ -56,6 +56,9 @@ protected:
     void press_button(bool&);
     void release_button(bool&);
     pointer_type self() { return self_.lock(); }
+
+    //you can only call this after setMapList is called
+    data::pViewSetting view_setting() const;
 
 protected:
     wpointer_type   self_;

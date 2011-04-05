@@ -7,7 +7,7 @@
 #include "view/SFX.hpp"
 #include "Sound.hpp"
 #include "utils/Random.hpp"
-#include "data/ViewSetting.hpp"
+#include "presenter/Map.hpp"
 #include "Accessors.hpp"        //for some basic visual effects
 #include "EasingEquations.hpp"  //for some basic visual effects
 #include <boost/foreach.hpp>
@@ -17,14 +17,14 @@ using namespace ctrl;
 using std::tr1::bind;
 using namespace std::tr1::placeholders;
 
-Player::Player(Input* input, data::pViewSetting const& view_setting)
-    :changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
+Player::Player(Input* input, int const& id)
+    :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
-     overheat_downtime_(2000), overheat_(false), hasting_(false), input_(input), view_setting_(view_setting)
+     overheat_downtime_(2000), overheat_(false), hasting_(false), input_(input)
 {
 }
 
-pPlayer Player::init()
+pPlayer Player::init(bool const& can_haste)
 {
     weplist_.push_back( new BlockShoot( shared_from_this() ) );
     weplist_.push_back( new PowerShoot( shared_from_this() ) );
@@ -44,11 +44,12 @@ pPlayer Player::init()
 
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::start_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_PRESS);
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::remove_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_RELEASE);
-
+        if( can_haste ) {
+            EventDispatcher::i().subscribe_btn_event(
+                bind(&Player::start_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_PRESS);
+            EventDispatcher::i().subscribe_btn_event(
+                bind(&Player::remove_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_RELEASE);
+        }
 //note: maybe I should let different callee have parallel calling button and state...
 //      do it when have time.
 
@@ -136,10 +137,22 @@ Player& Player::disable_all_wep_reloadability()
     return *this;
 }
 
+Player& Player::push_ally(int id)
+{
+    ally_input_ids_.push_back(id);
+    return *this;
+}
+
+Player& Player::push_enemy(int id)
+{
+    enemy_input_ids_.push_back(id);
+    return *this;
+}
+
 Player& Player::subscribe_shot_event
     (view::pSprite& sv, HitCallback const& ally_cb, HitCallback const& enemy_cb)
 {
-    BOOST_FOREACH(int const& id, view_setting_->ally_input_ids()) {
+    BOOST_FOREACH(int const& id, ally_input_ids_) {
         Input*  input = InputMgr::i().getInputByIndex(id);
         wpPlayer ally  = input->player();
         sv->onPress( &input->trig1() ) = bind(&Player::normal_shot_delegate, this, _1, ally_cb);
@@ -147,7 +160,7 @@ Player& Player::subscribe_shot_event
     }
 
     if( enemy_cb ) {
-        BOOST_FOREACH(int const& id, view_setting_->enemy_input_ids()) {
+        BOOST_FOREACH(int const& id, enemy_input_ids_) {
             Input*  input = InputMgr::i().getInputByIndex(id);
             wpPlayer enemy = input->player();
             //sv->onHit( &input->trig2() ) = bind(&Player::shot_delegate, this, _1, enemy_cb, enemy); 2011.03.25 weapon remove
@@ -157,8 +170,13 @@ Player& Player::subscribe_shot_event
     return *this;
 }
 
-//free func helper
-void end_overheat(bool& heat) { heat = false; }
+void Player::end_overheat()
+{
+    overheat_ = false;
+    if( presenter::pMap m = map_list_[id_].lock() ) {
+        m->overheat_event()(false);
+    }
+}
 
 void Player::generate_heat(double heat)
 {
@@ -167,9 +185,12 @@ void Player::generate_heat(double heat)
     if( accumulated_heat_ > 1 ) {
         accumulated_heat_ = 1;
         overheat_ = true;
+        if( presenter::pMap m = map_list_[id_].lock() ) {
+            m->overheat_event()(true);
+        }
         remove_haste_effect(); // only call this after you're sure about overheat_ is true
         EventDispatcher::i().subscribe_timer(
-            bind(&end_overheat, ref(overheat_)), shared_from_this(), overheat_downtime_);
+            bind(&Player::end_overheat, this), shared_from_this(), overheat_downtime_);
     }
 }
 
@@ -186,8 +207,8 @@ void Player::normal_shot_delegate
 //    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 //{
 //    if( pPlayer p = player.lock() ) {
-//        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
-//        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+//        std::list<int> const& that_allies = p->ally_input_ids();
+//        std::list<int> const& self_allies = ally_input_ids_;
 //        if( that_allies == self_allies || p->can_crossfire() )
 //            hit_cb( p->weapon()->firepower() ); // if the player is ally OR player can crossfire
 //    }
@@ -197,8 +218,8 @@ void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
     (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 {
     if( pPlayer p = player.lock() ) {
-        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
-        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+        std::list<int> const& that_allies = p->ally_input_ids();
+        std::list<int> const& self_allies = ally_input_ids_;
         if( that_allies == self_allies )
             hit_cb(1);
         else {
@@ -213,8 +234,8 @@ void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
 //    (view::pSprite& sv, HitCallback const& hit_cb, wpPlayer player)
 //{
 //    if( pPlayer p = player.lock() ) {
-//        std::list<int> const& that_allies = p->view_setting_->ally_input_ids();
-//        std::list<int> const& self_allies = view_setting_->ally_input_ids();
+//        std::list<int> const& that_allies = p->ally_input_ids();
+//        std::list<int> const& self_allies = ally_input_ids_;
 //        if( that_allies == self_allies || p->can_crossfire() )
     //        hit_cb( p->weapon()->firepower() );
 //    }
@@ -231,6 +252,9 @@ int  Player::wepid()                  const { return weplist_idx_; }
 double Player::heat()                 const { return accumulated_heat_; }
 bool Player::is_overheat()            const { return overheat_; }
 int  Player::overheat_downtime()      const { return overheat_downtime_; }
+int  Player::id()                     const { return id_; }
+std::list<int> const& Player::ally_input_ids()  const { return ally_input_ids_;  }
+std::list<int> const& Player::enemy_input_ids() const { return enemy_input_ids_; }
 bool Player::ammo_all_out() const {
     int count = 0;
     BOOST_FOREACH(Weapon* wp, weplist_)

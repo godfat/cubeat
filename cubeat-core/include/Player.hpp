@@ -24,18 +24,21 @@ public:
     typedef std::tr1::shared_ptr< Player > pointer_type;
     typedef std::tr1::weak_ptr  < Player > wpointer_type;
     static pointer_type create(Input* input,
-                               data::pViewSetting const& view_setting) {
-        return pointer_type(new Player(input, view_setting))->init();
+                               int const& id,
+                               bool const& can_haste = true) {
+        return pointer_type(new Player(input, id))->init(can_haste);
     }
     virtual void cycle();
     virtual bool startThinking() { return false; }
-    virtual void stopThinking() {}
+    virtual void stopAllActions() { if( hasting_ ) remove_haste_effect(); }
     void setMapList(std::vector<presenter::wpMap> const& mlist) { map_list_ = mlist; }
 
     Player& set_active_weapon(int i);
     Player& debug_reset_all_weapon();
     Player& set_config(utils::map_any const& config);
     Player& disable_all_wep_reloadability();
+    Player& push_ally(int id);
+    Player& push_enemy(int id);
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
     //I'd better refactor this afterwards.
@@ -53,6 +56,9 @@ public:
     double heat()                 const;
     bool is_overheat()            const;
     int  overheat_downtime()      const;
+    int  id()                     const;
+    std::list<int> const& ally_input_ids()  const;
+    std::list<int> const& enemy_input_ids() const;
 
     void generate_heat(double);
     float haste_speedfunc(float orig_speed) const;
@@ -60,8 +66,8 @@ public:
     virtual ~Player();
 
 protected:
-    Player(Input* input, data::pViewSetting const&);
-    pointer_type init();
+    Player(Input* input, int const&);
+    pointer_type init(bool const& can_haste = true);
 
     void normal_weapon_fx();
     void start_haste_effect();
@@ -71,8 +77,10 @@ protected:
     void repeating_shot_delegate(view::pSprite&, HitCallback const&, wpointer_type);
     void process_input();
     void heat_cooling();
+    void end_overheat();
 
 protected:
+    int       id_;
     int const changetime_;
     bool      changing_wep_;
     int       weplist_idx_;
@@ -82,9 +90,9 @@ protected:
 
     Input*               input_;
 	Weapon*              current_wep_;
-	data::pViewSetting   view_setting_;
 	std::vector<Weapon*> weplist_;
 	std::vector<presenter::wpMap> map_list_;
+	std::list<int> ally_input_ids_, enemy_input_ids_;
 };
 
 typedef std::tr1::shared_ptr<Player> pPlayer;

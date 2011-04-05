@@ -13,23 +13,12 @@ public:
     {
         return pointer_type(new ViewSetting(cube_size));
     }
-public:
-    ViewSetting& push_ally(int id){
-        ally_input_ids_.push_back(id); return *this;
-    }
-    ViewSetting& push_enemy(int id){
-        enemy_input_ids_.push_back(id); return *this;
-    }
-
-    std::list<int> const& ally_input_ids() const{ return ally_input_ids_; }
-    std::list<int> const& enemy_input_ids() const{ return enemy_input_ids_; }
 
 private:
     ViewSetting(double cube_size = 50):
     x_offset_(0), y_offset_(0), z_offset_(0), cube_size_(cube_size){}
 
 <%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size %>
-    std::list<int> ally_input_ids_, enemy_input_ids_;
 };
 
 }} // end of namespace

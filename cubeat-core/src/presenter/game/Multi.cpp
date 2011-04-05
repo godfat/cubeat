@@ -62,28 +62,30 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     data::pViewSetting s0, s1;
 
     s0 = data::ViewSetting::create(64);   //must use config
-    s0->x_offset(159).y_offset(684).push_ally(0).push_enemy(1);
+    s0->x_offset(159).y_offset(684);
     s1 = data::ViewSetting::create(64);   //must use config
-    s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
+    s1->x_offset(740).y_offset(684);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
     if( num_of_cpu == 0 ) {
-        player0_ = ctrl::Player::create(input0, s0);
-        player1_ = ctrl::Player::create(input1, s1);
+        player0_ = ctrl::Player::create(input0, 0);
+        player1_ = ctrl::Player::create(input1, 1);
     }
     else if( num_of_cpu == 1 ) {
         input1->setControlledByAI(true);
-        player0_ = ctrl::Player::create(input0, s0);
-        player1_ = ctrl::AIPlayer::create(input1, s1);
+        player0_ = ctrl::Player::create(input0, 0);
+        player1_ = ctrl::AIPlayer::create(input1, 1);
     }
     else {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        player0_ = ctrl::AIPlayer::create(input0, s0);
-        player1_ = ctrl::AIPlayer::create(input1, s1);
+        player0_ = ctrl::AIPlayer::create(input0, 0);
+        player1_ = ctrl::AIPlayer::create(input1, 1);
     }
+    player0_->push_ally(0).push_enemy(1);
+    player1_->push_ally(1).push_enemy(0);
 
     // setup player settings
     player0_->set_config(gameplay_.M("player1").M("weapon"));
@@ -278,8 +280,8 @@ void Multi::end(pMap lose_map)
 
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
     ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-    player0_->stopThinking();
-    player1_->stopThinking();
+    player0_->stopAllActions();
+    player1_->stopAllActions();
 
     Sound::i().play("3/3c/win.mp3");
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);

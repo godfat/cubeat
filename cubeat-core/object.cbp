@@ -97,7 +97,6 @@
 		<Unit filename="include\all_fwd.hpp" />
 		<Unit filename="include\all_fwd.hpp.eruby" />
 		<Unit filename="include\ctrl\AIPlayer.hpp" />
-		<Unit filename="include\ctrl\Ai.hpp" />
 		<Unit filename="include\data\BasicViewTypes.hpp" />
 		<Unit filename="include\data\Color.hpp" />
 		<Unit filename="include\data\Cube.hpp" />
@@ -105,6 +104,7 @@
 		<Unit filename="include\data\MapSetting.hpp" />
 		<Unit filename="include\data\MapSetting.hpp.eruby" />
 		<Unit filename="include\data\TAnimatorParam.hpp" />
+		<Unit filename="include\data\ViewSetting.hpp" />
 		<Unit filename="include\data\ViewSetting.hpp.eruby" />
 		<Unit filename="include\model\AIBrain.hpp" />
 		<Unit filename="include\model\AICommand.hpp" />

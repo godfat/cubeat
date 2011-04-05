@@ -386,7 +386,7 @@ private:
         else pos = pos_vec2(w/2, h/2); //memo: can we try to reuse this ..?
         if( h % 2 == 0 ) pos.Y += 32;
 
-        overheat_ = view::Sprite::create("ui/overheat1", scene_.lock(), 270, 75, true);
+        overheat_ = view::Sprite::create("ui/overheat3", scene_.lock(), 270, 75, true);
         overheat_->setDepth(-60).set<Pos2D>( pos-vec2(0, 64) ).setPickable(false);
         overheat_->set<Visible>(false);
         overheat_->tween<SineCirc, Alpha>(0, 1000u, -1);

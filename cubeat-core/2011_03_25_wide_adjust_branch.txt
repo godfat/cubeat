@@ -31,7 +31,7 @@
       thus there's a chance "they might get chained in the air."   -- fixed.
    -- Generated answers tend to be on the right side of map.  -- done, horizontal flip for 50% chance
 
-6. press enter to activate player control is weird.
+6. press enter to activate player control is weird. -- done, it should be tolerable for now.
 
 7. in-game user control needs to be refined a little.  -- consider done for now
    -- remove weapon related controls. -- done(, see 1.)

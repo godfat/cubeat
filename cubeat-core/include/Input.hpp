@@ -80,11 +80,16 @@ private:
     void pollManyMouseStates();
     void handleManyMouseDisconnect();
     void reinitManyMouse();
+    bool windowGotFocus() const      { return window_focus_now_ == true && window_focus_last_ == false; }
+    bool windowReleasedFocus() const { return window_focus_now_ == false && window_focus_last_ == true; }
+    void toggleInput(bool const&);
 
     view::pScene scene_;
     InputList    inputs_;
     bool keyboard_mouse_input_;
     bool inited_;
+    bool window_focus_now_;
+    bool window_focus_last_;
     int  mice_detected_by_manymouse_;
 };
 

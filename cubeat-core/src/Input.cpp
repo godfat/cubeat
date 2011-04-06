@@ -37,8 +37,8 @@ using namespace easing;
 using namespace accessor;
 
 InputMgr::InputMgr()
-    :MAX_INPUTS(2), keyboard_mouse_input_(false), inited_(false),
-     mice_detected_by_manymouse_(0)
+    :MAX_INPUTS(2), keyboard_mouse_input_(true), inited_(false),
+     window_focus_now_(true), window_focus_last_(false), mice_detected_by_manymouse_(0)
 
 {
     std::cout << "InputMgr constructed." << std::endl;
@@ -177,17 +177,16 @@ void InputMgr::updateAll()
     MastEventReceiver::i().endEventProcess();
 
     //toggle keyboard_mouse_input_ on/off
-    if( MastEventReceiver::i().keyPressed( KEY_RETURN ) ) {
-        keyboard_mouse_input_ = !keyboard_mouse_input_;
-        std::cout<<"Toggle secondary input "<<(keyboard_mouse_input_?"on":"off")<< std::endl;
-        if( keyboard_mouse_input_ ) {
-            reinitManyMouse();
-            IrrDevice::i().d()->getCursorControl()->setVisible(false);
-        }
-        else
-            IrrDevice::i().d()->getCursorControl()->setVisible(true);
+    if( window_focus_now_ )
+        if( MastEventReceiver::i().keyPressed( KEY_ESCAPE ) )
+            toggleInput(!keyboard_mouse_input_);
 
-    }
+    window_focus_last_ = window_focus_now_;
+    window_focus_now_ = IrrDevice::i().d()->isWindowActive();
+
+    if( windowGotFocus() ) toggleInput(true);
+    else if( windowReleasedFocus() ) toggleInput(false);
+
 #ifdef _USE_MANYMOUSE_
     if( keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
@@ -197,6 +196,19 @@ void InputMgr::updateAll()
         it->update();
 
     MastEventReceiver::i().startEventProcess();
+}
+
+void InputMgr::toggleInput(bool const& flag)
+{
+    if( keyboard_mouse_input_ == flag ) return;
+    keyboard_mouse_input_ = flag;
+    std::cout << "Toggle input grabbing: " << (keyboard_mouse_input_?"on":"off") << std::endl;
+    if( keyboard_mouse_input_ ) {
+        reinitManyMouse();
+        IrrDevice::i().d()->getCursorControl()->setVisible(false);
+    }
+    else
+        IrrDevice::i().d()->getCursorControl()->setVisible(true);
 }
 
 void InputMgr::initGraphicItems()

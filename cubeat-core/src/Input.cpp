@@ -37,8 +37,8 @@ using namespace easing;
 using namespace accessor;
 
 InputMgr::InputMgr()
-    :MAX_INPUTS(2), keyboard_mouse_input_(true), inited_(false),
-     window_focus_now_(true), window_focus_last_(false), mice_detected_by_manymouse_(0)
+    :MAX_INPUTS(2), keyboard_mouse_input_(false), inited_(false),
+     window_focus_now_(false), window_focus_last_(false), mice_detected_by_manymouse_(0)
 
 {
     std::cout << "InputMgr constructed." << std::endl;
@@ -177,14 +177,19 @@ void InputMgr::updateAll()
     MastEventReceiver::i().endEventProcess();
 
     //toggle keyboard_mouse_input_ on/off
-    if( window_focus_now_ )
-        if( MastEventReceiver::i().keyPressed( KEY_ESCAPE ) )
-            toggleInput(!keyboard_mouse_input_);
+    if( window_focus_now_ ) {
+        if( keyboard_mouse_input_ && MastEventReceiver::i().keyPressed( KEY_ESCAPE ) ) {
+            toggleInput(false);
+        }
+        else if( !keyboard_mouse_input_ && MastEventReceiver::i().leftMousePressed() ) {
+            toggleInput(true);
+        }
+    }
 
     window_focus_last_ = window_focus_now_;
     window_focus_now_ = IrrDevice::i().d()->isWindowActive();
 
-    if( windowGotFocus() ) toggleInput(true);
+    if( windowGotFocus() )           toggleInput(true);
     else if( windowReleasedFocus() ) toggleInput(false);
 
 #ifdef _USE_MANYMOUSE_

@@ -330,7 +330,6 @@ void Multi::setup_end_button()
 
 void Multi::end_sequence1()
 {
-    std::cout << "Waht the fuck.\n";
     Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
     stage_->releaseResource(); //release when player isn't going to replay

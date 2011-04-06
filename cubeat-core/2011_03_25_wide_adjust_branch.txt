@@ -60,8 +60,11 @@
 15. Stage number in current puzzle mode. -- done
   -- but actually we need something like puzzle high score that sort of things.
     -- probably a generic high score record for each of these modes.
+    -- It would be unwise to implement this before we have a better simplified interface for UI.
 
 16. ALL MUST USE ABSOLUTE PATH 
   -- should be done for both Windows and Mac, not sure about Linux.
     
 17. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
+
+18. You have to "choose character for CPU" ... which is very strange.

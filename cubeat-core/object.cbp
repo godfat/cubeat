@@ -23,14 +23,14 @@
 					<Add directory="include" />
 					<Add directory="lib" />
 					<Add directory="C:\local_gitrepo\Irrlicht\include" />
-					<Add directory="C:\libs\cpp\irrKlang-1.3.0\include" />
 					<Add directory="C:\libs\cpp\wiiyourself_1.15" />
 					<Add directory="C:\lang\luarocks\2.0\include" />
+					<Add directory="C:\libs\cpp\openal-soft\include" />
+					<Add directory="C:\libs\cpp\alure\include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="Irrlicht" />
-					<Add library="irrKlang" />
 					<Add library="wiiyourself_gcc45" />
 					<Add library="winmm" />
 					<Add library="user32" />
@@ -40,6 +40,8 @@
 					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add library="boost_date_time-mgw45-mt-1_43" />
 					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
+					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
+					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
 					<Add directory="C:\libs\cpp\irrKlang-1.3.0\lib\Win32-gcc" />
 					<Add directory="C:\libs\cpp\wiiyourself_1.15\lib" />
@@ -92,10 +94,12 @@
 		<Unit filename="include\Input.hpp" />
 		<Unit filename="include\IrrDevice.hpp" />
 		<Unit filename="include\Player.hpp" />
-		<Unit filename="include\Sound.hpp" />
 		<Unit filename="include\Weapon.hpp" />
 		<Unit filename="include\all_fwd.hpp" />
 		<Unit filename="include\all_fwd.hpp.eruby" />
+		<Unit filename="include\audio\Sound.hpp" />
+		<Unit filename="include\audio\SoundObject.hpp" />
+		<Unit filename="include\audio\detail\OpenAL.hpp" />
 		<Unit filename="include\ctrl\AIPlayer.hpp" />
 		<Unit filename="include\data\BasicViewTypes.hpp" />
 		<Unit filename="include\data\Color.hpp" />
@@ -241,8 +245,10 @@
 		<Unit filename="src\Input.cpp" />
 		<Unit filename="src\IrrDevice.cpp" />
 		<Unit filename="src\Player.cpp" />
-		<Unit filename="src\Sound.cpp" />
 		<Unit filename="src\Weapon.cpp" />
+		<Unit filename="src\audio\Sound.cpp" />
+		<Unit filename="src\audio\SoundObject.cpp" />
+		<Unit filename="src\audio\detail\OpenAL.cpp" />
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
 		<Unit filename="src\data\Color.cpp" />
 		<Unit filename="src\data\MapSetting.cpp" />

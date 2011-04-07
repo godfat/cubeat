@@ -4,7 +4,7 @@
 #include "view/AnimatedSceneObject.hpp"
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
-#include "Sound.hpp"
+#include "audio/Sound.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>
@@ -20,7 +20,7 @@ using namespace accessor;
 
 Stage::Stage() : need_release_(false)
 {
-    Sound::i().stopAll();
+    audio::Sound::i().stopAll();
 }
 
 Stage::~Stage()
@@ -132,7 +132,7 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM()
 {
-    Sound::i().play( conf_.S("music"), true );
+    audio::Sound::i().play( conf_.S("music"), true );
     return *this;
 }
 

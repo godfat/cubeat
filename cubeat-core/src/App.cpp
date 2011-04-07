@@ -10,6 +10,7 @@
 #include "view/SFX.hpp"
 #include "view/Scene.hpp"
 
+#include "audio/Sound.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
@@ -35,8 +36,11 @@ App::App()
         std::cout << "Graphic engine initialization failed. Halting..." << std::endl;
         return;
     }
+
     timer_ = IrrDevice::i().d()->getTimer();
     InputMgr::i().createInputs();
+    audio::Sound::i().init();
+
     trans_            = presenter::Transitioner::create();
     master_presenter_ = presenter::OpeningSequence::create();
     temp_presenter_   = presenter::pObject();
@@ -124,6 +128,7 @@ int App::run(std::tr1::function<void()> tester)
             trans_->cycle();
 
             InputMgr::i().redrawAll();
+            audio::Sound::i().cycle();
             view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
 
             driver->endScene();

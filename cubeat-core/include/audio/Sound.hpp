@@ -1,11 +1,4 @@
 
-/*2007.11.9
-  Deleted things coupled with Virtools.
-  This item cannot compile unless further changes made.
-
-  This class is now more or less like an interface.
-*/
-
 #ifndef _SHOOTING_CUBES_SOUND_
 #define _SHOOTING_CUBES_SOUND_
 
@@ -17,26 +10,27 @@ namespace audio {
 
 class SoundObject;
 
-class SoundMgr
+class Sound
 {
     typedef std::map  <std::string, SoundObject*>        SoundMap;
     typedef std::pair <std::string const, SoundObject*>  SoundMapPair;
 public:
-    static SoundMgr& i() {
-        static SoundMgr singleton;
+    static Sound& i() {
+        static Sound singleton;
         return singleton;
     }
 
-    SoundMgr& play(std::string const& path, bool loop = false);
-    SoundMgr& stopAll();
-    SoundMgr& pauseAll(bool);
-    SoundMgr& cycle();
+    Sound& load(std::string const& path);
+    Sound& play(std::string const& path, bool const& loop = false);
+    Sound& stopAll();
+    Sound& pauseAll(bool const&);
+    Sound& cycle();
 
     void init();
-    ~SoundMgr();
+    ~Sound();
 
 private:
-    SoundMgr();
+    Sound();
 
 private:
     std::string base_path_;

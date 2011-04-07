@@ -6,7 +6,7 @@
 #include <boost/tr1/memory.hpp>
 #include <vector>
 
-// #include "Sound.hpp"
+// #include "audio/Sound.hpp"
 
 namespace psc{ namespace model{
 

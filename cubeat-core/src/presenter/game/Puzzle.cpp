@@ -16,7 +16,7 @@
 #include "Input.hpp"
 #include "Player.hpp"
 #include "Weapon.hpp"
-#include "Sound.hpp"
+#include "audio/Sound.hpp"
 #include "Conf.hpp"
 #include "App.hpp"
 
@@ -175,12 +175,12 @@ void Puzzle::end(pMap lose_map)
     end_ = true;
     timer_ui_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
-    Sound::i().stopAll();
+    audio::Sound::i().stopAll();
     map0_->stop_dropping();
     map1_->stop_dropping();
     player0_->stopAllActions();
 
-    Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
+    audio::Sound::i().play( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W(), 350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
@@ -222,7 +222,7 @@ void Puzzle::setup_end_button()
 
 void Puzzle::end_sequence1()
 {
-    Sound::i().play("4/4c.wav");
+    audio::Sound::i().play("4/4c.wav");
     btn_reinit_.reset();
     stage_->releaseResource(); //release when player isn't going to replay
     App::i().launchMainMenu();
@@ -236,7 +236,7 @@ void Puzzle::reinit()
     //if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
     if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
     else if( new_puzzle_lv < 3 ) new_puzzle_lv = 3;
-    Sound::i().play("4/4b.wav");
+    audio::Sound::i().play("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);

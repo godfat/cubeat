@@ -1,7 +1,7 @@
 
 #include "Weapon.hpp"
 #include "EventDispatcher.hpp"
-#include "Sound.hpp"
+#include "audio/Sound.hpp"
 #include "view/SFX.hpp"
 #include "view/Scene.hpp" //warning: very bad!!!!
 #include "Input.hpp"
@@ -16,7 +16,7 @@ using namespace std::tr1::placeholders;
 void Weapon::reload() {
     if( reloadable_ == true && reloading_ == false ) {
         reloading_ = true;
-        //Sound::i().reload();
+        //audio::Sound::i().reload();
         //call reset() by timer
     }
 }
@@ -28,7 +28,7 @@ BlockShoot::BlockShoot(wpPlayer const& p):Weapon(p, 1, 10, 99, true, false){} //
 void BlockShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        Sound::i().play("1/a/1a-2.mp3");
+        audio::Sound::i().play("1/a/1a-2.mp3");
         view::SFX::i().weapon_vfx1( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }
@@ -41,7 +41,7 @@ PowerShoot::PowerShoot(wpPlayer const& p):Weapon(p, 3, 10, 99, false, false){} /
 void PowerShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        Sound::i().play("1/a/1a-3.mp3");
+        audio::Sound::i().play("1/a/1a-3.mp3");
         view::SFX::i().weapon_vfx2( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }
@@ -54,7 +54,7 @@ AreaShoot::AreaShoot(wpPlayer const& p):Weapon(p, 3, 1, 99, true, false){} //mus
 void AreaShoot::fire(vec2 const& pos) {
     if( ammo_ > 0 && reloading_ == false ) {
         --ammo_;
-        Sound::i().play("1/a/1a-4.mp3");
+        audio::Sound::i().play("1/a/1a-4.mp3");
         view::SFX::i().weapon_vfx3( InputMgr::i().scene(), pos );
         //use Timer to refresh coolingdown_
     }

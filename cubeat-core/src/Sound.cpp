@@ -1,12 +1,13 @@
 
 #include "Sound.hpp"
+#include "Conf.hpp"
 #include <irrKlang.h>
 
 using namespace psc;
 using namespace irrklang;
 
 Sound::Sound()
-    :base_path_("rc/sound/")
+    :base_path_( Conf::i().expand("rc/sound/") )
 {
     engine_ = createIrrKlangDevice();
 }

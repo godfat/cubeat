@@ -1,19 +1,35 @@
 
 #include "audio/detail/OpenAL.hpp"
+#include <cstdio>
 #include <AL/alure.h>
 
 namespace psc {
 namespace audio {
 namespace detail {
 
-int sound_update()
+bool sound_init()
 {
-    return 0;
+    if(!alureInitDevice(NULL, NULL)) { // Do we really have hardware accelerated sound here..?
+        fprintf(stderr, "OpenAL initialization failed: %s\n", alureGetErrorString());
+        return false;
+    }
+    fprintf(stdout, "OpenAL initialized.\n");
+    return true;
 }
 
-int sound_cleanup()
+void sound_update()
 {
-    return 0;
+    alureUpdate();
+}
+
+bool sound_cleanup()
+{
+    if(!alureShutdownDevice()) {
+        fprintf(stderr, "OpenAL destruction failed: %s\n", alureGetErrorString());
+        return false;
+    }
+    fprintf(stdout, "OpenAL destructed.\n");
+    return true;
 }
 
 } //detail

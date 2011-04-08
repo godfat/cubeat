@@ -5,8 +5,9 @@ namespace psc {
 namespace audio {
 namespace detail {
 
-int sound_update();
-int sound_cleanup();
+bool sound_init();
+void sound_update();
+bool sound_cleanup();
 
 } //detail
 } //audio

@@ -132,7 +132,7 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM()
 {
-    audio::Sound::i().play( conf_.S("music"), true );
+    audio::Sound::i().playStream( conf_.S("music"), true );
     return *this;
 }
 

@@ -283,7 +283,7 @@ void Multi::end(pMap lose_map)
     player0_->stopAllActions();
     player1_->stopAllActions();
 
-    audio::Sound::i().play("3/3c/win.mp3");
+    audio::Sound::i().playBuffer("3/3c/win.mp3");
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
@@ -330,7 +330,7 @@ void Multi::setup_end_button()
 
 void Multi::end_sequence1()
 {
-    audio::Sound::i().play("4/4c.wav");
+    audio::Sound::i().playBuffer("4/4c.wav");
     btn_reinit_.reset();
     stage_->releaseResource(); //release when player isn't going to replay
     App::i().launchMainMenu();
@@ -340,7 +340,7 @@ void Multi::end_sequence1()
 void Multi::reinit()
 {
     using std::tr1::bind;
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_), 500);
@@ -350,7 +350,7 @@ void Multi::reinit()
 //note: not very elegant.
 void Multi::item_creation()
 {
-    audio::Sound::i().play("3/3f/item.mp3");
+    audio::Sound::i().playBuffer("3/3f/item.mp3");
     item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
     item_->playAnime("moving", 500, -1).setDepth(-60);
 
@@ -390,7 +390,7 @@ void Multi::eat_item(ctrl::wpPlayer wp, int)
         else {
             p->weapon(0)->ammo( p->weapon(2)->ammo()+iset.I("wep3_ammo") );
         }
-        audio::Sound::i().play("1/e/getitem.mp3");
+        audio::Sound::i().playBuffer("1/e/getitem.mp3");
     }
 }
 

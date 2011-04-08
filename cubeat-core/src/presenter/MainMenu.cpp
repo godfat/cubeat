@@ -225,7 +225,7 @@ void MainMenu::initDecorator()
         deco_cubes_.push_back( temp );
     }
 
-    audio::Sound::i().play("title.mp3", true);
+    audio::Sound::i().playStream("title.mp3", true);
 
     App::i().setLoading(100);
 }
@@ -258,7 +258,7 @@ void MainMenu::push_start()
 {
     if( animating_ ) return;
 
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
     btn_start_.reset();
     //menus_["start_menu"]->getSpriteText("text").tween<SineCirc, Alpha>(0, 255, 120u, 2);
 
@@ -293,7 +293,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
 {
     if( animating_ ) return;
 
-    audio::Sound::i().play("4/4c.wav");
+    audio::Sound::i().playBuffer("4/4c.wav");
     hideMenu(from).showMenu(to);
     animating_ = true;
     btn_back1_.reset();
@@ -332,7 +332,7 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
     if( animating_ ) return;
 
     game_mode_ = mode;
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
 
     menus_["mode_select"]->setCallbackToSprite("multi_no_cpu", 0);
     menus_["mode_select"]->setCallbackToSprite("multi_one_cpu", 0);
@@ -421,7 +421,7 @@ void MainMenu::player1_select(int num)
 {
     if( player1focus_ + num < 1 ) return;
     if( player1focus_ + num > 5 ) return;
-    audio::Sound::i().play("4/4a.wav");
+    audio::Sound::i().playBuffer("4/4a.wav");
     player1focus_ += num;
     vec2 pos = player1text_->get<Pos2D>();
     pos.X += 150 * num;
@@ -432,7 +432,7 @@ void MainMenu::player2_select(int num)
 {
     if( player2focus_ + num < 1 ) return;
     if( player2focus_ + num > 5 ) return;
-    audio::Sound::i().play("4/4a.wav");
+    audio::Sound::i().playBuffer("4/4a.wav");
     player2focus_ += num;
     vec2 pos = player2text_->get<Pos2D>();
     pos.X += 150 * num;
@@ -460,7 +460,7 @@ void MainMenu::player2_getfocus(int num)
 void MainMenu::player1_checked()
 {
     if( animating_ ) return;
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
     player1num_ = player1focus_;
     player1text_->set<Alpha>(255);
     btn_choose_player1_.reset();
@@ -475,7 +475,7 @@ void MainMenu::player1_checked()
 void MainMenu::player2_checked()
 {
     if( animating_ ) return;
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
     player2num_ = player2focus_;
     player2text_->set<Alpha>(255);
     btn_choose_player2_.reset();
@@ -507,7 +507,7 @@ void MainMenu::stage_select(view::pSprite& sp, std::string name)
     if( two_players_ )
         conf2p_ = "char/char"+to_s(player2num_)+".zzml";
 
-    audio::Sound::i().play("4/4b.wav");
+    audio::Sound::i().playBuffer("4/4b.wav");
 
     fadeAllOut(1000);
     function<void()> cb = bind(&MainMenu::end, this);

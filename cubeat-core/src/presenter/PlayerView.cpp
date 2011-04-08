@@ -94,7 +94,7 @@ PlayerView& PlayerView::switchCharacterState( STATE const& state )
                .playAnime( stat.anim, 1000, 0, bind(&PlayerView::clearFaceState, this));
 
     if( stat.sound != "" )
-        audio::Sound::i().play( stat.sound );
+        audio::Sound::i().playBuffer( stat.sound );
 
     if( state == STAND ) {
         face_pos_idx_ = 0;

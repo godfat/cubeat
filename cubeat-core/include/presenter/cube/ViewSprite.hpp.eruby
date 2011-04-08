@@ -125,7 +125,7 @@ public:
         body_->set<accessor::GradientDiffuse>( 255 );
         body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         shot_event(&model::Cube::restore, &model::Cube::go_exploding);
-        //audio::Sound::i().play("1/d/ShotA@11.wav");
+        //audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
     }
 
     virtual void <% debug_hook 'restore' do %>(int color_id){ <% end %>
@@ -147,12 +147,12 @@ public:
         body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
         if( cube_.lock()->is_garbage() ) {
             body_->setTexture("cubes/garbage" + utils::to_s(hp));
-            audio::Sound::i().play("1/c/GlassF@11.wav");
+            audio::Sound::i().playBuffer("1/c/GlassF@11.wav");
         }
         else {
             int alpha = body_->get<accessor::Alpha>();
             body_->tween<easing::Linear, accessor::Alpha>(alpha/2 + 30, 300);
-            audio::Sound::i().play("1/b/HitB@11.wav");
+            audio::Sound::i().playBuffer("1/b/HitB@11.wav");
         }
     }
 
@@ -280,7 +280,7 @@ public:
                                   std::tr1::bind(&ViewSpriteMaster::pop_a_chain_text, this, chain) );
 
         chain_texts_[ chain ] = m;
-        audio::Sound::i().play( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".mp3"));
+        audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".mp3"));
     }
 
     virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_lands, int n){
@@ -319,7 +319,7 @@ public:
     virtual void <% debug_hook 'warning_counting' do %>(int warning_level){ <% end %>
         using std::tr1::bind; using namespace accessor; using namespace easing;
 
-        audio::Sound::i().play("3/3d/alarm.mp3");
+        audio::Sound::i().playBuffer("3/3d/alarm.mp3");
         alert_bar_top_->playAnime("moving", 1000);
         alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
         alert_bar_bottom_->playAnime("moving", 1000);

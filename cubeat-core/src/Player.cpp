@@ -119,7 +119,7 @@ Player& Player::set_active_weapon(int i)
         input_->setRangeShapeVisible(true);
     else
         input_->setRangeShapeVisible(false);
-    audio::Sound::i().play("1/g/09.mp3");
+    audio::Sound::i().playBuffer("1/g/09.mp3");
     return *this;
 }
 
@@ -290,7 +290,7 @@ void Player::remove_haste_effect()
 //temp: not flexible and stupid.
 void Player::normal_weapon_fx() {
     if( !overheat_ ) {
-        audio::Sound::i().play("1/a/1a-1.mp3");
+        audio::Sound::i().playBuffer("1/a/1a-1.mp3");
         view::SFX::i().normal_weapon_vfx(
             InputMgr::i().scene(), vec2(input_->cursor().x(), input_->cursor().y()) );
 
@@ -314,7 +314,7 @@ void Player::eat_item()
     else {
         weplist_[2]->ammo( weplist_[2]->ammo()+1 );
     }
-    audio::Sound::i().play("1/e/getitem.mp3");
+    audio::Sound::i().playBuffer("1/e/getitem.mp3");
 }
 
 //note: need fix

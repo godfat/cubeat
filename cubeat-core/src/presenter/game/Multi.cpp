@@ -283,7 +283,7 @@ void Multi::end(pMap lose_map)
     player0_->stopAllActions();
     player1_->stopAllActions();
 
-    audio::Sound::i().playBuffer("3/3c/win.mp3");
+    audio::Sound::i().playBuffer("3/3c/win.wav");
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
@@ -350,7 +350,7 @@ void Multi::reinit()
 //note: not very elegant.
 void Multi::item_creation()
 {
-    audio::Sound::i().playBuffer("3/3f/item.mp3");
+    audio::Sound::i().playBuffer("3/3f/item.wav");
     item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
     item_->playAnime("moving", 500, -1).setDepth(-60);
 
@@ -390,7 +390,7 @@ void Multi::eat_item(ctrl::wpPlayer wp, int)
         else {
             p->weapon(0)->ammo( p->weapon(2)->ammo()+iset.I("wep3_ammo") );
         }
-        audio::Sound::i().playBuffer("1/e/getitem.mp3");
+        audio::Sound::i().playBuffer("1/e/getitem.wav");
     }
 }
 

@@ -29,7 +29,7 @@ Map& Map::stop_dropping()
 Map& Map::kill_cube_at(int x, int y)
 {
     if( model()->kill_cube_at(x, y) ) {
-        audio::Sound::i().playBuffer("1/a/1a-1.mp3");
+        audio::Sound::i().playBuffer("1/a/1a-1.wav");
         audio::Sound::i().playBuffer("1/b/HitB@11.wav");
     }
     return *this;

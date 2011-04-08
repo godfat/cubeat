@@ -3,7 +3,7 @@
 # degree of "Field of View"
 FoV: 36,
 name: 'hospital',
-music: 'hospital/bgm.mp3',
+music: 'hospital/bgm.ogg',
 
 all_items: [
     # item group 0

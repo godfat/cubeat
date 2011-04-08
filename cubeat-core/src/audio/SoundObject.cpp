@@ -7,7 +7,7 @@
 using namespace psc;
 using namespace audio;
 
-int const SoundStream::NUM_BUFS = 2;
+int const SoundStream::NUM_BUFS = 3;
 
 SoundStream::SoundStream(std::string const& path, int const& chunk_length)
     :name_(Conf::i().expand(path)), ALstream_(0)
@@ -50,7 +50,6 @@ SoundBuffer::~SoundBuffer()
 /// ----------- SoundObject below ---------- ///
 
 SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
-    //:stream_(stream)
 {
     gen_source();
     if( pSoundStream s = stream.lock() ) {
@@ -88,19 +87,6 @@ void SoundObject::gen_source()
     }
 }
 
-//SoundObject& SoundObject::play(bool const& loop)
-//{
-//    if( pSoundStream s = stream_.lock() ) {
-//        std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
-//        if( !alurePlaySourceStream(source, s->ALstream_, SoundStream::NUM_BUFS, loop?-1:0, NULL, NULL) ) {
-//            std::cerr << "OpenAL: Failed to play stream " << s->name_ << ": " << alureGetErrorString() << std::endl;
-//            stop();
-//            //even if the stream cannot be played, it should be tolerable. (just skip it.)
-//        }
-//    }
-//    return *this;
-//}
-
 SoundObject& SoundObject::pause()
 {
     if( !alurePauseSource(source) ) {
@@ -135,7 +121,7 @@ bool SoundObject::finished() const
 {
     ALenum state;
     alGetSourcei(source, AL_SOURCE_STATE, &state);
-    return state == AL_STOPPED || state == AL_INITIAL;
+    return state == AL_STOPPED;
 }
 
 SoundObject::~SoundObject()

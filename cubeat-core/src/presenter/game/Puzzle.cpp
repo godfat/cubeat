@@ -180,7 +180,7 @@ void Puzzle::end(pMap lose_map)
     map1_->stop_dropping();
     player0_->stopAllActions();
 
-    audio::Sound::i().playBuffer( win_ ? "3/3c/win.mp3" : "3/3c/lose.mp3" );
+    audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W(), 350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2) );
     blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);

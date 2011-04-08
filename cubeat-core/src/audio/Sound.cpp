@@ -20,23 +20,23 @@ Sound::Sound()
 void audio::Sound::init()
 {
     if( inited_ == true ) return;
-    loadStream("title.mp3").loadBuffer("attack.wav"); //hack: test music
+    //If we have to preload some file here, then .. just do it.
+    //or client code can call loadStream or loadBuffer beforehand as they see fit.
     inited_ = true;
 }
 
 Sound& Sound::loadStream(std::string const& path)
 {
-    std::string relative_path;// = base_path_ + path;
-    relative_path = base_path_ + "test.ogg"; // THIS IS HACK
+    std::string relative_path = base_path_ + path;
     pSoundStream new_stream = SoundStream::create(relative_path);
+    //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
     sound_streams_[path] = new_stream;
     return *this;
 }
 
 Sound& Sound::loadBuffer(std::string const& path)
 {
-    std::string relative_path;// = base_path_ + path;
-    relative_path = base_path_ + "attack.wav"; // THIS IS HACK
+    std::string relative_path = base_path_ + path;
     pSoundBuffer new_buffer = SoundBuffer::create(relative_path);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
     sound_buffers_[path] = new_buffer;

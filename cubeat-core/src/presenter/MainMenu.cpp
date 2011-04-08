@@ -225,7 +225,7 @@ void MainMenu::initDecorator()
         deco_cubes_.push_back( temp );
     }
 
-    audio::Sound::i().playStream("title.mp3", true);
+    audio::Sound::i().playStream("title.ogg", true);
 
     App::i().setLoading(100);
 }

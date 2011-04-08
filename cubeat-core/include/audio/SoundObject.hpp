@@ -17,7 +17,7 @@ public:
     typedef std::tr1::weak_ptr<SoundStream> wpointer_type;
 
     static pointer_type create(std::string const& path,
-                               int const& chunk_length = 4096)
+                               int const& chunk_length = 8192)
     {
         return pointer_type(new SoundStream(path, chunk_length));
     }
@@ -75,7 +75,6 @@ public:
     }
     ~SoundObject();
 
-    //SoundObject& play(bool const& loop = false);
     SoundObject& pause();
     SoundObject& stop();
     SoundObject& resume();
@@ -86,7 +85,6 @@ private:
     SoundObject(wpSoundStream const&, bool const&);
     SoundObject(wpSoundBuffer const&, bool const&);
     void gen_source();
-    //wpSoundStream stream_;
     ALuint source;
 };
 

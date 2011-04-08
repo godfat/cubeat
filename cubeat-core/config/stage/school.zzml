@@ -3,7 +3,7 @@
 # degree of "Field of View"
 FoV: 36,
 name: 'school',
-music: 'school/bgm.mp3',
+music: 'school/bgm.ogg',
 
 all_items: [
     # item group 0

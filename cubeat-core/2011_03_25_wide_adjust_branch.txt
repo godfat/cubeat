@@ -28,30 +28,32 @@
 7. in-game user control needs to be refined a little.  -- consider done for now
    -- remove weapon related controls. -- done(, see 1.)
 
-8. pause menu -> can quit or resume game.
-   -- need a formal way to terminate the game from main menu as well!
-      -- quit using OS-dependent operation during a CPU vs CPU game might crash the game. 
+8. pause menu -> can quit or resume game. -- done
 
-9. "Chain" font block shooting  -- fixed. was pickable WTF!?
+9. need a formal way to terminate the game from main menu.
 
-10. copyright / credits screens.
+10. main menu's button and menu title need to have a better indication.
 
-11. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
+11. "Chain" font block shooting  -- fixed. was pickable WTF!?
 
-12. Manymouse on Mac/Linux doable???
+12. copyright / credits screens.
 
-13. On Mac:
+13. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
+
+14. Manymouse on Mac/Linux doable???
+
+15. On Mac:
     1. cmake project does not create xcodeproj which build .app by default.
     2. resource bundle directory.
     3. absolute path must be fetched upon execution.
     4. do all above to have a working .app on OSX
     
-14. Stage number in current puzzle mode. -- done
+16. Stage number in current puzzle mode. -- done
     
-15. ALL MUST USE ABSOLUTE PATH 
+17. ALL MUST USE ABSOLUTE PATH 
   -- should be done for both Windows and Mac, not sure about Linux.
    
-16. You have to "choose character for CPU" ... which is very strange.
+18. You have to "choose character for CPU" ... which is very strange.
 
 
 *** What I will not implement for this branch:

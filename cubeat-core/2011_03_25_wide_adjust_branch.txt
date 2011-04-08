@@ -1,12 +1,4 @@
 
-** Map::next_state might have bug.... cubes are chained even when they are in the air.
-   -- for puzzle mode, this is fixed for now.
-   -- for versus mode, this will still affect newly created cubes, but should be hard to notice.
-   -- I think we really need real_y(pixel_y) as a model property, either use this with current State
-      pattern or revamp the state pattern.
-   -- Why sometimes the bottom cubes' chain state isn't taken out?   
-     -- ignore this for now.
-
 1. heat value
    -- jama shooting don't use weapon (item) (see 2.) -- done, just all use onPress, not onHit.
    -- haste produce heat                 -- done
@@ -53,22 +45,32 @@
     2. resource bundle directory.
     3. absolute path must be fetched upon execution.
     4. do all above to have a working .app on OSX
-   
-14. We need better chaining cubes' indication. we need better indication of attacking and 
-    cubes dropping and those sort of things. In short, we need better UI and user feedback design.
     
-15. Stage number in current puzzle mode. -- done
-  -- but actually we need something like puzzle high score that sort of things.
-    -- probably a generic high score record for each of these modes.
-    -- It would be unwise to implement this before we have a better simplified interface for UI.
-
-16. ALL MUST USE ABSOLUTE PATH 
+14. Stage number in current puzzle mode. -- done
+    
+15. ALL MUST USE ABSOLUTE PATH 
   -- should be done for both Windows and Mac, not sure about Linux.
    
-17. You have to "choose character for CPU" ... which is very strange.
+16. You have to "choose character for CPU" ... which is very strange.
 
 
-Other Memo:
+*** What I will not implement for this branch:
+
+1. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+
+2. Probably a generic high score record for each game-modes.
+  -- It would be unwise to implement this before we have a better simplified interface for UI.
+
+3. I think we really need real_y(pixel_y) as a model property, either use this with current 
+   State pattern or revamp the state pattern.
+   -- Why sometimes the bottom cubes' chain state isn't taken out?  -- ignore this for now.
+   
+4. We need better chaining cubes' indication. we need better indication of attacking and 
+   cubes dropping and those sort of things. In short, we need better UI and user feedback design.
+
+   
+*** Other Memo:
+
 1. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
 
 2. Memo about wide range of distribution: 

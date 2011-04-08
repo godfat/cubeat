@@ -180,10 +180,6 @@ void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, 
     pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
     pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
 
-    pause_text_ = view::SpriteText::create("paused", scene_, "Star Jedi", 24, true);
-    pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
-    pause_text_->set<Visible>(false);
-
     utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
     vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
     vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
@@ -284,9 +280,12 @@ void Multi::end(pMap lose_map)
     player1_->stopAllActions();
 
     audio::Sound::i().playBuffer("3/3c/win.wav");
-    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
-    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-    blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
+    if( !blocker_ ) {
+        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
+    }
+    blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
     win_t_  = view::Sprite::create("win", scene_, 384, 192, true);
     lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
@@ -404,7 +403,30 @@ void Multi::item_destruction()
 
 void Multi::pause()
 {
+    if( !pause_text_ || !pause_text2_ ) {
+        pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
+        pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
+        pause_text_->setDepth(-450).setPickable(false);
+        pause_text2_ = view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
+        pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+        pause_text2_->setDepth(-450).setPickable(false);
+    }
     pause_text_->set<Visible>(true);
+    pause_text2_->set<Visible>(true);
+
+    if( !pause_t_ ) {
+        pause_t_ = view::Sprite::create("pause", scene_, 384, 192, true);
+        pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
+        pause_t_->setDepth(-450).setPickable(false);
+    }
+    pause_t_->set<Visible>(true);
+
+    if( !blocker_ ) {
+        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
+    }
+    blocker_->set<Alpha>(100).set<Visible>(true);
 
     App::i().pause();
     audio::Sound::i().pauseAll(true);
@@ -419,6 +441,9 @@ void Multi::pause()
 void Multi::resume()
 {
     pause_text_->set<Visible>(false);
+    pause_text2_->set<Visible>(false);
+    pause_t_->set<Visible>(false);
+    blocker_->set<Visible>(false);
 
     App::i().resume();
     audio::Sound::i().pauseAll(false);

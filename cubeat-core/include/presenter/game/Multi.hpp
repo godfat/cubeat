@@ -75,8 +75,8 @@ protected:
     presenter::pPlayerView pview2_;
 
     view::pAnimatedSprite item_;
-    view::pSprite         blocker_, win_t_, lose_t_, heatgauge1_, heatgauge2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_;
+    view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_;
     pDummy timer_item_, timer_ui_, timer_auto0_, timer_auto1_, btn_reinit_;
     std::string c1p_, c2p_, sconf_;
 

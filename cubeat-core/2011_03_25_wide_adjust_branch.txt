@@ -44,7 +44,7 @@
 
 10. copyright / credits screens.
 
-11. OpenAL integration, bye bye irrKlang.
+11. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
 
 12. Manymouse on Mac/Linux doable???
 
@@ -64,7 +64,14 @@
 
 16. ALL MUST USE ABSOLUTE PATH 
   -- should be done for both Windows and Mac, not sure about Linux.
-    
-17. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
+   
+17. You have to "choose character for CPU" ... which is very strange.
 
-18. You have to "choose character for CPU" ... which is very strange.
+
+Other Memo:
+1. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
+
+2. Memo about wide range of distribution: 
+  -- dll's built with mingw which uses MSVCRT.dll is good to go, can be run on as old as Windows XP, I think.
+     however libogg & libvorbis & luajit & OpenAL & ALURE aren't. They are dependent on MSVCRT100.dll.
+     My old G1S laptop with WinXP SP3 can run it, but I doubt it's just lucky.

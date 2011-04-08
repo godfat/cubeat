@@ -39,6 +39,7 @@ public:
     Player& disable_all_wep_reloadability();
     Player& push_ally(int id);
     Player& push_enemy(int id);
+    Player& subscribe_player_specific_interactions(bool const&);
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
     //I'd better refactor this afterwards.

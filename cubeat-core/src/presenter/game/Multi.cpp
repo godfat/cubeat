@@ -260,13 +260,13 @@ void Multi::update_ui_by_second(){
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 }
 
-//note: temp code
-void Multi::end(pMap lose_map)
+void Multi::cleanup()
 {
     timer_item_.reset();
     timer_ui_.reset();
     timer_auto0_.reset();
     timer_auto1_.reset();
+    btn_pause_.reset();
     if( item_ ) item_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
@@ -278,6 +278,12 @@ void Multi::end(pMap lose_map)
     ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
     player0_->stopAllActions();
     player1_->stopAllActions();
+}
+
+//note: temp code
+void Multi::end(pMap lose_map)
+{
+    cleanup();
 
     audio::Sound::i().playBuffer("3/3c/win.wav");
     if( !blocker_ ) {
@@ -334,6 +340,19 @@ void Multi::end_sequence1()
     stage_->releaseResource(); //release when player isn't going to replay
     App::i().launchMainMenu();
     std::cout << "game_multiplayer end call finished." << std::endl;
+}
+
+void Multi::pause_quit()
+{
+    App::i().resume();
+    audio::Sound::i().pauseAll(false);
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Multi::cleanup, this), shared_from_this(), 1); //1 ms
+        //because we call this here.. it's gonna cleanup a lot of things.
+        //it's better we delay this call.
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Multi::end_sequence1, this), shared_from_this(), 100); //100 ms
 }
 
 void Multi::reinit()
@@ -433,9 +452,19 @@ void Multi::pause()
     scene_->allowPicking(false);
     if( item_ ) item_->setPickable(false);
 
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::resume, this), shared_from_this(),
-        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+    std::tr1::function<void(int, int)> clicka = bind(&Multi::pause_quit, this);
+    std::tr1::function<void(int, int)> clickb = bind(&Multi::resume, this);
+
+    btn_pause_ = pDummy(new int);
+
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            clicka, btn_pause_, &input->trig1(), ctrl::BTN_PRESS);
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            clickb, btn_pause_, &input->trig2(), ctrl::BTN_PRESS);
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            clickb, btn_pause_, &input->pause(), ctrl::BTN_PRESS);
+    }
 }
 
 void Multi::resume()
@@ -450,9 +479,13 @@ void Multi::resume()
     scene_->allowPicking(true);
     if( item_ ) item_->setPickable(true);
 
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::pause, this), shared_from_this(),
-        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            bind(&Multi::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+        input->player()->subscribe_player_specific_interactions(true);
+    }
 }
 
 void Multi::cycle()

@@ -29,31 +29,12 @@ pPlayer Player::init(bool const& can_haste)
     weplist_.push_back( new BlockShoot( shared_from_this() ) );
     weplist_.push_back( new PowerShoot( shared_from_this() ) );
     weplist_.push_back( new AreaShoot( shared_from_this() ) );
-
     current_wep_ = weplist_[0];
 
-    if( input_ ) {
-        //2011.03.25 weapon feature removed temporarily
+    if( input_ )
         input_->player( shared_from_this() );
-        //EventDispatcher::i().subscribe_btn_event(
-        //    bind(&Player::set_active_weapon, this, 0), shared_from_this(), &input_->wep1(), BTN_PRESS);
-        //EventDispatcher::i().subscribe_btn_event(
-        //    bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
-        //EventDispatcher::i().subscribe_btn_event(
-        //    bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
 
-        EventDispatcher::i().subscribe_btn_event(
-            bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
-        if( can_haste ) {
-            EventDispatcher::i().subscribe_btn_event(
-                bind(&Player::start_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_PRESS);
-            EventDispatcher::i().subscribe_btn_event(
-                bind(&Player::remove_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_RELEASE);
-        }
-//note: maybe I should let different callee have parallel calling button and state...
-//      do it when have time.
-
-    }
+    subscribe_player_specific_interactions(can_haste);
 
     EventDispatcher::i().subscribe_timer(
         bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
@@ -95,6 +76,32 @@ void Player::heat_cooling()
             generate_heat(heat_for_haste_);
         }
     }
+}
+
+Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
+{
+    if( input_ ) {
+        //2011.03.25 weapon feature removed temporarily
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 0), shared_from_this(), &input_->wep1(), BTN_PRESS);
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
+        //EventDispatcher::i().subscribe_btn_event(
+        //    bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
+
+        EventDispatcher::i().subscribe_btn_event(
+            bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
+        if( can_haste ) {
+            EventDispatcher::i().subscribe_btn_event(
+                bind(&Player::start_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_PRESS);
+            EventDispatcher::i().subscribe_btn_event(
+                bind(&Player::remove_haste_effect, this), shared_from_this(), &input_->trig2(), BTN_RELEASE);
+        }
+//note: maybe I should let different callee have parallel calling button and state...
+//      do it when have time.
+
+    }
+    return *this;
 }
 
 Player& Player::set_config(utils::map_any const& config)

@@ -26,6 +26,7 @@ Stage::Stage() : need_release_(false)
 Stage::~Stage()
 {
     if( need_release_ ) {
+        std::cerr << "Releasing Scene: " << conf_.S("name") << std::endl;
         IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
         IMeshCache*   mcache = IrrDevice::i().d()->getSceneManager()->getMeshCache();
 
@@ -42,6 +43,7 @@ Stage::~Stage()
                 mcache->removeMesh( body->getMesh() );
             }
         }
+        std::cerr << "Releasing Scene: " << conf_.S("name") << "... done." << std::endl;
     }
 }
 

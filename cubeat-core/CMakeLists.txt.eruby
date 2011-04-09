@@ -11,7 +11,7 @@ SET (CMAKE_CXX_COMPILER "g++")
 IF(CMAKE_COMPILER_IS_GNUCXX)
     SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
     IF(APPLE)
-        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework IOKit -framework OpenGL -framework Carbon")
+        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework IOKit -framework OpenGL -framework Carbon -framework OpenAL")
     ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 SET (CMAKE_CXX_FLAGS "${cxx_flag}")
@@ -34,9 +34,9 @@ LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /usr/X11/lib <%= 
 
 # setup linking
 IF(APPLE)
-    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51)
+    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure)
 ELSE(APPLE)
-    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 X11 Xxf86vm GL)
+    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure al GL X11 Xxf86vm)
 ENDIF(APPLE)
 
 # setup source codes
@@ -47,6 +47,10 @@ SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /ma
 ADD_LIBRARY (cubeat SHARED ${SOURCES})
 SET (LIBRARY_OUTPUT_PATH bin)
 
+IF(APPLE)
+ADD_EXECUTABLE        (bin/cubeat main.mm)
+ELSE(APPLE)
 ADD_EXECUTABLE        (bin/cubeat main.cpp)
+ENDIF(APPLE)
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)
 SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS "-pagezero_size 10000 -image_base 100000000")

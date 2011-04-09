@@ -1,7 +1,14 @@
 #ifndef _SHOOTING_CUBES_AUDIO_SOUND_OBJECT_
 #define _SHOOTING_CUBES_AUDIO_SOUND_OBJECT_
 
-#include <AL/alure.h> //Do we need yet another interface abstraction to separate this?
+#if !defined(ALC_VERSION_0_1) || !defined(AL_VERSION_1_0)
+#if defined(__APPLE__)
+#include <OpenAL/alure.h>
+#else
+#include <AL/alure.h>
+#endif
+#endif
+
 #include <string>
 #include <boost/tr1/memory.hpp>
 

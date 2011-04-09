@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 # misc option
 # SET (CMAKE_VERBOSE_MAKEFILE on)
 
@@ -8,49 +8,65 @@ PROJECT (cubeat)
 SET (CMAKE_CXX_COMPILER "g++")
 
 # setup cxx flags
-IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET (cxx_flag "-std=c++98 -Wall -O3 -ffast-math")
-    IF(APPLE)
-        SET (cxx_flag "${cxx_flag} --visibility=default -framework AppKit -framework Foundation -framework IOKit -framework OpenGL -framework Carbon -framework OpenAL")
-    ENDIF(APPLE)
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-SET (CMAKE_CXX_FLAGS "${cxx_flag}")
-ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS)
-# -DBOOST_HAS_TR1
+IF(APPLE)
+  SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -O3 -ffast-math -fvisibility-inlines-hidden")
+ELSE(APPLE)
+  SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -O3 -ffast-math")
+ENDIF(APPLE)
 
-# setup needed library
-FIND_PACKAGE (Boost REQUIRED)
+ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS) # -DBOOST_HAS_TR1
 
 # setup include path
-INCLUDE_DIRECTORIES (include lib ../irrlicht/include ${Boost_INCLUDE_DIRS} /usr/local/include/luajit-2.0)
+INCLUDE_DIRECTORIES (include
+                     lib
+                     ../irrlicht/include
+                     /usr/local/include/luajit-2.0)
 
 # setup linking path
 IF(APPLE)
-    SET(irrlicht_lib_path "<%= File.expand_path("#{Dir.pwd}/../irrlicht/source/Irrlicht/MacOSX/build/Release") %>")
+  LINK_DIRECTORIES (/usr/X11/lib
+                    <%= "#{Dir.pwd}/lib" %>
+                    <%= "#{Dir.pwd}/../irrlicht/source/Irrlicht/MacOSX/build/Release" %>)
 ELSE(APPLE)
-    SET(irrlicht_lib_path "../irrlicht/lib/Linux") # X11
+  LINK_DIRECTORIES (/usr/X11/lib
+                    <%= "#{Dir.pwd}/lib" %>
+                    <%= "#{Dir.pwd}/../irrlicht/lib/Linux" %>)
 ENDIF(APPLE)
-LINK_DIRECTORIES (<%= "#{Dir.pwd}/lib" %> ${irrlicht_lib_path} /usr/X11/lib <%= Dir.pwd %>)
 
 # setup linking
 IF(APPLE)
-    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure)
+  LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure)
 ELSE(APPLE)
-    LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure al GL X11 Xxf86vm)
+  LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure al GL X11 Xxf86vm)
 ENDIF(APPLE)
 
 # setup source codes
-SET (SOURCES <%= Dir.glob('src/**/*.cpp').delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ } \
-                    .join("\n") %>)
+SET (SOURCES <%= Dir.glob('src/**/*.cpp').
+                     delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ }.
+                     join("\n") %>)
 
 # build target
 ADD_LIBRARY (cubeat SHARED ${SOURCES})
-SET (LIBRARY_OUTPUT_PATH bin)
+SET         (LIBRARY_OUTPUT_PATH bin)
 
 IF(APPLE)
-ADD_EXECUTABLE        (bin/cubeat main.mm)
+<% frameworks = %w[
+  -framework Foundation
+  -framework AppKit
+  -framework IOKit
+  -framework OpenAL
+  -framework OpenGL
+  -framework Carbon].join(' ').squeeze(' ') %>
+
+  ADD_EXECUTABLE        (bin/cubeat main.mm)
+  SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS
+                         "-pagezero_size 10000 -image_base 100000000 <%= frameworks %>")
+  SET_TARGET_PROPERTIES (cubeat PROPERTIES LINK_FLAGS "<%= frameworks %>")
+
 ELSE(APPLE)
-ADD_EXECUTABLE        (bin/cubeat main.cpp)
+  ADD_EXECUTABLE        (bin/cubeat main.cpp)
+  SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS
+                         "-pagezero_size 10000 -image_base 100000000")
 ENDIF(APPLE)
+
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)
-SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS "-pagezero_size 10000 -image_base 100000000")

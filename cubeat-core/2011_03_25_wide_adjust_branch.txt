@@ -71,7 +71,12 @@
    
 4. We need better chaining cubes' indication. we need better indication of attacking and 
    cubes dropping and those sort of things. In short, we need better UI and user feedback design.
+   
+5. Something about lock and delayed cleanup:
+   
 
+6. Something about Input scheme (see code Input.cpp around line 405):
+   
    
 *** Other Memo:
 

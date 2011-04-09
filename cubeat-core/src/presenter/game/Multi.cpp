@@ -138,14 +138,10 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     //ctrl::EventDispatcher::i().subscribe_timer(     //2011.03.25 item temporarily removed
     //    bind(&Multi::item_creation, this), timer_item_, 15000);
 
-    //temp: for pause functionality
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::pause, this), shared_from_this(),
-        &ctrl::InputMgr::i().getInputByIndex(0)->pause(), ctrl::BTN_PRESS);
-
-    ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Multi::pause, this), shared_from_this(),
-        &ctrl::InputMgr::i().getInputByIndex(1)->pause(), ctrl::BTN_PRESS);
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+    }
 
     if( num_of_cpu_ > 0 )
         player1_->startThinking();
@@ -420,8 +416,12 @@ void Multi::item_destruction()
         bind(&Multi::item_creation, this), timer_item_, 15000);
 }
 
-void Multi::pause()
+void do_nothing(int, int){};
+
+void Multi::pause(ctrl::Input const* controller)
 {
+    if( btn_pause_ ) return; //it's already paused, don't do anything if this is called again.
+
     if( !pause_text_ || !pause_text2_ ) {
         pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
         pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
@@ -447,40 +447,41 @@ void Multi::pause()
     }
     blocker_->set<Alpha>(100).set<Visible>(true);
 
-    //when paused we release AI control
-    if( num_of_cpu_ == 1 ) ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-    if( num_of_cpu_ == 2 ) ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
-
     App::i().pause();
     audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
     if( item_ ) item_->setPickable(false);
 
     std::tr1::function<void(int, int)> clicka = bind(&Multi::pause_quit, this);
-    std::tr1::function<void(int, int)> clickb = bind(&Multi::resume, this);
+    std::tr1::function<void(int, int)> clickb = bind(&Multi::resume, this, controller);
 
     btn_pause_ = pDummy(new int);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
-            clicka, btn_pause_, &input->trig1(), ctrl::BTN_PRESS);
+            do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
         ctrl::EventDispatcher::i().subscribe_btn_event(
-            clickb, btn_pause_, &input->trig2(), ctrl::BTN_PRESS);
+            do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
         ctrl::EventDispatcher::i().subscribe_btn_event(
-            clickb, btn_pause_, &input->pause(), ctrl::BTN_PRESS);
+            do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
     }
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clicka, btn_pause_, &controller->trig1(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clickb, btn_pause_, &controller->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clickb, btn_pause_, &controller->pause(), ctrl::BTN_PRESS);
 }
 
-void Multi::resume()
+void Multi::resume(ctrl::Input const* controller)
 {
+    if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
+
     pause_text_->set<Visible>(false);
     pause_text2_->set<Visible>(false);
     pause_t_->set<Visible>(false);
     blocker_->set<Visible>(false);
-
-    //when resumed we bring back AI control
-    if( num_of_cpu_ == 1 ) ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
-    if( num_of_cpu_ == 2 ) ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(true);
 
     App::i().resume();
     audio::Sound::i().pauseAll(false);
@@ -491,7 +492,7 @@ void Multi::resume()
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
-            bind(&Multi::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+            bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
         input->player()->subscribe_player_specific_interactions(true);
     }
 }
@@ -505,7 +506,7 @@ void Multi::cycle()
     scene_->redraw();
     map0_->redraw().cycle();
     map1_->redraw().cycle();
-    if( !btn_reinit_ ) { //2011.03.28 quick fix: if this indicator is alive, stop processing in-game user input.
+    if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
         player0_->cycle();
         player1_->cycle();
     }

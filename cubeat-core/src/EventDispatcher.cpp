@@ -50,6 +50,17 @@ EventDispatcher& EventDispatcher::subscribe_btn_event
             get<BE::CALLEE>(b) = obj;     //update new callee
             return *this;
         }
+//    for(BtnListener::iterator b = btn_listeners_.begin(), bend = btn_listeners_.end();
+//        b != bend; ++b) {
+//        if( get<BE::BTN>(*b) == btn && get<BE::STATE>(*b) == state ) {
+//            if( cb ) {
+//                get<BE::BTN_CB>(*b) = cb;      //update new callback
+//                get<BE::CALLEE>(*b) = obj;     //update new callee
+//            }
+//            else btn_events_to_be_deleted_.push_back(b); //push empty callback to delete it.
+//            return *this;
+//        }
+//    }
     btn_listeners_.push_back( tie( cb, btn, state, obj ) );
     return *this;
 }

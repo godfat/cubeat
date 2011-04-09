@@ -28,11 +28,11 @@ bool AIBrain::needThinking()
     return cmd_queue_.empty();
 }
 
-void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
-                    std::list<int> const& ally_ids,
-                    std::list<int> const& enemy_ids)
+void AIBrain::think(std::vector<model::pSimpleMap> map_list,
+                    std::list<int> ally_ids,
+                    std::list<int> enemy_ids)
 {
-    //Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
+    Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
     int self_index = ally_ids.front();
     //since we only have two map, one for each side, so let the first in ally-list be one's self.
@@ -119,11 +119,18 @@ void AIBrain::think(std::vector<model::pSimpleMap> const& map_list,
                     cmd->delay(200).weight(1).normal_shot(x, y);
                     cmd_queue_.push_back( cmd );
                 }
-                else
-                if( owner_.lock()->heat() < 0.66 ) {
-                    pAICommand cmd = AICommand::create();
-                    cmd->press_trig2(); //haste here
-                    cmd_queue_.push_back( cmd );
+                else {
+                    try { //see if we can catch anything at all here...
+                        if( ctrl::pPlayer p = owner_.lock() ) {
+                            if( p->heat() < 0.66 ) {
+                                pAICommand cmd = AICommand::create();
+                                cmd->press_trig2(); //haste here
+                                cmd_queue_.push_back( cmd );
+                            }
+                        }
+                    } catch(std::exception& e) {
+                        Logger::i().buf(e.what()).endl();
+                    }
                 }
             }
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 6b.").endl();

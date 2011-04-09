@@ -11,6 +11,7 @@
 namespace psc {
 
 namespace ctrl {
+class Input;
 class Player;
 typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
@@ -58,8 +59,8 @@ protected:
 //    void kill_cube_randomly1();
 
     //temp: for pausing
-    void pause();
-    void resume();
+    void pause(ctrl::Input const*);
+    void resume(ctrl::Input const*);
 
 protected:
     view::pScene scene_;

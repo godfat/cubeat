@@ -35,9 +35,9 @@ public:
 
     AIBrain(ctrl::pAIPlayer const&);
 
-    void think(std::vector<model::pSimpleMap> const& map_list,
-               std::list<int> const& ally_ids,
-               std::list<int> const& enemy_ids);
+    void think(std::vector<model::pSimpleMap> map_list,
+               std::list<int> ally_ids,
+               std::list<int> enemy_ids);
 
     bool       isThinking() const { return is_thinking_; }
     bool       needThinking();

@@ -125,7 +125,6 @@ int App::run(std::tr1::function<void()> tester)
             //if( update_block() ) continue;
             InputMgr::i().updateAll();
             EventDispatcher::i().dispatch();
-
             driver->beginScene(true, true, video::SColor(0,0,0,0));
             if( tester ) tester();
             else master_presenter_->cycle();

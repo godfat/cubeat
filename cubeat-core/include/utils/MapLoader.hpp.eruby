@@ -21,21 +21,6 @@ class MapLoader{
 public:
     static presenter::Map::pointer_type generate(int level){
 
-        //note by arch.jslin:
-
-        //This is for temporary redistribution on win32 platform without ruby installed.
-        //I compiled gen_puzzle.rb with rubyscript2exe for win32 (search that on google)
-        //I use \\ in path is because of the stupid win32 command line restriction,
-        //an executable is only executable in that way... you write bin/gen_puzzle won't work.
-        //Fuck Microsoft.
-//#ifdef WIN32
-//        std::system(("bin\\gen_puzzle_win32 level=" + to_s(level) +
-//#else
-//        std::system(("ruby bin/gen_puzzle.rb level=" + to_s(level) +
-//#endif
-//             " color_amounts=4 chain_amounts=3 starting_line=4 chaining_duration=300 cube_dying_duration=300 cube_sinking_duration=500 cube_dropping_duration=150 speed=80.0 damage_factor=1.0 width=6 height=10 dropping_creatable=0 garbage_dumpable=0" +
-//            " > tmp/puzzle.zzml").c_str());
-
         lua_State* L = luaL_newstate();
         luaL_openlibs(L);
         puzzle_binding(L, level);

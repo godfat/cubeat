@@ -74,9 +74,26 @@ Menu& Menu::setCallbackToSprite(std::string const& name,
                                 std::tr1::function<void(pSprite&)> cb)
 {
     if( pSprite temp = sprites_[name] ) {
-        BOOST_FOREACH(ctrl::Input* it, ctrl::InputMgr::i().getInputs())
+        pSpriteText t = dynamic_pointer_cast<SpriteText>( temp );
+
+        if( t ) t->set<GradientDiffuse>(160);
+        else temp->set<GradientDiffuse>(160);
+
+        BOOST_FOREACH(ctrl::Input* it, ctrl::InputMgr::i().getInputs()) {
+
             temp->onPress( &it->trig1() ) = cb;
+
+            if( t ) {
+                t->onEnterFocus( it ) = bind(&SpriteText::set<GradientDiffuse>, t.get(), 255);
+                t->onLeaveFocus( it ) = bind(&SpriteText::set<GradientDiffuse>, t.get(), 160);
+            }
+            else {
+                temp->onEnterFocus( it ) = bind(&Object::set<GradientDiffuse>, temp.get(), 255);
+                temp->onLeaveFocus( it ) = bind(&Object::set<GradientDiffuse>, temp.get(), 160);
+            }
+        }
     }
+
     return *this;
 }
 

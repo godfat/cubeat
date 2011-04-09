@@ -35,6 +35,7 @@ public:
     void launchPuzzle     (std::string const&, std::string const&, int);
     void pause();
     void resume();
+    void quit();
 
     ~App();
 
@@ -51,6 +52,8 @@ private:
     presenter::pTransitioner trans_;
     presenter::pObject master_presenter_;
     presenter::pObject temp_presenter_;
+
+    bool quit_;
 
     irr::ITimer* timer_;
 };

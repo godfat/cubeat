@@ -47,7 +47,7 @@ protected:
     void player2_getfocus(int);
     void player1_checked();
     void player2_checked();
-    void stage_choosing();
+    void stage_choosing(std::string const&);
     void stage_select(view::pSprite&, std::string);
     void player_choosing();
     void mode_select(view::pSprite&, int);
@@ -58,6 +58,7 @@ protected:
     void fadeAllOut(int);
     void push_start();
     void end();
+    void quit(view::pSprite&);
 
     void initDecorator();
 
@@ -73,9 +74,9 @@ protected:
     utils::map_any config;
     std::vector<std::string> paths;
 
-    enum { SINGLE, PPL_VS_PPL, PPL_VS_CPU, CPU_VS_CPU, PUZZLE };
+    enum { SINGLE, PPL_VS_PPL, PPL_VS_CPU, CPU_VS_CPU, PUZZLE};
     int player1focus_, player2focus_, player1num_, player2num_, stagenum_;
-    bool two_players_;
+    int num_of_human_ppl_;
     int game_mode_;
     std::vector<pPlayerView> pvlist_;
     view::pSpriteText player1text_, player2text_;

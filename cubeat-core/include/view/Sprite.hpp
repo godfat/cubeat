@@ -62,6 +62,8 @@ public:
     virtual Sprite& textureFlipH();
     virtual Sprite& textureFlipV();
 
+    virtual bool const& isCenterAligned() const { return center_; }
+
     //Maybe this feature should move to another class and use multiple inheritance.
     ctrl::CallbackDelegate& onPress  (ctrl::Button const*);
     ctrl::CallbackDelegate& onRelease(ctrl::Button const*);

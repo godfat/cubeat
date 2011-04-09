@@ -86,7 +86,7 @@ pMainMenu MainMenu::init()
     player2num_ = 0;
     stagenum_ = 0;
     game_mode_ = PPL_VS_PPL;
-    two_players_ = true;
+    num_of_human_ppl_ = 2;
 
     return shared_from_this();
 }
@@ -98,21 +98,23 @@ void MainMenu::setupMenus()
     menus_.insert( std::make_pair("mode_select", mode) );
 
     mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, false);
-    mode->getSprite("text").set<Pos2D>( vec2(-300, -160) );
+    mode->getSprite("text").set<Pos2D>( vec2(-300, -180) );
     mode->addSpriteText("multi_no_cpu", "player vs player", "Star Jedi", 0, 40, false);
-    mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -100) );
+    mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -120) );
     mode->addSpriteText("multi_one_cpu", "player vs cpu", "Star Jedi", 0, 40, false);
-    mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -40) );
+    mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -60) );
     mode->addSpriteText("multi_two_cpu", "cpu vs cpu demo", "Star Jedi", 0, 40, false);
-    mode->getSprite("multi_two_cpu").set<Pos2D>( vec2(-150, 20) );
+    mode->getSprite("multi_two_cpu").set<Pos2D>( vec2(-150, 0) );
     mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, false);
-    mode->getSprite("puzzle").set<Pos2D>( vec2(-150, 80) );
+    mode->getSprite("puzzle").set<Pos2D>( vec2(-150, 60) );
+    mode->addSpriteText("quit", "quit game", "Star Jedi", 0, 40, false);
+    mode->getSprite("quit").set<Pos2D>( vec2(-150, 120) );
 
     view::pMenu temp = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("player_select", temp) );
 
-    temp->addSpriteText("text", "choose character", "Star Jedi", 0, 40, true);
-    temp->getSprite("text").set<Pos2D>( vec2(-150, -160) );
+    temp->addSpriteText("text", "choose character", "Star Jedi", 0, 40, false);
+    temp->getSprite("text").set<Pos2D>( vec2(-450, -180) );
     for( int i = 1; i <= 5; ++i ) {
         pvlist_.push_back(
             PlayerView::create(("char/char"+to_s(i))+".zzml", temp, vec2(-500 + i*150, 20) ) );
@@ -172,6 +174,11 @@ void MainMenu::end()
     else if( game_mode_ == PUZZLE )
         App::i().launchPuzzle(conf1p_, stage_, 3);
     std::cout << "MainMenu end call finished." << std::endl;
+}
+
+void MainMenu::quit(view::pSprite&)
+{
+    App::i().quit();
 }
 
 void MainMenu::initDecorator()
@@ -283,10 +290,12 @@ void MainMenu::setup_mode_selecting_buttons()
     function<void(view::pSprite&)> mode2 = bind(&MainMenu::mode_select, this, _1, (int)PPL_VS_CPU);
     function<void(view::pSprite&)> mode3 = bind(&MainMenu::mode_select, this, _1, (int)CPU_VS_CPU);
     function<void(view::pSprite&)> mode4 = bind(&MainMenu::mode_select, this, _1, (int)PUZZLE);
+    function<void(view::pSprite&)> quit  = bind(&MainMenu::quit, this, _1);
     menus_["mode_select"]->setCallbackToSprite("multi_no_cpu", mode1);
     menus_["mode_select"]->setCallbackToSprite("multi_one_cpu", mode2);
     menus_["mode_select"]->setCallbackToSprite("multi_two_cpu", mode3);
     menus_["mode_select"]->setCallbackToSprite("puzzle", mode4);
+    menus_["mode_select"]->setCallbackToSprite("quit", quit);
 }
 
 void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
@@ -310,7 +319,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player2focus_ = 0;
         player1num_ = 0;
         player2num_ = 0;
-        two_players_ = true;
+        num_of_human_ppl_ = 2;
         game_mode_ = PPL_VS_PPL;
         setup_mode_selecting_buttons();
     }
@@ -339,10 +348,28 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
     menus_["mode_select"]->setCallbackToSprite("multi_two_cpu", 0);
     menus_["mode_select"]->setCallbackToSprite("puzzle", 0);
 
-    if( game_mode_ == SINGLE || game_mode_ == PUZZLE )
-        two_players_ = false;
+    std::string title;
+    if( mode == PPL_VS_PPL )      title = "(ppl vs ppl)";
+    else if( mode == PPL_VS_CPU ) title = "(ppl vs cpu)";
+    else if( mode == CPU_VS_CPU ) title = "(cpu vs cpu)"; //actually this page will not be seen anyway
+    else                          title = "(puzzle)";
 
-    player_choosing();
+    menus_["player_select"]->getSpriteText("text").changeText("choose character " + title).set<Alpha>(0);
+
+    if( game_mode_ == SINGLE || game_mode_ == PPL_VS_CPU || game_mode_ == PUZZLE ) {
+        num_of_human_ppl_ = 1;
+    }
+    else if( game_mode_ == CPU_VS_CPU ) {
+        num_of_human_ppl_ = 0;
+    }
+
+    if( num_of_human_ppl_ >= 1 )
+        player_choosing();
+    else {
+        player1num_ = utils::random(5) + 1;
+        player2num_ = utils::random(5) + 1;
+        stage_choosing("mode_select");
+    }
 }
 
 void MainMenu::player_choosing()
@@ -361,19 +388,14 @@ void MainMenu::player_choosing()
 //temp: very temp =_=
 void MainMenu::setup_player_selecting_buttons()
 {
-    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
-    player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
-
-    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
-
     //temp: button "back"
     function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "player_select", "mode_select");
-    btn_back1_ = pDummy(new int);
-    btn_back2_ = pDummy(new int);
-    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
-    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
 
+    player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
+
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    btn_back1_ = pDummy(new int);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     btn_choose_player1_ = pDummy(new int);
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -389,10 +411,14 @@ void MainMenu::setup_player_selecting_buttons()
             bind(&MainMenu::player1_getfocus, this, i);
         ++i;
     }
-
     player1focus_ = 1;
 
-    if( two_players_ ) {
+    if( num_of_human_ppl_ == 2 ) {
+        player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
+
+        ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
+        btn_back2_ = pDummy(new int);
+        ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
         btn_choose_player2_ = pDummy(new int);
 
         ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -402,7 +428,7 @@ void MainMenu::setup_player_selecting_buttons()
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&MainMenu::player2_checked, this), btn_choose_player2_, &input2->trig1(), ctrl::BTN_PRESS);
 
-        i = 1;
+        int i = 1;
         BOOST_FOREACH(pPlayerView& pv, pvlist_) {
             pv->getView()->getSprite("hitarea").onEnterFocus( input2 ) =
                 bind(&MainMenu::player2_getfocus, this, i);
@@ -414,6 +440,7 @@ void MainMenu::setup_player_selecting_buttons()
     }
     else {
         player2text_->set<Visible>(false);
+        player2num_ = utils::random(5) + 1;
     }
 }
 
@@ -464,12 +491,12 @@ void MainMenu::player1_checked()
     player1num_ = player1focus_;
     player1text_->set<Alpha>(255);
     btn_choose_player1_.reset();
-    if( two_players_ ) {
+    if( num_of_human_ppl_ == 2 ) {
         if( player1num_ != 0 && player2num_ != 0 )
-            stage_choosing();
+            stage_choosing("player_select");
     }
     else
-        stage_choosing();
+        stage_choosing("player_select");
 }
 
 void MainMenu::player2_checked()
@@ -480,16 +507,22 @@ void MainMenu::player2_checked()
     player2text_->set<Alpha>(255);
     btn_choose_player2_.reset();
     if( player1num_ != 0 && player2num_ != 0 )
-        stage_choosing();
+        stage_choosing("player_select");
 }
 
-void MainMenu::stage_choosing()
+void MainMenu::stage_choosing(std::string const& caller_menu)
 {
     animating_ = true;
-    hideMenu("player_select").showMenu("stage_select");
+    hideMenu(caller_menu).showMenu("stage_select");
 
     //temp: button "back"
-    function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
+    function<void(int, int)> clickB;
+
+    if( num_of_human_ppl_ >= 1 )
+        clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
+    else
+        clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "mode_select");
+
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
     ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
@@ -504,8 +537,8 @@ void MainMenu::stage_select(view::pSprite& sp, std::string name)
     conf1p_ = "char/char"+to_s(player1num_)+".zzml";
     stage_ = "stage/"+name+".zzml";
 
-    if( two_players_ )
-        conf2p_ = "char/char"+to_s(player2num_)+".zzml";
+    //if( two_players_ )
+    conf2p_ = "char/char"+to_s(player2num_)+".zzml";
 
     audio::Sound::i().playBuffer("4/4b.wav");
 

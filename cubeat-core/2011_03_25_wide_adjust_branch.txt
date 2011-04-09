@@ -30,9 +30,9 @@
 
 8. pause menu -> can quit or resume game. -- done
 
-9. need a formal way to terminate the game from main menu.
+9. need a formal way to terminate the game from main menu. -- done
 
-10. main menu's button and menu title need to have a better indication.
+10. main menu's button and menu title need to have a better indication.  -- done
 
 11. "Chain" font block shooting  -- fixed. was pickable WTF!?
 
@@ -53,7 +53,9 @@
 17. ALL MUST USE ABSOLUTE PATH 
   -- should be done for both Windows and Mac, not sure about Linux.
    
-18. You have to "choose character for CPU" ... which is very strange.
+18. You have to "choose character for CPU" ... which is very strange. -- done, in a dirty way.
+
+19. in CPU vs CPU mode you actually CANNOT quit.
 
 
 *** What I will not implement for this branch:

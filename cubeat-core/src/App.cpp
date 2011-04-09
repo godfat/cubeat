@@ -29,7 +29,7 @@ using std::tr1::bind;
 using std::tr1::ref;
 
 App::App()
-    : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0)
+    : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0), quit_(false)
 {
     std::cout << "App constructed." << std::endl;
     if( !IrrDevice::i().init(true) ) {
@@ -100,6 +100,11 @@ void App::resume()
         timer_->start();
 }
 
+void App::quit()
+{
+    quit_ = true;
+}
+
 int App::run(std::tr1::function<void()> tester)
 {
     using namespace irr;
@@ -112,7 +117,7 @@ int App::run(std::tr1::function<void()> tester)
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
 
-    while( IrrDevice::i().run() ) {
+    while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
         //{                                                            //comment: temp for double tasking
         //    if( timer_->isStopped() )        //comment: temp for double tasking

@@ -119,6 +119,8 @@ public:
 
     SpriteText& changeText(std::string const&);
     SpriteText& showNumber(int, unsigned int digit = 0);
+    std::string const& getText() const { return text_; }
+    int const& getFontSize() const     { return fsize_; }
 
     virtual ~SpriteText();
 

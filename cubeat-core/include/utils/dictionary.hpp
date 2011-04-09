@@ -166,8 +166,8 @@ protected:
 class map_any
 {
 public:
-    typedef typename map_any_::iterator       iterator;
-    typedef typename map_any_::const_iterator const_iterator;
+    typedef map_any_::iterator       iterator;
+    typedef map_any_::const_iterator const_iterator;
     static map_any construct( std::string const& str );
 
 public:

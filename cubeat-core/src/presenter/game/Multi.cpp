@@ -447,6 +447,10 @@ void Multi::pause()
     }
     blocker_->set<Alpha>(100).set<Visible>(true);
 
+    //when paused we release AI control
+    if( num_of_cpu_ == 1 ) ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
+    if( num_of_cpu_ == 2 ) ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
+
     App::i().pause();
     audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
@@ -473,6 +477,10 @@ void Multi::resume()
     pause_text2_->set<Visible>(false);
     pause_t_->set<Visible>(false);
     blocker_->set<Visible>(false);
+
+    //when resumed we bring back AI control
+    if( num_of_cpu_ == 1 ) ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
+    if( num_of_cpu_ == 2 ) ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(true);
 
     App::i().resume();
     audio::Sound::i().pauseAll(false);

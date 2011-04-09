@@ -284,8 +284,14 @@ Input::Input(std::string const& path)
 void Input::update()
 {
     if( ai_controlled_ ) { //AI integration testing
-        update_btn_state();
+        //This will update AI's button state using AI's simulated input of LAST FRAME.
+        update_btn_state(); //that's why we have to call update_btn_state() first when it's ai_controlled_.
         write_state_now_to_last();
+        if( InputMgr::i().keyboardMouseInput() ) {
+            buttons_by_keyboard_mouse(); //but in case you still want to have some control over user input
+            //we'll just use data from polled device data as well. AI's simulated input will overwrite
+            //some of them THIS FRAME.
+        }
     }
     else {
         write_state_now_to_last();
@@ -401,26 +407,32 @@ void Input::cursor_by_keyboard_mouse()
 
 void Input::buttons_by_keyboard_mouse()
 {
+    //the implementation here now raises a perculier problem. please see
+    //2011_03_25_wide_adjust_branch.txt for details.
 #ifdef _USE_MANYMOUSE_
     unsigned int button_bits = state_->buttons;
     if( cursor_key_ == 0 ) {
         trig1_.now() = (button_bits & trig1_key_) > 0;
         trig2_.now() = (button_bits & trig2_key_) > 0;
-        haste_.now() = (button_bits & haste_key_) > 0;
+        //haste_.now() = (button_bits & haste_key_) > 0;
+        pause_.now() = (button_bits & pause_key_) > 0;
     } else {
         trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
         trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
-        haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+        //haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+        pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
     }
 #else // _USE_MANYMOUSE_
     trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
     trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
-    haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+    //haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+    pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
 #endif // _USE_MANYMOUSE_
     wep1_.now() = MastEventReceiver::i().keyDown( wep1_key_ );
     wep2_.now() = MastEventReceiver::i().keyDown( wep2_key_ );
     wep3_.now() = MastEventReceiver::i().keyDown( wep3_key_ );
-    pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
+    //pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
+    haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
 }
 
 void Input::write_state_now_to_last()

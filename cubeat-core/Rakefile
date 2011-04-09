@@ -35,6 +35,26 @@ task :build => [:prepare, :Makefile] do
   sh 'make'
 end
 
+desc "create mac's CuBeat.app"
+task 'build:mac' => [:build, 'CuBeat.app']
+
+file 'CuBeat.app' => ['CuBeat.app/Contents/MacOS',
+                      'CuBeat.app/Contents/Resources']
+
+file 'CuBeat.app/Contents/MacOS' => ['bin/cubeat'] do
+  sh 'mkdir -p CuBeat.app/Contents/MacOS'
+  sh 'cp bin/cubeat CuBeat.app/Contents/MacOS/CuBeat'
+end
+
+file 'CuBeat.app/Contents/Resources' => ['bin/libcubeat.dylib'] do
+  sh 'mkdir -p CuBeat.app/Contents/Resources'
+  sh 'cp -r rc CuBeat.app/Contents/Resources/'
+  sh 'cp -r config CuBeat.app/Contents/Resources/'
+  sh 'cp -r script CuBeat.app/Contents/Resources/'
+  sh 'cp config.zzml CuBeat.app/Contents/Resources/'
+  sh 'cp bin/libcubeat.dylib CuBeat.app/Contents/Resources/'
+end
+
 desc 'clobber and build'
 task :rebuild => [:clobber, :build]
 

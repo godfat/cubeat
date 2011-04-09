@@ -394,8 +394,12 @@ void MainMenu::setup_player_selecting_buttons()
     player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
 
     ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     btn_back1_ = pDummy(new int);
+    btn_back2_ = pDummy(new int);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
+
     btn_choose_player1_ = pDummy(new int);
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -416,9 +420,6 @@ void MainMenu::setup_player_selecting_buttons()
     if( num_of_human_ppl_ == 2 ) {
         player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
-        ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
-        btn_back2_ = pDummy(new int);
-        ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
         btn_choose_player2_ = pDummy(new int);
 
         ctrl::EventDispatcher::i().subscribe_btn_event(

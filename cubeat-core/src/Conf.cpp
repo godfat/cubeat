@@ -16,7 +16,7 @@ void Conf::init(std::string const& working_path)
                         working_path : working_path + "/"; //This must be done ahead of everything
     }
 
-    config_ = utils::map_any::construct( read_config_text("config.zzml") );
+    config_ = utils::map_any::construct( read_config_text( working_path_ + "config.zzml") );
 
     config_path_           = expand(config_.S("config_path"));
     screen_width_          = config_.I("screenwidth");
@@ -35,7 +35,7 @@ std::string Conf::read_config_text(std::string const& path) const
 {
     std::ifstream infile;
     std::string str;
-    std::string actual_path = expand(path);
+    std::string actual_path = path;
     infile.open( actual_path.c_str() );
     if( infile.fail() || infile.eof() ) {  //non-existing file exception
         std::cout << "No such file: " << actual_path << ", Input setup ignored." << std::endl;

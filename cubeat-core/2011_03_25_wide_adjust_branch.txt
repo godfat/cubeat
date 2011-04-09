@@ -36,17 +36,16 @@
 
 11. "Chain" font block shooting  -- fixed. was pickable WTF!?
 
-12. copyright / credits screens.
+*** 12. copyright / credits screens.
+   -- do it after musics could be changed. relatively simple to add than anything in the MainMenu.
 
 13. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
 
-14. Manymouse on Mac/Linux doable???
+*** 14. Manymouse on Mac/Linux doable???
+   -- first get a linux version done first.
+   -- I am going to test if it's doable on Linux(Ubuntu) using virtualbox.
 
-15. On Mac:
-    1. cmake project does not create xcodeproj which build .app by default.
-    2. resource bundle directory.
-    3. absolute path must be fetched upon execution.
-    4. do all above to have a working .app on OSX
+15. On Mac: -- done, statically linked, only thing left not solved is app icon.
     
 16. Stage number in current puzzle mode. -- done
     
@@ -55,7 +54,7 @@
    
 18. You have to "choose character for CPU" ... which is very strange. -- done, in a dirty way.
 
-19. in CPU vs CPU mode you actually CANNOT quit.
+19. in CPU vs CPU mode you actually CANNOT quit.  -- done, finally got the bug thanks to Apple's crash report.
 
 
 *** What I will not implement for this branch:
@@ -73,9 +72,22 @@
    cubes dropping and those sort of things. In short, we need better UI and user feedback design.
    
 5. Something about lock and delayed cleanup:
+   I found many places in code where we should actually check on the weak_ptr.lock(), 
+   basically we have to assume it WILL somehow failed locking. if there's any performance hit,
+   it would have be done already by locking, so I don't consider performance an issue here.
    
+   and just like we can't erase or add an iterator during an iteration, it's the same for
+   event subscription clean-up process. Like you can't call clean all button events in a button
+   event callback itself! When in doubt, or have no obvious ways to resolve it, at least we
+   should try to use EventDispatcher's timer callback to delay it.   
 
 6. Something about Input scheme (see code Input.cpp around line 405):
+   The input scheme here should have a total revamp. we should only designate Button1, Button2, 
+   Button3... etc, never name it. It should have the flexibility to map every input to every
+   abstract button you can have in game, and you can assign every event to every button!
+   
+   The current implementation was based on more or less a wii remote idea, some group of buttons
+   and other group of buttons are just not interchangable. This is not optimal solution.
    
    
 *** Other Memo:
@@ -86,3 +98,5 @@
   -- dll's built with mingw which uses MSVCRT.dll is good to go, can be run on as old as Windows XP, I think.
      however libogg & libvorbis & luajit & OpenAL & ALURE aren't. They are dependent on MSVCRT100.dll.
      My old G1S laptop with WinXP SP3 can run it, but I doubt it's just lucky.
+ 
+  -- Mac & Linux's build are probably mostly statically linked, which is good on this case.

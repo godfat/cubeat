@@ -56,6 +56,8 @@
 
 19. in CPU vs CPU mode you actually CANNOT quit.  -- done, finally got the bug thanks to Apple's crash report.
 
+20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
+
 
 *** What I will not implement for this branch:
 

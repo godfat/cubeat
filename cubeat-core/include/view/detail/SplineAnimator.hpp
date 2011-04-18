@@ -1,13 +1,34 @@
 #ifndef _SHOOTING_CUBES_SPLINE_ANIMATOR_
 #define _SHOOTING_CUBES_SPLINE_ANIMATOR_
 
-// A Catmull-Rom Spline animator.
-// Basically this animator has even higher complexity in both
-// time and space than WaypointAnimator, so use it with caution.
-// arch.jslin - archilifelin@yahoo.com.tw (2008.3.19)
-
-// Reference and thanks to:
-//     Jim Armstrong, Singularity (www.algorithmist.net)
+// Originally on 2008.3.19, and modified on 2011.4.18:
+//
+// This part of the program is about the Catmull-Rom Spline Animator.
+// This part of the program is a derived work of the Flash ActionScript 3
+// "Singularity Library", written by Jim Armstrong (www.algorithmist.net)
+//
+// The original copyright notice is presented here unmodified:
+//////////////////////////////////////////////////////////////////////////
+// CatmullRom.as - Generate cubic Catmull-Rom spline that interpolates a set of data points.
+//
+// Reference:  www.algorithmist.net/arclen1.html
+//
+// copyright (c) 2006-2007, Jim Armstrong.  All Rights Reserved.
+//
+// This software program is supplied 'as is' without any warranty, express, implied,
+// or otherwise, including without limitation all warranties of merchantability or fitness
+// for a particular purpose.  Jim Armstrong shall not be liable for any special
+// incidental, or consequential damages, including, without limitation, lost
+// revenues, lost profits, or loss of prospective economic advantage, resulting
+// from the use or misuse of this software program.
+//
+// Programmed by Jim Armstrong, Singularity (www.algorithmist.net)
+//////////////////////////////////////////////////////////////////////////
+//
+// Ported to C++ on 2008.3.19 by arch.jslin (arch.jslin@gmail.com) to be
+// used in Irrlicht environment. Any derived work from this piece of code
+// must maintain this copyright notice and must not be resold in the form
+// of source code.
 
 // TODO:
 // There are some potential bug about float number's equality.

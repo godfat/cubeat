@@ -1,5 +1,4 @@
 
-
 #include "private/AVIVideo.hpp"
 #include "IrrDevice.hpp"
 
@@ -37,29 +36,7 @@ void AVIVideo::redraw()
     if( !pixels_out ) { texture_->unlock(); return; }
 
 #ifdef WIN32
-    unsigned char* pixels_in = (unsigned char*)
-                               AVIStreamGetFrame( frame_obj_, now_frame_ ) +
-                               sizeof(BITMAPINFOHEADER);
-
-    int pitch_i = bitmap_.biWidth * 3;
-    int pitch_o = texture_->getPitch();
-    int yi      = (bitmap_.biHeight-1) * pitch_i; //bitmap format is upside-down.
-    int yo      = 0;
-
-    for(int h = 0; h < bitmap_.biHeight; ++h) {
-        for(int w = 0, xi=0, xo=0; w < bitmap_.biWidth; ++w) {
-            //this is rather dangerous, cuz we assume the irr texture is A8R8G8B8
-            //and the AVI bitmap is set to 24bit color.
-            pixels_out[yo + xo    ] = pixels_in[yi + xi    ];   //R
-            pixels_out[yo + xo + 1] = pixels_in[yi + xi + 1];   //G
-            pixels_out[yo + xo + 2] = pixels_in[yi + xi + 2];   //B
-            pixels_out[yo + xo + 3] = 255;                      //A
-            xi += 3;
-            xo += 4;
-        }
-        yi -= pitch_i;
-        yo += pitch_o;
-    }
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif //WIN32
 
     texture_->unlock();
@@ -126,41 +103,11 @@ dimension2di AVIVideo::getSize() const
 bool AVIVideo::open(std::string const& path)
 {
 #ifdef WIN32
-    AVIFILEINFO      avi_info;
-    HRESULT          hr;
-//    PAVISTREAM       astream;             //not used for non-sound streaming
-//    AVISTREAMINFO*   stream_info;
-//    LPWAVEFORMAT     audio_format;
-//    LPPCMWAVEFORMAT  audio_format_PCM;
-
-    AVIFileInit();
-    hr = AVIFileOpen(&avi_file_, path.c_str(), OF_READ, NULL);
-    if(hr != AVIERR_OK) return false;
-
-    AVIFileInfo(avi_file_, &avi_info, sizeof(AVIFILEINFO));
-    setFPS((int)((float)avi_info.dwRate / avi_info.dwScale + 0.5f));
-
-    width_ = avi_info.dwWidth;
-    height_= avi_info.dwHeight;
-
-    hr = AVIFileGetStream(avi_file_, &vstream_, streamtypeVIDEO, 0);
-    if(hr != AVIERR_OK) return false;
-
-    start_frame_ = AVIStreamStart(vstream_);
-    if(start_frame_ == -1) return false;
-
-    num_of_frames_ = AVIStreamLength(vstream_);
-    if(num_of_frames_ == -1) return false;
-
-    initBitmapStruct(24);
-    frame_obj_ = AVIStreamGetFrameOpen(vstream_, &bitmap_);
-    if(bitmap_.biSizeImage == 0)
-        bitmap_.biSizeImage = bitmap_.biHeight * bitmap_.biWidth * 3;
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif //WIN32
     u32 w=1,h=1;
 #ifdef WIN32
-    for(w = 1; w < avi_info.dwWidth; w <<= 1);
-    for(h = 1; h < avi_info.dwHeight; h <<= 1);
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
@@ -177,22 +124,7 @@ bool AVIVideo::open(std::string const& path)
 void AVIVideo::initBitmapStruct(int bitsPerPixel)
 {
 #ifdef WIN32
-    bitmap_.biSize = sizeof(BITMAPINFOHEADER);
-    bitmap_.biBitCount = bitsPerPixel;
-    bitmap_.biClrImportant = 0;
-    bitmap_.biClrUsed = 0;
-    bitmap_.biCompression = BI_RGB;
-    bitmap_.biPlanes = 1;
-    bitmap_.biWidth = width_;
-    bitmap_.biHeight = height_;
-    bitmap_.biXPelsPerMeter = 0;
-    bitmap_.biYPelsPerMeter = 0;
-    bitmap_.biSizeImage = (((bitmap_.biWidth * 3) + 3) & 0xfffc) * bitmap_.biHeight;
-    if (bitmap_.biBitCount > 24)      bitmap_.biBitCount = 32;
-    else if (bitmap_.biBitCount > 16) bitmap_.biBitCount = 24;
-    else if (bitmap_.biBitCount > 8)  bitmap_.biBitCount = 16;
-    else if (bitmap_.biBitCount > 4)  bitmap_.biBitCount =  8;
-    else if (bitmap_.biBitCount > 0)  bitmap_.biBitCount =  4;
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif //WIN32
 }
 
@@ -217,9 +149,6 @@ bool AVIVideo::nextFrame()
 void AVIVideo::close()
 {
 #ifdef WIN32
-    if( file_ok_ && frame_obj_ ) AVIStreamGetFrameClose( frame_obj_ );
-    if( file_ok_ && vstream_ )   AVIStreamRelease( vstream_ );
-    if( avi_file_ )              AVIFileRelease( avi_file_ );
-    AVIFileExit();
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif //WIN32
 }

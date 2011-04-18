@@ -63,10 +63,7 @@ private:
     irr::ITimer* timer_;
 
 #ifdef WIN32
-    PAVIFILE         avi_file_;
-    PGETFRAME        frame_obj_;
-    PAVISTREAM       vstream_;
-    BITMAPINFOHEADER bitmap_;
+    // 2011.04.18: code removed due to possibly unresolved copyright issue.
 #endif // WIN32
 };
 

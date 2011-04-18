@@ -5,6 +5,12 @@
 #include "EventDispatcher.hpp"
 #include "view/SpriteMovie.hpp"
 
+/*******************************************************************/
+/* 2011.04.18                                                      */
+/* This testcase will compile but not working because AVI support  */
+/* is currently removed.                                           */
+/*******************************************************************/
+
 using namespace irr;
 using namespace core;
 using namespace scene;

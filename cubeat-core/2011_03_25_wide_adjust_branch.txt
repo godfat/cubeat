@@ -36,14 +36,13 @@
 
 11. "Chain" font block shooting  -- fixed. was pickable WTF!?
 
-*** 12. copyright / credits screens.
-   -- do it after musics could be changed. relatively simple to add than anything in the MainMenu.
+12. copyright / credits screens. -- consider it done. we just need to substitute the image.
 
 13. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
 
 *** 14. Manymouse on Mac/Linux doable???
    -- first get a linux version done first.
-   -- I am going to test if it's doable on Linux(Ubuntu) using virtualbox.
+   -- linux absolutely doable, just we need to write a script to help user set the device.
 
 15. On Mac: -- done, statically linked, only thing left not solved is app icon.
     
@@ -56,12 +55,14 @@
 
 19. in CPU vs CPU mode you actually CANNOT quit.  -- done, finally got the bug thanks to Apple's crash report.
 
-20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
+*** 20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
+    -- and also, make single prior to versus
 
 
 *** What I will not implement for this branch:
 
 1. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+   This probably need to be a separated small project.
 
 2. Probably a generic high score record for each game-modes.
   -- It would be unwise to implement this before we have a better simplified interface for UI.
@@ -102,3 +103,5 @@
      My old G1S laptop with WinXP SP3 can run it, but I doubt it's just lucky.
  
   -- Mac & Linux's build are probably mostly statically linked, which is good on this case.
+     No, actually not. At least LuaJIT and Irrlicht aren't statically linked.
+     

@@ -14,6 +14,8 @@
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
+// 2011.04.18: code removed due to possibly unresolved copyright issue.
+// if you define _USE_WIIMOTE_, this code simply cannot compile.
 #include "private/Wiimote_IR_internal.hpp"
 #endif
 

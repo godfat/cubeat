@@ -45,7 +45,7 @@ MainMenu::~MainMenu()
 
 pMainMenu MainMenu::init()
 {
-    App::i().setLoading(1);
+    App::i().setLoading(30);
 
     config = Conf::i().config_of("presenter/mainmenu");
 

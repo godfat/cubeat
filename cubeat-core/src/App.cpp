@@ -42,8 +42,7 @@ App::App()
     audio::Sound::i().init();
 
     trans_            = presenter::Transitioner::create();
-    master_presenter_ = presenter::OpeningSequence::create();
-    temp_presenter_   = presenter::pObject();
+    master_presenter_ = presenter::Object::create();
 
     view::pScene preload = view::Scene::create("PreLoad Scene");
     view::SFX::i().init_textures(preload);
@@ -54,28 +53,39 @@ App::~App()
     std::cout << "App destructing, before deleting inputs" << std::endl;
 }
 
-void App::setLoading(int const& cent)
+App& App::setLoading(int const& cent)
 {
     trans_->setLoadingBar(cent);
+    return *this;
 }
 
-void App::launchMainMenu()
+App& App::launchOpening()
+{
+    temp_presenter_ = presenter::OpeningSequence::create();
+    std::cout << "Opening launched." << std::endl;
+    return *this;
+}
+
+App& App::launchMainMenu()
 {
     temp_presenter_ = presenter::MainMenu::create();
     std::cout << "MainMenu launched." << std::endl;
+    return *this;
 }
 
-void App::launchMultiplayer(std::string const& conf1p, std::string const& conf2p,
+App& App::launchMultiplayer(std::string const& conf1p, std::string const& conf2p,
                             std::string const& stage, int num_of_cpu)
 {
     temp_presenter_ = presenter::game::Multi::create(conf1p, conf2p, stage, num_of_cpu);
     std::cout << "game_Multiplayer launched." << std::endl;
+    return *this;
 }
 
-void App::launchPuzzle(std::string const& conf1p, std::string const& stage, int puzzle_level)
+App& App::launchPuzzle(std::string const& conf1p, std::string const& stage, int puzzle_level)
 {
     temp_presenter_ = presenter::game::Puzzle::create(conf1p, stage, puzzle_level);
     std::cout << "game_puzzle launched." << std::endl;
+    return *this;
 }
 
 bool App::update_block()
@@ -88,21 +98,24 @@ bool App::update_block()
     return false;
 }
 
-void App::pause()
+App& App::pause()
 {
     if( !timer_->isStopped() )
         timer_->stop();
+    return *this;
 }
 
-void App::resume()
+App& App::resume()
 {
     if( timer_->isStopped() )
         timer_->start();
+    return *this;
 }
 
-void App::quit()
+App& App::quit()
 {
     quit_ = true;
+    return *this;
 }
 
 int App::run(std::tr1::function<void()> tester)

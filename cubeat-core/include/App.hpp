@@ -29,13 +29,14 @@ public:
 
     int run(std::tr1::function<void()> = 0);
 
-    void setLoading(int const& cent);
-    void launchMainMenu();
-    void launchMultiplayer(std::string const&, std::string const&, std::string const&, int);
-    void launchPuzzle     (std::string const&, std::string const&, int);
-    void pause();
-    void resume();
-    void quit();
+    App& setLoading(int const& cent);
+    App& launchOpening();
+    App& launchMainMenu();
+    App& launchMultiplayer(std::string const&, std::string const&, std::string const&, int);
+    App& launchPuzzle     (std::string const&, std::string const&, int);
+    App& pause();
+    App& resume();
+    App& quit();
 
     ~App();
 

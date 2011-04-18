@@ -29,10 +29,11 @@ protected:
 
 protected:
     view::pScene scene_;
+    view::pSprite startup_page_;
     view::pSpriteMovie movie_;
     bool deletion_scheduled_;
 
-    utils::map_any config;
+    utils::map_any config_;
 };
 
 } //presenter

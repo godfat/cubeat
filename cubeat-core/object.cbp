@@ -24,7 +24,6 @@
 					<Add directory="include" />
 					<Add directory="lib" />
 					<Add directory="C:\local_gitrepo\Irrlicht\include" />
-					<Add directory="C:\libs\cpp\wiiyourself_1.15" />
 					<Add directory="C:\lang\luarocks\2.0\include" />
 					<Add directory="C:\libs\cpp\openal-soft\include" />
 					<Add directory="C:\libs\cpp\alure\include" />
@@ -32,19 +31,14 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="Irrlicht" />
-					<Add library="wiiyourself_gcc45" />
 					<Add library="winmm" />
 					<Add library="user32" />
-					<Add library="hid" />
-					<Add library="setupapi" />
-					<Add library="vfw32" />
 					<Add library="boost_thread-mgw45-mt-1_43" />
 					<Add library="boost_date_time-mgw45-mt-1_43" />
 					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
-					<Add directory="C:\libs\cpp\wiiyourself_1.15\lib" />
 					<Add directory="C:\lang\luarocks\2.0" />
 				</Linker>
 			</Target>

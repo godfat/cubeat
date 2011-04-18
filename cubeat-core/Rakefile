@@ -38,12 +38,30 @@ end
 desc "create mac's CuBeat.app"
 task 'build:mac' => [:build, 'CuBeat.app']
 
+def mac_setup_binary binary, install_path='CuBeat.app/Contents/MacOS'
+  `otool -L #{binary}`.split("\n").select{ |path|
+    next false unless path.start_with?("\t")
+    path !~ %r{\t(/System/|/usr/lib/)}
+  }.map{ |s| s[%r{(/\S+)+}] }.each{ |lib|
+    name = File.basename(lib)
+    dest = "#{install_path}/#{name}"
+    sh "cp #{lib} #{dest}" unless File.exist?(dest)
+    sh "chmod 644 #{dest}"
+    sh "install_name_tool -change #{lib} '@loader_path/#{name}' #{binary}"
+  }
+end
+
 file 'CuBeat.app' => ['CuBeat.app/Contents/MacOS',
-                      'CuBeat.app/Contents/Resources']
+                      'CuBeat.app/Contents/Resources'] do
+  mac_setup_binary('CuBeat.app/Contents/MacOS/CuBeat')
+  mac_setup_binary('CuBeat.app/Contents/MacOS/libcubeat.dylib')
+  sh 'tar -zcf CuBeat.app.tgz CuBeat.app'
+end
 
 file 'CuBeat.app/Contents/MacOS' => ['bin/cubeat'] do
   sh 'mkdir -p CuBeat.app/Contents/MacOS'
   sh 'cp bin/cubeat CuBeat.app/Contents/MacOS/CuBeat'
+  sh 'cp bin/libcubeat.dylib CuBeat.app/Contents/Resources/'
 end
 
 file 'CuBeat.app/Contents/Resources' => ['bin/libcubeat.dylib'] do
@@ -52,7 +70,6 @@ file 'CuBeat.app/Contents/Resources' => ['bin/libcubeat.dylib'] do
   sh 'cp -r config CuBeat.app/Contents/Resources/'
   sh 'cp -r script CuBeat.app/Contents/Resources/'
   sh 'cp config.zzml CuBeat.app/Contents/Resources/'
-  sh 'cp bin/libcubeat.dylib CuBeat.app/Contents/Resources/'
 end
 
 desc 'clobber and build'

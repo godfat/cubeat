@@ -92,6 +92,8 @@
    The current implementation was based on more or less a wii remote idea, some group of buttons
    and other group of buttons are just not interchangable. This is not optimal solution.
    
+7. heat gauge has some glowing glitch. (after glow the color remained white. tween related issue)
+   
    
 *** Other Memo:
 

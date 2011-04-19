@@ -218,6 +218,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.cpp" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="script\puzzle\chain.lua" />
 		<Unit filename="script\puzzle\helpers.lua" />
 		<Unit filename="script\puzzle\maputils.lua" />

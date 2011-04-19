@@ -1,6 +1,7 @@
 # generated executable
 bin/cubeat
 bin/Release
+obj
 
 # resources and tmp
 tmp

@@ -86,6 +86,7 @@ pMainMenu MainMenu::init()
     player2num_ = 0;
     stagenum_ = 0;
     game_mode_ = PPL_VS_PPL;
+    ai_level_ = AI_HARD;
     num_of_human_ppl_ = 2;
 
     return shared_from_this();
@@ -99,10 +100,10 @@ void MainMenu::setupMenus()
 
     mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, false);
     mode->getSprite("text").set<Pos2D>( vec2(-300, -180) );
-    mode->addSpriteText("multi_no_cpu", "player vs player", "Star Jedi", 0, 40, false);
-    mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -120) );
     mode->addSpriteText("multi_one_cpu", "player vs cpu", "Star Jedi", 0, 40, false);
-    mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -60) );
+    mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -120) );
+    mode->addSpriteText("multi_no_cpu", "player vs player", "Star Jedi", 0, 40, false);
+    mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -60) );
     mode->addSpriteText("multi_two_cpu", "cpu vs cpu demo", "Star Jedi", 0, 40, false);
     mode->getSprite("multi_two_cpu").set<Pos2D>( vec2(-150, 0) );
     mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, false);
@@ -133,6 +134,18 @@ void MainMenu::setupMenus()
         m->set<Scale>(vec3(1.2, 1.2, 1.2));
     }
 
+    view::pMenu temp3= view::Menu::create("", mainmenu_scene_, 1, 1, true);
+    menus_.insert( std::make_pair("ai_select", temp3) );
+
+    temp3->addSpriteText("text", "choose ai level", "Star Jedi", 0, 40, false);
+    temp3->getSprite("text").set<Pos2D>( vec2(-300, -180) );
+    temp3->addSpriteText("easy", "easy", "Star Jedi", 0, 40, false);
+    temp3->getSprite("easy").set<Pos2D>( vec2(-150, -120) );
+    temp3->addSpriteText("normal", "normal", "Star Jedi", 0, 40, false);
+    temp3->getSprite("normal").set<Pos2D>( vec2(-150, -60) );
+    temp3->addSpriteText("hard", "hard", "Star Jedi", 0, 40, false);
+    temp3->getSprite("hard").set<Pos2D>( vec2(-150, 0) );
+
     view::pMenu temp2= view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("stage_select", temp2) );
 
@@ -160,17 +173,17 @@ void MainMenu::setupMenus()
     player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
     player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 
-    hideMenu("mode_select").hideMenu("player_select").hideMenu("stage_select");
+    hideMenu("mode_select").hideMenu("player_select").hideMenu("ai_select").hideMenu("stage_select");
 }
 
 void MainMenu::end()
 {
     if( game_mode_ == PPL_VS_PPL )
-        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 0);
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 0, ai_level_);
     else if( game_mode_ == PPL_VS_CPU )
-        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 1);
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 1, ai_level_);
     else if( game_mode_ == CPU_VS_CPU )
-        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 2);
+        App::i().launchMultiplayer(conf1p_, conf2p_, stage_, 2, ai_level_);
     else if( game_mode_ == PUZZLE )
         App::i().launchPuzzle(conf1p_, stage_, 3);
     std::cout << "MainMenu end call finished." << std::endl;
@@ -298,6 +311,25 @@ void MainMenu::setup_mode_selecting_buttons()
     menus_["mode_select"]->setCallbackToSprite("quit", quit);
 }
 
+void MainMenu::setup_ai_selecting_buttons()
+{
+    function<void(int, int)> clickB = bind(&MainMenu::go_back_from_to, this, "ai_select", "player_select");
+    btn_back1_ = pDummy(new int);
+    btn_back2_.reset();
+    //btn_back2_ = pDummy(new int);
+    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+    //ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
+    ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
+    //ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
+
+    function<void(view::pSprite&)> easy   = bind(&MainMenu::ai_select, this, _1, (int)AI_EASY);
+    function<void(view::pSprite&)> normal = bind(&MainMenu::ai_select, this, _1, (int)AI_NORMAL);
+    function<void(view::pSprite&)> hard   = bind(&MainMenu::ai_select, this, _1, (int)AI_HARD);
+    menus_["ai_select"]->setCallbackToSprite("easy", easy);
+    menus_["ai_select"]->setCallbackToSprite("normal", normal);
+    menus_["ai_select"]->setCallbackToSprite("hard", hard);
+}
+
 void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
 {
     if( animating_ ) return;
@@ -321,6 +353,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player2num_ = 0;
         num_of_human_ppl_ = 2;
         game_mode_ = PPL_VS_PPL;
+        ai_level_ = AI_HARD;
         setup_mode_selecting_buttons();
     }
     else if( to == "player_select" ) {
@@ -330,7 +363,12 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player2focus_ = 0;
         player1num_ = 0;
         player2num_ = 0;
+        ai_level_ = AI_HARD;
         setup_player_selecting_buttons();
+    }
+    else if( to == "ai_select" ) {
+        ai_level_ = AI_HARD;
+        setup_ai_selecting_buttons();
     }
     else if( to == "stage_select" ) {
     }
@@ -383,6 +421,14 @@ void MainMenu::player_choosing()
     player2num_ = 0;
 
     setup_player_selecting_buttons();
+}
+
+void MainMenu::ai_choosing()
+{
+    hideMenu("player_select").showMenu("ai_select");
+    animating_ = true;
+    ai_level_ = AI_HARD;
+    setup_ai_selecting_buttons();
 }
 
 //temp: very temp =_=
@@ -496,8 +542,12 @@ void MainMenu::player1_checked()
         if( player1num_ != 0 && player2num_ != 0 )
             stage_choosing("player_select");
     }
-    else
-        stage_choosing("player_select");
+    else {
+        if( game_mode_ == PPL_VS_CPU )
+            ai_choosing();
+        else
+            stage_choosing("player_select");
+    }
 }
 
 void MainMenu::player2_checked()
@@ -517,12 +567,8 @@ void MainMenu::stage_choosing(std::string const& caller_menu)
     hideMenu(caller_menu).showMenu("stage_select");
 
     //temp: button "back"
-    function<void(int, int)> clickB;
-
-    if( num_of_human_ppl_ >= 1 )
-        clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "player_select");
-    else
-        clickB = bind(&MainMenu::go_back_from_to, this, "stage_select", "mode_select");
+    function<void(int, int)> clickB =
+        bind(&MainMenu::go_back_from_to, this, "stage_select", caller_menu);
 
     btn_back1_ = pDummy(new int);
     btn_back2_ = pDummy(new int);
@@ -530,6 +576,20 @@ void MainMenu::stage_choosing(std::string const& caller_menu)
     ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back1_, &input1->trig2(), ctrl::BTN_PRESS);
     ctrl::EventDispatcher::i().subscribe_btn_event( clickB, btn_back2_, &input2->trig2(), ctrl::BTN_PRESS);
+}
+
+void MainMenu::ai_select(view::pSprite& sp, int ai_level)
+{
+    if( animating_ ) return;
+
+    ai_level_ = ai_level;
+    audio::Sound::i().playBuffer("4/4b.wav");
+
+    menus_["ai_select"]->setCallbackToSprite("easy", 0);
+    menus_["ai_select"]->setCallbackToSprite("normal", 0);
+    menus_["ai_select"]->setCallbackToSprite("hard", 0);
+
+    stage_choosing("ai_select");
 }
 
 void MainMenu::stage_select(view::pSprite& sp, std::string name)

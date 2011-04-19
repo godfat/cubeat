@@ -26,8 +26,8 @@ class Multi : public Object, public std::tr1::enable_shared_from_this<Multi>
 public:
     typedef std::tr1::shared_ptr<Multi> pointer_type;
     static pointer_type create(std::string const& c1p, std::string const& c2p,
-                            std::string const& sc, int num_of_cpu) {
-        return utils::ObjectPool<Multi>::create()->init(c1p,c2p,sc, num_of_cpu);
+                            std::string const& sc, int num_of_cpu, int ai_level) {
+        return utils::ObjectPool<Multi>::create()->init(c1p,c2p,sc, num_of_cpu, ai_level);
     }
 
     Multi();
@@ -36,7 +36,7 @@ public:
     virtual void cycle();
 
 protected:
-    pointer_type init(std::string const&, std::string const&, std::string const&, int);
+    pointer_type init(std::string const&, std::string const&, std::string const&, int, int);
     void cleanup();
     void end(pMap p);
     void reinit();
@@ -45,7 +45,7 @@ protected:
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);
     void item_creation();
     void item_destruction();
-    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path );
+    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path);
     void eat_item(ctrl::wpPlayer, int);
 
     void setup_end_button();
@@ -85,7 +85,7 @@ protected:
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
-    int num_of_cpu_;
+    int num_of_cpu_, ai_level_;
     bool gauge1_flag_, gauge2_flag_;
 };
 

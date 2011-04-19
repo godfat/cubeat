@@ -27,6 +27,7 @@
 #include "utils/to_s.hpp"
 #include "utils/Logger.hpp"
 #include <boost/foreach.hpp>
+#include <algorithm>
 
 using namespace psc;
 using namespace presenter;
@@ -48,14 +49,14 @@ Multi::~Multi()
 }
 
 pMulti Multi::init(std::string const& c1p, std::string const& c2p,
-                   std::string const& sc, int num_of_cpu)
+                   std::string const& sc, int num_of_cpu, int ai_level)
 {
     //App::i().setLoading(1);
     scene_ = psc::view::Scene::create("Multiplayer game");
     //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
     scene_->setTo2DView();
 
-    c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu;
+    c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu; ai_level_ = ai_level;
 
     gameplay_ = Conf::i().config_of("gameplay/multi");
 
@@ -65,6 +66,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     s0->x_offset(159).y_offset(684);
     s1 = data::ViewSetting::create(64);   //must use config
     s1->x_offset(740).y_offset(684);
+
+    ctrl::AIPlayer::AISetting ai_temp[3] =
+        {ctrl::AIPlayer::Easy(), ctrl::AIPlayer::Normal(), ctrl::AIPlayer::Hard()};
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
@@ -76,13 +80,14 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     else if( num_of_cpu == 1 ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
     }
     else {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        player0_ = ctrl::AIPlayer::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1);
+        std::random_shuffle(ai_temp, ai_temp + 3);
+        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);
@@ -357,7 +362,7 @@ void Multi::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
     ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_), 500);
+        bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_, ai_level_), 500);
     std::cout << "game_multiplayer end call finished." << std::endl;
 }
 

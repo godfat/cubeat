@@ -32,7 +32,7 @@ public:
     App& setLoading(int const& cent);
     App& launchOpening();
     App& launchMainMenu();
-    App& launchMultiplayer(std::string const&, std::string const&, std::string const&, int);
+    App& launchMultiplayer(std::string const&, std::string const&, std::string const&, int, int);
     App& launchPuzzle     (std::string const&, std::string const&, int);
     App& pause();
     App& resume();

@@ -51,9 +51,12 @@ protected:
     void stage_select(view::pSprite&, std::string);
     void player_choosing();
     void mode_select(view::pSprite&, int);
+    void ai_choosing();
+    void ai_select(view::pSprite&, int);
     void go_back_from_to(std::string const&, std::string const&);
     void setup_player_selecting_buttons();
     void setup_mode_selecting_buttons();
+    void setup_ai_selecting_buttons();
 
     void fadeAllOut(int);
     void push_start();
@@ -75,9 +78,9 @@ protected:
     std::vector<std::string> paths;
 
     enum { SINGLE, PPL_VS_PPL, PPL_VS_CPU, CPU_VS_CPU, PUZZLE};
+    enum { AI_EASY, AI_NORMAL, AI_HARD };
     int player1focus_, player2focus_, player1num_, player2num_, stagenum_;
-    int num_of_human_ppl_;
-    int game_mode_;
+    int num_of_human_ppl_, game_mode_, ai_level_;
     std::vector<pPlayerView> pvlist_;
     view::pSpriteText player1text_, player2text_;
     std::string conf1p_, conf2p_, stage_;

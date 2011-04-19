@@ -31,9 +31,17 @@ public:
     typedef std::tr1::shared_ptr< boost::thread > pThread;
     typedef std::tr1::shared_ptr< int >      pDummy;
 
-    static pointer_type create(Input* input,
-                               int const& id) {
-        return pointer_type(new AIPlayer(input, id))->init();
+    struct AISetting{
+        AISetting(int a, int b, int c):attack_power_(a), think_interval_(b), missrate_(c){}
+        int attack_power_, think_interval_;
+        int missrate_;
+    };
+    struct Easy   : public AISetting{ Easy  ():AISetting( 9,400, 15){} };
+    struct Normal : public AISetting{ Normal():AISetting(18,350, 10){} };
+    struct Hard   : public AISetting{ Hard  ():AISetting(99,300, 2) {} };
+
+    static pointer_type create(Input* input, int const& id, AISetting const& s = Hard()) {
+        return pointer_type(new AIPlayer(input, id, s))->init();
     }
 
     virtual void cycle();
@@ -45,7 +53,7 @@ public:
     virtual ~AIPlayer();
 
 protected:
-    AIPlayer(Input* input, int const&);
+    AIPlayer(Input* input, int const&, AISetting const&);
     pointer_type init();
 
     void think();
@@ -63,12 +71,13 @@ protected:
 protected:
     wpointer_type   self_;
     model::AIBrain* brain_;
-    int             think_interval_;
     pThread         think_thread_;
     pDummy          think_timer_;
     boost::mutex    think_mutex_;
     bool            is_executing_;
     bool            trig1_, trig2_;
+    AISetting       setting_;
+    int             think_interval_;
 };
 
 typedef AIPlayer::pointer_type  pAIPlayer;

@@ -15,7 +15,8 @@ pSimpleMap AIUtils::clone_map(pSimpleMap const& map)
     return map->clone();
 }
 
-pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map, int threshold)
+pSimpleCube AIUtils::find_keycube_for_highest_chain_power
+    (pSimpleMap const& map, int lower_bound, int upper_bound)
 {
     int highest_score = get_base_attack( map->clone() ), current_score = 0;
     pSimpleCube best_cube;
@@ -28,7 +29,9 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power(pSimpleMap const& map,
         for( int x=0; x < map->ms()->width(); ++x ) {
             if( pSimpleCube c = map->simp_cubes_[x][y] ) {
                 current_score = simulate_fire_at( x, y, map->clone() );
-                if( current_score > highest_score && current_score >= threshold ) {
+                if( current_score > highest_score &&
+                    current_score >= lower_bound &&
+                    current_score <= upper_bound ) {
                     best_cube = c;
                     highest_score = current_score;
                 }

@@ -23,9 +23,9 @@ using std::tr1::ref;
 using std::tr1::function;
 using utils::Logger;
 
-AIPlayer::AIPlayer(Input* input, int const& id)
-    :Player(input, id), brain_(0), think_interval_(250), is_executing_(false),
-     trig1_(false), trig2_(false)
+AIPlayer::AIPlayer(Input* input, int const& id, AISetting const& setting)
+    :Player(input, id), brain_(0), is_executing_(false), trig1_(false), trig2_(false),
+     setting_(setting), think_interval_(setting.think_interval_ >= 100 ? setting.think_interval_ : 100)
 {
 }
 
@@ -42,6 +42,7 @@ pAIPlayer AIPlayer::init()
     Player::init();
     self_ = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
     brain_ = new model::AIBrain(self());
+    brain_->power(setting_.attack_power_);
 
     int x = utils::random( Conf::i().SCREEN_W() );
     int y = utils::random( Conf::i().SCREEN_H() );
@@ -136,15 +137,23 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
     using namespace accessor;
     using namespace easing;
     int c_size = view_setting()->cube_size();
-    vec2 dest(x*c_size + c_size/2 + view_setting()->x_offset(),
-              -y*c_size - c_size/2 + view_setting()->y_offset());
 
+    int handshaking_x = utils::random(c_size/2) - c_size/4;
+    int handshaking_y = utils::random(c_size/2) - c_size/4;
+
+    if( utils::random(100) < setting_.missrate_ ) { //this shot is probably going to miss the target
+        handshaking_x *= 4;
+        handshaking_y *= 4;
+    }
+
+    vec2 dest(x*c_size + c_size/2 + view_setting()->x_offset() + handshaking_x,
+              -y*c_size - c_size/2 + view_setting()->y_offset() + handshaking_y);
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;
 
     function<void()> cb = bind(&AIPlayer::hold_button, this, ref(trig1_), 1);
 
-    input_->getCursor()->tween<IOExpo, Pos2D>(dest, 200, 0, cb);
+    input_->getCursor()->tween<IOExpo, Pos2D>(dest, think_interval_ - 100, 0, cb);
 }
 
 void AIPlayer::haste(int ms)

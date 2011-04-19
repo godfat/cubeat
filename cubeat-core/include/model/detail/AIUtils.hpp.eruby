@@ -22,7 +22,8 @@ public:
     static pSimpleCube lookup(pSimpleMap const&, int x, int y);
     static pSimpleCube lookup_for_grounded(pSimpleMap const&, int x, int y);
     static std::vector<int> find_high_column_indexes(pSimpleMap const&, int threshold = 6);
-    static pSimpleCube find_keycube_for_highest_chain_power(pSimpleMap const&, int threshold = 0);
+    static pSimpleCube find_keycube_for_highest_chain_power
+           (pSimpleMap const&, int lower_bound = 0, int upper_bound = 9999);
     static std::vector<pSimpleCube> find_garbages(pSimpleMap const&);
     static std::vector<pSimpleCube> find_brokens(pSimpleMap const&);
     static int cube_count(pSimpleMap const&);

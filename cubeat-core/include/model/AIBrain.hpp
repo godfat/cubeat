@@ -44,12 +44,16 @@ public:
     pAICommand getCurrentCmd();
     void       popCmdQueue();
 
+    AIBrain&   power(int const& i)       { attack_power_ = i; return *this; }
+    int        power() const             { return attack_power_; }
+
     boost::mutex& getMutex() { return cmd_queue_mutex_; }
 
 private:
     ctrl::wpAIPlayer owner_;
     std::vector<model::pSimpleMap> map_list_;
     bool             is_thinking_;
+    int              attack_power_;
     CommandQueue     cmd_queue_;
     boost::mutex     cmd_queue_mutex_;
 };

@@ -17,7 +17,7 @@ using ai_detail::AIUtils;
 using utils::Logger;
 
 AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
-    :owner_(owner), is_thinking_(false)
+    :owner_(owner), is_thinking_(false), attack_power_(9999)
 {
     std::cout << "AI processing unit created." << std::endl;
 }
@@ -35,10 +35,12 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
     Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
     int self_index = ally_ids.front();
+    int enemy_index = enemy_ids.front();
     //since we only have two map, one for each side, so let the first in ally-list be one's self.
 
     map_list_ = map_list;
     pSimpleMap self_map = map_list_[self_index]->clone();
+    pSimpleMap enemy_map = map_list_[enemy_index]->clone();
     //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
     //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
     {
@@ -46,24 +48,26 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
 
         //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
         int attack_threshold = 8;
+        if( attack_power_ < 20 ) attack_threshold = 4;
         if( self_map->warning_level() > 50 )
             attack_threshold = 1;
         else if( self_map->warning_level() > 25 )
             attack_threshold = 2;
         else if( self_map->warning_level() > 0 )
-            attack_threshold = 4;
+            attack_threshold = 3;
         else if( AIUtils::grounded_cube_count(self_map) + self_map->garbage_left() >
                  self_map->ms()->width() * (self_map->ms()->height()-1) )
             attack_threshold = 1;
 
-        if( pSimpleCube c = AIUtils::find_keycube_for_highest_chain_power(self_map, attack_threshold) ) {
+        pSimpleCube keycube = AIUtils::find_keycube_for_highest_chain_power(self_map, attack_threshold, attack_power_);
+        if( enemy_map->garbage_left() < attack_power_ * 2 && keycube ) {
             //Logger::i().buf(this).buf(" found highest chain_power at: ").buf(c->x()).buf(", ").buf(c->y()).endl();
             pAICommand cmd = AICommand::create();
-            cmd->delay(200).weight(1).normal_shot(c->x(), c->y());
+            cmd->delay(200).weight(1).normal_shot(keycube->x(), keycube->y());
             cmd_queue_.push_back( cmd );
-            if( c->is_broken() )
+            if( keycube->is_broken() )
                 cmd_queue_.push_back( cmd );
-            if( c->is_garbage() ) {
+            if( keycube->is_garbage() ) {
                 cmd_queue_.push_back( cmd );
                 cmd_queue_.push_back( cmd );
             }
@@ -74,7 +78,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
             //Logger::i().buf("brain ").buf(this).buf(" checkpoint 3b.").endl();
             std::vector<pSimpleCube> garbages = AIUtils::find_garbages(self_map);
             std::vector<pSimpleCube> brokens  = AIUtils::find_brokens(self_map);
-            int high_col_threshold = 10;
+            int high_col_threshold = 9;
             std::vector<int> high_cols = AIUtils::find_high_column_indexes(self_map, high_col_threshold);
             std::random_shuffle(high_cols.begin(), high_cols.end());
             std::random_shuffle(garbages.begin(), garbages.end());

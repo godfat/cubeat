@@ -29,6 +29,7 @@ IF(APPLE)
                     <%= "#{Dir.pwd}/../irrlicht/source/Irrlicht/MacOSX/build/Release" %>)
 ELSE(APPLE)
   LINK_DIRECTORIES (/usr/X11/lib
+                    /usr/lib/mesa
                     <%= "#{Dir.pwd}/lib" %>
                     <%= "#{Dir.pwd}/../irrlicht/lib/Linux" %>)
 ENDIF(APPLE)
@@ -37,7 +38,7 @@ ENDIF(APPLE)
 IF(APPLE)
   LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure)
 ELSE(APPLE)
-  LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure al GL X11 Xxf86vm)
+  LINK_LIBRARIES (Irrlicht freetype boost_thread luajit-5.1 alure openal GL X11 Xxf86vm)
 ENDIF(APPLE)
 
 # setup source codes
@@ -65,8 +66,6 @@ IF(APPLE)
 
 ELSE(APPLE)
   ADD_EXECUTABLE        (bin/cubeat main.cpp)
-  SET_TARGET_PROPERTIES (bin/cubeat PROPERTIES LINK_FLAGS
-                         "-pagezero_size 10000 -image_base 100000000")
 ENDIF(APPLE)
 
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)

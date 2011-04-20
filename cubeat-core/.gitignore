@@ -1,6 +1,5 @@
 # generated executable
-bin/cubeat
-bin/Release
+bin
 obj
 
 # resources

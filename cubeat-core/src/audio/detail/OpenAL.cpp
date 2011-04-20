@@ -1,7 +1,12 @@
 
 #include "audio/detail/OpenAL.hpp"
 #include <cstdio>
+
+#if defined(__APPLE__) || defined(__MACOSX__)
+#include <OpenAL/alure.h>
+#else
 #include <AL/alure.h>
+#endif
 
 namespace psc {
 namespace audio {

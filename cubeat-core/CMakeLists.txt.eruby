@@ -20,7 +20,8 @@ ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS) # -DBOOST_HAS_TR1
 INCLUDE_DIRECTORIES (include
                      lib
                      ../irrlicht/include
-                     /usr/local/include/luajit-2.0)
+                     /usr/local/include/luajit-2.0
+                     /usr/include/luajit-2.0)
 
 # setup linking path
 IF(APPLE)
@@ -36,9 +37,9 @@ ENDIF(APPLE)
 
 # setup linking
 IF(APPLE)
-  LINK_LIBRARIES (Irrlicht freetype boost_thread-mt luajit-51 alure)
+  LINK_LIBRARIES (Irrlicht freetype luajit-5.1 alure boost_thread-mt)
 ELSE(APPLE)
-  LINK_LIBRARIES (Irrlicht freetype boost_thread luajit-5.1 alure openal GL X11 Xxf86vm)
+  LINK_LIBRARIES (Irrlicht freetype luajit-5.1 alure boost_thread openal GL X11 Xxf86vm)
 ENDIF(APPLE)
 
 # setup source codes

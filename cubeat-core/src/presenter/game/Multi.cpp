@@ -286,7 +286,6 @@ void Multi::end(pMap lose_map)
 {
     cleanup();
 
-    audio::Sound::i().playBuffer("3/3c/win.wav");
     if( !blocker_ ) {
         blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
         blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
@@ -302,10 +301,15 @@ void Multi::end(pMap lose_map)
     if( lose_map == map0_ ) {
         lose_t_->set<Pos2D>( pos1 );
         win_t_->set<Pos2D>( pos2 );
+        if( num_of_cpu_ == 1 )
+            audio::Sound::i().playBuffer("3/3c/lose.wav");
+        else
+            audio::Sound::i().playBuffer("3/3c/win.wav");
     }
     else {
         lose_t_->set<Pos2D>( pos2 );
         win_t_->set<Pos2D>( pos1 );
+        audio::Sound::i().playBuffer("3/3c/win.wav");
     }
     vec3 v0(0,0,0), v1(1,1,1);
     win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);

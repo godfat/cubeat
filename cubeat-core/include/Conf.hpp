@@ -15,6 +15,7 @@ private:
     utils::map_any config_;
     std::string working_path_;
     std::string config_path_;
+    std::string script_path_;
 
     int screen_width_;
     int screen_height_;
@@ -39,6 +40,7 @@ public:
     #endif
     }
     inline std::string const& WORKING_PATH() const { return working_path_; }
+    inline std::string script_path(std::string const& path) const { return script_path_ + path; }
 
     utils::map_any config_of(std::string const& name) const;
     std::string read_config_text(std::string const& path) const;

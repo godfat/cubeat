@@ -3,9 +3,11 @@ bin/cubeat
 bin/Release
 obj
 
-# resources and tmp
-tmp
-rc
+# resources
+rc/fonts
+rc/model
+rc/sound
+rc/texture
 
 # cmake generated
 Makefile

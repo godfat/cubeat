@@ -1,6 +1,6 @@
 
-local MapUtils = require 'script/puzzle/maputils'
-local Helper = require 'script/puzzle/helpers'
+local MapUtils = require 'rc/script/puzzle/maputils'
+local Helper = require 'rc/script/puzzle/helpers'
 local random, Stack = Helper.random, Helper.stack
 
 math.randomseed(os.time())

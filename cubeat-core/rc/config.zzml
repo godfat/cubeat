@@ -1,4 +1,3 @@
-config_path        : 'config/',
 screenwidth        : 1280,
 screenheight       : 720,
 framerate          : 60

@@ -16,9 +16,10 @@ void Conf::init(std::string const& working_path)
                         working_path : working_path + "/"; //This must be done ahead of everything
     }
 
-    config_ = utils::map_any::construct( read_config_text( working_path_ + "config.zzml") );
+    config_ = utils::map_any::construct( read_config_text( working_path_ + "rc/config.zzml") );
 
-    config_path_           = expand(config_.S("config_path"));
+    config_path_           = expand("rc/config/");
+    script_path_           = expand("rc/script/");
     screen_width_          = config_.I("screenwidth");
     screen_height_         = config_.I("screenheight");
     framerate_             = config_.I("framerate");

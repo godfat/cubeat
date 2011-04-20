@@ -1,6 +1,6 @@
 
-local random = require 'script/puzzle/helpers'.random
-local C3H, C4H, C5H, C3V, C4V = unpack(require 'script/puzzle/chain')
+local random = require 'rc/script/puzzle/helpers'.random
+local C3H, C4H, C5H, C3V, C4V = unpack(require 'rc/script/puzzle/chain')
 
 local MapUtils = {}
 local floor = math.floor

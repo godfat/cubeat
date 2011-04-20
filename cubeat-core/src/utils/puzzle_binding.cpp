@@ -351,7 +351,7 @@ int puzzle_binding(lua_State* L, int const& level)
 
 /* Before we load or execute any script. */
 
-    if( load_lua_script(L, psc::Conf::i().expand("script/puzzle/puzzle_gen_interface.lua").c_str() ) ) //will execute once globally
+    if( load_lua_script(L, psc::Conf::i().script_path("puzzle/puzzle_gen_interface.lua").c_str() ) ) //will execute once globally
         return 1;
 
     call_lua_function(L, "generate_to_file", level, 6, 10, true); //temp: true for debug

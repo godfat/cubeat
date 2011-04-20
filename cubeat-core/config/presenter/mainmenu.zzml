@@ -1,9 +1,9 @@
 title:
 {
 #800 x 200 is the original texture size of 'Cubeat' title
-    path: 'cubeat_800x200',
-  orig_w: 800,
-  orig_h: 200,
+    path: 'title',
+  orig_w: 512,
+  orig_h: 512,
    depth: -200
 },
 
@@ -20,7 +20,7 @@ decorator:
     color_num: 4,
 
 #size formula of cube decorations on the mainmenu: screen width(pixel) * size_factor(0.133)
-    size_factor: 0.133,
+    size_factor: 0.15,
     size_random_percent: 33,
     rotation_duration_ms: 3000,
     rotation_random_ms: 2000,

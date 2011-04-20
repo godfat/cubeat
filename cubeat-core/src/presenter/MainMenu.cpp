@@ -63,13 +63,12 @@ pMainMenu MainMenu::init()
         view::Menu::create(title.S("path"), mainmenu_scene_, width, height, true);
 
     menus_.insert( std::make_pair("start_menu", temp) );
-    temp->moveTo( Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - temp->get<Size2D>().Y/3 )
+    temp->moveTo( Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - temp->get<Size2D>().Y/8 )
          .setDepth( title.I("depth") );
 
     temp->addSpriteText("text", text.S("text"), text.S("font"), 0, m_text_size, true)
          .getSpriteText("text").tween<SineCirc, Alpha>(0, (unsigned int)text.I("glow_period"), -1)
-         .set<Pos2D>( vec2( 0, height ) );
-
+         .set<Pos2D>( vec2( 0, height/2 + temp->get<Size2D>().Y/8 ) );
 
     setupMenus();
 
@@ -201,18 +200,13 @@ void MainMenu::initDecorator()
     int const w = Conf::i().SCREEN_W();
     int const h = Conf::i().SCREEN_H();
     int const size = w * deco.F("size_factor");
-    int const num_w = (w/size)*2;
-    int const num_h = (h/size)*2 + 3;
+    //int const num_w = (w/size)*2;
+    int const num_h = (h/size)*2 + 4;
     int const outgoing = size * 1.66f; //1.41f;
     int const contract = size / 8;
 
-    vec2 start1( -outgoing, contract),  end1(w+outgoing, contract);     //line1
-    vec2 start2(w-contract, -outgoing), end2(w-contract, h+outgoing);   //line2
-    vec2 start3(w+outgoing, h-contract),end3( -outgoing, h-contract);   //line3
-    vec2 start4( contract,  h+outgoing),end4( contract,  -outgoing);    //line4
-
-//    int const time_w = 10000;            //1280 768 is best factor
-//    int const time_h = time_w * (w/h);   //1280 768 is best factor
+    vec3 start1(w-contract, outgoing,   500), end1(w-contract, -(h+outgoing),-500);
+    vec3 start2(contract, -(h+outgoing),500), end2(  contract,   outgoing,   -500);   //line4
 
     int const color_num = deco.I("color_num");
     for(int i = 0; i < color_num; ++i ) {
@@ -220,23 +214,34 @@ void MainMenu::initDecorator()
             std::string( utils::to_s((i%4)+1) ) );
     }
 
-    std::vector<vec3> waypoints;
-    waypoints.push_back( vec3(contract, -contract, 1000) );
-    waypoints.push_back( vec3(w-contract, -(contract), 500) );
-    waypoints.push_back( vec3(w-contract, -(h-contract), 0) );
-    waypoints.push_back( vec3(contract, -(h-contract), -500) );
-    waypoints.push_back( vec3(contract, outgoing, -1000) );
+    int capacity = num_h;
 
-    int capacity = (num_w + num_h - 6)*2;
-    for(int i=0; i < capacity; ++i ) {
+    for(int i = 0; i < capacity; ++i ) {
         data::Color col = data::Color::from_id(0, color_num);
         col.offset();
         int rand_size = size * (utils::random(33)/100.0f + 1);
         view::pSprite temp = view::Sprite::create(
             paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
 
-        data::WaypointParam<Linear, Pos3D> p1;
-        p1.waypoints(waypoints).duration(20000).loop(-1).delay(-(float)i/capacity*20000);
+        data::AnimatorParam<Linear, Pos3D> p1;
+        p1.start(start1).end(end1).duration(10000).loop(-1).delay(-(float)i/capacity*10000);
+        data::AnimatorParam<Linear, Rotation> p2;
+        p2.end(vec3(0,0,360)).duration(utils::random(2000)+3000).loop(-1);
+
+        temp->set<ColorDiffuse>( 0xff000000 | col.rgb() ).tween(p1).tween(p2);
+
+        deco_cubes_.push_back( temp );
+    }
+
+    for(int i = 0; i < num_h; ++i ) {
+        data::Color col = data::Color::from_id(0, color_num);
+        col.offset();
+        int rand_size = size * (utils::random(33)/100.0f + 1);
+        view::pSprite temp = view::Sprite::create(
+            paths[utils::random(paths.size())], mainmenu_scene_, rand_size, rand_size, true);
+
+        data::AnimatorParam<Linear, Pos3D> p1;
+        p1.start(start2).end(end2).duration(10000).loop(-1).delay(-(float)i/capacity*10000);
         data::AnimatorParam<Linear, Rotation> p2;
         p2.end(vec3(0,0,360)).duration(utils::random(2000)+3000).loop(-1);
 
@@ -620,7 +625,7 @@ MainMenu& MainMenu::showMenu(std::string const& name)
     int y = Conf::i().SCREEN_H() / 2;
     sprite->tweenAll<Linear, Alpha>(255, 1000u);
     if( name == "start_menu" ) { //temp: special case
-        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/3;
+        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/8;
         sprite->getSpriteText("text")
                .tween<SineCirc, Alpha>(255, (unsigned int)config.M("text").I("glow_period"), -1);
     }
@@ -645,7 +650,7 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
     function<void()> const& endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
     int y = Conf::i().SCREEN_H() / 2;
     if( name == "start_menu" ) //temp: special case
-        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/3;
+        y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/8;
     sprite->tween<ICirc, Pos2D>(vec2(-200, y), 1000, 0, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 500u);
 

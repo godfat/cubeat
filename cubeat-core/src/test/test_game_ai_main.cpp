@@ -34,26 +34,35 @@ class TestGame{
 public:
     TestGame(){
         scene_ = psc::view::Scene::create("TestMapViewScene");
-        scene_->setTo2DView().enableGlobalHittingEvent();     //important
+        //scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
         data::pViewSetting s0, s1;
 
         s0 = data::ViewSetting::create(64);   //must use config
-        s0->x_offset(159).y_offset(684).push_ally(0).push_enemy(1);
+        s0->x_offset(159).y_offset(684);
         s1 = data::ViewSetting::create(64);   //must use config
-        s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
+        s1->x_offset(740).y_offset(684);
 
-        ctrl::Input* ppl_input = ctrl::InputMgr::i().getInputByIndex(0);
-        ctrl::Input* cpu_input = ctrl::InputMgr::i().getInputByIndex(1);
-        ppl_input->setControlledByAI(true);
-        cpu_input->setControlledByAI(true);
+        ctrl::AIPlayer::AISetting ai_temp[3] =
+        {ctrl::AIPlayer::Easy(), ctrl::AIPlayer::Normal(), ctrl::AIPlayer::Hard()};
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        //player0_ = ctrl::Player::create(ppl_input, s0);
-        player0_ = ctrl::AIPlayer::create(ppl_input, s0);
-        player1_ = ctrl::AIPlayer::create(cpu_input, s1);
-        player0_->debug_reset_all_weapon();
-        player1_->debug_reset_all_weapon();
+        ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
+        ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
+
+        input0->setControlledByAI(true);
+        input1->setControlledByAI(true);
+        std::random_shuffle(ai_temp, ai_temp + 3);
+        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
+
+        player0_->push_ally(0).push_enemy(1);
+        player1_->push_ally(1).push_enemy(0);
+
+        // setup player settings
+        //player0_->set_config(gameplay_.M("player1").M("weapon"));
+        //player1_->set_config(gameplay_.M("player2").M("weapon"));
+
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create();
         //map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
@@ -77,16 +86,16 @@ public:
         player1_->setMapList( map_list );
 
         // setup stage & ui & player's view objects:
-        utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
+        utils::map_any stage = Conf::i().config_of("test_stage");
         stage_ = presenter::Stage::create( stage.S("test_stage") );
-        setup_ui_by_config( "config/char/char1.zzml",
-                            "config/char/char2.zzml",
-                            "config/ui/in_game_2p_layout.zzml" );
+        setup_ui_by_config( "char/char1.zzml",
+                            "char/char2.zzml",
+                            "ui/in_game_2p_layout.zzml" );
 
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
         //start music
-        stage_->playBGM();
+        //stage_->playBGM();
 
         ctrl::EventDispatcher::i().subscribe_timer(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
@@ -99,7 +108,7 @@ public:
     }
 
     void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path ) {
-        uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+        uiconf_ = Conf::i().config_of(path);
         utils::map_any const& base = uiconf_.M("base");
         ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
         ui_layout_->set<Alpha>(192);
@@ -114,8 +123,8 @@ public:
         }
 
         vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-        pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
-        pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "config/char/char2.zzml", scene_, center_pos );
+        pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "char/char1.zzml", scene_, center_pos );
+        pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "char/char2.zzml", scene_, center_pos );
         pview2_->flipPosition();
         pview1_->setMap( map0_ );
         pview2_->setMap( map1_ );
@@ -153,12 +162,12 @@ public:
         ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_);
         ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
         ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
-        ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
-        ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
-        ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
         if( pview1_->getState() == presenter::PlayerView::HIT &&
             last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
@@ -229,6 +238,7 @@ private:
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+    psc::Conf::i().init("");
     psc::App::i();
     TestGame tester;
     return psc::App::i().run(std::tr1::bind(&TestGame::cycle, &tester));

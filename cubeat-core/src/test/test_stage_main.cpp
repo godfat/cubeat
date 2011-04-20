@@ -3,6 +3,7 @@
 #include "EventDispatcher.hpp"
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
+#include "Conf.hpp"
 
 using namespace psc;
 
@@ -13,7 +14,7 @@ public:
     TestStage(){
         //temporary Scene:
 
-        utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
+        utils::map_any stage = Conf::i().config_of("test_stage");
         stage_ = presenter::Stage::create( stage.S("test_stage") );
         stage_->playBGM();
 
@@ -40,6 +41,7 @@ private:
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+    psc::Conf::i().init("");
     psc::App::i();
     TestStage tester;
     return psc::App::i().run(std::tr1::bind(&TestStage::cycle, &tester));

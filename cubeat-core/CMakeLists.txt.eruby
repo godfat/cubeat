@@ -20,7 +20,8 @@ ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS) # -DBOOST_HAS_TR1
 INCLUDE_DIRECTORIES (include
                      lib
                      ../irrlicht/include
-                     /usr/local/include/luajit-2.0)
+                     /usr/local/include/luajit-2.0
+                     /usr/include/luajit-2.0)
 
 # setup linking path
 IF(APPLE)

@@ -10,6 +10,7 @@ likely break animator effects (especially cyclic ones consist of repetitive
 
 /* Testcase */
 #include "testcase/ViewTest1.hpp"
+#include "Conf.hpp"
 #include "App.hpp"
 #include <cstdlib> // for srand
 #include <ctime> // for time, clock
@@ -19,7 +20,7 @@ likely break animator effects (especially cyclic ones consist of repetitive
 int main()
 {
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
-
+    psc::Conf::i().init("");
     psc::App::i(); // init irr
 
     std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);

@@ -4,8 +4,6 @@
 //This is for multiple mice support, using ManyMouse library
 //you must have the lib in order to compile this struct
 
-#ifdef _USE_MANYMOUSE_
-
 #include "manymouse/manymouse.h"
 #include "Conf.hpp"
 #include <string>
@@ -23,7 +21,7 @@ struct MouseState
         return pointer_type(new MouseState);
     }
 
-    bool         device_id;
+    unsigned int device_id;
     bool         connected;
     std::string  name;
     int          x, y;
@@ -48,5 +46,4 @@ typedef MouseState::wpointer_type wpMouseState;
 } //psc
 } //ctrl
 
-#endif //_USE_MANYMOUSE_
 #endif //_SHOOTING_CUBES_PRIVATE_MOUSESTATE_FOR_MANYMOUSE_

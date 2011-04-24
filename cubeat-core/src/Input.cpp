@@ -19,9 +19,7 @@
 #include "private/Wiimote_IR_internal.hpp"
 #endif
 
-#ifdef _USE_MANYMOUSE_
 #include "private/MouseState.hpp"
-#endif
 
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
@@ -40,8 +38,8 @@ using namespace accessor;
 
 InputMgr::InputMgr()
     :MAX_INPUTS(2), keyboard_mouse_input_(false), inited_(false),
-     window_focus_now_(false), window_focus_last_(false), mice_detected_by_manymouse_(0)
-
+     window_focus_now_(false), window_focus_last_(false), mice_detected_by_manymouse_(0),
+     poll_manymouse_event_(0)
 {
     std::cout << "InputMgr constructed." << std::endl;
 }
@@ -60,14 +58,22 @@ bool InputMgr::createInputs()
     initManyMouse();
 
     std::cout << "InputMgr created inputs." << std::endl;
-    for( int i = 0; i < MAX_INPUTS; ++i ) {
-        std::string name("player");
-        name += (i+1+48); //ascii-code...
-        name += ".zzml";
-        inputs_.push_back( new Input( "input/" + name ) );
-    }
+    for( int i = 0; i < MAX_INPUTS; ++i )
+        inputs_.push_back( new Input( find_input_name_accordingly(i) ) );
+
     initGraphicItems();
     return true;
+}
+
+std::string InputMgr::find_input_name_accordingly(int const& index)
+{
+    std::string name("input/player");
+    name += (index + 1 + 48); //ascii-code...
+    if( index > 0 && index >= manyMouseCount() )
+        name += "_keyboard";  //mouse not enough for this player
+    else name += "_mouse";    //mouse enough for this player
+    name += ".zzml";
+    return name;
 }
 
 bool InputMgr::cleanupInputs()
@@ -88,34 +94,39 @@ bool InputMgr::cleanupInputs()
 
 void InputMgr::initManyMouse()
 {
-#ifdef _USE_MANYMOUSE_
-    mice_detected_by_manymouse_ = ManyMouse_Init();
-    std::cout << "ManyMouse_Init: " << mice_detected_by_manymouse_ << std::endl;
-#endif
+    using std::tr1::bind;
+    if( int mice_detected_initially = ManyMouse_Init() ) {
+        std::cout << "ManyMouse_Init: " << mice_detected_initially << std::endl;
+        if( !poll_manymouse_event_ )
+            poll_manymouse_event_ = bind(&InputMgr::pollManyMouseStates, this);
+    }
+    else std::cout << "ManyMouse_Init failed." << std::endl;
 }
 
 void InputMgr::quitManyMouse()
 {
-#ifdef _USE_MANYMOUSE_
+    poll_manymouse_event_ = 0;
     ManyMouse_Quit();
     std::cout << "ManyMouse_Quit." << std::endl;
-#endif
 }
 
 void InputMgr::pollManyMouseStates()
 {
-#ifdef _USE_MANYMOUSE_
     ManyMouseEvent e;
-    while ( ManyMouse_PollEvent(&e) ) {
-        if (e.device >= static_cast<unsigned int>(MAX_INPUTS) )
-            continue;
-
+    while ( ManyMouse_PollEvent(&e) )
+    {
         pMouseState ms;
         for( int i = 0; i < MAX_INPUTS; ++i ) {
-            if( inputs_[i]->state_->device_id == e.device )
+            if( inputs_[i]->state_->device_id == e.device ) {
                 ms = inputs_[i]->state_;
+                break;
+            }
         }
-        if( !ms ) continue;
+        if( !ms ) {
+            if( mice_detected_by_manymouse_ < MAX_INPUTS )
+                associate_input_manymouse(e.device);
+            continue;
+        }
 
         switch ( e.type ) {
             case MANYMOUSE_EVENT_RELMOTION: {
@@ -145,36 +156,36 @@ void InputMgr::pollManyMouseStates()
             default: break;
         }
     }
-#endif
+}
+
+void InputMgr::associate_input_manymouse(unsigned int const& device_id)
+{
+    ++mice_detected_by_manymouse_; //add first.
+
+    Input* it = inputs_[mice_detected_by_manymouse_ - 1];
+    pMouseState ms = it->state_;
+    ms->name = ManyMouse_DeviceName(device_id);
+    ms->device_id = device_id;
+    ms->connected = true;
+
+    it->reinit_config( find_input_name_accordingly(mice_detected_by_manymouse_ - 1) );
+    std::cout << "Mice #" << mice_detected_by_manymouse_ - 1 << ": " << ms->name << std::endl;
 }
 
 void InputMgr::handleManyMouseDisconnect()
 {
-#ifdef _USE_MANYMOUSE_
-#endif //_USE_MANYMOUSE_
 }
 
 void InputMgr::reinitManyMouse()
 {
-#ifdef _USE_MANYMOUSE_
     quitManyMouse();
     initManyMouse();
-
-    int total_inputs = (mice_detected_by_manymouse_ > MAX_INPUTS) ? MAX_INPUTS : mice_detected_by_manymouse_;
-
-    for( int i = 0; i < total_inputs; ++i ) {
-        pMouseState ms = inputs_[i]->state_;
-        ms->name = ManyMouse_DeviceName(i);
-        ms->device_id = i;
-        ms->connected = true;
-        std::cout << "Mice #" << i << ": " << ms->name << std::endl;
-    }
-#endif //_USE_MANYMOUSE_
 }
 
 void InputMgr::updateAll()
 {
-    pollManyMouseStates();
+    if( poll_manymouse_event_ )
+        poll_manymouse_event_();
 
     MastEventReceiver::i().endEventProcess();
 
@@ -194,10 +205,8 @@ void InputMgr::updateAll()
     if( windowGotFocus() )           toggleInput(true);
     else if( windowReleasedFocus() ) toggleInput(false);
 
-#ifdef _USE_MANYMOUSE_
     if( keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
-#endif //_USE_MANYMOUSE_
 
     BOOST_FOREACH( Input* it, inputs_ )
         it->update();
@@ -214,8 +223,9 @@ void InputMgr::toggleInput(bool const& flag)
         reinitManyMouse();
         IrrDevice::i().d()->getCursorControl()->setVisible(false);
     }
-    else
+    else {
         IrrDevice::i().d()->getCursorControl()->setVisible(true);
+    }
 }
 
 void InputMgr::initGraphicItems()
@@ -245,7 +255,24 @@ Input* InputMgr::getInputByIndex(unsigned int i)
 
 Input::Input(std::string const& path)
     :cursor_(this), trig1_(this), trig2_(this), wep1_(this), wep2_(this), wep3_(this),
-     haste_(this), pause_(this), ai_controlled_(false)
+     haste_(this), pause_(this), ai_controlled_(false), update_cursor_event_(0),
+     update_buttons_event_(0)
+{
+    state_ = MouseState::create();
+    state_->name = "manymouse state not initialized.";
+    state_->device_id = 0xffffffff; // since its unsigned int, we have to use other garbage value.
+    state_->connected = false;
+#ifdef _USE_WIIMOTE_
+    wiimote_.Connect();
+    wiimote_.SetLEDs(wiimote::TotalConnected());
+    wiimote_.SetReportType(wiimote::IN_BUTTONS_ACCEL_IR);
+    std::cout << "Wiimote connected: " << wiimote::TotalConnected() << std::endl;
+#endif //_USE_WIIMOTE_
+
+    reinit_config(path);
+}
+
+void Input::reinit_config(std::string const& path)
 {
     map_any keymap = Conf::i().config_of(path);
     cursor_key_ = keymap.I("cursor");
@@ -256,31 +283,29 @@ Input::Input(std::string const& path)
     wep3_key_   = keymap.I("wep3");
     haste_key_  = keymap.I("haste");
     pause_key_  = keymap.I("pause");
-
-    CURSOR_SENSATIVITY = static_cast<float>( keymap.I("speed") );
-
-#ifdef _USE_WIIMOTE_
-    wiimote_.Connect();
-    wiimote_.SetLEDs(wiimote::TotalConnected());
-    wiimote_.SetReportType(wiimote::IN_BUTTONS_ACCEL_IR);
-    std::cout << "Wiimote connected: " << wiimote::TotalConnected() << std::endl;
-#endif //_USE_WIIMOTE_
-#ifdef _USE_MANYMOUSE_
-    state_ = MouseState::create();
-    if( InputMgr::i().count() >= InputMgr::i().manyMouseCount() ) {
-        state_->name = "Mouse-like control not found for this Input object.";
-        state_->device_id = -1;
-        state_->connected = false;
-    } else {
-        state_->name = ManyMouse_DeviceName( InputMgr::i().count() );
-        state_->device_id = InputMgr::i().count();
-        state_->connected = true;
-    }
-    std::cout<< "Mice #" << InputMgr::i().count() << ": " << state_->name << std::endl;
-#endif //_USE_MANYMOUSE_
-
     cursor_texture_name_ = keymap.S("cursor_texture");
     area_texture_name_ = keymap.S("area_rect");
+
+    cursor_sensitivity_ = static_cast<float>( keymap.I("speed") );
+
+    using std::tr1::bind;
+    switch( cursor_key_ ) {
+        case 0:
+            update_cursor_event_ = state_->connected ?
+                bind(&Input::update_cursor_by_manymouse, this) :
+                bind(&Input::update_cursor_by_sysmouse, this);
+            break;
+        case 1:
+            update_cursor_event_ = bind(&Input::update_cursor_by_wasd, this);
+            break;
+        case 2:
+            update_cursor_event_ = bind(&Input::update_cursor_by_arrowkeys, this);
+            break;
+    }
+
+    update_buttons_event_ = state_->connected ?
+        bind(&Input::update_buttons_by_manymouse, this) :
+        bind(&Input::update_buttons_by_sysmouse_or_keyboard, this);
 }
 
 void Input::update()
@@ -307,9 +332,7 @@ void Input::update()
         update_btn_state();
     }
     cursor_.constrain();
-#ifdef _USE_MANYMOUSE_
     state_->constrain();
-#endif // _USE_MANYMOUSE_
 }
 
 #ifdef _USE_WIIMOTE_
@@ -382,59 +405,68 @@ void Input::setCursorVisible(bool b) {
 
 void Input::cursor_by_keyboard_mouse()
 {
-    float speed = CURSOR_SENSATIVITY * 150.f / IrrDevice::i().d()->getVideoDriver()->getFPS();
+    update_cursor_event_();
+}
+
+void Input::update_cursor_by_manymouse()
+{
+    cursor_.x() = state_->x;
+    cursor_.y() = state_->y;
+}
+
+void Input::update_cursor_by_sysmouse()
+{
+    cursor_.x() = MastEventReceiver::i().mouseX();
+    cursor_.y() = MastEventReceiver::i().mouseY();
+}
+
+void Input::update_cursor_by_wasd()
+{
+    float speed = cursor_sensitivity_ * 150.f / IrrDevice::i().d()->getVideoDriver()->getFPS();
     if( speed < 1.f ) speed = 1.f;
-    if( cursor_key_ == 0 ) {     //A Special Case Which Is Not EKEY_CODE: 0x00 means "mouse"
-#ifdef _USE_MANYMOUSE_
-        cursor_.x() = state_->x;
-        cursor_.y() = state_->y;
-#else // _USE_MANYMOUSE_
-        cursor_.x() = MastEventReceiver::i().mouseX();
-        cursor_.y() = MastEventReceiver::i().mouseY();
-#endif // _USE_MANYMOUSE_
-    }
-    else if( cursor_key_ == 1 ) {//A Special Case Which Is Not EKEY_CODE: 0x01 means "wasd"
-        cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_D)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_A))) * speed;
-        cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_S)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_W))) * speed;
-    }
-    else if( cursor_key_ == 2 ) {//A Special Case Which Is Not EKEY_CODE: 0x02 means "use arrow"
-        cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_RIGHT)) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_LEFT ))) * speed;
-        cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_DOWN )) -
-                        static_cast<int>(MastEventReceiver::i().keyDown(KEY_UP   ))) * speed;
-    }
+    cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_D)) -
+                    static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_A))) * speed;
+    cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_S)) -
+                    static_cast<int>(MastEventReceiver::i().keyDown(KEY_KEY_W))) * speed;
+}
+
+void Input::update_cursor_by_arrowkeys()
+{
+    float speed = cursor_sensitivity_ * 150.f / IrrDevice::i().d()->getVideoDriver()->getFPS();
+    if( speed < 1.f ) speed = 1.f;
+    cursor_.x() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_RIGHT)) -
+                    static_cast<int>(MastEventReceiver::i().keyDown(KEY_LEFT ))) * speed;
+    cursor_.y() += (static_cast<int>(MastEventReceiver::i().keyDown(KEY_DOWN )) -
+                    static_cast<int>(MastEventReceiver::i().keyDown(KEY_UP   ))) * speed;
 }
 
 void Input::buttons_by_keyboard_mouse()
 {
     //the implementation here now raises a perculier problem. please see
     //2011_03_25_wide_adjust_branch.txt for details.
-#ifdef _USE_MANYMOUSE_
-    unsigned int button_bits = state_->buttons;
-    if( cursor_key_ == 0 ) {
-        trig1_.now() = (button_bits & trig1_key_) > 0;
-        trig2_.now() = (button_bits & trig2_key_) > 0;
-        //haste_.now() = (button_bits & haste_key_) > 0;
-        pause_.now() = (button_bits & pause_key_) > 0;
-    } else {
-        trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
-        trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
-        //haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
-        pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
-    }
-#else // _USE_MANYMOUSE_
-    trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
-    trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
-    //haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
-    pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
-#endif // _USE_MANYMOUSE_
+    update_buttons_event_();
     wep1_.now() = MastEventReceiver::i().keyDown( wep1_key_ );
     wep2_.now() = MastEventReceiver::i().keyDown( wep2_key_ );
     wep3_.now() = MastEventReceiver::i().keyDown( wep3_key_ );
     //pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
     haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+}
+
+void Input::update_buttons_by_manymouse()
+{
+    unsigned int button_bits = state_->buttons;
+    trig1_.now() = (button_bits & trig1_key_) > 0;
+    trig2_.now() = (button_bits & trig2_key_) > 0;
+    //haste_.now() = (button_bits & haste_key_) > 0;
+    pause_.now() = (button_bits & pause_key_) > 0;
+}
+
+void Input::update_buttons_by_sysmouse_or_keyboard()
+{
+    trig1_.now() = MastEventReceiver::i().keyDown( trig1_key_ );
+    trig2_.now() = MastEventReceiver::i().keyDown( trig2_key_ );
+    //haste_.now() = MastEventReceiver::i().keyDown( haste_key_ );
+    pause_.now() = MastEventReceiver::i().keyDown( pause_key_ );
 }
 
 void Input::write_state_now_to_last()

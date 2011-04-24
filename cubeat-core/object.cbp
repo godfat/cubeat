@@ -200,10 +200,9 @@
 		<Unit filename="rc\config\data\color.zzml" />
 		<Unit filename="rc\config\device.zzml" />
 		<Unit filename="rc\config\gameplay\multi.zzml" />
-		<Unit filename="rc\config\input\player1.zzml" />
-		<Unit filename="rc\config\input\player2.zzml" />
-		<Unit filename="rc\config\input\player2_keyboard_enable.zzml" />
-		<Unit filename="rc\config\input\player2_multimice_enable.zzml" />
+		<Unit filename="rc\config\input\player1_mouse.zzml" />
+		<Unit filename="rc\config\input\player2_keyboard.zzml" />
+		<Unit filename="rc\config\input\player2_mouse.zzml" />
 		<Unit filename="rc\config\presenter\mainmenu.zzml" />
 		<Unit filename="rc\config\presenter\opening.zzml" />
 		<Unit filename="rc\config\presenter\transitioner.zzml" />

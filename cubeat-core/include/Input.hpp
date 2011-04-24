@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <boost/tr1/memory.hpp>
+#include <boost/tr1/functional.hpp>
 
 #ifdef _USE_WIIMOTE_
 #include <wiimote.h>
@@ -39,11 +40,11 @@ class Player;
 typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
 
-#ifdef _USE_MANYMOUSE_
+//#ifdef _USE_MANYMOUSE_
 class MouseState;
 typedef std::tr1::shared_ptr<MouseState> pMouseState;
 typedef std::tr1::weak_ptr<MouseState>  wpMouseState;
-#endif //_USE_MANYMOUSE_
+//#endif //_USE_MANYMOUSE_
 
 class InputMgr
 {
@@ -62,8 +63,8 @@ public:
     view::pScene& scene()  { return scene_; }
     int count() const      { return static_cast<int>(inputs_.size()); }
     bool keyboardMouseInput() const { return keyboard_mouse_input_; }
-    bool inited()        const { return inited_; }
-    bool manyMouseCount() const { return mice_detected_by_manymouse_; }
+    bool inited()         const { return inited_; }
+    int  manyMouseCount() const { return mice_detected_by_manymouse_; }
     void updateAll(); //we can't combine updateAll and redrawAll,
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)
@@ -84,6 +85,9 @@ private:
     bool windowReleasedFocus() const { return window_focus_now_ == false && window_focus_last_ == true; }
     void toggleInput(bool const&);
 
+    std::string find_input_name_accordingly(int const&);
+    void associate_input_manymouse(unsigned int const&);
+
     view::pScene scene_;
     InputList    inputs_;
     bool keyboard_mouse_input_;
@@ -91,6 +95,7 @@ private:
     bool window_focus_now_;
     bool window_focus_last_;
     int  mice_detected_by_manymouse_;
+    std::tr1::function<void()> poll_manymouse_event_;
 };
 
 class Input
@@ -137,6 +142,13 @@ private:
     void write_state_now_to_last();
     void update_btn_state();
     void init_graphic();
+    void reinit_config(std::string const&);
+    void update_cursor_by_manymouse();
+    void update_cursor_by_sysmouse();
+    void update_cursor_by_wasd();
+    void update_cursor_by_arrowkeys();
+    void update_buttons_by_manymouse();
+    void update_buttons_by_sysmouse_or_keyboard();
 
     Crosshair cursor_;
     Button trig1_;
@@ -156,7 +168,7 @@ private:
     int haste_key_;
     int pause_key_;
 
-    float CURSOR_SENSATIVITY;
+    float cursor_sensitivity_;
 
     wpPlayer player_;
     view::pSprite cursor_mark_;
@@ -173,15 +185,15 @@ private:
     bool ai_controlled_;
 //</AI integration testing>
 
+    std::tr1::function<void()> update_cursor_event_, update_buttons_event_;
+    pMouseState state_;
+
 #ifdef _USE_WIIMOTE_
 public:
     void rumbleWiimote(int ms);
 private:
     void update_by_wiimote();
     wiimote wiimote_;
-#endif
-#ifdef _USE_MANYMOUSE_
-    pMouseState state_;
 #endif
 };
 

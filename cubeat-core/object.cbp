@@ -18,7 +18,6 @@
 					<Add option="-Wall" />
 					<Add option="-fno-fast-math" />
 					<Add option="-Wno-missing-braces" />
-					<Add option="-D_USE_MANYMOUSE_" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
 					<Add option="-DNDEBUG" />
 					<Add directory="include" />

@@ -14,6 +14,7 @@ ELSE(APPLE)
   SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -O3 -ffast-math")
 ENDIF(APPLE)
 
+# setup compile time definitions
 ADD_DEFINITIONS (-DNDEBUG -DBOOST_DISABLE_ASSERTS) # -DBOOST_HAS_TR1
 
 # setup include path
@@ -45,7 +46,8 @@ ENDIF(APPLE)
 # setup source codes
 SET (SOURCES <%= Dir.glob('src/**/*.cpp').
                      delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ }.
-                     join("\n") %>)
+                     join("\n") + "\n" + 
+                 Dir.glob('lib/**/*.c*').join("\n") %>)
 
 # build target
 ADD_LIBRARY (cubeat SHARED ${SOURCES})

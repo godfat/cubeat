@@ -205,7 +205,7 @@ void InputMgr::updateAll()
     if( windowGotFocus() )           toggleInput(true);
     else if( windowReleasedFocus() ) toggleInput(false);
 
-    if( keyboard_mouse_input_ )
+    if( mice_detected_by_manymouse_ > 0 && keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
 
     BOOST_FOREACH( Input* it, inputs_ )

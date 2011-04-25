@@ -41,7 +41,6 @@
 13. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
 
 *** 14. Manymouse on Mac/Linux doable???
-   -- first get a linux version done first.
    -- linux absolutely doable, just we need to write a script to help user set the device.
 
 15. On Mac: -- done, statically linked, only thing left not solved is app icon.

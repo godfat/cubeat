@@ -1,0 +1,14 @@
+#
+#  cubeat(game) udev rules for manymouse support
+#
+#  Please put this file in "/etc/udev/rules.d" (You'll need root privilege when doing this.)
+#  
+#  Notice: This is NOT NECESSARY to play the game. You just can't play with 2 mice for the
+#          local machine versus play. You can still play with keyboard though, if the other
+#          player actually want to do this. 
+#
+################################################################################################
+
+
+# input devices # 
+SUBSYSTEM=="input", GROUP="input", MODE="660"

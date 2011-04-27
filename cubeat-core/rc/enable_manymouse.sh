@@ -21,8 +21,12 @@ Do you want to proceed? (y/n) "
 read ans
 
 if [ "$ans" == "y" ] ; then
+  # Absolute path to this script. 
+  script=$(readlink -f $0)
+  # Absolute path this script is in. 
+  script_path=$(dirname $script)
   username=$(whoami)
-  sudo cp 85-cubeat.rules /etc/udev/rules.d
+  sudo cp $script_path/85-cubeat.rules /etc/udev/rules.d
   sudo groupadd -f input
   sudo gpasswd -a $username input
 fi

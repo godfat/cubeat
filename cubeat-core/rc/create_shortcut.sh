@@ -11,22 +11,22 @@ Value=0.5
 Type=Application
 Name=CuBeat
 Categories=Game
-Exec=$script_path/../cubeat
+Exec=$script_path/../CuBeat.sh
 Path=$script_path/../
 Icon=$script_path/CuBeat.png
 Name[en_US]=CuBeat
 GenericName[en_US.utf8]=CuBeat 0.5alpha demo
-" > CuBeat.desktop
+" > $script_path/CuBeat.desktop
 
 # locate desktop
 desktop_dir=$(xdg-user-dir DESKTOP)
 if [ "$desktop_dir" == "" ] ; then
-	# no xdg-user-dir found or it does not know where to find desktop
-	# assume $HOME/Desktop
-	desktop_dir=$HOME/Desktop
+  # no xdg-user-dir found or it does not know where to find desktop
+  # assume $HOME/Desktop
+  desktop_dir=$HOME/Desktop
 fi
 
-cp CuBeat.desktop $desktop_dir
+cp $script_path/CuBeat.desktop $desktop_dir
 chmod 755 $desktop_dir/CuBeat.desktop
 
 

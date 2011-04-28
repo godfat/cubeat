@@ -1,3 +1,6 @@
+# generated bundle on Linux
+built_bundle
+
 # generated executable
 bin
 obj
@@ -15,6 +18,7 @@ CMakeLists.txt
 CMakeScripts
 CMakeCache.txt
 CMakeFiles
+install_manifest.txt
 
 # generated source codes
 include/all_fwd.hpp

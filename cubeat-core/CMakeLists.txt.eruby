@@ -31,7 +31,7 @@ IF(APPLE)
                     <%= "#{Dir.pwd}/../irrlicht/source/Irrlicht/MacOSX/build/Release" %>)
 ELSE(APPLE)
   LINK_DIRECTORIES (/usr/X11/lib
-                    /usr/lib/mesa
+                    #/usr/lib/mesa
                     <%= "#{Dir.pwd}/lib" %>
                     <%= "#{Dir.pwd}/../irrlicht/lib/Linux" %>)
 ENDIF(APPLE)
@@ -72,3 +72,32 @@ ELSE(APPLE)
 ENDIF(APPLE)
 
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)
+
+# on Linux, we'd like to distinguish the final bundle between x86_64 / i686
+if(UNIX)
+
+  # also we have to strip this "rpath" thingy
+  SET(CMAKE_SKIP_RPATH TRUE)
+
+  INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rc
+          DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/built_bundle)
+
+  INSTALL(PROGRAMS setup.sh cleanup.sh CuBeat.sh
+          DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/built_bundle)
+
+  if(CMAKE_SIZEOF_VOID_P MATCHES "8")
+    SET(LIBS_PATH libs64)   
+  else(CMAKE_SIZEOF_VOID_P MATCHES "8")
+    SET(LIBS_PATH libs32)
+  endif(CMAKE_SIZEOF_VOID_P MATCHES "8")
+
+  INSTALL(TARGETS cubeat
+          DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/built_bundle/libs32)
+
+  INSTALL(TARGETS bin/cubeat
+          DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/built_bundle)
+
+endif(UNIX)
+
+
+

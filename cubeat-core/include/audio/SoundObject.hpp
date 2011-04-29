@@ -24,7 +24,7 @@ public:
     typedef std::tr1::weak_ptr<SoundStream> wpointer_type;
 
     static pointer_type create(std::string const& path,
-                               int const& chunk_length = 8192)
+                               int const& chunk_length = 8192*2)
     {
         return pointer_type(new SoundStream(path, chunk_length));
     }

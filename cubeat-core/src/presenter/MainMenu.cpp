@@ -144,6 +144,8 @@ void MainMenu::setupMenus()
     temp3->getSprite("normal").set<Pos2D>( vec2(-150, -60) );
     temp3->addSpriteText("hard", "hard", "Star Jedi", 0, 40, false);
     temp3->getSprite("hard").set<Pos2D>( vec2(-150, 0) );
+    temp3->addSpriteText("insane", "insane", "Star Jedi", 0, 40, false);
+    temp3->getSprite("insane").set<Pos2D>( vec2(-150, 60) );
 
     view::pMenu temp2= view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("stage_select", temp2) );
@@ -330,9 +332,11 @@ void MainMenu::setup_ai_selecting_buttons()
     function<void(view::pSprite&)> easy   = bind(&MainMenu::ai_select, this, _1, (int)AI_EASY);
     function<void(view::pSprite&)> normal = bind(&MainMenu::ai_select, this, _1, (int)AI_NORMAL);
     function<void(view::pSprite&)> hard   = bind(&MainMenu::ai_select, this, _1, (int)AI_HARD);
+    function<void(view::pSprite&)> insane = bind(&MainMenu::ai_select, this, _1, (int)AI_INSANE);
     menus_["ai_select"]->setCallbackToSprite("easy", easy);
     menus_["ai_select"]->setCallbackToSprite("normal", normal);
     menus_["ai_select"]->setCallbackToSprite("hard", hard);
+    menus_["ai_select"]->setCallbackToSprite("insane", insane);
 }
 
 void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
@@ -358,7 +362,7 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player2num_ = 0;
         num_of_human_ppl_ = 2;
         game_mode_ = PPL_VS_PPL;
-        ai_level_ = AI_HARD;
+        ai_level_ = AI_INSANE;
         setup_mode_selecting_buttons();
     }
     else if( to == "player_select" ) {
@@ -368,11 +372,11 @@ void MainMenu::go_back_from_to(std::string const& from, std::string const& to)
         player2focus_ = 0;
         player1num_ = 0;
         player2num_ = 0;
-        ai_level_ = AI_HARD;
+        ai_level_ = AI_INSANE;
         setup_player_selecting_buttons();
     }
     else if( to == "ai_select" ) {
-        ai_level_ = AI_HARD;
+        ai_level_ = AI_INSANE;
         setup_ai_selecting_buttons();
     }
     else if( to == "stage_select" ) {
@@ -434,7 +438,7 @@ void MainMenu::ai_choosing()
 {
     hideMenu("player_select").showMenu("ai_select");
     animating_ = true;
-    ai_level_ = AI_HARD;
+    ai_level_ = AI_INSANE;
     setup_ai_selecting_buttons();
 }
 
@@ -595,6 +599,7 @@ void MainMenu::ai_select(view::pSprite& sp, int ai_level)
     menus_["ai_select"]->setCallbackToSprite("easy", 0);
     menus_["ai_select"]->setCallbackToSprite("normal", 0);
     menus_["ai_select"]->setCallbackToSprite("hard", 0);
+    menus_["ai_select"]->setCallbackToSprite("insane", 0);
 
     stage_choosing("ai_select");
 }

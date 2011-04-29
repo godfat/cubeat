@@ -48,7 +48,8 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
 
         //Logger::i().buf("brain ").buf(this).buf(" checkpoint 2.").endl();
         int attack_threshold = 8;
-        if( attack_power_ < 20 ) attack_threshold = 4;
+        if( attack_power_ < 9  )      attack_threshold = 2;
+        else if( attack_power_ < 20 ) attack_threshold = 4;
         if( self_map->warning_level() > 50 )
             attack_threshold = 1;
         else if( self_map->warning_level() > 25 )

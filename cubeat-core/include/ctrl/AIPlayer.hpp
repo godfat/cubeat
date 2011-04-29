@@ -36,9 +36,10 @@ public:
         int attack_power_, think_interval_;
         int missrate_;
     };
-    struct Easy   : public AISetting{ Easy  ():AISetting( 9,400, 15){} };
-    struct Normal : public AISetting{ Normal():AISetting(18,350, 10){} };
-    struct Hard   : public AISetting{ Hard  ():AISetting(99,300, 2) {} };
+    struct Easy   : public AISetting{ Easy  ():AISetting( 3,500, 20){} };
+    struct Normal : public AISetting{ Normal():AISetting( 9,400, 15){} };
+    struct Hard   : public AISetting{ Hard  ():AISetting(18,350, 8) {} };
+    struct Insane : public AISetting{ Insane():AISetting(99,300, 2) {} };
 
     static pointer_type create(Input* input, int const& id, AISetting const& s = Hard()) {
         return pointer_type(new AIPlayer(input, id, s))->init();

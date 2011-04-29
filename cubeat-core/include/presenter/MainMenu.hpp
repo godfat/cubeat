@@ -78,7 +78,7 @@ protected:
     std::vector<std::string> paths;
 
     enum { SINGLE, PPL_VS_PPL, PPL_VS_CPU, CPU_VS_CPU, PUZZLE};
-    enum { AI_EASY, AI_NORMAL, AI_HARD };
+    enum { AI_EASY, AI_NORMAL, AI_HARD, AI_INSANE };
     int player1focus_, player2focus_, player1num_, player2num_, stagenum_;
     int num_of_human_ppl_, game_mode_, ai_level_;
     std::vector<pPlayerView> pvlist_;

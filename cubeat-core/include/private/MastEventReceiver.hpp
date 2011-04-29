@@ -38,6 +38,14 @@ protected:
     // Enumeration for Event Handling State.
     enum processStateENUM {STARTED, ENDED};
 
+    // Supplement to Irrlicht EKEY_CODE
+    enum EKEY_CODE_SUPPLEMENT {
+      KEY_SLASH            = 0xBF,  // / key
+      KEY_OPENBRACKET      = 0xDB,  // [ key
+      KEY_BACKSLASH        = 0xDC,  // \ key
+      KEY_CLOSEBRACKET     = 0xDD   // ] key
+    };
+
     // Mouse button states.
     keyStatesENUM mouseButtonState[2]; //Left(0), Middle(1) and Right(2) Buttons.
 

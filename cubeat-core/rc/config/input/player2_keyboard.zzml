@@ -4,22 +4,24 @@ area_rect: 'area_rect',
 #Arrow keys
 cursor: 0x02,
 
-#O
-trig1: 0x4F,
+#,
+trig1: 0xBC,
 
-#I
-trig2: 0x49,
+#.
+trig2: 0xBE,
 
 #8, 9, 0
+#currently not used
 wep1: 0x38,
 wep2: 0x39,
 wep3: 0x30,
 
 #L
+#currently not used
 haste: 0x4C,
 
-#P
-pause: 0x50,
+#/  <- some keyboard might not have this mapping. US keyboard should work.
+pause: 0xBF,
 
 #Cursor Sensativity
 speed: 5

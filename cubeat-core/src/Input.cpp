@@ -160,6 +160,7 @@ void InputMgr::pollManyMouseStates()
 
 void InputMgr::associate_input_manymouse(unsigned int const& device_id)
 {
+#if !defined(__APPLE__) && !defined(__MACOSX__)
     ++mice_detected_by_manymouse_; //add first.
 
     Input* it = inputs_[mice_detected_by_manymouse_ - 1];
@@ -170,6 +171,7 @@ void InputMgr::associate_input_manymouse(unsigned int const& device_id)
 
     it->reinit_config( find_input_name_accordingly(mice_detected_by_manymouse_ - 1) );
     std::cout << "Mice #" << mice_detected_by_manymouse_ - 1 << ": " << ms->name << std::endl;
+#endif // we skip OSX for now, as manymouse aren't fixed there, yet.
 }
 
 void InputMgr::handleManyMouseDisconnect()

@@ -56,8 +56,6 @@
 20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
     -- DONE
 
-*** 21. icon on WinXP disappeared. I don't know why.
-
 *** What I will not implement for this branch:
 
 1. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 

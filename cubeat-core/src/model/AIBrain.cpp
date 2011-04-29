@@ -32,7 +32,7 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
                     std::list<int> ally_ids,
                     std::list<int> enemy_ids)
 {
-    Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
+    //Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
     int self_index = ally_ids.front();
     int enemy_index = enemy_ids.front();

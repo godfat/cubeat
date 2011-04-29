@@ -53,7 +53,7 @@ SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
 {
     gen_source();
     if( pSoundStream s = stream.lock() ) {
-        std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
+        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
         alureRewindStream(s->ALstream_);
         if( !alurePlaySourceStream(source, s->ALstream_, SoundStream::NUM_BUFS, loop?-1:0, NULL, NULL) ) {
             std::cerr << "OpenAL: Failed to play stream " << s->name_ << ": " << alureGetErrorString() << std::endl;
@@ -67,7 +67,7 @@ SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
 {
     gen_source();
     if( pSoundBuffer s = buffer.lock() ) {
-        std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
+        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
         alSourcei(source, AL_BUFFER, s->ALbuffer_);
         alSourcei(source, AL_LOOPING, loop?AL_TRUE:AL_FALSE);
         if( !alurePlaySource(source, NULL, NULL) ) {

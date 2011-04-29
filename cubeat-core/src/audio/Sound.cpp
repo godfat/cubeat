@@ -51,7 +51,7 @@ Sound& Sound::playStream(std::string const& path, bool const& loop)
     pSoundObject new_sound = SoundObject::create(sound_streams_[path], loop);
     sound_list_.push_back(new_sound);
 
-    std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
+    //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
 
     return *this;
 }
@@ -64,7 +64,7 @@ Sound& Sound::playBuffer(std::string const& path, bool const& loop)
     pSoundObject new_sound = SoundObject::create(sound_buffers_[path], loop);
     sound_list_.push_back(new_sound);
 
-    std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
+    //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
 
     return *this;
 }

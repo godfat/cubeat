@@ -92,6 +92,8 @@
    and other group of buttons are just not interchangable. This is not optimal solution.
    
 7. heat gauge has some glowing glitch. (after glow the color remained white. tween related issue)
+
+8. close program during AI vs AI demo still have a chance to crash when input/player destructing.
    
    
 *** Other Memo:

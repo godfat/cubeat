@@ -40,8 +40,7 @@
 
 13. OpenAL integration, bye bye irrKlang. -- DONE!!! FINALLY!!!
 
-*** 14. Manymouse on Mac/Linux doable???
-   -- linux absolutely doable, just we need to write a script to help user set the device.
+14. Manymouse on Mac/Linux doable -- consider it done for now.
 
 15. On Mac: -- done, statically linked, only thing left not solved is app icon.
     
@@ -57,6 +56,7 @@
 20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
     -- DONE
 
+*** 21. icon on WinXP disappeared. I don't know why.
 
 *** What I will not implement for this branch:
 

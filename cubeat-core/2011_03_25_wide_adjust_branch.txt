@@ -94,6 +94,9 @@
 7. heat gauge has some glowing glitch. (after glow the color remained white. tween related issue)
 
 8. close program during AI vs AI demo still have a chance to crash when input/player destructing.
+"""terminate called after throwing an instance of 'boost::exception_detail::clone_impl<
+   boost::exception_detail::error_info_injector<boost::lock_error> >'
+   what(): boost::lock_error"""
    
    
 *** Other Memo:

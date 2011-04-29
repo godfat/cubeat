@@ -410,7 +410,9 @@ void MainMenu::mode_select(view::pSprite& sv, int mode)
         player_choosing();
     else {
         player1num_ = utils::random(5) + 1;
-        player2num_ = utils::random(5) + 1;
+        do {
+            player2num_ = utils::random(5) + 1;
+        } while( player1num_ == player2num_ ); //we don't want 2 cpu use same char
         stage_choosing("mode_select");
     }
 }

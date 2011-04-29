@@ -67,9 +67,6 @@ end
 file 'CuBeat.app/Contents/Resources' => ['bin/libcubeat.dylib'] do
   sh 'mkdir -p CuBeat.app/Contents/Resources'
   sh 'cp -r rc CuBeat.app/Contents/Resources/'
-  sh 'cp -r config CuBeat.app/Contents/Resources/'
-  sh 'cp -r script CuBeat.app/Contents/Resources/'
-  sh 'cp config.zzml CuBeat.app/Contents/Resources/'
 end
 
 desc 'clobber and build'

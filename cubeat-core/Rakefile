@@ -1,4 +1,6 @@
 
+##### this is extremely ugly, should refactor it someday
+
 task :default do
   Rake.application.options.show_task_pattern = /./
   Rake.application.display_tasks_and_comments
@@ -57,6 +59,7 @@ task 'build:mac' => [:build, "#{B}/CuBeat.app"] do
   mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
   sh "cp rc/MacOSX/Info.plist #{B}/CuBeat.app/Contents/"
   sh "cp rc/MacOSX/CuBeat.icns #{B}/CuBeat.app/Contents/Resources/"
+  sh "cp -r NOTICE.txt doc rc/*.txt #{B}"
   sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
 end
 
@@ -106,6 +109,7 @@ task 'build:linux' => [:build,
   linux_setup_binary(libs, "#{B}/CuBeat/bin/CuBeat")
   linux_setup_binary(libs, "#{B}/CuBeat/#{linux_lib}/libcubeat.so")
   sh "cp rc/Linux/*.sh #{B}/CuBeat/"
+  sh "cp -r NOTICE.txt doc rc/*.txt #{B}"
   sh "cd #{B}; tar -zcf CuBeat.tgz CuBeat"
 end
 

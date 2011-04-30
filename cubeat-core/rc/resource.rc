@@ -8,11 +8,11 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "CompanyName", "The Team of Project Shooting Cubes"
+      VALUE "CompanyName", "Team Project Shooting Cubes"
       VALUE "FileDescription", "http://cubeat.game.tw"
       VALUE "FileVersion", "0.5alpha"
       VALUE "InternalName", "CuBeat"
-      VALUE "LegalCopyright", "The Team of Project Shooting Cubes"
+      VALUE "LegalCopyright", "Team Project Shooting Cubes"
       VALUE "OriginalFilename", "CuBeat.exe"
       VALUE "ProductName", "CuBeat"
       VALUE "ProductVersion", "0.5alpha"

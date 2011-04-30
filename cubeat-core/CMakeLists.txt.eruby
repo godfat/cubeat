@@ -46,7 +46,7 @@ ENDIF(APPLE)
 # setup source codes
 SET (SOURCES <%= Dir.glob('src/**/*.cpp').
                      delete_if{ |f| f =~ /wii/i || f =~ /main\.cpp$/ }.
-                     join("\n") + "\n" + 
+                     join("\n") + "\n" +
                  Dir.glob('lib/**/*.c*').join("\n") %>)
 
 # build target
@@ -72,5 +72,3 @@ ELSE(APPLE)
 ENDIF(APPLE)
 
 TARGET_LINK_LIBRARIES (bin/cubeat cubeat)
-
-

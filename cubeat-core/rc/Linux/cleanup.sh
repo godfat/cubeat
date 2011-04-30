@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This will undo what setup.sh has done.
 
@@ -9,6 +9,5 @@ echo "
 Done."
 chmod 755 rc/disable_manymouse.sh
 
-rc/remove_shortcut.sh
-rc/disable_manymouse.sh
-
+./rc/remove_shortcut.sh
+./rc/disable_manymouse.sh

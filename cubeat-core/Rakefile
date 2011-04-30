@@ -51,7 +51,7 @@ end
 
 #####
 
-B = 'bundle'
+B = 'bundle/CuBeat'
 
 desc "create mac's CuBeat.app"
 task 'build:mac' => [:build, "#{B}/CuBeat.app"] do
@@ -60,7 +60,7 @@ task 'build:mac' => [:build, "#{B}/CuBeat.app"] do
   sh "cp rc/MacOSX/Info.plist #{B}/CuBeat.app/Contents/"
   sh "cp rc/MacOSX/CuBeat.icns #{B}/CuBeat.app/Contents/Resources/"
   sh "cp -r NOTICE.txt doc rc/*.txt #{B}"
-  sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
+  sh "cd bundle; tar -zcf CuBeat.tgz CuBeat"
 end
 
 file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
@@ -102,29 +102,29 @@ end
 
 desc 'build for linux'
 task 'build:linux' => [:build,
-                       "#{B}/CuBeat/bin",
-                       "#{B}/CuBeat/#{linux_lib}",
-                       "#{B}/CuBeat/rc"] do
+                       "#{B}/bin",
+                       "#{B}/#{linux_lib}",
+                       "#{B}/rc"] do
   libs = %w[luajit alure boost_thread]
-  linux_setup_binary(libs, "#{B}/CuBeat/bin/CuBeat")
-  linux_setup_binary(libs, "#{B}/CuBeat/#{linux_lib}/libcubeat.so")
-  sh "cp rc/Linux/*.sh #{B}/CuBeat/"
-  sh "cp -r NOTICE.txt doc rc/*.txt #{B}"
-  sh "cd #{B}; tar -zcf CuBeat.tgz CuBeat"
+  linux_setup_binary(libs, "#{B}/bin/CuBeat")
+  linux_setup_binary(libs, "#{B}/#{linux_lib}/libcubeat.so")
+  sh "cp rc/Linux/*.sh #{B}/"
+  sh "cp -r NOTICE.txt doc rc/*.txt #{B}/"
+  sh "cd bundle; tar -zcf CuBeat.tgz CuBeat"
 end
 
-file "#{B}/CuBeat/bin" => ['bin/cubeat'] do
-  sh "mkdir -p #{B}/CuBeat/bin"
-  sh "cp bin/cubeat #{B}/CuBeat/bin/CuBeat"
+file "#{B}/bin" => ['bin/cubeat'] do
+  sh "mkdir -p #{B}/bin"
+  sh "cp bin/cubeat #{B}/bin/CuBeat"
 end
 
-file "#{B}/CuBeat/#{linux_lib}" => ['bin/libcubeat.so'] do
-  sh "mkdir -p #{B}/CuBeat/#{linux_lib}"
-  sh "cp bin/libcubeat.so #{B}/CuBeat/#{linux_lib}/"
+file "#{B}/#{linux_lib}" => ['bin/libcubeat.so'] do
+  sh "mkdir -p #{B}/#{linux_lib}"
+  sh "cp bin/libcubeat.so #{B}/#{linux_lib}/"
 end
 
-file "#{B}/CuBeat/rc" do
-  sh "cp -r rc #{B}/CuBeat/rc"
+file "#{B}/rc" do
+  sh "cp -r rc #{B}/rc"
 end
 
 def grep_path str
@@ -142,7 +142,7 @@ def linux_setup_binary wants, binary
   `readelf -d #{binary} | grep NEEDED`.split("\n").map{ |str|
     grep_path(str) }.select{ |lib| lib =~ wants_regexp }.each{ |name|
       prefix = ld_lib.find{ |path| File.exist?("#{path}/#{name}") }
-      dest = "#{B}/CuBeat/#{linux_lib}/#{name}"
+      dest = "#{B}/#{linux_lib}/#{name}"
       next if File.exist?(dest)
       sh "cp #{prefix}/#{name} #{dest}"
       sh "chmod 644 #{dest}"

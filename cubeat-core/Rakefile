@@ -97,6 +97,7 @@ task 'build:linux' => [:build,
   libs = %w[luajit alure boost_thread]
   linux_setup_binary(libs, "#{B}/CuBeat/bin/CuBeat")
   linux_setup_binary(libs, "#{B}/CuBeat/lib/libcubeat.so")
+  sh "cp rc/Linux/*.sh #{B}/CuBeat/"
   sh "cd #{B}; tar -zcf CuBeat.tgz CuBeat"
 end
 

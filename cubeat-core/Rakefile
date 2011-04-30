@@ -136,5 +136,4 @@ def linux_setup_binary wants, binary
       sh "chmod 644 #{dest}"
     }
   sh "chrpath -d #{binary}"
-  sh "chmod 644 #{binary}"
 end

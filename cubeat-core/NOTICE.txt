@@ -1,0 +1,55 @@
+3rd-party libraries:
+
+CuBeat (this program) uses following 3rd party libraries or frameworks:
+
+* A modified version of Irrlicht 1.7-SVN, hosted at https://github.com/arch-jslin/Irrlicht, which is included under Irrlicht Engine License.
+Please see doc/irrlicht_license.txt or http://irrlicht.sourceforge.net/license.html
+
+* FreeType 2.3.x is included under FreeType License
+Please see doc/freetype_license.txt or http://www.freetype.org/FTL.TXT
+
+* Boost 1.4x.y is included under Boost Software License
+Please see doc/boost_license_1_0.txt or http://www.boost.org/LICENSE_1_0.txt
+
+* ManyMouse is included under zlib License
+Copyright (c) 2005-2008 Ryan C. Gordon and others.
+Please see doc/manymouse_license.txt or http://hg.icculus.org/icculus/manymouse/raw-file/tip/LICENSE.txt
+
+* LuaJIT2 is included under MIT/X License
+Copyright (c) 2005-2011 Mike Pall
+Please see doc/mit_license.txt or http://luajit.org/luajit.html
+
+* OpenAL-Soft is included under LGPL License
+Copyright (c) 2009-2010 Chris Robinson
+Please see doc/library_gpl_2_0.txt or http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+And please notice this is only included in Windows versions of the program. 
+In both MacOSX and Linux distributions of the program, platform supported OpenAL is used.
+
+* ALURE is included under MIX/X License
+Copyright (c) 2009-2010 Chris Robinson
+Please see doc/mit_license.txt or http://kcat.strangesoft.net/alure.html
+
+* libogg is included under BSD License
+Copyright (c) 2002, Xiph.org Foundation
+Please see doc/libogg_license.txt. more info at http://www.xiph.org/
+And please notice this is only included in Windows versions of the program. 
+In both MacOSX and Linux distributions of the program, platform supported libogg is used.
+
+* libvorbis is included under BSD License
+Copyright (c) 2002-2008 Xiph.org Foundation
+Please see doc/libvorbis_license.txt. more info at http://www.xiph.org/
+And please notice this is only included in Windows versions of the program. 
+In both MacOSX and Linux distributions of the program, platform supported libvorbis is used.
+
+* MastEventReceiver is included under following notices, used in accordance with the Irrlicht Engine.
+Copyright (c) Robert E. Demarest, AKA Mastiff or Mastiff Odit
+Please see doc/mast_eventreceiver_license.txt
+
+* Easing Equation and the implementation written in ActionScript 3, is ported to C++ in this program, under BSD License and MIT/X License respectively.
+Original Easing Equation: Copyright (c) 2001 Robert Penner. All rights reserved.
+AS3 implementation: Copyright (c) Zeh Fernando, Nate Chatellier
+Please see doc/easing_equation_license.txt, doc/mit_license.txt or http://code.google.com/p/tweener/
+
+* A Catmull-Rom spline implementation and a Gauss-Legendre Numerical Integration implementation written in ActionScript 3 from "Singularity Library", are ported to C++ in this program.
+Copyright (c) 2006-2007, Jim Armstrong. All Rights Reserved.
+Please see doc/singularity_license.txt or http://www.algorithmist.net/as3pc.html

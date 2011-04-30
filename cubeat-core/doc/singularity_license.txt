@@ -1,0 +1,31 @@
+//////////////////////////////////////////////////////////////////////////
+// CatmullRom.as - Generate cubic Catmull-Rom spline that interpolates a set of data points.
+//
+// Reference:  www.algorithmist.net/arclen1.html
+//
+// copyright (c) 2006-2007, Jim Armstrong.  All Rights Reserved.
+//
+// This software program is supplied 'as is' without any warranty, express, implied,
+// or otherwise, including without limitation all warranties of merchantability or fitness
+// for a particular purpose.  Jim Armstrong shall not be liable for any special
+// incidental, or consequential damages, including, without limitation, lost
+// revenues, lost profits, or loss of prospective economic advantage, resulting
+// from the use or misuse of this software program.
+//
+// Programmed by Jim Armstrong, Singularity (www.algorithmist.net)
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// Gauss.as - Gauss-Legendre Numerical Integration.
+//
+// copyright (c) 2006-2007, Jim Armstrong.  All Rights Reserved.
+//
+// This software program is supplied 'as is' without any warranty, express, implied,
+// or otherwise, including without limitation all warranties of merchantability or fitness
+// for a particular purpose.  Jim Armstrong shall not be liable for any special
+// incidental, or consequential damages, including, without limitation, lost
+// revenues, lost profits, or loss of prospective economic advantage, resulting
+// from the use or misuse of this software program.
+//
+// Programmed by:  Jim Armstrong, Singularity (www.algorithmist.net)
+//////////////////////////////////////////////////////////////////////////

@@ -35,10 +35,12 @@ task :build => [:prepare, :Makefile] do
   sh 'make'
 end
 
-desc "create mac's CuBeat.app"
-task 'build:mac' => [:build, 'CuBeat.app']
+B = 'bundle'
 
-def mac_setup_binary binary, install_path='CuBeat.app/Contents/MacOS'
+desc "create mac's CuBeat.app"
+task 'build:mac' => [:build, "#{B}/CuBeat.app"]
+
+def mac_setup_binary binary, install_path="#{B}/CuBeat.app/Contents/MacOS"
   `otool -L #{binary}`.split("\n").select{ |path|
     next false unless path.start_with?("\t")
     path !~ %r{\t(/System/|/usr/lib/)}
@@ -51,22 +53,24 @@ def mac_setup_binary binary, install_path='CuBeat.app/Contents/MacOS'
   }
 end
 
-file 'CuBeat.app' => ['CuBeat.app/Contents/MacOS',
-                      'CuBeat.app/Contents/Resources'] do
-  mac_setup_binary('CuBeat.app/Contents/MacOS/CuBeat')
-  mac_setup_binary('CuBeat.app/Contents/MacOS/libcubeat.dylib')
-  sh 'tar -zcf CuBeat.app.tgz CuBeat.app'
+file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
+                           "#{B}/CuBeat.app/Contents/Resources"] do
+  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/CuBeat")
+  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
+  sh "tar -zcf #{B}/CuBeat.app.tgz #{B}/CuBeat.app"
 end
 
-file 'CuBeat.app/Contents/MacOS' => ['bin/cubeat'] do
-  sh 'mkdir -p CuBeat.app/Contents/MacOS'
-  sh 'cp bin/cubeat CuBeat.app/Contents/MacOS/CuBeat'
-  sh 'cp bin/libcubeat.dylib CuBeat.app/Contents/Resources/'
+file "#{B}/CuBeat.app/Contents/MacOS" =>
+                                    ['bin/cubeat',
+                                     "#{B}/CuBeat.app/Contents/Resources"] do
+  sh "mkdir -p #{B}/CuBeat.app/Contents/MacOS"
+  sh "cp bin/cubeat #{B}/CuBeat.app/Contents/MacOS/CuBeat"
+  sh "cp bin/libcubeat.dylib #{B}/CuBeat.app/Contents/Resources/"
 end
 
-file 'CuBeat.app/Contents/Resources' => ['bin/libcubeat.dylib'] do
-  sh 'mkdir -p CuBeat.app/Contents/Resources'
-  sh 'cp -r rc CuBeat.app/Contents/Resources/'
+file "#{B}/CuBeat.app/Contents/Resources" => ['bin/libcubeat.dylib'] do
+  sh "mkdir -p #{B}/CuBeat.app/Contents/Resources"
+  sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
 end
 
 desc 'clobber and build'
@@ -81,13 +85,4 @@ task :prepare => [:preprocess,
 task :reprocess_CMakeLists do
   File.delete 'CMakeLists.txt'
   sh 'rake CMakeLists.txt'
-end
-
-##
-
-namespace :svk do
-  %w{commit push pull status update}.each{ |cmd|
-    desc "svk #{cmd}"
-    task(cmd){sh "svk #{cmd}"}
-  }
 end

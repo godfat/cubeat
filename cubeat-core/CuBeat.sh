@@ -18,5 +18,5 @@ else
 fi
 
 export LD_LIBRARY_PATH=$libs_path:$LD_LIBRARY_PATH
-./cubeat
+./bin/CuBeat
 

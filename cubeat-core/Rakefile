@@ -85,7 +85,7 @@ def mac_setup_binary binary, install_path="#{B}/CuBeat.app/Contents/MacOS"
     sh "chmod 644 #{dest}"
     sh "install_name_tool -change #{lib} '@loader_path/#{name}' #{binary}"
   }
-  sh "chmod 644 #{binary}" unless File.extname(binary).blank?
+  sh "chmod 644 #{binary}" unless File.extname(binary).empty?
 end
 
 #####
@@ -137,5 +137,5 @@ def linux_setup_binary wants, binary
       sh "chmod 644 #{dest}"
     }
   sh "chrpath -d #{binary}"
-  sh "chmod 644 #{binary}" unless File.extname(binary).blank?
+  sh "chmod 644 #{binary}" unless File.extname(binary).empty?
 end

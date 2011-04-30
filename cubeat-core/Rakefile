@@ -83,12 +83,3 @@ task :reprocess_CMakeLists do
   File.delete 'CMakeLists.txt'
   sh 'rake CMakeLists.txt'
 end
-
-##
-
-namespace :svk do
-  %w{commit push pull status update}.each{ |cmd|
-    desc "svk #{cmd}"
-    task(cmd){sh "svk #{cmd}"}
-  }
-end

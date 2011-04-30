@@ -93,11 +93,11 @@ end
 desc 'build for linux'
 task 'build:linux' => [:build,
                        "#{B}/CuBeat/bin",
-                       "#{B}/CuBeat/lib",
+                       "#{B}/CuBeat/#{linux_lib}",
                        "#{B}/CuBeat/rc"] do
   libs = %w[luajit alure boost_thread]
   linux_setup_binary(libs, "#{B}/CuBeat/bin/CuBeat")
-  linux_setup_binary(libs, "#{B}/CuBeat/lib/libcubeat.so")
+  linux_setup_binary(libs, "#{B}/CuBeat/#{linux_lib}/libcubeat.so")
   sh "cp rc/Linux/*.sh #{B}/CuBeat/"
   sh "cd #{B}; tar -zcf CuBeat.tgz CuBeat"
 end
@@ -107,9 +107,9 @@ file "#{B}/CuBeat/bin" => ['bin/cubeat'] do
   sh "cp bin/cubeat #{B}/CuBeat/bin/CuBeat"
 end
 
-file "#{B}/CuBeat/lib" => ['bin/libcubeat.so'] do
-  sh "mkdir -p #{B}/CuBeat/lib"
-  sh "cp bin/libcubeat.so #{B}/CuBeat/lib/"
+file "#{B}/CuBeat/#{linux_lib}" => ['bin/libcubeat.so'] do
+  sh "mkdir -p #{B}/CuBeat/#{linux_lib}"
+  sh "cp bin/libcubeat.so #{B}/CuBeat/#{linux_lib}/"
 end
 
 file "#{B}/CuBeat/rc" do
@@ -131,11 +131,18 @@ def linux_setup_binary wants, binary
   `readelf -d #{binary} | grep NEEDED`.split("\n").map{ |str|
     grep_path(str) }.select{ |lib| lib =~ wants_regexp }.each{ |name|
       prefix = ld_lib.find{ |path| File.exist?("#{path}/#{name}") }
-      dest = "#{B}/CuBeat/lib/#{name}"
+      dest = "#{B}/CuBeat/#{linux_lib}/#{name}"
       next if File.exist?(dest)
       sh "cp #{prefix}/#{name} #{dest}"
       sh "chmod 644 #{dest}"
     }
   sh "chrpath -d #{binary}"
   sh "chmod 644 #{binary}" unless File.extname(binary).empty?
+end
+
+def linux_lib
+  case `uname -m`.strip
+    when 'x86_64'; 'lib64'
+    else         ; 'lib32'
+  end
 end

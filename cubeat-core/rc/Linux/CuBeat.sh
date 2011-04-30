@@ -17,6 +17,4 @@ else
    libs_path=./libs32
 fi
 
-export LD_LIBRARY_PATH=$libs_path:$LD_LIBRARY_PATH
-./bin/CuBeat
-
+env LD_LIBRARY_PATH=$libs_path:$LD_LIBRARY_PATH ./bin/CuBeat

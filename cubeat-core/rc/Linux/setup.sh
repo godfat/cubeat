@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script will help you to create desktop shortcut to CuBeat.
 # And it will prompt for ManyMouse support.
@@ -10,6 +10,5 @@ echo "
 Done."
 chmod 755 rc/enable_manymouse.sh
 
-rc/create_shortcut.sh
-rc/enable_manymouse.sh
-
+./rc/create_shortcut.sh
+./rc/enable_manymouse.sh

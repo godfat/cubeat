@@ -11,11 +11,7 @@ SET (CMAKE_CXX_COMPILER "g++")
 IF(APPLE)
   SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -O3 -ffast-math -fvisibility-inlines-hidden")
 ELSE(APPLE)
-  if(CMAKE_SIZEOF_VOID_P MATCHES "8")
-    SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -fPIC -O3 -ffast-math")
-  else(CMAKE_SIZEOF_VOID_P MATCHES "8")
-    SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -O3 -ffast-math")
-  endif(CMAKE_SIZEOF_VOID_P MATCHES "8")
+  SET (CMAKE_CXX_FLAGS "-std=c++98 -Wall -fPIC -O3 -ffast-math")
 ENDIF(APPLE)
 
 # setup compile time definitions

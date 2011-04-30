@@ -56,8 +56,6 @@
 20. AI level -> easy / normal / hard, and corresponding UI in MainMenu to choose from.
     -- DONE
 
-*** 21. icon on WinXP disappeared. I don't know why.
-
 *** What I will not implement for this branch:
 
 1. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
@@ -94,6 +92,9 @@
 7. heat gauge has some glowing glitch. (after glow the color remained white. tween related issue)
 
 8. close program during AI vs AI demo still have a chance to crash when input/player destructing.
+"""terminate called after throwing an instance of 'boost::exception_detail::clone_impl<
+   boost::exception_detail::error_info_injector<boost::lock_error> >'
+   what(): boost::lock_error"""
    
    
 *** Other Memo:

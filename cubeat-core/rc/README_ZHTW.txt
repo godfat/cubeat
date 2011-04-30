@@ -45,6 +45,7 @@ Windows 版：
 
 MacOSX 版：
 直接執行 CuBeat.app 開始遊戲。若有遇上問題，請先更新到 OSX 10.6 版本，
+暫不支援雙滑鼠。
 
 Linux 版：
 1. 請確定有正常的 OpenGL driver，而非軟體模擬的

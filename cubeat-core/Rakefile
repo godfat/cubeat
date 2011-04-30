@@ -52,16 +52,16 @@ end
 B = 'bundle'
 
 desc "create mac's CuBeat.app"
-task 'build:mac' => [:build, "#{B}/CuBeat.app"]
-
-file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
-                           "#{B}/CuBeat.app/Contents/Resources"] do
+task 'build:mac' => [:build, "#{B}/CuBeat.app"] do
   mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/CuBeat")
   mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
   sh "cp rc/MacOSX/Info.plist #{B}/CuBeat.app/Contents/"
   sh "cp rc/MacOSX/CuBeat.icns #{B}/CuBeat.app/Contents/Resources/"
   sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
 end
+
+file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
+                           "#{B}/CuBeat.app/Contents/Resources"]
 
 file "#{B}/CuBeat.app/Contents/MacOS" => ['bin/cubeat'] do
   sh "mkdir -p #{B}/CuBeat.app/Contents/MacOS"

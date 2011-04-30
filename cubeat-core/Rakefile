@@ -35,6 +35,20 @@ task :build => [:prepare, :Makefile] do
   sh 'make'
 end
 
+desc 'clobber and build'
+task :rebuild => [:clobber, :build]
+
+desc 'prepare for build, doing custom preprocessing'
+task :prepare => [:preprocess,
+                  :reprocess_CMakeLists]
+
+task :reprocess_CMakeLists do
+  File.delete 'CMakeLists.txt'
+  sh 'rake CMakeLists.txt'
+end
+
+#####
+
 B = 'bundle'
 
 desc "create mac's CuBeat.app"
@@ -57,7 +71,7 @@ file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
                            "#{B}/CuBeat.app/Contents/Resources"] do
   mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/CuBeat")
   mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
-  sh "tar -zcf #{B}/CuBeat.app.tgz #{B}/CuBeat.app"
+  sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
 end
 
 file "#{B}/CuBeat.app/Contents/MacOS" =>
@@ -73,16 +87,51 @@ file "#{B}/CuBeat.app/Contents/Resources" => ['bin/libcubeat.dylib'] do
   sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
 end
 
-desc 'clobber and build'
-task :rebuild => [:clobber, :build]
+#####
 
-desc 'prepare for build, doing custom preprocessing'
-task :prepare => [:preprocess,
-                  :reprocess_CMakeLists]
+desc 'build for linux'
+task 'build:linux' => [:build,
+                       "#{B}/CuBeat/bin",
+                       "#{B}/CuBeat/lib",
+                       "#{B}/CuBeat/rc"] do
+  libs = %w[luajit alure boost_thread]
+  linux_setup_binary(libs, "bin/cubeat")
+  linux_setup_binary(libs, "bin/libcubeat.so")
+  sh "cd #{B}; tar -zcf CuBeat.tgz CuBeat"
+end
 
-##
+file "#{B}/CuBeat/bin" => ['bin/cubeat'] do
+  sh "mkdir -p #{B}/CuBeat/bin"
+  sh "cp bin/cubeat #{B}/CuBeat/bin/CuBeat"
+end
 
-task :reprocess_CMakeLists do
-  File.delete 'CMakeLists.txt'
-  sh 'rake CMakeLists.txt'
+file "#{B}/CuBeat/lib" => ['bin/libcubeat.so'] do
+  sh "mkdir -p #{B}/CuBeat/lib"
+  sh "cp bin/libcubeat.so #{B}/CuBeat/lib/"
+  sh "chmod 644 #{B}/CuBeat/lib/libcubeat.so"
+end
+
+file "#{B}/CuBeat/rc" do
+  sh "cp -r rc #{B}/CuBeat/rc"
+end
+
+def grep_path str
+  str[/\[.+\]/][1..-2]
+end
+
+def linux_setup_binary wants, binary
+  wants_regexp = Regexp.new(wants.join('|'))
+  rpath = grep_path(`readelf -d #{binary} | grep RPATH`).split(':') +
+          %w[/usr/lib /usr/local/lib]
+
+  `readelf -d #{binary} | grep NEEDED`.split("\n").map{ |str|
+    grep_path(str) }.select{ |lib| lib =~ wants_regexp }.each{ |name|
+      prefix = rpath.find{ |path| File.exist?("#{path}/#{name}") }
+      dest = "#{B}/CuBeat/lib/#{name}"
+      if !File.exist?(dest)
+        sh "cp #{prefix}/#{name} #{dest}"
+        sh "chrpath -d #{dest}"
+      end
+      sh "chmod 644 #{dest}"
+    }
 end

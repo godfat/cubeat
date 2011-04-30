@@ -58,7 +58,8 @@ file 'CuBeat.app' => ['CuBeat.app/Contents/MacOS',
   sh 'tar -zcf CuBeat.app.tgz CuBeat.app'
 end
 
-file 'CuBeat.app/Contents/MacOS' => ['bin/cubeat'] do
+file 'CuBeat.app/Contents/MacOS' => ['bin/cubeat',
+                                     'CuBeat.app/Contents/Resources'] do
   sh 'mkdir -p CuBeat.app/Contents/MacOS'
   sh 'cp bin/cubeat CuBeat.app/Contents/MacOS/CuBeat'
   sh 'cp bin/libcubeat.dylib CuBeat.app/Contents/Resources/'

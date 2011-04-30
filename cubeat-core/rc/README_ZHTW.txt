@@ -1,7 +1,7 @@
 CuBeat 測試版使用說明
 
 官方網站：http://cubeat.game.tw
-問題回報：http://cubeat.game.tw/devblog 或 cubeat.tw@gmail.com
+問題回報：http://cubeat.game.tw/devblog/?page_id=2 或 cubeat.tw@gmail.com
 
 =========================================================
 基本操作：
@@ -54,5 +54,5 @@ Linux 版：
 
 
 若有其他任何疑問或建議，請來信：
-cubeat.tw@gmail.com 或是至 http://cubeat.game.tw/devblog 留言，感謝！
+cubeat.tw@gmail.com 或是至 http://cubeat.game.tw/devblog/?page_id=2 留言，感謝！
 

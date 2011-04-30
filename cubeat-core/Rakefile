@@ -54,6 +54,26 @@ B = 'bundle'
 desc "create mac's CuBeat.app"
 task 'build:mac' => [:build, "#{B}/CuBeat.app"]
 
+file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
+                           "#{B}/CuBeat.app/Contents/Resources"] do
+  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/CuBeat")
+  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
+  sh "cp rc/MacOSX/Info.plist #{B}/CuBeat.app/Contents/"
+  sh "cp rc/MacOSX/CuBeat.icns #{B}/CuBeat.app/Contents/Resources/"
+  sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
+end
+
+file "#{B}/CuBeat.app/Contents/MacOS" => ['bin/cubeat'] do
+  sh "mkdir -p #{B}/CuBeat.app/Contents/MacOS"
+  sh "cp bin/cubeat #{B}/CuBeat.app/Contents/MacOS/CuBeat"
+  sh "cp bin/libcubeat.dylib #{B}/CuBeat.app/Contents/MacOS/"
+end
+
+file "#{B}/CuBeat.app/Contents/Resources" do
+  sh "mkdir -p #{B}/CuBeat.app/Contents/Resources"
+  sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
+end
+
 def mac_setup_binary binary, install_path="#{B}/CuBeat.app/Contents/MacOS"
   `otool -L #{binary}`.split("\n").select{ |path|
     next false unless path.start_with?("\t")
@@ -65,26 +85,6 @@ def mac_setup_binary binary, install_path="#{B}/CuBeat.app/Contents/MacOS"
     sh "chmod 644 #{dest}"
     sh "install_name_tool -change #{lib} '@loader_path/#{name}' #{binary}"
   }
-end
-
-file "#{B}/CuBeat.app" => ["#{B}/CuBeat.app/Contents/MacOS",
-                           "#{B}/CuBeat.app/Contents/Resources"] do
-  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/CuBeat")
-  mac_setup_binary("#{B}/CuBeat.app/Contents/MacOS/libcubeat.dylib")
-  sh "cd #{B}; tar -zcf CuBeat.app.tgz CuBeat.app"
-end
-
-file "#{B}/CuBeat.app/Contents/MacOS" =>
-                                    ['bin/cubeat',
-                                     "#{B}/CuBeat.app/Contents/Resources"] do
-  sh "mkdir -p #{B}/CuBeat.app/Contents/MacOS"
-  sh "cp bin/cubeat #{B}/CuBeat.app/Contents/MacOS/CuBeat"
-  sh "cp bin/libcubeat.dylib #{B}/CuBeat.app/Contents/Resources/"
-end
-
-file "#{B}/CuBeat.app/Contents/Resources" => ['bin/libcubeat.dylib'] do
-  sh "mkdir -p #{B}/CuBeat.app/Contents/Resources"
-  sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
 end
 
 #####

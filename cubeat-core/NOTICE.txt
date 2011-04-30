@@ -1,3 +1,7 @@
+
+You can find more information here:
+https://github.com/godfat/cubeat
+
 3rd-party libraries:
 
 CuBeat (this program) uses following 3rd party libraries or frameworks:
@@ -22,7 +26,7 @@ Please see doc/mit_license.txt or http://luajit.org/luajit.html
 * OpenAL-Soft is included under LGPL License
 Copyright (c) 2009-2010 Chris Robinson
 Please see doc/library_gpl_2_0.txt or http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
-And please notice this is only included in Windows versions of the program. 
+And please notice this is only included in Windows versions of the program.
 In both MacOSX and Linux distributions of the program, platform supported OpenAL is used.
 
 * ALURE is included under MIX/X License
@@ -32,13 +36,13 @@ Please see doc/mit_license.txt or http://kcat.strangesoft.net/alure.html
 * libogg is included under BSD License
 Copyright (c) 2002, Xiph.org Foundation
 Please see doc/libogg_license.txt. more info at http://www.xiph.org/
-And please notice this is only included in Windows versions of the program. 
+And please notice this is only included in Windows versions of the program.
 In both MacOSX and Linux distributions of the program, platform supported libogg is used.
 
 * libvorbis is included under BSD License
 Copyright (c) 2002-2008 Xiph.org Foundation
 Please see doc/libvorbis_license.txt. more info at http://www.xiph.org/
-And please notice this is only included in Windows versions of the program. 
+And please notice this is only included in Windows versions of the program.
 In both MacOSX and Linux distributions of the program, platform supported libvorbis is used.
 
 * MastEventReceiver is included under following notices, used in accordance with the Irrlicht Engine.

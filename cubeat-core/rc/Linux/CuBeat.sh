@@ -12,9 +12,9 @@ fi
 march=$(uname -m)
 if [ $march = x86_64 ]
 then
-   libs_path=./libs64
+   libs_path=./lib64
 else
-   libs_path=./libs32
+   libs_path=./lib32
 fi
 
 env LD_LIBRARY_PATH=$libs_path:$LD_LIBRARY_PATH ./bin/CuBeat

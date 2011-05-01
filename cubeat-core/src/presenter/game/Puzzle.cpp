@@ -62,10 +62,8 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     s1->x_offset(740).y_offset(684);
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-    player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), 0, false);
-    player0_->weapon(0)->ammo(0);
-    player0_->weapon(1)->ammo(0);
-    player0_->weapon(2)->ammo(0);
+    ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
+    player0_ = ctrl::Player::create(input, 0, false);
     player0_->push_ally(0);
 
     // setup map0
@@ -93,14 +91,13 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     setup_ui_by_config( c1p, std::string(), "ui/in_game_2p_layout" );
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
-    win_ = false, fired_ = false, end_ = false;
+    win_ = false, puzzle_started_ = false, end_ = false;
 
     //start music
     stage_->playBGM();
 
     //note: bad area
     timer_ui_   = pDummy(new int);
-    btn_single_shot_ = pDummy(new int);
     //note: end of bad area
 
     using std::tr1::bind;
@@ -110,7 +107,12 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
-        bind(&Puzzle::single_shot, this), btn_single_shot_, &player0_->input()->trig1(), ctrl::BTN_PRESS);
+        bind(&Puzzle::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+
+    //temp: puzzle description on the right.
+    desc_text_ = view::SpriteText::create("puzzle:\n\nclear all cubes\nin 1 shot", scene_, "Star Jedi", 30, true);
+    desc_text_->set<Pos2D>( vec2(s1->x_offset() + s1->cube_size()*3, s1->y_offset()/3) );
+    desc_text_->setDepth(-20).setPickable(false);
 
     return shared_from_this();
 }
@@ -130,12 +132,42 @@ void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p,
             addSpriteText(key, attr.S("text"), attr.S("font"), 0, attr.I("fsize"), attr.I("center") )
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
-    //2011.04.05 make stage number equal to puzzle level.
-    ui_layout_->getSpriteText("stage").changeText( "level" + to_s(puzzle_level_ - 2) ); //first puzzle have 3 chains.
 
     vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
     pview1_->setMap( map0_ );
+
+    //2011.04.05 make stage number equal to puzzle level.
+    ui_layout_->getSpriteText("stage").changeText( "level" + to_s(puzzle_level_ - 2) ); //first puzzle have 3 chains.
+
+    utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
+    vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
+    heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+    heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+
+    gauge1_flag_ = false;
+}
+
+void Puzzle::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag)
+{
+    gauge->set<Scale>( vec3(player->heat(), 1, 1) );
+
+    if( !player->is_overheat() ) {
+        out_flag = false;
+        if( player->heat() < 0.5 ) {
+            gauge->set<Green>(255);
+            gauge->set<Red>( player->heat()*2*255 );
+        }
+        else {
+            gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
+            gauge->set<Red>(255);
+        }
+    }
+    else if( !out_flag ) {
+        out_flag = true;
+        gauge->tween<SineCirc, ColorDiffuseVec3>(vec3(255,255,255), player->overheat_downtime()/4, 3);
+    }
 }
 
 void Puzzle::update_ui(){
@@ -151,6 +183,8 @@ void Puzzle::update_ui(){
 
     last_garbage_1p_ = new_garbage_1p_;
     last_garbage_2p_ = new_garbage_2p_;
+
+    update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
 }
 
 void Puzzle::update_ui_by_second(){
@@ -161,29 +195,33 @@ void Puzzle::update_ui_by_second(){
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 }
 
-void Puzzle::single_shot(){
-    btn_single_shot_.reset();
-    ctrl::EventDispatcher::i().subscribe_timer(
-        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), std::tr1::ref(scene_)), 100);
-    fired_ = true;
-    //ctrl::EventDispatcher::i().clear_obj_event( scene_ );
+void Puzzle::cleanup()
+{
+    timer_ui_.reset();
+    btn_pause_.reset();
+    ctrl::EventDispatcher::i().clear_btn_event();
+    ctrl::EventDispatcher::i().clear_obj_event( scene_ );
+    audio::Sound::i().stopAll();
+    map0_->stop_dropping();
+    map1_->stop_dropping();
+
+    player0_->stopAllActions();
 }
 
 //note: temp code
 void Puzzle::end(pMap lose_map)
 {
+    cleanup();
     end_ = true;
-    timer_ui_.reset();
-    ctrl::EventDispatcher::i().clear_btn_event();
-    audio::Sound::i().stopAll();
-    map0_->stop_dropping();
-    map1_->stop_dropping();
-    player0_->stopAllActions();
+
+    if( !blocker_ ) {
+        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
+    }
+    blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
     audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );
-    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W(), 350, true);
-    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2) );
-    blocker_->setDepth(-100).set<GradientDiffuse>(0).tween<Linear, Alpha>(0, 100, 500u);
 
     win_t_  = view::Sprite::create( win_ ? "win" : "lose" , scene_, 384, 192, true);
     //lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
@@ -195,8 +233,8 @@ void Puzzle::end(pMap lose_map)
     win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
     //lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-    end_text_ = view::SpriteText::create("to next level?", scene_, "Star Jedi", 30, true);
-    end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
+    end_text_ = view::SpriteText::create( win_ ? "to next level?" : "try again at same level?", scene_, "Star Jedi", 30, true);
+    end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "Star Jedi", 30, true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
@@ -229,10 +267,23 @@ void Puzzle::end_sequence1()
     std::cout << "game_puzzle end call finished." << std::endl;
 }
 
+void Puzzle::pause_quit()
+{
+    App::i().resume();
+    audio::Sound::i().pauseAll(false);
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Puzzle::cleanup, this), shared_from_this(), 1); //1 ms
+        //because we call this here.. it's gonna cleanup a lot of things.
+        //it's better we delay this call.
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&Puzzle::end_sequence1, this), shared_from_this(), 100); //100 ms
+}
+
 void Puzzle::reinit()
 {
     using std::tr1::bind;
-    int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_-1;
+    int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_;
     //if( new_puzzle_lv > 8 ) new_puzzle_lv = 8;
     if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
     else if( new_puzzle_lv < 3 ) new_puzzle_lv = 3;
@@ -242,6 +293,76 @@ void Puzzle::reinit()
         bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);
 
     std::cout << "game_puzzle end call finished." << std::endl;
+}
+
+void Puzzle::pause()
+{
+    if( btn_pause_ ) return; //it's already paused, don't do anything if this is called again.
+
+    if( !pause_text_ || !pause_text2_ ) {
+        pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
+        pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
+        pause_text_->setDepth(-450).setPickable(false);
+        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "Star Jedi", 30, true);
+        pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+        pause_text2_->setDepth(-450).setPickable(false);
+    }
+    pause_text_->set<Visible>(true);
+    pause_text2_->set<Visible>(true);
+
+    if( !pause_t_ ) {
+        pause_t_ = view::Sprite::create("pause", scene_, 384, 192, true);
+        pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
+        pause_t_->setDepth(-450).setPickable(false);
+    }
+    pause_t_->set<Visible>(true);
+
+    if( !blocker_ ) {
+        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
+    }
+    blocker_->set<Alpha>(100).set<Visible>(true);
+
+    App::i().pause();
+    audio::Sound::i().pauseAll(true);
+    scene_->allowPicking(false);
+
+    ctrl::Input const* controller = ctrl::InputMgr::i().getInputByIndex(0);
+
+    std::tr1::function<void(int, int)> clicka = bind(&Puzzle::pause_quit, this);
+    std::tr1::function<void(int, int)> clickb = bind(&Puzzle::resume, this);
+
+    btn_pause_ = pDummy(new int);
+
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clicka, btn_pause_, &controller->trig1(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clickb, btn_pause_, &controller->trig2(), ctrl::BTN_PRESS);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        clickb, btn_pause_, &controller->pause(), ctrl::BTN_PRESS);
+}
+
+void Puzzle::resume()
+{
+    if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
+
+    pause_text_->set<Visible>(false);
+    pause_text2_->set<Visible>(false);
+    pause_t_->set<Visible>(false);
+    blocker_->set<Visible>(false);
+
+    App::i().resume();
+    audio::Sound::i().pauseAll(false);
+    scene_->allowPicking(true);
+
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+
+    ctrl::Input const* input = ctrl::InputMgr::i().getInputByIndex(0);
+    ctrl::EventDispatcher::i().subscribe_btn_event(
+        bind(&Puzzle::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+
+    input->player()->subscribe_player_specific_interactions(true);
 }
 
 void Puzzle::cycle()
@@ -254,12 +375,18 @@ void Puzzle::cycle()
     map1_->redraw().cycle();
 
     //note: bad way........ but have no time.
-    if( !end_ && map0_->all_empty() ) {
-        win_ = true;
-        end(map0_);
-    }
-    else if( !end_ && fired_ && map0_->all_waiting() ) {
-        win_ = false;
-        end(map0_);
+    if( !end_ ) {
+        if( puzzle_started_ && map0_->all_empty() ) {
+            win_ = true;
+            end(map0_);
+        }
+        else if( puzzle_started_ && map0_->all_waiting() ) {
+            win_ = false;
+            end(map0_);
+        }
+        else if( !puzzle_started_ && !map0_->all_waiting() ) {
+            puzzle_started_ = true;
+            ctrl::EventDispatcher::i().clear_obj_event( scene_ );
+        }
     }
 }

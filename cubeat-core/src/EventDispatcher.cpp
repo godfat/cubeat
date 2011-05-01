@@ -34,6 +34,7 @@ EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
 
 EventDispatcher::EventDispatcher()
 {
+    std::cout << "EventDispatcher constructed..." << std::endl;
 }
 
 EventDispatcher::~EventDispatcher()

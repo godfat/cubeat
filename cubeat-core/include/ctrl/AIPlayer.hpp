@@ -49,7 +49,7 @@ public:
     virtual bool startThinking();
     virtual void stopAllActions();
 
-    boost::mutex& getMutex() { return think_mutex_; }
+    //boost::mutex& getMutex() { return think_mutex_; }
 
     virtual ~AIPlayer();
 
@@ -74,7 +74,6 @@ protected:
     model::AIBrain* brain_;
     pThread         think_thread_;
     pDummy          think_timer_;
-    boost::mutex    think_mutex_;
     bool            is_executing_;
     bool            trig1_, trig2_;
     AISetting       setting_;

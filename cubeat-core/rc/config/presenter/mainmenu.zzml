@@ -9,7 +9,7 @@ title:
 
 text:
 {
-    text: 'push "A" button',
+    text: 'left click to continue ',
     font: 'Star Jedi',
     glow_period: 2000
 },

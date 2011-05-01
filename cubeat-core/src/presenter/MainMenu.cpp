@@ -51,7 +51,7 @@ pMainMenu MainMenu::init()
 
     utils::map_any title = config.M("title");
     utils::map_any text = config.M("text");
-    int const m_text_size = Conf::i().SCREEN_W()/30;
+    int const m_text_size = 40;
 
     mainmenu_scene_ = view::Scene::create("MainMenu");
     mainmenu_scene_->setTo2DView();
@@ -87,6 +87,12 @@ pMainMenu MainMenu::init()
     game_mode_ = PPL_VS_PPL;
     ai_level_ = AI_HARD;
     num_of_human_ppl_ = 2;
+
+    //temporary notice in mainmenu:
+    notice_text_ = view::SpriteText::create("version: " + Conf::i().VERSION() + "\nplease consult the readme file in case of problems.",
+                                            mainmenu_scene_, "Star Jedi", 24, false);
+    notice_text_->set<Pos2D>( vec2(200, Conf::i().SCREEN_H()-60) ).set<Scale>(vec3(0.66, 0.66, 1));
+    notice_text_->set<GradientDiffuse>(0).setPickable(false);
 
     return shared_from_this();
 }
@@ -631,11 +637,14 @@ MainMenu& MainMenu::showMenu(std::string const& name)
     boost::function<void()> const& f = (BLL::var(animating_) = false);
     int y = Conf::i().SCREEN_H() / 2;
     sprite->tweenAll<Linear, Alpha>(255, 1000u);
+
     if( name == "start_menu" ) { //temp: special case
         y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/8;
         sprite->getSpriteText("text")
                .tween<SineCirc, Alpha>(255, (unsigned int)config.M("text").I("glow_period"), -1);
+        notice_text_->tween<Linear, GradientDiffuse>(0, 500u);
     }
+
     sprite->tween<OCirc, Pos2D>(vec2(Conf::i().SCREEN_W() / 2, y), 1000, 0, f );
 
     sprite->set<Visible>(true);
@@ -656,8 +665,12 @@ MainMenu& MainMenu::hideMenu(std::string const& name)
     view::pMenu sprite = menus_[name];
     function<void()> const& endcall = bind(&view::Sprite::set<Visible>, sprite.get(), false);
     int y = Conf::i().SCREEN_H() / 2;
-    if( name == "start_menu" ) //temp: special case
+
+    if( name == "start_menu" ) { //temp: special case
         y = Conf::i().SCREEN_H() / 2 - sprite->get<Size2D>().Y/8;
+        notice_text_->tween<Linear, GradientDiffuse>(192, 500u);
+    }
+
     sprite->tween<ICirc, Pos2D>(vec2(-200, y), 1000, 0, endcall);
     sprite->tweenAll<Linear, Alpha>(0, 500u);
 

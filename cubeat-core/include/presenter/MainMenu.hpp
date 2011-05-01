@@ -82,7 +82,7 @@ protected:
     int player1focus_, player2focus_, player1num_, player2num_, stagenum_;
     int num_of_human_ppl_, game_mode_, ai_level_;
     std::vector<pPlayerView> pvlist_;
-    view::pSpriteText player1text_, player2text_;
+    view::pSpriteText player1text_, player2text_, notice_text_;
     std::string conf1p_, conf2p_, stage_;
     pDummy btn_start_, btn_choose_player1_, btn_choose_player2_, btn_back1_, btn_back2_;
 };

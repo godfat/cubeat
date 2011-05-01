@@ -153,6 +153,18 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     if( num_of_cpu_ > 1 )
         player0_->startThinking();
 
+    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+    blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false).set<Visible>(false);
+
+    if( num_of_cpu_ == 2 ) {
+        blocker_->set<Visible>(true);
+        pause_note_text_ = view::SpriteText::create("press middle button to\npause and leave", scene_, "Star Jedi", 30, true);
+        pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
+        pause_note_text_->setDepth(-100).setPickable(false);
+    }
+
     return shared_from_this();
 }
 
@@ -194,7 +206,8 @@ void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, 
     gauge1_flag_ = gauge2_flag_ = false;
 }
 
-void Multi::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag) {
+void Multi::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag)
+{
     gauge->set<Scale>( vec3(player->heat(), 1, 1) );
 
     if( !player->is_overheat() ) {
@@ -265,8 +278,6 @@ void Multi::cleanup()
 {
     timer_item_.reset();
     timer_ui_.reset();
-    timer_auto0_.reset();
-    timer_auto1_.reset();
     btn_pause_.reset();
     if( item_ ) item_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
@@ -286,11 +297,6 @@ void Multi::end(pMap lose_map)
 {
     cleanup();
 
-    if( !blocker_ ) {
-        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
-        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
-    }
     blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
     win_t_  = view::Sprite::create("win", scene_, 384, 192, true);
@@ -316,7 +322,7 @@ void Multi::end(pMap lose_map)
     lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
     end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
-    end_text2_= view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
+    end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "Star Jedi", 30, true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
@@ -431,11 +437,13 @@ void Multi::pause(ctrl::Input const* controller)
 {
     if( btn_pause_ ) return; //it's already paused, don't do anything if this is called again.
 
+    if( pause_note_text_) pause_note_text_->set<Visible>(false);
+
     if( !pause_text_ || !pause_text2_ ) {
         pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
         pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
         pause_text_->setDepth(-450).setPickable(false);
-        pause_text2_ = view::SpriteText::create("a:yes / b:no", scene_, "Star Jedi", 30, true);
+        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "Star Jedi", 30, true);
         pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
         pause_text2_->setDepth(-450).setPickable(false);
     }
@@ -449,11 +457,6 @@ void Multi::pause(ctrl::Input const* controller)
     }
     pause_t_->set<Visible>(true);
 
-    if( !blocker_ ) {
-        blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
-        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-        blocker_->setDepth(-40).set<GradientDiffuse>(0).setPickable(false);
-    }
     blocker_->set<Alpha>(100).set<Visible>(true);
 
     App::i().pause();

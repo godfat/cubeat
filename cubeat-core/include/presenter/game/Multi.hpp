@@ -52,12 +52,6 @@ protected:
     void end_sequence1();
     void pause_quit();
 
-    //temp: for randomly killing cubes
-//    void toggle_auto0();
-//    void toggle_auto1();
-//    void kill_cube_randomly0();
-//    void kill_cube_randomly1();
-
     //temp: for pausing
     void pause(ctrl::Input const*);
     void resume(ctrl::Input const*);
@@ -79,8 +73,8 @@ protected:
 
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_;
-    pDummy timer_item_, timer_ui_, timer_auto0_, timer_auto1_, btn_reinit_, btn_pause_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_;
+    pDummy timer_item_, timer_ui_, btn_reinit_, btn_pause_;
     std::string c1p_, c2p_, sconf_;
 
     int min_, sec_;

@@ -16,10 +16,13 @@ private:
     std::string working_path_;
     std::string config_path_;
     std::string script_path_;
+    std::string version_string_;
 
     int screen_width_;
     int screen_height_;
     int framerate_;
+
+    Conf();
 
 public:
     static Conf& i() {
@@ -48,6 +51,8 @@ public:
     inline int SCREEN_W() const { return screen_width_; }
     inline int SCREEN_H() const { return screen_height_; }
     inline int FRAMERATE() const { return framerate_; }
+
+    std::string const& VERSION() const { return version_string_; }
 };
 
 }

@@ -9,6 +9,10 @@
 using namespace boost::algorithm;
 using namespace psc;
 
+Conf::Conf()
+    :version_string_("CuBeat 0.5.1 alpha")
+{}
+
 void Conf::init(std::string const& working_path)
 {
     if( !working_path.empty() ) {

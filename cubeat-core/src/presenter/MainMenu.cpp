@@ -213,8 +213,8 @@ void MainMenu::initDecorator()
     int const outgoing = size * 1.66f; //1.41f;
     int const contract = size / 8;
 
-    vec3 start1(w-contract, outgoing,   500), end1(w-contract, -(h+outgoing),-500);
-    vec3 start2(contract, -(h+outgoing),500), end2(  contract,   outgoing,   -500);   //line4
+    vec3 start1(w-contract, outgoing,   0), end1(w-contract, -(h+outgoing),-1000);
+    vec3 start2(contract, -(h+outgoing),0), end2(  contract,   outgoing,   -1000);   //line4
 
     int const color_num = deco.I("color_num");
     for(int i = 0; i < color_num; ++i ) {

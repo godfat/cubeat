@@ -94,6 +94,11 @@
 8. We should have someway to push nightly builds. Now windows' bundling need working too.
 
 9. We need a list to automate what to bundle and what not.
+
+10. resolution problem. (or this might not be so bad -- we just have to make sure cursor value is
+    scaled as such.)
+
+11. training mode and tutorials.
    
    
 *** Other Memo:

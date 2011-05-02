@@ -9,47 +9,51 @@
 namespace psc{ namespace utils{
 
 template <typename T, typename UserAllocator = boost::default_user_allocator_new_delete>
-class extended_object_pool: public boost::object_pool<T, UserAllocator>{
+class object_pool_mt {
 public:
     typedef typename boost::object_pool<T, UserAllocator>::element_type element_type;
-    using boost::object_pool<T, UserAllocator>::construct;
 
-    void destroy_mt(element_type* const chunk){
+    inline void destroy_mt(element_type* const chunk){
         chunk->~T();
         free_mt(chunk);
     }
 
+    inline bool is_from(element_type* const chunk) const {
+        return pool_.is_from(chunk);
+    }
+
     element_type * construct(){
-      element_type * const ret = this->malloc_mt();
+      element_type * const ret = malloc_mt();
       if (ret == 0)
         return ret;
       try { new (ret) element_type(); }
-      catch (...) { this->free_mt(ret); throw; }
+      catch (...) { free_mt(ret); throw; }
       return ret;
     }
 
 <% for_template_parameters_within(1..5, []){ |args_list| %>
     template <%= template_parameters args_list %>
     element_type * construct(<%= forward_parameters args_list %>){
-      element_type * const ret = this->malloc_mt();
+      element_type * const ret = malloc_mt();
       if (ret == 0)
         return ret;
       try { new (ret) element_type(<%= arguments args_list %>); }
-      catch (...) { this->free_mt(ret); throw; }
+      catch (...) { free_mt(ret); throw; }
       return ret;
     }
 <% } %>
 
 private:
-    element_type* malloc_mt(){
+    inline element_type* malloc_mt(){
         boost::mutex::scoped_lock lock(mutex_);
-        return this->malloc();
+        return pool_.malloc();
     }
-    void free_mt(element_type* p){
+    inline void free_mt(element_type* p){
         boost::mutex::scoped_lock lock(mutex_);
-        this->free(p);
+        pool_.free(p);
     }
     boost::mutex mutex_;
+    boost::object_pool<T, UserAllocator> pool_;
 };
 
 template <class T>
@@ -74,7 +78,7 @@ public:
     }
 
 private:
-    typedef extended_object_pool<T> pool_type;
+    typedef object_pool_mt<T> pool_type;
     typedef Loki::SingletonHolder<pool_type, Loki::CreateUsingNew, Loki::DeletableSingleton> SPool;
 
     static void destroy(T* t){

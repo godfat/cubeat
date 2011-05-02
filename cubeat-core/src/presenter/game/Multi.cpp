@@ -297,6 +297,7 @@ void Multi::end(pMap lose_map)
 {
     cleanup();
 
+    if( pause_note_text_) pause_note_text_->set<Visible>(false);
     blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
     win_t_  = view::Sprite::create("win", scene_, 384, 192, true);

@@ -33,6 +33,9 @@ OpeningSequence::OpeningSequence()
 
 OpeningSequence::~OpeningSequence()
 {
+    irr::video::IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+    //the startup page texture isn't going to be useful anymore.
+    driver->removeTexture( startup_page_->body()->getMaterial(0).getTexture(0) );
     std::cout << "Did Opening died properly?" << std::endl;
 }
 

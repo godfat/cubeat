@@ -75,6 +75,8 @@ Sound& Sound::stopAll()
         p->stop();
 
     sound_list_.clear();
+    sound_streams_.clear();
+    sound_buffers_.clear();
     return *this;
 }
 
@@ -109,7 +111,5 @@ Sound& Sound::cycle()
 Sound::~Sound()
 {
     stopAll();
-    sound_streams_.clear();
-    sound_buffers_.clear();
     detail::sound_cleanup();
 }

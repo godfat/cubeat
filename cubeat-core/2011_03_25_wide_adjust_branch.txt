@@ -99,6 +99,8 @@
     scaled as such.)
 
 11. training mode and tutorials.
+
+12. fix the Singleton flood.
    
    
 *** Other Memo:

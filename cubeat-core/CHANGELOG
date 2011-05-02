@@ -1,0 +1,13 @@
+CuBeat 0.5.1 Alpha
+
+Update since 0.5 alpha:
+
+1.all the hints for controls in game should now be appropriate.
+2.puzzle mode now has a rule description in game, and you can stay
+  on the same level if you failed, but the puzzle is still random.
+3.puzzle mode will no longer fail on "missed shots," and can pause
+  then leave to main menu now. Usually we have to make cubes in-
+  visible when paused to prevent cheating, but considering this 
+  game is still in alpha testing phase, so we are not adding this.
+4.now AI vs AI demo mode has a hint to tell you can pause and quit.
+5.added a notice on the main menu to remind players about README.

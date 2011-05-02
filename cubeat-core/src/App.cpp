@@ -169,6 +169,7 @@ int App::run(std::tr1::function<void()> tester)
     }
 
     std::cout << "App main loop has ended." << std::endl;
-
+    if( master_presenter_ ) //hack: make the recollection of master_presenter_ faster.
+        master_presenter_.reset();
     return 0;
 }

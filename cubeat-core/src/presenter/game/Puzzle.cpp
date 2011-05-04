@@ -47,6 +47,7 @@ Puzzle::~Puzzle()
 
 pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_level)
 {
+    using std::tr1::bind;
     //App::i().setLoading(1);
     scene_ = psc::view::Scene::create("random Puzzle game");
     //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
@@ -64,7 +65,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
     player0_ = ctrl::Player::create(input, 0, false);
-    player0_->push_ally(0);
+    player0_->push_ally(0).player_hit_event(bind(&Puzzle::puzzle_started, this));
 
     // setup map0
     map0_ = utils::MapLoader::generate( puzzle_level );
@@ -100,7 +101,6 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     timer_ui_   = pDummy(new int);
     //note: end of bad area
 
-    using std::tr1::bind;
     ctrl::EventDispatcher::i().subscribe_timer(
         bind(&Puzzle::update_ui_by_second, this), timer_ui_, 1000, -1);
     ctrl::EventDispatcher::i().subscribe_timer(
@@ -365,6 +365,13 @@ void Puzzle::resume()
     input->player()->subscribe_player_specific_interactions(true);
 }
 
+void Puzzle::puzzle_started() //This is a callback for obj_event, so you cannot clear obj_event inside this.
+{
+    puzzle_started_ = true;
+    ctrl::EventDispatcher::i().subscribe_timer(
+        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), scene_), 1);
+}
+
 void Puzzle::cycle()
 {
     pview1_->cycle();
@@ -376,17 +383,15 @@ void Puzzle::cycle()
 
     //note: bad way........ but have no time.
     if( !end_ ) {
-        if( puzzle_started_ && map0_->all_empty() ) {
-            win_ = true;
-            end(map0_);
-        }
-        else if( puzzle_started_ && map0_->all_waiting() ) {
-            win_ = false;
-            end(map0_);
-        }
-        else if( !puzzle_started_ && !map0_->all_waiting() ) {
-            puzzle_started_ = true;
-            ctrl::EventDispatcher::i().clear_obj_event( scene_ );
+        if( puzzle_started_ ) {
+            if( map0_->all_empty() ) {
+                win_ = true;
+                end(map0_);
+            }
+            else if( map0_->all_waiting() ) {
+                win_ = false;
+                end(map0_);
+            }
         }
     }
 }

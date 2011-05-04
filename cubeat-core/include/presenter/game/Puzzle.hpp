@@ -50,6 +50,8 @@ protected:
     void pause();
     void resume();
 
+    void puzzle_started();
+
 protected:
     view::pScene scene_;
     presenter::pStage stage_;

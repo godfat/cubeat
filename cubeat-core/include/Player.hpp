@@ -94,6 +94,10 @@ protected:
 	std::vector<Weapon*> weplist_;
 	std::vector<presenter::wpMap> map_list_;
 	std::list<int> ally_input_ids_, enemy_input_ids_;
+
+	std::tr1::function<void()> player_hit_event_;
+public:
+	void player_hit_event(std::tr1::function<void()> const& ev) { player_hit_event_ = ev; }
 };
 
 typedef std::tr1::shared_ptr<Player> pPlayer;

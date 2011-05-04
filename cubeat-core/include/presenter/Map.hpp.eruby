@@ -38,7 +38,6 @@ public:
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
     Map& stop_dropping();
-    Map& kill_cube_at(int x, int y);
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);

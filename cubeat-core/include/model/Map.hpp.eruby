@@ -91,8 +91,6 @@ public:
     bool all_empty() const;
     bool all_waiting() const;
 
-    //temp: added by arch.jslin only for randomly exploding cubes
-    bool kill_cube_at(int x, int y);
     pSimpleMap dump_data() const;
 
 private:

@@ -427,14 +427,6 @@ bool Map::all_waiting() const {
     return true;
 }
 
-bool Map::kill_cube_at(int x, int y) {
-    if( cubes_[x][y] ) {
-        cubes_[x][y]->go_exploding(3);
-        return true;
-    }
-    return false;
-}
-
 pSimpleMap Map::dump_data() const
 {
     data::pMapSetting cloned_ms = map_setting_->clone();

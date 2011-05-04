@@ -25,16 +25,6 @@ Map& Map::stop_dropping()
     return *this;
 }
 
-//temp
-Map& Map::kill_cube_at(int x, int y)
-{
-    if( model()->kill_cube_at(x, y) ) {
-        audio::Sound::i().playBuffer("1/a/1a-1.wav");
-        audio::Sound::i().playBuffer("1/b/HitB@11.wav");
-    }
-    return *this;
-}
-
 int Map::sum_of_all_enemy() const {
     int sum = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_)

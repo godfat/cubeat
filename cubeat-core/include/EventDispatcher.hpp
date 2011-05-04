@@ -86,7 +86,7 @@ public:
     EventDispatcher& clear_btn_event();
     EventDispatcher& clear_timer_event(); //note: has bug, don't use.
     //note: call to this has no effect, don't sure why. need to check in the future.
-    EventDispatcher& clear_obj_event(view::pScene const& scene);
+    EventDispatcher& clear_obj_event(view::wpScene const& scene);
 
     void dispatch();
     ~EventDispatcher();

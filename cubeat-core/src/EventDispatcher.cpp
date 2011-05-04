@@ -131,14 +131,16 @@ EventDispatcher& EventDispatcher::clear_timer_event()
 }
 
 //note: bad way to do this... but normal way has no effect... don't know why...
-EventDispatcher& EventDispatcher::clear_obj_event(view::pScene const& scene)
+EventDispatcher& EventDispatcher::clear_obj_event(view::wpScene const& scene)
 {
 //    ObjListener& listeners = scene_listeners_[ scene ];
 //    for(ObjListener::iterator o = listeners.begin(), oend = listeners.end(); o != oend; ++o) {
 //        obj_events_to_be_deleted_.insert( std::make_pair(scene, o) );
 //    }
 //    cleanup_obj_event();
-    scene_listeners_[ scene ] = ObjListener();
+    if( view::pScene s = scene.lock() ) {
+        scene_listeners_[ s ] = ObjListener();
+    }
     return *this;
 }
 

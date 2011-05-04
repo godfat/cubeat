@@ -1,3 +1,18 @@
+CuBeat 0.5.2 Alpha
+
+Update since 0.5.1:
+
+1.memory usage should now be lower now (pretty much the same as before
+  we added start-up splash screen. That one was the problem.)
+2.close program forcefully during gameplay should no longer crash the
+  game. I made sure that master_presenter_ is killed as soon as App::
+  run()'s main loop finished, so that the destruction sequence isn't
+  mangled with all those god damn stupid singletons.
+3.the puzzle mode in 0.5.1 introduced a new bug which let you shoot
+  the uppermost cube and the game isn't failed. That should be fixed
+  by now as I added a player_hit_event_ to Player to generate an event
+  when the player actually hit some cube.
+
 CuBeat 0.5.1 Alpha
 
 Update since 0.5 alpha:

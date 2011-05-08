@@ -101,6 +101,13 @@
 11. training mode and tutorials.
 
 12. fix the Singleton flood.
+
+13. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
+    how to prevent buffer exhaustion... 
+    
+14. glitches: 
+    - AI vs AI hint for pause blocking too much
+    - see if we can fix resolution shrinking and manymouse <-> system mouse cursor position sync.
    
    
 *** Other Memo:

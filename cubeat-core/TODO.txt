@@ -1,24 +1,69 @@
 
-* This TODO is basically obselete. please check the wiki on our github page :)
+1. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+   This probably need to be a separated small project.
 
-* refactor main.cpp
-* fix ai related methods.
-* profiling
-* introduce state Waiting_neednt_check
-* add type check for master/slave view. stdout couldn't be a master.
+2. Probably a generic high score record for each game-modes.
+  -- It would be unwise to implement this before we have a better simplified interface for UI.
 
-* <del>thread</del>
+3. I think we really need real_y(pixel_y) as a model property, either use this with current 
+   State pattern or revamp the state pattern.
+   -- Why sometimes the bottom cubes' chain state isn't taken out?  -- ignore this for now.
+   
+4. We need better chaining cubes' indication. we need better indication of attacking and 
+   cubes dropping and those sort of things. In short, we need better UI and user feedback design.
+   
+5. Something about lock and delayed cleanup:
+   I found many places in code where we should actually check on the weak_ptr.lock(), 
+   basically we have to assume it WILL somehow failed locking. if there's any performance hit,
+   it would have be done already by locking, so I don't consider performance an issue here.
+   
+   and just like we can't erase or add an iterator during an iteration, it's the same for
+   event subscription clean-up process. Like you can't call clean all button events in a button
+   event callback itself! When in doubt, or have no obvious ways to resolve it, at least we
+   should try to use EventDispatcher's timer callback to delay it.   
 
-* <del>need to fix some preprocessing ordering... e.g., CMakeList.txt,
-  create it last!!! and all_fwd.hpp is also suffer simlary problem.</del>
+6. Something about Input scheme (see code Input.cpp around line 405):
+   The input scheme here should have a total revamp. we should only designate Button1, Button2, 
+   Button3... etc, never name it. It should have the flexibility to map every input to every
+   abstract button you can have in game, and you can assign every event to every button!
+   
+   The current implementation was based on more or less a wii remote idea, some group of buttons
+   and other group of buttons are just not interchangable. This is not optimal solution.
+   
+7. heat gauge has some glowing glitch. (after glow the color remained white. tween related issue)
 
-* <del>garbage switch?</del>
-  - if there's some garbages, no dropping creation.
+8. We should have someway to push nightly builds. Now windows' bundling need working too.
 
-* <del>cube remember color id</del>
+9. We need a list to automate what to bundle and what not.
 
-* <del>presenter hold model? or reversed way?</del>
+10. resolution problem. (or this might not be so bad -- we just have to make sure cursor value is
+    scaled as such.)
 
-* <del>gcc43</del>
+11. training mode and tutorials.
 
-* <del>introduce state Sinking</del>
+12. fix the Singleton flood.
+
+13. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
+    how to prevent buffer exhaustion... 
+    
+14. glitches: 
+    - AI vs AI hint for pause blocking too much
+    - see if we can fix resolution shrinking and manymouse <-> system mouse cursor position sync.
+	
+15. ManyMouse on MacOSX 10.6+
+
+16. Mouse Speed need to be adjustable
+   
+   
+*** Other Memo:
+
+1. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
+
+2. Memo about wide range of distribution: 
+  -- dll's built with mingw which uses MSVCRT.dll is good to go, can be run on as old as Windows XP, I think.
+     however libogg & libvorbis & luajit & OpenAL & ALURE aren't. They are dependent on MSVCRT100.dll.
+     My old G1S laptop with WinXP SP3 can run it, but I doubt it's just lucky.
+ 
+  -- Mac & Linux's build are probably mostly statically linked, which is good on this case.
+     No, actually not. At least LuaJIT and Irrlicht aren't statically linked.
+     

@@ -17,20 +17,25 @@
        -- Make Timer interface return formal handles, not use shared_ptr<int> as dummies.
      -- The singleton flood must be fixed first.
 
-  3. A better way to present the UI programatically (usually means the presenter)
+  3. Try to remove as many template usages as possible:
+     -- presenter::cube::ViewStdOut, ViewMaster, ViewSprite, ViewSpriteMaster etc should be removed.
+     -- Animators, Accessors.
+     -- pull contents to cpp units, don't leave them in headers.     
+     
+  4. A better way to present the UI programatically (usually means the presenter)
      -- Lua modules? or we just fix the C++ interfaces? 
      -- It'd better go with multiple event dispatchers and timers.
      
-  4. We need more resolution options and more configs for different resolutions.
+  5. We need more resolution options and more configs for different resolutions.
      
-  5. Lack of networking capability.
+  6. Lack of networking capability.
      -- enet + Lua modules?
      
-  6. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
+  7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
      view::Scene, How do I fix this? 
      -- Multiple EventDispatchers for Multi Scenes might have something to do with this.
      
-  7. We need a Font Factory.
+  8. We need a Font Factory.
 
 * Technical Detail Issues:
 
@@ -127,7 +132,7 @@
     Others:
     -- damage_factor over time.
     -- draw game (timeout)
-    -- more restrained mouse clicks (bullet/heat/energy limits)
+    -- more restrained mouse clicks (bullet/heat/energy limits or items or other mechanisms)
 
   3. Memo about wide range of distribution: 
     -- dll's built with mingw which uses MSVCRT.dll is good to go, can be run on as old as Windows XP, I think.
@@ -144,5 +149,7 @@
   5. Does EventDispatcher::subscribe_obj_event have to KNOW the really callee? (e.g. presenter, not view)
      but then we'll enforce more shared_ptr usage. and locking twice (once for view, once for presenter) 
      sounds very stupid.
+     
+  6. Among other options, the sound/audio option must go into the option menu.
      
   

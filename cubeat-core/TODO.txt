@@ -9,20 +9,20 @@
 
 * Programming-Fundamental Issues:
 
-  1. Fix the Singleton flood.
+0.6  1. Fix the Singleton flood.
 
-  2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+0.6  2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
      This probably need to be a separated small project.
      -- Let's separate the Timer as a different module?
        -- Make Timer interface return formal handles, not use shared_ptr<int> as dummies.
      -- The singleton flood must be fixed first.
 
-  3. Try to remove as many template usages as possible:
+0.6  3. Try to remove as many template usages as possible:
      -- presenter::cube::ViewStdOut, ViewMaster, ViewSprite, ViewSpriteMaster etc should be removed.
      -- Animators, Accessors.
      -- pull contents to cpp units, don't leave them in headers.     
      
-  4. A better way to present the UI programatically (usually means the presenter)
+0.6  4. A better way to present the UI programatically (usually means the presenter)
      -- Lua modules? or we just fix the C++ interfaces? 
      -- It'd better go with multiple event dispatchers and timers.
      
@@ -31,7 +31,7 @@
   6. Lack of networking capability.
      -- enet + Lua modules?
      
-  7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
+0.6  7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
      view::Scene, How do I fix this? 
      -- Multiple EventDispatchers for Multi Scenes might have something to do with this.
      
@@ -39,7 +39,7 @@
 
 * Technical Detail Issues:
 
-  1. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
+0.6  1. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
      how to prevent buffer exhaustion... 
 
   2. ManyMouse on MacOSX 10.6+ 
@@ -64,13 +64,13 @@
 
 * Model / Gameplay Issues:
 
-  1. I think we really need real_y(pixel_y) as a model property, either use this with current 
+0.6  1. I think we really need real_y(pixel_y) as a model property, either use this with current 
      State pattern or revamp the state pattern.
      -- Why sometimes the bottom cubes' chain state isn't taken out? 
      
 * UI / Gameplay Issues:
 
-  1. We need better chaining cubes' indication. we need better indication of attacking and 
+0.6  1. We need better chaining cubes' indication. we need better indication of attacking and 
      cubes dropping and those sort of things. In short, we need better UI and user feedback design.
      -- These are mostly game objects, not UI objects.
     
@@ -83,22 +83,22 @@
    
 * UI / Glitches:  
 
-  1. Heat gauge has some glowing glitch. (after glow the color remained white. Tween-related issue)
+0.6  1. Heat gauge has some glowing glitch. (after glow the color remained white. Tween-related issue)
      -- the glowing cubes for chaining indicator has this issue too.
 
-  2. AI vs AI hint for pause blocking too much of the screen.
+0.6  2. AI vs AI hint for pause blocking too much of the screen.
 
 * Feature / Gameplay Issues:
 
-  1. Training mode and tutorials. 
+0.6  1. Training mode and tutorials. 
      -- require the UI improvements programatically
 
-  2. Better Puzzle mode.
+0.6  2. Better Puzzle mode.
 
   3. No Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.
      
-  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
+0.6  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
      -- Lua modules?
      
   5. Other game modes:
@@ -118,7 +118,7 @@
 
   1. We should have some way to push nightly builds. Now windows' bundling need working too.
 
-  2. We need a list to automate what to bundle and what not.
+  2. We need a list to automate what to bundle and what not. (manifest)
 
 
 *** Other Memo:
@@ -146,10 +146,10 @@
      "IT IS JUST FOR ANIMATIONS. IT SHOULD NOT BE AFFECTED IN ANY WAY EXCEPT FOR DELETION DURING EXECUTION."
      (which means I think SpeedFuncAnimator is so stupid.)
 
-  5. Does EventDispatcher::subscribe_obj_event have to KNOW the really callee? (e.g. presenter, not view)
+  5. Does EventDispatcher::subscribe_obj_event have to KNOW the real callee? (e.g. presenter, not view)
      but then we'll enforce more shared_ptr usage. and locking twice (once for view, once for presenter) 
      sounds very stupid.
      
-  6. Among other options, the sound/audio option must go into the option menu.
+0.6  6. Among other options, the sound/audio option must go into the option menu.
      
   

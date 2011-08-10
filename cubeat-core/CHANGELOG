@@ -12,6 +12,7 @@ Update since 0.5.1:
   the uppermost cube and the game isn't failed. That should be fixed
   by now as I added a player_hit_event_ to Player to generate an event
   when the player actually hit some cube.
+4.README_ZHTW file updated, and added README_EN.
 
 CuBeat 0.5.1 Alpha
 

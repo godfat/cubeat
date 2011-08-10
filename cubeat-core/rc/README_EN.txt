@@ -24,8 +24,8 @@ Basic Controls
  right click: Cancel / Speed Up
 middle click: Pause 
 
-2nd player (shown as the blue cursor. controlled by the 
-second mouse or the touchpad of a notebook, or keyboard)
+2nd player (shown as the blue cursor. controlled by the second 
+mouse or the touchpad of a notebook, or the arrow keys)
 when controlled by the keyboard:
 "," key: Ok / Shoot
 "." key: Cancel / Speed Up

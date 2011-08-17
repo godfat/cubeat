@@ -29,7 +29,7 @@ Please see doc/library_gpl_2_0.txt or http://www.gnu.org/licenses/old-licenses/l
 And please notice this is only included in Windows versions of the program.
 In both MacOSX and Linux distributions of the program, platform supported OpenAL is used.
 
-* ALURE is included under MIX/X License
+* ALURE is included under MIT/X License
 Copyright (c) 2009-2010 Chris Robinson
 Please see doc/mit_license.txt or http://kcat.strangesoft.net/alure.html
 

@@ -18,6 +18,7 @@ bool sound_init()
         fprintf(stderr, "OpenAL initialization failed: %s\n", alureGetErrorString());
         return false;
     }
+    alureStreamSizeIsMicroSec(AL_TRUE);
     fprintf(stdout, "OpenAL initialized.\n");
     return true;
 }

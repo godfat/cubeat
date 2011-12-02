@@ -27,8 +27,6 @@ void Lua::error(lua_State* L, char const* fmt, ...) {
     vfprintf(stderr, fmt, argp);
     va_end(argp);
     printf("\n");
-    lua_close(L);
-    //exit(EXIT_FAILURE);
 }
 
 void Lua::stack_dump(lua_State* L)

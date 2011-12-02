@@ -37,6 +37,7 @@ public:
     typedef std::deque< pAICommand >      CommandQueue;
 
     AIBrain(ctrl::pAIPlayer const&);
+    ~AIBrain();
 
     void think(std::vector<model::pSimpleMap> map_list,
                std::list<int> ally_ids,

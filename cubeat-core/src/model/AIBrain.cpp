@@ -34,9 +34,8 @@ extern "C"
     }
 
     APIEXPORT void SimpleMap__gc(pSimpleMap* p) {
-        Logger::i().buf("Map: ").buf(p).buf(" __gc called.").endl();
+        Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
         delete p;
-        Logger::i().buf("Map: ").buf(p).buf(" box deleted.").endl();
     }
 }
 
@@ -49,6 +48,11 @@ AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
     L_ = luaL_newstate();
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ai/easy.lua").c_str());
+}
+
+AIBrain::~AIBrain()
+{
+    lua_close(L_);
 }
 
 bool AIBrain::needThinking()
@@ -74,7 +78,11 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
     //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
     //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
 
-    Lua::call(L_, "ai_entry", static_cast<void*>(&self_map), static_cast<void*>(&enemy_map));
+    pSimpleMap *p = new pSimpleMap, *q = new pSimpleMap;
+    *p = self_map;
+    *q = enemy_map;
+    Lua::call(L_, "ai_entry", static_cast<void*>(p), static_cast<void*>(q));
+    //don't delete here! let lua gc invoke the destruction!
     Logger::i().buf("Verify ").buf(self_map).buf(" use_count: ").buf(self_map.use_count()).endl();
 //    {
 //        boost::mutex::scoped_lock lock( cmd_queue_mutex_ );

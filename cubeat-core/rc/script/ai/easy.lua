@@ -15,8 +15,10 @@ mt.print_data_for_debug = C.SimpleMap_print_data_for_debug
 ffi.metatype("pSimpleMap", mt)
 
 function ai_entry(my_map, enemy_map)
-  my_map    = ffi.gc(ffi.cast("pSimpleMap*", my_map),    C.SimpleMap__gc) -- temporary cdata lifespan problem?
+  my_map    = ffi.gc(ffi.cast("pSimpleMap*", my_map),    C.SimpleMap__gc) 
   enemy_map = ffi.gc(ffi.cast("pSimpleMap*", enemy_map), C.SimpleMap__gc) 
   
   my_map:print_data_for_debug()
+  print(collectgarbage("count"))
+  collectgarbage("collect")
 end

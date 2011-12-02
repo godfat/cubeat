@@ -145,7 +145,6 @@
 		<Unit filename="include\utils\lua_utility.hpp" />
 		<Unit filename="include\utils\math.hpp" />
 		<Unit filename="include\utils\math.hpp.eruby" />
-		<Unit filename="include\utils\puzzle_binding.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp.eruby" />
 		<Unit filename="include\view\All.hpp" />
@@ -346,7 +345,6 @@
 		<Unit filename="src\utils\Logger.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\utils\lua_utility.cpp" />
-		<Unit filename="src\utils\puzzle_binding.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />
 		<Unit filename="src\view\AnimatedSprite.cpp" />
 		<Unit filename="src\view\Button.cpp" />

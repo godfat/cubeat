@@ -8,7 +8,7 @@
 #include "utils/to_s.hpp"
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
-#include "utils/puzzle_binding.hpp"
+#include "utils/lua_utility.hpp"
 
 #include <string>
 #include <fstream>
@@ -20,10 +20,11 @@ namespace psc{ namespace utils{
 class MapLoader{
 public:
     static presenter::Map::pointer_type generate(int level){
-
+        using namespace script;
         lua_State* L = luaL_newstate();
         luaL_openlibs(L);
-        puzzle_binding(L, level);
+        Lua::run_script(L, Conf::i().script_path("puzzle/puzzle_gen_interface.lua").c_str());
+        Lua::call(L, "generate_to_file", level, 6, 10, true); //temp: true for debug
         lua_close(L);
 
         return load("tmp/puzzle.zzml");

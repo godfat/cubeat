@@ -8,15 +8,39 @@
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
 #include "utils/lua_utility.hpp"
+#include "Conf.hpp"
 
 #include <boost/foreach.hpp>
 #include <algorithm>
 #include <iostream>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define APIEXPORT __declspec(dllexport)
+#else
+#define APIEXPORT
+#endif
+
 using namespace psc;
 using namespace model;
 using ai_detail::AIUtils;
 using utils::Logger;
+
+///////////
+
+extern "C"
+{
+    APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap* p) {
+        (*p)->print_data_for_debug();
+    }
+
+    APIEXPORT void SimpleMap__gc(pSimpleMap* p) {
+        Logger::i().buf("Map: ").buf(p).buf(" __gc called.").endl();
+        delete p;
+        Logger::i().buf("Map: ").buf(p).buf(" box deleted.").endl();
+    }
+}
+
+///////////
 
 AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
     :owner_(owner), is_thinking_(false), attack_power_(9999)
@@ -24,6 +48,7 @@ AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
     std::cout << "AI processing unit created." << std::endl;
     L_ = luaL_newstate();
     luaL_openlibs(L_);
+    script::Lua::run_script(L_, Conf::i().script_path("ai/easy.lua").c_str());
 }
 
 bool AIBrain::needThinking()
@@ -43,15 +68,14 @@ void AIBrain::think(std::vector<model::pSimpleMap> map_list,
     int enemy_index = enemy_ids.front();
     //since we only have two map, one for each side, so let the first in ally-list be one's self.
 
-    Logger::i().buf("before try to call lua").endl();
-    Lua::eval(L_, "print(jit.status())");
-    Logger::i().buf("after try to call lua").endl();
-
     map_list_ = map_list;
     pSimpleMap self_map = map_list_[self_index]->clone();
     pSimpleMap enemy_map = map_list_[enemy_index]->clone();
     //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
     //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
+
+    Lua::call(L_, "ai_entry", static_cast<void*>(&self_map), static_cast<void*>(&enemy_map));
+    Logger::i().buf("Verify ").buf(self_map).buf(" use_count: ").buf(self_map.use_count()).endl();
 //    {
 //        boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 //

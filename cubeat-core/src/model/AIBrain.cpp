@@ -29,12 +29,92 @@ using utils::Logger;
 
 extern "C"
 {
+    APIEXPORT pSimpleCube* find_keycube_for_highest_chain_power(pSimpleMap* p, int lower_bound, int upper_bound) {
+        pSimpleCube c =
+            AIUtils::find_keycube_for_highest_chain_power((*p), lower_bound, upper_bound);
+        pSimpleCube* ret = new pSimpleCube;
+        *ret = c;
+        return ret;
+    }
+
     APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap* p) {
         (*p)->print_data_for_debug();
     }
 
+    APIEXPORT int  SimpleMap_warning_level(pSimpleMap* p) {
+        return (*p)->warning_level();
+    }
+
+    APIEXPORT int  SimpleMap_garbage_left(pSimpleMap* p) {
+        return (*p)->garbage_left();
+    }
+
+    APIEXPORT int  SimpleMap_width(pSimpleMap* p) {
+        return (*p)->ms()->width();
+    }
+
+    APIEXPORT int  SimpleMap_height(pSimpleMap* p) {
+        return (*p)->ms()->height();
+    }
+
+    APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p) {
+        //not going to work using pointer to pointers.
+        //looked like I have to box vector<SimpleCube>
+    }
+
+    APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap* p) {
+        //not going to work using pointer to pointers.
+        //looked like I have to box vector<SimpleCube>
+    }
+
     APIEXPORT void SimpleMap__gc(pSimpleMap* p) {
         Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
+        delete p;
+    }
+
+    APIEXPORT bool         SimpleMap_check_cube(pSimpleMap* p, int x, int y) {
+        return ( AIUtils::lookup((*p), x, y) ) ? true : false;
+    }
+
+    APIEXPORT pSimpleCube* SimpleMap_get_cube(pSimpleMap* p, int x, int y) {
+        pSimpleCube c = AIUtils::lookup((*p), x, y);
+        pSimpleCube* ret = new pSimpleCube;
+        *ret = c;
+        return ret;
+    }
+
+    APIEXPORT pSimpleCube* SimpleMap_get_grounded_cube(pSimpleMap* p, int x, int y) {
+        pSimpleCube c = AIUtils::lookup_for_grounded((*p), x, y);
+        pSimpleCube* ret = new pSimpleCube;
+        *ret = c;
+        return ret;
+    }
+
+    APIEXPORT int SimpleMap_grounded_cube_count(pSimpleMap* p) {
+        return AIUtils::grounded_cube_count(*p);
+    }
+
+    APIEXPORT bool SimpleCube_exist(pSimpleCube* p) {
+        return (*p) ? true : false;
+    }
+
+    APIEXPORT bool SimpleCube_is_garbage(pSimpleCube* p) {
+        return (*p)->is_garbage();
+    }
+
+    APIEXPORT bool SimpleCube_is_broken(pSimpleCube* p) {
+        return (*p)->is_broken();
+    }
+
+    APIEXPORT int  SimpleCube_x(pSimpleCube* p) {
+        return (*p)->x();
+    }
+
+    APIEXPORT int  SimpleCube_y(pSimpleCube* p) {
+        return (*p)->y();
+    }
+
+    APIEXPORT void SimpleCube__gc(pSimpleCube* p) {
         delete p;
     }
 }

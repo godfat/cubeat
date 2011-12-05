@@ -122,6 +122,9 @@ pSimpleCube AIUtils::lookup(pSimpleMap const& map, int x, int y)
     return map->simp_cubes_[x][y];
 }
 
+//This is definitely causing problem. SimpleCube doesn't know dropping/waiting,
+//And if it's still dropping it can't be grounded for sure. But This function doesn't
+//consider this...
 pSimpleCube AIUtils::lookup_for_grounded(pSimpleMap const& map, int x, int y)
 {
     if( pSimpleCube c = lookup(map, x, y) )

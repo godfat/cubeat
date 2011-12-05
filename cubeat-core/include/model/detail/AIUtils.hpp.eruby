@@ -26,6 +26,8 @@ public:
            (pSimpleMap const&, int lower_bound = 0, int upper_bound = 9999);
     static std::vector<pSimpleCube> find_garbages(pSimpleMap const&);
     static std::vector<pSimpleCube> find_brokens(pSimpleMap const&);
+    static pSimpleCube** find_garbages(pSimpleMap const&, unsigned int* size_out);
+    static pSimpleCube** find_brokens(pSimpleMap const&, unsigned int* size_out);
     static int cube_count(pSimpleMap const&);
     static int grounded_cube_count(pSimpleMap const& map);
     static pSimpleMap clone_map(pSimpleMap const&);

@@ -81,23 +81,11 @@ extern "C"
     }
 
     APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p, unsigned int* size_out) {
-        std::vector<pSimpleCube> garbages = AIUtils::find_garbages(*p);
-        pSimpleCube** list = new pSimpleCube*[garbages.size()];
-        for( size_t i = 0; i < garbages.size(); ++i ) {
-            *(list[i]) = garbages[i];
-        }
-        *size_out = garbages.size();
-        return list;
+        return AIUtils::find_garbages(*p, size_out);
     }
 
     APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap* p, unsigned int* size_out) {
-        std::vector<pSimpleCube> brokens = AIUtils::find_garbages(*p);
-        pSimpleCube** list = new pSimpleCube*[brokens.size()];
-        for( size_t i = 0; i < brokens.size(); ++i ) {
-            *(list[i]) = brokens[i];
-        }
-        *size_out = brokens.size();
-        return list;
+        return AIUtils::find_brokens(*p, size_out);
     }
 
     APIEXPORT int SimpleMap_grounded_cube_count(pSimpleMap* p) {
@@ -130,7 +118,9 @@ extern "C"
     }
 
     APIEXPORT void SimpleCubeList__gc(pSimpleCube** list, int size) {
+        Logger::i().buf("CubeList: ").buf(*list).buf(" __gc called.").endl();
         for( int i = 0; i < size; ++i ) {
+            Logger::i().buf("CubeList cleaning cube: ").buf(*(list[i])).buf(", use_count: ").buf(list[i]->use_count()).endl();
             delete list[i];
         }
         delete[] list;

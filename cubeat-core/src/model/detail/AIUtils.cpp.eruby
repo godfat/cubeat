@@ -69,6 +69,42 @@ std::vector<pSimpleCube> AIUtils::find_brokens(pSimpleMap const& map)
     return brokens;
 }
 
+//added these two for more directly interact with LuaJIT FFI interface.
+
+pSimpleCube** AIUtils::find_garbages(pSimpleMap const& map, unsigned int* size_out)
+{
+    pSimpleCube** list = new pSimpleCube*[map->ms()->width() * map->ms()->height()];
+    unsigned int size = 0;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( pSimpleCube c = map->simp_cubes_[x][y] )
+                if( c->is_garbage() && !map->is_below_empty(c) ) { //don't count brokens in the air
+                    list[size] = new pSimpleCube;
+                    *(list[size]) = c;
+                    ++size;
+                }
+
+    *size_out = size;
+    return list;
+}
+
+pSimpleCube** AIUtils::find_brokens(pSimpleMap const& map, unsigned int* size_out)
+{
+    pSimpleCube** list = new pSimpleCube*[map->ms()->width() * map->ms()->height()];
+    unsigned int size = 0;
+    for( int x=0; x < map->ms()->width(); ++x )
+        for( int y=0; y < map->ms()->height(); ++y )
+            if( pSimpleCube c = map->simp_cubes_[x][y] )
+                if( c->is_broken() && !map->is_below_empty(c) ) { //don't count brokens in the air
+                    list[size] = new pSimpleCube;
+                    *(list[size]) = c;
+                    ++size;
+                }
+
+    *size_out = size;
+    return list;
+}
+
 int AIUtils::cube_count(pSimpleMap const& map)
 {
     int num = 0;

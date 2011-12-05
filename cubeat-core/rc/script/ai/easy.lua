@@ -54,15 +54,13 @@ Mt_SimpleMap.get_grounded_cube    = function(self, x, y)
   return ffi.gc(C.SimpleMap_get_grounded_cube(self, x, y), C.SimpleCube__gc)
 end
 
-Mt_SimpleMap.get_garbages         = function(self) 
-  local size_out = ffi.new("unsigned int[1]")
+Mt_SimpleMap.get_garbages         = function(self, size_out) 
   return ffi.gc(C.SimpleMap_get_garbages(self, size_out), function(self)
     C.SimpleCubeList__gc(self, size_out[0])
   end)
 end
 
-Mt_SimpleMap.get_brokens          = function(self) 
-  local size_out = ffi.new("unsigned int[1]")
+Mt_SimpleMap.get_brokens          = function(self, size_out) 
   return ffi.gc(C.SimpleMap_get_brokens(self, size_out), function(self)
     C.SimpleCubeList__gc(self, size_out[0])
   end)
@@ -88,6 +86,12 @@ function ai_entry(my_map, enemy_map)
     io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
   else
     io.write "No keycube for now.\n"
+  end
+  
+  local size = ffi.new("unsigned int[1]")
+  local list = my_map:get_brokens(size)
+  for i = 0, size[0]-1 do
+    io.write( string.format("broken cube at: %d, %d\n", list[i]:x(), list[i]:y()) )
   end
   
   print(collectgarbage("count"))

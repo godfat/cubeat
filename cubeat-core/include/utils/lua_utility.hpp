@@ -23,6 +23,7 @@ struct Lua
     static inline void push_(lua_State* L, char const*& v)  { lua_pushstring(L, v); }
     template<int N>
     static inline void push_(lua_State* L, char const (&v)[N]) { lua_pushlstring(L, v, N); }
+    static inline void push_(lua_State* L, void* const& v)     { lua_pushlightuserdata(L, v); }
     template<typename T>
     static inline void push_(lua_State* L, T const& v);/* { //not supported.
         printf("Lua: YOU CANNNNNNNNNOT PASSSSSSSS!\n");

@@ -7,6 +7,9 @@
 #include <utility>
 #include <boost/thread/mutex.hpp>
 
+//for lua scripting, and this has to be global.. not in any namespaces
+struct lua_State;
+
 namespace psc {
 
 namespace ctrl {
@@ -34,6 +37,7 @@ public:
     typedef std::deque< pAICommand >      CommandQueue;
 
     AIBrain(ctrl::pAIPlayer const&);
+    ~AIBrain();
 
     void think(std::vector<model::pSimpleMap> map_list,
                std::list<int> ally_ids,
@@ -56,6 +60,8 @@ private:
     int              attack_power_;
     CommandQueue     cmd_queue_;
     boost::mutex     cmd_queue_mutex_;
+
+    lua_State*       L_;
 };
 
 typedef AIBrain::pointer_type pAIBrain;

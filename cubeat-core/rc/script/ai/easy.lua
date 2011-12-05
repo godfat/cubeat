@@ -6,6 +6,12 @@ ffi.cdef[[
 typedef struct pSimpleMap pSimpleMap;
 
 void SimpleMap_print_data_for_debug(pSimpleMap*);
+int  SimpleMap_warning_level(pSimpleMap*);
+int  SimpleMap_garbage_left(pSimpleMap*);
+int  SimpleMap_width(pSimpleMap*);
+int  SimpleMap_height(pSimpleMap*);
+
+
 void SimpleMap__gc(pSimpleMap*);
 ]]
 

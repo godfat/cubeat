@@ -31,7 +31,7 @@ extern "C"
 {
     APIEXPORT pSimpleCube* find_keycube_for_highest_chain_power(pSimpleMap* p, int lower_bound, int upper_bound) {
         pSimpleCube c =
-            AIUtils::find_keycube_for_highest_chain_power((*p), lower_bound, upper_bound);
+            AIUtils::find_keycube_for_highest_chain_power(*p, lower_bound, upper_bound);
         pSimpleCube* ret = new pSimpleCube;
         *ret = c;
         return ret;
@@ -57,37 +57,47 @@ extern "C"
         return (*p)->ms()->height();
     }
 
-    APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p) {
-        //not going to work using pointer to pointers.
-        //looked like I have to box vector<SimpleCube>
-    }
-
-    APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap* p) {
-        //not going to work using pointer to pointers.
-        //looked like I have to box vector<SimpleCube>
-    }
-
     APIEXPORT void SimpleMap__gc(pSimpleMap* p) {
         Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
         delete p;
     }
 
-    APIEXPORT bool         SimpleMap_check_cube(pSimpleMap* p, int x, int y) {
-        return ( AIUtils::lookup((*p), x, y) ) ? true : false;
+    APIEXPORT bool SimpleMap_cube_exist_at(pSimpleMap* p, int x, int y) {
+        return ( AIUtils::lookup(*p, x, y) ) ? true : false;
     }
 
     APIEXPORT pSimpleCube* SimpleMap_get_cube(pSimpleMap* p, int x, int y) {
-        pSimpleCube c = AIUtils::lookup((*p), x, y);
+        pSimpleCube c = AIUtils::lookup(*p, x, y);
         pSimpleCube* ret = new pSimpleCube;
         *ret = c;
         return ret;
     }
 
     APIEXPORT pSimpleCube* SimpleMap_get_grounded_cube(pSimpleMap* p, int x, int y) {
-        pSimpleCube c = AIUtils::lookup_for_grounded((*p), x, y);
+        pSimpleCube c = AIUtils::lookup_for_grounded(*p, x, y);
         pSimpleCube* ret = new pSimpleCube;
         *ret = c;
         return ret;
+    }
+
+    APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p, unsigned int* size_out) {
+        std::vector<pSimpleCube> garbages = AIUtils::find_garbages(*p);
+        pSimpleCube** list = new pSimpleCube*[garbages.size()];
+        for( size_t i = 0; i < garbages.size(); ++i ) {
+            *(list[i]) = garbages[i];
+        }
+        *size_out = garbages.size();
+        return list;
+    }
+
+    APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap* p, unsigned int* size_out) {
+        std::vector<pSimpleCube> brokens = AIUtils::find_garbages(*p);
+        pSimpleCube** list = new pSimpleCube*[brokens.size()];
+        for( size_t i = 0; i < brokens.size(); ++i ) {
+            *(list[i]) = brokens[i];
+        }
+        *size_out = brokens.size();
+        return list;
     }
 
     APIEXPORT int SimpleMap_grounded_cube_count(pSimpleMap* p) {
@@ -115,7 +125,15 @@ extern "C"
     }
 
     APIEXPORT void SimpleCube__gc(pSimpleCube* p) {
+        Logger::i().buf("Cube: ").buf(*p).buf(" __gc called, use_count: ").buf(p->use_count()).endl();
         delete p;
+    }
+
+    APIEXPORT void SimpleCubeList__gc(pSimpleCube** list, int size) {
+        for( int i = 0; i < size; ++i ) {
+            delete list[i];
+        }
+        delete[] list;
     }
 }
 

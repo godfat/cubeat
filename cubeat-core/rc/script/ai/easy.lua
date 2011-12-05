@@ -14,13 +14,13 @@ int  SimpleMap_garbage_left(pSimpleMap*);
 int  SimpleMap_width(pSimpleMap*);
 int  SimpleMap_height(pSimpleMap*);
 void SimpleMap__gc(pSimpleMap*);
+bool SimpleMap_cube_exist_at(pSimpleMap*, int, int);
+int  SimpleMap_grounded_cube_count(pSimpleMap*);
 
-bool          SimpleMap_exist(pSimpleMap*, int, int);
 pSimpleCube*  SimpleMap_get_cube(pSimpleMap*, int, int);
 pSimpleCube*  SimpleMap_get_grounded_cube(pSimpleMap*, int, int);
-pSimpleCube** SimpleMap_find_garbages(pSimpleMap*);
-pSimpleCube** SimpleMap_find_garbages(pSimpleMap*);
-int           SimpleMap_grounded_cube_count(pSimpleMap*);
+pSimpleCube** SimpleMap_get_garbages(pSimpleMap*, unsigned int* size_out);
+pSimpleCube** SimpleMap_get_brokens(pSimpleMap*, unsigned int* size_out);
 
 bool SimpleCube_exist(pSimpleCube*);
 bool SimpleCube_is_garbage(pSimpleCube*);
@@ -28,7 +28,13 @@ bool SimpleCube_is_broken(pSimpleCube*);
 int  SimpleCube_x(pSimpleCube*);
 int  SimpleCube_y(pSimpleCube*);
 void SimpleCube__gc(pSimpleCube*);
+
+void SimpleCubeList__gc(pSimpleCube** list, int size);
 ]]
+
+local function find_keycube_for_highest_chain_power(map, lb, ub)
+  return ffi.gc(C.find_keycube_for_highest_chain_power(map, lb, ub), C.SimpleCube__gc)
+end
 
 local Mt_SimpleMap = {}
 Mt_SimpleMap.__index = Mt_SimpleMap
@@ -37,7 +43,31 @@ Mt_SimpleMap.warning_level        = C.SimpleMap_warning_level
 Mt_SimpleMap.garbage_left         = C.SimpleMap_garbage_left
 Mt_SimpleMap.width                = C.SimpleMap_width
 Mt_SimpleMap.height               = C.SimpleMap_height
-Mt_SimpleMap.is_below_empty       = C.SimpleMap_is_below_empty
+Mt_SimpleMap.cube_exist_at        = C.SimpleMap_cube_exist_at
+Mt_SimpleMap.grounded_cube_count  = C.SimpleMap_grounded_cube_count
+
+Mt_SimpleMap.get_cube             = function(self, x, y) 
+  return ffi.gc(C.SimpleMap_get_cube(self, x, y), C.SimpleCube__gc)
+end
+
+Mt_SimpleMap.get_grounded_cube    = function(self, x, y) 
+  return ffi.gc(C.SimpleMap_get_grounded_cube(self, x, y), C.SimpleCube__gc)
+end
+
+Mt_SimpleMap.get_garbages         = function(self) 
+  local size_out = ffi.new("unsigned int[1]")
+  return ffi.gc(C.SimpleMap_get_garbages(self, size_out), function(self)
+    C.SimpleCubeList__gc(self, size_out[0])
+  end)
+end
+
+Mt_SimpleMap.get_brokens          = function(self) 
+  local size_out = ffi.new("unsigned int[1]")
+  return ffi.gc(C.SimpleMap_get_brokens(self, size_out), function(self)
+    C.SimpleCubeList__gc(self, size_out[0])
+  end)
+end
+
 ffi.metatype("pSimpleMap", Mt_SimpleMap)
 
 local Mt_SimpleCube = {}
@@ -53,7 +83,13 @@ function ai_entry(my_map, enemy_map)
   my_map    = ffi.gc(ffi.cast("pSimpleMap*", my_map),    C.SimpleMap__gc) 
   enemy_map = ffi.gc(ffi.cast("pSimpleMap*", enemy_map), C.SimpleMap__gc) 
   
-  my_map:print_data_for_debug()
+  local keycube = find_keycube_for_highest_chain_power(my_map, 2, 99)
+  if keycube:exist() then
+    io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
+  else
+    io.write "No keycube for now.\n"
+  end
+  
   print(collectgarbage("count"))
   collectgarbage("collect")
 end

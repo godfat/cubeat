@@ -20,6 +20,9 @@ CMakeCache.txt
 CMakeFiles
 install_manifest.txt
 
+# luajit ffi needed cdefs from c headers
+*.ffi
+
 # generated source codes
 include/all_fwd.hpp
 include/ctrl/Ai.hpp

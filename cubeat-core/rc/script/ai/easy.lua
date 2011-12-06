@@ -1,40 +1,12 @@
 
-local ffi = require 'ffi'
-local C   = ffi.C
-
+local ffi      = require 'ffi'
+local basepath = require 'rc/script/helper'.basepath
+local C        = ffi.C
 ffi.cdef[[
-typedef struct pSimpleMap  pSimpleMap;
+typedef struct pSimpleMap pSimpleMap;
 typedef struct pSimpleCube pSimpleCube;
-
-pSimpleCube* find_keycube_for_highest_chain_power(pSimpleMap*, int, int);
-
-void SimpleMap_print_data_for_debug(pSimpleMap*);
-int  SimpleMap_warning_level(pSimpleMap*);
-int  SimpleMap_garbage_left(pSimpleMap*);
-int  SimpleMap_width(pSimpleMap*);
-int  SimpleMap_height(pSimpleMap*);
-void SimpleMap__gc(pSimpleMap*);
-bool SimpleMap_cube_exist_at(pSimpleMap*, int, int);
-int  SimpleMap_grounded_cube_count(pSimpleMap*);
-
-pSimpleCube*  SimpleMap_get_cube(pSimpleMap*, int, int);
-pSimpleCube*  SimpleMap_get_grounded_cube(pSimpleMap*, int, int);
-pSimpleCube** SimpleMap_get_garbages(pSimpleMap*, unsigned int* size_out);
-pSimpleCube** SimpleMap_get_brokens(pSimpleMap*, unsigned int* size_out);
-
-bool SimpleCube_exist(pSimpleCube*);
-bool SimpleCube_is_garbage(pSimpleCube*);
-bool SimpleCube_is_broken(pSimpleCube*);
-int  SimpleCube_x(pSimpleCube*);
-int  SimpleCube_y(pSimpleCube*);
-void SimpleCube__gc(pSimpleCube*);
-
-void SimpleCubeList__gc(pSimpleCube** list, int size);
 ]]
-
-local function find_keycube_for_highest_chain_power(map, lb, ub)
-  return ffi.gc(C.find_keycube_for_highest_chain_power(map, lb, ub), C.SimpleCube__gc)
-end
+ffi.cdef( io.open( basepath().."rc/script/ai/lua_AI_bindings.ffi", 'r'):read('*a') )
 
 local Mt_SimpleMap = {}
 Mt_SimpleMap.__index = Mt_SimpleMap
@@ -52,6 +24,10 @@ end
 
 Mt_SimpleMap.get_grounded_cube    = function(self, x, y) 
   return ffi.gc(C.SimpleMap_get_grounded_cube(self, x, y), C.SimpleCube__gc)
+end
+
+Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub)
+  return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub), C.SimpleCube__gc)
 end
 
 Mt_SimpleMap.get_garbages         = function(self) 
@@ -83,7 +59,7 @@ function ai_entry(my_map, enemy_map)
   my_map    = ffi.gc(ffi.cast("pSimpleMap*", my_map),    C.SimpleMap__gc) 
   enemy_map = ffi.gc(ffi.cast("pSimpleMap*", enemy_map), C.SimpleMap__gc) 
   
-  local keycube = find_keycube_for_highest_chain_power(my_map, 2, 99)
+  local keycube = my_map:get_firepoint_cube(2, 99)
   if keycube:exist() then
     io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
   else

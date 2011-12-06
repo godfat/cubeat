@@ -8,126 +8,17 @@
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
 #include "script/lua_utility.hpp"
+#include "script/lua_AI_bindings.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>
 #include <algorithm>
 #include <iostream>
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
-#define APIEXPORT __declspec(dllexport)
-#else
-#define APIEXPORT
-#endif
-
 using namespace psc;
 using namespace model;
 using ai_detail::AIUtils;
 using utils::Logger;
-
-///////////
-
-extern "C"
-{
-    APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap* p) {
-        (*p)->print_data_for_debug();
-    }
-
-    APIEXPORT int  SimpleMap_warning_level(pSimpleMap* p) {
-        return (*p)->warning_level();
-    }
-
-    APIEXPORT int  SimpleMap_garbage_left(pSimpleMap* p) {
-        return (*p)->garbage_left();
-    }
-
-    APIEXPORT int  SimpleMap_width(pSimpleMap* p) {
-        return (*p)->ms()->width();
-    }
-
-    APIEXPORT int  SimpleMap_height(pSimpleMap* p) {
-        return (*p)->ms()->height();
-    }
-
-    APIEXPORT void SimpleMap__gc(pSimpleMap* p) {
-        Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
-        delete p;
-    }
-
-    APIEXPORT bool SimpleMap_cube_exist_at(pSimpleMap* p, int x, int y) {
-        return ( AIUtils::lookup(*p, x, y) ) ? true : false;
-    }
-
-    APIEXPORT pSimpleCube* SimpleMap_get_cube(pSimpleMap* p, int x, int y) {
-        pSimpleCube c = AIUtils::lookup(*p, x, y);
-        pSimpleCube* ret = new pSimpleCube;
-        *ret = c;
-        return ret;
-    }
-
-    APIEXPORT pSimpleCube* SimpleMap_get_grounded_cube(pSimpleMap* p, int x, int y) {
-        pSimpleCube c = AIUtils::lookup_for_grounded(*p, x, y);
-        pSimpleCube* ret = new pSimpleCube;
-        *ret = c;
-        return ret;
-    }
-
-    APIEXPORT pSimpleCube* SimpleMap_get_firepoint_cube(pSimpleMap* p, int lower_bound, int upper_bound) {
-        pSimpleCube c =
-            AIUtils::find_keycube_for_highest_chain_power(*p, lower_bound, upper_bound);
-        pSimpleCube* ret = new pSimpleCube;
-        *ret = c;
-        return ret;
-    }
-
-    APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p, unsigned int* size_out) {
-        return AIUtils::find_garbages(*p, size_out);
-    }
-
-    APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap* p, unsigned int* size_out) {
-        return AIUtils::find_brokens(*p, size_out);
-    }
-
-    APIEXPORT int SimpleMap_grounded_cube_count(pSimpleMap* p) {
-        return AIUtils::grounded_cube_count(*p);
-    }
-
-    APIEXPORT bool SimpleCube_exist(pSimpleCube* p) {
-        return (*p) ? true : false;
-    }
-
-    APIEXPORT bool SimpleCube_is_garbage(pSimpleCube* p) {
-        return (*p)->is_garbage();
-    }
-
-    APIEXPORT bool SimpleCube_is_broken(pSimpleCube* p) {
-        return (*p)->is_broken();
-    }
-
-    APIEXPORT int  SimpleCube_x(pSimpleCube* p) {
-        return (*p)->x();
-    }
-
-    APIEXPORT int  SimpleCube_y(pSimpleCube* p) {
-        return (*p)->y();
-    }
-
-    APIEXPORT void SimpleCube__gc(pSimpleCube* p) {
-        Logger::i().buf("Cube: ").buf(*p).buf(" __gc called, use_count: ").buf(p->use_count()).endl();
-        delete p;
-    }
-
-    APIEXPORT void SimpleCubeList__gc(pSimpleCube** list, int size) {
-        Logger::i().buf("CubeList: ").buf(*list).buf(" __gc called.").endl();
-        for( int i = 0; i < size; ++i ) {
-            Logger::i().buf("CubeList cleaning cube: ").buf(*(list[i])).buf(", use_count: ").buf(list[i]->use_count()).endl();
-            delete list[i];
-        }
-        delete[] list;
-    }
-}
-
-///////////
 
 AIBrain::AIBrain(ctrl::pAIPlayer const& owner)
     :owner_(owner), is_thinking_(false), attack_power_(9999)

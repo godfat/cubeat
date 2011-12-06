@@ -74,10 +74,14 @@ function ai_entry(self)
   self = ffi.cast("AIBrain*", self)
   local my_map =    self:get_ally_map(0)
   local enemy_map = self:get_enemy_map(0)
+  local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.PSC_AI_NONE}) -- reuse this
   
   local keycube = my_map:get_firepoint_cube(2, 99)
   if keycube:exist() then
     io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
+    cmdbuf.x, cmdbuf.y = keycube:x(), keycube:y()
+    cmdbuf.type = C.PSC_AI_SHOOT
+    self:push_command(cmdbuf)
   else
     io.write "No keycube for now.\n"
   end

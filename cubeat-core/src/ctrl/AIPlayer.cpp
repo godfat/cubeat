@@ -65,20 +65,21 @@ void AIPlayer::think()
             //Logger::i().buf("player ").buf(this).buf(" think thread use count: ").buf(think_thread_.use_count()).endl();
         }
 
-        std::vector< model::pSimpleMap > model_list;
-        presenter::pMap m1 = map_list_[0].lock();
-        presenter::pMap m2 = map_list_[1].lock();
-        if( m1 && m2 ) {
-            model_list.push_back( m1->model()->dump_data() );
-            model_list.push_back( m2->model()->dump_data() );
-        //Logger::i().buf("player ").buf(this).buf(" before creating thread, map ").buf(model_list[0]).buf(" is created").endl();
-
-            think_thread_ = pThread(
-                new boost::thread( bind(&model::AIBrain::think, brain_,
-                                        model_list,
-                                        ally_input_ids_,
-                                        enemy_input_ids_) ));
+        std::vector< model::pSimpleMap > ally_maps;
+        std::vector< model::pSimpleMap > enemy_maps;
+        for( std::list<int>::const_iterator i = ally_input_ids_.begin(); i != ally_input_ids_.end(); ++i ) {
+            if( presenter::pMap m = map_list_[ *i ].lock() )
+                ally_maps.push_back( m->model()->dump_data() );
         }
+        for( std::list<int>::const_iterator i = enemy_input_ids_.begin(); i != enemy_input_ids_.end(); ++i ) {
+            if( presenter::pMap m = map_list_[ *i ].lock() )
+                enemy_maps.push_back( m->model()->dump_data() );
+        }
+
+        think_thread_ = pThread(
+            new boost::thread( bind(&model::AIBrain::think, brain_,
+                                    ally_maps,
+                                    enemy_maps) ));
     }
 }
 

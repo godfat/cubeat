@@ -3,10 +3,25 @@ local ffi      = require 'ffi'
 local basepath = require 'rc/script/helper'.basepath
 local C        = ffi.C
 ffi.cdef[[
+typedef struct AIBrain AIBrain;
 typedef struct pSimpleMap pSimpleMap;
 typedef struct pSimpleCube pSimpleCube;
 ]]
-ffi.cdef( io.open( basepath().."rc/script/ai/lua_AI_bindings.ffi", 'r'):read('*a') )
+ffi.cdef( io.open( basepath().."rc/script/ai/bindings.ffi", 'r'):read('*a') )
+
+local Mt_AIBrain = {}
+Mt_AIBrain.__index = Mt_AIBrain
+Mt_AIBrain.push_command = C.AIBrain_push_command
+
+Mt_AIBrain.get_ally_map = function(self, index)
+  return ffi.gc(C.AIBrain_get_ally_map(self, index), C.SimpleMap__gc)
+end
+
+Mt_AIBrain.get_enemy_map = function(self, index)
+  return ffi.gc(C.AIBrain_get_enemy_map(self, index), C.SimpleMap__gc)
+end
+
+ffi.metatype("AIBrain", Mt_AIBrain)
 
 local Mt_SimpleMap = {}
 Mt_SimpleMap.__index = Mt_SimpleMap
@@ -55,9 +70,10 @@ Mt_SimpleCube.x          = C.SimpleCube_x
 Mt_SimpleCube.y          = C.SimpleCube_y
 ffi.metatype("pSimpleCube", Mt_SimpleCube)
 
-function ai_entry(my_map, enemy_map)
-  my_map    = ffi.gc(ffi.cast("pSimpleMap*", my_map),    C.SimpleMap__gc) 
-  enemy_map = ffi.gc(ffi.cast("pSimpleMap*", enemy_map), C.SimpleMap__gc) 
+function ai_entry(self)
+  self = ffi.cast("AIBrain*", self)
+  local my_map =    self:get_ally_map(0)
+  local enemy_map = self:get_enemy_map(0)
   
   local keycube = my_map:get_firepoint_cube(2, 99)
   if keycube:exist() then

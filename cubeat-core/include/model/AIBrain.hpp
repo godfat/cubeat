@@ -39,14 +39,19 @@ public:
     AIBrain(ctrl::pAIPlayer const&);
     ~AIBrain();
 
-    void think(std::vector<model::pSimpleMap> map_list,
-               std::list<int> ally_ids,
-               std::list<int> enemy_ids);
+    void think(std::vector<model::pSimpleMap> ally_maps,
+               std::vector<model::pSimpleMap> enemy_maps);
 
     bool       isThinking() const { return is_thinking_; }
     bool       needThinking();
     pAICommand getCurrentCmd();
     void       popCmdQueue();
+
+    //scripting usage only -- does it have to be public?
+    void       pushCommand(pAICommand cmd);
+    pSimpleMap getAllyMap (size_t const& index);
+    pSimpleMap getEnemyMap(size_t const& index);
+    //end of scripting usage
 
     AIBrain&   power(int const& i)       { attack_power_ = i; return *this; }
     int        power() const             { return attack_power_; }
@@ -55,9 +60,10 @@ public:
 
 private:
     ctrl::wpAIPlayer owner_;
-    std::vector<model::pSimpleMap> map_list_;
     bool             is_thinking_;
     int              attack_power_;
+    std::vector<model::pSimpleMap> ally_maps_;
+    std::vector<model::pSimpleMap> enemy_maps_;
     CommandQueue     cmd_queue_;
     boost::mutex     cmd_queue_mutex_;
 

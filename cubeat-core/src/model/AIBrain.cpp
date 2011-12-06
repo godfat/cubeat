@@ -8,7 +8,6 @@
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
 #include "script/lua_utility.hpp"
-#include "script/lua_AI_bindings.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>
@@ -40,29 +39,24 @@ bool AIBrain::needThinking()
     return cmd_queue_.empty();
 }
 
-void AIBrain::think(std::vector<model::pSimpleMap> map_list,
-                    std::list<int> ally_ids,
-                    std::list<int> enemy_ids)
+void AIBrain::think(std::vector<model::pSimpleMap> ally_maps,
+                    std::vector<model::pSimpleMap> enemy_maps)
 {
     using namespace script;
     //Logger::i().buf("brain ").buf(this).buf(" before thinking block.").endl();
     is_thinking_ = true;
-    int self_index = ally_ids.front();
-    int enemy_index = enemy_ids.front();
+//    int self_index = ally_ids.front();
+//    int enemy_index = enemy_ids.front();
     //since we only have two map, one for each side, so let the first in ally-list be one's self.
 
-    map_list_ = map_list;
-    pSimpleMap self_map = map_list_[self_index]->clone();
-    pSimpleMap enemy_map = map_list_[enemy_index]->clone();
+    ally_maps_ = ally_maps;
+    enemy_maps_= enemy_maps;
+//    pSimpleMap self_map = map_list_[self_index]->clone();
+//    pSimpleMap enemy_map = map_list_[enemy_index]->clone();
     //Logger::i().buf("self_map: ").buf(self_map).buf(", use_count: ").buf(self_map.use_count()).endl();
     //Logger::i().buf("brain ").buf(this).buf(" checkpoint 1.").endl();
 
-    pSimpleMap *p = new pSimpleMap, *q = new pSimpleMap;
-    *p = self_map;
-    *q = enemy_map;
-    Lua::call(L_, "ai_entry", static_cast<void*>(p), static_cast<void*>(q));
-    //don't delete here! let lua gc invoke the destruction!
-    Logger::i().buf("Verify ").buf(self_map).buf(" use_count: ").buf(self_map.use_count()).endl();
+    Lua::call(L_, "ai_entry", static_cast<void*>(this));
 //    {
 //        boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
 //
@@ -183,3 +177,19 @@ void AIBrain::popCmdQueue()
         cmd_queue_.pop_front();
     }
 }
+
+//scripting usage only
+void AIBrain::pushCommand(pAICommand cmd) {
+    boost::mutex::scoped_lock lock( cmd_queue_mutex_ );
+    cmd_queue_.push_back( cmd );
+}
+
+pSimpleMap AIBrain::getAllyMap (size_t const& index) {
+    return ( index < ally_maps_.size() ) ? ally_maps_[index] : pSimpleMap();
+}
+
+pSimpleMap AIBrain::getEnemyMap(size_t const& index) {
+    return ( index < enemy_maps_.size() ) ? enemy_maps_[index] : pSimpleMap();
+}
+
+//end of scripting usage

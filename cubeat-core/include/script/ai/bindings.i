@@ -5,6 +5,17 @@
 #define APIEXPORT
 #endif
 
+typedef struct {
+    enum { PSC_AI_NONE = 0, PSC_AI_SHOOT, PSC_AI_HASTE };
+    int x, y;
+    int delay;
+    unsigned int type; //enum
+} LuaAICommand;
+
+APIEXPORT void        AIBrain_push_command(AIBrain*, LuaAICommand*); //not shared_ptr!
+APIEXPORT pSimpleMap* AIBrain_get_ally_map(AIBrain*, unsigned int);  //not shared_ptr!
+APIEXPORT pSimpleMap* AIBrain_get_enemy_map(AIBrain*, unsigned int); //not shared_ptr!
+
 APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap*);
 APIEXPORT int  SimpleMap_warning_level(pSimpleMap*);
 APIEXPORT int  SimpleMap_garbage_left(pSimpleMap*);

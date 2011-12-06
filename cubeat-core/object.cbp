@@ -129,8 +129,7 @@
 		<Unit filename="include\private\AVIVideo.hpp" />
 		<Unit filename="include\private\MastEventReceiver.hpp" />
 		<Unit filename="include\private\MouseState.hpp" />
-		<Unit filename="include\script\lua_AI_bindings.hpp" />
-		<Unit filename="include\script\lua_AI_bindings.i" />
+		<Unit filename="include\script\ai\bindings.i" />
 		<Unit filename="include\script\lua_utility.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
@@ -295,7 +294,7 @@
 		<Unit filename="src\presenter\game\Puzzle.cpp" />
 		<Unit filename="src\private\AVIVideo.cpp" />
 		<Unit filename="src\private\MastEventReceiver.cpp" />
-		<Unit filename="src\script\lua_AI_bindings.cpp" />
+		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\test\test_font_input_method_main.cpp">
 			<Option compile="0" />

@@ -1,5 +1,5 @@
 
-#include "utils/lua_utility.hpp"
+#include "script/lua_utility.hpp"
 
 using namespace psc;
 using namespace script;

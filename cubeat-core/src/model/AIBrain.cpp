@@ -7,7 +7,7 @@
 #include "model/detail/AIUtils.hpp"
 #include "utils/Random.hpp"
 #include "utils/Logger.hpp"
-#include "utils/lua_utility.hpp"
+#include "script/lua_utility.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>
@@ -29,14 +29,6 @@ using utils::Logger;
 
 extern "C"
 {
-    APIEXPORT pSimpleCube* find_keycube_for_highest_chain_power(pSimpleMap* p, int lower_bound, int upper_bound) {
-        pSimpleCube c =
-            AIUtils::find_keycube_for_highest_chain_power(*p, lower_bound, upper_bound);
-        pSimpleCube* ret = new pSimpleCube;
-        *ret = c;
-        return ret;
-    }
-
     APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap* p) {
         (*p)->print_data_for_debug();
     }
@@ -75,6 +67,14 @@ extern "C"
 
     APIEXPORT pSimpleCube* SimpleMap_get_grounded_cube(pSimpleMap* p, int x, int y) {
         pSimpleCube c = AIUtils::lookup_for_grounded(*p, x, y);
+        pSimpleCube* ret = new pSimpleCube;
+        *ret = c;
+        return ret;
+    }
+
+    APIEXPORT pSimpleCube* SimpleMap_get_firepoint_cube(pSimpleMap* p, int lower_bound, int upper_bound) {
+        pSimpleCube c =
+            AIUtils::find_keycube_for_highest_chain_power(*p, lower_bound, upper_bound);
         pSimpleCube* ret = new pSimpleCube;
         *ret = c;
         return ret;

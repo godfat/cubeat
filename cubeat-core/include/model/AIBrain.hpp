@@ -48,6 +48,7 @@ public:
     void       popCmdQueue();
 
     //scripting usage only -- does it have to be public?
+    int        cmdQueueSize();
     void       pushCommand(pAICommand cmd);
     pSimpleMap getAllyMap (size_t const& index);
     pSimpleMap getEnemyMap(size_t const& index);

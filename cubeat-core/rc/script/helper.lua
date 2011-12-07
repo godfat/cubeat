@@ -18,7 +18,10 @@ local function basepath()
   return (getcwd(buf, 256).."/") -- get working directory with trailing / 
 end
 
+local function random(n) return math.floor(math.random()*n) end
+
 return {
-  basepath = basepath
+  basepath = basepath,
+  random   = random
 }
 

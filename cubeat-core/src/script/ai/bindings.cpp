@@ -41,6 +41,10 @@ pSimpleMap* AIBrain_get_enemy_map(AIBrain* p, unsigned int index) { //not shared
     return ret;
 }
 
+int AIBrain_cmdqueue_size(AIBrain* p) { //not shared_ptr!
+    return p->cmdQueueSize();
+}
+
 void SimpleMap_print_data_for_debug(pSimpleMap* p) {
     (*p)->print_data_for_debug();
 }
@@ -62,7 +66,7 @@ int  SimpleMap_height(pSimpleMap* p) {
 }
 
 void SimpleMap__gc(pSimpleMap* p) {
-    Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
+    //Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
     delete p;
 }
 
@@ -125,14 +129,14 @@ int  SimpleCube_y(pSimpleCube* p) {
 }
 
 void SimpleCube__gc(pSimpleCube* p) {
-    Logger::i().buf("Cube: ").buf(*p).buf(" __gc called, use_count: ").buf(p->use_count()).endl();
+    //Logger::i().buf("Cube: ").buf(*p).buf(" __gc called, use_count: ").buf(p->use_count()).endl();
     delete p;
 }
 
 void SimpleCubeList__gc(pSimpleCube** list, int size) {
-    Logger::i().buf("CubeList: ").buf(*list).buf(" __gc called.").endl();
+    //Logger::i().buf("CubeList: ").buf(*list).buf(" __gc called.").endl();
     for( int i = 0; i < size; ++i ) {
-        Logger::i().buf("CubeList cleaning cube: ").buf(*(list[i])).buf(", use_count: ").buf(list[i]->use_count()).endl();
+        //Logger::i().buf("CubeList cleaning cube: ").buf(*(list[i])).buf(", use_count: ").buf(list[i]->use_count()).endl();
         delete list[i];
     }
     delete[] list;

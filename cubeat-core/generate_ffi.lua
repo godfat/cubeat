@@ -2,7 +2,7 @@
 -- temporary C interface header to LuaJIT FFI cdefs command script
 
 local stub = io.open("stub.c", "w")
-stub:write("#include <script/"..arg[1]..".i>")
+stub:write("#include <script/"..arg[1]..".hpp>")
 stub:close()
 
 local str2 = "gcc -I include -E stub.c | grep -v '^#' > rc/script/"..arg[1]..".ffi"

@@ -11,7 +11,7 @@ using ai_detail::AIUtils;
 using utils::Logger;
 
 extern "C" {
-#include "script/ai/bindings.i"
+#include "script/ai/bindings.hpp"
 }
 
 void AIBrain_push_command(AIBrain* p, LuaAICommand* c) { //not shared_ptr!

@@ -129,7 +129,7 @@
 		<Unit filename="include\private\AVIVideo.hpp" />
 		<Unit filename="include\private\MastEventReceiver.hpp" />
 		<Unit filename="include\private\MouseState.hpp" />
-		<Unit filename="include\script\ai\bindings.i" />
+		<Unit filename="include\script\ai\bindings.hpp" />
 		<Unit filename="include\script\lua_utility.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />

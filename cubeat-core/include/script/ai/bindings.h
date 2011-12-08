@@ -12,10 +12,10 @@ typedef struct {
     unsigned int type; //enum
 } LuaAICommand;
 
-APIEXPORT void        AIBrain_push_command(AIBrain*, LuaAICommand*); //not shared_ptr!
-APIEXPORT pSimpleMap* AIBrain_get_ally_map(AIBrain*, unsigned int);  //not shared_ptr!
-APIEXPORT pSimpleMap* AIBrain_get_enemy_map(AIBrain*, unsigned int); //not shared_ptr!
-APIEXPORT int         AIBrain_cmdqueue_size(AIBrain*); //not shared_ptr!
+APIEXPORT void        AIPlayer_push_command(AIPlayer*, LuaAICommand*); //not shared_ptr!
+APIEXPORT pSimpleMap* AIPlayer_get_ally_map(AIPlayer*, unsigned int);  //not shared_ptr!
+APIEXPORT pSimpleMap* AIPlayer_get_enemy_map(AIPlayer*, unsigned int); //not shared_ptr!
+APIEXPORT int         AIPlayer_cmdqueue_size(AIPlayer*); //not shared_ptr!
 
 APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap*);
 APIEXPORT int  SimpleMap_warning_level(pSimpleMap*);

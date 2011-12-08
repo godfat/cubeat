@@ -5,26 +5,26 @@ local basepath = helper.basepath
 local random   = helper.random
 local C        = ffi.C
 ffi.cdef[[
-typedef struct AIBrain AIBrain;
+typedef struct AIPlayer AIPlayer;
 typedef struct pSimpleMap pSimpleMap;
 typedef struct pSimpleCube pSimpleCube;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ai/bindings.ffi", 'r'):read('*a') )
 
-local Mt_AIBrain = {}
-Mt_AIBrain.__index = Mt_AIBrain
-Mt_AIBrain.push_command  = C.AIBrain_push_command
-Mt_AIBrain.cmdqueue_size = C.AIBrain_cmdqueue_size
+local Mt_AIPlayer = {}
+Mt_AIPlayer.__index = Mt_AIPlayer
+Mt_AIPlayer.push_command  = C.AIPlayer_push_command
+Mt_AIPlayer.cmdqueue_size = C.AIPlayer_cmdqueue_size
 
-Mt_AIBrain.get_ally_map = function(self, index)
-  return ffi.gc(C.AIBrain_get_ally_map(self, index), C.SimpleMap__gc)
+Mt_AIPlayer.get_ally_map = function(self, index)
+  return ffi.gc(C.AIPlayer_get_ally_map(self, index), C.SimpleMap__gc)
 end
 
-Mt_AIBrain.get_enemy_map = function(self, index)
-  return ffi.gc(C.AIBrain_get_enemy_map(self, index), C.SimpleMap__gc)
+Mt_AIPlayer.get_enemy_map = function(self, index)
+  return ffi.gc(C.AIPlayer_get_enemy_map(self, index), C.SimpleMap__gc)
 end
 
-ffi.metatype("AIBrain", Mt_AIBrain)
+ffi.metatype("AIPlayer", Mt_AIPlayer)
 
 local Mt_SimpleMap = {}
 Mt_SimpleMap.__index = Mt_SimpleMap
@@ -102,7 +102,9 @@ local function random_shuffle(array, size)
 end
 
 function ai_entry(self)
-  self = ffi.cast("AIBrain*", self)
+  self = ffi.cast("AIPlayer*", self)
+  
+  --since we only have two map, one for each side, so let the first in ally-list be one's self.
   local my_map =    self:get_ally_map(0)
   local enemy_map = self:get_enemy_map(0)
   local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.PSC_AI_NONE}) -- reuse this

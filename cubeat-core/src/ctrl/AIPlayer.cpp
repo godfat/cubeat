@@ -1,8 +1,8 @@
 
 #include "ctrl/AIPlayer.hpp"
 #include "data/ViewSetting.hpp"
-#include "model/AIBrain.hpp"
 #include "model/AICommand.hpp"
+#include "model/SimpleMap.hpp"
 #include "presenter/Map.hpp"
 #include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
@@ -11,6 +11,7 @@
 #include "EasingEquations.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
+#include "script/lua_utility.hpp"
 #include "Conf.hpp"
 
 #include <boost/tr1/functional.hpp>
@@ -24,8 +25,8 @@ using std::tr1::function;
 using utils::Logger;
 
 AIPlayer::AIPlayer(Input* input, int const& id, AISetting const& setting)
-    :Player(input, id), brain_(0), is_executing_(false), trig1_(false), trig2_(false),
-     setting_(setting), think_interval_(setting.think_interval_ >= 100 ? setting.think_interval_ : 100)
+    :Player(input, id), is_executing_(false), trig1_(false), trig2_(false),
+     setting_(setting), think_interval_(350)
 {
 }
 
@@ -34,15 +35,14 @@ AIPlayer::~AIPlayer()
     input_->getCursor()->clearAllTween(); //in case AIPlayer's hold_button is still called after player's death.
     input_->getCursor()->tween<easing::Linear, accessor::Rotation>
         (vec3(0,0,0), vec3(0,0,360), 3000u, -1); //replace it for original animation
-    delete brain_;
+
+    lua_close(L_);
 }
 
 pAIPlayer AIPlayer::init()
 {
     Player::init();
     self_ = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
-    brain_ = new model::AIBrain(self());
-    brain_->power(setting_.attack_power_);
 
     int x = utils::random( Conf::i().SCREEN_W() );
     int y = utils::random( Conf::i().SCREEN_H() );
@@ -50,45 +50,55 @@ pAIPlayer AIPlayer::init()
     input_->cursor().y() = y;
     input_->getCursor()->set<accessor::Pos2D>(vec2(x, y));
 
+    std::cout << "AI processing unit created." << std::endl;
+    L_ = luaL_newstate();
+    luaL_openlibs(L_);
+    script::Lua::run_script(L_, Conf::i().script_path("ai/easy.lua").c_str());
+
     return self();
+}
+
+void AIPlayer::setMapList(std::vector<presenter::wpMap> const& mlist)
+{
+    map_list_ = mlist;
+    update_map_models();
+}
+
+void AIPlayer::update_map_models()
+{
+    ally_maps_.clear();
+    enemy_maps_.clear();
+    for( std::list<int>::const_iterator i = ally_input_ids_.begin(); i != ally_input_ids_.end(); ++i ) {
+        if( presenter::pMap m = map_list_[ *i ].lock() )
+            ally_maps_.push_back( m->model()->dump_data() );
+    }
+    for( std::list<int>::const_iterator i = enemy_input_ids_.begin(); i != enemy_input_ids_.end(); ++i ) {
+        if( presenter::pMap m = map_list_[ *i ].lock() )
+            enemy_maps_.push_back( m->model()->dump_data() );
+    }
+}
+
+void AIPlayer::open_thread_to_think()
+{
+    update_map_models();
+    //note: heat and cmd_queue_ size should be considered INSIDE thinking process.
+    if( !is_executing_ && cmd_queue_.empty() && heat() < 0.75 ) {
+        think_thread_ = pThread( new boost::thread( bind(&AIPlayer::think, this) ) );
+    }
 }
 
 void AIPlayer::think()
 {
-    if( !brain_->isThinking() && !is_executing_ && brain_->needThinking() && heat() < 0.75 ) {
-
-        //Logger::i().buf("player ").buf(this).buf(" goes into thinking function.").endl();
-        if( think_thread_ ) {
-            //Logger::i().buf("player ").buf(this).buf(" call joining thread. ").endl();
-            //think_thread_->join();
-            //Logger::i().buf("player ").buf(this).buf(" thread joined. ").endl();
-            //Logger::i().buf("player ").buf(this).buf(" think thread use count: ").buf(think_thread_.use_count()).endl();
-        }
-
-        std::vector< model::pSimpleMap > ally_maps;
-        std::vector< model::pSimpleMap > enemy_maps;
-        for( std::list<int>::const_iterator i = ally_input_ids_.begin(); i != ally_input_ids_.end(); ++i ) {
-            if( presenter::pMap m = map_list_[ *i ].lock() )
-                ally_maps.push_back( m->model()->dump_data() );
-        }
-        for( std::list<int>::const_iterator i = enemy_input_ids_.begin(); i != enemy_input_ids_.end(); ++i ) {
-            if( presenter::pMap m = map_list_[ *i ].lock() )
-                enemy_maps.push_back( m->model()->dump_data() );
-        }
-
-        think_thread_ = pThread(
-            new boost::thread( bind(&model::AIBrain::think, brain_,
-                                    ally_maps,
-                                    enemy_maps) ));
-    }
+    script::Lua::call(L_, "ai_entry", static_cast<void*>(this));
 }
 
 bool AIPlayer::startThinking()
 {
-    if( brain_ && !brain_->isThinking() ) {
+    if( !think_thread_ ) {
         std::cout << "CPU AI started thinking ..." << std::endl;
         think_timer_ = pDummy(new int);
-        EventDispatcher::i().subscribe_timer( bind( &AIPlayer::think, this), think_timer_, think_interval_, -1);
+        EventDispatcher::i().subscribe_timer(
+            bind( &AIPlayer::open_thread_to_think, this), think_timer_, think_interval_, -1);
         return true;
     }
     else return false;
@@ -101,6 +111,7 @@ void AIPlayer::stopAllActions()
         std::cout << "AIPlayer stopped thinking." << std::endl;
         think_timer_.reset();
         think_thread_->join();
+        think_thread_.reset();
     }
 }
 
@@ -183,17 +194,50 @@ void AIPlayer::release_button(bool& corresponding_btn_state_)
     is_executing_ = false; //this indicate executing finished.
 }
 
+model::pAICommand AIPlayer::getCurrentCmd()
+{
+    if( !cmd_queue_.empty() ) {
+        return cmd_queue_.front();
+    }
+    else
+        return model::pAICommand();
+}
+
+void AIPlayer::popCmdQueue()
+{
+    if( !cmd_queue_.empty() ) {
+        cmd_queue_.pop_front();
+    }
+}
+
+//scripting usage only
+int AIPlayer::cmdQueueSize() {
+    return cmd_queue_.size();
+}
+
+void AIPlayer::pushCommand(model::pAICommand const& cmd) {
+    cmd_queue_.push_back( cmd );
+}
+
+model::pSimpleMap AIPlayer::getAllyMap (size_t const& index) {
+    return ( index < ally_maps_.size() ) ? ally_maps_[index] : model::pSimpleMap();
+}
+
+model::pSimpleMap AIPlayer::getEnemyMap(size_t const& index) {
+    return ( index < enemy_maps_.size() ) ? enemy_maps_[index] : model::pSimpleMap();
+}
+
 void AIPlayer::cycle()
 {
     input_->trig1().now() = trig1_;
     input_->trig2().now() = trig2_;
 
     if( !is_executing_ ) {
-        if( model::pAICommand cmd = brain_->getCurrentCmd() ) {
+        if( model::pAICommand cmd = getCurrentCmd() ) {
             //Logger::i().buf("player ").buf(this).buf(" issuing command: ").buf(cmd).endl();
             is_executing_ = true; //this indicate executing started.
             issue_command( cmd );
-            brain_->popCmdQueue();
+            popCmdQueue();
             //Logger::i().buf("player ").buf(this).buf(" done issuing command: ").buf(cmd).endl();
         }
     }

@@ -1,11 +1,12 @@
 #include "model/SimpleMap.hpp"
 #include "model/SimpleCube.hpp"
 #include "model/detail/AIUtils.hpp"
-#include "model/AIBrain.hpp"
 #include "model/AICommand.hpp"
+#include "ctrl/AIPlayer.hpp"
 #include "utils/Logger.hpp"
 
 using namespace psc;
+using namespace ctrl;
 using namespace model;
 using ai_detail::AIUtils;
 using utils::Logger;
@@ -14,7 +15,7 @@ extern "C" {
 #include "script/ai/bindings.h"
 }
 
-void AIBrain_push_command(AIBrain* p, LuaAICommand* c) { //not shared_ptr!
+void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
     if( c->type == LuaAICommand::PSC_AI_SHOOT ) {
         pAICommand cmd = AICommand::create();
         cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
@@ -27,21 +28,21 @@ void AIBrain_push_command(AIBrain* p, LuaAICommand* c) { //not shared_ptr!
     }
 }
 
-pSimpleMap* AIBrain_get_ally_map(AIBrain* p, unsigned int index) { //not shared_ptr!
+pSimpleMap* AIPlayer_get_ally_map(AIPlayer* p, unsigned int index) { //not shared_ptr!
     pSimpleMap c = p->getAllyMap(index);
     pSimpleMap* ret = new pSimpleMap;
     *ret = c;
     return ret;
 }
 
-pSimpleMap* AIBrain_get_enemy_map(AIBrain* p, unsigned int index) { //not shared_ptr!
+pSimpleMap* AIPlayer_get_enemy_map(AIPlayer* p, unsigned int index) { //not shared_ptr!
     pSimpleMap c = p->getEnemyMap(index);
     pSimpleMap* ret = new pSimpleMap;
     *ret = c;
     return ret;
 }
 
-int AIBrain_cmdqueue_size(AIBrain* p) { //not shared_ptr!
+int AIPlayer_cmdqueue_size(AIPlayer* p) { //not shared_ptr!
     return p->cmdQueueSize();
 }
 

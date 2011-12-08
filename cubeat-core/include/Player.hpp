@@ -31,7 +31,7 @@ public:
     virtual void cycle();
     virtual bool startThinking() { return false; }
     virtual void stopAllActions() { if( hasting_ ) remove_haste_effect(); }
-    void setMapList(std::vector<presenter::wpMap> const& mlist) { map_list_ = mlist; }
+    virtual void setMapList(std::vector<presenter::wpMap> const& mlist) { map_list_ = mlist; }
 
     Player& set_active_weapon(int i);
     Player& debug_reset_all_weapon();

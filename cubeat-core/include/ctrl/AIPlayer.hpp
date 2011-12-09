@@ -38,18 +38,8 @@ public:
     typedef std::tr1::shared_ptr< int >      pDummy;
     typedef std::deque< model::pAICommand >  CommandQueue;
 
-    struct AISetting{
-        AISetting(int a, int b, int c):attack_power_(a), think_interval_(b), missrate_(c){}
-        int attack_power_, think_interval_;
-        int missrate_;
-    };
-    struct Easy   : public AISetting{ Easy  ():AISetting( 3,500, 20){} };
-    struct Normal : public AISetting{ Normal():AISetting( 9,400, 15){} };
-    struct Hard   : public AISetting{ Hard  ():AISetting(18,350, 8) {} };
-    struct Insane : public AISetting{ Insane():AISetting(99,300, 2) {} };
-
-    static pointer_type create(Input* input, int const& id, AISetting const& s = Hard()) {
-        return pointer_type(new AIPlayer(input, id, s))->init();
+    static pointer_type create(Input* input, int const& id, std::string const& ai_name = "ai/hard.lua") {
+        return pointer_type(new AIPlayer(input, id, ai_name))->init();
     }
 
     virtual void setMapList(std::vector<presenter::wpMap> const& mlist);
@@ -67,7 +57,7 @@ public:
     virtual ~AIPlayer();
 
 protected:
-    AIPlayer(Input* input, int const&, AISetting const&);
+    AIPlayer(Input* input, int const&, std::string const&);
     pointer_type init();
 
     void open_thread_to_think();
@@ -94,8 +84,9 @@ protected:
     pDummy          think_timer_;
     bool            is_executing_;
     bool            trig1_, trig2_;
-    AISetting       setting_;
+    std::string     ai_name_;
     int             think_interval_;
+    int             missrate_;
 
     std::vector<model::pSimpleMap> ally_maps_;
     std::vector<model::pSimpleMap> enemy_maps_;

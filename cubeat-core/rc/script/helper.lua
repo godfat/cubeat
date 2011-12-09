@@ -20,8 +20,16 @@ end
 
 local function random(n) return math.floor(math.random()*n) end
 
+local function C_random_shuffle(array, size)
+  for i = 0, size-1 do 
+    local rnd = random(size)
+    array[i], array[rnd] = array[rnd], array[i]
+  end
+end
+
 return {
   basepath = basepath,
-  random   = random
+  random   = random,
+  C_random_shuffle = C_random_shuffle
 }
 

@@ -13,12 +13,12 @@ local function setcmd(buf, type, delay, x, y)
   buf.x, buf.y, buf.delay, buf.type = x, y, delay, type
 end
 
-local ATTACK_PWR     = 3
+local ATTACK_PWR     = 9
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
 --these are intended for C to call from.
-function THINK_INTERVAL() return 500 end --ms
-function MISSRATE()       return 20  end --percentage. 0 ~ 100
+function THINK_INTERVAL() return 400 end --ms
+function MISSRATE()       return 15  end --percentage. 0 ~ 100
 
 function ai_entry(self)
   self = ffi.cast("AIPlayer*", self)

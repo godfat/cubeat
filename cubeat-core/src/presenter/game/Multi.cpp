@@ -67,8 +67,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     s1 = data::ViewSetting::create(64);   //must use config
     s1->x_offset(740).y_offset(684);
 
-    ctrl::AIPlayer::AISetting ai_temp[4] =
-        {ctrl::AIPlayer::Easy(), ctrl::AIPlayer::Normal(), ctrl::AIPlayer::Hard(), ctrl::AIPlayer::Insane()};
+    std::string ai_temp[4] =
+        {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);

@@ -22,11 +22,12 @@ using std::tr1::bind;
 using std::tr1::static_pointer_cast;
 using std::tr1::ref;
 using std::tr1::function;
+using std::tr1::tuple;
 using utils::Logger;
 
-AIPlayer::AIPlayer(Input* input, int const& id, AISetting const& setting)
+AIPlayer::AIPlayer(Input* input, int const& id, std::string const& ai_name)
     :Player(input, id), is_executing_(false), trig1_(false), trig2_(false),
-     setting_(setting), think_interval_(350)
+     ai_name_(ai_name), think_interval_(350), missrate_(10)
 {
 }
 
@@ -53,7 +54,10 @@ pAIPlayer AIPlayer::init()
     std::cout << "AI processing unit created." << std::endl;
     L_ = luaL_newstate();
     luaL_openlibs(L_);
-    script::Lua::run_script(L_, Conf::i().script_path("ai/easy.lua").c_str());
+    script::Lua::run_script(L_, Conf::i().script_path(ai_name_).c_str());
+
+    think_interval_ = script::Lua::call_R<int>(L_, "THINK_INTERVAL");
+    missrate_       = script::Lua::call_R<int>(L_, "MISSRATE");
 
     return self();
 }
@@ -153,7 +157,7 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
     int handshaking_x = utils::random(c_size/2) - c_size/4;
     int handshaking_y = utils::random(c_size/2) - c_size/4;
 
-    if( utils::random(100) < setting_.missrate_ ) { //this shot is probably going to miss the target
+    if( utils::random(100) < missrate_ ) { //this shot is probably going to miss the target
         handshaking_x *= 4;
         handshaking_y *= 4;
     }

@@ -82,8 +82,10 @@ function ai_entry(self)
         setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf) 
       else
-        setcmd(cmdbuf, C.PSC_AI_HASTE, 0, 0, 0) -- we have to know player's heat level here! damn!
-        self:push_command(cmdbuf) 
+        if self:get_heat() < 0.7 then
+          setcmd(cmdbuf, C.PSC_AI_HASTE, 0, 0, 0) 
+          self:push_command(cmdbuf) 
+        end
       end
     end
   end

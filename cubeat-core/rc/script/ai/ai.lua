@@ -15,6 +15,7 @@ local Mt_AIPlayer = {}
 Mt_AIPlayer.__index       = Mt_AIPlayer
 Mt_AIPlayer.push_command  = C.AIPlayer_push_command
 Mt_AIPlayer.cmdqueue_size = C.AIPlayer_cmdqueue_size
+Mt_AIPlayer.get_heat      = C.AIPlayer_get_heat
 
 Mt_AIPlayer.get_ally_map = function(self, index)
   return ffi.gc(C.AIPlayer_get_ally_map(self, index), C.SimpleMap__gc)

@@ -46,6 +46,10 @@ int AIPlayer_cmdqueue_size(AIPlayer* p) { //not shared_ptr!
     return p->cmdQueueSize();
 }
 
+double AIPlayer_get_heat(AIPlayer* p) {   //not shared_ptr!
+    return p->heat();
+}
+
 void SimpleMap_print_data_for_debug(pSimpleMap* p) {
     (*p)->print_data_for_debug();
 }

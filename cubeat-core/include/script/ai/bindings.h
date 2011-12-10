@@ -16,6 +16,7 @@ APIEXPORT void        AIPlayer_push_command(AIPlayer*, LuaAICommand*); //not sha
 APIEXPORT pSimpleMap* AIPlayer_get_ally_map(AIPlayer*, unsigned int);  //not shared_ptr!
 APIEXPORT pSimpleMap* AIPlayer_get_enemy_map(AIPlayer*, unsigned int); //not shared_ptr!
 APIEXPORT int         AIPlayer_cmdqueue_size(AIPlayer*); //not shared_ptr!
+APIEXPORT double      AIPlayer_get_heat(AIPlayer*);      //not shared_ptr!
 
 APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap*);
 APIEXPORT int  SimpleMap_warning_level(pSimpleMap*);

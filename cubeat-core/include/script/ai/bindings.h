@@ -26,10 +26,11 @@ APIEXPORT int  SimpleMap_height(pSimpleMap*);
 APIEXPORT void SimpleMap__gc(pSimpleMap*);
 APIEXPORT bool SimpleMap_cube_exist_at(pSimpleMap*, int, int);
 APIEXPORT int  SimpleMap_grounded_cube_count(pSimpleMap*);
+APIEXPORT bool SimpleMap_still_chaining(pSimpleMap*);
 
 APIEXPORT pSimpleCube*  SimpleMap_get_cube(pSimpleMap*, int, int);
 APIEXPORT pSimpleCube*  SimpleMap_get_grounded_cube(pSimpleMap*, int, int);
-APIEXPORT pSimpleCube*  SimpleMap_get_firepoint_cube(pSimpleMap*, int, int);
+APIEXPORT pSimpleCube*  SimpleMap_get_firepoint_cube(pSimpleMap*, int, int, int);
 APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap*, unsigned int* size_out);
 APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap*, unsigned int* size_out);
 

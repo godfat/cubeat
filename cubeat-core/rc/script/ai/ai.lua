@@ -36,6 +36,7 @@ Mt_SimpleMap.width                = C.SimpleMap_width
 Mt_SimpleMap.height               = C.SimpleMap_height
 Mt_SimpleMap.cube_exist_at        = C.SimpleMap_cube_exist_at
 Mt_SimpleMap.grounded_cube_count  = C.SimpleMap_grounded_cube_count
+Mt_SimpleMap.still_chaining       = C.SimpleMap_still_chaining
 
 Mt_SimpleMap.get_cube             = function(self, x, y) 
   return ffi.gc(C.SimpleMap_get_cube(self, x, y), C.SimpleCube__gc)
@@ -45,8 +46,8 @@ Mt_SimpleMap.get_grounded_cube    = function(self, x, y)
   return ffi.gc(C.SimpleMap_get_grounded_cube(self, x, y), C.SimpleCube__gc)
 end
 
-Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub)
-  return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub), C.SimpleCube__gc)
+Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub, em)
+  return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub, em), C.SimpleCube__gc)
 end
 
 Mt_SimpleMap.get_garbages         = function(self) 

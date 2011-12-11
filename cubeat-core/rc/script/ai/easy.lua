@@ -59,17 +59,20 @@ function ai_entry(self)
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
     
-    if bsize > 0 then 
-      shuffle(brokens, bsize)
-      local rnd = random(bsize)
-      setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
-      self:push_command(cmdbuf)
-    end
-
-    if hsize > 0 and not my_map:still_chaining() then
+    if hsize > 0 and my_map:cube_count() <= 54 then
       shuffle(highcols, hsize)
       local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
       setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, rnd_x, rnd_height)
+      self:push_command(cmdbuf)
+      if my_map:get_grounded_cube(rnd_x, rnd_height):is_broken() then
+        self:push_command(cmdbuf)
+      end
+    end    
+    
+    if bsize > 0 and self:cmdqueue_size() < 1 then 
+      shuffle(brokens, bsize)
+      local rnd = random(bsize)
+      setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
       self:push_command(cmdbuf)
     end
     -- don't do garbages for now.

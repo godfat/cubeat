@@ -59,7 +59,7 @@ function ai_entry(self)
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
     
-    if hsize > 0 and my_map:cube_count() <= 54 then
+    if hsize > 0 and my_map:grounded_cube_count() <= 54 then
       shuffle(highcols, hsize)
       local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
       setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, rnd_x, rnd_height)

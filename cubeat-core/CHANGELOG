@@ -1,3 +1,11 @@
+
+CuBeat 0.6 Alpha
+
+Update since 0.5.2:
+
+1.Fix a serious bug where you can still use "interrupt shots" when you
+  are overheat.
+
 CuBeat 0.5.2 Alpha
 
 Update since 0.5.1:

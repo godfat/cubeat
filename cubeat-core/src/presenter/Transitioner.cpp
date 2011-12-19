@@ -26,7 +26,7 @@ void Transitioner::init()
     int const b_text_size = Conf::i().SCREEN_W() / 20;
     int const m_text_size = Conf::i().SCREEN_W() / 30;
 
-    transition_scene_ = view::Scene::create("Transitioner");
+    transition_scene_ = view::Scene::create("transitioner");
     transition_scene_->setTo2DView();
 
     loading_menu_ = view::Menu::create("loading", transition_scene_,

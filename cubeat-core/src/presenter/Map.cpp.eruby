@@ -79,7 +79,7 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
 void Map::speedup(){
     if( map_setting()->speed() < 400.f )
         map_setting()->speed( map_setting()->speed() + 10.f );
-    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up more frequently
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up more frequently
         std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
 }
 
@@ -91,7 +91,7 @@ pMap <% debug_hook 'Map::init' do %>(){
 
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
-    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
         std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;
@@ -105,7 +105,7 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
 
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
-    ctrl::EventDispatcher::i().subscribe_timer( //timer to call speed up
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
         std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;

@@ -81,7 +81,7 @@ public:
 
         body_->tween<easing::Linear, accessor::Pos2D>(
             pos_vec2(), map_setting()->cube_dropping_duration());
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             std::tr1::bind( &ViewSprite::check_if_need_callback, this, callback),
             std::tr1::static_pointer_cast<ViewSprite>( shared_from_this() ),
             map_setting()->cube_dropping_duration() );
@@ -223,7 +223,7 @@ public:
     static ViewMaster::pointer_type create(view::pScene scene, data::pViewSetting setting, ctrl::wpPlayer const& player = ctrl::wpPlayer())
     {
         pointer_type result(new ViewSpriteMaster(scene, setting, player));
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             std::tr1::bind(&ViewSpriteMaster::cleanup, result.get()),
             result, 10, -1);
         return result;

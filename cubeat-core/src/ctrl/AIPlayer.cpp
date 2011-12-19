@@ -101,7 +101,7 @@ bool AIPlayer::startThinking()
     if( !think_thread_ ) {
         std::cout << "CPU AI started thinking ..." << std::endl;
         think_timer_ = pDummy(new int);
-        EventDispatcher::i().subscribe_timer(
+        EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind( &AIPlayer::open_thread_to_think, this), think_timer_, think_interval_, -1);
         return true;
     }
@@ -184,7 +184,7 @@ void AIPlayer::hold_button(bool& corresponding_btn_state_, int ms)
     pAIPlayer self = static_pointer_cast<AIPlayer>(shared_from_this());
     function<void()> cb = bind(&AIPlayer::release_button, this, ref(corresponding_btn_state_));
 
-    EventDispatcher::i().subscribe_timer(cb, self, ms);
+    EventDispatcher::i().get_timer_dispatcher("game")->subscribe(cb, self, ms);
 }
 
 void AIPlayer::press_button(bool& corresponding_btn_state_)

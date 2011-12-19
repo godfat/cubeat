@@ -51,10 +51,10 @@ int main(){
     // display(map);
 
     IrrDevice::i().init(true);
-    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo, 1000, -1);
-    // psc::ctrl::EventDispatcher::i().subscribe_timer(echo2, 500, -1);
-    // psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&display, std::tr1::ref(map)), 500, -1);
-    psc::ctrl::EventDispatcher::i().subscribe_timer(std::tr1::bind(&std::exit, 0), 10000);
+    // psc::ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(echo, 1000, -1);
+    // psc::ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(echo2, 500, -1);
+    // psc::ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(std::tr1::bind(&display, std::tr1::ref(map)), 500, -1);
+    psc::ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(std::tr1::bind(&std::exit, 0), 10000);
     while(IrrDevice::i().d()->run()){
         map->cycle();
         map->redraw();

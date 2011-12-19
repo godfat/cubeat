@@ -33,7 +33,7 @@ class TestGame{
 
 public:
     TestGame(){
-        scene_ = psc::view::Scene::create("TestMapViewScene");
+        scene_ = psc::view::Scene::create("game");
         //scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
         data::pViewSetting s0, s1;
@@ -97,7 +97,7 @@ public:
         //start music
         //stage_->playBGM();
 
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
 
         if( !player0_->startThinking() )

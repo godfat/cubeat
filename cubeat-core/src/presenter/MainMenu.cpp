@@ -53,7 +53,7 @@ pMainMenu MainMenu::init()
     utils::map_any text = config.M("text");
     int const m_text_size = 40;
 
-    mainmenu_scene_ = view::Scene::create("MainMenu");
+    mainmenu_scene_ = view::Scene::create("mainmenu");
     mainmenu_scene_->setTo2DView();
 
     int const width = title.I("orig_w") * (Conf::i().SCREEN_W() / 1280.0f); //1280 is best screen size.
@@ -72,7 +72,8 @@ pMainMenu MainMenu::init()
 
     setupMenus();
 
-    ctrl::EventDispatcher::i().subscribe_timer( bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
+    ctrl::EventDispatcher::i().get_timer_dispatcher("mainmenu")->subscribe(
+        bind(&MainMenu::initDecorator, this), shared_from_this(), 30 );
 
     function<void(int, int)> clickA = bind(&MainMenu::push_start, this);
     btn_start_ = pDummy(new int);
@@ -283,8 +284,10 @@ void MainMenu::fadeAllOut(int dur)
     BOOST_FOREACH(view::pSprite& sp, deco_cubes_)
         sp->tween<Linear, Alpha>(0, dur);
 
-    ctrl::EventDispatcher::i().subscribe_timer(bind(&audio::Sound::stopAll, &audio::Sound::i()), dur);
-    ctrl::EventDispatcher::i().subscribe_timer(bind(&App::setLoading, &App::i(), 1), dur);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("mainmenu")->subscribe(
+        bind(&audio::Sound::stopAll, &audio::Sound::i()), dur);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("mainmenu")->subscribe(
+        bind(&App::setLoading, &App::i(), 1), dur);
 }
 
 void MainMenu::push_start()
@@ -623,7 +626,7 @@ void MainMenu::stage_select(view::pSprite& sp, std::string name)
 
     fadeAllOut(1000);
     function<void()> cb = bind(&MainMenu::end, this);
-    ctrl::EventDispatcher::i().subscribe_timer(cb, shared_from_this(), 1100);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("mainmenu")->subscribe(cb, shared_from_this(), 1100);
 
     menus_["stage_select"]->setCallbackToSprite("stage1", 0);
     menus_["stage_select"]->setCallbackToSprite("stage2", 0);

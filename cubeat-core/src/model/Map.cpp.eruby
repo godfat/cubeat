@@ -220,7 +220,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->attack_of_current_step()*damage_factor;
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
-            ctrl::EventDispatcher::i().subscribe_timer(
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
             o->new_chain_event()(*i);
             o->new_garbage_event()(*i, o->garbage_lands(), amount);
@@ -237,7 +237,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //current_sum_of_attack_ -= amount;
             //o->throw_garbage( amount );
             std::tr1::function<void(int)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
-            ctrl::EventDispatcher::i().subscribe_timer(
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount),
                 self(),
                 1000);
@@ -375,22 +375,22 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             warning_level_ = std::tr1::shared_ptr<int>(new int(0));
 
             owner()->warning_counting_event()(0); //added for call warning as soon as column full
-            ctrl::EventDispatcher::i().subscribe_timer(
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&Map::inc_warning, this, ref(*warning_level_)), warning_level_, 50u, -1);
 
-            ctrl::EventDispatcher::i().subscribe_timer(
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->alert_bar_update_event(), ref(*warning_level_)), warning_level_, 50u, -1);
         }
         if( !alarm_sound_ ) {
             alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
 
-            ctrl::EventDispatcher::i().subscribe_timer(
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->warning_counting_event(), ref(*warning_level_)), alarm_sound_, 1000u, -1);
         }
     }
 
     if( warning_level_ && *warning_level_ >= 100 && owner()->lose_event() ) {
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             owner()->lose_event(), warning_level_, 10u);
     }
 }

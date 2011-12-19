@@ -37,7 +37,7 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void step4_alt_timer(view::pSprite& sprite)
     {
         std::tr1::function<void()> next_step = bind(&ViewTest1::step1, this, ref(sprite));
-        EventDispatcher::i().subscribe_timer(
+        EventDispatcher::i().get_timer_dispatcher("ui").subscribe(
             bind( &view::Sprite::moveTween, sprite.get(), 0, 0, 3000, next_step, 0), shared_from_this(), 2000);
     }
 
@@ -160,10 +160,10 @@ ViewTest1::ViewTest1()
     std::tr1::function<void(view::pSprite&, int, int)> test5_ = bind(&ViewTest1::test5, this, _1, _2, _3);
     std::tr1::function<void(view::pSprite&, int, int)> test6_ = bind(&ViewTest1::test6, this, _1, _2, _3);
 
-    guiv = view::Scene::create("ViewTest_GUI");
+    guiv = view::Scene::create("ui");
     guiv->setTo2DView();
 
-    worldv = view::Scene::create("ViewTest_WORLD");
+    worldv = view::Scene::create("world");
     worldv->setTo3DView(PI/5.f);
 
     data::AnimatorParam<Linear, Frame> param1; param1.start(4801.0f).end(9600.0f).loop(-1);
@@ -245,19 +245,19 @@ ViewTest1::ViewTest1()
 
 void ViewTest1::init()
 {
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
         bind(&ViewTest1::step1, this, ref(anotherthing)), shared_from_this(), 1000 );
 
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
         bind(&ViewTest1::glow, this, ref(something)), shared_from_this(), 600, -1 );
 
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
         bind(&ViewTest1::removeFn, this, ref(something)), shared_from_this(), 2000 );
 
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
         bind(&ViewTest1::addFn, this, ref(something)), shared_from_this(), 4000 );
 
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
         bind(&ViewTest1::addFn2, this, ref(something)), shared_from_this(), 6000 );
 }
 

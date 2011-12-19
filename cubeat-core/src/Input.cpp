@@ -233,7 +233,7 @@ void InputMgr::toggleInput(bool const& flag)
 void InputMgr::initGraphicItems()
 {
     if( !scene_ ) {
-        scene_ = view::Scene::create("Input scene");
+        scene_ = view::Scene::create("input");
         scene_->setTo2DView();
     }
     BOOST_FOREACH( Input* it, inputs_ )
@@ -366,7 +366,8 @@ void Input::rumbleWiimote(int ms)
 {
     using std::tr1::bind;
     wiimote_.SetRumble(true);
-    EventDispatcher::i().subscribe_timer( bind(&wiimote::SetRumble, &wiimote_, false), ms );
+    EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&wiimote::SetRumble, &wiimote_, false), ms );
 }
 #endif //_USE_WIIMOTE_
 

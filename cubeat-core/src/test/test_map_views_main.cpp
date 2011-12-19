@@ -13,7 +13,7 @@
 // class TestMapViews{
 // public:
 //     TestMapViews(){
-//         scene_ = psc::view::Scene::create("TestMapViewScene");
+//         scene_ = psc::view::Scene::create("game");
 //         scene_->setTo2DView();
 //
 //         data::pViewSpriteSetting s;
@@ -44,17 +44,17 @@
 //         map1_->push_garbage_land(map0_);
 //
 // //        // model cycle for 10 fps
-// //        ctrl::EventDispatcher::i().subscribe_timer(
+// //        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 // //            std::tr1::bind(&presenter::Map::cycle_slow, map0_.get()), map0_, 100, -1);
 // //
 // //        // model cycle for 10 fps
-// //        ctrl::EventDispatcher::i().subscribe_timer(
+// //        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 // //            std::tr1::bind(&presenter::Map::cycle_slow, map1_.get()), map1_, 100, -1);
 //
 //         // for testing garbage
 //         map1_->throw_garbage(15);
 //
-//         ctrl::EventDispatcher::i().subscribe_timer(
+//         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //             std::tr1::bind(&presenter::Map::throw_garbage, map1_.get(), 30), map1_, 10000);
 //     }
 //     void cycle(){

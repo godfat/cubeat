@@ -52,7 +52,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
                    std::string const& sc, int num_of_cpu, int ai_level)
 {
     //App::i().setLoading(1);
-    scene_ = psc::view::Scene::create("Multiplayer game");
+    scene_ = psc::view::Scene::create("game");
     //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
     scene_->setTo2DView();
 
@@ -136,11 +136,11 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     //note: end of bad area
     using std::tr1::bind;
 
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
-    //ctrl::EventDispatcher::i().subscribe_timer(     //2011.03.25 item temporarily removed
+    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(     //2011.03.25 item temporarily removed
     //    bind(&Multi::item_creation, this), timer_item_, 15000);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
@@ -329,7 +329,8 @@ void Multi::end(pMap lose_map)
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
     end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
-    ctrl::EventDispatcher::i().subscribe_timer(bind(&Multi::setup_end_button, this), 1000);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Multi::setup_end_button, this), 1000);
 }
 
 void Multi::setup_end_button()
@@ -359,11 +360,11 @@ void Multi::pause_quit()
     App::i().resume();
     audio::Sound::i().pauseAll(false);
     btn_pause_.reset(); //reset button event subscribed by this handle.
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::cleanup, this), shared_from_this(), 1); //1 ms
         //because we call this here.. it's gonna cleanup a lot of things.
         //it's better we delay this call.
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::end_sequence1, this), shared_from_this(), 100); //100 ms
 }
 
@@ -372,7 +373,7 @@ void Multi::reinit()
     using std::tr1::bind;
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_, ai_level_), 500);
     std::cout << "game_multiplayer end call finished." << std::endl;
 }
@@ -428,7 +429,7 @@ void Multi::item_destruction()
 {
     timer_item_.reset();
     timer_item_ = pDummy(new int);
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::item_creation, this), timer_item_, 15000);
 }
 

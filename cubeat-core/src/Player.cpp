@@ -36,7 +36,7 @@ pPlayer Player::init(bool const& can_haste)
 
     subscribe_player_specific_interactions(can_haste);
 
-    EventDispatcher::i().subscribe_timer(
+    EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
 
     return shared_from_this();
@@ -196,7 +196,7 @@ void Player::generate_heat(double heat)
             m->overheat_event()(true);
         }
         remove_haste_effect(); // only call this after you're sure about overheat_ is true
-        EventDispatcher::i().subscribe_timer(
+        EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Player::end_overheat, this), shared_from_this(), overheat_downtime_);
     }
 }

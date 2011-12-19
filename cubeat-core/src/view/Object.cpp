@@ -151,6 +151,14 @@ pScene Object::scene() const
     return scene_.lock();
 }
 
+std::string Object::getSceneName() const
+{
+    if( pScene s = scene_.lock() ) {
+        return s->getName();
+    }
+    return "BAD SCENE!";
+}
+
 ISceneNode* Object::body() const
 {
     return body_;

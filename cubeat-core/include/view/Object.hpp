@@ -36,6 +36,7 @@ public:
 
     Object(std::string const& name = "");
 
+    std::string     getSceneName() const;
     virtual Object* clone() const;
     virtual pScene  scene() const;
     virtual Object& moveTo(int,int,int);

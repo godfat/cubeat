@@ -41,7 +41,7 @@ OpeningSequence::~OpeningSequence()
 
 pOpeningSequence OpeningSequence::init()
 {
-    scene_ = view::Scene::create("OpeningSequence");
+    scene_ = view::Scene::create("opening");
     scene_->setTo2DView();
     int width  = Conf::i().SCREEN_W();
     int height = Conf::i().SCREEN_H();
@@ -57,9 +57,9 @@ pOpeningSequence OpeningSequence::init()
     startup_page_->queue(anim1).tween(anim2);
 //    movie_ = view::SpriteMovie::create(config_.S("movie_path"), scene_,
 //                                       Conf::i().SCREEN_W(), Conf::i().SCREEN_H());
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("opening")->subscribe(
         bind(&App::setLoading, &App::i(), 10), shared_from_this(), duration);
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("opening")->subscribe(
         bind(&OpeningSequence::end, this), shared_from_this(), duration + 100); //+100 ms to make sure this happens later
     return shared_from_this();
 }

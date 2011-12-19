@@ -33,11 +33,11 @@ public:
 
         movie = view::SpriteMovie::create("E:/portfolio/ndssp/ndssp_op.avi", scene, 640, 480);
         movie->stop().moveTo(320, 240).setCenterAligned(true);
-        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::play, movie.get()), 6000);
-        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::restart, movie.get()), 8500);
-        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::stop, movie.get()), 10500);
-        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::play, movie.get()), 11500);
-        EventDispatcher::i().subscribe_timer( bind(&view::SpriteMovie::setCurrentFrame, movie.get(), 200), 13000);
+        EventDispatcher::i().get_timer_dispatcher("AVITest")->subscribe( bind(&view::SpriteMovie::play, movie.get()), 6000);
+        EventDispatcher::i().get_timer_dispatcher("AVITest")->subscribe( bind(&view::SpriteMovie::restart, movie.get()), 8500);
+        EventDispatcher::i().get_timer_dispatcher("AVITest")->subscribe( bind(&view::SpriteMovie::stop, movie.get()), 10500);
+        EventDispatcher::i().get_timer_dispatcher("AVITest")->subscribe( bind(&view::SpriteMovie::play, movie.get()), 11500);
+        EventDispatcher::i().get_timer_dispatcher("AVITest")->subscribe( bind(&view::SpriteMovie::setCurrentFrame, movie.get(), 200), 13000);
     }
 #endif
 

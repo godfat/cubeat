@@ -21,10 +21,10 @@ public:
         stage_ = presenter::Stage::create( stage.S("test_stage") );
         stage_->playBGM();
 
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
 
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
 
         data::pViewSetting s0, s1;

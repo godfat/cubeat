@@ -12,7 +12,7 @@ using namespace state;
 pState <% debug_hook 'Waiting::init' do %>(){
 <% end %>
     pState result = shared_from_this();
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Waiting::check_chain_now, this),
         result, map()->ms()->chaining_duration());
     return result;

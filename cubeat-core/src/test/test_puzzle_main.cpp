@@ -17,7 +17,7 @@ using namespace psc;
 class TestPuzzle{
 public:
     TestPuzzle(){
-        scene_ = psc::view::Scene::create("TestMapViewScene");
+        scene_ = psc::view::Scene::create("game");
         scene_->setTo2DView().enableGlobalHittingEvent();     //important
 
         data::pViewSetting s0, s1;

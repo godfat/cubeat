@@ -23,8 +23,6 @@ using std::tr1::bind;
 using namespace std::tr1::placeholders;
 using std::make_pair;
 
-using irr::ITimer;
-
 using namespace psc;
 using namespace ctrl;
 
@@ -34,12 +32,38 @@ EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
 
 EventDispatcher::EventDispatcher()
 {
+    new_timer_dispatcher("global");
     std::cout << "EventDispatcher constructed..." << std::endl;
 }
 
 EventDispatcher::~EventDispatcher()
 {
+    drop_timer_dispatcher("global");
     std::cout << "EventDispatcher destructing..." << std::endl;
+}
+
+pTimerDispatcher EventDispatcher::new_timer_dispatcher(std::string const& name)
+{
+    pTimerDispatcher td = TimerDispatcher::create(name);
+    if( timer_dispatchers_.find( name ) == timer_dispatchers_.end() ) {
+        timer_dispatchers_.insert( make_pair(name, td) );
+    }
+    return td;
+}
+
+pTimerDispatcher EventDispatcher::get_timer_dispatcher(std::string const& name)
+{
+    TimerDispatcherMap::iterator it = timer_dispatchers_.find( name );
+    if( it == timer_dispatchers_.end() ) {
+        printf("Warning: bad timer dispatcher, resolving to global one..\n");
+        return timer_dispatchers_["global"];
+    }
+    return it->second;
+}
+
+void EventDispatcher::drop_timer_dispatcher(std::string const& name)
+{
+    timer_dispatchers_.erase(name);
 }
 
 EventDispatcher& EventDispatcher::subscribe_btn_event
@@ -73,21 +97,6 @@ EventDispatcher& EventDispatcher::subscribe_btn_event
     return subscribe_btn_event(cb, self_, btn, state);
 }
 
-EventDispatcher& EventDispatcher::subscribe_timer
-    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int loop)
-{
-    int const zero = 0;
-    newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
-    return *this;
-}
-
-EventDispatcher& EventDispatcher::subscribe_timer
-    (TimerCallback const& cb, int const& duration, int loop)
-{
-    if(!self_) self_ = pvoid(&EventDispatcher::i(), &free_func_do_nothing_deleter);
-    return subscribe_timer(cb, self_, duration, loop);
-}
-
 EventDispatcher& EventDispatcher::subscribe_obj_event
     (ObjCallback const* ocb, view::pSprite const& obj, Button const* btn, BSTATE const& state)
 {
@@ -112,21 +121,6 @@ EventDispatcher& EventDispatcher::clear_btn_event()
         btn_events_to_be_deleted_.push_back(b);
     }
     cleanup_btn_event();
-    return *this;
-}
-
-//note: has bug, don't use.
-EventDispatcher& EventDispatcher::clear_timer_event()
-{
-//    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t)
-//        timers_to_be_deleted_.push_back(t);
-//
-//    // clean up
-//    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
-//        timers_.erase(t);
-//    }
-//    timers_to_be_deleted_.clear();
-//    timers_.clear();
     return *this;
 }
 
@@ -283,74 +277,25 @@ void EventDispatcher::dispatch_btn(){
     cleanup_btn_event();
 }
 
-
-/// This is the Main Loop of Timer
-
-void EventDispatcher::dispatch_timer(){
-
-    cleanup_timer_and_init_newly_created_timer();
-
-    std::time_t now = IrrDevice::i().d()->getTimer()->getTime();
-    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
-        if( get<TE::CALLEE>(*t).lock() ) {
-            if( now - get<TE::LASTTIME>(*t) >= get<TE::DURATION>(*t) ) {
-
-                //debug
-//                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 ) {
-//                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << ", reg-ed duration: " << get<TE::DURATION>(*t) << " loop: " << get<TE::LOOP>(*t) << std::endl;
-//                    int* a = reinterpret_cast<int*>((get<TE::CALLEE>(*t).lock().get()));
-//                    std::cout << "   " << *a << std::endl;
-//                }
-
-                get<TE::TIMER_CB>(*t)();
-
-                //debug
-//                if( get<TE::DURATION>(*t) == 1000 && get<TE::LOOP>(*t) > 0 )
-//                    std::cout << "   timer: functor " << get<TE::CALLEE>(*t).lock() << std::endl;
-
-                get<TE::LASTTIME>(*t) = now; //get<TE::LASTTIME>(*t) += get<TE::DURATION>(*t);
-                int& looptimes = get<TE::LOOP>(*t);
-                if( looptimes == 0 ) {
-                    timers_to_be_deleted_.push_back(t);
-                } else if( looptimes > 0 ) looptimes -= 1;
-            }
-        }
-        else timers_to_be_deleted_.push_back(t);
-    }
-}
-
-
 /// Main Loop of Event Dispatcher
 
 void EventDispatcher::dispatch()
 {
+    //tick timers regarding their own status respectively.
+    BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
+        tdp.second->tick();
+    }
+
     dispatch_btn();
     dispatch_obj();
-    dispatch_timer();
+
+    BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
+        tdp.second->dispatch();
+    }
 }
 
 
 /// Cleanup method for Event Dispatcher
-
-void EventDispatcher::cleanup_timer_and_init_newly_created_timer()
-{
-    // clean up
-    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
-        timers_.erase(t);
-    }
-    timers_to_be_deleted_.clear();
-
-    // init newly created
-    std::time_t init_time = IrrDevice::i().d()->getTimer()->getTime();
-    BOOST_FOREACH(Timer& timer, newly_created_timers_){
-        get<TE::LASTTIME>(timer) = init_time;
-    }
-
-    timers_.insert(timers_.end(),
-                   newly_created_timers_.begin(),
-                   newly_created_timers_.end());
-    newly_created_timers_.clear();
-}
 
 void EventDispatcher::cleanup_obj_event()
 {

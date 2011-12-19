@@ -99,8 +99,12 @@ PlayerView& PlayerView::switchCharacterState( STATE const& state )
     if( state == STAND ) {
         face_pos_idx_ = 0;
         character_->getSprite("face").set<Pos2D>( face_pos_[0] );
-        ctrl::EventDispatcher::i().subscribe_timer(
+        ctrl::EventDispatcher::i().get_timer_dispatcher( character_->getSceneName() )->subscribe(
             std::tr1::bind(&PlayerView::faceUpdate, this), shared_from_this(), 250, 2);
+
+        // 2011.12.19 FUCK!!!!!!!!!!!!!!!!!!
+        // YOU CAN'T GET TIMER DISPATCHER BY NAME BECAUSE SOME CLASS CAN BE REUSED ACROSS DIFFERENT SCENE!!!!
+        // HENCE SCENE NAME IS NOT RELIABLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! FUCK!!!!!!!!!!!!!!!!!!!!!
     }
     return *this;
 }

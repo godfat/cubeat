@@ -28,7 +28,7 @@ void <% debug_hook 'Dying::next_state' do %>(){
 pState <% debug_hook 'Dying::init' do %>(){
 <% end %>
     pDying result = std::tr1::static_pointer_cast<Dying>(shared_from_this());
-    ctrl::EventDispatcher::i().subscribe_timer(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Dying::next_state, result.get()), result,
             map()->ms()->cube_dying_duration());
     return result;

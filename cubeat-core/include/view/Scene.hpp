@@ -13,6 +13,8 @@ namespace psc {
 namespace ctrl {
 class Button;
 class Input;
+class TimerDispatcher;
+typedef std::tr1::weak_ptr<TimerDispatcher> wpTimerDispatcher;
 }
 
 namespace view {
@@ -49,6 +51,9 @@ public:
     void removePickMapping(irr::scene::ISceneNode*);
     void enableGlobalHittingEvent();
     void update_focus_objs_by_input(ctrl::Input const*);   //this will be called inside EventDispatcher.
+
+    std::string getName() const { return name_; }
+
     virtual ~Scene();
 
 protected:
@@ -66,6 +71,7 @@ protected:
     std::list<wpObject> picked_temporary_;   //this list will be wiped every time you call "pick"
                                              //so there must be a copy in the outside world
     PickingMap pickmap_, last_pickmap_;
+    ctrl::wpTimerDispatcher timer_;
 };
 
 } //view

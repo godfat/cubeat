@@ -254,6 +254,7 @@
 		<Unit filename="src\audio\SoundObject.cpp" />
 		<Unit filename="src\audio\detail\OpenAL.cpp" />
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
+		<Unit filename="src\ctrl\TimerDispatcher.cpp" />
 		<Unit filename="src\data\Color.cpp" />
 		<Unit filename="src\data\MapSetting.cpp" />
 		<Unit filename="src\data\MapSetting.cpp.eruby" />

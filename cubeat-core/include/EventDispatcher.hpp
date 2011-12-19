@@ -27,6 +27,42 @@ namespace ctrl {
 class Input;
 class Button;
 
+class TimerDispatcher
+{
+    typedef std::tr1::function<void()>                                     TimerCallback;
+    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, int, wpvoid> Timer;
+    typedef std::list<Timer>                                               TimerList;
+    typedef std::list< TimerList::iterator >                               TimerRemoval;
+
+public:
+    typedef std::shared_ptr<TimerDispatcher> pointer_type;
+
+    static pointer_type
+
+    TimerDispatcher&
+    subscribe(TimerCallback const&, wpvoid const&, int const&, int loop = 0);
+    TimerDispatcher&
+    subscribe(TimerCallback const&, int const&, int loop = 0);
+
+    EventDispatcher& clear_timer_event(); //note: has bug, don't use.
+    //note: call to this has no effect, don't sure why. need to check in the future.
+
+    void dispatch(); //this should only be called by EventDispatcher
+
+private:
+    struct TE{enum{TIMER_CB, DURATION, LASTTIME, LOOP, CALLEE};};
+    enum { TIMER_TIME, TIMER };
+
+    TimerDispatcher();
+
+    void cleanup_timer_and_init_newly_created_timer();
+
+    TimerList    timers_, newly_created_timers_;
+    TimerRemoval timers_to_be_deleted_;
+
+    pointer_type self_;
+};
+
 class EventDispatcher
 {
     typedef std::tr1::shared_ptr<void>                                     pvoid;
@@ -36,11 +72,6 @@ class EventDispatcher
     typedef std::tr1::tuple<BtnCallback, Button const*, BSTATE, wpvoid>    BtnEvent;
     typedef std::list<BtnEvent>                                            BtnListener;
     typedef std::list< BtnListener::iterator >                             BtnEventRemoval;
-
-    typedef std::tr1::function<void()>                                     TimerCallback;
-    typedef std::tr1::tuple<TimerCallback, std::time_t, std::time_t, int, wpvoid> Timer;
-    typedef std::list<Timer>                                               TimerList;
-    typedef std::list< TimerList::iterator >                               TimerRemoval;
 
     typedef std::tr1::function<void( view::pSprite& )>                     ObjCallback;
     typedef std::tr1::tuple<ObjCallback const*, Button const*, BSTATE, view::wpSprite> ObjEvent;
@@ -70,8 +101,6 @@ public:
     EventDispatcher&
     subscribe_btn_event(BtnCallback const&, wpvoid const&, Button const*, BSTATE const&);
     EventDispatcher&
-    subscribe_timer(TimerCallback const&, wpvoid const&, int const&, int loop = 0);
-    EventDispatcher&
     subscribe_obj_event(ObjCallback const*, view::pSprite const&, Button const*, BSTATE const&);
     EventDispatcher&
     subscribe_focus_event(FocusCallback const*, view::pSprite const&, Input const*, FSTATE const&);
@@ -79,13 +108,9 @@ public:
     /// Free function version
     EventDispatcher&
     subscribe_btn_event(BtnCallback const&, Button const*, BSTATE const&);
-    EventDispatcher&
-    subscribe_timer(TimerCallback const&, int const&, int loop = 0);
 
     /// Clear all: clean up events, usually use when menu change or stage change.
     EventDispatcher& clear_btn_event();
-    EventDispatcher& clear_timer_event(); //note: has bug, don't use.
-    //note: call to this has no effect, don't sure why. need to check in the future.
     EventDispatcher& clear_obj_event(view::wpScene const& scene);
 
     void dispatch();
@@ -93,16 +118,12 @@ public:
 
 private:
     struct BE{enum{BTN_CB, BTN, STATE, CALLEE};};
-    struct TE{enum{TIMER_CB, DURATION, LASTTIME, LOOP, CALLEE};};
     struct FE{enum{FOCUS_CB, INPUT, STATE, CALLEE};};
     struct OE{enum{OBJ_CB, BTN, STATE, CALLEE};};
-    enum { TIMER_TIME, TIMER };
     EventDispatcher();
     void dispatch_btn();
     void dispatch_obj();
-    void dispatch_timer();
     void dispatch_focus();  //this is not an independent dispatching, it depends on dispatch_obj
-    void cleanup_timer_and_init_newly_created_timer();
     void cleanup_obj_event();
     void cleanup_btn_event();
     void obj_picking(view::pScene const&);
@@ -112,8 +133,6 @@ private:
 private:
     BtnListener          btn_listeners_;
     BtnEventRemoval      btn_events_to_be_deleted_;
-    TimerList            timers_, newly_created_timers_;
-    TimerRemoval         timers_to_be_deleted_;
     SceneListener        scene_listeners_;
     ObjEventRemoval      obj_events_to_be_deleted_;
     SceneListenerRemoval scene_expired_;

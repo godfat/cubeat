@@ -9,14 +9,12 @@
 #include "all_fwd.hpp"
 #include <boost/tr1/functional.hpp>
 
-namespace irr {
-class ITimer;
-}
-
 namespace psc {
 
 namespace ctrl {
 class Input;
+class TimerDispatcher;
+typedef std::tr1::weak_ptr<TimerDispatcher> wpTimerDispatcher;
 }
 
 class App
@@ -56,7 +54,7 @@ private:
 
     bool quit_;
 
-    irr::ITimer* timer_;
+    ctrl::wpTimerDispatcher global_timer_;
 };
 
 }  //psc

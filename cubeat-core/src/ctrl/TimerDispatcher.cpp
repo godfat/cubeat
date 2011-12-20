@@ -21,11 +21,12 @@ using namespace ctrl;
 TimerDispatcher::TimerDispatcher(std::string const& name)
     :name_(name)
 {
-    printf("TimerDispatcher created.\n");
+    printf("TimerDispatcher created: %s\n", name_.c_str());
 }
 
 TimerDispatcher::~TimerDispatcher()
 {
+    printf("TimerDispatcher died: %s\n", name_.c_str());
     delete timer_;
 }
 
@@ -33,7 +34,7 @@ pTimerDispatcher TimerDispatcher::init()
 {
     self_  = shared_from_this();
     timer_ = new utils::Timer(IrrDevice::i().d()->getTimer(), true); //start on running by default
-    return self_;
+    return self_.lock();
 }
 
 TimerDispatcher& TimerDispatcher::subscribe
@@ -47,7 +48,7 @@ TimerDispatcher& TimerDispatcher::subscribe
 TimerDispatcher& TimerDispatcher::subscribe
     (TimerCallback const& cb, int const& duration, int loop)
 {
-    return subscribe(cb, self_, duration, loop);
+    return subscribe(cb, shared_from_this(), duration, loop);
 }
 
 
@@ -83,7 +84,7 @@ bool TimerDispatcher::is_stopped() const
     return timer_->isStopped();
 }
 
-std::time_t TimerDispatcher::getTime() const
+std::time_t TimerDispatcher::get_time() const
 {
     return timer_->getTime();
 }

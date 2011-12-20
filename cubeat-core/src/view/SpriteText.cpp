@@ -142,7 +142,8 @@ void SpriteText::startTween()
     if( anim_queue_.size() > 0 ) {
         AnimatorBase* anim = anim_queue_.front();
         anim_queue_.pop_front();
-        anim->updateStartTime();
+        std::time_t time = scene()->getTime();
+        anim->updateStartTime( time );
         AT::ATEnum e = static_cast<AT::ATEnum>(anim->getType());
         clearTween( e ); //del all animators of same type
 
@@ -154,6 +155,7 @@ void SpriteText::startTween()
                     letter_node_[0]->addAnimator( anim );
                 else {
                     AnimatorBase* a = anim->cloneWithoutCallback();
+                    a->updateStartTime( time );
                     letter_node_[i]->addAnimator( a );
                     a->drop();
                 }

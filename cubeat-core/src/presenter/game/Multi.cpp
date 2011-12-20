@@ -357,7 +357,7 @@ void Multi::end_sequence1()
 
 void Multi::pause_quit()
 {
-    App::i().resume();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);
     btn_pause_.reset(); //reset button event subscribed by this handle.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -373,7 +373,7 @@ void Multi::reinit()
     using std::tr1::bind;
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&App::launchMultiplayer, &App::i(), c1p_, c2p_, sconf_, num_of_cpu_, ai_level_), 500);
     std::cout << "game_multiplayer end call finished." << std::endl;
 }
@@ -461,7 +461,7 @@ void Multi::pause(ctrl::Input const* controller)
 
     blocker_->set<Alpha>(100).set<Visible>(true);
 
-    App::i().pause();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
     if( item_ ) item_->setPickable(false);
@@ -497,7 +497,7 @@ void Multi::resume(ctrl::Input const* controller)
     pause_t_->set<Visible>(false);
     blocker_->set<Visible>(false);
 
-    App::i().resume();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);
     scene_->allowPicking(true);
     if( item_ ) item_->setPickable(true);

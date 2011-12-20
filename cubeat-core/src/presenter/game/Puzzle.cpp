@@ -69,6 +69,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
     // setup map0
     map0_ = utils::MapLoader::generate( puzzle_level );
+
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
@@ -270,7 +271,7 @@ void Puzzle::end_sequence1()
 
 void Puzzle::pause_quit()
 {
-    App::i().resume();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);
     btn_pause_.reset(); //reset button event subscribed by this handle.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -290,7 +291,7 @@ void Puzzle::reinit()
     else if( new_puzzle_lv < 3 ) new_puzzle_lv = 3;
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&App::launchPuzzle, &App::i(), c1p_, sconf_, new_puzzle_lv), 500);
 
     std::cout << "game_puzzle end call finished." << std::endl;
@@ -325,7 +326,7 @@ void Puzzle::pause()
     }
     blocker_->set<Alpha>(100).set<Visible>(true);
 
-    App::i().pause();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
 
@@ -353,7 +354,7 @@ void Puzzle::resume()
     pause_t_->set<Visible>(false);
     blocker_->set<Visible>(false);
 
-    App::i().resume();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);
     scene_->allowPicking(true);
 

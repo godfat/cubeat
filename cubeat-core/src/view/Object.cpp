@@ -113,7 +113,7 @@ void Object::startTween() {
     if( anim_queue_.size() > 0 ) {
         AnimatorBase* anim = anim_queue_.front();
         anim_queue_.pop_front();
-        anim->updateStartTime();
+        anim->updateStartTime( scene()->getTime() );
         clearTween( static_cast<AT::ATEnum>(anim->getType()) ); //del all animators of same type
         body_->addAnimator( anim );
         anim->drop();

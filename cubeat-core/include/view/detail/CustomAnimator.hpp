@@ -16,8 +16,8 @@ namespace scene
 class AnimatorBase : public ISceneNodeAnimator {
 public:
     AnimatorBase(s32 const& delayTime = 0):delayTime_(delayTime){}
-    void updateStartTime() {
-        startTime_ = IrrDevice::i().d()->getTimer()->getTime() + delayTime_;
+    void updateStartTime(s32 const& base_time) {
+        startTime_ = base_time + delayTime_;
     }
 
     virtual AnimatorBase* clone() const = 0;
@@ -48,7 +48,7 @@ public:
         #ifdef _DEBUG
         setDebugName("CustomAnimator");
         #endif
-        updateStartTime();
+        updateStartTime(0);
     };
 
     //! destructor

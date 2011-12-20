@@ -52,7 +52,8 @@ void Scene::init(std::string const& name)
     std::cout << "scene: " << name << " created." << std::endl;
 
     //get timer dispatcher for SetTime and it's own time.
-    timer_ = ctrl::EventDispatcher::i().new_timer_dispatcher(name);
+    timer_ = ctrl::TimerDispatcher::create(name);
+    ctrl::EventDispatcher::i().add_timer_dispatcher(timer_);
 
     scene_ = std::tr1::static_pointer_cast<Scene>(shared_from_this());
 }
@@ -115,10 +116,7 @@ Scene& Scene::activate()
 
 Scene& Scene::redraw()
 {
-    if( ctrl::pTimerDispatcher td = timer_.lock() ) {
-        IrrDevice::i().d()->getTimer()->setTime(td->getTime());
-        //so we can be sure this scene is drawn on its own timeline.
-    }
+    IrrDevice::i().d()->getTimer()->setTime(timer_->get_time());
     smgr_->drawAll();
     return *this;
 }
@@ -269,10 +267,10 @@ void Scene::removePickMapping(ISceneNode* node)
     node2view_.erase( node );
 }
 
+std::time_t Scene::getTime() const { return timer_->get_time(); }
+
 Scene::~Scene()
 {
-    ctrl::EventDispatcher::i().drop_timer_dispatcher(name_);
-
     std::cout << body_->getName() << " scene died." << std::endl;
     node2view_.clear();
     std::cout << "scene cleared: " << smgr_->drop() << "\n";

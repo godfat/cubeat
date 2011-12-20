@@ -37,7 +37,8 @@ App::App()
         return;
     }
 
-    timer_ = IrrDevice::i().d()->getTimer();
+    global_timer_ = EventDispatcher::i().get_timer_dispatcher("global");
+
     InputMgr::i().createInputs();
     audio::Sound::i().init();
 
@@ -90,7 +91,7 @@ App& App::launchPuzzle(std::string const& conf1p, std::string const& stage, int 
 
 bool App::update_block()
 {
-    u32 now_time = timer_->getTime();
+    u32 now_time = global_timer_.lock()->get_time();
     if( now_time - last_timetick_ <= 1000/framerate_ ) {
         return true;
     }
@@ -100,15 +101,15 @@ bool App::update_block()
 
 App& App::pause()
 {
-    if( !timer_->isStopped() )
-        timer_->stop();
+    if( !global_timer_.lock()->is_stopped() )
+        global_timer_.lock()->stop();
     return *this;
 }
 
 App& App::resume()
 {
-    if( timer_->isStopped() )
-        timer_->start();
+    if( global_timer_.lock()->is_stopped() )
+        global_timer_.lock()->start();
     return *this;
 }
 
@@ -133,8 +134,8 @@ int App::run(std::tr1::function<void()> tester)
     while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
         //{                                                            //comment: temp for double tasking
-        //    if( timer_->isStopped() )        //comment: temp for double tasking
-        //        timer_->start();             //comment: temp for double tasking
+        //    if( global_timer_.lock()->isStopped() )        //comment: temp for double tasking
+        //        global_timer_.lock()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
             InputMgr::i().updateAll();
             EventDispatcher::i().dispatch();

@@ -48,6 +48,7 @@ class TimerDispatcher : public std::tr1::enable_shared_from_this<TimerDispatcher
 
 public:
     typedef std::tr1::shared_ptr<TimerDispatcher> pointer_type;
+    typedef std::tr1::weak_ptr<TimerDispatcher>   wpointer_type;
 
     static pointer_type create(std::string const& name) {
         return pointer_type(new TimerDispatcher(name))->init();
@@ -60,8 +61,9 @@ public:
 
     TimerDispatcher& start();
     TimerDispatcher& stop();
-    bool        is_stopped() const;
-    std::time_t getTime()    const;
+    bool             is_stopped() const;
+    std::time_t      get_time()   const;
+    std::string      get_name()   const { return name_; }
 
     TimerDispatcher& clear_timer_event(); //note: has bug, don't use.
     //note: call to this has no effect, don't sure why. need to check in the future.
@@ -79,17 +81,18 @@ private:
     void cleanup_timer_and_init_newly_created_timer();
     void tick();
 
-    TimerList    timers_, newly_created_timers_;
-    TimerRemoval timers_to_be_deleted_;
-    std::string  name_;
+    TimerList     timers_, newly_created_timers_;
+    TimerRemoval  timers_to_be_deleted_;
+    std::string   name_;
     utils::Timer* timer_;
 
-    pointer_type self_;
+    wpointer_type self_;
 
     friend class EventDispatcher; //for EventDispatcher to call dispatch & tick
 };
 
-typedef TimerDispatcher::pointer_type pTimerDispatcher;
+typedef TimerDispatcher::pointer_type  pTimerDispatcher;
+typedef TimerDispatcher::wpointer_type wpTimerDispatcher;
 
 class EventDispatcher
 {
@@ -119,8 +122,9 @@ class EventDispatcher
     typedef std::list<FocusEvent>                                          FocusListener;
     typedef std::list<FocusListener::iterator>                             FocusEventRemoval;
 
-    typedef std::pair<std::string const, pTimerDispatcher>                 TimerDispatcherPair;
-    typedef std::map <std::string, pTimerDispatcher>                       TimerDispatcherMap;
+    typedef std::pair<std::string const, wpTimerDispatcher>                TimerDispatcherPair;
+    typedef std::map <std::string, wpTimerDispatcher>                      TimerDispatcherMap;
+    typedef std::list<TimerDispatcherMap::key_type>                        TimerDispatcherRemoval;
 
 public:
     static EventDispatcher& i() {
@@ -128,9 +132,8 @@ public:
         return singleton;
     }
 
-    pTimerDispatcher new_timer_dispatcher (std::string const& name);
-    pTimerDispatcher get_timer_dispatcher (std::string const& name); // for those needing timer.
-    void             drop_timer_dispatcher(std::string const& name); // who news, who drops
+    void             add_timer_dispatcher(pTimerDispatcher const& t);
+    pTimerDispatcher get_timer_dispatcher(std::string const& name); // for those needing timer.
 
     /// Object binding version
     EventDispatcher&
@@ -156,25 +159,31 @@ private:
     struct FE{enum{FOCUS_CB, INPUT, STATE, CALLEE};};
     struct OE{enum{OBJ_CB, BTN, STATE, CALLEE};};
     EventDispatcher();
+    void tick_timers();
     void dispatch_btn();
     void dispatch_obj();
     void dispatch_focus();  //this is not an independent dispatching, it depends on dispatch_obj
+    void dispatch_timer();
     void cleanup_obj_event();
     void cleanup_btn_event();
+    void cleanup_timer_dispatcher();
     void obj_picking(view::pScene const&);
     void obj_listening(view::pScene const&, ObjListener&);
     void update_focus_objs();
 
 private:
-    BtnListener          btn_listeners_;
-    BtnEventRemoval      btn_events_to_be_deleted_;
-    SceneListener        scene_listeners_;
-    ObjEventRemoval      obj_events_to_be_deleted_;
-    SceneListenerRemoval scene_expired_;
-    PickingMap           pickmap_, last_pickmap_, focus_objs_, leave_focus_objs_;
-    FocusListener        focus_listeners_;
-    FocusEventRemoval    focus_events_to_be_deleted_;
-    TimerDispatcherMap   timer_dispatchers_;
+    BtnListener            btn_listeners_;
+    BtnEventRemoval        btn_events_to_be_deleted_;
+    SceneListener          scene_listeners_;
+    ObjEventRemoval        obj_events_to_be_deleted_;
+    SceneListenerRemoval   scene_expired_;
+    PickingMap             pickmap_, last_pickmap_, focus_objs_, leave_focus_objs_;
+    FocusListener          focus_listeners_;
+    FocusEventRemoval      focus_events_to_be_deleted_;
+    TimerDispatcherMap     timer_dispatchers_;
+    TimerDispatcherRemoval timer_expired_;
+
+    pTimerDispatcher       global_timer_;
 
     static pvoid self_; //point to &EventDispatcher::i()
 };

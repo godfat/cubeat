@@ -32,23 +32,19 @@ EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
 
 EventDispatcher::EventDispatcher()
 {
-    new_timer_dispatcher("global");
+    global_timer_ = TimerDispatcher::create("global");
+    add_timer_dispatcher(global_timer_);
     std::cout << "EventDispatcher constructed..." << std::endl;
 }
 
 EventDispatcher::~EventDispatcher()
 {
-    drop_timer_dispatcher("global");
     std::cout << "EventDispatcher destructing..." << std::endl;
 }
 
-pTimerDispatcher EventDispatcher::new_timer_dispatcher(std::string const& name)
+void EventDispatcher::add_timer_dispatcher(pTimerDispatcher const& t)
 {
-    pTimerDispatcher td = TimerDispatcher::create(name);
-    if( timer_dispatchers_.find( name ) == timer_dispatchers_.end() ) {
-        timer_dispatchers_.insert( make_pair(name, td) );
-    }
-    return td;
+    timer_dispatchers_[ t->get_name() ] = t; //converts to wpTimerDispatcher
 }
 
 pTimerDispatcher EventDispatcher::get_timer_dispatcher(std::string const& name)
@@ -56,14 +52,9 @@ pTimerDispatcher EventDispatcher::get_timer_dispatcher(std::string const& name)
     TimerDispatcherMap::iterator it = timer_dispatchers_.find( name );
     if( it == timer_dispatchers_.end() ) {
         printf("Warning: bad timer dispatcher, resolving to global one..\n");
-        return timer_dispatchers_["global"];
+        return timer_dispatchers_["global"].lock();
     }
-    return it->second;
-}
-
-void EventDispatcher::drop_timer_dispatcher(std::string const& name)
-{
-    timer_dispatchers_.erase(name);
+    return it->second.lock();
 }
 
 EventDispatcher& EventDispatcher::subscribe_btn_event
@@ -279,19 +270,48 @@ void EventDispatcher::dispatch_btn(){
 
 /// Main Loop of Event Dispatcher
 
-void EventDispatcher::dispatch()
+void EventDispatcher::tick_timers()
 {
     //tick timers regarding their own status respectively.
     BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
-        tdp.second->tick();
+        pTimerDispatcher td = tdp.second.lock();
+        if( !td ) {
+            timer_expired_.push_back( tdp.first );
+            continue;
+        }
+        td->tick();
     }
+}
+
+void EventDispatcher::dispatch_timer()
+{
+    BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
+        pTimerDispatcher td = tdp.second.lock();
+        if( !td ) {
+            timer_expired_.push_back( tdp.first );
+            continue;
+        }
+        td->dispatch();
+    }
+}
+
+void EventDispatcher::cleanup_timer_dispatcher()
+{
+    BOOST_FOREACH(TimerDispatcherMap::key_type& s, timer_expired_) {
+        timer_dispatchers_.erase(s);
+    }
+    timer_expired_.clear();
+}
+
+void EventDispatcher::dispatch()
+{
+    tick_timers();
 
     dispatch_btn();
     dispatch_obj();
+    dispatch_timer();
 
-    BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
-        tdp.second->dispatch();
-    }
+    cleanup_timer_dispatcher();
 }
 
 

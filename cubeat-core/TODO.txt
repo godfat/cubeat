@@ -9,18 +9,21 @@
 
 * Programming-Fundamental Issues:
 
-0.6  1. Fix the Singleton flood.
+SKIP 1. Fix the Singleton flood.
 
-0.6  2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+DONE?2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
      This probably need to be a separated small project.
      -- Let's separate the Timer as a different module?
        -- Make Timer interface return formal handles, not use shared_ptr<int> as dummies.
      -- The singleton flood must be fixed first.
+       ** SKIPPED
+     ** Multiple timer done, but Timer still don't return formal handles.
 
-0.6  3. Try to remove as many template usages as possible:
+SKIP 3. Try to remove as many template usages as possible:
      -- presenter::cube::ViewStdOut, ViewMaster, ViewSprite, ViewSpriteMaster etc should be removed.
      -- Animators, Accessors.
-     -- pull contents to cpp units, don't leave them in headers.     
+     -- pull contents to cpp units, don't leave them in headers.
+     ** If it ain't broken, don't fix it.
      
 0.6  4. A better way to present the UI programatically (usually means the presenter)
      -- Lua modules? or we just fix the C++ interfaces? 

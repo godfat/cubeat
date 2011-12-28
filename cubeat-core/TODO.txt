@@ -34,9 +34,11 @@ SKIP 3. Try to remove as many template usages as possible:
   6. Lack of networking capability.
      -- enet + Lua modules?
      
-0.6  7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
+SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
      view::Scene, How do I fix this? 
      -- Multiple EventDispatchers for Multi Scenes might have something to do with this.
+     ** On a second thought, I doubt this will tangle with other features in the future.
+        So, just don't do anything with it. If it can be removed, then it will be.
      
   8. We need a Font Factory.
 

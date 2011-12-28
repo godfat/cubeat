@@ -106,6 +106,7 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
      
 0.6  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
      -- Lua modules?
+       ** Lua integration of this part done.
      
   5. Other game modes:
      -- Time attack, Score attack, challenge mode, etc.

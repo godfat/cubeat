@@ -189,7 +189,10 @@
 		<Unit filename="lib\manymouse\windows_wminput.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
@@ -340,6 +343,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_ui_main.cpp" />
 		<Unit filename="src\test\test_view1_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

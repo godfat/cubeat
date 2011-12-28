@@ -48,6 +48,7 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
      how to prevent buffer exhaustion... 
 
   2. ManyMouse on MacOSX 10.6+ 
+     see http://hg.icculus.org/icculus/manymouse/
      
   3. Something about lock and delayed cleanup:
      I found many places in code where we should actually check on the weak_ptr.lock(), 

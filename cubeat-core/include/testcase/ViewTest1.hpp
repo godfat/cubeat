@@ -37,7 +37,7 @@ struct ViewTest1 : public std::tr1::enable_shared_from_this<ViewTest1>
     void step4_alt_timer(view::pSprite& sprite)
     {
         std::tr1::function<void()> next_step = bind(&ViewTest1::step1, this, ref(sprite));
-        EventDispatcher::i().get_timer_dispatcher("ui").subscribe(
+        EventDispatcher::i().get_timer_dispatcher("ui")->subscribe(
             bind( &view::Sprite::moveTween, sprite.get(), 0, 0, 3000, next_step, 0), shared_from_this(), 2000);
     }
 
@@ -171,11 +171,11 @@ ViewTest1::ViewTest1()
     param2.center(vec3(5,5,50)).start(vec2(10,0)).end(vec2(10,360)).rotation(vec3(-45,0,0))
           .duration(5000).loop(-1);
 
-    testcube2 = view::AnimatedSceneObject::create("ex_move", worldv);
+    testcube2 = view::AnimatedSceneObject::create("jungle/grass1", worldv);
     testcube2->moveTo(5,5,50).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                              .tween(param1).tween(param2);
 
-    testcube3 = view::AnimatedSceneObject::create("ex_move", worldv);
+    testcube3 = view::AnimatedSceneObject::create("jungle/grass1", worldv);
     testcube3->moveTo(-5,-5,60).set<Scale>(vec3(0.3f, 0.3f, 0.3f))
                                .tween<Linear, Frame>(0.0f,9600.0f,3000, -1);
 
@@ -194,11 +194,11 @@ ViewTest1::ViewTest1()
     anotherthing = view::Sprite::create("title", guiv, 100, 40);
     anotherthing->moveTo(0,0);
 
-    girl = view::AnimatedSprite::create("test", guiv, 128, 192);
+    girl = view::AnimatedSprite::create("char1", guiv, 192, 192);
     girl->addAnime("stand",3).addAnime("hit",5).moveTo(400,300);
     girl->playAnime("stand", 1000, -1);
 
-    a = view::AnimatedSprite::create( "test", guiv, 128, 192);
+    a = view::AnimatedSprite::create( "char2", guiv, 192, 192);
     a->addAnime("hit",5).playAnime("hit",876,-1).moveTo(150,350);
 
     //test menu
@@ -224,7 +224,7 @@ ViewTest1::ViewTest1()
     paramD.center(vec3(-3,3,83)).start(vec2(3*1.71f,-45)).end(vec2(9,135)).rotation(vec3(-90,45,0))
           .duration(4000);
 
-    cube4 = view::AnimatedSceneObject::create("ex_move", worldv);
+    cube4 = view::AnimatedSceneObject::create("jungle/grass1", worldv);
     cube4->moveTo(0,0,80).set<Scale>(vec3(.3f, .3f, .3f))
           .queue(paramA).queue(paramB).queue(paramC).tween(paramD);
 

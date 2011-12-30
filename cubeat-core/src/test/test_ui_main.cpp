@@ -1,4 +1,7 @@
 
+#include "Accessors.hpp"
+#include "view/Scene.hpp"
+#include "view/Sprite.hpp"
 #include "presenter/Stage.hpp"
 #include "EventDispatcher.hpp"
 #include "utils/Random.hpp"
@@ -6,6 +9,7 @@
 #include "Conf.hpp"
 
 using namespace psc;
+using namespace accessor;
 
 class TestStage{
     typedef std::vector< view::pAnimatedSceneObject > SceneObjList;
@@ -18,6 +22,12 @@ public:
         stage_ = presenter::Stage::create( stage.S("test_stage") );
         stage_->playBGM();
 
+        scene_ = view::Scene::create("ui");
+        scene_->setTo2DView();
+
+        test_sprite_ = view::Sprite::create("area_rect", scene_, 128, 128, true);
+        test_sprite_->set<Pos2D>(vec2(640, 360));
+
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
 
@@ -27,10 +37,13 @@ public:
 
     void cycle(){
         stage_->cycle();
+        scene_->redraw();
     }
 
 private:
     presenter::pStage stage_;
+    view::pScene      scene_;
+    view::pSprite     test_sprite_;
 };
 
 #include "App.hpp"

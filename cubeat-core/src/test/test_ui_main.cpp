@@ -8,43 +8,8 @@
 #include "utils/dictionary.hpp"
 #include "Conf.hpp"
 
-using namespace psc;
-using namespace accessor;
-
-class TestStage{
-    typedef std::vector< view::pAnimatedSceneObject > SceneObjList;
-
-public:
-    TestStage(){
-        //temporary Scene:
-
-        utils::map_any stage = Conf::i().config_of("test_stage");
-        stage_ = presenter::Stage::create( stage.S("test_stage") );
-        stage_->playBGM();
-
-        scene_ = view::Scene::create("ui");
-        scene_->setTo2DView();
-
-        test_sprite_ = view::Sprite::create("area_rect", scene_, 128, 128, true);
-        test_sprite_->set<Pos2D>(vec2(640, 360));
-
-        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
-
-        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
-    }
-
-    void cycle(){
-        stage_->cycle();
-        scene_->redraw();
-    }
-
-private:
-    presenter::pStage stage_;
-    view::pScene      scene_;
-    view::pSprite     test_sprite_;
-};
+#include "test/test_ui.hpp"
+#include "script/lua_utility.hpp"
 
 #include "App.hpp"
 #include <cstdlib> // for srand
@@ -52,11 +17,52 @@ private:
 
 #include <boost/tr1/functional.hpp> // for bind
 
+using namespace psc;
+using namespace accessor;
+
+TestUI::TestUI()
+{
+    //temporary Scene:
+    utils::map_any stage = Conf::i().config_of("test_stage");
+    stage_ = presenter::Stage::create( stage.S("test_stage") );
+    stage_->playBGM();
+
+    scene_ = view::Scene::create("ui");
+    scene_->setTo2DView();
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
+}
+
+void TestUI::init()
+{
+    //enable Lua scripting for this class
+    L_ = luaL_newstate();
+    luaL_openlibs(L_);
+    script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
+    script::Lua::call(L_, "test_ui_entry", static_cast<void*>(this));
+}
+
+TestUI::~TestUI()
+{
+    lua_close(L_);
+}
+
+void TestUI::cycle()
+{
+    stage_->cycle();
+    scene_->redraw();
+}
+
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::Conf::i().init("");
     psc::App::i();
-    TestStage tester;
-    return psc::App::i().run(std::tr1::bind(&TestStage::cycle, &tester));
+    psc::TestUI tester;
+    tester.init();
+    return psc::App::i().run(std::tr1::bind(&psc::TestUI::cycle, &tester));
 }
 

@@ -1,3 +1,5 @@
+#ifndef _SHOOTING_CUBES_SCRIPT_AI_BINDINGS_
+#define _SHOOTING_CUBES_SCRIPT_AI_BINDINGS_
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #define APIEXPORT __declspec(dllexport)
@@ -42,3 +44,5 @@ APIEXPORT int  SimpleCube_y(pSimpleCube*);
 APIEXPORT void SimpleCube__gc(pSimpleCube*);
 
 APIEXPORT void SimpleCubeList__gc(pSimpleCube** list, int size);
+
+#endif //_SHOOTING_CUBES_SCRIPT_AI_BINDINGS_

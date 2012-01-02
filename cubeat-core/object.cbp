@@ -130,7 +130,8 @@
 		<Unit filename="include\private\MouseState.hpp" />
 		<Unit filename="include\script\ai\bindings.h" />
 		<Unit filename="include\script\lua_utility.hpp" />
-		<Unit filename="include\script\ui\bindings.h" />
+		<Unit filename="include\script\ui\test\bindings.h" />
+		<Unit filename="include\test\test_ui.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
 		<Unit filename="include\utils\ChainChecker.hpp" />
@@ -237,6 +238,12 @@
 		<Unit filename="rc\resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="rc\script\ai\ai.lua" />
+		<Unit filename="rc\script\ai\bindings.ffi" />
+		<Unit filename="rc\script\ai\easy.lua" />
+		<Unit filename="rc\script\ai\hard.lua" />
+		<Unit filename="rc\script\ai\insane.lua" />
+		<Unit filename="rc\script\ai\normal.lua" />
 		<Unit filename="rc\script\puzzle\chain.lua" />
 		<Unit filename="rc\script\puzzle\helpers.lua" />
 		<Unit filename="rc\script\puzzle\maputils.lua" />
@@ -244,6 +251,9 @@
 		<Unit filename="rc\script\puzzle\puzzle_gen_interface.lua" />
 		<Unit filename="rc\script\test.lua" />
 		<Unit filename="rc\script\test2.lua" />
+		<Unit filename="rc\script\ui\test\bindings.ffi" />
+		<Unit filename="rc\script\ui\test\test1.lua" />
+		<Unit filename="rc\script\ui\test\view.lua" />
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -300,7 +310,7 @@
 		<Unit filename="src\private\MastEventReceiver.cpp" />
 		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
-		<Unit filename="src\script\ui\bindings.cpp" />
+		<Unit filename="src\script\ui\test\bindings.cpp" />
 		<Unit filename="src\test\test_font_input_method_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -29,10 +29,10 @@ Mt_Sprite.__index    = Mt_Sprite
 Mt_Sprite.set_pos    = C.Sprite_set_pos
 Mt_Sprite.set_rotate = C.Sprite_set_rotate
 Mt_Sprite.set_scale  = C.Sprite_set_scale
-Mt_Sprite.set_red	 = C.Sprite_set_red
-Mt_Sprite.set_green	 = C.Sprite_set_green
-Mt_Sprite.set_blue	 = C.Sprite_set_blue
-Mt_Sprite.set_alpha	 = C.Sprite_set_alpha
+Mt_Sprite.set_red    = C.Sprite_set_red
+Mt_Sprite.set_green  = C.Sprite_set_green
+Mt_Sprite.set_blue   = C.Sprite_set_blue
+Mt_Sprite.set_alpha  = C.Sprite_set_alpha
 Mt_Sprite.set_frame  = C.Sprite_set_frame
 Mt_Sprite.set_visible= C.Sprite_set_visible
 

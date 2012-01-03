@@ -36,7 +36,6 @@ public:
     void onFullRed(view::pSprite& p);
     void onHalfAlpha(view::pSprite& p);
     void onFullAlpha(view::pSprite& p);
-    void onPressSprite(view::pSprite& p);
 
 private:
     presenter::pStage stage_;

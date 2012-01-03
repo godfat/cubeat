@@ -27,6 +27,38 @@ void Sprite_set_pos(pSprite* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
+void Sprite_set_rotate(pSprite* self, double x, double y, double z) {
+    (*self)->set<Rotation>(vec3(x,y,z));
+}
+
+void Sprite_set_scale(pSprite* self, double x, double y, double z) {
+    (*self)->set<Scale>(vec3(x,y,z));
+}
+
+void Sprite_set_red(pSprite* self, int x) {
+    (*self)->set<Red>(x);
+}
+
+void Sprite_set_green(pSprite* self, int x) {
+    (*self)->set<Green>(x);
+}
+
+void Sprite_set_blue(pSprite* self, int x) {
+    (*self)->set<Blue>(x);
+}
+
+void Sprite_set_alpha(pSprite* self, int x) {
+    (*self)->set<Alpha>(x);
+}
+
+void Sprite_set_frame(pSprite* self, float x) {
+    (*self)->set<Frame>(x);
+}
+
+void Sprite_set_visible(pSprite* self, bool x) {
+    (*self)->set<Visible>(x);
+}
+
 void Scene__gc(pScene* self) {
     delete self;
 }

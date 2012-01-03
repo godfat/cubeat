@@ -33,7 +33,6 @@ TestUI::TestUI()
 
     sprite_= view::Sprite::create("char1/test", scene_, 384, 384);
     sprite_->moveTo(0, 200);
-
     button_01_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
     button_01_->moveTo(800, 100);
     button_02_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
@@ -75,7 +74,6 @@ TestUI::TestUI()
     button_06_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = fullRed;
     button_07_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = halfAlpha;
     button_08_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = fullAlpha;
-    std::tr1::function<void(view::pSprite&)> pressSprite    = bind(&TestUI::onPressSprite, this, _1);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
@@ -104,15 +102,6 @@ void TestUI::cycle()
     scene_->redraw();
 }
 
-int main(){
-    std::srand(std::time(0)^std::clock()); //  init srand for global rand...
-    psc::Conf::i().init("");
-    psc::App::i();
-    psc::TestUI tester;
-    tester.init();
-    return psc::App::i().run(std::tr1::bind(&psc::TestUI::cycle, &tester));
-}
-
 void TestUI::onMoveRight(view::pSprite& p){
     sprite_->moveTween(300, 200, 1000);
 }
@@ -136,11 +125,18 @@ void TestUI::onHalfAlpha(view::pSprite& p){
 }
 void TestUI::onFullAlpha(view::pSprite& p){
     sprite_->set<Alpha>(255);
-}
-void TestUI::onPressSprite(view::pSprite& p){
     //p->set<Red>(100);
     //p->set<Alpha>(100);
     //p->set<Scale>(vec3(1.2f,1.2f,1));
     //p->set<GradientDiffuse>(100);
     //p->set<Visible>(false);
+}
+
+int main(){
+    std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+    psc::Conf::i().init("");
+    psc::App::i();
+    psc::TestUI tester;
+    tester.init();
+    return psc::App::i().run(std::tr1::bind(&psc::TestUI::cycle, &tester));
 }

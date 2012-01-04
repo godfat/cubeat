@@ -7,11 +7,14 @@
 #define APIEXPORT
 #endif
 
+typedef void (*PSC_OBJCALLBACK)(pSprite*);
+
 APIEXPORT pScene*  TestUI_get_ui_scene(TestUI*);
 
 APIEXPORT pSprite* Sprite_create(char const*, pScene*, int, int, bool);
 
 APIEXPORT void     Sprite_set_pos(pSprite*, double, double);
+APIEXPORT void     Sprite_on_release(pSprite* self, PSC_OBJCALLBACK);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

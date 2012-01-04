@@ -8,6 +8,7 @@ local view     = require 'rc/script/ui/test/view'
 ----------------------------------------------------------------------------------
 
 local scene_, sp 
+local cb
 
 function init(self)
   self = ffi.cast("TestUI*", self);
@@ -15,10 +16,18 @@ function init(self)
   sp     = view.newSprite("area_rect", scene_, 64, 64, true)
   sp:set_pos(640, 360)
   
-  sp.on_release = function(self) print 'hi' end
-  sp.on_release()
+  cb = ffi.cast("PSC_OBJCALLBACK", function(self) 
+    print 'hi'
+  end)
+  
+  sp:on_release(cb)
 end
 
 function cycle(self)
   self = ffi.cast("TestUI*", self);
+end
+
+function destroy(self)
+  self = ffi.cast("TestUI*", self);
+  cb:free() 
 end

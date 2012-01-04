@@ -48,6 +48,7 @@ void TestUI::init()
 
 TestUI::~TestUI()
 {
+    script::Lua::call(L_, "destroy", static_cast<void*>(this));
     lua_close(L_);
 }
 

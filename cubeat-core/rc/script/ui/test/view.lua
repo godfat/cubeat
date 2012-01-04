@@ -27,6 +27,7 @@ ffi.metatype("pScene",  Mt_Scene)
 local Mt_Sprite = {}
 Mt_Sprite.__index    = Mt_Sprite
 Mt_Sprite.set_pos    = C.Sprite_set_pos
+Mt_Sprite.on_release = C.Sprite_on_release
 
 ffi.metatype("pSprite", Mt_Sprite)
 

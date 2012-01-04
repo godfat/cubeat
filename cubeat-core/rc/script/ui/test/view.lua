@@ -28,12 +28,12 @@ local Mt_Sprite = {}
 Mt_Sprite.__index    = Mt_Sprite
 Mt_Sprite.set_pos    = C.Sprite_set_pos
 
+ffi.metatype("pSprite", Mt_Sprite)
+
 local function newSprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
 end
 
-ffi.metatype("pSprite", Mt_Sprite)
-
 return {
-    newSprite = newSprite
+  newSprite = newSprite
 }

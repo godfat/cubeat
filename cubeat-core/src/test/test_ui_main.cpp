@@ -43,7 +43,7 @@ void TestUI::init()
     L_ = luaL_newstate();
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
-    script::Lua::call(L_, "test_ui_entry", static_cast<void*>(this));
+    script::Lua::call(L_, "init", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()
@@ -53,6 +53,7 @@ TestUI::~TestUI()
 
 void TestUI::cycle()
 {
+    script::Lua::call(L_, "cycle", static_cast<void*>(this));
     stage_->cycle();
     scene_->redraw();
 }

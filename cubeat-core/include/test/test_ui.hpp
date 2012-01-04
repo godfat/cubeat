@@ -12,6 +12,7 @@ class Scene;
 class Sprite;
 typedef std::tr1::shared_ptr<Scene>  pScene;
 typedef std::tr1::shared_ptr<Sprite> pSprite;
+typedef std::tr1::shared_ptr<SpriteText> pSpriteText;
 } //view
 namespace presenter {
 class Stage;
@@ -45,6 +46,7 @@ private:
     presenter::pStage stage_;
     view::pScene      scene_;
     view::pSprite     test_sprite_;
+    view::pSpriteText test_sprite_text_;
 
     view::pSprite   sprite_;
     view::pSprite   button_01_;

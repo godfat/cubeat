@@ -4,6 +4,7 @@
 #include "Accessors.hpp"
 #include "view/Scene.hpp"
 #include "view/Sprite.hpp"
+#include "view/SpriteText.hpp"
 #include "presenter/Stage.hpp"
 #include "EventDispatcher.hpp"
 #include "utils/Random.hpp"
@@ -57,6 +58,8 @@ TestUI::TestUI()
     button_11_->moveTo(1080, 420);
     button_12_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
     button_12_->moveTo(1080, 500);
+    test_sprite_text_ = view::SpriteText::create("Hello everyone!!", scene_, "Star Jedi", 48, false, data::Color(0,0,255));
+    test_sprite_text_->moveTo(400, 100);
 
     std::tr1::function<void(view::pSprite&)> moveRight      = bind(&TestUI::onMoveRight, this, _1);
     std::tr1::function<void(view::pSprite&)> moveLeft       = bind(&TestUI::onMoveLeft, this, _1);

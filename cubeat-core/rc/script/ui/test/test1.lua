@@ -7,10 +7,13 @@ local view     = require 'rc/script/ui/test/view'
 -------------------- scripts above this line should be separated -----------------
 ----------------------------------------------------------------------------------
 
-function test_ui_entry(self)
-  self = ffi.cast("TestUI*", self);
-  local s = self:get_ui_scene()
-  local sp = view.newSprite("area_rect", s, 64, 64, true)
+local scene_, sp 
+local cb
+
+function init(self)
+  self    = ffi.cast("TestUI*", self);
+  scene_  = self:get_ui_scene()
+  sp      = view.newSprite("area_rect", scene_, 64, 64, true)
   sp:set_texture("cubes/cube-b-1")
   sp:set_pos(640, 360)
   sp:set_scale(1.5, 1.5, 1)
@@ -28,6 +31,21 @@ function test_ui_entry(self)
   sp:texture_flipH()
   sp:texture_flipV()
   sp:set_size(32, 32)
+  
+  cb = ffi.cast("PSC_OBJCALLBACK", function(self) 
+    print 'hi'
+  end)
+  
+  sp:on_release(cb)
+end
+
+function cycle(self)
+  self = ffi.cast("TestUI*", self);
+end
+
+function destroy(self)
+  self = ffi.cast("TestUI*", self);
+  cb:free()
 end
 
 function test_ui_create_buttons(self)

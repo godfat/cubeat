@@ -49,13 +49,14 @@ Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_frame               = C.Sprite_set_frame
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_size                = C.Sprite_set_size
+Mt_Sprite.on_release              = C.Sprite_on_release
+
+ffi.metatype("pSprite", Mt_Sprite)
 
 local function newSprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
 end
 
-ffi.metatype("pSprite", Mt_Sprite)
-
 return {
-    newSprite = newSprite
+  newSprite = newSprite
 }

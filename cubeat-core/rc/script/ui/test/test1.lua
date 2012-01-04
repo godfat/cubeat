@@ -8,12 +8,11 @@ local view     = require 'rc/script/ui/test/view'
 ----------------------------------------------------------------------------------
 
 local scene_, sp 
-local cb
 
 function init(self)
   self    = ffi.cast("TestUI*", self);
   scene_  = self:get_ui_scene()
-  sp      = view.newSprite("area_rect", scene_, 64, 64, true)
+  sp      = view.new_sprite("area_rect", scene_, 64, 64, true)
   sp:set_texture("cubes/cube-b-1")
   sp:set_pos(640, 360)
   sp:set_scale(1.5, 1.5, 1)
@@ -32,11 +31,12 @@ function init(self)
   sp:texture_flipV()
   sp:set_size(32, 32)
   
-  cb = ffi.cast("PSC_OBJCALLBACK", function(self) 
-    print 'hi'
+  sp:on_release(function(self)
+    print 'hi' 
+    self:on_release(function(self)
+      print 'hello'
+    end)
   end)
-  
-  sp:on_release(cb)
 end
 
 function cycle(self)
@@ -45,7 +45,6 @@ end
 
 function destroy(self)
   self = ffi.cast("TestUI*", self);
-  cb:free()
 end
 
 function test_ui_create_buttons(self)

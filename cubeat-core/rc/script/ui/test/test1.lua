@@ -12,7 +12,7 @@ local scene_, sp
 function init(self)
   self = ffi.cast("TestUI*", self);
   scene_ = self:get_ui_scene()
-  sp     = view.newSprite("area_rect", scene_, 64, 64, true)
+  sp     = view.new_sprite("area_rect", scene_, 64, 64, true)
   sp:set_pos(640, 360)
 
   sp:on_release(function(self)

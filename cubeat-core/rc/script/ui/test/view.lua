@@ -60,7 +60,7 @@ end
 
 ffi.metatype("pSprite", Mt_Sprite)
 
-local function newSprite(name, scene, w, h, center)
+local function new_sprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
     tracked_cb_removal (Mt_Sprite.__on_releases__, self)
     tracked_cb_removal (Mt_Sprite.__on_presses__, self)
@@ -71,5 +71,5 @@ local function newSprite(name, scene, w, h, center)
 end
 
 return {
-  newSprite = newSprite
+  new_sprite = new_sprite
 }

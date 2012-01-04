@@ -13,18 +13,35 @@ ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a')
 
 ------------- Some utils rigged for ffi callback management ---------------
 
-local function tracked_cb(cb_table, o, func)
-  if cb_table[o] == nil then
-    cb_table[o] = ffi.cast("PSC_OBJCALLBACK", func)
+local function _tracked_cb(btn_table, b, func)
+  if btn_table[b] == nil then
+    btn_table[b] = ffi.cast("PSC_OBJCALLBACK", func)
   else
-    cb_table[o]:set(func)
+    btn_table[b]:set(func)
   end
-  return cb_table[o]
+end
+
+local function tracked_cb(cb_table, o, b, func)
+  if cb_table[o] == nil then
+    cb_table[o] = {}
+    print 'new table for button registry added'
+    _tracked_cb(cb_table[o], b, func)
+  else
+    _tracked_cb(cb_table[o], b, func)
+  end
+  return cb_table[o][b]
 end
 
 local function tracked_cb_removal(cb_table, o)
-  if cb_table[o] then 
-    cb_table[o]:free(); cb_table[o] = nil
+  for k, v in pairs(cb_table) do 
+    print(k, v)
+  end
+  if type(cb_table[o]) == "table" then 
+    for _, v1 in pairs(cb_table[o]) do
+      print(_, v1)
+      v1:free()
+      v1 = nil
+    end
   end
 end
 
@@ -54,8 +71,8 @@ Mt_Sprite.__on_presses__  = setmetatable({}, weakkey)
 Mt_Sprite.__on_downs__    = setmetatable({}, weakkey)
 Mt_Sprite.__on_ups__      = setmetatable({}, weakkey)
 
-Mt_Sprite.on_release = function(self, func)
-  C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, func))
+Mt_Sprite.on_release = function(self, btn, func)
+  C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
 end
 
 ffi.metatype("pSprite", Mt_Sprite)
@@ -63,6 +80,7 @@ ffi.metatype("pSprite", Mt_Sprite)
 local function new_sprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
     tracked_cb_removal (Mt_Sprite.__on_releases__, self)
+    print '--------'
     tracked_cb_removal (Mt_Sprite.__on_presses__, self)
     tracked_cb_removal (Mt_Sprite.__on_downs__, self)
     tracked_cb_removal (Mt_Sprite.__on_ups__, self)

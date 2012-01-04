@@ -125,8 +125,6 @@ void TestUI::onHalfAlpha(view::pSprite& p){
 }
 void TestUI::onFullAlpha(view::pSprite& p){
     sprite_->set<Alpha>(255);
-    //p->set<Red>(100);
-    //p->set<Alpha>(100);
     //p->set<Scale>(vec3(1.2f,1.2f,1));
     //p->set<GradientDiffuse>(100);
     //p->set<Visible>(false);

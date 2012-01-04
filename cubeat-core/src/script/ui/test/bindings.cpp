@@ -23,6 +23,22 @@ pSprite* Sprite_create(char const* name, pScene* s, int w, int h, bool center) {
     return sp;
 }
 
+void Sprite_set_texture(pSprite* self, const char* path) {
+    (*self)->setTexture(path);
+}
+
+void Sprite_set_center_aligned(pSprite* self, bool center) {
+    (*self)->setCenterAligned(center);
+}
+
+void Sprite_move_to(pSprite* self, int x, int y) {
+    (*self)->moveTo(x, y);
+}
+
+void Sprite_move_tween(pSprite* self, int x, int y, int t) {
+    (*self)->moveTween(x, y, t);
+}
+
 void Sprite_set_pos(pSprite* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
@@ -35,6 +51,18 @@ void Sprite_set_scale(pSprite* self, double x, double y, double z) {
     (*self)->set<Scale>(vec3(x,y,z));
 }
 
+void Sprite_set_color_diffuse(pSprite* self, int x) {
+    (*self)->set<ColorDiffuse>(x);
+}
+
+void Sprite_set_gradient_diffuse(pSprite* self, int x) {
+    (*self)->set<GradientDiffuse>(x);
+}
+
+void Sprite_set_gradient_emissive(pSprite* self, int x) {
+    (*self)->set<GradientEmissive>(x);
+}
+
 void Sprite_set_red(pSprite* self, int x) {
     (*self)->set<Red>(x);
 }
@@ -45,6 +73,18 @@ void Sprite_set_green(pSprite* self, int x) {
 
 void Sprite_set_blue(pSprite* self, int x) {
     (*self)->set<Blue>(x);
+}
+
+void Sprite_set_redE(pSprite* self, int x) {
+    (*self)->set<RedE>(x);
+}
+
+void Sprite_set_greenE(pSprite* self, int x) {
+    (*self)->set<GreenE>(x);
+}
+
+void Sprite_set_blueE(pSprite* self, int x) {
+    (*self)->set<BlueE>(x);
 }
 
 void Sprite_set_alpha(pSprite* self, int x) {

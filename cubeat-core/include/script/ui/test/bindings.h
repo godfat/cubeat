@@ -11,12 +11,23 @@ APIEXPORT pScene*  TestUI_get_ui_scene(TestUI*);
 
 APIEXPORT pSprite* Sprite_create(char const*, pScene*, int, int, bool);
 
+APIEXPORT void     Sprite_set_texture(pSprite*, const char*);
+APIEXPORT void     Sprite_set_center_aligned(pSprite*, bool);
+APIEXPORT void     Sprite_move_to(pSprite*, int, int);
+APIEXPORT void     Sprite_move_tween(pSprite*, int, int, int);
+
 APIEXPORT void     Sprite_set_pos(pSprite*, double, double);
 APIEXPORT void     Sprite_set_rotate(pSprite*, double, double, double);
 APIEXPORT void     Sprite_set_scale(pSprite*, double, double, double);
+APIEXPORT void     Sprite_set_color_diffuse(pSprite*, int);
+APIEXPORT void     Sprite_set_gradient_diffuse(pSprite*, int);
+APIEXPORT void     Sprite_set_gradient_emissive(pSprite*, int);
 APIEXPORT void     Sprite_set_red(pSprite*, int);
 APIEXPORT void     Sprite_set_green(pSprite*, int);
 APIEXPORT void     Sprite_set_blue(pSprite*, int);
+APIEXPORT void     Sprite_set_redE(pSprite*, int);
+APIEXPORT void     Sprite_set_greenE(pSprite*, int);
+APIEXPORT void     Sprite_set_blueE(pSprite*, int);
 APIEXPORT void     Sprite_set_alpha(pSprite*, int);
 APIEXPORT void     Sprite_set_frame(pSprite*, float);
 APIEXPORT void     Sprite_set_visible(pSprite*, bool);

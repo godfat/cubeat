@@ -34,29 +34,29 @@ TestUI::TestUI()
     sprite_= view::Sprite::create("char1/test", scene_, 384, 384);
     sprite_->moveTo(0, 200);
     button_01_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_01_->moveTo(800, 100);
+    button_01_->moveTo(1000, 100);
     button_02_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_02_->moveTo(800, 180);
+    button_02_->moveTo(1000, 180);
     button_03_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_03_->moveTo(800, 260);
+    button_03_->moveTo(1000, 260);
     button_04_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_04_->moveTo(800, 340);
+    button_04_->moveTo(1000, 340);
     button_05_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_05_->moveTo(800, 420);
+    button_05_->moveTo(1000, 420);
     button_06_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    button_06_->moveTo(800, 500);
+    button_06_->moveTo(1000, 500);
     button_07_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_07_->moveTo(880, 100);
+    button_07_->moveTo(1080, 100);
     button_08_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_08_->moveTo(880, 180);
+    button_08_->moveTo(1080, 180);
     button_09_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_09_->moveTo(880, 260);
+    button_09_->moveTo(1080, 260);
     button_10_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_10_->moveTo(880, 340);
+    button_10_->moveTo(1080, 340);
     button_11_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_11_->moveTo(880, 420);
+    button_11_->moveTo(1080, 420);
     button_12_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    button_12_->moveTo(880, 500);
+    button_12_->moveTo(1080, 500);
 
     std::tr1::function<void(view::pSprite&)> moveRight      = bind(&TestUI::onMoveRight, this, _1);
     std::tr1::function<void(view::pSprite&)> moveLeft       = bind(&TestUI::onMoveLeft, this, _1);
@@ -66,6 +66,10 @@ TestUI::TestUI()
     std::tr1::function<void(view::pSprite&)> fullRed        = bind(&TestUI::onFullRed, this, _1);
     std::tr1::function<void(view::pSprite&)> halfAlpha      = bind(&TestUI::onHalfAlpha, this, _1);
     std::tr1::function<void(view::pSprite&)> fullAlpha      = bind(&TestUI::onFullAlpha, this, _1);
+    std::tr1::function<void(view::pSprite&)> textureFlipH   = bind(&TestUI::onTextureFlipH, this, _1);
+    std::tr1::function<void(view::pSprite&)> textureFlipV   = bind(&TestUI::onTextureFlipV, this, _1);
+    std::tr1::function<void(view::pSprite&)> largeSize      = bind(&TestUI::onLargeSize, this, _1);
+    std::tr1::function<void(view::pSprite&)> smallSize      = bind(&TestUI::onSmallSize, this, _1);
     button_01_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = moveRight;
     button_02_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = moveLeft;
     button_03_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = selectChar1;
@@ -74,6 +78,10 @@ TestUI::TestUI()
     button_06_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = fullRed;
     button_07_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = halfAlpha;
     button_08_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = fullAlpha;
+    button_09_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = textureFlipH;
+    button_10_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = textureFlipV;
+    button_11_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = largeSize;
+    button_12_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = smallSize;
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
@@ -89,6 +97,7 @@ void TestUI::init()
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
     script::Lua::call(L_, "test_ui_entry", static_cast<void*>(this));
+    script::Lua::call(L_, "test_ui_create_buttons", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()
@@ -103,7 +112,7 @@ void TestUI::cycle()
 }
 
 void TestUI::onMoveRight(view::pSprite& p){
-    sprite_->moveTween(300, 200, 1000);
+    sprite_->moveTween(200, 200, 1000);
 }
 void TestUI::onMoveLeft(view::pSprite& p){
     sprite_->moveTween(  0, 200, 1000);
@@ -125,9 +134,18 @@ void TestUI::onHalfAlpha(view::pSprite& p){
 }
 void TestUI::onFullAlpha(view::pSprite& p){
     sprite_->set<Alpha>(255);
-    //p->set<Scale>(vec3(1.2f,1.2f,1));
-    //p->set<GradientDiffuse>(100);
-    //p->set<Visible>(false);
+}
+void TestUI::onTextureFlipH(view::pSprite& p) {
+    sprite_->textureFlipH();
+}
+void TestUI::onTextureFlipV(view::pSprite& p) {
+    sprite_->textureFlipV();
+}
+void TestUI::onLargeSize(view::pSprite& p) {
+    sprite_->set<Size2D>(vec2(500, 500));
+}
+void TestUI::onSmallSize(view::pSprite& p) {
+    sprite_->set<Size2D>(vec2(384, 384));
 }
 
 int main(){

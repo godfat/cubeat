@@ -39,16 +39,24 @@ void Sprite_move_tween(pSprite* self, int x, int y, int t) {
     (*self)->moveTween(x, y, t);
 }
 
+void Sprite_texture_flipH(pSprite* self) {
+    (*self)->textureFlipH();
+}
+
+void Sprite_texture_flipV(pSprite* self) {
+    (*self)->textureFlipV();
+}
+
 void Sprite_set_pos(pSprite* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
 void Sprite_set_rotate(pSprite* self, double x, double y, double z) {
-    (*self)->set<Rotation>(vec3(x,y,z));
+    (*self)->set<Rotation>(vec3(x, y, z));
 }
 
 void Sprite_set_scale(pSprite* self, double x, double y, double z) {
-    (*self)->set<Scale>(vec3(x,y,z));
+    (*self)->set<Scale>(vec3(x, y, z));
 }
 
 void Sprite_set_color_diffuse(pSprite* self, int x) {
@@ -97,6 +105,10 @@ void Sprite_set_frame(pSprite* self, float x) {
 
 void Sprite_set_visible(pSprite* self, bool x) {
     (*self)->set<Visible>(x);
+}
+
+void Sprite_set_size(pSprite* self, double x, double y) {
+    (*self)->set<Size2D>(vec2(x, y));
 }
 
 void Scene__gc(pScene* self) {

@@ -15,6 +15,8 @@ APIEXPORT void     Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void     Sprite_set_center_aligned(pSprite*, bool);
 APIEXPORT void     Sprite_move_to(pSprite*, int, int);
 APIEXPORT void     Sprite_move_tween(pSprite*, int, int, int);
+APIEXPORT void     Sprite_texture_flipH(pSprite*);
+APIEXPORT void     Sprite_texture_flipV(pSprite*);
 
 APIEXPORT void     Sprite_set_pos(pSprite*, double, double);
 APIEXPORT void     Sprite_set_rotate(pSprite*, double, double, double);
@@ -31,6 +33,7 @@ APIEXPORT void     Sprite_set_blueE(pSprite*, int);
 APIEXPORT void     Sprite_set_alpha(pSprite*, int);
 APIEXPORT void     Sprite_set_frame(pSprite*, float);
 APIEXPORT void     Sprite_set_visible(pSprite*, bool);
+APIEXPORT void     Sprite_set_size(pSprite*, double, double);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

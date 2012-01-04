@@ -30,6 +30,8 @@ Mt_Sprite.set_texture             = C.Sprite_set_texture
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
 Mt_Sprite.move_to                 = C.Sprite_move_to
 Mt_Sprite.move_tween              = C.Sprite_move_tween
+Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
+Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
 
 Mt_Sprite.set_pos                 = C.Sprite_set_pos
 Mt_Sprite.set_rotate              = C.Sprite_set_rotate
@@ -46,6 +48,7 @@ Mt_Sprite.set_blueE               = C.Sprite_set_blueE
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_frame               = C.Sprite_set_frame
 Mt_Sprite.set_visible             = C.Sprite_set_visible
+Mt_Sprite.set_size                = C.Sprite_set_size
 
 local function newSprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)

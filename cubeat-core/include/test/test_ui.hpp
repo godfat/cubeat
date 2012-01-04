@@ -36,6 +36,10 @@ public:
     void onFullRed(view::pSprite& p);
     void onHalfAlpha(view::pSprite& p);
     void onFullAlpha(view::pSprite& p);
+    void onTextureFlipH(view::pSprite& p);
+    void onTextureFlipV(view::pSprite& p);
+    void onLargeSize(view::pSprite& p);
+    void onSmallSize(view::pSprite& p);
 
 private:
     presenter::pStage stage_;

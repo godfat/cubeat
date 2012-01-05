@@ -37,9 +37,14 @@ APIEXPORT void     Sprite_set_frame(pSprite*, float);
 APIEXPORT void     Sprite_set_visible(pSprite*, bool);
 APIEXPORT void     Sprite_set_size(pSprite*, double, double);
 APIEXPORT void     Sprite_on_release(pSprite* self, PSC_OBJCALLBACK);
+APIEXPORT void     Sprite_on_press(pSprite* self, PSC_OBJCALLBACK);
+
+APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
+APIEXPORT void          SpriteText_set_pos(pSpriteText*, double, double);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);
+APIEXPORT void     SpriteText__gc(pSpriteText*);
 
 #endif //_SHOOTING_CUBES_SCRIPT_UI_TEST_BINDINGS_
 

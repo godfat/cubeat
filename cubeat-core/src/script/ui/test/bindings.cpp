@@ -1,5 +1,6 @@
 #include "view/Scene.hpp"
 #include "view/Sprite.hpp"
+#include "view/SpriteText.hpp"
 #include "Accessors.hpp"
 #include "Input.hpp"
 #include "test/test_ui.hpp"
@@ -125,10 +126,29 @@ void Sprite_on_release(pSprite* self, PSC_OBJCALLBACK func) {
         bind(delegate_for_cb_from_lua, _1, func);
 }
 
+void Sprite_on_press(pSprite* self, PSC_OBJCALLBACK func) {
+    (*self)->onPress( &InputMgr::i().getInputByIndex(0)->trig1() ) =
+        bind(delegate_for_cb_from_lua, _1, func);
+}
+
+pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {
+    pSpriteText* sp = new pSpriteText;
+    *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
+    return sp;
+}
+
+void SpriteText_set_pos(pSpriteText* self, double x, double y) {
+    (*self)->set<Pos2D>(vec2(x, y));
+}
+
 void Scene__gc(pScene* self) {
     delete self;
 }
 
 void Sprite__gc(pSprite* self) {
+    delete self;
+}
+
+void SpriteText__gc(pSpriteText* self) {
     delete self;
 }

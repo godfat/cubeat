@@ -7,7 +7,11 @@ local view     = require 'rc/script/ui/test/view'
 -------------------- scripts above this line should be separated -----------------
 ----------------------------------------------------------------------------------
 
-local scene_, sp 
+local scene_, sp
+
+local char_
+local btn_char_ = {}
+local text_
 
 function init(self)
   self    = ffi.cast("TestUI*", self);
@@ -37,6 +41,34 @@ function init(self)
       print 'hello'
     end)
   end)
+  
+  char_ = view.new_sprite("char1/full", scene_, 200, 600, false)
+  char_:move_to(200, 100)
+
+  text_ = view.new_sprite_text("Select Character", scene_, "Star Jedi", 24, false, 255, 255, 255)
+  text_:set_pos(600, 250)
+  
+  btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)
+  btn_char_[2] = view.new_sprite("cubes/cube-r-1", scene_, 64, 64, false)
+  btn_char_[3] = view.new_sprite("cubes/cube-g-1", scene_, 64, 64, false)
+  btn_char_[4] = view.new_sprite("cubes/cube-b-1", scene_, 64, 64, false)
+  btn_char_[5] = view.new_sprite("cubes/cube-y-1", scene_, 64, 64, false)
+  btn_char_[1]:move_to(600, 300)
+  btn_char_[2]:move_to(680, 300)
+  btn_char_[3]:move_to(760, 300)
+  btn_char_[4]:move_to(840, 300)
+  btn_char_[5]:move_to(920, 300)
+  
+  function sel_char1(self) char_:set_texture("char1/full") end
+  function sel_char2(self) char_:set_texture("char2/full") end
+  function sel_char3(self) char_:set_texture("char3/full") end
+  function sel_char4(self) char_:set_texture("char4/full") end
+  function sel_char5(self) char_:set_texture("char5/full") end
+  btn_char_[1]:on_press( sel_char1 )
+  btn_char_[2]:on_press( sel_char2 )
+  btn_char_[3]:on_press( sel_char3 )
+  btn_char_[4]:on_press( sel_char4 )
+  btn_char_[5]:on_press( sel_char5 )
 end
 
 function cycle(self)
@@ -50,22 +82,4 @@ end
 function test_ui_create_buttons(self)
   self = ffi.cast("TestUI*", self);
   local s = self:get_ui_scene()
-  
-  local btn_green = {}
-  for i=1,6 do
-    btn_green[i] = view.newSprite("cubes/cube-g-1", s, 64, 64, false)
-    btn_green[i]:move_to(600, (20+i*80))
-  end
-  
-  local btn_blue = {}
-  for i=1,6 do
-    btn_blue[i] = view.newSprite("cubes/cube-b-1", s, 64, 64, false)
-    btn_blue[i]:move_to(680, (20+i*80))
-  end
-  
-  local btn_red = {}
-  for i=1,6 do
-    btn_red[i] = view.newSprite("cubes/cube-r-1", s, 64, 64, false)
-    btn_red[i]:move_to(760, (20+i*80))
-  end  
 end

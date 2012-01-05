@@ -8,6 +8,7 @@ ffi.cdef[[
 typedef struct TestUI TestUI;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
+typedef struct pSpriteText pSpriteText;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a') )
 
@@ -78,6 +79,9 @@ Mt_Sprite.__on_ups__      = setmetatable({}, weakkey)
 Mt_Sprite.on_release = function(self, func)
   C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, func))
 end
+Mt_Sprite.on_press = function(self, func)
+  C.Sprite_on_press(self, tracked_cb(Mt_Sprite.__on_presses__, self, func))
+end
 
 ffi.metatype("pSprite", Mt_Sprite)
 
@@ -91,6 +95,31 @@ local function new_sprite(name, scene, w, h, center)
   end)
 end
 
+local Mt_SpriteText = {}
+Mt_SpriteText.__index   = Mt_SpriteText
+Mt_SpriteText.set_pos   = C.SpriteText_set_pos
+
+Mt_SpriteText.__on_releases__ = setmetatable({}, weakkey)
+Mt_SpriteText.__on_presses__  = setmetatable({}, weakkey)
+Mt_SpriteText.__on_downs__    = setmetatable({}, weakkey)
+Mt_SpriteText.__on_ups__      = setmetatable({}, weakkey)
+Mt_SpriteText.on_release = function(self, func)
+  C.Sprite_on_release(self, tracked_cb(Mt_SpriteText.__on_releases__, self, func))
+end
+
+ffi.metatype("pSpriteText", Mt_SpriteText)
+
+local function new_sprite_text(text, scene, font, size, center, r, g, b)
+  return ffi.gc(C.SpriteText_create(text, scene, font, size, center, r, g, b), function(self)
+    tracked_cb_removal (Mt_SpriteText.__on_releases__, self)
+    tracked_cb_removal (Mt_SpriteText.__on_presses__, self)
+    tracked_cb_removal (Mt_SpriteText.__on_downs__, self)
+    tracked_cb_removal (Mt_SpriteText.__on_ups__, self)
+    C.SpriteText__gc(self)
+  end)
+end
+
 return {
-  new_sprite = new_sprite
+  new_sprite        = new_sprite,
+  new_sprite_text   = new_sprite_text
 }

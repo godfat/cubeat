@@ -32,8 +32,18 @@ TestUI::TestUI()
     scene_ = view::Scene::create("ui");
     scene_->setTo2DView();
 
-    sprite_= view::Sprite::create("char1/test", scene_, 384, 384);
-    sprite_->moveTo(0, 200);
+    //sprite_= view::Sprite::create("char1/test", scene_, 384, 384);
+    //sprite_->moveTo(0, 200);
+    //test_sprite_text_ = view::SpriteText::create("Hello everyone!!", scene_, "Star Jedi", 48, false, data::Color(0,0,255));
+    //test_sprite_text_->moveTo(400, 100);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
+
+    /*
     button_01_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
     button_01_->moveTo(1000, 100);
     button_02_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
@@ -58,9 +68,8 @@ TestUI::TestUI()
     button_11_->moveTo(1080, 420);
     button_12_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
     button_12_->moveTo(1080, 500);
-    test_sprite_text_ = view::SpriteText::create("Hello everyone!!", scene_, "Star Jedi", 48, false, data::Color(0,0,255));
-    test_sprite_text_->moveTo(400, 100);
-
+    */
+    /*
     std::tr1::function<void(view::pSprite&)> moveRight      = bind(&TestUI::onMoveRight, this, _1);
     std::tr1::function<void(view::pSprite&)> moveLeft       = bind(&TestUI::onMoveLeft, this, _1);
     std::tr1::function<void(view::pSprite&)> selectChar1    = bind(&TestUI::onSelectChar1, this, _1);
@@ -85,12 +94,7 @@ TestUI::TestUI()
     button_10_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = textureFlipV;
     button_11_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = largeSize;
     button_12_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = smallSize;
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
+    */
 }
 
 void TestUI::init()
@@ -114,7 +118,7 @@ void TestUI::cycle()
     stage_->cycle();
     scene_->redraw();
 }
-
+/*
 void TestUI::onMoveRight(view::pSprite& p){
     sprite_->moveTween(200, 200, 1000);
 }
@@ -151,6 +155,7 @@ void TestUI::onLargeSize(view::pSprite& p) {
 void TestUI::onSmallSize(view::pSprite& p) {
     sprite_->set<Size2D>(vec2(384, 384));
 }
+*/
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...

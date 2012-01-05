@@ -10,6 +10,7 @@ namespace psc {
 namespace view {
 class Scene;
 class Sprite;
+class SpriteText;
 typedef std::tr1::shared_ptr<Scene>  pScene;
 typedef std::tr1::shared_ptr<Sprite> pSprite;
 typedef std::tr1::shared_ptr<SpriteText> pSpriteText;
@@ -28,7 +29,7 @@ public:
 
     void cycle();
     view::pScene getUIScene() { return scene_; }
-
+    /*
     void onMoveRight(view::pSprite& p);
     void onMoveLeft(view::pSprite& p);
     void onSelectChar1(view::pSprite& p);
@@ -41,14 +42,17 @@ public:
     void onTextureFlipV(view::pSprite& p);
     void onLargeSize(view::pSprite& p);
     void onSmallSize(view::pSprite& p);
-
+    */
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
     view::pSprite     test_sprite_;
-    view::pSpriteText test_sprite_text_;
 
-    view::pSprite   sprite_;
+    lua_State* L_;
+
+    //view::pSprite   sprite_;
+    //view::pSpriteText test_sprite_text_;
+    /*
     view::pSprite   button_01_;
     view::pSprite   button_02_;
     view::pSprite   button_03_;
@@ -61,8 +65,7 @@ private:
     view::pSprite   button_10_;
     view::pSprite   button_11_;
     view::pSprite   button_12_;
-
-    lua_State* L_;
+    */
 };
 } //psc
 

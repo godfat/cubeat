@@ -45,8 +45,9 @@ function init(self)
   char_ = view.new_sprite("char1/full", scene_, 200, 600, false)
   char_:move_to(200, 100)
 
-  text_ = view.new_sprite_text("Select Character", scene_, "Star Jedi", 24, false, 255, 255, 255)
+  text_ = view.new_sprite_text("Hello World", scene_, "Star Jedi", 24, false, 255, 255, 255)
   text_:set_pos(600, 250)
+  text_:change_text("Please select character")
   
   btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)
   btn_char_[2] = view.new_sprite("cubes/cube-r-1", scene_, 64, 64, false)
@@ -77,9 +78,4 @@ end
 
 function destroy(self)
   self = ffi.cast("TestUI*", self);
-end
-
-function test_ui_create_buttons(self)
-  self = ffi.cast("TestUI*", self);
-  local s = self:get_ui_scene()
 end

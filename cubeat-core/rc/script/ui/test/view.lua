@@ -9,7 +9,6 @@ typedef struct TestUI TestUI;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
-typedef struct Button Button;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a') )
 
@@ -97,8 +96,9 @@ local function new_sprite(name, scene, w, h, center)
 end
 
 local Mt_SpriteText = {}
-Mt_SpriteText.__index   = Mt_SpriteText
-Mt_SpriteText.set_pos   = C.SpriteText_set_pos
+Mt_SpriteText.__index     = Mt_SpriteText
+Mt_SpriteText.set_pos     = C.SpriteText_set_pos
+Mt_SpriteText.change_text = C.SpriteText_change_text
 
 Mt_SpriteText.__on_releases__ = setmetatable({}, weakkey)
 Mt_SpriteText.__on_presses__  = setmetatable({}, weakkey)

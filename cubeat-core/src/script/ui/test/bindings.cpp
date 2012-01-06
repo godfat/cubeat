@@ -141,6 +141,10 @@ void SpriteText_set_pos(pSpriteText* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
+void SpriteText_change_text(pSpriteText* self, char const* text) {
+    (*self)->changeText(text);
+}
+
 void Scene__gc(pScene* self) {
     delete self;
 }

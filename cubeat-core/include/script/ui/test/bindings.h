@@ -41,6 +41,7 @@ APIEXPORT void     Sprite_on_press(pSprite* self, PSC_OBJCALLBACK);
 
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
 APIEXPORT void          SpriteText_set_pos(pSpriteText*, double, double);
+APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

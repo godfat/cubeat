@@ -30,13 +30,12 @@ public:
     void cycle();
     view::pScene getUIScene() { return scene_; }
 
-    void LeftBtnClick(view::pSprite& p) { act_->setTexture("char1/test"); }
-    void RightBtnClick(view::pSprite& p) { act_->setTexture("char2/test"); }
+    void LeftBtnClick (view::pSprite& p){ act_->setTexture("char1/test"); }
+    void RightBtnClick(view::pSprite& p){ act_->setTexture("char2/test"); }
 
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
-    view::pSprite     test_sprite_;
 
     lua_State* L_;
 

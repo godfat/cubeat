@@ -145,6 +145,14 @@ void SpriteText_change_text(pSpriteText* self, char const* text) {
     (*self)->changeText(text);
 }
 
+InputButton const* Input_get_trig1(){
+    return &InputMgr::i().getInputByIndex(0)->trig1();
+}
+
+InputButton const* Input_get_trig2(){
+    return &InputMgr::i().getInputByIndex(0)->trig2();
+}
+
 void Scene__gc(pScene* self) {
     delete self;
 }

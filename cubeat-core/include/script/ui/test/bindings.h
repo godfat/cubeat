@@ -43,6 +43,9 @@ APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int
 APIEXPORT void          SpriteText_set_pos(pSpriteText*, double, double);
 APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);
 
+APIEXPORT InputButton const* Input_get_trig1();
+APIEXPORT InputButton const* Input_get_trig2();
+
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);
 APIEXPORT void     SpriteText__gc(pSpriteText*);

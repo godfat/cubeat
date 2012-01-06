@@ -9,6 +9,7 @@ typedef struct TestUI TestUI;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
+typedef struct Button Button;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a') )
 

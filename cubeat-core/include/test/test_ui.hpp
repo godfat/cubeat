@@ -29,20 +29,10 @@ public:
 
     void cycle();
     view::pScene getUIScene() { return scene_; }
-    /*
-    void onMoveRight(view::pSprite& p);
-    void onMoveLeft(view::pSprite& p);
-    void onSelectChar1(view::pSprite& p);
-    void onSelectChar2(view::pSprite& p);
-    void onNoRed(view::pSprite& p);
-    void onFullRed(view::pSprite& p);
-    void onHalfAlpha(view::pSprite& p);
-    void onFullAlpha(view::pSprite& p);
-    void onTextureFlipH(view::pSprite& p);
-    void onTextureFlipV(view::pSprite& p);
-    void onLargeSize(view::pSprite& p);
-    void onSmallSize(view::pSprite& p);
-    */
+
+    void LeftBtnClick(view::pSprite& p) { act_->setTexture("char1/test"); }
+    void RightBtnClick(view::pSprite& p) { act_->setTexture("char2/test"); }
+
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
@@ -50,22 +40,8 @@ private:
 
     lua_State* L_;
 
-    //view::pSprite   sprite_;
-    //view::pSpriteText test_sprite_text_;
-    /*
-    view::pSprite   button_01_;
-    view::pSprite   button_02_;
-    view::pSprite   button_03_;
-    view::pSprite   button_04_;
-    view::pSprite   button_05_;
-    view::pSprite   button_06_;
-    view::pSprite   button_07_;
-    view::pSprite   button_08_;
-    view::pSprite   button_09_;
-    view::pSprite   button_10_;
-    view::pSprite   button_11_;
-    view::pSprite   button_12_;
-    */
+    view::pSprite   act_;
+    view::pSprite   btn_;
 };
 } //psc
 

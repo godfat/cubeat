@@ -11,13 +11,13 @@
 #include "manymouse.h"
 
 static const char *manymouse_copyright =
-    "ManyMouse " MANYMOUSE_VERSION " copyright (c) 2005-2008 Ryan C. Gordon.";
+    "ManyMouse " MANYMOUSE_VERSION " copyright (c) 2005-2011 Ryan C. Gordon.";
 
 extern const ManyMouseDriver *ManyMouseDriver_windows;
 extern const ManyMouseDriver *ManyMouseDriver_evdev;
 extern const ManyMouseDriver *ManyMouseDriver_hidmanager;
 extern const ManyMouseDriver *ManyMouseDriver_hidutilities;
-extern const ManyMouseDriver *ManyMouseDriver_xinput;
+extern const ManyMouseDriver *ManyMouseDriver_xinput2;
 
 /*
  * These have to be in the favored order...obviously it doesn't matter if the
@@ -31,10 +31,7 @@ extern const ManyMouseDriver *ManyMouseDriver_xinput;
  */
 static const ManyMouseDriver **mice_drivers[] =
 {
-    #if 0  /* FIXME: re-add this when the code is written! */
-    &ManyMouseDriver_xinput,
-    #endif
-
+    &ManyMouseDriver_xinput2,
     &ManyMouseDriver_evdev,
     &ManyMouseDriver_windows,
     &ManyMouseDriver_hidmanager,
@@ -52,10 +49,10 @@ int ManyMouse_Init(void)
 
     /* impossible test to keep manymouse_copyright linked into the binary. */
     if (manymouse_copyright == NULL)
-        return(-1);
+        return -1;
 
     if (driver != NULL)
-        return(-1);
+        return -1;
 
     for (i = 0; (i < upper) && (driver == NULL); i++)
     {
@@ -71,31 +68,32 @@ int ManyMouse_Init(void)
         } /* if */
     } /* for */
 
-    return(retval);
+    return retval;
 } /* ManyMouse_Init */
 
 
 void ManyMouse_Quit(void)
 {
     if (driver != NULL)
+    {
         driver->quit();
-    driver = NULL;
+        driver = NULL;
+    } /* if */
 } /* ManyMouse_Quit */
 
+const char *ManyMouse_DriverName(void)
+{
+    return (driver) ? driver->driver_name : NULL;
+} /* ManyMouse_DriverName */
 
 const char *ManyMouse_DeviceName(unsigned int index)
 {
-    if (driver != NULL)
-        return(driver->name(index));
-    return(NULL);
-} /* ManyMouse_PollEvent */
-
+    return (driver) ? driver->name(index) : NULL;
+} /* ManyMouse_DeviceName */
 
 int ManyMouse_PollEvent(ManyMouseEvent *event)
 {
-    if (driver != NULL)
-        return(driver->poll(event));
-    return(0);
+    return (driver) ? driver->poll(event) : 0;
 } /* ManyMouse_PollEvent */
 
 /* end of manymouse.c ... */

@@ -41,7 +41,7 @@ typedef std::tr1::shared_ptr<Player> pPlayer;
 typedef std::tr1::weak_ptr<Player> wpPlayer;
 
 //#ifdef _USE_MANYMOUSE_
-class MouseState;
+struct MouseState;
 typedef std::tr1::shared_ptr<MouseState> pMouseState;
 typedef std::tr1::weak_ptr<MouseState>  wpMouseState;
 //#endif //_USE_MANYMOUSE_

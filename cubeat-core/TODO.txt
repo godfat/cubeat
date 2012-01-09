@@ -49,8 +49,8 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
   2. ManyMouse on MacOSX 10.6+
      see http://hg.icculus.org/icculus/manymouse/
-     -- Partially fixed: Bluetooth may not be detected by manymouse, need report to Ryan.
-     -- Derived Issue: Only if 2 mice are movable by manymouse then we reinit both config to use manymouse.
+     -- Now Linux version should use XInput2, tests and removals (about using udev group) required.
+     -- Issue: Only if 2 mice are movable by manymouse then we reinit both config to use manymouse.
 
   3. Something about lock and delayed cleanup:
      I found many places in code where we should actually check on the weak_ptr.lock(),

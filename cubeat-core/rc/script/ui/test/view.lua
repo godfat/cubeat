@@ -13,6 +13,13 @@ ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a')
 
 ------------- Some utils rigged for ffi callback management ---------------
 
+--[[ Important notes:
+  I am just going to let ffi callbacks' resources go loose for now, 
+  Since it is mainly for UI use only, it will not duplicate like in-game
+  objects and keep creating new callbacks; moreover, lua_close(L) surely 
+  will reclaim everything that was in Lua. So I decide this is not worth 
+  it.
+
 local function _tracked_cb(btn_table, b, func)
   if btn_table[b] == nil then
     btn_table[b] = ffi.cast("PSC_OBJCALLBACK", func)
@@ -44,6 +51,7 @@ local function tracked_cb_removal(cb_table, o)
     end
   end
 end
+--]]
 
 ------------- "Class" definitions -----------------------------------------
 
@@ -64,28 +72,30 @@ ffi.metatype("pScene",  Mt_Scene)
 local Mt_Sprite = {}
 Mt_Sprite.__index    = Mt_Sprite
 Mt_Sprite.set_pos    = C.Sprite_set_pos
+Mt_Sprite.on_release = C.Sprite_on_release
 
-local weakkey = {__mode = "k"}
-Mt_Sprite.__on_releases__ = setmetatable({}, weakkey)
-Mt_Sprite.__on_presses__  = setmetatable({}, weakkey)
-Mt_Sprite.__on_downs__    = setmetatable({}, weakkey)
-Mt_Sprite.__on_ups__      = setmetatable({}, weakkey)
+-- local weakkey = {__mode = "k"}
+-- Mt_Sprite.__on_releases__ = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_presses__  = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_downs__    = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_ups__      = setmetatable({}, weakkey)
 
-Mt_Sprite.on_release = function(self, btn, func)
-  C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
-end
+-- Mt_Sprite.on_release = function(self, btn, func)
+  -- C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
+-- end
 
 ffi.metatype("pSprite", Mt_Sprite)
 
 local function new_sprite(name, scene, w, h, center)
-  return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
-    tracked_cb_removal (Mt_Sprite.__on_releases__, self)
-    print '--------'
-    tracked_cb_removal (Mt_Sprite.__on_presses__, self)
-    tracked_cb_removal (Mt_Sprite.__on_downs__, self)
-    tracked_cb_removal (Mt_Sprite.__on_ups__, self)
-    C.Sprite__gc(self)
-  end)
+  -- return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
+    -- tracked_cb_removal (Mt_Sprite.__on_releases__, self)
+    -- print '--------'
+    -- tracked_cb_removal (Mt_Sprite.__on_presses__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_downs__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_ups__, self)
+    -- C.Sprite__gc(self)
+  -- end)
+  return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
 end
 
 return {

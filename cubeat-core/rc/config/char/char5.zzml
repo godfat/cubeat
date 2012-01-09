@@ -10,18 +10,18 @@ face_w: 50,
 face_h: 50,
 
 # face texture for corresponding enum FACE { NORMAL=0, GOOD=1, BAD=2 }
-face: {
-    0: { tex: 'char5/face_normal', bdeco:0, gdeco:0 },
-    1: { tex: 'char5/face_good',   bdeco:0, gdeco:1 },
-    2: { tex: 'char5/face_bad',    bdeco:1, gdeco:0 }
-},
+face: [
+    { tex: 'char5/face_normal', bdeco:0, gdeco:0 },
+    { tex: 'char5/face_good',   bdeco:0, gdeco:1 },
+    { tex: 'char5/face_bad',    bdeco:1, gdeco:0 }
+],
 
 # actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }
-state : {
-    0: { anim: 'stand',  face_visible: 1, sound: '' },
-    1: { anim: 'attack', face_visible: 0, sound: 'char5/attack.wav' },
-    2: { anim: 'hit'  ,  face_visible: 0, sound: 'char5/hit.wav' }
-},
+state : [
+    { anim: 'stand',  face_visible: 1, sound: '' },
+    { anim: 'attack', face_visible: 0, sound: 'char5/attack.wav' },
+    { anim: 'hit'  ,  face_visible: 0, sound: 'char5/hit.wav' }
+],
 
 # face pos from frame0 to frame3
 face_pos: [

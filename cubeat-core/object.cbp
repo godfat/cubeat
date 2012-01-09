@@ -191,6 +191,9 @@
 		<Unit filename="lib\manymouse\windows_wminput.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lib\manymouse\x11_xinput2.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#define MANYMOUSE_VERSION "0.0.2"
+#define MANYMOUSE_VERSION "0.0.3"
 
 typedef enum
 {
@@ -39,6 +39,7 @@ typedef struct
 /* internal use only. */
 typedef struct
 {
+    const char *driver_name;
     int (*init)(void);
     void (*quit)(void);
     const char *(*name)(unsigned int index);
@@ -47,6 +48,7 @@ typedef struct
 
 
 int ManyMouse_Init(void);
+const char *ManyMouse_DriverName(void);
 void ManyMouse_Quit(void);
 const char *ManyMouse_DeviceName(unsigned int index);
 int ManyMouse_PollEvent(ManyMouseEvent *event);

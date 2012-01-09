@@ -13,6 +13,47 @@ typedef struct InputButton InputButton;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a') )
 
+------------- Some utils rigged for ffi callback management ---------------
+--[[ Important notes:
+  I am just going to let ffi callbacks' resources go loose for now, 
+  Since it is mainly for UI use only, it will not duplicate like in-game
+  objects and keep creating new callbacks; moreover, lua_close(L) surely 
+  will reclaim everything that was in Lua. So I decide this is not worth 
+  it.
+
+local function _tracked_cb(btn_table, b, func)
+  if btn_table[b] == nil then
+    btn_table[b] = ffi.cast("PSC_OBJCALLBACK", func)
+  else
+    btn_table[b]:set(func)
+  end
+end
+
+local function tracked_cb(cb_table, o, b, func)
+  if cb_table[o] == nil then
+    cb_table[o] = {}
+    print 'new table for button registry added'
+    _tracked_cb(cb_table[o], b, func)
+  else
+    _tracked_cb(cb_table[o], b, func)
+  end
+  return cb_table[o][b]
+end
+
+local function tracked_cb_removal(cb_table, o)
+  for k, v in pairs(cb_table) do 
+    print(k, v)
+  end
+  if type(cb_table[o]) == "table" then 
+    for _, v1 in pairs(cb_table[o]) do
+      print(_, v1)
+      v1:free()
+      v1 = nil
+    end
+  end
+end
+--]]
+
 ------------- "Class" definitions -----------------------------------------
 
 local Mt_TestUI = {}
@@ -55,6 +96,16 @@ Mt_Sprite.set_frame               = C.Sprite_set_frame
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_size                = C.Sprite_set_size
 
+-- local weakkey = {__mode = "k"}
+-- Mt_Sprite.__on_releases__ = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_presses__  = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_downs__    = setmetatable({}, weakkey)
+-- Mt_Sprite.__on_ups__      = setmetatable({}, weakkey)
+
+-- Mt_Sprite.on_release = function(self, btn, func)
+  -- C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
+-- end
+
 Mt_Sprite.on_release = C.Sprite_on_release
 Mt_Sprite.on_press   = C.Sprite_on_press
 
@@ -88,6 +139,14 @@ Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
 local function new_sprite_text(text, scene, font, size, center, r, g, b)
+  -- return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
+    -- tracked_cb_removal (Mt_Sprite.__on_releases__, self)
+    -- print '--------'
+    -- tracked_cb_removal (Mt_Sprite.__on_presses__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_downs__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_ups__, self)
+    -- C.Sprite__gc(self)
+  -- end)
   return ffi.gc(C.SpriteText_create(text, scene, font, size, center, r, g, b), C.SpriteText__gc)
 end
 

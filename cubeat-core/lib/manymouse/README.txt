@@ -23,10 +23,25 @@ Basic usage:
  - Add the new files to your project's build system.
  - #include "manymouse.h" in your source code
  - Call ManyMouse_Init() once before using anything else in the library,
-   usually at program startup time. If it returns > 0, it found mice it can
-   use.
+   usually at program startup time. If it returns > 0, that's the number of
+   mice it found. If it returns zero, it means the system works, but there
+   aren't any mice to be found, and calling ManyMouse_Init() may report mice
+   in the future if one is plugged in. If it returns < 0, it means the system
+   will never report mice; this can happen, for example, on Windows 95, which
+   lacks functionality we need that was introduced with Windows XP.
+ - Call ManyMouse_DriverName() if you want to know the human-readable
+   name of the driver that handles devices behind the scenes. Some platforms
+   have different drivers depending on the system being used. This is for
+   debugging purposes only: it is not localized and we don't promise they
+   won't change. The string is in UTF-8 format. Don't free this string.
+   This will return NULL if ManyMouse_Init() failed.
  - Call ManyMouse_DeviceName() if you want to know the human-readable
-   name of each device ("Logitech USB mouse", etc).
+   name of each device ("Logitech USB mouse", etc). This is for debugging
+   purposes only: it is not localized and we don't promise they won't change.
+   As these strings are created by the device and the OS, we can't even
+   promise they'll even actually help you identify the mouse in your hand;
+   sometimes, they are quite lousy descriptions. The string is in UTF-8
+   format. Don't free this string.
  - Read input from the mice with ManyMouse_PollEvent() in a loop until the
    function returns 0. Each time through the loop, examine the event that
    was returned and react appropriately. Do this with regular frequency:
@@ -36,7 +51,8 @@ Basic usage:
  - When you are done processing mice, call ManyMouse_Quit() once, usually at
    program termination.
 
-There are examples of complete usage in the "example" directory.
+There are examples of complete usage in the "example" directory. The simplest
+ is test_manymouse_stdio.c ...
 
 
 Thread safety note:
@@ -126,28 +142,45 @@ Some general ManyMouse usage notes:
    recommend using SDL's "windib" target in the meantime to avoid this
    problem.
 
- - (XInput code isn't finished yet, but in the future this note will be true.)
-   On Unix systems, we try to use the XInput extension if possible...currently
-   most users (XFree86/x.org X server) will not find this useful, since XInput
-   is either not included or not configured properly. In the short term, most
-   Linux users should favor the evdev target, below. For now, the XInput
-   target will refuse to work unless it sees more than one mouse, since in
-   those cases, the system is possibly misconfigured. XInput currently doesn't
-   support hotplugging, although the x.org people are planning to extend the
-   spec to support this. If you want to use the XInput target, make sure you
-   link with "-ldl", since we use dlopen() to find the X11/XInput libraries.
-   You do not have to link against Xlib directly, and ManyMouse will fail
-   gracefully (reporting no mice in the ManyMouse XInput driver) if the
-   libraries don't exist on the end user's system. Naturally, you'll need
-   the X11 headers on your system. You can build with SUPPORT_XINPUT defined
-   to zero to disable XInput support.
+ - On Unix systems, we try to use the XInput2 extension if possible.
+   ManyMouse will try to fallback to other approaches if there is no X server
+   available or the X server doesn't support XInput2. If you want to use the
+   XInput2 target, make sure you link with "-ldl", since we use dlopen() to
+   find the X11/XInput2 libraries. You do not have to link against Xlib
+   directly, and ManyMouse will fail gracefully (reporting no mice in the
+   ManyMouse XInput2 driver) if the libraries don't exist on the end user's
+   system. Naturally, you'll need the X11 headers on your system (on Ubuntu,
+   you would want to apt-get install libxi-dev). You can build with
+   SUPPORT_XINPUT2 defined to zero to disable XInput2 support completely.
+   Please note that the XInput2 target does not need your app to supply an X11
+   window. The test_manymouse_stdio app works with this target, so long as the
+   X server is running. Please note that the X11 DGA extension conflicts with
+   XInput2 (specifically: SDL might use it). This is a good way to deal with
+   this in SDL 1.2:
 
- - On Linux, we first try to use the /dev/input/event* devices; this means
+        char namebuf[16];
+        const char *driver;
+
+        SDL_Init(SDL_INIT_VIDEO);
+        driver = SDL_VideoDriverName(namebuf, sizeof (namebuf));
+        if (driver && (strcmp(driver, "x11") == 0))
+        {
+            if (strcmp(ManyMouse_DriverName(), "X11 XInput2 extension") == 0)
+                setenv("SDL_MOUSE_RELATIVE", "0", 1);
+        }
+
+        // now you may call SDL_SetVideoMode() or SDL_WM_GrabInput() safely.
+
+ - On Linux, we can try to use the /dev/input/event* devices; this means
    that ManyMouse can function with or without an X server. Please note that
-   the next major release of x.org's X server will grab the devices at the
-   kernel level, and will make this interface useless...eventually, their
-   XInput implementation will implement hotplugging and such, making it the
-   favorable ManyMouse target for most Linux users.
+   modern Linux systems only allow root access to these devices. Most users
+   will want XInput2, but this can be used if the device permissions allow.
+
+ - There (currently) exists a class of users that have Linux systems with
+   evdev device nodes forbidden to all but the root user, and no XInput2
+   support. These users are out of luck; they should either force the
+   permissions on /dev/input/event*, or upgrade their X server. This is a
+   problem that will solve itself with time.
 
  - On Mac OS X, we use IOKit's HID Manager API, which means you can use this
    C-callable library from Cocoa, Carbon, and generic Unix applications, with

@@ -323,8 +323,8 @@ protected:
         size_t pSize = waypoints_.size();
         WaypointType s1 = waypoints_[2] - waypoints_[1];
         WaypointType s2 = waypoints_[pSize-3] - waypoints_[1];
-        float const& d1 = distance(waypoints_[2], waypoints_[1]);
-        float const& d2 = distance(waypoints_[pSize-3], waypoints_[1]);
+        float const& d1 = this->distance(waypoints_[2], waypoints_[1]);
+        float const& d2 = this->distance(waypoints_[pSize-3], waypoints_[1]);
         s1 /= d1;
         s2 /= d2;
         waypoints_.front() = waypoints_[1] + d1*s2;

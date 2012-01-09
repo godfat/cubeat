@@ -170,6 +170,10 @@ public:
     typedef map_any_::const_iterator const_iterator;
     static map_any construct( std::string const& str );
 
+    void operator=(map_any const& rhs){
+        dict_ = rhs.dict_;
+    }
+
 public:
     inline int&         I(int         const& i) { return boost::any_cast<int&>        (dict_[i]); }
     inline double&      F(int         const& i) { return boost::any_cast<double&>     (dict_[i]); }

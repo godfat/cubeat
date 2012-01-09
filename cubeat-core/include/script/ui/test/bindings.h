@@ -52,6 +52,9 @@ APIEXPORT void          SpriteText_set_scale(pSpriteText*, double, double, doubl
 APIEXPORT void          SpriteText_set_red(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_green(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_blue(pSpriteText*, int);
+APIEXPORT void          SpriteText_set_alpha(pSpriteText*, int);
+APIEXPORT void          SpriteText_set_visible(pSpriteText*, bool);
+APIEXPORT void          SpriteText_on_release(pSpriteText* self, PSC_OBJCALLBACK);
 
 APIEXPORT InputButton const* Input_get_trig1();
 APIEXPORT InputButton const* Input_get_trig2();

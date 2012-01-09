@@ -50,6 +50,7 @@ function init(self)
   text_:change_text("Please select character")
   print(text_:get_text())
   print(text_:get_font_size())
+  text_:set_alpha(100)
   
   
   btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)

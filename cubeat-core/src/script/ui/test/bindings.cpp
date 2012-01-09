@@ -172,11 +172,26 @@ void SpriteText_set_scale(pSpriteText* self, double x, double y, double z) {
 void SpriteText_set_red(pSpriteText* self, int x) {
     (*self)->set<Red>(x);
 }
+
 void SpriteText_set_green(pSpriteText* self, int x) {
     (*self)->set<Green>(x);
 }
+
 void SpriteText_set_blue(pSpriteText* self, int x) {
     (*self)->set<Blue>(x);
+}
+
+void SpriteText_set_alpha(pSpriteText* self, int x) {
+    (*self)->set<Alpha>(x);
+}
+
+void SpriteText_set_visible(pSpriteText* self, bool x) {
+    (*self)->set<Visible>(x);
+}
+
+void SpriteText_on_release(pSpriteText* self, PSC_OBJCALLBACK func) {
+    (*self)->onRelease( &InputMgr::i().getInputByIndex(0)->trig1() ) =
+        bind(delegate_for_cb_from_lua, _1, func);
 }
 
 InputButton const* Input_get_trig1(){

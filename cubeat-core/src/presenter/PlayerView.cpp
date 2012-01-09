@@ -43,19 +43,19 @@ pPlayerView PlayerView::init(std::string const& path, view::pObject const& paren
                                       .set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
     utils::map_any const& fpos = conf_.V("face_pos").M(0);
-    utils::map_any const& face = conf_.M("face");
+    utils::vector_any const& face = conf_.V("face");
     character_->addSprite("face", 0, conf_.I("face_w"), conf_.I("face_h"), true, face.M(NORMAL).S("tex") )
                .getSprite("face").set<Pos2D>( vec2(fpos.I("x"), fpos.I("y")) );
 
-    BOOST_FOREACH(utils::pair_any const& it, conf_.M("face")) {
-        utils::map_any const& face = boost::any_cast<utils::map_any const>(it.second);
+    BOOST_FOREACH(utils::any_type const& it, conf_.V("face")) {
+        utils::map_any const& face = boost::any_cast<utils::map_any const>(it);
         faces_.push_back( FaceState() );
         faces_.back().tex = face.S("tex");
         faces_.back().gdeco = face.I("gdeco");
         faces_.back().bdeco = face.I("bdeco");
     }
-    BOOST_FOREACH(utils::pair_any const& it, conf_.M("state")) {
-        utils::map_any const& stat = boost::any_cast<utils::map_any const>(it.second);
+    BOOST_FOREACH(utils::any_type const& it, conf_.V("state")) {
+        utils::map_any const& stat = boost::any_cast<utils::map_any const>(it);
         states_.push_back( CharState() );
         states_.back().anim = stat.S("anim");
         states_.back().face_visible = stat.I("face_visible");

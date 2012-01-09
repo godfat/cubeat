@@ -11,7 +11,7 @@
 
 SKIP 1. Fix the Singleton flood.
 
-DONE?2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes. 
+DONE?2. Multiple EventDispatcher. Multiple Timer for Multiple Scenes.
      This probably need to be a separated small project.
      -- Let's separate the Timer as a different module?
        -- Make Timer interface return formal handles, not use shared_ptr<int> as dummies.
@@ -24,70 +24,72 @@ SKIP 3. Try to remove as many template usages as possible:
      -- Animators, Accessors.
      -- pull contents to cpp units, don't leave them in headers.
      ** If it ain't broken, don't fix it.
-     
+
 0.6  4. A better way to present the UI programatically (usually means the presenter)
-     -- Lua modules? or we just fix the C++ interfaces? 
+     -- Lua modules? or we just fix the C++ interfaces?
      -- It'd better go with multiple event dispatchers and timers.
-     
+
   5. We need more resolution options and more configs for different resolutions.
-     
+
   6. Lack of networking capability.
      -- enet + Lua modules?
-     
-SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on 
-     view::Scene, How do I fix this? 
+
+SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on
+     view::Scene, How do I fix this?
      -- Multiple EventDispatchers for Multi Scenes might have something to do with this.
      ** On a second thought, I doubt this will tangle with other features in the future.
         So, just don't do anything with it. If it can be removed, then it will be.
-     
+
   8. We need a Font Factory.
 
 * Technical Detail Issues:
 
 0.6  1. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
-     how to prevent buffer exhaustion... 
+     how to prevent buffer exhaustion...
 
-  2. ManyMouse on MacOSX 10.6+ 
+  2. ManyMouse on MacOSX 10.6+
      see http://hg.icculus.org/icculus/manymouse/
-     
+     -- Partially fixed: Bluetooth may not be detected by manymouse, need report to Ryan.
+     -- Derived Issue: Only if 2 mice are movable by manymouse then we reinit both config to use manymouse.
+
   3. Something about lock and delayed cleanup:
-     I found many places in code where we should actually check on the weak_ptr.lock(), 
+     I found many places in code where we should actually check on the weak_ptr.lock(),
      basically we have to assume it WILL somehow failed locking. if there's any performance hit,
      it would have been done already by locking, so I don't consider performance an issue here.
-     
+
      and just like we can't erase or add an iterator during an iteration, it's the same for
      event subscription clean-up process. Like you can't call clean all button events in a button
      event callback itself! When in doubt, or have no obvious ways to resolve it, at least we
-     should try to use EventDispatcher's timer callback to delay it.   
-     
+     should try to use EventDispatcher's timer callback to delay it.
+
   4. Something about Input scheme (see code Input.cpp around line 405):
-     The input scheme here should have a total revamp. we should only designate Button1, Button2, 
+     The input scheme here should have a total revamp. we should only designate Button1, Button2,
      Button3... etc, never name it. It should have the flexibility to map every input to every
      abstract button you can have in game, and you can assign every event to every button!
-     
+
      The current implementation was based on more or less a wii remote idea, some group of buttons
      and other group of buttons are just not interchangable. This is not the optimal solution.
 
 * Model / Gameplay Issues:
 
-0.6  1. I think we really need real_y(pixel_y) as a model property, either use this with current 
+0.6  1. I think we really need real_y(pixel_y) as a model property, either use this with current
      State pattern or revamp the state pattern.
-     -- Why sometimes the bottom cubes' chain state isn't taken out? 
-     
+     -- Why sometimes the bottom cubes' chain state isn't taken out?
+
 * UI / Gameplay Issues:
 
-0.6  1. We need better chaining cubes' indication. we need better indication of attacking and 
+0.6  1. We need better chaining cubes' indication. we need better indication of attacking and
      cubes dropping and those sort of things. In short, we need better UI and user feedback design.
      -- These are mostly game objects, not UI objects.
-    
+
   2. Probably a generic high score record for each game-modes.
      -- require the UI improvements programatically
-    
+
   3. See if we can fix resolution shrinking and manymouse <-> system mouse cursor position sync.
      -- Maybe we just have to make sure cursor value is scaled as such for now?
      -- Mouse Speed need to be adjustable (require the UI improvements programatically for the option menu)
-   
-* UI / Glitches:  
+
+* UI / Glitches:
 
 0.6  1. Heat gauge has some glowing glitch. (after glow the color remained white. Tween-related issue)
      -- the glowing cubes for chaining indicator has this issue too.
@@ -96,28 +98,28 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
 * Feature / Gameplay Issues:
 
-0.6  1. Training mode and tutorials. 
+0.6  1. Training mode and tutorials.
      -- require the UI improvements programatically
 
 0.6  2. Better Puzzle mode.
 
   3. No Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.
-     
+
 0.6  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
      -- Lua modules?
        ** Lua integration of this part done.
-     
+
   5. Other game modes:
      -- Time attack, Score attack, challenge mode, etc.
-     
+
 * Tools / Libraries Issues:
 
   1. Make Logger use warning level structure or use define to quarantine debug messages.
 
-  2. The utils::dictionary needs writing and error-logging functionalities. 
+  2. The utils::dictionary needs writing and error-logging functionalities.
      -- But we'll switch over to all Lua setup gradually.
-     
+
   3. Better particle emitter interfaces.
      -- Lua modules?
 
@@ -134,29 +136,28 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
     -- And color should be adjustable, just like puyopuyo. The problem is default should be 4 or 5?
        6 has been proved too much. 4 sometimes seemed too easy to trigger big chains randomly.
     -- And we might need other ways to remove garbage/broken cubes.
-    
+
   2. The rhythm of the game (especially the dying cubes) needs work.
     Others:
     -- damage_factor over time.
     -- draw game (timeout)
     -- more restrained mouse clicks (bullet/heat/energy limits or items or other mechanisms)
 
-  3. Memo about wide range of distribution: 
+  3. Memo about wide range of distribution:
     -- dll's built with mingw which uses MSVCRT.dll is good to go, can be run on as old as Windows XP, I think.
        however libogg & libvorbis & luajit & OpenAL & ALURE aren't. They are dependent on MSVCRT100.dll.
        My old G1S laptop with WinXP SP3 can run it, but I doubt it's just lucky.
-   
+
     -- Mac & Linux's build are probably mostly statically linked, which is good on this case.
        No, actually not. At least LuaJIT and Irrlicht aren't statically linked.
-       
-  4. We should consider changing the semantics about Animation Tweens: 
+
+  4. We should consider changing the semantics about Animation Tweens:
      "IT IS JUST FOR ANIMATIONS. IT SHOULD NOT BE AFFECTED IN ANY WAY EXCEPT FOR DELETION DURING EXECUTION."
      (which means I think SpeedFuncAnimator is so stupid.)
 
   5. Does EventDispatcher::subscribe_obj_event have to KNOW the real callee? (e.g. presenter, not view)
-     but then we'll enforce more shared_ptr usage. and locking twice (once for view, once for presenter) 
+     but then we'll enforce more shared_ptr usage. and locking twice (once for view, once for presenter)
      sounds very stupid.
-     
+
 0.6  6. Among other options, the sound/audio option must go into the option menu.
-     
-  
+

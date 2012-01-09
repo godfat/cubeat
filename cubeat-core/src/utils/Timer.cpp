@@ -2,7 +2,7 @@
 //adapted from http://www.michaelzeilfelder.de/irrlicht/timer.cpp
 
 #include "ITimer.h" //irrlicht
-#include "utils/timer.hpp"
+#include "utils/Timer.hpp"
 
 using namespace psc;
 using namespace utils;

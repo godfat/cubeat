@@ -137,12 +137,46 @@ pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int s
     return sp;
 }
 
-void SpriteText_set_pos(pSpriteText* self, double x, double y) {
-    (*self)->set<Pos2D>(vec2(x, y));
+void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
+    (*self)->setCenterAligned(center);
 }
 
 void SpriteText_change_text(pSpriteText* self, char const* text) {
     (*self)->changeText(text);
+}
+
+void SpriteText_show_number(pSpriteText* self, int num, unsigned int digit) {
+    (*self)->showNumber(num, digit);
+}
+
+char const* SpriteText_get_text(pSpriteText* self) {
+    return (*self)->getText().c_str();
+}
+
+int SpriteText_get_font_size(pSpriteText* self) {
+    return (*self)->getFontSize();
+}
+
+void SpriteText_set_pos(pSpriteText* self, double x, double y) {
+    (*self)->set<Pos2D>(vec2(x, y));
+}
+
+void SpriteText_set_rotate(pSpriteText* self, double x, double y, double z) {
+    (*self)->set<Rotation>(vec3(x, y, z));
+}
+
+void SpriteText_set_scale(pSpriteText* self, double x, double y, double z) {
+    (*self)->set<Scale>(vec3(x, y, z));
+}
+
+void SpriteText_set_red(pSpriteText* self, int x) {
+    (*self)->set<Red>(x);
+}
+void SpriteText_set_green(pSpriteText* self, int x) {
+    (*self)->set<Green>(x);
+}
+void SpriteText_set_blue(pSpriteText* self, int x) {
+    (*self)->set<Blue>(x);
 }
 
 InputButton const* Input_get_trig1(){

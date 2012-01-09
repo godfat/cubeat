@@ -43,8 +43,9 @@ private:
 
     lua_State* L_;
 
-    view::pSprite   act_;
-    view::pSprite   btn_;
+    view::pSprite       act_;
+    view::pSprite       btn_;
+    view::pSpriteText   text_;
 };
 } //psc
 

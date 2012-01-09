@@ -40,8 +40,18 @@ APIEXPORT void     Sprite_on_release(pSprite* self, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_press(pSprite* self, PSC_OBJCALLBACK);
 
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
-APIEXPORT void          SpriteText_set_pos(pSpriteText*, double, double);
+APIEXPORT void          SpriteText_set_center_aligned(pSpriteText*, bool);
 APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);
+APIEXPORT void          SpriteText_show_number(pSpriteText*, int, unsigned int);
+APIEXPORT char const*   SpriteText_get_text(pSpriteText*);
+APIEXPORT int           SpriteText_get_font_size(pSpriteText*);
+
+APIEXPORT void          SpriteText_set_pos(pSpriteText*, double, double);
+APIEXPORT void          SpriteText_set_rotate(pSpriteText*, double, double, double);
+APIEXPORT void          SpriteText_set_scale(pSpriteText*, double, double, double);
+APIEXPORT void          SpriteText_set_red(pSpriteText*, int);
+APIEXPORT void          SpriteText_set_green(pSpriteText*, int);
+APIEXPORT void          SpriteText_set_blue(pSpriteText*, int);
 
 APIEXPORT InputButton const* Input_get_trig1();
 APIEXPORT InputButton const* Input_get_trig2();

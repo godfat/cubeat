@@ -48,6 +48,9 @@ function init(self)
   text_ = view.new_sprite_text("Hello World", scene_, "Star Jedi", 24, false, 255, 255, 255)
   text_:set_pos(600, 250)
   text_:change_text("Please select character")
+  print(text_:get_text())
+  print(text_:get_font_size())
+  
   
   btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)
   btn_char_[2] = view.new_sprite("cubes/cube-r-1", scene_, 64, 64, false)

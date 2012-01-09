@@ -97,9 +97,21 @@ local function new_sprite(name, scene, w, h, center)
 end
 
 local Mt_SpriteText = {}
-Mt_SpriteText.__index     = Mt_SpriteText
-Mt_SpriteText.set_pos     = C.SpriteText_set_pos
-Mt_SpriteText.change_text = C.SpriteText_change_text
+Mt_SpriteText.__index             = Mt_SpriteText
+Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
+Mt_SpriteText.change_text         = C.SpriteText_change_text
+Mt_SpriteText.show_number         = C.SpriteText_show_number
+Mt_SpriteText.get_text            = function(self)
+  return ffi.string(C.SpriteText_get_text(self))
+end
+Mt_SpriteText.get_font_size       = C.SpriteText_get_font_size
+
+Mt_SpriteText.set_pos             = C.SpriteText_set_pos
+Mt_SpriteText.set_rotate          = C.SpriteText_set_rotate
+Mt_SpriteText.set_scale           = C.SpriteText_set_scale
+Mt_SpriteText.set_red             = C.SpriteText_set_red
+Mt_SpriteText.set_green           = C.SpriteText_set_green
+Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 
 Mt_SpriteText.__on_releases__ = setmetatable({}, weakkey)
 Mt_SpriteText.__on_presses__  = setmetatable({}, weakkey)

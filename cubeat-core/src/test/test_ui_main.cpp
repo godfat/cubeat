@@ -40,8 +40,10 @@ TestUI::TestUI()
 
     act_ = view::Sprite::create("char1/test", scene_, 192, 192);
     btn_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
+    text_= view::SpriteText::create("Test word", scene_, "Star Jedi", 24);
     act_->moveTo(620, 50);
     btn_->moveTo(920, 50);
+    text_->moveTo(600, 10);
     std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
     std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
     btn_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;

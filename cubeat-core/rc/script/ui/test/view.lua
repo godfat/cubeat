@@ -112,6 +112,14 @@ Mt_Sprite.on_press   = C.Sprite_on_press
 ffi.metatype("pSprite", Mt_Sprite)
 
 local function new_sprite(name, scene, w, h, center)
+  -- return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
+    -- tracked_cb_removal (Mt_Sprite.__on_releases__, self)
+    -- print '--------'
+    -- tracked_cb_removal (Mt_Sprite.__on_presses__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_downs__, self)
+    -- tracked_cb_removal (Mt_Sprite.__on_ups__, self)
+    -- C.Sprite__gc(self)
+  -- end)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
 end
 
@@ -134,19 +142,12 @@ Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 
-
+Mt_SpriteText.on_release          = C.SpriteText_on_release
+Mt_SpriteText.on_press            = C.SpriteText_on_press
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
 local function new_sprite_text(text, scene, font, size, center, r, g, b)
-  -- return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
-    -- tracked_cb_removal (Mt_Sprite.__on_releases__, self)
-    -- print '--------'
-    -- tracked_cb_removal (Mt_Sprite.__on_presses__, self)
-    -- tracked_cb_removal (Mt_Sprite.__on_downs__, self)
-    -- tracked_cb_removal (Mt_Sprite.__on_ups__, self)
-    -- C.Sprite__gc(self)
-  -- end)
   return ffi.gc(C.SpriteText_create(text, scene, font, size, center, r, g, b), C.SpriteText__gc)
 end
 

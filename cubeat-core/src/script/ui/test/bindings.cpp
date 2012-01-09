@@ -121,14 +121,12 @@ void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
     cb(&sp);
 }
 
-void Sprite_on_release(pSprite* self, PSC_OBJCALLBACK func) {
-    (*self)->onRelease( &InputMgr::i().getInputByIndex(0)->trig1() ) =
-        bind(delegate_for_cb_from_lua, _1, func);
+void Sprite_on_release(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void Sprite_on_press(pSprite* self, PSC_OBJCALLBACK func) {
-    (*self)->onPress( &InputMgr::i().getInputByIndex(0)->trig1() ) =
-        bind(delegate_for_cb_from_lua, _1, func);
+void Sprite_on_press(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
 pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {
@@ -189,17 +187,20 @@ void SpriteText_set_visible(pSpriteText* self, bool x) {
     (*self)->set<Visible>(x);
 }
 
-void SpriteText_on_release(pSpriteText* self, PSC_OBJCALLBACK func) {
-    (*self)->onRelease( &InputMgr::i().getInputByIndex(0)->trig1() ) =
-        bind(delegate_for_cb_from_lua, _1, func);
+void SpriteText_on_release(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-InputButton const* Input_get_trig1(){
-    return &InputMgr::i().getInputByIndex(0)->trig1();
+void SpriteText_on_press(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-InputButton const* Input_get_trig2(){
-    return &InputMgr::i().getInputByIndex(0)->trig2();
+InputButton const* Input_get_trig1(int x){
+    return &InputMgr::i().getInputByIndex(x)->trig1();
+}
+
+InputButton const* Input_get_trig2(int x){
+    return &InputMgr::i().getInputByIndex(x)->trig2();
 }
 
 void Scene__gc(pScene* self) {

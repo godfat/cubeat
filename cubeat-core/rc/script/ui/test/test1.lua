@@ -35,9 +35,9 @@ function init(self)
   sp:texture_flipV()
   sp:set_size(32, 32)
   
-  sp:on_release(function(self)
+  sp:on_release(C.Input_get_trig1(0), function(self)
     print 'hi' 
-    self:on_release(function(self)
+    self:on_release(C.Input_get_trig1(0), function(self)
       print 'hello'
     end)
   end)
@@ -51,7 +51,8 @@ function init(self)
   print(text_:get_text())
   print(text_:get_font_size())
   text_:set_alpha(100)
-  
+  text_:on_press(C.Input_get_trig1(0), function() text_:set_visible(false) end)
+  text_:on_release(C.Input_get_trig1(0), function() text_:set_visible(true) end)
   
   btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)
   btn_char_[2] = view.new_sprite("cubes/cube-r-1", scene_, 64, 64, false)
@@ -69,11 +70,11 @@ function init(self)
   function sel_char3(self) char_:set_texture("char3/full") end
   function sel_char4(self) char_:set_texture("char4/full") end
   function sel_char5(self) char_:set_texture("char5/full") end
-  btn_char_[1]:on_press( sel_char1 )
-  btn_char_[2]:on_press( sel_char2 )
-  btn_char_[3]:on_press( sel_char3 )
-  btn_char_[4]:on_press( sel_char4 )
-  btn_char_[5]:on_press( sel_char5 )
+  btn_char_[1]:on_press( C.Input_get_trig1(0), sel_char1 )
+  btn_char_[2]:on_press( C.Input_get_trig1(0), sel_char2 )
+  btn_char_[3]:on_press( C.Input_get_trig1(0), sel_char3 )
+  btn_char_[4]:on_press( C.Input_get_trig1(0), sel_char4 )
+  btn_char_[5]:on_press( C.Input_get_trig1(0), sel_char5 )
 end
 
 function cycle(self)

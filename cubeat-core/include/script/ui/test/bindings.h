@@ -59,6 +59,11 @@ APIEXPORT void          SpriteText_on_press(pSpriteText* self, InputButton const
 
 APIEXPORT InputButton const* Input_get_trig1(int);
 APIEXPORT InputButton const* Input_get_trig2(int);
+APIEXPORT InputButton const* Input_get_wep1(int);
+APIEXPORT InputButton const* Input_get_wep2(int);
+APIEXPORT InputButton const* Input_get_wep3(int);
+APIEXPORT InputButton const* Input_get_haste(int);
+APIEXPORT InputButton const* Input_get_pause(int);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

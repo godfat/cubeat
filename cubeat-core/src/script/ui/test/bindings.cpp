@@ -203,6 +203,26 @@ InputButton const* Input_get_trig2(int x){
     return &InputMgr::i().getInputByIndex(x)->trig2();
 }
 
+InputButton const* Input_get_wep1(int x) {
+    return &InputMgr::i().getInputByIndex(x)->wep1();
+}
+
+InputButton const* Input_get_wep2(int x) {
+    return &InputMgr::i().getInputByIndex(x)->wep2();
+}
+
+InputButton const* Input_get_wep3(int x) {
+    return &InputMgr::i().getInputByIndex(x)->wep3();
+}
+
+InputButton const* Input_get_haste(int x) {
+    return &InputMgr::i().getInputByIndex(x)->haste();
+}
+
+InputButton const* Input_get_pause(int x) {
+    return &InputMgr::i().getInputByIndex(x)->pause();
+}
+
 void Scene__gc(pScene* self) {
     delete self;
 }

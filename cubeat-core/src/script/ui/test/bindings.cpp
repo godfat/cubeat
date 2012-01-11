@@ -129,6 +129,14 @@ void Sprite_on_press(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
+void Sprite_on_up(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onUp( btn ) = bind(delegate_for_cb_from_lua, _1, func);
+}
+
+void Sprite_on_down(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func);
+}
+
 pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {
     pSpriteText* sp = new pSpriteText;
     *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
@@ -195,32 +203,40 @@ void SpriteText_on_press(pSpriteText* self, InputButton const* btn, PSC_OBJCALLB
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-InputButton const* Input_get_trig1(int x){
-    return &InputMgr::i().getInputByIndex(x)->trig1();
+Input* Input_get_input1() {
+    return InputMgr::i().getInputByIndex(0);
 }
 
-InputButton const* Input_get_trig2(int x){
-    return &InputMgr::i().getInputByIndex(x)->trig2();
+Input* Input_get_input2() {
+    return InputMgr::i().getInputByIndex(1);
 }
 
-InputButton const* Input_get_wep1(int x) {
-    return &InputMgr::i().getInputByIndex(x)->wep1();
+InputButton const* Input_get_trig1(Input* p){
+    return &p->trig1();
 }
 
-InputButton const* Input_get_wep2(int x) {
-    return &InputMgr::i().getInputByIndex(x)->wep2();
+InputButton const* Input_get_trig2(Input* p){
+    return &p->trig2();
 }
 
-InputButton const* Input_get_wep3(int x) {
-    return &InputMgr::i().getInputByIndex(x)->wep3();
+InputButton const* Input_get_wep1(Input* p) {
+    return &p->wep1();
 }
 
-InputButton const* Input_get_haste(int x) {
-    return &InputMgr::i().getInputByIndex(x)->haste();
+InputButton const* Input_get_wep2(Input* p) {
+    return &p->wep2();
 }
 
-InputButton const* Input_get_pause(int x) {
-    return &InputMgr::i().getInputByIndex(x)->pause();
+InputButton const* Input_get_wep3(Input* p) {
+    return &p->wep3();
+}
+
+InputButton const* Input_get_haste(Input* p) {
+    return &p->haste();
+}
+
+InputButton const* Input_get_pause(Input* p) {
+    return &p->pause();
 }
 
 void Scene__gc(pScene* self) {

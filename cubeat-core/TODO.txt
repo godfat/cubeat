@@ -102,8 +102,7 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
      -- require the UI improvements programatically
 
 0.6  2. Better Puzzle mode.
-     ** Need a "Puzzle Explorer" for easy editing.
-       -- Maybe "Puzzle Editor"? with GUI ..., reserve for the future.
+DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
 
   3. No Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.

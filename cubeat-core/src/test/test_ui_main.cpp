@@ -46,8 +46,12 @@ TestUI::TestUI()
     text_->moveTo(600, 10);
     std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
     std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
+    std::tr1::function<void(view::pSprite&, int, int)> enter = bind(&TestUI::EnterFocus, this, _1, _2, _3);
+    std::tr1::function<void(view::pSprite&, int, int)> leave = bind(&TestUI::LeaveFocus, this, _1, _2, _3);
     btn_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;
     btn_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = clickRight;
+    btn_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
 }
 
 void TestUI::init()
@@ -70,6 +74,14 @@ void TestUI::cycle()
     script::Lua::call(L_, "cycle", static_cast<void*>(this));
     stage_->cycle();
     scene_->redraw();
+}
+
+void TestUI::EnterFocus(view::pSprite& p, int a, int b){
+    p->set<Red>(0);
+}
+
+void TestUI::LeaveFocus(view::pSprite& p, int a, int b){
+    p->set<Red>(255);
 }
 
 int main(){

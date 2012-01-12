@@ -107,8 +107,12 @@ Mt_Sprite.set_size                = C.Sprite_set_size
   -- C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
 -- end
 
-Mt_Sprite.on_release = C.Sprite_on_release
-Mt_Sprite.on_press   = C.Sprite_on_press
+Mt_Sprite.on_release              = C.Sprite_on_release
+Mt_Sprite.on_press                = C.Sprite_on_press
+Mt_Sprite.on_up                   = C.Sprite_on_up
+Mt_Sprite.on_down                 = C.Sprite_on_down
+Mt_Sprite.on_enter_focus          = C.Sprite_on_enter_focus
+Mt_Sprite.on_leave_focus          = C.Sprite_on_leave_focus
 
 ffi.metatype("pSprite", Mt_Sprite)
 
@@ -145,6 +149,8 @@ Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 
 Mt_SpriteText.on_release          = C.SpriteText_on_release
 Mt_SpriteText.on_press            = C.SpriteText_on_press
+Mt_SpriteText.on_up               = C.SpriteText_on_up
+Mt_SpriteText.on_down             = C.SpriteText_on_down
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 

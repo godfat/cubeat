@@ -75,6 +75,18 @@ function init(self)
   btn_char_[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
   btn_char_[4]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char4 )
   btn_char_[5]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char5 )
+  function focus_in(self, x, y)
+    self:set_red(0)
+    self:set_alpha(100)
+  end
+  function focus_out(self, x, y)
+    self:set_red(255)
+    self:set_alpha(255)
+  end
+  for i=1,5 do
+    btn_char_[i]:on_enter_focus( C.Input_get_input1(), focus_in, 0, 0 )
+    btn_char_[i]:on_leave_focus( C.Input_get_input1(), focus_out, 0, 0 )
+  end
 end
 
 function cycle(self)

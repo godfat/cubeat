@@ -36,6 +36,8 @@ public:
 
     void LeftBtnClick (view::pSprite& p){ act_->setTexture("char1/test"); }
     void RightBtnClick(view::pSprite& p){ act_->setTexture("char2/test"); }
+    void EnterFocus(view::pSprite& p, int a, int b);
+    void LeaveFocus(view::pSprite& p, int a, int b);
 
 private:
     presenter::pStage stage_;

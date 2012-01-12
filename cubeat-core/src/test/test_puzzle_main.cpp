@@ -1,67 +1,34 @@
 
-#include "view/Scene.hpp"
-#include "view/Sprite.hpp"
-
-#include "presenter/Map.hpp"
-#include "presenter/cube/ViewSprite.hpp"
-#include "presenter/cube/ViewStdout.hpp"
-
-#include "utils/MapLoader.hpp"
-
-#include "EventDispatcher.hpp"
-#include "Input.hpp"
-#include "Player.hpp"
+#include "presenter/game/Puzzle.hpp"
+#include <cstdio>
 
 using namespace psc;
 
-class TestPuzzle{
+class TestPuzzle : public presenter::game::Puzzle
+{
 public:
-    TestPuzzle(){
-        scene_ = psc::view::Scene::create("game");
-        scene_->setTo2DView().enableGlobalHittingEvent();     //important
-
-        data::pViewSetting s0, s1;
-
-        s0 = data::ViewSetting::create(50);
-        s0->x_offset(50).y_offset(500).push_ally(1).push_enemy(0);
-        s1 = data::ViewSetting::create(50);
-        s1->x_offset(450).y_offset(500).push_ally(0).push_enemy(1);
-
-        ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s0);
-        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s1);
-
-        // setup map0
-        map0_ = utils::MapLoader::generate(5); // presenter::Map::create();
-        map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
-
-        // setup map1
-        // map1_ = utils::MapLoader::load("config/puzzle.zzml");
-        map1_ = utils::MapLoader::load(utils::random(2));
-        map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
-
-        // mini view
-        data::pViewSetting s2 = data::ViewSetting::create(25);
-        s2->x_offset(800).y_offset(300);
-        map1_->push_view_slave( presenter::cube::ViewSpriteMaster::create(scene_, s2) );
-
-        // setup garbage land
-        map0_->push_garbage_land(map1_);
-        map1_->push_garbage_land(map0_);
-    }
-    void cycle(){
-        scene_->redraw();
-        map0_->redraw().cycle();
-        map1_->redraw().cycle();
+    typedef std::tr1::shared_ptr<TestPuzzle> pointer_type;
+    static pointer_type create(std::string const& c1p, std::string const& sc, int puzzle_level) {
+        return utils::ObjectPool<TestPuzzle>::create()->init(c1p,sc,puzzle_level);
     }
 
-private:
-    view::pScene scene_;
-    presenter::pMap map0_;
-    presenter::pMap map1_;
-    ctrl::pPlayer player0_;
-    ctrl::pPlayer player1_;
+    TestPuzzle() {}
+    virtual ~TestPuzzle() {
+        printf("TestPuzzle Game destructing ...\n");
+    }
+
+    void cycle() { //shadow Puzzle::cycle directly;
+        presenter::game::Puzzle::cycle();
+    }
+
+protected:
+    pointer_type init(std::string const& c1p, std::string const& sc, int puzzle_level) {
+        presenter::game::Puzzle::init(c1p, sc, puzzle_level);
+        return std::tr1::static_pointer_cast<TestPuzzle>(shared_from_this());
+    }
 };
+
+typedef TestPuzzle::pointer_type pTestPuzzle;
 
 #include "App.hpp"
 #include <cstdlib> // for srand
@@ -72,6 +39,6 @@ private:
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::App::i();
-    TestPuzzle tester;
-    return psc::App::i().run(std::tr1::bind(&TestPuzzle::cycle, &tester));
+    pTestPuzzle tester = TestPuzzle::create(0, 0, 5);
+    return psc::App::i().run(std::tr1::bind(&TestPuzzle::cycle, tester.get()));
 }

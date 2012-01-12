@@ -40,14 +40,16 @@ dropping_creatable:0,
 garbage_dumpable:0,
 cube_colors:
 ]])
-  local map = PuzzleGen:generate(chain_limit, w, h, de_bug)
+  local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug)
   file:write("[\n")
 
   file:write("[")
   for x = 1, map.width - 1 do file:write("0, ") end -- important, the real height must be one row higher than logic map
   file:write("0],\n")
 
+  local flipped = false
   if random(2) == 0 then
+    flipped = true
     if de_bug then print(" -- puzzle flipped (50% chance) -- ") end
     for y = 1, map.height do reverse_i(map[y]) end
   end
@@ -65,6 +67,12 @@ cube_colors:
     else file:write("],\n") end
   end
   file:write("]\n")
+
+  if de_bug then
+    if ans     then file:write("# note: "..ans.."\n") end
+    if flipped then file:write("# note: answer flipped.\n") end
+  end
+
   file:close()
 end
 

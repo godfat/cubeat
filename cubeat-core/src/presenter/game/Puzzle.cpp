@@ -135,7 +135,7 @@ void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p,
     }
 
     vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "config/char/char1.zzml", scene_, center_pos );
+    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "char/char1.zzml", scene_, center_pos );
     pview1_->setMap( map0_ );
 
     //2011.04.05 make stage number equal to puzzle level.
@@ -146,6 +146,8 @@ void Puzzle::setup_ui_by_config( std::string const& c1p, std::string const& c2p,
     heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
     heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
                 .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+
+    ui_layout_->setPickable(false);
 
     gauge1_flag_ = false;
 }

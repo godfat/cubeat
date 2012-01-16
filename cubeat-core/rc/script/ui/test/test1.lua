@@ -65,27 +65,27 @@ function init(self)
   btn_char_[4]:move_to(840, 300)
   btn_char_[5]:move_to(920, 300)
   
-  function sel_char1(self) char_:set_texture("char1/full") end
-  function sel_char2(self) char_:set_texture("char2/full") end
-  function sel_char3(self) char_:set_texture("char3/full") end
-  function sel_char4(self) char_:set_texture("char4/full") end
-  function sel_char5(self) char_:set_texture("char5/full") end
+  local function sel_char1(self) char_:set_texture("char1/full") end
+  local function sel_char2(self) char_:set_texture("char2/full") end
+  local function sel_char3(self) char_:set_texture("char3/full") end
+  local function sel_char4(self) char_:set_texture("char4/full") end
+  local function sel_char5(self) char_:set_texture("char5/full") end
   btn_char_[1]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char1 )
   btn_char_[2]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char2 )
   btn_char_[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
   btn_char_[4]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char4 )
   btn_char_[5]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char5 )
-  function focus_in(self, x, y)
+  local function focus_in(self, x, y)
     self:set_red(0)
     self:set_alpha(100)
   end
-  function focus_out(self, x, y)
+  local function focus_out(self, x, y)
     self:set_red(255)
     self:set_alpha(255)
   end
   for i=1,5 do
-    btn_char_[i]:on_enter_focus( C.Input_get_input1(), focus_in, 0, 0 )
-    btn_char_[i]:on_leave_focus( C.Input_get_input1(), focus_out, 0, 0 )
+    btn_char_[i]:on_enter_focus( C.Input_get_input1(), focus_in )
+    btn_char_[i]:on_leave_focus( C.Input_get_input1(), focus_out )
   end
 end
 

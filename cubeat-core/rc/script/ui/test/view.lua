@@ -151,6 +151,8 @@ Mt_SpriteText.on_release          = C.SpriteText_on_release
 Mt_SpriteText.on_press            = C.SpriteText_on_press
 Mt_SpriteText.on_up               = C.SpriteText_on_up
 Mt_SpriteText.on_down             = C.SpriteText_on_down
+Mt_SpriteText.on_enter_focus      = C.SpriteText_on_enter_focus
+Mt_SpriteText.on_leave_focus      = C.SpriteText_on_leave_focus
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 

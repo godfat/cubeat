@@ -223,6 +223,14 @@ void SpriteText_on_down(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBA
     (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func );
 }
 
+void SpriteText_on_enter_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+    (*self)->onEnterFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void SpriteText_on_leave_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+    (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
 Input* Input_get_input1() {
     return InputMgr::i().getInputByIndex(0);
 }

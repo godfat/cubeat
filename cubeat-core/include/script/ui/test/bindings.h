@@ -64,6 +64,8 @@ APIEXPORT void          SpriteText_on_release(pSpriteText* self, InputButton con
 APIEXPORT void          SpriteText_on_press(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_up(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_down(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
+APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
 APIEXPORT Input*    Input_get_input1();
 APIEXPORT Input*    Input_get_input2();

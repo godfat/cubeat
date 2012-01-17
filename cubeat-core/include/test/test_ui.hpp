@@ -39,6 +39,9 @@ public:
     void EnterFocus(view::pSprite& p, int a, int b);
     void LeaveFocus(view::pSprite& p, int a, int b);
 
+    void ShowSelCharPanel(view::pSprite& p);
+    void HideSelCharPanel(view::pSprite& p);
+
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
@@ -48,6 +51,8 @@ private:
     view::pSprite       act_;
     view::pSprite       btn_;
     view::pSpriteText   text_;
+
+    view::pSprite       btn1_;
 };
 } //psc
 

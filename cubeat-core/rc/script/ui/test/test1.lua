@@ -9,10 +9,6 @@ local view     = require 'rc/script/ui/test/view'
 
 local scene_, sp
 
-local char_
-local btn_char_ = {}
-local text_
-
 function init(self)
   self    = ffi.cast("TestUI*", self);
   scene_  = self:get_ui_scene()
@@ -20,13 +16,6 @@ function init(self)
   sp:set_texture("cubes/cube-b-1")
   sp:set_pos(640, 360)
   sp:set_scale(1.5, 1.5, 1)
-  --sp:set_red(0)
-  --sp:set_green(0)
-  --sp:set_blue(0)
-  --sp:set_alpha(100)
-  --sp:set_redE(100)
-  --sp:set_greenE(100)
-  --sp:set_blueE(100)
   sp:set_visible(true)
   sp:set_center_aligned(false)
   sp:move_to(100, 100)
@@ -41,52 +30,63 @@ function init(self)
       print 'hello'
     end)
   end)
-  
-  char_ = view.new_sprite("char1/full", scene_, 200, 600, false)
-  char_:move_to(200, 100)
+end
 
-  text_ = view.new_sprite_text("Hello World", scene_, "Star Jedi", 24, false, 255, 255, 255)
-  text_:set_pos(600, 250)
-  text_:change_text("Please select character")
-  print(text_:get_text())
-  print(text_:get_font_size())
-  text_:set_alpha(100)
-  text_:on_press(C.Input_get_trig1(C.Input_get_input1()), function() text_:set_visible(false) end)
-  text_:on_release(C.Input_get_trig1(C.Input_get_input1()), function() text_:set_visible(true) end)
+local select_char_bg,
+      select_char_title,
+      select_char_img
+local select_char_btn = {}
+
+function init_select_char_panel(self)
+  select_char_bg = view.new_sprite("area_rect", scene_, 512, 680, false)
+  select_char_bg:set_pos( 0, 0)
   
-  btn_char_[1] = view.new_sprite("cubes/cube1", scene_, 64, 64, false)
-  btn_char_[2] = view.new_sprite("cubes/cube-r-1", scene_, 64, 64, false)
-  btn_char_[3] = view.new_sprite("cubes/cube-g-1", scene_, 64, 64, false)
-  btn_char_[4] = view.new_sprite("cubes/cube-b-1", scene_, 64, 64, false)
-  btn_char_[5] = view.new_sprite("cubes/cube-y-1", scene_, 64, 64, false)
-  btn_char_[1]:move_to(600, 300)
-  btn_char_[2]:move_to(680, 300)
-  btn_char_[3]:move_to(760, 300)
-  btn_char_[4]:move_to(840, 300)
-  btn_char_[5]:move_to(920, 300)
+  select_char_title = view.new_sprite_text( "Please select character",
+                                            scene_,
+                                            "Star Jedi",
+                                            24,
+                                            true,
+                                            255, 255, 255 )
+  select_char_title:set_pos(256, 60)
   
-  local function sel_char1(self) char_:set_texture("char1/full") end
-  local function sel_char2(self) char_:set_texture("char2/full") end
-  local function sel_char3(self) char_:set_texture("char3/full") end
-  local function sel_char4(self) char_:set_texture("char4/full") end
-  local function sel_char5(self) char_:set_texture("char5/full") end
-  btn_char_[1]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char1 )
-  btn_char_[2]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char2 )
-  btn_char_[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
-  btn_char_[4]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char4 )
-  btn_char_[5]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char5 )
-  local function focus_in(self, x, y)
-    self:set_red(0)
-    self:set_alpha(100)
-  end
-  local function focus_out(self, x, y)
-    self:set_red(255)
-    self:set_alpha(255)
-  end
+  select_char_img = view.new_sprite("char1/full", scene_, 200, 600, false)
+  select_char_img:set_pos(40, 60)
+  
   for i=1,5 do
-    btn_char_[i]:on_enter_focus( C.Input_get_input1(), focus_in )
-    btn_char_[i]:on_leave_focus( C.Input_get_input1(), focus_out )
+    select_char_btn[i] = view.new_sprite_text("charactor"..i, scene_, "Star Jedi", 24, false, 255, 255, 255)
+    select_char_btn[i]:set_pos(260, 100+i*40)
   end
+  
+  local function sel_char1(self) select_char_img:set_texture("char1/full") print("push") end
+  local function sel_char2(self) select_char_img:set_texture("char2/full") end
+  local function sel_char3(self) select_char_img:set_texture("char3/full") end
+  local function sel_char4(self) select_char_img:set_texture("char4/full") end
+  local function sel_char5(self) select_char_img:set_texture("char5/full") end
+  select_char_btn[1]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char1 )
+  select_char_btn[2]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char2 )
+  select_char_btn[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
+  select_char_btn[4]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char4 )
+  select_char_btn[5]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char5 )
+  
+  local btn_focus_in  = {}
+  local btn_focus_out = {}
+  for i=1,5 do
+    btn_focus_in[i]   = function(self, x, y) select_char_btn[i]:set_red(100) end
+    btn_focus_out[i]  = function(self, x, y) select_char_btn[i]:set_red(255) end
+    select_char_btn[i]:on_enter_focus( C.Input_get_input1(), btn_focus_in[i] )
+    select_char_btn[i]:on_leave_focus( C.Input_get_input1(), btn_focus_out[i] )
+  end
+  
+  select_char_bg:set_visible(false)
+  select_char_img:set_visible(false)
+  select_char_title:set_visible(false)
+  for i=1,5 do select_char_btn[i]:set_visible(false) end
+end
+
+function set_select_char_panel_visible(self, visible)
+  select_char_img:set_visible(visible)
+  select_char_title:set_visible(visible)
+  for i=1,5 do select_char_btn[i]:set_visible(visible) end
 end
 
 function cycle(self)

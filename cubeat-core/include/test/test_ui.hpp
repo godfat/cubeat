@@ -40,6 +40,8 @@ public:
     void LeaveFocus(view::pSprite& p, int a, int b);
     void ShowPanel(view::pSprite& p);
     void HidePanel(view::pSprite& p);
+    void ShowChar(view::pSprite& p);
+    void HideChar(view::pSprite& p);
 
     void ShowSelCharPanel(view::pSprite& p);
     void HideSelCharPanel(view::pSprite& p);
@@ -54,6 +56,7 @@ private:
     view::pSprite       act_;
     view::pSprite       btn_change_char_;
     view::pSprite       btn_visible_panel_;
+    view::pSprite       btn_visible_char_;
     view::pSpriteText   text_;
 
     view::pSprite       btn1_;

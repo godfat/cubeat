@@ -46,7 +46,7 @@ TestUI::TestUI()
     text_->moveTo(128, -20);
     btn_change_char_    = view::Sprite::create("cubes/cube1", scene_, 64, 64);
     btn_change_char_->moveTo(900, 60);
-    btn_visible_panel_  = view::Sprite::create("cubes/cube1", scene_, 64, 64) ;
+    btn_visible_panel_  = view::Sprite::create("cubes/cube1", scene_, 64, 64);
     btn_visible_panel_->moveTo(900, 140);
     std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
     std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
@@ -62,14 +62,23 @@ TestUI::TestUI()
     btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hidePanel;
     btn_visible_panel_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
     btn_visible_panel_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+    btn_visible_char_   = view::Sprite::create("cubes/cube1", scene_, 64, 64);
+    btn_visible_char_->moveTo(900, 220);
+    std::tr1::function<void(view::pSprite&)> showChar = bind(&TestUI::ShowChar, this, _1);
+    std::tr1::function<void(view::pSprite&)> hideChar = bind(&TestUI::HideChar, this, _1);
+    btn_visible_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showChar;
+    btn_visible_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideChar;
+    btn_visible_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn_visible_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
 
-
-    btn1_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    btn1_->moveTo(900, 300);
+    btn1_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
+    btn1_->moveTo(900, 320);
     std::tr1::function<void(view::pSprite&)> showSelCharPanel  = bind(&TestUI::ShowSelCharPanel, this, _1);
     std::tr1::function<void(view::pSprite&)> hideSelCharPanel  = bind(&TestUI::HideSelCharPanel, this, _1);
     btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showSelCharPanel;
     btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideSelCharPanel;
+    btn1_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn1_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
 }
 
 void TestUI::init()
@@ -96,11 +105,11 @@ void TestUI::cycle()
 }
 
 void TestUI::EnterFocus(view::pSprite& p, int a, int b){
-    p->set<Red>(0);
+    p->set<Blue>(0);
 }
 
 void TestUI::LeaveFocus(view::pSprite& p, int a, int b){
-    p->set<Red>(255);
+    p->set<Blue>(255);
 }
 
 void TestUI::ShowPanel(view::pSprite& p) {
@@ -109,6 +118,14 @@ void TestUI::ShowPanel(view::pSprite& p) {
 
 void TestUI::HidePanel(view::pSprite& p){
     bg_->set<Visible>(false);
+}
+
+void TestUI::ShowChar(view::pSprite& p) {
+    act_->set<Visible>(true);
+}
+
+void TestUI::HideChar(view::pSprite& p) {
+    act_->set<Visible>(false);
 }
 
 void TestUI::ShowSelCharPanel(view::pSprite& p){

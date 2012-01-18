@@ -60,6 +60,9 @@ TestUI::TestUI()
     std::tr1::function<void(view::pSprite&)> hidePanel = bind(&TestUI::HidePanel, this, _1);
     btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPanel;
     btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hidePanel;
+    btn_visible_panel_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn_visible_panel_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+
 
     btn1_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
     btn1_->moveTo(900, 300);

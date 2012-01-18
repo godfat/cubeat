@@ -38,27 +38,35 @@ TestUI::TestUI()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
 
-    act_ = view::Sprite::create("char1/test", scene_, 192, 192);
-    btn_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    text_= view::SpriteText::create("Test word", scene_, "Star Jedi", 24);
-    act_->moveTo(620, 50);
-    btn_->moveTo(920, 50);
-    text_->moveTo(600, 10);
+    bg_  = view::Sprite::create("square", scene_, 256, 256);
+    bg_->moveTo(600, 50);
+    act_ = view::Sprite::create("char1/test", bg_, 192, 192, true);
+    act_->moveTo(128, 128);
+    text_= view::SpriteText::create("Test Panel", bg_, "Star Jedi", 24, true);
+    text_->moveTo(128, -20);
+    btn_change_char_    = view::Sprite::create("cubes/cube1", scene_, 64, 64);
+    btn_change_char_->moveTo(900, 60);
+    btn_visible_panel_  = view::Sprite::create("cubes/cube1", scene_, 64, 64) ;
+    btn_visible_panel_->moveTo(900, 140);
     std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
     std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
     std::tr1::function<void(view::pSprite&, int, int)> enter = bind(&TestUI::EnterFocus, this, _1, _2, _3);
     std::tr1::function<void(view::pSprite&, int, int)> leave = bind(&TestUI::LeaveFocus, this, _1, _2, _3);
-    btn_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;
-    btn_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = clickRight;
-    btn_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
-    btn_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;
+    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = clickRight;
+    btn_change_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn_change_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+    std::tr1::function<void(view::pSprite&)> showPanel = bind(&TestUI::ShowPanel, this, _1);
+    std::tr1::function<void(view::pSprite&)> hidePanel = bind(&TestUI::HidePanel, this, _1);
+    btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPanel;
+    btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hidePanel;
 
     btn1_ = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    btn1_->moveTo(920, 300);
-    std::tr1::function<void(view::pSprite&)> showPanel  = bind(&TestUI::ShowSelCharPanel, this, _1);
-    std::tr1::function<void(view::pSprite&)> hidePanel  = bind(&TestUI::HideSelCharPanel, this, _1);
-    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPanel;
-    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hidePanel;
+    btn1_->moveTo(900, 300);
+    std::tr1::function<void(view::pSprite&)> showSelCharPanel  = bind(&TestUI::ShowSelCharPanel, this, _1);
+    std::tr1::function<void(view::pSprite&)> hideSelCharPanel  = bind(&TestUI::HideSelCharPanel, this, _1);
+    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showSelCharPanel;
+    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideSelCharPanel;
 }
 
 void TestUI::init()
@@ -90,6 +98,14 @@ void TestUI::EnterFocus(view::pSprite& p, int a, int b){
 
 void TestUI::LeaveFocus(view::pSprite& p, int a, int b){
     p->set<Red>(255);
+}
+
+void TestUI::ShowPanel(view::pSprite& p) {
+    bg_->set<Visible>(true);
+}
+
+void TestUI::HidePanel(view::pSprite& p){
+    bg_->set<Visible>(false);
 }
 
 void TestUI::ShowSelCharPanel(view::pSprite& p){

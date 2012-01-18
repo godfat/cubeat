@@ -38,6 +38,8 @@ public:
     void RightBtnClick(view::pSprite& p){ act_->setTexture("char2/test"); }
     void EnterFocus(view::pSprite& p, int a, int b);
     void LeaveFocus(view::pSprite& p, int a, int b);
+    void ShowPanel(view::pSprite& p);
+    void HidePanel(view::pSprite& p);
 
     void ShowSelCharPanel(view::pSprite& p);
     void HideSelCharPanel(view::pSprite& p);
@@ -48,8 +50,10 @@ private:
 
     lua_State* L_;
 
+    view::pSprite       bg_;
     view::pSprite       act_;
-    view::pSprite       btn_;
+    view::pSprite       btn_change_char_;
+    view::pSprite       btn_visible_panel_;
     view::pSpriteText   text_;
 
     view::pSprite       btn1_;

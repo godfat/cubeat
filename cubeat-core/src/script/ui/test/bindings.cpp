@@ -105,7 +105,7 @@ void Sprite_set_alpha(pSprite* self, int x) {
     (*self)->set<Alpha>(x);
 }
 
-void Sprite_set_frame(pSprite* self, float x) {
+void Sprite_set_frame(pSprite* self, double x) {
     (*self)->set<Frame>(x);
 }
 

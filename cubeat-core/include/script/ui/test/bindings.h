@@ -35,7 +35,7 @@ APIEXPORT void     Sprite_set_redE(pSprite*, int);
 APIEXPORT void     Sprite_set_greenE(pSprite*, int);
 APIEXPORT void     Sprite_set_blueE(pSprite*, int);
 APIEXPORT void     Sprite_set_alpha(pSprite*, int);
-APIEXPORT void     Sprite_set_frame(pSprite*, float);
+APIEXPORT void     Sprite_set_frame(pSprite*, double);
 APIEXPORT void     Sprite_set_visible(pSprite*, bool);
 APIEXPORT void     Sprite_set_size(pSprite*, double, double);
 APIEXPORT void     Sprite_on_release(pSprite* self, InputButton const*, PSC_OBJCALLBACK);

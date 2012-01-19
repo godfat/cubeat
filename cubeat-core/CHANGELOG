@@ -9,6 +9,7 @@ Update since 0.5.2:
   USB mice are mostly fine, but there's a chance your mouse will not 
   respond to the game if it has a specifically customized driver (usually 
   seen on some bluetooth mice)
+3.Updated boost.thread library from mgw45-1_43 to mgw46-1_48
 
 CuBeat 0.5.2 Alpha
 

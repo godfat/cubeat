@@ -160,7 +160,12 @@ local function new_sprite_text(text, scene, font, size, center, r, g, b)
   return ffi.gc(C.SpriteText_create(text, scene, font, size, center, r, g, b), C.SpriteText__gc)
 end
 
+local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, g, b)
+  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
+end
+
 return {
   new_sprite        = new_sprite,
-  new_sprite_text   = new_sprite_text
+  new_sprite_text   = new_sprite_text,
+  new_sprite_text_from_sprite = new_sprite_text_from_sprite
 }

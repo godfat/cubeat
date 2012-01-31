@@ -89,6 +89,21 @@ function set_select_char_panel_visible(self, visible)
   for i=1,5 do select_char_btn[i]:set_visible(visible) end
 end
 
+local test_panel,
+      test_title
+
+function init_test_panel(self)
+  test_panel = view.new_sprite("square", scene_, 256, 256, false)
+  test_panel:set_pos(600, 320)
+  
+  test_title = view.new_sprite_text_from_sprite("hello", test_panel, "Star Jedi", 24, true, 255, 255, 255)
+  test_title:set_pos(128, 128)
+end
+
+function set_test_panel_visible(self, visible)
+  test_panel:set_visible(visible)
+end
+
 function cycle(self)
   self = ffi.cast("TestUI*", self);
 end

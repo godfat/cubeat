@@ -79,6 +79,14 @@ TestUI::TestUI()
     btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideSelCharPanel;
     btn1_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
     btn1_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+    btn2_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
+    btn2_->moveTo(900, 400);
+    std::tr1::function<void(view::pSprite&)> showTestPanel = bind(&TestUI::ShowTestPanel, this, _1);
+    std::tr1::function<void(view::pSprite&)> hideTestPanel = bind(&TestUI::HideTestPanel, this, _1);
+    btn2_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showTestPanel;
+    btn2_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideTestPanel;
+    btn2_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn2_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
 }
 
 void TestUI::init()
@@ -89,6 +97,7 @@ void TestUI::init()
     script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
     script::Lua::call(L_, "init_select_char_panel", static_cast<void*>(this));
+    script::Lua::call(L_, "init_test_panel", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()
@@ -134,6 +143,13 @@ void TestUI::ShowSelCharPanel(view::pSprite& p){
 
 void TestUI::HideSelCharPanel(view::pSprite& p){
     script::Lua::call(L_, "set_select_char_panel_visible", static_cast<void*>(this), false);
+}
+
+void TestUI::ShowTestPanel(view::pSprite& p){
+    script::Lua::call(L_, "set_test_panel_visible", static_cast<void*>(this), true);
+}
+void TestUI::HideTestPanel(view::pSprite& p){
+    script::Lua::call(L_, "set_test_panel_visible", static_cast<void*>(this), false);
 }
 
 int main(){

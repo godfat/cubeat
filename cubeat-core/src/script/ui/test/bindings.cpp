@@ -155,6 +155,12 @@ pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int s
     return sp;
 }
 
+pSpriteText* SpriteText_create_from_sprite(char const* text, pSprite* s, char const* f, int size, bool center, int r, int g, int b) {
+    pSpriteText* sp = new pSpriteText;
+    *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
+    return sp;
+}
+
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);
 }
@@ -268,13 +274,13 @@ InputButton const* Input_get_pause(Input* p) {
 }
 
 void Scene__gc(pScene* self) {
-    delete self;
+    //delete self;
 }
 
 void Sprite__gc(pSprite* self) {
-    delete self;
+    //delete self;
 }
 
 void SpriteText__gc(pSpriteText* self) {
-    delete self;
+    //delete self;
 }

@@ -46,6 +46,7 @@ APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCAL
 APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
+APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);
 APIEXPORT void          SpriteText_set_center_aligned(pSpriteText*, bool);
 APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);
 APIEXPORT void          SpriteText_show_number(pSpriteText*, int, unsigned int);

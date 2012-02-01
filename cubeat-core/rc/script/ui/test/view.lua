@@ -128,6 +128,10 @@ local function new_sprite(name, scene, w, h, center)
   return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
 end
 
+local function new_sprite_from_sprite(name, sprite, w, h, center)
+  return ffi.gc(C.Sprite_create_from_sprite(name, sprite, w, h, center), C.Sprite__gc)
+end
+
 local Mt_SpriteText = {}
 Mt_SpriteText.__index             = Mt_SpriteText
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
@@ -165,7 +169,8 @@ local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, 
 end
 
 return {
-  new_sprite        = new_sprite,
-  new_sprite_text   = new_sprite_text,
+  new_sprite                  = new_sprite,
+  new_sprite_from_sprite      = new_sprite_from_sprite,
+  new_sprite_text             = new_sprite_text,
   new_sprite_text_from_sprite = new_sprite_text_from_sprite
 }

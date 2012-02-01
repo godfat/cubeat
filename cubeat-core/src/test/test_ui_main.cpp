@@ -39,54 +39,42 @@ TestUI::TestUI()
         std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
 
     bg_  = view::Sprite::create("square", scene_, 256, 256);
-    bg_->moveTo(600, 50);
+    bg_->moveTo(140, 140);
     act_ = view::Sprite::create("char1/test", bg_, 192, 192, true);
     act_->moveTo(128, 128);
     text_= view::SpriteText::create("Test Panel", bg_, "Star Jedi", 24, true);
     text_->moveTo(128, -20);
-    btn_change_char_    = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    btn_change_char_->moveTo(900, 60);
-    btn_visible_panel_  = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    btn_visible_panel_->moveTo(900, 140);
-    std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
-    std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
+    bg_->set<Visible>(false);
+
     std::tr1::function<void(view::pSprite&, int, int)> enter = bind(&TestUI::EnterFocus, this, _1, _2, _3);
     std::tr1::function<void(view::pSprite&, int, int)> leave = bind(&TestUI::LeaveFocus, this, _1, _2, _3);
-    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;
-    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = clickRight;
-    btn_change_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
-    btn_change_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+
+    btn_visible_panel_  = view::Sprite::create("cubes/cube1", scene_, 64, 64);
+    btn_visible_panel_->moveTo(50, 140);
     std::tr1::function<void(view::pSprite&)> showPanel = bind(&TestUI::ShowPanel, this, _1);
     std::tr1::function<void(view::pSprite&)> hidePanel = bind(&TestUI::HidePanel, this, _1);
     btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPanel;
     btn_visible_panel_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hidePanel;
     btn_visible_panel_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
     btn_visible_panel_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
-    btn_visible_char_   = view::Sprite::create("cubes/cube1", scene_, 64, 64);
-    btn_visible_char_->moveTo(900, 220);
+
+    btn_change_char_    = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
+    btn_change_char_->moveTo(50, 220);
+    std::tr1::function<void(view::pSprite&)> clickLeft  = bind(&TestUI::LeftBtnClick, this, _1);
+    std::tr1::function<void(view::pSprite&)> clickRight = bind(&TestUI::RightBtnClick, this, _1);
+    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = clickLeft;
+    btn_change_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = clickRight;
+    btn_change_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
+    btn_change_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+
+    btn_visible_char_   = view::Sprite::create("cubes/cube-g-1", scene_, 64, 64);
+    btn_visible_char_->moveTo(50, 300);
     std::tr1::function<void(view::pSprite&)> showChar = bind(&TestUI::ShowChar, this, _1);
     std::tr1::function<void(view::pSprite&)> hideChar = bind(&TestUI::HideChar, this, _1);
     btn_visible_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showChar;
     btn_visible_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideChar;
     btn_visible_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
     btn_visible_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
-
-    btn1_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    btn1_->moveTo(900, 320);
-    std::tr1::function<void(view::pSprite&)> showSelCharPanel  = bind(&TestUI::ShowSelCharPanel, this, _1);
-    std::tr1::function<void(view::pSprite&)> hideSelCharPanel  = bind(&TestUI::HideSelCharPanel, this, _1);
-    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showSelCharPanel;
-    btn1_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideSelCharPanel;
-    btn1_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
-    btn1_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
-    btn2_ = view::Sprite::create("cubes/cube-b-1", scene_, 64, 64);
-    btn2_->moveTo(900, 400);
-    std::tr1::function<void(view::pSprite&)> showTestPanel = bind(&TestUI::ShowTestPanel, this, _1);
-    std::tr1::function<void(view::pSprite&)> hideTestPanel = bind(&TestUI::HideTestPanel, this, _1);
-    btn2_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showTestPanel;
-    btn2_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideTestPanel;
-    btn2_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
-    btn2_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
 }
 
 void TestUI::init()
@@ -96,8 +84,8 @@ void TestUI::init()
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
+    script::Lua::call(L_, "init_game_title", static_cast<void*>(this));
     script::Lua::call(L_, "init_select_char_panel", static_cast<void*>(this));
-    script::Lua::call(L_, "init_test_panel", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()
@@ -135,21 +123,6 @@ void TestUI::ShowChar(view::pSprite& p) {
 
 void TestUI::HideChar(view::pSprite& p) {
     act_->set<Visible>(false);
-}
-
-void TestUI::ShowSelCharPanel(view::pSprite& p){
-    script::Lua::call(L_, "set_select_char_panel_visible", static_cast<void*>(this), true);
-}
-
-void TestUI::HideSelCharPanel(view::pSprite& p){
-    script::Lua::call(L_, "set_select_char_panel_visible", static_cast<void*>(this), false);
-}
-
-void TestUI::ShowTestPanel(view::pSprite& p){
-    script::Lua::call(L_, "set_test_panel_visible", static_cast<void*>(this), true);
-}
-void TestUI::HideTestPanel(view::pSprite& p){
-    script::Lua::call(L_, "set_test_panel_visible", static_cast<void*>(this), false);
 }
 
 int main(){

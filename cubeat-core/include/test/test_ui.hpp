@@ -43,11 +43,6 @@ public:
     void ShowChar(view::pSprite& p);
     void HideChar(view::pSprite& p);
 
-    void ShowSelCharPanel(view::pSprite& p);
-    void HideSelCharPanel(view::pSprite& p);
-    void ShowTestPanel(view::pSprite& p);
-    void HideTestPanel(view::pSprite& p);
-
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
@@ -60,9 +55,6 @@ private:
     view::pSprite       btn_visible_panel_;
     view::pSprite       btn_visible_char_;
     view::pSpriteText   text_;
-
-    view::pSprite       btn1_;
-    view::pSprite       btn2_;
 };
 } //psc
 

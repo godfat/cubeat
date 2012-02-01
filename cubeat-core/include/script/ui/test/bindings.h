@@ -14,6 +14,7 @@ typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
 APIEXPORT pScene*  TestUI_get_ui_scene(TestUI*);
 
 APIEXPORT pSprite* Sprite_create(char const*, pScene*, int, int, bool);
+APIEXPORT pSprite* Sprite_create_from_sprite(char const*, pSprite*, int, int, bool);
 
 APIEXPORT void     Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void     Sprite_set_center_aligned(pSprite*, bool);

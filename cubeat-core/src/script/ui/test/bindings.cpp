@@ -29,6 +29,12 @@ pSprite* Sprite_create(char const* name, pScene* s, int w, int h, bool center) {
     return sp;
 }
 
+pSprite* Sprite_create_from_sprite(char const* name, pSprite* s, int w, int h, bool center) {
+    pSprite* sp = new pSprite;
+    *sp = Sprite::create(name, *s, w, h, center);
+    return sp;
+}
+
 void Sprite_set_texture(pSprite* self, const char* path) {
     (*self)->setTexture(path);
 }

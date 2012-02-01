@@ -39,7 +39,7 @@ local select_char_btn = {}
 
 function init_select_char_panel(self)
   select_char_bg = view.new_sprite("area_rect", scene_, 512, 680, false)
-  select_char_bg:set_pos( 0, 0)
+  select_char_bg:set_pos( 300, 0)
   
   select_char_title = view.new_sprite_text( "Please select character",
                                             scene_,
@@ -47,14 +47,14 @@ function init_select_char_panel(self)
                                             24,
                                             true,
                                             255, 255, 255 )
-  select_char_title:set_pos(256, 60)
+  select_char_title:set_pos(556, 60)
   
   select_char_img = view.new_sprite("char1/full", scene_, 200, 600, false)
-  select_char_img:set_pos(40, 60)
+  select_char_img:set_pos(340, 60)
   
   for i=1,5 do
     select_char_btn[i] = view.new_sprite_text("charactor"..i, scene_, "Star Jedi", 24, false, 255, 255, 255)
-    select_char_btn[i]:set_pos(260, 100+i*40)
+    select_char_btn[i]:set_pos(560, 100+i*40)
   end
   
   local function sel_char1(self) select_char_img:set_texture("char1/full") print("push") end
@@ -89,19 +89,21 @@ function set_select_char_panel_visible(self, visible)
   for i=1,5 do select_char_btn[i]:set_visible(visible) end
 end
 
-local test_panel,
-      test_title
+local title_start_game_
 
-function init_test_panel(self)
-  test_panel = view.new_sprite("square", scene_, 256, 256, false)
-  test_panel:set_pos(600, 320)
+function init_game_title(self)
+  title_start_game_ = view.new_sprite_text("Select Charactor", scene_, "Star Jedi", 36, true, 255, 255, 255)
+  title_start_game_:set_pos(688, 480)
   
-  test_title = view.new_sprite_text_from_sprite("hello", test_panel, "Star Jedi", 24, true, 255, 255, 255)
-  test_title:set_pos(128, 128)
-end
-
-function set_test_panel_visible(self, visible)
-  test_panel:set_visible(visible)
+  local title_focus_in  = function(self, x, y) title_start_game_:set_red(100) end
+  local title_focus_out = function(self, x, y) title_start_game_:set_red(255) end
+  local title_press     = function(self)
+                            set_select_char_panel_visible(self, true)
+                            title_start_game_:set_visible(false)
+                          end
+  title_start_game_:on_enter_focus( C.Input_get_input1(), title_focus_in )
+  title_start_game_:on_leave_focus( C.Input_get_input1(), title_focus_out)
+  title_start_game_:on_press( C.Input_get_trig1(C.Input_get_input1()), title_press )
 end
 
 function cycle(self)

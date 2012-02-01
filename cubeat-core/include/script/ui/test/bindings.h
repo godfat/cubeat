@@ -18,6 +18,7 @@ APIEXPORT pSprite* Sprite_create_from_sprite(char const*, pSprite*, int, int, bo
 
 APIEXPORT void     Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void     Sprite_set_center_aligned(pSprite*, bool);
+APIEXPORT void     Sprite_set_depth(pSprite*, double);
 APIEXPORT void     Sprite_move_to(pSprite*, int, int);
 APIEXPORT void     Sprite_move_tween(pSprite*, int, int, int);
 APIEXPORT void     Sprite_texture_flipH(pSprite*);
@@ -49,6 +50,7 @@ APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCAL
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
 APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);
 APIEXPORT void          SpriteText_set_center_aligned(pSpriteText*, bool);
+APIEXPORT void          SpriteText_set_depth(pSpriteText*, double);
 APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);
 APIEXPORT void          SpriteText_show_number(pSpriteText*, int, unsigned int);
 APIEXPORT char const*   SpriteText_get_text(pSpriteText*);

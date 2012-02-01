@@ -75,6 +75,7 @@ local Mt_Sprite = {}
 Mt_Sprite.__index                 = Mt_Sprite
 Mt_Sprite.set_texture             = C.Sprite_set_texture
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
+Mt_Sprite.set_depth               = C.Sprite_set_depth
 Mt_Sprite.move_to                 = C.Sprite_move_to
 Mt_Sprite.move_tween              = C.Sprite_move_tween
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
@@ -135,6 +136,7 @@ end
 local Mt_SpriteText = {}
 Mt_SpriteText.__index             = Mt_SpriteText
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
+Mt_SpriteText.set_depth           = C.SpriteText_set_depth
 Mt_SpriteText.change_text         = C.SpriteText_change_text
 Mt_SpriteText.show_number         = C.SpriteText_show_number
 Mt_SpriteText.get_text            = function(self)

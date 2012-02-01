@@ -43,6 +43,10 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
+void Sprite_set_depth(pSprite* self, double depth) {
+    (*self)->setDepth(depth);
+}
+
 void Sprite_move_to(pSprite* self, int x, int y) {
     (*self)->moveTo(x, y);
 }
@@ -169,6 +173,10 @@ pSpriteText* SpriteText_create_from_sprite(char const* text, pSprite* s, char co
 
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);
+}
+
+void SpriteText_set_depth(pSpriteText* self, double depth) {
+    (*self)->setDepth(depth);
 }
 
 void SpriteText_change_text(pSpriteText* self, char const* text) {

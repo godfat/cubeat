@@ -29,39 +29,45 @@ function init(self)
     self:on_release(C.Input_get_trig1(C.Input_get_input1()), function(self)
       print 'hello'
     end)
-  end)
+  end)  
 end
 
-local select_char_bg,
-      select_char_title,
-      select_char_img
+local select_char_bg_,
+      select_char_title_,
+      select_char_img_,
+      select_char_ok_
 local select_char_btn = {}
 
 function init_select_char_panel(self)
-  select_char_bg = view.new_sprite("area_rect", scene_, 512, 680, false)
-  select_char_bg:set_pos( 300, 0)
+  select_char_bg_ = view.new_sprite("area_rect", scene_, 600, 720, false)
+  select_char_bg_:set_pos( 300, 0)
   
-  select_char_title = view.new_sprite_text( "Please select character",
+  select_char_title_ = view.new_sprite_text( "Please select character",
                                             scene_,
                                             "Star Jedi",
                                             24,
                                             true,
                                             255, 255, 255 )
-  select_char_title:set_pos(556, 60)
+  select_char_title_:set_pos(600, 60)
   
-  select_char_img = view.new_sprite("char1/full", scene_, 200, 600, false)
-  select_char_img:set_pos(340, 60)
+  select_char_img_ = view.new_sprite("char1/full", scene_, 200, 600, false)
+  select_char_img_:set_pos(340, 100)
+  
+  select_char_ok_ = view.new_sprite_text("ok", scene_, "Star Jedi", 24, false, 255, 255, 255)
+  select_char_ok_:set_pos(640, 400)
+  select_char_ok_:on_enter_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(100) end )
+  select_char_ok_:on_leave_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(255) end )
   
   for i=1,5 do
     select_char_btn[i] = view.new_sprite_text("charactor"..i, scene_, "Star Jedi", 24, false, 255, 255, 255)
-    select_char_btn[i]:set_pos(560, 100+i*40)
+    select_char_btn[i]:set_pos(640, 100+i*40)
   end
   
-  local function sel_char1(self) select_char_img:set_texture("char1/full") print("push") end
-  local function sel_char2(self) select_char_img:set_texture("char2/full") end
-  local function sel_char3(self) select_char_img:set_texture("char3/full") end
-  local function sel_char4(self) select_char_img:set_texture("char4/full") end
-  local function sel_char5(self) select_char_img:set_texture("char5/full") end
+  local function sel_char1(self) select_char_img_:set_texture("char1/full") print("push") end
+  local function sel_char2(self) select_char_img_:set_texture("char2/full") end
+  local function sel_char3(self) select_char_img_:set_texture("char3/full") end
+  local function sel_char4(self) select_char_img_:set_texture("char4/full") end
+  local function sel_char5(self) select_char_img_:set_texture("char5/full") end
   select_char_btn[1]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char1 )
   select_char_btn[2]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char2 )
   select_char_btn[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
@@ -77,33 +83,45 @@ function init_select_char_panel(self)
     select_char_btn[i]:on_leave_focus( C.Input_get_input1(), btn_focus_out[i] )
   end
   
-  select_char_bg:set_visible(false)
-  select_char_img:set_visible(false)
-  select_char_title:set_visible(false)
+  select_char_bg_:set_visible(false)
+  select_char_img_:set_visible(false)
+  select_char_ok_:set_visible(false)
+  select_char_title_:set_visible(false)
   for i=1,5 do select_char_btn[i]:set_visible(false) end
 end
 
 function set_select_char_panel_visible(self, visible)
-  select_char_img:set_visible(visible)
-  select_char_title:set_visible(visible)
+  select_char_img_:set_visible(visible)
+  select_char_ok_:set_visible(visible)
+  select_char_title_:set_visible(visible)
   for i=1,5 do select_char_btn[i]:set_visible(visible) end
 end
 
-local title_start_game_
+local start_game_title_
 
 function init_game_title(self)
-  title_start_game_ = view.new_sprite_text("Select Charactor", scene_, "Star Jedi", 36, true, 255, 255, 255)
-  title_start_game_:set_pos(688, 480)
+  start_game_title_ = view.new_sprite_text("Select Charactor", scene_, "Star Jedi", 36, true, 255, 255, 255)
+  start_game_title_:set_pos(688, 480)
   
-  local title_focus_in  = function(self, x, y) title_start_game_:set_red(100) end
-  local title_focus_out = function(self, x, y) title_start_game_:set_red(255) end
+  local title_focus_in  = function(self, x, y) start_game_title_:set_red(100) end
+  local title_focus_out = function(self, x, y) start_game_title_:set_red(255) end
   local title_press     = function(self)
                             set_select_char_panel_visible(self, true)
-                            title_start_game_:set_visible(false)
+                            start_game_title_:set_visible(false)
                           end
-  title_start_game_:on_enter_focus( C.Input_get_input1(), title_focus_in )
-  title_start_game_:on_leave_focus( C.Input_get_input1(), title_focus_out)
-  title_start_game_:on_press( C.Input_get_trig1(C.Input_get_input1()), title_press )
+  start_game_title_:on_enter_focus( C.Input_get_input1(), title_focus_in )
+  start_game_title_:on_leave_focus( C.Input_get_input1(), title_focus_out)
+  start_game_title_:on_press( C.Input_get_trig1(C.Input_get_input1()), title_press )
+end
+
+local test1,
+      test2
+      
+function init_test_sprite(self)
+  test1 = view.new_sprite("cubes/cube1", scene_, 128, 128, true)
+  test1:set_pos(688, 384)
+  test2 = view.new_sprite_from_sprite("cubes/cube-b-1", test1, 64, 64, true)
+  test2:set_depth(10)
 end
 
 function cycle(self)

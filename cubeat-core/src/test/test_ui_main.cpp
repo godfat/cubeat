@@ -86,6 +86,7 @@ void TestUI::init()
     script::Lua::call(L_, "init", static_cast<void*>(this));
     script::Lua::call(L_, "init_game_title", static_cast<void*>(this));
     script::Lua::call(L_, "init_select_char_panel", static_cast<void*>(this));
+    //script::Lua::call(L_, "init_test_sprite", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()

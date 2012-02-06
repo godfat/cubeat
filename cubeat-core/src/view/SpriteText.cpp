@@ -35,7 +35,7 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     fpath_ = font_path;
 
     setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
-
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
     SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = SColor( color.rgb() );
     body_->getMaterial(0) = mat;

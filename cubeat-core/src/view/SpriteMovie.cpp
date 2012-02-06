@@ -39,6 +39,7 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     /////////////// End of this part /////////////////////////////////////////
 
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->getMaterial(0) = mat;
 
     dimension2di avi_actual_size = avi->getSize();

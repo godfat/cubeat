@@ -41,6 +41,7 @@ void Object::init(pObject const& parent)
 {
     setupSceneAndManager(parent);
     body_ = smgr_->addEmptySceneNode( parent->body() );
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->setIsDebugObject(true);
 }
 
@@ -172,5 +173,6 @@ Object::~Object()
             scene()->removePickMapping( body_ );
         }
         body_->remove();
+        body_->drop();
     }
 }

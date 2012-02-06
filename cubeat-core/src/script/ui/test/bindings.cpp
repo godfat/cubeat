@@ -289,18 +289,18 @@ InputButton const* Input_get_pause(Input* p) {
 
 void Scene__gc(pScene* self) {
     printf("start delete Scene\n");
-    printf("Scene's parent = %s \n", (*self)->body()->getParent());
-    //delete self;
+    printf("Scene: %x, Scene's parent = %x \n", (*self)->body(), (*self)->body()->getParent());
+    delete self;
 }
 
 void Sprite__gc(pSprite* self) {
     printf("start delete Sprite\n");
-    printf("Sprite's parent = %s \n", (*self)->body()->getParent());
-    //delete self;
+    printf("Sprite: %x, Sprite's parent = %x \n", (*self)->body(), (*self)->body()->getParent());
+    delete self;
 }
 
 void SpriteText__gc(pSpriteText* self) {
     printf("start delete SpriteText\n");
-    printf("SpriteText's parent = %s \n", (*self)->body()->getParent());
-    //delete self;
+    printf("SpriteText: %x, SpriteText's parent = %x \n", (*self)->body(), (*self)->body()->getParent());
+    delete self;
 }

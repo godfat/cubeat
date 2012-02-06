@@ -39,6 +39,9 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
         body_->getMaterial(i).DiffuseColor.set(255, 255, 255, 255);
     }
 
+    //test
+    body_->grab();
+
     pAnimatedSceneObject self = static_pointer_cast<AnimatedSceneObject>( shared_from_this() );
     scene()->addPickMapping( body_, self );
     return self;

@@ -37,6 +37,9 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
     body_->getMaterial(0) = mat;
 
+    //test
+    body_->grab();
+
     pAnimatedSprite self = static_pointer_cast<AnimatedSprite>( shared_from_this() );
     scene()->addPickMapping( body_, self );
 

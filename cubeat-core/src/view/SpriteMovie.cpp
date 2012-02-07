@@ -41,6 +41,9 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
     body_->getMaterial(0) = mat;
 
+    //test
+    body_->grab();
+
     dimension2di avi_actual_size = avi->getSize();
     adjust_texcoord_for_hand_made_texture( thismesh_, avi_actual_size.Width, avi_actual_size.Height );
 

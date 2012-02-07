@@ -82,6 +82,9 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
 
+    //test
+    body_->grab();
+
     body_->getMaterial(0) = mat;
 
     pSprite self = static_pointer_cast<Sprite>( shared_from_this() );

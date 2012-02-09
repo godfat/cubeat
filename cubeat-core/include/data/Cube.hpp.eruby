@@ -12,8 +12,9 @@ struct Cube{
     static pointer_type create(int x, int y, int color_id){
         return utils::ObjectPool<Cube>::create(x, y, color_id);
     }
-    Cube(int x, int y, int color_id): x_(x), y_(y), color_id_(color_id){}
+    Cube(int x, int y, int color_id): x_(x), y_(y), color_id_(color_id), real_y_(0) {}
 <%= accessor :int, :x, :y, :color_id %>
+<%= accessor :double, :real_y %>
 };
 
 }} // end of namespace

@@ -48,6 +48,7 @@ public:
     state::pWaiting is_waiting();
     state::pDropping is_dropping();
     void lose_chain();
+    void drop_a_frame(time_t const&, time_t const&);
     // end
 
     // begin only used by Map::cube_can_lose_chain,

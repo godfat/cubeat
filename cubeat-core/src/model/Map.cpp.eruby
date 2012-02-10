@@ -265,7 +265,9 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     presenter::pMap owner = owner_.lock();
     for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
         int x = is_empty[i];
-        insert_garbage( owner->make_cube(x, top)->model() );
+        pCube c = owner->make_cube(x, top)->model();
+        c->real_y(top*64); //NOTE: this may not be good.
+        insert_garbage( c );
         --garbage_left_;
     }
 }
@@ -285,8 +287,8 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
     if( is_empty.size() == 0 ) return;
 
     BOOST_FOREACH(int x, is_empty){
-        cubes_preview_[x]->x(x).y(top).go_sinking();
-        insert_cube(cubes_preview_[x]);
+        cubes_preview_[x]->x(x).y(top).real_y(top*64).go_sinking();
+        insert_cube(cubes_preview_[x]);     //^^^^^^ NOTE: this may not be good.
     }
 
     presenter::pMap owner = owner_.lock();

@@ -49,6 +49,11 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
     }
 }
 
+void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
+    real_y(real_y() - (5 * (now_t - last_t) / 1000));
+    // and ?
+}
+
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
     if( chain() && map()->cube_can_lose_chain(self()) ){

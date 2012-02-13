@@ -98,6 +98,8 @@ public:
         }
     }
 
+
+
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
         unsigned int duration = map_setting()->cube_dying_duration();
         body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
@@ -215,6 +217,8 @@ private:
     data::wpViewSetting view_setting_;
     ctrl::wpPlayer player_;
 };
+
+///////////////////////////////////////////////////////////////////////////////
 
 class ViewSpriteMaster: public ViewMaster{
 public:

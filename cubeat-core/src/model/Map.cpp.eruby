@@ -67,7 +67,7 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
     fill_preview_queue(); // added
 
     //This point should be the end of the last init step, so start timing now:
-    last_t_ = ctrl::EventDispatcher::().get_timer_dispatcher("game")->getTime();
+    last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
     return *this;
 }
@@ -161,7 +161,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 
 Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
-    now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->getTime();
+    now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
     garbage_dumpable_ = ms()->garbage_dumpable();
     dropping_creatable_ = ms()->dropping_creatable();

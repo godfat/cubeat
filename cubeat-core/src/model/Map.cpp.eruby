@@ -66,6 +66,9 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
 
     fill_preview_queue(); // added
 
+    //This point should be the end of the last init step, so start timing now:
+    last_t_ = ctrl::EventDispatcher::().get_timer_dispatcher("game")->getTime();
+
     return *this;
 }
 
@@ -81,7 +84,10 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
         dropping_creatable_ = false;
         if( !c->is_garbage() && !c->is_broken() ) garbage_dumpable_ = false;
     }
-    if(  c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
+    if( c->cycle_and_die(now_t_, last_t_) ) {
+        cubes_[x][y].reset()
+        owner_.lock()->release(c);
+    }
 }
 
 Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
@@ -152,6 +158,34 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
     // throw "impossible flow";
     return state::pState();
 }
+
+Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
+
+    now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->getTime();
+
+    garbage_dumpable_ = ms()->garbage_dumpable();
+    dropping_creatable_ = ms()->dropping_creatable();
+    if(garbage_dumpable_ && dropping_creatable_)
+        cycle_warning();
+    else {
+        warning_level_.reset();
+        alarm_sound_.reset();
+    }
+
+    update_chains();
+    cycle_cubes();
+
+    if( garbage_dumpable_ && garbage_left_ > 0 )
+        cycle_creation_garbage();
+    else if( dropping_creatable_ )
+        cycle_creation();
+
+    last_t_ = now_t_;
+
+    return *this;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 // resolve the chain on the cube
 void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, pChain chain){

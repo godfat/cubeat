@@ -17,9 +17,9 @@ using namespace model;
 using namespace state;
 using std::tr1::dynamic_pointer_cast;
 
-bool <% debug_hook 'Cube::cycle_and_die' do %>(){
+bool <% debug_hook 'Cube::cycle_and_die' do %>(time_t const& now_t, time_t const& last_t){
 <% end %>
-    if(state_) state_->cycle();
+    if(state_) state_->cycle(now_t, last_t);
     return is_dead();
 }
 
@@ -42,16 +42,25 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
 <% end %>
     y(y()-1);
     map()->update_cube_position(self(), x(), y()+1);
-    if( is_sinking() )
-        sink_a_block_event()();
-    else {
-        drop_a_block_event()();
-    }
+    //if( is_sinking() )
+    //    sink_a_block_event()();
+    //else {
+    //    drop_a_block_event()();
+    //}
 }
 
 void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
     real_y(real_y() - (5 * (now_t - last_t) / 1000));
+                     //^ aggregated speed
     // and ?
+}
+
+bool Cube::arrived_at_logical_y(){
+    return real_y() <= y()*64;
+}
+
+void Cube::adjust_real_y_to_block(){
+    real_y(y()*64);
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){

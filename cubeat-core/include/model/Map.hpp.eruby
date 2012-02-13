@@ -40,32 +40,13 @@ public:
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        SimpleMap(setting), owner_(owner), cubes_(0, 0)
+        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
     ~Map();
 
-    Map& <% debug_hook 'cycle' do %>(){ <% end %>
-        garbage_dumpable_ = ms()->garbage_dumpable();
-        dropping_creatable_ = ms()->dropping_creatable();
-        if(garbage_dumpable_ && dropping_creatable_)
-            cycle_warning();
-        else {
-            warning_level_.reset();
-            alarm_sound_.reset();
-        }
-
-        update_chains();
-        cycle_cubes();
-
-        if( garbage_dumpable_ && garbage_left_ > 0 )
-            cycle_creation_garbage();
-    	else if( dropping_creatable_ )
-    	    cycle_creation();
-
-        return *this;
-    }
+    Map& cycle();
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
@@ -119,6 +100,10 @@ private:
     presenter::wpMap  owner_; // should be weak_ptr
     wpMap             self_;
     container_type    cubes_;
+
+    // Now map has to keep track of logical state with regard to precise timing
+    time_t now_t_, last_t_;
+
     bool dropping_creatable_, garbage_dumpable_, has_column_full_;
     std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy
     preview_list_type cubes_preview_;

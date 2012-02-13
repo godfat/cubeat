@@ -11,7 +11,7 @@ public:
     State(wpCube owner): owner_(owner){}
     virtual ~State(){}
 
-    virtual void cycle(){}
+    virtual void cycle(time_t const&, time_t const&){}
     virtual void next_state();
 
 protected:

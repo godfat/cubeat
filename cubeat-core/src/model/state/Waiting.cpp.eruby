@@ -18,7 +18,7 @@ pState <% debug_hook 'Waiting::init' do %>(){
     return result;
 }
 
-void <% debug_hook 'Waiting::cycle' do %>(){
+void <% debug_hook 'Waiting::cycle' do %>(time_t const& now_t, time_t const& last_t){
 <% end %>
     if(pState result = map()->next_state(owner()))
         switch_state(result);

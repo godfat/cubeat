@@ -53,14 +53,16 @@ void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
     real_y(real_y() - (5 * (now_t - last_t) / 1000));
                      //^ aggregated speed
     // and ?
+    update_pos_event()();
 }
 
 bool Cube::arrived_at_logical_y(){
     return real_y() <= y()*64;
 }
 
-void Cube::adjust_real_y_to_block(){
+void Cube::adjust_real_y(){
     real_y(y()*64);
+    update_pos_event()();
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){

@@ -98,7 +98,9 @@ public:
         }
     }
 
-
+    virtual void update_pos(){
+        body_->set<accessor::Pos2D>(pos_vec2());
+    }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
         unsigned int duration = map_setting()->cube_dying_duration();
@@ -195,9 +197,11 @@ private:
     vec2 pos_vec2() const{
         data::pViewSetting s = view_setting();
         data::pCube d = data();
+//        return vec2( ( d->x()*s->cube_size() + s->cube_size()/2 ),
+//                     ( d->y()*s->cube_size() + s->cube_size()/2 )*-1 );
         return vec2( ( d->x()*s->cube_size() + s->cube_size()/2 ),
-                     ( d->y()*s->cube_size() + s->cube_size()/2 )*-1 );
-                                            // NOTE: reversed y
+                     ( d->real_y()           + s->cube_size()/2 )*-1 );
+                                               // NOTE: reversed y
     }
     static void check_cube_and_do(std::tr1::function<void(model::pCube, int)> method,
         model::wpCube c, int dmg)

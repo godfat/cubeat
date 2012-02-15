@@ -19,6 +19,7 @@ namespace psc{ namespace model{
 class Cube: public SimpleCube{
     friend class state::State; // for state_ = ? used by switch_state
     friend class state::Dropping; // for drop_a_block
+    friend class state::Sinking;  // fro drop_a_block
 public:
     typedef pCube pointer_type;
 

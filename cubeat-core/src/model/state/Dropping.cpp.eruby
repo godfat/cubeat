@@ -17,8 +17,6 @@ pState <% debug_hook 'Dropping::init' do %>(){
 void Dropping::cycle(time_t const& now_t, time_t const& last_t){
     owner()->drop_a_frame(now_t, last_t);
     if( owner()->arrived_at_logical_y() ) {
-        if(pState result = map()->next_state(owner())) {
-            switch_state(result);
-        }
+        next_state();
     }
 }

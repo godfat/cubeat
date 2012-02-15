@@ -277,7 +277,8 @@
 		<Unit filename="src\model\state\Dying.cpp" />
 		<Unit filename="src\model\state\Dying.cpp.eruby" />
 		<Unit filename="src\model\state\Exploding.cpp.eruby.old" />
-		<Unit filename="src\model\state\Sinking.cpp.eruby.old" />
+		<Unit filename="src\model\state\Sinking.cpp" />
+		<Unit filename="src\model\state\Sinking.cpp.eruby" />
 		<Unit filename="src\model\state\State.cpp" />
 		<Unit filename="src\model\state\State.cpp.eruby" />
 		<Unit filename="src\model\state\Waiting.cpp" />

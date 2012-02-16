@@ -79,7 +79,9 @@ private:
     Map& insert_garbage(pCube);
     Map& insert_preview(pCube);
     void cycle_cubes();
+    void check_one_fadings();
     void cycle_a_cube(pCube, int x, int y);
+    void check_a_fade(pCube, int x, int y);
     void cycle_creation();
     void cycle_creation_garbage();
     void cycle_warning();

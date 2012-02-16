@@ -75,9 +75,13 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
 <% end %>
-    std::cout << "cycle_cubes.\n";
     using namespace std::tr1::placeholders;
     utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2, _3));
+}
+
+void Map::check_one_fadings() {
+    using namespace std::tr1::placeholders;
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3));
 }
 
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
@@ -89,6 +93,21 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
     if( c->cycle_and_die(now_t_, last_t_) ) {
         cubes_[x][y].reset();
         owner_.lock()->release(c);
+    }
+}
+
+void Map::check_a_fade(pCube c, int x, int y)
+{
+    if( state::pWaiting waiting = c->is_waiting() ){
+        if( waiting->need_check() ){
+            pOneFadingOrig one_fading = make_OneFading(c);
+
+            if( one_fading ){
+                one_fading->fade(*this, c);
+                c->go_dying();
+            }
+            waiting->checked();
+        }
     }
 }
 
@@ -125,20 +144,20 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 // used Waiting::cycle
 state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 <% end %>
-    if( state::pWaiting waiting = cube->is_waiting() ){
-
-        if( waiting->need_check() ){
-            pOneFadingOrig one_fading = make_OneFading(cube);
-
-            if( one_fading ){
-                std::cout << "start one fading, cubes dying.\n";
-                one_fading->fade(*this, cube);
-                return state::Dying::create(cube);
-            }
-            waiting->checked();
-            cube->set_grounded(); // once grounded, always grounded
-        }
-    }
+//    if( state::pWaiting waiting = cube->is_waiting() ){
+//
+//        if( waiting->need_check() ){
+//            pOneFadingOrig one_fading = make_OneFading(cube);
+//
+//            if( one_fading ){
+//                std::cout << "start one fading, cubes dying.\n";
+//                one_fading->fade(*this, cube);
+//                return state::Dying::create(cube);
+//            }
+//            waiting->checked();
+//            cube->set_grounded(); // once grounded, always grounded
+//        }
+//    }
 
     if( is_below_empty(cube) ){
         // cubes_[cube->x()][cube->y()].reset();
@@ -157,6 +176,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
         else {
             cube->adjust_real_y();
             std::cout << "cube " << cube << " becomes waiting.\n";
+            cube->set_grounded(); // once grounded, always grounded
             return state::Waiting::create(cube);
         }
     }
@@ -166,7 +186,10 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 
 Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
+    last_t_ = now_t_;
     now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+
+    if( last_t_ == now_t_ ) return *this; //if time is not changed, then cycle should be stopped;
 
     garbage_dumpable_ = ms()->garbage_dumpable();
     dropping_creatable_ = ms()->dropping_creatable();
@@ -179,13 +202,12 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
     update_chains();
     cycle_cubes();
+    check_one_fadings();
 
     if( garbage_dumpable_ && garbage_left_ > 0 )
         cycle_creation_garbage();
     else if( dropping_creatable_ )
         cycle_creation();
-
-    last_t_ = now_t_;
 
     return *this;
 }

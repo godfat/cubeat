@@ -65,7 +65,7 @@ public:
     pChain const chain() const{ return chain_belonged_to_; }
     // end
 
-    // begin only used by OneFading::fade
+    // begin only used by OneFading::fade, Map::check_a_fade
     void go_dying();
     // end
 

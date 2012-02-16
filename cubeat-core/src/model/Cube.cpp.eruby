@@ -55,11 +55,11 @@ void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
 }
 
 bool Cube::arrived_at_logical_y(){
-    return real_y() <= y()*64;
+    return real_y() < y()*64.0;
 }
 
 void Cube::adjust_real_y(){
-    real_y(y()*64);
+    real_y(y()*64.0);
     update_pos_event()();
 }
 

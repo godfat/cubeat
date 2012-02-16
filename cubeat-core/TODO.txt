@@ -96,6 +96,8 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
 0.6  2. AI vs AI hint for pause blocking too much of the screen.
 
+0.6  3. Chain status sometimes will be removed too soon, even before cubes enter Waiting state.
+
 * Feature / Gameplay Issues:
 
 0.6  1. Training mode and tutorials.

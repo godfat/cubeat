@@ -9,6 +9,6 @@ using namespace model;
 using namespace state;
 
 pState Sinking::init(){
-    owner()->drop_a_block();
+    //owner()->drop_a_block();
     return shared_from_this();
 }

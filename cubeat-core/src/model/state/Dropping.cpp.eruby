@@ -10,7 +10,7 @@ using namespace state;
 
 pState <% debug_hook 'Dropping::init' do %>(){
 <% end %>
-    owner()->drop_a_block();
+    //owner()->drop_a_block();
     return shared_from_this();
 }
 

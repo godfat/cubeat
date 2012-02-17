@@ -32,6 +32,7 @@ public:
     void weapon_vfx1(view::pScene&, vec2 const&);
     void weapon_vfx2(view::pScene&, vec2 const&);
     void weapon_vfx3(view::pScene&, vec2 const&);
+    void cube_explode(view::pSprite);
     void init_textures(view::pScene&);
     void cleanup();
 

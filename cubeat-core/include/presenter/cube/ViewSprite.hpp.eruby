@@ -8,6 +8,7 @@
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
+#include "view/SFX.hpp"
 
 #include "presenter/cube/ViewMaster.hpp"
 
@@ -115,13 +116,13 @@ public:
         body_->setPickable(false);
         if( cube_.lock()->is_garbage() )
             body_->setTexture( "cubes/garbage0" );
-        // stupid binding would be a must,
-        // without it, ViewSprite, Sprite, etc. would be destroyed by GC!
-        body_->setDepth(-40); //so it is not blocked in view;
-        body_->tween<easing::OQuad, accessor::Scale>(vec3(1.3,1.3,1.3), 300);
-        body_->tween<easing::Linear, accessor::Alpha>(0, 300);
-        body_->tween<easing::Linear, accessor::GradientEmissive>(255, 300,
-            0, std::tr1::bind(&ViewSprite::just_for_hold_shared_ptr, shared_from_this()) );
+
+        double csize = view_setting_.lock()->cube_size();
+        view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
+        fx_body->setPickable(false);
+        fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
+        fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
+        view::SFX::i().cube_explode(fx_body);
     }
 
     virtual void <% debug_hook 'be_broken' do %>(){ <% end %>
@@ -211,7 +212,6 @@ private:
     void <% debug_hook 'check_if_need_callback' do %>(callback_type callback){ <% end %>
         if(model::pCube c = cube_.lock()) callback();
     }
-    void just_for_hold_shared_ptr(){}
 
 private:
     view::pSprite  body_;

@@ -71,7 +71,8 @@ namespace accessor {
                 node->getMaterial(i).DiffuseColor.set( val );
         }
         static void get(irr::scene::ISceneNode* node, value_type& out ) {
-            return; //currently not used, and is not quite useful, hence no impl.
+            if( node->getMaterialCount() )
+                out = node->getMaterial(0).DiffuseColor.color;
         }
     };
 

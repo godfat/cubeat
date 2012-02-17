@@ -100,6 +100,7 @@ void Map::check_a_fade(pCube c, int x, int y)
 {
     if( state::pWaiting waiting = c->is_waiting() ){
         if( waiting->need_check() ){
+            c->set_grounded(); // once grounded, always grounded
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
@@ -164,8 +165,7 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
         }
         else {
             cube->adjust_real_y();
-            std::cout << "cube " << cube << " becomes waiting.\n";
-            cube->set_grounded(); // once grounded, always grounded
+//            std::cout << "cube " << cube << " becomes waiting.\n";
             return state::Waiting::create(cube);
         }
     }
@@ -195,8 +195,9 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
     if( garbage_dumpable_ && garbage_left_ > 0 )
         cycle_creation_garbage();
-    else if( dropping_creatable_ )
+    else if( dropping_creatable_ ) {
         cycle_creation();
+    }
 
     return *this;
 }

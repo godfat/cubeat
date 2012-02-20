@@ -240,9 +240,7 @@
 		<Unit filename="rc\config\presenter\mainmenu.zzml" />
 		<Unit filename="rc\config\presenter\opening.zzml" />
 		<Unit filename="rc\config\presenter\transitioner.zzml" />
-		<Unit filename="rc\config\puzzle.zzml" />
 		<Unit filename="rc\config\puzzle_stage.txt" />
-		<Unit filename="rc\config\puzzles.zzml" />
 		<Unit filename="rc\config\puzzles\level04.zzml" />
 		<Unit filename="rc\config\puzzles\level05.zzml" />
 		<Unit filename="rc\config\puzzles\level06.zzml" />
@@ -260,8 +258,6 @@
 		<Unit filename="rc\config\stage\jungle.zzml" />
 		<Unit filename="rc\config\stage\school.zzml" />
 		<Unit filename="rc\config\stage\street.zzml" />
-		<Unit filename="rc\config\test.zml" />
-		<Unit filename="rc\config\test2.zml" />
 		<Unit filename="rc\config\test_stage.zzml" />
 		<Unit filename="rc\config\tmp\puzzle.zzml" />
 		<Unit filename="rc\config\ui\in_game_2p_layout.zzml" />

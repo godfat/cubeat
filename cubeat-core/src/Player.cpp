@@ -56,11 +56,21 @@ void Player::cycle()
 {
 }
 
-//2011.03.28 This will provide a modifiable speed for ViewSprite
-float Player::haste_speedfunc(float orig_speed) const
+//2012.02.20 When player get to know his map, map has to know when player press haste
+void Player::setMapList(std::vector<presenter::wpMap> const& mlist)
 {
-    return hasting_ ? 450.f : orig_speed;
+    map_list_ = mlist;
+    if( presenter::pMap m = map_list_[id_].lock() ) {
+        m->hasting_cond(bind(&Player::is_hasting, this));
+        m->hasting_cond()();
+    }
 }
+
+//2011.03.28 This will provide a modifiable speed for ViewSprite
+//float Player::haste_speedfunc(float orig_speed) const
+//{
+//    return hasting_ ? 450.f : orig_speed;
+//}
 
 void Player::heat_cooling()
 {
@@ -262,6 +272,7 @@ bool Player::can_fire_repeatedly()    const { return current_wep_->can_fire_repe
 int  Player::wepid()                  const { return weplist_idx_; }
 double Player::heat()                 const { return accumulated_heat_; }
 bool Player::is_overheat()            const { return overheat_; }
+bool Player::is_hasting()             const { return hasting_; }
 int  Player::overheat_downtime()      const { return overheat_downtime_; }
 int  Player::id()                     const { return id_; }
 std::list<int> const& Player::ally_input_ids()  const { return ally_input_ids_;  }

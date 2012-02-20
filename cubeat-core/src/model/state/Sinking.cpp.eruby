@@ -12,3 +12,11 @@ pState Sinking::init(){
     //owner()->drop_a_block();
     return shared_from_this();
 }
+
+void Sinking::cycle(time_t const& now_t, time_t const& last_t){
+    owner()->sink_a_frame(now_t, last_t);
+    if( owner()->arrived_at_logical_y() ) {
+        next_state();
+    }
+}
+

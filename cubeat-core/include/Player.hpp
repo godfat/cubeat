@@ -31,7 +31,7 @@ public:
     virtual void cycle();
     virtual bool startThinking() { return false; }
     virtual void stopAllActions() { if( hasting_ ) remove_haste_effect(); }
-    virtual void setMapList(std::vector<presenter::wpMap> const& mlist) { map_list_ = mlist; }
+    virtual void setMapList(std::vector<presenter::wpMap> const& mlist);
 
     Player& set_active_weapon(int i);
     Player& debug_reset_all_weapon();
@@ -56,13 +56,14 @@ public:
     bool ammo_all_out()           const;
     double heat()                 const;
     bool is_overheat()            const;
+    bool is_hasting()             const;
     int  overheat_downtime()      const;
     int  id()                     const;
     std::list<int> const& ally_input_ids()  const;
     std::list<int> const& enemy_input_ids() const;
 
     void generate_heat(double);
-    float haste_speedfunc(float orig_speed) const;
+    //float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
 

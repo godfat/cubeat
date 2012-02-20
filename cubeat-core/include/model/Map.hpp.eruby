@@ -72,6 +72,9 @@ public:
     bool all_empty() const;
     bool all_waiting() const;
 
+    // used by Cube#drop_a_frame or sink_a_frame
+    double get_sink_speed() const;
+
     pSimpleMap dump_data() const;
 
 private:

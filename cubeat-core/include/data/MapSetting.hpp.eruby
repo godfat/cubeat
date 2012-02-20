@@ -24,7 +24,7 @@ public:
     }
 
 <%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay %>
-<%= accessor :double, :speed, :damage_factor %>
+<%= accessor :double, :sink_speed, :drop_speed, :damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage %>
@@ -49,7 +49,8 @@ public:
                .cube_dying_duration(cube_dying_duration_)
                .cube_dropping_duration(cube_dropping_duration_)
                .warning_check_delay(warning_check_delay_)
-               .speed(speed_)
+               .sink_speed(sink_speed_)
+               .drop_speed(drop_speed_)
                .damage_factor(damage_factor_)
                .width(width_)
                .height(height_)
@@ -66,7 +67,7 @@ private:
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
         cube_dropping_duration_(135), warning_check_delay_(100),
-        speed_(80.0), damage_factor_(1.00),
+        sink_speed_(80.0), drop_speed_(450.0), damage_factor_(1.00),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
         use_broken_as_garbage_(false)
     { reset_size(); }

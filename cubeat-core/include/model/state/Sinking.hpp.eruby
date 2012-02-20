@@ -22,6 +22,7 @@ public:
 
 protected:
     virtual pState init();
+    virtual void cycle(time_t const&, time_t const&);
 };
 
 }}} // end of namespace

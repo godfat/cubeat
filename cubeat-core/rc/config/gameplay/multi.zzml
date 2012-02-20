@@ -25,12 +25,18 @@ player1: {
     #This only affect newly created cubes, and determines
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
-    speed: 65.0,
+    sink_speed: 65.0,
+
+    #How fast does the ALREADY DROPPED cubes drop from one block to another
+    #This speed is constant during the game, and is used for HASTE as well.
+    #(suggestion: 450.0 ~ 1000.0)
+    drop_speed: 450.0,
 
     #How much time does a cube need to drop from one block to another
     #This does not affect newly created cubes, only affects garbages
     #and cubes that already dropped.
     #(suggestion: 120 ~ 200 milliseconds)
+    #NOTE: THIS IS DEPRECATED.
     cube_dropping_duration: 150,
 
     #whether it'll use broken cubes as garbage cubes or not:
@@ -67,7 +73,8 @@ player2: {
     starting_line: 3,
     chaining_duration: 600,
     cube_dying_duration: 500,
-    speed: 65.0,
+    sink_speed: 65.0,
+    drop_speed: 450.0,
     cube_dropping_duration: 150,
     use_broken_as_garbage: 1,
 

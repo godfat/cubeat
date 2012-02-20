@@ -479,6 +479,13 @@ bool Map::all_waiting() const {
     return true;
 }
 
+double Map::get_sink_speed() const {
+    if( owner()->hasting_cond()() ) //hasting_cond is a delegated function
+        return ms()->drop_speed();
+    else
+        return ms()->sink_speed();
+}
+
 pSimpleMap Map::dump_data() const
 {
     data::pMapSetting cloned_ms = map_setting_->clone();

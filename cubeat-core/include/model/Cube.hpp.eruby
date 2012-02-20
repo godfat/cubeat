@@ -116,6 +116,7 @@ private:
     state::cpSinking is_sinking() const;
     void drop_a_block();
     void drop_a_frame(time_t const&, time_t const&);
+    void sink_a_frame(time_t const&, time_t const&);
     pCube self() const{ return self_.lock(); }
 
 private:

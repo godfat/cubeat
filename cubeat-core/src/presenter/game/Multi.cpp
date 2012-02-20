@@ -121,10 +121,6 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     player0_->setMapList( map_list );
     player1_->setMapList( map_list );
 
-    ///TEST
-    map0_->hasting_cond(bind(&ctrl::Player::is_hasting, player0_.get()));
-    map1_->hasting_cond(bind(&ctrl::Player::is_hasting, player1_.get()));
-
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sc.size() ? sc : "stage/jungle" );
     setup_ui_by_config( c1p, c2p, "ui/in_game_2p_layout" );

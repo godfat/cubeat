@@ -61,8 +61,7 @@ void Player::setMapList(std::vector<presenter::wpMap> const& mlist)
 {
     map_list_ = mlist;
     if( presenter::pMap m = map_list_[id_].lock() ) {
-        m->hasting_cond(bind(&Player::is_hasting, this));
-        m->hasting_cond()();
+        //m->hasting_cond(bind(&Player::is_hasting, this));
     }
 }
 

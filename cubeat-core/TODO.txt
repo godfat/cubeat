@@ -25,14 +25,18 @@ SKIP 3. Try to remove as many template usages as possible:
      -- pull contents to cpp units, don't leave them in headers.
      ** If it ain't broken, don't fix it.
 
-0.6  4. A better way to present the UI programatically (usually means the presenter)
+WIP  4. A better way to present the UI programatically (usually means the presenter)
      -- Lua modules? or we just fix the C++ interfaces?
      -- It'd better go with multiple event dispatchers and timers.
 
   5. We need more resolution options and more configs for different resolutions.
 
-  6. Lack of networking capability.
-     -- enet + Lua modules?
+WIP  6. Lack of networking capability.
+     -- enet + Lua modules (using lua-enet)
+     -- a matcher (doing hole-punching as well) in pure lua(jit) 
+     -- Preparation for networking
+       -- "no-model" version of Map and Cube.
+       -- client synchonization of Map states and Cube states
 
 SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on
      view::Scene, How do I fix this?
@@ -47,9 +51,11 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 0.6  1. OpenAL should be handled in a separate thread. and I should check some article of OpenAL about
      how to prevent buffer exhaustion...
 
-  2. ManyMouse on MacOSX 10.6+
+WIP  2. ManyMouse on MacOSX 10.6+
      see http://hg.icculus.org/icculus/manymouse/
-     -- Now Linux version should use XInput2, tests and removals (about using udev group) required.
+     -- Linux version should remove udev and shell script dependencies, have to recompile manymouse to use XInput2.
+       -- need tests.
+     -- Bluetooth mouse with too-customized drivers are not working well.
      -- Issue: Only if 2 mice are movable by manymouse then we reinit both config to use manymouse.
 
   3. Something about lock and delayed cleanup:
@@ -72,9 +78,10 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
 * Model / Gameplay Issues:
 
-0.6  1. I think we really need real_y(pixel_y) as a model property, either use this with current
+DONE?1. I think we really need real_y(pixel_y) as a model property, either use this with current
      State pattern or revamp the state pattern.
      -- Why sometimes the bottom cubes' chain state isn't taken out?
+     -- Map::next_state and states are modestly modified, consider the real_y addition done.
 
 * UI / Gameplay Issues:
 
@@ -84,6 +91,9 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
   2. Probably a generic high score record for each game-modes.
      -- require the UI improvements programatically
+WIP  -- Marvin's http leaderboard is largely done, just lack testings. 
+       -- Need integration with client. cURL? or luasocket-http? 
+     NOTE: with 0.6, we probably only use local highscores, but still we need to test http leaderboard.
 
   3. See if we can fix resolution shrinking and manymouse <-> system mouse cursor position sync.
      -- Maybe we just have to make sure cursor value is scaled as such for now?
@@ -93,14 +103,15 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 
 0.6  1. Heat gauge has some glowing glitch. (after glow the color remained white. Tween-related issue)
      -- the glowing cubes for chaining indicator has this issue too.
+     -- I was probably too lazy to use start-end tweens, causing sometimes new tweens start at wrong value.
 
 0.6  2. AI vs AI hint for pause blocking too much of the screen.
 
 0.6  3. Chain status sometimes will be removed too soon, even before cubes enter Waiting state.
 
-     4. arriving at logical y when the cube below is still there dropping is worth investigating nonetheless.
+  4. arriving at logical y when the cube below is still there dropping is worth investigating nonetheless.
      
-     5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
+  5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
 
 * Feature / Gameplay Issues:
 
@@ -110,14 +121,27 @@ SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which
 0.6  2. Better Puzzle mode.
 DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
 
-  3. No Multiplayer over the network.
+0.6  3. Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.
 
-0.6  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
-     -- Lua modules?
-       ** Lua integration of this part done.
+WIP  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
+     -- Lua integration of this part done.
+     
+WIP  5. Character Differentiations - Special abilities
+     -- Determine death countdown by character(player) data
+     -- Determine heat accumulating speed by character(player) data
+     -- Determine restore color_id random percentage by character(player) data
+     -- Determine other(or self)'s "attack_factor" when init
+     -- Determine if garbage drops can occasionally be normal cubes by character(player) data
+     -- means to change creation & garbage flags (in ms) to false for sometime
+     -- means to directly restore cubes to a specific color_id
+     -- means to affect other(or self)'s "garbage_left" directly
+     -- means to call a group of cubes go_exploding using correct SFX and animations
+        (according to character(players))
+     -- means to "transport" cubes to opponent's Map and keep their colors.
+     -- means to modify or lock oneself's heat value     
 
-  5. Other game modes:
+  6. Other game modes:
      -- Time attack, Score attack, challenge mode, etc.
 
 * Tools / Libraries Issues:
@@ -141,7 +165,7 @@ DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
 
   1. Make default starting lines 3 only. I think a good choice would always be "num_of_colors - 1"
     -- And color should be adjustable, just like puyopuyo. The problem is default should be 4 or 5?
-       6 has been proved too much. 4 sometimes seemed too easy to trigger big chains randomly.
+       6 has been proven too much. 4 sometimes seemed too easy to trigger big chains randomly.
     -- And we might need other ways to remove garbage/broken cubes.
 
   2. The rhythm of the game (especially the dying cubes) needs work.

@@ -124,6 +124,9 @@ function init_test_sprite(self)
                             test2:on_tween_line(940, 384, 4000, 0, tween_cb, 500)
                           end
   test1:on_press( C.Input_get_trig1(C.Input_get_input1()), test1_on_press )
+  
+  test3 = view.new_sprite_text("click", scene_, "Star Jedi", 24, true, 255, 255, 255)
+  test3:set_pos(688, 324)
 end
 
 function cycle(self)

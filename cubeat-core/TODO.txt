@@ -82,6 +82,9 @@ DONE?1. I think we really need real_y(pixel_y) as a model property, either use t
      State pattern or revamp the state pattern.
      -- Why sometimes the bottom cubes' chain state isn't taken out?
      -- Map::next_state and states are modestly modified, consider the real_y addition done.
+     
+  2. OneFadings should not do full BFS for each of cubes. Rather, one full pass and check who are
+     connected and who aren't should suffice. (Not sure if it changes chain processing behavior)
 
 * UI / Gameplay Issues:
 

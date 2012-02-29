@@ -115,6 +115,8 @@ Mt_Sprite.on_down                 = C.Sprite_on_down
 Mt_Sprite.on_enter_focus          = C.Sprite_on_enter_focus
 Mt_Sprite.on_leave_focus          = C.Sprite_on_leave_focus
 
+Mt_Sprite.on_tween_line           = C.Sprite_on_tween_line
+
 ffi.metatype("pSprite", Mt_Sprite)
 
 local function new_sprite(name, scene, w, h, center)

@@ -84,9 +84,9 @@ void TestUI::init()
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ui/test/test1.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
-    script::Lua::call(L_, "init_game_title", static_cast<void*>(this));
-    script::Lua::call(L_, "init_select_char_panel", static_cast<void*>(this));
-    //script::Lua::call(L_, "init_test_sprite", static_cast<void*>(this));
+    //script::Lua::call(L_, "init_game_title", static_cast<void*>(this));
+    //script::Lua::call(L_, "init_select_char_panel", static_cast<void*>(this));
+    script::Lua::call(L_, "init_test_sprite", static_cast<void*>(this));
 }
 
 TestUI::~TestUI()

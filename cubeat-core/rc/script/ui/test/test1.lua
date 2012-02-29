@@ -109,13 +109,21 @@ function init_game_title(self)
 end
 
 local test1,
-      test2
+      test2,
+      test3
       
 function init_test_sprite(self)
-  test1 = view.new_sprite("cubes/cube1", scene_, 128, 128, true)
+  test1 = view.new_sprite("cubes/cube1", scene_, 64, 64, true)
   test1:set_pos(688, 384)
-  test2 = view.new_sprite_from_sprite("cubes/cube-b-1", test1, 64, 64, true)
-  test2:set_depth(-1)
+  test2 = view.new_sprite("cubes/cube1", scene_, 64, 64, true)
+  test2:set_pos(840, 384)
+  local tween_cb =  function(self)
+                      test2:set_red(100)
+                    end
+  local test1_on_press =  function(self)
+                            test2:on_tween_line(940, 384, 4000, 0, tween_cb, 500)
+                          end
+  test1:on_press( C.Input_get_trig1(C.Input_get_input1()), test1_on_press )
 end
 
 function cycle(self)

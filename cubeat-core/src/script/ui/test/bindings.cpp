@@ -2,6 +2,7 @@
 #include "view/Sprite.hpp"
 #include "view/SpriteText.hpp"
 #include "Accessors.hpp"
+#include "EasingEquations.hpp"
 #include "Input.hpp"
 #include "test/test_ui.hpp"
 
@@ -9,6 +10,7 @@ using namespace psc;
 using namespace view;
 using namespace ctrl;
 using namespace accessor;
+using namespace easing;
 
 using std::tr1::bind;
 using namespace std::tr1::placeholders;
@@ -157,6 +159,11 @@ void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_P
 
 void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void Sprite_on_tween_line(pSprite* self, double x, double y, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Pos2D>(vec2(x, y), duration, loop, call, delay);
 }
 
 pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {

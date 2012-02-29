@@ -6,7 +6,6 @@
 #else
 #define APIEXPORT
 #endif
-
 typedef void (*PSC_OBJCALLBACK)(pSprite*);
 
 typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
@@ -46,6 +45,8 @@ APIEXPORT void     Sprite_on_up(pSprite* self, InputButton const*, PSC_OBJCALLBA
 APIEXPORT void     Sprite_on_down(pSprite* self, InputButton const*, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+
+APIEXPORT void     Sprite_on_tween_line(pSprite* self, double, double, double, int, PSC_OBJCALLBACK, int);
 
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
 APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);

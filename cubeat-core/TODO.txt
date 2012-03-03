@@ -115,6 +115,8 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   4. arriving at logical y when the cube below is still there dropping is worth investigating nonetheless.
      
   5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
+  
+0.6  6. Why Background can't use double type as xyz????
 
 * Feature / Gameplay Issues:
 

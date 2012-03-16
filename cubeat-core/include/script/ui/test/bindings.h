@@ -46,7 +46,14 @@ APIEXPORT void     Sprite_on_down(pSprite* self, InputButton const*, PSC_OBJCALL
 APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
-APIEXPORT void     Sprite_on_tween_line(pSprite* self, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_pos(pSprite* self, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_rotation(pSprite* self, double, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_scale(pSprite* self, double, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_color_diffuse(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_red(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_green(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_blue(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void     Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
 
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
 APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);
@@ -71,6 +78,8 @@ APIEXPORT void          SpriteText_on_up(pSpriteText* self, InputButton const*, 
 APIEXPORT void          SpriteText_on_down(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+
+APIEXPORT void          SpriteText_on_tween_line_alpha(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
 
 APIEXPORT Input*    Input_get_input1();
 APIEXPORT Input*    Input_get_input2();

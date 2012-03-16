@@ -108,6 +108,127 @@ function init_game_title(self)
   start_game_title_:on_press( C.Input_get_trig1(C.Input_get_input1()), title_press )
 end
 
+local panel1,
+      button1,
+      button2,
+      button3,
+      button4,
+      panel2,
+      ratio_icon1,
+      ratio_icon2,
+      ratio_title1,
+      ratio_title2,
+      ratio_value1,
+      ratio_value2,
+      arrow_left,
+      arrow_right,
+      arrow_title
+
+function init_test_menu(self)
+  panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
+  panel1:set_pos(688, 384)
+  button1 = view.new_sprite_text_from_sprite("button1", panel1, "Star Jedi", 24, false, 255, 255, 0)
+  button2 = view.new_sprite_text_from_sprite("button2", panel1, "Star Jedi", 24, false, 255, 255, 0)
+  button3 = view.new_sprite_text_from_sprite("button3", panel1, "Star Jedi", 24, false, 255, 255, 0)
+  button4 = view.new_sprite_text_from_sprite("button4", panel1, "Star Jedi", 24, false, 255, 255, 0)
+  button1:set_pos(-100, -100)
+  button2:set_pos(-100, -50)
+  button3:set_pos(-100, 0)
+  button4:set_pos(-100, 50)
+  button1:set_depth(-1)
+  button2:set_depth(-1)
+  button3:set_depth(-1)
+  button4:set_depth(-1)
+  local button_focus1 =  function(self, x, y) button1:set_blue(255) end
+  local button_focus2 =  function(self, x, y) button2:set_blue(255) end
+  local button_focus3 =  function(self, x, y) button3:set_blue(255) end
+  local button_focus4 =  function(self, x, y) button4:set_blue(255) end
+  local button_leave1 =  function(self, x, y) button1:set_blue(0) end
+  local button_leave2 =  function(self, x, y) button2:set_blue(0) end
+  local button_leave3 =  function(self, x, y) button3:set_blue(0) end
+  local button_leave4 =  function(self, x, y) button4:set_blue(0) end
+  button1:on_enter_focus( C.Input_get_input1(), button_focus1 )
+  button1:on_leave_focus( C.Input_get_input1(), button_leave1 )
+  button2:on_enter_focus( C.Input_get_input1(), button_focus2 )
+  button2:on_leave_focus( C.Input_get_input1(), button_leave2 )
+  button3:on_enter_focus( C.Input_get_input1(), button_focus3 )
+  button3:on_leave_focus( C.Input_get_input1(), button_leave3 )
+  button4:on_enter_focus( C.Input_get_input1(), button_focus4 )
+  button4:on_leave_focus( C.Input_get_input1(), button_leave4 )
+  
+  panel2 = view.new_sprite("area_rect", scene_, 512, 512, true)
+  panel2:set_pos(688, 384)
+  ratio_icon1   = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
+  ratio_icon2   = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
+  ratio_title1  = view.new_sprite_text_from_sprite("ratio1", panel2, "Star Jedi", 24, false, 255, 255, 255)
+  ratio_title2  = view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, false, 255, 255, 255)
+  ratio_icon1:set_pos(-200, -200)
+  ratio_icon2:set_pos(-200, -150)
+  ratio_title1:set_pos(-150, -200)
+  ratio_title2:set_pos(-150, -150)
+  ratio_value1 = false
+  ratio_value2 = false
+  arrow_left = view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
+  arrow_right= view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
+  arrow_title= view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, true, 255, 255, 255)
+  arrow_left:set_pos(-200, -100)
+  arrow_right:set_pos(80, -100)
+  arrow_title:set_pos(-50, -90)
+  panel2:set_alpha(0)
+  ratio_icon1:set_alpha(0)
+  ratio_icon2:set_alpha(0)
+  ratio_title1:set_alpha(0)
+  ratio_title2:set_alpha(0)
+  arrow_left:set_alpha(0)
+  arrow_right:set_alpha(0)
+  arrow_title:set_alpha(0)
+  ratio_icon1:set_depth(-1)
+  ratio_icon2:set_depth(-1)
+  ratio_title1:set_depth(-1)
+  ratio_title2:set_depth(-1)
+  
+  local ratio1_press = function(self)
+    if ratio_value1 == false then
+      ratio_icon1:set_texture("cubes/cube-b-1")
+      ratio_value1 = true
+    else
+      ratio_icon1:set_texture("cubes/cube1")
+      ratio_value1 = false
+    end
+  end
+  local ratio2_press = function(self)
+    if ratio_value2 == false then
+      ratio_icon2:set_texture("cubes/cube-b-1")
+      ratio_value2 = true
+    else
+      ratio_icon2:set_texture("cubes/cube1")
+      ratio_value2 = false
+    end
+  end
+  ratio_icon1:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio1_press )
+  ratio_icon2:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio2_press )
+  ratio_title1:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio1_press )
+  ratio_title2:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio2_press )
+  
+  local tween_cb =  function(self) end
+  local button2_press = function(self)
+                          panel1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          button1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          button2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          button3:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          button4:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          panel2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio_icon1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio_icon2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio_title1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio_title2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          arrow_left:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          arrow_right:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          arrow_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                        end
+  button2:on_press( C.Input_get_trig1(C.Input_get_input1()), button2_press )
+end
+
 local test1,
       test2,
       test3
@@ -121,7 +242,12 @@ function init_test_sprite(self)
                       test2:set_red(100)
                     end
   local test1_on_press =  function(self)
-                            test2:on_tween_line(940, 384, 4000, 0, tween_cb, 500)
+                            --test2:on_tween_line_pos(940, 384, 4000, 0, tween_cb, 500)
+                            --test2:on_tween_line_rotation(0, 45, 0, 4000, 0, tween_cb, 500)
+                            --test2:on_tween_line_scale(2, 1, 0, 4000, 0, tween_cb, 500)
+                            --test2:on_tween_line_color_diffuse(50, 4000, 0, tween_cb, 500)
+                            --test2:on_tween_line_blue(50, 4000, 0, tween_cb, 500)
+                            test2:on_tween_line_alpha(50, 4000, 0, tween_cb, 500)
                           end
   test1:on_press( C.Input_get_trig1(C.Input_get_input1()), test1_on_press )
   

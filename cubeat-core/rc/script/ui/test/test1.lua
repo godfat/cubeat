@@ -122,7 +122,14 @@ local panel1,
       ratio_value2,
       arrow_left,
       arrow_right,
-      arrow_title
+      arrow_title,
+      scrollbar_front,
+      scrollbar_back,
+      scrollbar_title
+local title_tb = {"TITLE1", "TITLE2", "TITLE3"}
+local title_index = 1
+local scrollbar_on = false
+local scrollbar_on_title
 
 function init_test_menu(self)
   panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
@@ -168,9 +175,9 @@ function init_test_menu(self)
   ratio_title2:set_pos(-150, -150)
   ratio_value1 = false
   ratio_value2 = false
-  arrow_left = view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
-  arrow_right= view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
-  arrow_title= view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, true, 255, 255, 255)
+  arrow_left = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
+  arrow_right= view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
+  arrow_title= view.new_sprite_text_from_sprite(title_tb[title_index], panel2, "Star Jedi", 24, true, 255, 255, 255)
   arrow_left:set_pos(-200, -100)
   arrow_right:set_pos(80, -100)
   arrow_title:set_pos(-50, -90)
@@ -186,6 +193,21 @@ function init_test_menu(self)
   ratio_icon2:set_depth(-1)
   ratio_title1:set_depth(-1)
   ratio_title2:set_depth(-1)
+  arrow_left:set_depth(-1)
+  arrow_right:set_depth(-1)
+  scrollbar_back    = view.new_sprite_from_sprite("cubes/cube1", panel2, 256, 16, false)
+  scrollbar_front   = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
+  scrollbar_title   = view.new_sprite_text_from_sprite("0", panel2, "Star Jedi", 24, true, 255, 255, 255)
+  scrollbar_on_title= view.new_sprite_text_from_sprite("off", panel2, "Star Jedi", 24, true, 255, 255, 255)
+  scrollbar_back:set_pos(-200, -40)
+  scrollbar_front:set_pos(-200, -50)
+  scrollbar_title:set_pos(100, -40)
+  scrollbar_on_title:set_pos(150, -40)
+  scrollbar_back:set_alpha(0)
+  scrollbar_front:set_alpha(0)
+  scrollbar_title:set_alpha(0)
+  scrollbar_on_title:set_alpha(0)
+  scrollbar_front:set_depth(-1)
   
   local ratio1_press = function(self)
     if ratio_value1 == false then
@@ -210,6 +232,35 @@ function init_test_menu(self)
   ratio_title1:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio1_press )
   ratio_title2:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio2_press )
   
+  local arrow_left_press = function(self)
+    title_index = title_index - 1
+    if title_index < 1 then title_index = table.getn(title_tb) end
+    arrow_title:change_text(title_tb[title_index])
+  end
+  local arrow_right_press = function(self)
+    title_index = title_index + 1
+    if title_index > table.getn(title_tb) then title_index = 1 end
+    arrow_title:change_text(title_tb[title_index])
+  end
+  arrow_left:on_press( C.Input_get_trig1(C.Input_get_input1()), arrow_left_press )
+  arrow_right:on_press( C.Input_get_trig1(C.Input_get_input1()), arrow_right_press )
+  
+  local scrollbar_press   = function(self)
+    scrollbar_on = true
+    scrollbar_on_title:change_text("on")
+  end
+  local scrollbar_release = function(self)
+    scrollbar_on = false
+    scrollbar_on_title:change_text("off")
+  end
+  local scrollbar_leave = function(self, x, y)
+    scrollbar_on = false
+    scrollbar_on_title:change_text("off")
+  end
+  scrollbar_front:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_press )
+  scrollbar_front:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_release )
+  scrollbar_front:on_leave_focus( C.Input_get_input1(), scrollbar_leave )
+  
   local tween_cb =  function(self) end
   local button2_press = function(self)
                           panel1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
@@ -225,6 +276,10 @@ function init_test_menu(self)
                           arrow_left:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           arrow_right:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           arrow_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          scrollbar_back:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          scrollbar_front:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          scrollbar_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          scrollbar_on_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                         end
   button2:on_press( C.Input_get_trig1(C.Input_get_input1()), button2_press )
 end

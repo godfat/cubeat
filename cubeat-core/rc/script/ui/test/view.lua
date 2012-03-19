@@ -10,7 +10,7 @@ typedef struct pScene pScene;
 typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
 typedef struct Input Input;
-typedef struct InputButton InputButton;
+typedef struct Button Button;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a') )
 

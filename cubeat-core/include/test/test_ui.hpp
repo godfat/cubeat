@@ -15,10 +15,6 @@ typedef std::tr1::shared_ptr<Scene>  pScene;
 typedef std::tr1::shared_ptr<Sprite> pSprite;
 typedef std::tr1::shared_ptr<SpriteText> pSpriteText;
 } //view
-namespace ctrl {
-class Button;
-typedef Button InputButton;
-}
 namespace presenter {
 class Stage;
 typedef std::tr1::shared_ptr<Stage>  pStage;

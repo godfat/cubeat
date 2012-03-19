@@ -39,10 +39,10 @@ APIEXPORT void     Sprite_set_alpha(pSprite*, int);
 APIEXPORT void     Sprite_set_frame(pSprite*, double);
 APIEXPORT void     Sprite_set_visible(pSprite*, bool);
 APIEXPORT void     Sprite_set_size(pSprite*, double, double);
-APIEXPORT void     Sprite_on_release(pSprite* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void     Sprite_on_press(pSprite* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void     Sprite_on_up(pSprite* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void     Sprite_on_down(pSprite* self, InputButton const*, PSC_OBJCALLBACK);
+APIEXPORT void     Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void     Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void     Sprite_on_up(pSprite* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void     Sprite_on_down(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
@@ -72,10 +72,10 @@ APIEXPORT void          SpriteText_set_green(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_blue(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_alpha(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_visible(pSpriteText*, bool);
-APIEXPORT void          SpriteText_on_release(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void          SpriteText_on_press(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void          SpriteText_on_up(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
-APIEXPORT void          SpriteText_on_down(pSpriteText* self, InputButton const*, PSC_OBJCALLBACK);
+APIEXPORT void          SpriteText_on_release(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void          SpriteText_on_press(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void          SpriteText_on_up(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void          SpriteText_on_down(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
@@ -83,13 +83,13 @@ APIEXPORT void          SpriteText_on_tween_line_alpha(pSpriteText* self, int, d
 
 APIEXPORT Input*    Input_get_input1();
 APIEXPORT Input*    Input_get_input2();
-APIEXPORT InputButton const* Input_get_trig1(Input* p);
-APIEXPORT InputButton const* Input_get_trig2(Input* p);
-APIEXPORT InputButton const* Input_get_wep1(Input* p);
-APIEXPORT InputButton const* Input_get_wep2(Input* p);
-APIEXPORT InputButton const* Input_get_wep3(Input* p);
-APIEXPORT InputButton const* Input_get_haste(Input* p);
-APIEXPORT InputButton const* Input_get_pause(Input* p);
+APIEXPORT Button const* Input_get_trig1(Input* p);
+APIEXPORT Button const* Input_get_trig2(Input* p);
+APIEXPORT Button const* Input_get_wep1(Input* p);
+APIEXPORT Button const* Input_get_wep2(Input* p);
+APIEXPORT Button const* Input_get_wep3(Input* p);
+APIEXPORT Button const* Input_get_haste(Input* p);
+APIEXPORT Button const* Input_get_pause(Input* p);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

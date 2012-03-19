@@ -40,6 +40,8 @@ protected:
     void cleanup();
     void end(pMap p);
     void reinit();
+    void game_start();
+
     void update_ui_by_second();
     void update_ui();
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);

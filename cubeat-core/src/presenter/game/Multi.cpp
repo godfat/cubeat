@@ -58,6 +58,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu; ai_level_ = ai_level;
 
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    scene_->allowPicking(false);
+
     gameplay_ = Conf::i().config_of("gameplay/multi");
 
     data::pViewSetting s0, s1;
@@ -127,6 +130,19 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
+    using std::tr1::bind;
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&Multi::game_start, this), 3000);
+
+    return shared_from_this();
+}
+
+void Multi::game_start()
+{
     //start music
     stage_->playBGM();
 
@@ -134,13 +150,12 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
     timer_ui_   = pDummy(new int);
     //note: end of bad area
-    using std::tr1::bind;
 
+    using std::tr1::bind;
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
-    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(     //2011.03.25 item temporarily removed
+    //2011.03.25 item temporarily removed
+    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
     //    bind(&Multi::item_creation, this), timer_item_, 15000);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
@@ -165,7 +180,8 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
         pause_note_text_->setDepth(-100).setPickable(false);
     }
 
-    return shared_from_this();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    scene_->allowPicking(true);
 }
 
 void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )

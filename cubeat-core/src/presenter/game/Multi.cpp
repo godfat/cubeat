@@ -130,6 +130,10 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
+    ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+    ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+    ready_go(3);
+
     using std::tr1::bind;
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
@@ -139,6 +143,21 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
         bind(&Multi::game_start, this), 3000);
 
     return shared_from_this();
+}
+
+void Multi::ready_go(int step)
+{
+    if ( step < 0 ) return;
+    else if ( step == 0 ) {
+        ready_go_text_->changeText("go!");
+    }
+    else {
+        ready_go_text_->showNumber(step);
+    }
+    ready_go_text_->set<Scale>(vec3(.3,.3,.3));
+    ready_go_text_->tween<OElastic, Scale>(vec3(1,1,1), 900u, 0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&Multi::ready_go, this, step-1), 1000);
 }
 
 void Multi::game_start()

@@ -43,6 +43,8 @@ void Object::init(pObject const& parent)
     body_ = smgr_->addEmptySceneNode( parent->body() );
     body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->setIsDebugObject(true);
+    //test
+    body_->grab();
 }
 
 Object& Object::moveTo(int x, int y, int z)
@@ -169,6 +171,9 @@ Object::~Object()
 {
     clearAllQueuedTween();
     if( body_ ) {
+        //debug:
+        printf("view::Object: %x, ref: %d, name: %s destructing...\n", body_, body_->getReferenceCount(), body_->getName());
+
         if( scene() ) {
             scene()->removePickMapping( body_ );
         }

@@ -40,6 +40,9 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     mat.DiffuseColor = SColor( color.rgb() );
     body_->getMaterial(0) = mat;
 
+    //test
+    body_->grab();
+
     createText( text, font_path, size );
 
     pSpriteText self = static_pointer_cast<SpriteText>( shared_from_this() );

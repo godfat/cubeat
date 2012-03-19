@@ -24,9 +24,8 @@ public:
     typedef std::tr1::shared_ptr< Player > pointer_type;
     typedef std::tr1::weak_ptr  < Player > wpointer_type;
     static pointer_type create(Input* input,
-                               int const& id,
-                               bool const& can_haste = true) {
-        return pointer_type(new Player(input, id))->init(can_haste);
+                               int const& id) {
+        return pointer_type(new Player(input, id))->init();
     }
     virtual void cycle();
     virtual bool startThinking() { return false; }
@@ -39,7 +38,7 @@ public:
     Player& disable_all_wep_reloadability();
     Player& push_ally(int id);
     Player& push_enemy(int id);
-    Player& subscribe_player_specific_interactions(bool const&);
+    Player& subscribe_player_specific_interactions(bool const& can_haste = true);
 
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
     //I'd better refactor this afterwards.
@@ -69,7 +68,7 @@ public:
 
 protected:
     Player(Input* input, int const&);
-    pointer_type init(bool const& can_haste = true);
+    pointer_type init();
 
     void normal_weapon_fx();
     void start_haste_effect();

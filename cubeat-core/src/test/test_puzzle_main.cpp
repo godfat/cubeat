@@ -103,7 +103,7 @@ protected:
         s1->x_offset(740).y_offset(684);
 
         ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
-        player0_ = ctrl::Player::create(input, 0, false);
+        player0_ = ctrl::Player::create(input, 0);
         player0_->push_ally(0).player_hit_event(bind(&TestPuzzle::puzzle_started, this));
 
         // setup map0
@@ -158,6 +158,8 @@ protected:
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&TestPuzzle::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
 
+        player0_->subscribe_player_specific_interactions(false);
+
         pview1_->setMap( map0_ );
     }
 
@@ -199,7 +201,7 @@ protected:
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&TestPuzzle::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
 
-        input->player()->subscribe_player_specific_interactions(true);
+        input->player()->subscribe_player_specific_interactions(false);
     }
 
     void puzzle_started() {

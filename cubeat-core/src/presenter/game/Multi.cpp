@@ -163,11 +163,6 @@ void Multi::game_start()
             bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
     }
 
-    if( num_of_cpu_ > 0 )
-        player1_->startThinking();
-    if( num_of_cpu_ > 1 )
-        player0_->startThinking();
-
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false).set<Visible>(false);
@@ -182,6 +177,14 @@ void Multi::game_start()
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     scene_->allowPicking(true);
+
+    player0_->subscribe_player_specific_interactions();
+    player1_->subscribe_player_specific_interactions();
+
+    if( num_of_cpu_ > 0 )
+        player1_->startThinking();
+    if( num_of_cpu_ > 1 )
+        player0_->startThinking();
 }
 
 void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
@@ -525,7 +528,7 @@ void Multi::resume(ctrl::Input const* controller)
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
-        input->player()->subscribe_player_specific_interactions(true);
+        input->player()->subscribe_player_specific_interactions();
     }
 }
 

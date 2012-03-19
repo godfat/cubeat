@@ -24,7 +24,7 @@ Player::Player(Input* input, int const& id)
 {
 }
 
-pPlayer Player::init(bool const& can_haste)
+pPlayer Player::init()
 {
     weplist_.push_back( new BlockShoot( shared_from_this() ) );
     weplist_.push_back( new PowerShoot( shared_from_this() ) );
@@ -33,8 +33,6 @@ pPlayer Player::init(bool const& can_haste)
 
     if( input_ )
         input_->player( shared_from_this() );
-
-    subscribe_player_specific_interactions(can_haste);
 
     EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms

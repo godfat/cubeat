@@ -132,7 +132,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
     ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-    ready_go(3);
+    ready_go_text_->setPickable(false);
 
     using std::tr1::bind;
 
@@ -142,20 +142,29 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&Multi::game_start, this), 3000);
 
+    ready_go(3);
+
     return shared_from_this();
 }
 
+//This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
 void Multi::ready_go(int step)
 {
-    if ( step < 0 ) return;
+    if ( step < 0 ) {
+        ready_go_text_->tween<Linear, Alpha>(0, 500u);
+        return;
+    }
     else if ( step == 0 ) {
         ready_go_text_->changeText("go!");
+        ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
+        //need sound fx here
     }
     else {
         ready_go_text_->showNumber(step);
+        ready_go_text_->set<Scale>(vec3(5,5,5));
+        //need sound fx here
     }
-    ready_go_text_->set<Scale>(vec3(.3,.3,.3));
-    ready_go_text_->tween<OElastic, Scale>(vec3(1,1,1), 900u, 0);
+    ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&Multi::ready_go, this, step-1), 1000);
 }

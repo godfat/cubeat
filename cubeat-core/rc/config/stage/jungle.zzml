@@ -3,7 +3,8 @@
 # degree of "Field of View"
 FoV: 36,
 name: 'jungle',
-music: 'jungle/bgm.ogg',
+music: 'jungle/bgm_a.ogg',
+music2: 'jungle/bgm_b.ogg',
 
 all_items: [
     # item group 0

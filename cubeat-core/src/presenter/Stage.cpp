@@ -134,7 +134,12 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM()
 {
-    audio::Sound::i().playStream( conf_.S("music"), true );
+    try {
+        audio::Sound::i().playABStream( conf_.S("music"), conf_.S("music2") );
+    }
+    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+        audio::Sound::i().playStream( conf_.S("music"), true );
+    }
     return *this;
 }
 

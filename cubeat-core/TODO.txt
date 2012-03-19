@@ -118,6 +118,8 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   
 0.6  6. Why Background can't use double type as xyz????
 
+0.6  7. Chain messages are somewhat delayed and disappeared early??? check newest video footage ...
+
 * Feature / Gameplay Issues:
 
 0.6  1. Training mode and tutorials.

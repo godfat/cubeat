@@ -56,7 +56,11 @@ public:
                                      s->cube_size(), s->cube_size(), true);
 
         body_->set<accessor::Pos2D>(pos_vec2());
-        restore(c->data()->color_id());
+        body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+        data::Color col = data::Color::from_id(c->data()->color_id());
+        col.offset();
+        body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+        shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     }
 
     virtual void <% debug_hook 'drop_a_block' do %>(){ <% end %>

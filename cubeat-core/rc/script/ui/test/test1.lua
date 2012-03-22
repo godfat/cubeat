@@ -185,7 +185,7 @@ function init_test_menu(self)
   scrollbar_back    = view.new_sprite_from_sprite("cubes/cube1", panel2, 256, 16, false)
   scrollbar_front   = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
   scrollbar_title   = view.new_sprite_text_from_sprite("0", panel2, "Star Jedi", 24, true, 255, 255, 0)
-  scrollbar_on_title= view.new_sprite_text_from_sprite("off", panel2, "Star Jedi", 24, true, 255, 255, 0)
+  scrollbar_on_title= view.new_sprite_text_from_sprite("off", panel2, "Star Jedi", 24, true, 100, 100, 255)
   --
   panel2:set_pos(688, 384)
   panel2:set_alpha(0)
@@ -225,12 +225,12 @@ function init_test_menu(self)
   scrollbar_back:set_pos(-200, -40)
   scrollbar_front:set_pos(-200, -50)
   scrollbar_title:set_pos(100, -40)
-  scrollbar_on_title:set_pos(150, -40)
+  scrollbar_on_title:set_pos(170, -40)
   scrollbar_back:set_alpha(0)
   scrollbar_front:set_alpha(0)
   scrollbar_title:set_alpha(0)
   scrollbar_on_title:set_alpha(0)
-  scrollbar_front:set_depth(-1)
+  scrollbar_front:set_depth(-100)
   
   --=======================RATIO=======================--
   local ratio1_press = function(self)
@@ -312,6 +312,22 @@ function init_test_menu(self)
                                 end
   scrollbar_front:on_enter_focus( C.Input_get_input1(), scrollbar_front_focus )
   scrollbar_front:on_leave_focus( C.Input_get_input1(), scrollbar_front_leave )
+  --
+  local scrollbar_front_down  = function(self)
+    if scrollbar_on == true then
+      local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - 704
+      local pos_y = scrollbar_front:get_pos_y()
+      local bg_left = scrollbar_back:get_pos_x()
+      local bg_right= bg_left + scrollbar_back:get_size_x() - 32
+      if pos_x < bg_left then pos_x = bg_left end
+      if pos_x > bg_right then pos_x = bg_right end
+      scrollbar_front:set_pos(pos_x, pos_y)
+      --
+      local scroll_value = math.floor( (pos_x-bg_left)*100/(scrollbar_back:get_size_x()-32) )
+      scrollbar_title:change_text(tostring(scroll_value))
+    end
+  end
+  scrollbar_front:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_down )
   
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end

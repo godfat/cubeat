@@ -129,6 +129,22 @@ void Sprite_set_size(pSprite* self, double x, double y) {
     (*self)->set<Size2D>(vec2(x, y));
 }
 
+int Sprite_get_pos_x(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().X);
+}
+
+int Sprite_get_pos_y(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().Y);
+}
+
+int Sprite_get_size_x(pSprite* self) {
+    return (int)((*self)->get<Size2D>().X);
+}
+
+int Sprite_get_size_y(pSprite* self) {
+    return (int)((*self)->get<Size2D>().Y);
+}
+
 void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
     cb(&sp);
 }
@@ -332,6 +348,14 @@ Button const* Input_get_haste(Input* p) {
 
 Button const* Input_get_pause(Input* p) {
     return &p->pause();
+}
+
+int Input_get_cursor_x(Input* p) {
+    return p->cursor().x();
+}
+
+int Input_get_cursor_y(Input* p) {
+    return p->cursor().y();
 }
 
 void Scene__gc(pScene* self) {

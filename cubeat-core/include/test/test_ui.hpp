@@ -39,6 +39,8 @@ public:
     void ShowChar(view::pSprite& p);
     void HideChar(view::pSprite& p);
 
+    void ShowPos(view::pSprite& p);
+
 private:
     presenter::pStage stage_;
     view::pScene      scene_;
@@ -51,6 +53,9 @@ private:
     view::pSprite       btn_visible_panel_;
     view::pSprite       btn_visible_char_;
     view::pSpriteText   text_;
+
+    view::pSprite       btn_test_cursor_;
+    view::pSpriteText   text_cursor_;
 };
 } //psc
 

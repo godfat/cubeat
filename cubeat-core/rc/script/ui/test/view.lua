@@ -98,6 +98,11 @@ Mt_Sprite.set_frame               = C.Sprite_set_frame
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_size                = C.Sprite_set_size
 
+Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
+Mt_Sprite.get_pos_y               = C.Sprite_get_pos_y
+Mt_Sprite.get_size_x              = C.Sprite_get_size_x
+Mt_Sprite.get_size_y              = C.Sprite_get_size_y
+
 -- local weakkey = {__mode = "k"}
 -- Mt_Sprite.__on_releases__ = setmetatable({}, weakkey)
 -- Mt_Sprite.__on_presses__  = setmetatable({}, weakkey)

@@ -186,9 +186,49 @@ local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, 
   return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 end
 
+local function new_ui_ratio(ratio, sprite)
+  ratio.switch      = false
+  ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
+  ratio.title       = new_sprite_text_from_sprite("ratio1", sprite, "Star Jedi", 24, false, 255, 255, 0)
+  ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, false, 100, 100, 255)
+  local ratio_focus = function(self) ratio.title:set_blue(255) end
+  local ratio_leave = function(self) ratio.title:set_blue(0) end
+  ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
+  ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
+  ratio.icon:set_depth(-10)
+  ratio.title:set_depth(-10)
+  ratio.set_pos             = function(self, posx, posy)
+                                ratio.icon:set_pos(posx, posy)
+                                ratio.title:set_pos(posx+50, posy)
+                                ratio.debug_text:set_pos(posx+330, posy)
+                              end
+  ratio.set_visible         = function(self, visible)
+                                ratio.icon:set_visible(visible)
+                                ratio.title:set_visible(visible)
+                                ratio.debug_text:set_visible(visible)
+                              end
+  ratio.set_alpha           = function(self, alpha)
+                                ratio.icon:set_alpha(alpha)
+                                ratio.title:set_alpha(alpha)
+                                ratio.debug_text:set_alpha(alpha)
+                              end
+  ratio.on_tween_line_alpha = function(self, alpha)
+                                local tween_cb =  function(self) end
+                                ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                                ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                                ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                              end
+  ratio.on_press            = function(self, func)
+                                ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+                                ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+                              end
+  return ratio
+end
+
 return {
   new_sprite                  = new_sprite,
   new_sprite_from_sprite      = new_sprite_from_sprite,
   new_sprite_text             = new_sprite_text,
-  new_sprite_text_from_sprite = new_sprite_text_from_sprite
+  new_sprite_text_from_sprite = new_sprite_text_from_sprite,
+  new_ui_ratio                = new_ui_ratio
 }

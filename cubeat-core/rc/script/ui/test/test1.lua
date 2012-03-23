@@ -115,6 +115,8 @@ local panel1,
       button4
 local panel2,
       back_button
+local ratio1 = {}
+local ratio2 = {}
 local ratio_icon1,
       ratio_icon2,
       ratio_title1,
@@ -134,6 +136,7 @@ local title_tb = {"TITLE1", "TITLE2", "TITLE3"}
 local title_index = 1
 local scrollbar_on = false
 local scrollbar_on_title
+local test_ui_ratio = {}
 
 function init_test_menu(self)
   --=======================INIT PANEL1=======================--
@@ -172,12 +175,14 @@ function init_test_menu(self)
   --=======================INIT PANEL2=======================--
   panel2            = view.new_sprite("area_rect", scene_, 512, 512, true)
   back_button       = view.new_sprite_text_from_sprite("BACK", panel2, "Star Jedi", 24, false, 255, 255, 0)
-  ratio_icon1       = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
-  ratio_icon2       = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
-  ratio_title1      = view.new_sprite_text_from_sprite("ratio1", panel2, "Star Jedi", 24, false, 255, 255, 0)
-  ratio_title2      = view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, false, 255, 255, 0)
-  ratio_debug_text1 = view.new_sprite_text_from_sprite("FALSE", panel2, "Star Jedi", 24, false, 100, 100, 255)
-  ratio_debug_text2 = view.new_sprite_text_from_sprite("FALSE", panel2, "Star Jedi", 24, false, 100, 100, 255)
+  ratio1  = view.new_ui_ratio(ratio1, panel2)
+  ratio2  = view.new_ui_ratio(ratio2, panel2)
+  --ratio_icon1       = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
+  --ratio_icon2       = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
+  --ratio_title1      = view.new_sprite_text_from_sprite("ratio1", panel2, "Star Jedi", 24, false, 255, 255, 0)
+  --ratio_title2      = view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, false, 255, 255, 0)
+  --ratio_debug_text1 = view.new_sprite_text_from_sprite("FALSE", panel2, "Star Jedi", 24, false, 100, 100, 255)
+  --ratio_debug_text2 = view.new_sprite_text_from_sprite("FALSE", panel2, "Star Jedi", 24, false, 100, 100, 255)
   arrow_left        = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
   arrow_right       = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
   arrow_title       = view.new_sprite_text_from_sprite(title_tb[title_index], panel2, "Star Jedi", 24, true, 255, 255, 0)
@@ -194,7 +199,11 @@ function init_test_menu(self)
   back_button:set_alpha(0)
   back_button:set_depth(-1)
   --
-  ratio_icon1:set_pos(-200, -200)
+  ratio1:set_pos(-200, -200)
+  ratio2:set_pos(-200, -150)
+  ratio1:set_alpha(0)
+  ratio2:set_alpha(0)
+  --[[ratio_icon1:set_pos(-200, -200)
   ratio_icon2:set_pos(-200, -150)
   ratio_title1:set_pos(-150, -200)
   ratio_title2:set_pos(-150, -150)
@@ -209,7 +218,7 @@ function init_test_menu(self)
   ratio_icon1:set_depth(-1)
   ratio_icon2:set_depth(-1)
   ratio_title1:set_depth(-1)
-  ratio_title2:set_depth(-1)
+  ratio_title2:set_depth(-1)--]]
   --
   arrow_left:set_pos(-200, -100)
   arrow_right:set_pos(80, -100)
@@ -234,6 +243,28 @@ function init_test_menu(self)
   
   --=======================RATIO=======================--
   local ratio1_press = function(self)
+    if ratio1.switch == false then
+      ratio1.icon:set_texture("cubes/cube-b-1")
+      ratio1.switch = true
+    else
+      ratio1.icon:set_texture("cubes/cube1")
+      ratio1.switch = false
+    end
+    ratio1.debug_text:change_text(tostring(ratio1.switch))
+  end
+  local ratio2_press = function(self)
+    if ratio2.switch == false then
+      ratio2.icon:set_texture("cubes/cube-b-1")
+      ratio2.switch = true
+    else
+      ratio2.icon:set_texture("cubes/cube1")
+      ratio2.switch = false
+    end
+    ratio2.debug_text:change_text(tostring(ratio2.switch))
+  end
+  ratio1:on_press(ratio1_press)
+  ratio2:on_press(ratio2_press)
+  --[[local ratio1_press = function(self)
     if ratio_value1 == false then
       ratio_icon1:set_texture("cubes/cube-b-1")
       ratio_value1 = true
@@ -265,7 +296,7 @@ function init_test_menu(self)
   ratio_title1:on_enter_focus( C.Input_get_input1(), ratio1_focus )
   ratio_title1:on_leave_focus( C.Input_get_input1(), ratio1_leave )
   ratio_title2:on_enter_focus( C.Input_get_input1(), ratio2_focus )
-  ratio_title2:on_leave_focus( C.Input_get_input1(), ratio2_leave )
+  ratio_title2:on_leave_focus( C.Input_get_input1(), ratio2_leave )--]]
   
   --=======================LEFT&RIGHT ARROW=======================--
   local arrow_left_press = function(self)
@@ -328,6 +359,21 @@ function init_test_menu(self)
     end
   end
   scrollbar_front:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_down )
+  --=======================TEST UI RATIO=======================--
+  test_ui_ratio = view.new_ui_ratio(test_ui_ratio, panel2)
+  test_ui_ratio:set_pos(-200, 0)
+  test_ui_ratio:set_alpha(0)
+  local ratio_press = function(self)
+    if test_ui_ratio.switch == false then
+      test_ui_ratio.icon:set_texture("cubes/cube-b-1")
+      test_ui_ratio.switch = true
+    else
+      test_ui_ratio.icon:set_texture("cubes/cube1")
+      test_ui_ratio.switch = false
+    end
+    test_ui_ratio.debug_text:change_text(tostring(test_ui_ratio.switch))
+  end
+  test_ui_ratio:on_press(ratio_press)
   
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
@@ -338,12 +384,14 @@ function init_test_menu(self)
                             button3:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                             button4:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                             panel2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            ratio_icon1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            ratio1:on_tween_line_alpha(0)
+                            ratio2:on_tween_line_alpha(0)
+                            --[[ratio_icon1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             ratio_icon2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             ratio_title1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             ratio_title2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             ratio_debug_text1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            ratio_debug_text2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            ratio_debug_text2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)--]]
                             arrow_left:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             arrow_right:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             arrow_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
@@ -353,6 +401,7 @@ function init_test_menu(self)
                             scrollbar_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             scrollbar_on_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             back_button:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            test_ui_ratio:on_tween_line_alpha(0)
                           end
   back_button:on_press( C.Input_get_trig1(C.Input_get_input1()), back_btn_press )
   --
@@ -370,12 +419,14 @@ function init_test_menu(self)
                           button3:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                           button4:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                           panel2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_icon1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio1:on_tween_line_alpha(255)
+                          ratio2:on_tween_line_alpha(255)
+                          --[[ratio_icon1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio_icon2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio_title1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio_title2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio_debug_text1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_debug_text2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio_debug_text2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)--]]
                           arrow_left:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           arrow_right:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           arrow_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
@@ -385,6 +436,7 @@ function init_test_menu(self)
                           scrollbar_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           scrollbar_on_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           back_button:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          test_ui_ratio:on_tween_line_alpha(255)
                         end
   button2:on_press( C.Input_get_trig1(C.Input_get_input1()), button2_press )
 end

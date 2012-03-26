@@ -186,10 +186,37 @@ local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, 
   return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 end
 
-local function new_ui_ratio(ratio, sprite)
-  ratio.switch      = false
+local function new_ui_button(button, text, sprite)
+  button.title        = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
+  button.title:set_depth(-10)
+  local button_focus  = function(self) button.title:set_blue(255) end
+  local butotn_leave  = function(self) button.title:set_blue(0) end
+  button.title:on_enter_focus( C.Input_get_input1(), button_focus )
+  button.title:on_leave_focus( C.Input_get_input1(), butotn_leave )
+  --
+  button.set_pos      = function(self, posx, posy)
+                          button.title:set_pos(posx, posy)
+                        end
+  button.set_visible  = function(self, visible)
+                          button.title:set_visible(visible)
+                        end
+  button.set_alpha    = function(self, alpha)
+                          button.title:set_alpha(alpha)
+                        end
+  button.set_fade     = function(self, alpha)
+                          local tween_cb =  function(self) end
+                          button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        end
+  button.on_press     = function(self, func)
+                          button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+                        end
+  return button
+end
+
+local function new_ui_ratio(ratio, text, sprite)
+  ratio.is_down     = false
   ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
-  ratio.title       = new_sprite_text_from_sprite("ratio1", sprite, "Star Jedi", 24, false, 255, 255, 0)
+  ratio.title       = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
   ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, false, 100, 100, 255)
   local ratio_focus = function(self) ratio.title:set_blue(255) end
   local ratio_leave = function(self) ratio.title:set_blue(0) end
@@ -197,31 +224,42 @@ local function new_ui_ratio(ratio, sprite)
   ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
   ratio.icon:set_depth(-10)
   ratio.title:set_depth(-10)
-  ratio.set_pos             = function(self, posx, posy)
-                                ratio.icon:set_pos(posx, posy)
-                                ratio.title:set_pos(posx+50, posy)
-                                ratio.debug_text:set_pos(posx+330, posy)
-                              end
-  ratio.set_visible         = function(self, visible)
-                                ratio.icon:set_visible(visible)
-                                ratio.title:set_visible(visible)
-                                ratio.debug_text:set_visible(visible)
-                              end
-  ratio.set_alpha           = function(self, alpha)
-                                ratio.icon:set_alpha(alpha)
-                                ratio.title:set_alpha(alpha)
-                                ratio.debug_text:set_alpha(alpha)
-                              end
-  ratio.on_tween_line_alpha = function(self, alpha)
-                                local tween_cb =  function(self) end
-                                ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                                ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                                ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                              end
-  ratio.on_press            = function(self, func)
-                                ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
-                                ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
-                              end
+  ratio.set_pos     = function(self, posx, posy)
+                        ratio.icon:set_pos(posx, posy)
+                        ratio.title:set_pos(posx+50, posy)
+                        ratio.debug_text:set_pos(posx+330, posy)
+                      end
+  ratio.set_visible = function(self, visible)
+                        ratio.icon:set_visible(visible)
+                        ratio.title:set_visible(visible)
+                        ratio.debug_text:set_visible(visible)
+                      end
+  ratio.set_alpha   = function(self, alpha)
+                        ratio.icon:set_alpha(alpha)
+                        ratio.title:set_alpha(alpha)
+                        ratio.debug_text:set_alpha(alpha)
+                      end
+  ratio.set_fade    = function(self, alpha)
+                        local tween_cb =  function(self) end
+                        ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                      end
+  ratio.on_press    = function(self, func)
+                        local callback  = function(self)
+                                            if ratio.is_down == false then
+                                              ratio.icon:set_texture("cubes/cube-b-1")
+                                              ratio.is_down = true
+                                            else
+                                              ratio.icon:set_texture("cubes/cube1")
+                                              ratio.is_down = false
+                                            end
+                                            ratio.debug_text:change_text(tostring(ratio.is_down))
+                                            func(self)
+                                          end
+                        ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                      end
   return ratio
 end
 
@@ -230,5 +268,6 @@ return {
   new_sprite_from_sprite      = new_sprite_from_sprite,
   new_sprite_text             = new_sprite_text,
   new_sprite_text_from_sprite = new_sprite_text_from_sprite,
+  new_ui_button               = new_ui_button,
   new_ui_ratio                = new_ui_ratio
 }

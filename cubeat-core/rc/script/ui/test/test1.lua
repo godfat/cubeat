@@ -113,23 +113,18 @@ local button1 = {}
 local button2 = {}
 local button3 = {}
 local button4 = {}
-local panel2,
-      back_button
+local panel2
+local back_btn = {}
 local ratio1 = {}
 local ratio2 = {}
-local arrow_left,
-      arrow_right,
-      arrow_title,
-      arrow_debug_text
+local selectbox = {}
+local selectbox_title = {"SELECT1", "SELECT2", "SELECT3"}
 local scrollbar_front,
       scrollbar_back,
       scrollbar_title
-local title_tb = {"TITLE1", "TITLE2", "TITLE3"}
-local title_index = 1
 local scrollbar_on = false
 local scrollbar_on_title
-local test_ui_ratio = {}
-local test_ui_button = {}
+local test_scroll = {}
 
 function init_test_menu(self)
   --=======================INIT PANEL1=======================--
@@ -149,10 +144,9 @@ function init_test_menu(self)
   panel2:set_pos(688, 384)
   panel2:set_alpha(0)
   --
-  back_button = view.new_sprite_text_from_sprite("BACK", panel2, "Star Jedi", 24, false, 255, 255, 0)
-  back_button:set_pos(-200, 150)
-  back_button:set_alpha(0)
-  back_button:set_depth(-1)
+  back_btn = view.new_ui_button(back_btn, "BACK", panel2)
+  back_btn:set_pos(-200, 150)
+  back_btn:set_alpha(0)
   --
   ratio1  = view.new_ui_ratio(ratio1, "ratio1", panel2)
   ratio2  = view.new_ui_ratio(ratio2, "ratio2", panel2)
@@ -165,26 +159,18 @@ function init_test_menu(self)
   ratio1:on_press(ratio1_press)
   ratio2:on_press(ratio2_press)
   --
-  arrow_left        = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
-  arrow_right       = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
-  arrow_title       = view.new_sprite_text_from_sprite(title_tb[title_index], panel2, "Star Jedi", 24, true, 255, 255, 0)
-  arrow_debug_text  = view.new_sprite_text_from_sprite(tostring(title_index), panel2, "Star Jedi", 24, true, 100, 100, 255)
+  selectbox = view.new_ui_selectbox(selectbox, panel2, selectbox_title)
+  selectbox:set_pos(-200, -100)
+  selectbox:set_alpha(0)
+  local press_left  = function(self) end
+  local press_right = function(self) end
+  selectbox:on_press_left(press_left)
+  selectbox:on_press_right(press_right)
+  --
   scrollbar_back    = view.new_sprite_from_sprite("cubes/cube1", panel2, 256, 16, false)
   scrollbar_front   = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
   scrollbar_title   = view.new_sprite_text_from_sprite("0", panel2, "Star Jedi", 24, true, 255, 255, 0)
   scrollbar_on_title= view.new_sprite_text_from_sprite("off", panel2, "Star Jedi", 24, true, 100, 100, 255)
-  --
-  arrow_left:set_pos(-200, -100)
-  arrow_right:set_pos(80, -100)
-  arrow_title:set_pos(-50, -90)
-  arrow_debug_text:set_pos(170, -90)
-  arrow_left:set_alpha(0)
-  arrow_right:set_alpha(0)
-  arrow_title:set_alpha(0)
-  arrow_debug_text:set_alpha(0)
-  arrow_left:set_depth(-1)
-  arrow_right:set_depth(-1)
-  --
   scrollbar_back:set_pos(-200, -40)
   scrollbar_front:set_pos(-200, -50)
   scrollbar_title:set_pos(100, -40)
@@ -194,31 +180,6 @@ function init_test_menu(self)
   scrollbar_title:set_alpha(0)
   scrollbar_on_title:set_alpha(0)
   scrollbar_front:set_depth(-100)
-  
-  --=======================LEFT&RIGHT ARROW=======================--
-  local arrow_left_press = function(self)
-    title_index = title_index - 1
-    if title_index < 1 then title_index = table.getn(title_tb) end
-    arrow_title:change_text(title_tb[title_index])
-    arrow_debug_text:change_text(tostring(title_index))
-  end
-  local arrow_right_press = function(self)
-    title_index = title_index + 1
-    if title_index > table.getn(title_tb) then title_index = 1 end
-    arrow_title:change_text(title_tb[title_index])
-    arrow_debug_text:change_text(tostring(title_index))
-  end
-  arrow_left:on_press( C.Input_get_trig1(C.Input_get_input1()), arrow_left_press )
-  arrow_right:on_press( C.Input_get_trig1(C.Input_get_input1()), arrow_right_press )
-  --
-  local arrow_left_focus = function(self) arrow_left:set_blue(0) end
-  local arrow_left_leave = function(self) arrow_left:set_blue(255) end
-  local arrow_right_focus = function(self) arrow_right:set_blue(0) end
-  local arrow_right_leave = function(self) arrow_right:set_blue(255) end
-  arrow_left:on_enter_focus( C.Input_get_input1(), arrow_left_focus )
-  arrow_left:on_leave_focus( C.Input_get_input1(), arrow_left_leave )
-  arrow_right:on_enter_focus( C.Input_get_input1(), arrow_right_focus )
-  arrow_right:on_leave_focus( C.Input_get_input1(), arrow_right_leave )
   
   --=======================SCROLLBAR=======================--
   local scrollbar_front_press   = function(self)
@@ -257,6 +218,11 @@ function init_test_menu(self)
   end
   scrollbar_front:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_down )
   
+  --=======================TEST SCROLLBAR=======================--
+  test_scroll = view.new_ui_scrollbar(test_scroll, panel2, 1000)
+  test_scroll:set_pos(-200, 0)
+  test_scroll:set_alpha(0)
+  
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
   local back_btn_press =  function(self)
@@ -268,22 +234,15 @@ function init_test_menu(self)
                             panel2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             ratio1:set_fade(0)
                             ratio2:set_fade(0)
-                            arrow_left:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            arrow_right:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            arrow_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            arrow_debug_text:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            selectbox:set_fade(0)
                             scrollbar_back:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             scrollbar_front:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             scrollbar_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
                             scrollbar_on_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            back_button:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            test_scroll:set_fade(0)
+                            back_btn:set_fade(0)
                           end
-  back_button:on_press( C.Input_get_trig1(C.Input_get_input1()), back_btn_press )
-  --
-  local back_btn_focus  = function(self)back_button:set_blue(255) end
-  local back_btn_leave  = function(self) back_button:set_blue(0) end
-  back_button:on_enter_focus( C.Input_get_input1(), back_btn_focus )
-  back_button:on_leave_focus( C.Input_get_input1(), back_btn_leave )
+  back_btn:on_press(back_btn_press)
   
   --=======================PANEL1 BUTTON2=======================--
   local tween_cb =  function(self) end
@@ -296,15 +255,13 @@ function init_test_menu(self)
                           panel2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio1:set_fade(255)
                           ratio2:set_fade(255)
-                          arrow_left:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_right:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_debug_text:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          selectbox:set_fade(255)
                           scrollbar_back:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           scrollbar_front:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           scrollbar_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           scrollbar_on_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          back_button:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          test_scroll:set_fade(255)
+                          back_btn:set_fade(255)
                         end
   button2:on_press( button2_press )
 end

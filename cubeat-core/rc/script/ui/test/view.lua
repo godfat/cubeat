@@ -188,9 +188,10 @@ end
 
 local function new_ui_button(button, text, sprite)
   button.title        = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
-  button.title:set_depth(-10)
   local button_focus  = function(self) button.title:set_blue(255) end
   local butotn_leave  = function(self) button.title:set_blue(0) end
+  button.title:set_depth(-10)
+  --
   button.title:on_enter_focus( C.Input_get_input1(), button_focus )
   button.title:on_leave_focus( C.Input_get_input1(), butotn_leave )
   --
@@ -204,7 +205,7 @@ local function new_ui_button(button, text, sprite)
                           button.title:set_alpha(alpha)
                         end
   button.set_fade     = function(self, alpha)
-                          local tween_cb =  function(self) end
+                          local tween_cb = function(self) end
                           button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         end
   button.on_press     = function(self, func)
@@ -214,16 +215,18 @@ local function new_ui_button(button, text, sprite)
 end
 
 local function new_ui_ratio(ratio, text, sprite)
-  ratio.is_down     = false
+  ratio.is_pressed  = false
   ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
   ratio.title       = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
   ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, false, 100, 100, 255)
+  ratio.icon:set_depth(-10)
+  ratio.title:set_depth(-10)
+  --
   local ratio_focus = function(self) ratio.title:set_blue(255) end
   local ratio_leave = function(self) ratio.title:set_blue(0) end
   ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
   ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
-  ratio.icon:set_depth(-10)
-  ratio.title:set_depth(-10)
+  --
   ratio.set_pos     = function(self, posx, posy)
                         ratio.icon:set_pos(posx, posy)
                         ratio.title:set_pos(posx+50, posy)
@@ -240,21 +243,21 @@ local function new_ui_ratio(ratio, text, sprite)
                         ratio.debug_text:set_alpha(alpha)
                       end
   ratio.set_fade    = function(self, alpha)
-                        local tween_cb =  function(self) end
+                        local tween_cb = function(self) end
                         ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                       end
   ratio.on_press    = function(self, func)
                         local callback  = function(self)
-                                            if ratio.is_down == false then
+                                            if ratio.is_pressed == false then
                                               ratio.icon:set_texture("cubes/cube-b-1")
-                                              ratio.is_down = true
+                                              ratio.is_pressed = true
                                             else
                                               ratio.icon:set_texture("cubes/cube1")
-                                              ratio.is_down = false
+                                              ratio.is_pressed = false
                                             end
-                                            ratio.debug_text:change_text(tostring(ratio.is_down))
+                                            ratio.debug_text:change_text(tostring(ratio.is_pressed))
                                             func(self)
                                           end
                         ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
@@ -263,11 +266,156 @@ local function new_ui_ratio(ratio, text, sprite)
   return ratio
 end
 
+local function new_ui_selectbox(box, sprite, tb)
+  box.index     = 1
+  box.title_tb  = tb
+  box.left      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
+  box.right     = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
+  box.title     = new_sprite_text_from_sprite(box.title_tb[box.index], sprite, "Star Jedi", 24, true, 255, 255, 0)
+  box.debug_text= new_sprite_text_from_sprite(tostring(box.index), sprite, "Star Jedi", 24, true, 100, 100, 255)
+  box.left:set_depth(-10)
+  box.right:set_depth(-10)
+  --
+  local left_focus  = function(self) box.left:set_blue(0) end
+  local left_leave  = function(self) box.left:set_blue(255) end
+  local right_focus = function(self) box.right:set_blue(0) end
+  local right_leave = function(self) box.right:set_blue(255) end
+  box.left:on_enter_focus( C.Input_get_input1(), left_focus )
+  box.left:on_leave_focus( C.Input_get_input1(), left_leave )
+  box.right:on_enter_focus( C.Input_get_input1(), right_focus )
+  box.right:on_leave_focus( C.Input_get_input1(), right_leave )
+  --
+  box.set_pos       = function(self, posx, posy)
+                        box.left:set_pos(posx, posy)
+                        box.right:set_pos(posx+280, posy)
+                        box.title:set_pos(posx+150, posy+10)
+                        box.debug_text:set_pos(posx+370, posy+10)
+                      end
+  box.set_visible   = function(self, visible)
+                        box.left:set_visible(visible)
+                        box.right:set_visible(visible)
+                        box.title:set_visible(visible)
+                        box.debug_text:set_visible(visible)
+                      end
+  box.set_alpha     = function(self, alpha)
+                        box.left:set_alpha(alpha)
+                        box.right:set_alpha(alpha)
+                        box.title:set_alpha(alpha)
+                        box.debug_text:set_alpha(alpha)
+                      end
+  box.set_fade      = function(self, alpha)
+                        local tween_cb = function(self) end
+                        box.left:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        box.right:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        box.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                      end
+  box.on_press_left = function(self, func)
+                        local callback  = function(self)
+                                            box.index = box.index - 1
+                                            if box.index < 1 then box.index = table.getn(box.title_tb) end
+                                            box.title:change_text(box.title_tb[box.index])
+                                            box.debug_text:change_text(tostring(box.index))
+                                            func(self)
+                                          end
+                        box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                      end
+  box.on_press_right= function(self, func)
+                        local callback  = function(self)
+                                            box.index = box.index + 1
+                                            if box.index > table.getn(box.title_tb) then box.index = 1 end
+                                            box.title:change_text(box.title_tb[box.index])
+                                            box.debug_text:change_text(tostring(box.index))
+                                            func(self)
+                                          end
+                        box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                      end
+  return box
+end
+
+local function new_ui_scrollbar(scrollbar, sprite, range)
+  scrollbar.parent      = sprite
+  scrollbar.range       = range
+  scrollbar.index       = 0
+  scrollbar.is_pressed  = false
+  scrollbar.line        = new_sprite_from_sprite("cubes/cube1", sprite, 256, 16, false)
+  scrollbar.button      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
+  scrollbar.title       = new_sprite_text_from_sprite("0", sprite, "Star Jedi", 24, true, 255, 255, 0)
+  scrollbar.debug_text  = new_sprite_text_from_sprite("off", sprite, "Star Jedi", 24, true, 100, 100, 255)
+  scrollbar.button:set_depth(-100)
+  --
+  local scrollbar_button_focus    = function(self) scrollbar.button:set_blue(0) end
+  local scrollbar_button_leave    = function(self)
+                                      scrollbar.button:set_blue(255)
+                                      scrollbar.is_pressed = false
+                                      scrollbar.debug_text:change_text("off")
+                                    end
+  scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus )
+  scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave )
+  --
+  local scrollbar_button_press    = function(self)
+                                      scrollbar.is_pressed = true
+                                      scrollbar.debug_text:change_text("on")
+                                    end
+  local scrollbar_button_release  = function(self)
+                                      scrollbar.is_pressed = false
+                                      scrollbar.debug_text:change_text("off")
+                                    end
+  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press )
+  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release )
+  --
+  local scrollbar_button_down     = function(self)
+    if scrollbar.is_pressed == true then
+      local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - 704
+      local pos_y = scrollbar.button:get_pos_y()
+      local bg_left = scrollbar.line:get_pos_x()
+      local bg_right= bg_left + scrollbar.line:get_size_x() - 32
+      if pos_x < bg_left then pos_x = bg_left end
+      if pos_x > bg_right then pos_x = bg_right end
+      scrollbar.button:set_pos(pos_x, pos_y)
+      --
+      local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-32) )
+      scrollbar.title:change_text(tostring(scroll_value))
+    end
+  end
+  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down )
+  --
+  scrollbar.set_pos     = function(self, posx, posy)
+                            scrollbar.line:set_pos(posx, posy+10)
+                            scrollbar.button:set_pos(posx, posy)
+                            scrollbar.title:set_pos(posx+300, posy+10)
+                            scrollbar.debug_text:set_pos(posx+370, posy+10)
+                          end
+  scrollbar.set_visible = function(self, visible)
+                            scrollbar.visible = visible
+                            scrollbar.line:set_visible(visible)
+                            scrollbar.button:set_visible(visible)
+                            scrollbar.title:set_visible(visible)
+                            scrollbar.debug_text:set_visible(visible)
+                          end
+  scrollbar.set_alpha   = function(self, alpha)
+                            scrollbar.line:set_alpha(alpha)
+                            scrollbar.button:set_alpha(alpha)
+                            scrollbar.title:set_alpha(alpha)
+                            scrollbar.debug_text:set_alpha(alpha)
+                          end
+  scrollbar.set_fade    = function(self, alpha)
+                            local tween_cb = function(self) end
+                            scrollbar.line:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                            scrollbar.button:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                            scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                            scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          end
+  return scrollbar
+end
+
 return {
   new_sprite                  = new_sprite,
   new_sprite_from_sprite      = new_sprite_from_sprite,
   new_sprite_text             = new_sprite_text,
   new_sprite_text_from_sprite = new_sprite_text_from_sprite,
   new_ui_button               = new_ui_button,
-  new_ui_ratio                = new_ui_ratio
+  new_ui_ratio                = new_ui_ratio,
+  new_ui_selectbox            = new_ui_selectbox,
+  new_ui_scrollbar            = new_ui_scrollbar
 }

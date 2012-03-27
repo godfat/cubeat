@@ -44,6 +44,9 @@ public:
     virtual Object& setPickable(bool const&);
     virtual Object& setLighting(bool const&);
 
+    //2012.03.27 This method is pretty expensive
+    virtual vec2    getScreenPos();
+
     virtual irr::scene::ISceneNode* body() const;
 
     template <class Accessor>

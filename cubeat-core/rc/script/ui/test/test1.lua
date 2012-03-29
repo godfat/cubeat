@@ -119,12 +119,7 @@ local ratio1 = {}
 local ratio2 = {}
 local selectbox = {}
 local selectbox_title = {"SELECT1", "SELECT2", "SELECT3"}
-local scrollbar_front,
-      scrollbar_back,
-      scrollbar_title
-local scrollbar_on = false
-local scrollbar_on_title
-local test_scroll = {}
+local scrollbar1 = {}
 
 function init_test_menu(self)
   --=======================INIT PANEL1=======================--
@@ -142,18 +137,18 @@ function init_test_menu(self)
   --=======================INIT PANEL2=======================--
   panel2  = view.new_sprite("area_rect", scene_, 512, 512, true)
   panel2:set_pos(688, 384)
-  panel2:set_alpha(0)
+  panel2:set_visible(false)
   --
   back_btn = view.new_ui_button(back_btn, "BACK", panel2)
   back_btn:set_pos(-200, 150)
-  back_btn:set_alpha(0)
+  back_btn:set_visible(false)
   --
   ratio1  = view.new_ui_ratio(ratio1, "ratio1", panel2)
   ratio2  = view.new_ui_ratio(ratio2, "ratio2", panel2)
   ratio1:set_pos(-200, -200)
   ratio2:set_pos(-200, -150)
-  ratio1:set_alpha(0)
-  ratio2:set_alpha(0)
+  ratio1:set_visible(false)
+  ratio2:set_visible(false)
   local ratio1_press = function(self) end
   local ratio2_press = function(self) end
   ratio1:on_press(ratio1_press)
@@ -161,106 +156,52 @@ function init_test_menu(self)
   --
   selectbox = view.new_ui_selectbox(selectbox, panel2, selectbox_title)
   selectbox:set_pos(-200, -100)
-  selectbox:set_alpha(0)
+  selectbox:set_visible(false)
   local press_left  = function(self) end
   local press_right = function(self) end
   selectbox:on_press_left(press_left)
   selectbox:on_press_right(press_right)
   --
-  scrollbar_back    = view.new_sprite_from_sprite("cubes/cube1", panel2, 256, 16, false)
-  scrollbar_front   = view.new_sprite_from_sprite("cubes/cube-b-1", panel2, 32, 32, false)
-  scrollbar_title   = view.new_sprite_text_from_sprite("0", panel2, "Star Jedi", 24, true, 255, 255, 0)
-  scrollbar_on_title= view.new_sprite_text_from_sprite("off", panel2, "Star Jedi", 24, true, 100, 100, 255)
-  scrollbar_back:set_pos(-200, -40)
-  scrollbar_front:set_pos(-200, -50)
-  scrollbar_title:set_pos(100, -40)
-  scrollbar_on_title:set_pos(170, -40)
-  scrollbar_back:set_alpha(0)
-  scrollbar_front:set_alpha(0)
-  scrollbar_title:set_alpha(0)
-  scrollbar_on_title:set_alpha(0)
-  scrollbar_front:set_depth(-100)
-  
-  --=======================SCROLLBAR=======================--
-  local scrollbar_front_press   = function(self)
-    scrollbar_on = true
-    scrollbar_on_title:change_text("on")
-  end
-  local scrollbar_front_release = function(self)
-    scrollbar_on = false
-    scrollbar_on_title:change_text("off")
-  end
-  scrollbar_front:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_press )
-  scrollbar_front:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_release )
-  --
-  local scrollbar_front_focus = function(self) scrollbar_front:set_blue(0) end
-  local scrollbar_front_leave = function(self)
-                                  scrollbar_front:set_blue(255)
-                                  scrollbar_on = false
-                                  scrollbar_on_title:change_text("off")
-                                end
-  scrollbar_front:on_enter_focus( C.Input_get_input1(), scrollbar_front_focus )
-  scrollbar_front:on_leave_focus( C.Input_get_input1(), scrollbar_front_leave )
-  --
-  local scrollbar_front_down  = function(self)
-    if scrollbar_on == true then
-      local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - 704
-      local pos_y = scrollbar_front:get_pos_y()
-      local bg_left = scrollbar_back:get_pos_x()
-      local bg_right= bg_left + scrollbar_back:get_size_x() - 32
-      if pos_x < bg_left then pos_x = bg_left end
-      if pos_x > bg_right then pos_x = bg_right end
-      scrollbar_front:set_pos(pos_x, pos_y)
-      --
-      local scroll_value = math.floor( (pos_x-bg_left)*100/(scrollbar_back:get_size_x()-32) )
-      scrollbar_title:change_text(tostring(scroll_value))
-    end
-  end
-  scrollbar_front:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_front_down )
-  
-  --=======================TEST SCROLLBAR=======================--
-  test_scroll = view.new_ui_scrollbar(test_scroll, panel2, 1000)
-  test_scroll:set_pos(-200, 0)
-  test_scroll:set_alpha(0)
+  scrollbar1 = view.new_ui_scrollbar(scrollbar1, panel2, 1000)
+  scrollbar1:set_pos(-200, -50)
+  scrollbar1:set_visible(false)
   
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
+  local tween_cb_panel2 = function(self) panel2:set_visible(false) end
   local back_btn_press =  function(self)
+                            panel1:set_visible(true)
                             panel1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                             button1:set_fade(255)
                             button2:set_fade(255)
                             button3:set_fade(255)
                             button4:set_fade(255)
-                            panel2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                            panel2:set_visible(true)
+                            panel2:on_tween_line_alpha(0, 500, 0, tween_cb_panel2, 0)
                             ratio1:set_fade(0)
                             ratio2:set_fade(0)
                             selectbox:set_fade(0)
-                            scrollbar_back:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            scrollbar_front:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            scrollbar_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            scrollbar_on_title:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                            test_scroll:set_fade(0)
+                            scrollbar1:set_fade(0)
                             back_btn:set_fade(0)
                           end
   back_btn:on_press(back_btn_press)
   
   --=======================PANEL1 BUTTON2=======================--
   local tween_cb =  function(self) end
+  local tween_cb_panel1 = function(self) panel1:set_visible(false) end
   local button2_press = function(self)
-                          panel1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          panel1:set_visible(true)
+                          panel1:on_tween_line_alpha(0, 500, 0, tween_cb_panel1, 0)
                           button1:set_fade(0)
                           button2:set_fade(0)
                           button3:set_fade(0)
                           button4:set_fade(0)
+                          panel2:set_visible(true)
                           panel2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           ratio1:set_fade(255)
                           ratio2:set_fade(255)
                           selectbox:set_fade(255)
-                          scrollbar_back:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          scrollbar_front:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          scrollbar_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          scrollbar_on_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          test_scroll:set_fade(255)
+                          scrollbar1:set_fade(255)
                           back_btn:set_fade(255)
                         end
   button2:on_press( button2_press )

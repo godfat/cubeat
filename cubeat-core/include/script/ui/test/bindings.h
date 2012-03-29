@@ -44,6 +44,8 @@ APIEXPORT int      Sprite_get_pos_x(pSprite*);
 APIEXPORT int      Sprite_get_pos_y(pSprite*);
 APIEXPORT int      Sprite_get_size_x(pSprite*);
 APIEXPORT int      Sprite_get_size_y(pSprite*);
+APIEXPORT int      Sprite_get_screen_pos_x(pSprite*);
+APIEXPORT int      Sprite_get_screen_pos_y(pSprite*);
 
 APIEXPORT void     Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);

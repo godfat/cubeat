@@ -102,6 +102,9 @@ Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
 Mt_Sprite.get_pos_y               = C.Sprite_get_pos_y
 Mt_Sprite.get_size_x              = C.Sprite_get_size_x
 Mt_Sprite.get_size_y              = C.Sprite_get_size_y
+Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
+Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
+
 
 -- local weakkey = {__mode = "k"}
 -- Mt_Sprite.__on_releases__ = setmetatable({}, weakkey)
@@ -205,8 +208,14 @@ local function new_ui_button(button, text, sprite)
                           button.title:set_alpha(alpha)
                         end
   button.set_fade     = function(self, alpha)
-                          local tween_cb = function(self) end
-                          button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          button:set_visible(true)
+                          if alpha == 0 then
+                            local tween_cb = function(self) button:set_visible(false) end
+                            button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          else
+                            local tween_cb = function(self) end
+                            button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          end
                         end
   button.on_press     = function(self, func)
                           button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
@@ -243,10 +252,20 @@ local function new_ui_ratio(ratio, text, sprite)
                         ratio.debug_text:set_alpha(alpha)
                       end
   ratio.set_fade    = function(self, alpha)
-                        local tween_cb = function(self) end
-                        ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                        ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                        ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        ratio:set_visible(true)
+                        if alpha == 0 then
+                          local tween_cb_icon = function(self) ratio.icon:set_visible(false) end
+                          local tween_cb_title= function(self) ratio.icon:set_visible(false) end
+                          local tween_cb_debug= function(self) ratio.icon:set_visible(false) end
+                          ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb_icon, 0)
+                          ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb_title, 0)
+                          ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb_debug, 0)
+                        else
+                          local tween_cb = function(self) end
+                          ratio.icon:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        end
                       end
   ratio.on_press    = function(self, func)
                         local callback  = function(self)
@@ -304,11 +323,23 @@ local function new_ui_selectbox(box, sprite, tb)
                         box.debug_text:set_alpha(alpha)
                       end
   box.set_fade      = function(self, alpha)
-                        local tween_cb = function(self) end
-                        box.left:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                        box.right:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                        box.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                        box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        box:set_visible(true)
+                        if alpha == 0 then
+                          local tween_cb_left   = function(self) box.left:set_visible(false) end
+                          local tween_cb_right  = function(self) box.right:set_visible(false) end
+                          local tween_cb_title  = function(self) box.title:set_visible(false) end
+                          local tween_cb_debug  = function(self) box.debug_text:set_visible(false) end
+                          box.left:on_tween_line_alpha(alpha, 500, 0, tween_cb_left, 0)
+                          box.right:on_tween_line_alpha(alpha, 500, 0, tween_cb_right, 0)
+                          box.title:on_tween_line_alpha(alpha, 500, 0, tween_cb_title, 0)
+                          box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb_debug, 0)
+                        else
+                          local tween_cb = function(self) end
+                          box.left:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          box.right:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          box.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                          box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                        end
                       end
   box.on_press_left = function(self, func)
                         local callback  = function(self)
@@ -342,9 +373,14 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   scrollbar.button      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
   scrollbar.title       = new_sprite_text_from_sprite("0", sprite, "Star Jedi", 24, true, 255, 255, 0)
   scrollbar.debug_text  = new_sprite_text_from_sprite("off", sprite, "Star Jedi", 24, true, 100, 100, 255)
+  scrollbar.line:set_depth(-50)
   scrollbar.button:set_depth(-100)
   --
-  local scrollbar_button_focus    = function(self) scrollbar.button:set_blue(0) end
+  local scrollbar_button_focus    = function(self)
+                                      scrollbar.button:set_blue(0)
+                                      scrollbar.is_pressed = true
+                                      scrollbar.debug_text:change_text("on")
+                                    end
   local scrollbar_button_leave    = function(self)
                                       scrollbar.button:set_blue(255)
                                       scrollbar.is_pressed = false
@@ -353,32 +389,35 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus )
   scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave )
   --
-  local scrollbar_button_press    = function(self)
-                                      scrollbar.is_pressed = true
-                                      scrollbar.debug_text:change_text("on")
-                                    end
-  local scrollbar_button_release  = function(self)
-                                      scrollbar.is_pressed = false
-                                      scrollbar.debug_text:change_text("off")
-                                    end
-  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press )
-  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release )
-  --
-  local scrollbar_button_down     = function(self)
+  local scrollbar_button_down = function(self)
     if scrollbar.is_pressed == true then
-      local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - 704
+      local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
       local pos_y = scrollbar.button:get_pos_y()
       local bg_left = scrollbar.line:get_pos_x()
-      local bg_right= bg_left + scrollbar.line:get_size_x() - 32
+      local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
       if pos_x < bg_left then pos_x = bg_left end
       if pos_x > bg_right then pos_x = bg_right end
       scrollbar.button:set_pos(pos_x, pos_y)
       --
-      local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-32) )
+      local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
       scrollbar.title:change_text(tostring(scroll_value))
     end
   end
   scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down )
+  --
+  local scrollbar_line_press = function(self)
+    local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
+    local pos_y = scrollbar.button:get_pos_y()
+    local bg_left = scrollbar.line:get_pos_x()
+    local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+    if pos_x < bg_left then pos_x = bg_left end
+    if pos_x > bg_right then pos_x = bg_right end
+    scrollbar.button:set_pos(pos_x, pos_y)
+    --
+    local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+    scrollbar.title:change_text(tostring(scroll_value))
+  end
+  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_line_press )
   --
   scrollbar.set_pos     = function(self, posx, posy)
                             scrollbar.line:set_pos(posx, posy+10)
@@ -387,7 +426,6 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
                             scrollbar.debug_text:set_pos(posx+370, posy+10)
                           end
   scrollbar.set_visible = function(self, visible)
-                            scrollbar.visible = visible
                             scrollbar.line:set_visible(visible)
                             scrollbar.button:set_visible(visible)
                             scrollbar.title:set_visible(visible)
@@ -400,11 +438,24 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
                             scrollbar.debug_text:set_alpha(alpha)
                           end
   scrollbar.set_fade    = function(self, alpha)
-                            local tween_cb = function(self) end
-                            scrollbar.line:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                            scrollbar.button:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                            scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
-                            scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                            scrollbar:set_visible(true)
+                            if alpha == 0 then
+                              local tween_cb_line   = function(self) scrollbar.line:set_visible(false) end
+                              local tween_cb_button = function(self) scrollbar.button:set_visible(false) end
+                              local tween_cb_title  = function(self) scrollbar.title:set_visible(false) end
+                              local tween_cb_debug  = function(self) scrollbar.debug_text:set_visible(false) end
+                              scrollbar.line:on_tween_line_alpha(alpha, 500, 0, tween_cb_line, 0)
+                              scrollbar.button:on_tween_line_alpha(alpha, 500, 0, tween_cb_button, 0)
+                              scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb_title, 0)
+                              scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb_debug, 0)
+
+                            else
+                              local tween_cb = function(self) end
+                              scrollbar.line:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                              scrollbar.button:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                              scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                              scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
+                            end
                           end
   return scrollbar
 end

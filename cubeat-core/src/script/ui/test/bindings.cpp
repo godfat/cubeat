@@ -145,6 +145,14 @@ int Sprite_get_size_y(pSprite* self) {
     return (int)((*self)->get<Size2D>().Y);
 }
 
+int Sprite_get_screen_pos_x(pSprite* self) {
+    return (int)((*self)->getScreenPos().X);
+}
+
+int Sprite_get_screen_pos_y(pSprite* self) {
+    return (int)((*self)->getScreenPos().Y);
+}
+
 void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
     cb(&sp);
 }

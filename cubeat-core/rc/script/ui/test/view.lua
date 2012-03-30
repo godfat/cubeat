@@ -231,6 +231,10 @@ local function new_ui_button(button, text, sprite)
                             button.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                           end
                         end
+  button.moveto       = function(self, posx, posy, duration, delay)
+                          local tween_cb = function(self) end
+                          button.title:on_tween_line_pos(posx, posy, duration, 0, tween_cb, delay)
+                        end
   button.on_press     = function(self, func)
                           button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
                         end
@@ -293,6 +297,22 @@ local function new_ui_ratio(ratio, text, sprite)
                           ratio.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                           ratio.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         end
+                      end
+  ratio.set_pressed = function(self, pressed)
+                        if pressed == true then
+                          ratio.icon:set_texture("cubes/cube-b-1")
+                          ratio.is_pressed = true
+                        else
+                          ratio.icon:set_texture("cubes/cube1")
+                          ratio.is_pressed = false
+                        end
+                        ratio.debug_text:change_text(tostring(ratio.is_pressed))
+                      end
+  ratio.moveto      = function(self, posx, posy, duration, delay)
+                        local tween_cb = function(self) end
+                        ratio.icon:on_tween_line_pos(posx, posy, duration, 0, tween_cb, delay)
+                        ratio.title:on_tween_line_pos(posx+50, posy-5, duration, 0, tween_cb, delay)
+                        ratio.debug_text:on_tween_line_pos(posx+370, posy+10, duration, 0, tween_cb, delay)
                       end
   ratio.on_press    = function(self, func)
                         local callback  = function(self)
@@ -383,6 +403,20 @@ local function new_ui_selectbox(box, sprite, tb)
                           box.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                           box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         end
+                      end
+  box.set_index     = function(self, index)
+                        if index < 0 then return end
+                        if index > table.getn(box.title_tb) then return end
+                        box.index = index
+                        box.title:change_text(box.title_tb[box.index])
+                        box.debug_text:change_text(tostring(box.index))
+                      end
+  box.moveto        = function(self, posx, posy, duration, delay)
+                        local tween_cb = function(self) end
+                        box.left:on_tween_line_pos(posx, posy, duration, 0, tween_cb, delay)
+                        box.right:on_tween_line_pos(posx+280, posy, duration, 0, tween_cb, delay)
+                        box.title:on_tween_line_pos(posx+150, posy+10, duration, 0, tween_cb, delay)
+                        box.debug_text:on_tween_line_pos(posx+370, posy+10, duration, 0, tween_cb, delay)
                       end
   box.left_on_press = function(self, func)
                         local callback  = function(self)

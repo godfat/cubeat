@@ -170,6 +170,13 @@ Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 
+Mt_SpriteText.get_pos_x           = C.SpriteText_get_pos_x
+Mt_SpriteText.get_pos_y           = C.SpriteText_get_pos_y
+Mt_SpriteText.get_size_x          = C.SpriteText_get_size_x
+Mt_SpriteText.get_size_y          = C.SpriteText_get_size_y
+Mt_SpriteText.get_screen_pos_x    = C.SpriteText_get_screen_pos_x
+Mt_SpriteText.get_screen_pos_y    = C.SpriteText_get_screen_pos_y
+
 Mt_SpriteText.on_release          = C.SpriteText_on_release
 Mt_SpriteText.on_press            = C.SpriteText_on_press
 Mt_SpriteText.on_up               = C.SpriteText_on_up
@@ -177,7 +184,14 @@ Mt_SpriteText.on_down             = C.SpriteText_on_down
 Mt_SpriteText.on_enter_focus      = C.SpriteText_on_enter_focus
 Mt_SpriteText.on_leave_focus      = C.SpriteText_on_leave_focus
 
-Mt_SpriteText.on_tween_line_alpha = C.SpriteText_on_tween_line_alpha
+Mt_SpriteText.on_tween_line_pos           = C.SpriteText_on_tween_line_pos
+Mt_SpriteText.on_tween_line_rotation      = C.SpriteText_on_tween_line_rotation
+Mt_SpriteText.on_tween_line_scale         = C.SpriteText_on_tween_line_scale
+Mt_SpriteText.on_tween_line_color_diffuse = C.SpriteText_on_tween_line_color_diffuse
+Mt_SpriteText.on_tween_line_red           = C.SpriteText_on_tween_line_red
+Mt_SpriteText.on_tween_line_green         = C.SpriteText_on_tween_line_green
+Mt_SpriteText.on_tween_line_blue          = C.SpriteText_on_tween_line_blue
+Mt_SpriteText.on_tween_line_alpha         = C.SpriteText_on_tween_line_alpha
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
@@ -192,11 +206,11 @@ end
 local function new_ui_button(button, text, sprite)
   button.title        = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
   local button_focus  = function(self) button.title:set_blue(255) end
-  local butotn_leave  = function(self) button.title:set_blue(0) end
+  local button_leave  = function(self) button.title:set_blue(0) end
   button.title:set_depth(-10)
   --
   button.title:on_enter_focus( C.Input_get_input1(), button_focus )
-  button.title:on_leave_focus( C.Input_get_input1(), butotn_leave )
+  button.title:on_leave_focus( C.Input_get_input1(), button_leave )
   --
   button.set_pos      = function(self, posx, posy)
                           button.title:set_pos(posx, posy)
@@ -227,7 +241,7 @@ local function new_ui_ratio(ratio, text, sprite)
   ratio.is_pressed  = false
   ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
   ratio.title       = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
-  ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, false, 100, 100, 255)
+  ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, true, 100, 100, 255)
   ratio.icon:set_depth(-10)
   ratio.title:set_depth(-10)
   --
@@ -251,8 +265,8 @@ local function new_ui_ratio(ratio, text, sprite)
   --
   ratio.set_pos     = function(self, posx, posy)
                         ratio.icon:set_pos(posx, posy)
-                        ratio.title:set_pos(posx+50, posy)
-                        ratio.debug_text:set_pos(posx+330, posy)
+                        ratio.title:set_pos(posx+50, posy-5)
+                        ratio.debug_text:set_pos(posx+370, posy+10)
                       end
   ratio.set_visible = function(self, visible)
                         ratio.icon:set_visible(visible)
@@ -370,7 +384,7 @@ local function new_ui_selectbox(box, sprite, tb)
                           box.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                         end
                       end
-  box.on_press_left = function(self, func)
+  box.left_on_press = function(self, func)
                         local callback  = function(self)
                                             box.index = box.index - 1
                                             if box.index < 1 then box.index = table.getn(box.title_tb) end
@@ -380,7 +394,7 @@ local function new_ui_selectbox(box, sprite, tb)
                                           end
                         box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
-  box.on_press_right= function(self, func)
+  box.right_on_press= function(self, func)
                         local callback  = function(self)
                                             box.index = box.index + 1
                                             if box.index > table.getn(box.title_tb) then box.index = 1 end
@@ -450,7 +464,10 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   --
   scrollbar.set_pos     = function(self, posx, posy)
                             scrollbar.line:set_pos(posx, posy+10)
-                            scrollbar.button:set_pos(posx, posy)
+                            local bg_left = scrollbar.line:get_pos_x()
+                            local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+                            local btn_posx = ( scrollbar.index / scrollbar.range ) * (bg_right - bg_left) + bg_left
+                            scrollbar.button:set_pos(btn_posx, posy)
                             scrollbar.title:set_pos(posx+300, posy+10)
                             scrollbar.debug_text:set_pos(posx+370, posy+10)
                           end
@@ -485,6 +502,17 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
                               scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                               scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                             end
+                          end
+  scrollbar.set_index   = function(self, index)
+                            if index < 0 then index = 0 end
+                            if index > scrollbar.range then index = scrollbar.range end
+                            local bg_left = scrollbar.line:get_pos_x()
+                            local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+                            local posx = ( index / scrollbar.range ) * (bg_right - bg_left) + bg_left
+                            local posy = scrollbar.button:get_pos_y()
+                            scrollbar.button:set_pos(posx, posy)
+                            scrollbar.title:change_text(tostring(index))
+                            scrollbar.index = index
                           end
   scrollbar.on_press    = function(self, func)
                             local callback = function(self)

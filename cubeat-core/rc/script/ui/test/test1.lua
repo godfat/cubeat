@@ -120,6 +120,7 @@ local ratio2 = {}
 local selectbox1 = {}
 local selectbox_title = {"SELECT1", "SELECT2", "SELECT3"}
 local scrollbar1 = {}
+local title_image
 
 function init_test_menu(self)
   --=======================INIT PANEL1=======================--
@@ -162,21 +163,31 @@ function init_test_menu(self)
   selectbox1:set_pos(-200, -100)
   selectbox1:set_alpha(0)
   selectbox1:set_visible(false)
-  local press_left  = function(self) print("press left button") end
-  local press_right = function(self) print("press right button") end
-  selectbox1:on_press_left(press_left)
-  selectbox1:on_press_right(press_right)
+  local left_press  = function(self) print("press left button") end
+  local right_press = function(self) print("press right button") end
+  selectbox1:left_on_press(left_press)
+  selectbox1:right_on_press(right_press)
   --
-  scrollbar1 = view.new_ui_scrollbar(scrollbar1, panel2, 1000)
+  title_image = view.new_sprite_from_sprite("title", panel2, 128, 128, false)
+  title_image:set_pos(-200, 0)
+  title_image:set_alpha(0)
+  title_image:set_visible(false)
+  --
+  scrollbar1 = view.new_ui_scrollbar(scrollbar1, panel2, 255)
+  scrollbar1:set_index(255)
   scrollbar1:set_pos(-200, -50)
   scrollbar1:set_alpha(0)
   scrollbar1:set_visible(false)
-  local press_scrollbar = function(self) print("the index is "..tostring(scrollbar1.index)) end
-  scrollbar1:on_press(press_scrollbar)
+  local scrollbar_press = function(self)
+                            print("the index is "..tostring(scrollbar1.index))
+                            title_image:set_blue(scrollbar1.index)
+                          end
+  scrollbar1:on_press(scrollbar_press)
   
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
   local tween_cb_panel2 = function(self) panel2:set_visible(false) end
+  local tween_cb_title  = function(self) title_image:set_visible(false) end
   local back_btn_press =  function(self)
                             panel1:set_visible(true)
                             panel1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
@@ -189,6 +200,8 @@ function init_test_menu(self)
                             ratio1:set_fade(0)
                             ratio2:set_fade(0)
                             selectbox1:set_fade(0)
+                            title_image:set_visible(true)
+                            title_image:on_tween_line_alpha(0, 500, 0, tween_cb_title, 0)
                             scrollbar1:set_fade(0)
                             back_btn:set_fade(0)
                           end
@@ -209,6 +222,8 @@ function init_test_menu(self)
                           ratio1:set_fade(255)
                           ratio2:set_fade(255)
                           selectbox1:set_fade(255)
+                          title_image:set_visible(true)
+                          title_image:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
                           scrollbar1:set_fade(255)
                           back_btn:set_fade(255)
                         end

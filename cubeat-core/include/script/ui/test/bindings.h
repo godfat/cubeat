@@ -80,6 +80,14 @@ APIEXPORT void          SpriteText_set_green(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_blue(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_alpha(pSpriteText*, int);
 APIEXPORT void          SpriteText_set_visible(pSpriteText*, bool);
+
+APIEXPORT int           SpriteText_get_pos_x(pSpriteText*);
+APIEXPORT int           SpriteText_get_pos_y(pSpriteText*);
+APIEXPORT int           SpriteText_get_size_x(pSpriteText*);
+APIEXPORT int           SpriteText_get_size_y(pSpriteText*);
+APIEXPORT int           SpriteText_get_screen_pos_x(pSpriteText*);
+APIEXPORT int           SpriteText_get_screen_pos_y(pSpriteText*);
+
 APIEXPORT void          SpriteText_on_release(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_press(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_up(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
@@ -87,6 +95,13 @@ APIEXPORT void          SpriteText_on_down(pSpriteText* self, Button const*, PSC
 APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
+APIEXPORT void          SpriteText_on_tween_line_pos(pSpriteText* self, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_rotation(pSpriteText* self, double, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_scale(pSpriteText* self, double, double, double, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_color_diffuse(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_red(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_green(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void          SpriteText_on_tween_line_blue(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
 APIEXPORT void          SpriteText_on_tween_line_alpha(pSpriteText* self, int, double, int, PSC_OBJCALLBACK, int);
 
 APIEXPORT Input*    Input_get_input1();

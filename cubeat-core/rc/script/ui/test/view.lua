@@ -236,6 +236,19 @@ local function new_ui_ratio(ratio, text, sprite)
   ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
   ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
   --
+  local ratio_press = function(self)
+                        if ratio.is_pressed == false then
+                          ratio.icon:set_texture("cubes/cube-b-1")
+                          ratio.is_pressed = true
+                        else
+                          ratio.icon:set_texture("cubes/cube1")
+                          ratio.is_pressed = false
+                        end
+                        ratio.debug_text:change_text(tostring(ratio.is_pressed))
+                      end
+  ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
+  ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
+  --
   ratio.set_pos     = function(self, posx, posy)
                         ratio.icon:set_pos(posx, posy)
                         ratio.title:set_pos(posx+50, posy)
@@ -304,6 +317,22 @@ local function new_ui_selectbox(box, sprite, tb)
   box.right:on_enter_focus( C.Input_get_input1(), right_focus )
   box.right:on_leave_focus( C.Input_get_input1(), right_leave )
   --
+  local left_press  = function(self)
+                        box.index = box.index - 1
+                        if box.index < 1 then box.index = table.getn(box.title_tb) end
+                        box.title:change_text(box.title_tb[box.index])
+                        box.debug_text:change_text(tostring(box.index))
+                      end
+  box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), left_press )
+  --
+  local right_press = function(self)
+                        box.index = box.index + 1
+                        if box.index > table.getn(box.title_tb) then box.index = 1 end
+                        box.title:change_text(box.title_tb[box.index])
+                        box.debug_text:change_text(tostring(box.index))
+                      end
+  box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), right_press )
+  --
   box.set_pos       = function(self, posx, posy)
                         box.left:set_pos(posx, posy)
                         box.right:set_pos(posx+280, posy)
@@ -368,7 +397,7 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   scrollbar.parent      = sprite
   scrollbar.range       = range
   scrollbar.index       = 0
-  scrollbar.is_pressed  = false
+  scrollbar.is_focus    = false
   scrollbar.line        = new_sprite_from_sprite("cubes/cube1", sprite, 256, 16, false)
   scrollbar.button      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
   scrollbar.title       = new_sprite_text_from_sprite("0", sprite, "Star Jedi", 24, true, 255, 255, 0)
@@ -378,19 +407,19 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   --
   local scrollbar_button_focus    = function(self)
                                       scrollbar.button:set_blue(0)
-                                      scrollbar.is_pressed = true
+                                      scrollbar.is_focus = true
                                       scrollbar.debug_text:change_text("on")
                                     end
   local scrollbar_button_leave    = function(self)
                                       scrollbar.button:set_blue(255)
-                                      scrollbar.is_pressed = false
+                                      scrollbar.is_focus = false
                                       scrollbar.debug_text:change_text("off")
                                     end
   scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus )
   scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave )
   --
   local scrollbar_button_down = function(self)
-    if scrollbar.is_pressed == true then
+    if scrollbar.is_focus == true then
       local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
       local pos_y = scrollbar.button:get_pos_y()
       local bg_left = scrollbar.line:get_pos_x()
@@ -399,8 +428,8 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
       if pos_x > bg_right then pos_x = bg_right end
       scrollbar.button:set_pos(pos_x, pos_y)
       --
-      local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-      scrollbar.title:change_text(tostring(scroll_value))
+      scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+      scrollbar.title:change_text(tostring(scrollbar.index))
     end
   end
   scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down )
@@ -414,8 +443,8 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
     if pos_x > bg_right then pos_x = bg_right end
     scrollbar.button:set_pos(pos_x, pos_y)
     --
-    local scroll_value = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-    scrollbar.title:change_text(tostring(scroll_value))
+    scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+    scrollbar.title:change_text(tostring(scrollbar.index))
   end
   scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_line_press )
   --
@@ -456,6 +485,24 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
                               scrollbar.title:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                               scrollbar.debug_text:on_tween_line_alpha(alpha, 500, 0, tween_cb, 0)
                             end
+                          end
+  scrollbar.on_press    = function(self, func)
+                            local callback = function(self)
+                              if scrollbar.is_focus == true then
+                                local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
+                                local pos_y = scrollbar.button:get_pos_y()
+                                local bg_left = scrollbar.line:get_pos_x()
+                                local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+                                if pos_x < bg_left then pos_x = bg_left end
+                                if pos_x > bg_right then pos_x = bg_right end
+                                scrollbar.button:set_pos(pos_x, pos_y)
+                                --
+                                scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+                                scrollbar.title:change_text(tostring(scrollbar.index))
+                              end
+                              func(self)
+                            end
+                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), callback )
                           end
   return scrollbar
 end

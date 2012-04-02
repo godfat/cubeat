@@ -445,6 +445,7 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   scrollbar.parent      = sprite
   scrollbar.range       = range
   scrollbar.index       = 0
+  scrollbar.is_pressed  = false
   scrollbar.is_focus    = false
   scrollbar.line        = new_sprite_from_sprite("cubes/cube1", sprite, 256, 16, false)
   scrollbar.button      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
@@ -452,6 +453,15 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
   scrollbar.debug_text  = new_sprite_text_from_sprite("off", sprite, "Star Jedi", 24, true, 100, 100, 255)
   scrollbar.line:set_depth(-50)
   scrollbar.button:set_depth(-100)
+  --
+  local scrollbar_button_press    = function(self)
+                                      scrollbar.is_pressed = true
+                                    end
+  local scrollbar_button_release  = function(self)
+                                      scrollbar.is_pressed = false
+                                    end
+  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press )
+  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release )
   --
   local scrollbar_button_focus    = function(self)
                                       scrollbar.button:set_blue(0)
@@ -462,6 +472,20 @@ local function new_ui_scrollbar(scrollbar, sprite, range)
                                       scrollbar.button:set_blue(255)
                                       scrollbar.is_focus = false
                                       scrollbar.debug_text:change_text("off")
+                                      --
+                                      if scrollbar.is_pressed == true then
+                                        local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
+                                        local pos_y = scrollbar.button:get_pos_y()
+                                        local bg_left = scrollbar.line:get_pos_x()
+                                        local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+                                        if pos_x < bg_left then pos_x = bg_left end
+                                        if pos_x > bg_right then pos_x = bg_right end
+                                        scrollbar.button:set_pos(pos_x, pos_y)
+                                        --
+                                        scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+                                        scrollbar.title:change_text(tostring(scrollbar.index))
+                                        scrollbar.is_pressed = false
+                                      end
                                     end
   scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus )
   scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave )

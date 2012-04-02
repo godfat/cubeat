@@ -203,7 +203,8 @@ local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, 
   return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 end
 
-local function new_ui_button(button, text, sprite)
+local function new_ui_button(text, sprite)
+  local button = {}
   button.title        = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
   local button_focus  = function(self) button.title:set_blue(255) end
   local button_leave  = function(self) button.title:set_blue(0) end
@@ -241,7 +242,8 @@ local function new_ui_button(button, text, sprite)
   return button
 end
 
-local function new_ui_ratio(ratio, text, sprite)
+local function new_ui_ratio(text, sprite)
+  local ratio = {}
   ratio.is_pressed  = false
   ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
   ratio.title       = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
@@ -332,7 +334,8 @@ local function new_ui_ratio(ratio, text, sprite)
   return ratio
 end
 
-local function new_ui_selectbox(box, sprite, tb)
+local function new_ui_selectbox(sprite, tb)
+  box = {}
   box.index     = 1
   box.title_tb  = tb
   box.left      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
@@ -441,7 +444,8 @@ local function new_ui_selectbox(box, sprite, tb)
   return box
 end
 
-local function new_ui_scrollbar(scrollbar, sprite, range)
+local function new_ui_scrollbar(sprite, range)
+  scrollbar = {}
   scrollbar.parent      = sprite
   scrollbar.range       = range
   scrollbar.index       = 0

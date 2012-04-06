@@ -1,6 +1,7 @@
 
 local ffi      = require 'ffi'
 local helper   = require 'rc/script/helper'
+local msgpack  = require 'rc/script/ui/test/luajit-msgpack-pure'
 local basepath = helper.basepath
 local C        = ffi.C
 
@@ -597,13 +598,37 @@ local function new_ui_scrollbar(sprite, range)
   return scrollbar
 end
 
+local function load_option(option_data)
+  local file = io.open("game_option", "r")
+  if file == nil then
+    io.output("game_option")
+    io.close()
+  else
+    local offset
+    offset, option_data = msgpack.unpack( file:read() )
+    file:close()
+  end
+  return option_data
+end
+
+local function save_option(option_data)
+  local s = msgpack.pack(option_data)
+  local file = io.open("game_option", "w")
+  file:write(s)
+  file:close()
+end
+
 return {
   new_sprite                  = new_sprite,
   new_sprite_from_sprite      = new_sprite_from_sprite,
   new_sprite_text             = new_sprite_text,
   new_sprite_text_from_sprite = new_sprite_text_from_sprite,
+  --
   new_ui_button               = new_ui_button,
   new_ui_ratio                = new_ui_ratio,
   new_ui_selectbox            = new_ui_selectbox,
-  new_ui_scrollbar            = new_ui_scrollbar
+  new_ui_scrollbar            = new_ui_scrollbar,
+  --
+  load_option                 = load_option,
+  save_option                 = save_option
 }

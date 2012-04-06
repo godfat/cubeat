@@ -3,6 +3,7 @@ local ffi      = require 'ffi'
 local C        = ffi.C
 
 local view     = require 'rc/script/ui/test/view'
+local msgpack  = require 'rc/script/ui/test/luajit-msgpack-pure'
 
 -------------------- scripts above this line should be separated -----------------
 ----------------------------------------------------------------------------------
@@ -121,8 +122,16 @@ local selectbox1 = {}
 local selectbox_title = {"SELECT1", "SELECT2", "SELECT3"}
 local scrollbar1 = {}
 local title_image
+local option_data = {
+                      ratio1 = false,
+                      ratio2 = false,
+                      scrollbar1_index = 255,
+                      selectbox_index = 1
+                    }
 
 function init_test_menu(self)
+  option_data = view.load_option(option_data)
+  view.save_option(option_data)
   --=======================INIT PANEL1=======================--
   panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
   panel1:set_pos(688, 384)
@@ -148,23 +157,44 @@ function init_test_menu(self)
   --
   ratio1  = view.new_ui_ratio("ratio1", panel2)
   ratio2  = view.new_ui_ratio("ratio2", panel2)
+  ratio1:set_pressed(option_data["ratio1"])
+  ratio2:set_pressed(option_data["ratio2"])
   ratio1:set_pos(-200, -200)
   ratio2:set_pos(-200, -150)
   ratio1:set_alpha(0)
   ratio2:set_alpha(0)
   ratio1:set_visible(false)
   ratio2:set_visible(false)
-  local ratio1_press = function(self) print("press ratio1") end
-  local ratio2_press = function(self) print("press ratio2") end
+  local ratio1_press = function(self)
+                        print("press ratio1")
+                        option_data["ratio1"] = ratio1.is_pressed
+                        view.save_option(option_data)
+                       end
+  local ratio2_press = function(self)
+                        print("press ratio2")
+                        option_data["ratio2"] = ratio2.is_pressed
+                        view.save_option(option_data)
+                       end
   ratio1:on_press(ratio1_press)
   ratio2:on_press(ratio2_press)
   --
   selectbox1 = view.new_ui_selectbox(panel2, selectbox_title)
+  selectbox1:set_index(option_data["selectbox_index"])
   selectbox1:set_pos(-200, -100)
   selectbox1:set_alpha(0)
   selectbox1:set_visible(false)
-  local left_press  = function(self) print("press left button") end
-  local right_press = function(self) print("press right button") end
+  local left_press  = function(self)
+                        print("press left button")
+                        --
+                        option_data["selectbox_index"] = selectbox1.index
+                        view.save_option(option_data)
+                      end
+  local right_press = function(self)
+                        print("press right button")
+                        --
+                        option_data["selectbox_index"] = selectbox1.index
+                        view.save_option(option_data)
+                      end
   selectbox1:left_on_press(left_press)
   selectbox1:right_on_press(right_press)
   --
@@ -174,13 +204,16 @@ function init_test_menu(self)
   title_image:set_visible(false)
   --
   scrollbar1 = view.new_ui_scrollbar(panel2, 255)
-  scrollbar1:set_index(255)
+  scrollbar1:set_index(option_data["scrollbar1_index"])
   scrollbar1:set_pos(-200, -50)
   scrollbar1:set_alpha(0)
   scrollbar1:set_visible(false)
   local scrollbar_press = function(self)
                             print("the index is "..tostring(scrollbar1.index))
                             title_image:set_blue(scrollbar1.index)
+                            --
+                            option_data["scrollbar1_index"] = scrollbar1.index
+                            view.save_option(option_data)
                           end
   scrollbar1:on_press(scrollbar_press)
   

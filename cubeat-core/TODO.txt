@@ -32,11 +32,25 @@ WIP  4. A better way to present the UI programatically (usually means the presen
   5. We need more resolution options and more configs for different resolutions.
 
 WIP  6. Lack of networking capability.
-     -- enet + Lua modules (using lua-enet)
      -- a matcher (doing hole-punching as well) in pure lua(jit) 
      -- Preparation for networking
-       -- "no-model" version of Map and Cube.
        -- client synchonization of Map states and Cube states
+     -- memo 
+        ..... in presenter::Game .... 
+        ... blah blah ... 
+        1. still have to subscribe callbacks cuz scope problem. 
+           net::Manager::i().on_matched( tr1::bind(...) )
+           net::Manager::i().on_connected( tr1::bind(...) )
+           net::Manager::i().on_received( tr1::bind(...) ) 
+        2. net::Manager::i().start_lua() //use two mockup callbacks for Server/Client 
+        3. handles on_matched()
+        4. handles on_connected()
+        5. Lua starts calling poll_from_C() 
+        6. handles on_received() (not yet implemented) and presenter::Game parses data,
+           this can be refactored when message types start to bloat
+        7. when you want to send message: 
+           net::Manager::i().send(s) //test plain text first, and then byte stream 
+           let s be messy's ok for now. let's see how I can refactor that.
 
 SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on
      view::Scene, How do I fix this?

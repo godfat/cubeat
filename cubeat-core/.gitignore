@@ -63,6 +63,7 @@ src/model/detail/AIUtils.cpp
 src/model/state/Dropping.cpp
 src/model/state/Dying.cpp
 src/model/state/State.cpp
+src/model/state/Sinking.cpp
 src/model/state/Waiting.cpp
 src/presenter/Cube.cpp
 src/presenter/Map.cpp

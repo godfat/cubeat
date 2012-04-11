@@ -77,10 +77,11 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
 }
 
 void Map::speedup(){
-    if( map_setting()->speed() < 400.f )
-        map_setting()->speed( map_setting()->speed() + 10.f );
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up more frequently
-        std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
+    if( map_setting()->sink_speed() < 400.0 ) {
+        map_setting()->sink_speed( map_setting()->sink_speed() + 10.0 );
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
+    }
 }
 
 pMap <% debug_hook 'Map::init' do %>(){
@@ -142,7 +143,8 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                       get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
                    drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
-                   sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) );
+                   sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
+                     update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

@@ -29,6 +29,7 @@ pSceneObject SceneObject::init(pObject const& parent)
     oss << Conf::i().expand("rc/model/") << name_ << ".x";
     IMesh* mesh = smgr_->getMesh( oss.str().c_str() )->getMesh(0);
     body_ = smgr_->addMeshSceneNode( mesh, parent->body() );
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
 
     //test
     body_->grab();

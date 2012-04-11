@@ -33,7 +33,39 @@
 					<Add library="winmm" />
 					<Add library="user32" />
 					<Add library="boost_thread-mgw46-mt-1_48" />
-					<Add library="boost_date_time-mgw46-mt-1_48" />
+					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
+					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
+					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
+					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
+					<Add directory="C:\lang\luarocks\2.0" />
+				</Linker>
+			</Target>
+			<Target title="Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin\Debug\object" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-fno-fast-math" />
+					<Add option="-Wno-missing-braces" />
+					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-DNDEBUG" />
+					<Add directory="include" />
+					<Add directory="lib" />
+					<Add directory="C:\local_gitrepo\Irrlicht\include" />
+					<Add directory="C:\lang\luarocks\2.0\include" />
+					<Add directory="C:\libs\cpp\openal-soft\include" />
+					<Add directory="C:\libs\cpp\alure\include" />
+				</Compiler>
+				<Linker>
+					<Add library="Irrlicht" />
+					<Add library="winmm" />
+					<Add library="user32" />
+					<Add library="boost_thread-mgw46-mt-1_48" />
 					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
@@ -213,9 +245,7 @@
 		<Unit filename="rc\config\presenter\mainmenu.zzml" />
 		<Unit filename="rc\config\presenter\opening.zzml" />
 		<Unit filename="rc\config\presenter\transitioner.zzml" />
-		<Unit filename="rc\config\puzzle.zzml" />
 		<Unit filename="rc\config\puzzle_stage.txt" />
-		<Unit filename="rc\config\puzzles.zzml" />
 		<Unit filename="rc\config\puzzles\level04.zzml" />
 		<Unit filename="rc\config\puzzles\level05.zzml" />
 		<Unit filename="rc\config\puzzles\level06.zzml" />
@@ -233,8 +263,6 @@
 		<Unit filename="rc\config\stage\jungle.zzml" />
 		<Unit filename="rc\config\stage\school.zzml" />
 		<Unit filename="rc\config\stage\street.zzml" />
-		<Unit filename="rc\config\test.zml" />
-		<Unit filename="rc\config\test2.zml" />
 		<Unit filename="rc\config\test_stage.zzml" />
 		<Unit filename="rc\config\tmp\puzzle.zzml" />
 		<Unit filename="rc\config\ui\in_game_2p_layout.zzml" />
@@ -292,7 +320,8 @@
 		<Unit filename="src\model\state\Dying.cpp" />
 		<Unit filename="src\model\state\Dying.cpp.eruby" />
 		<Unit filename="src\model\state\Exploding.cpp.eruby.old" />
-		<Unit filename="src\model\state\Sinking.cpp.eruby.old" />
+		<Unit filename="src\model\state\Sinking.cpp" />
+		<Unit filename="src\model\state\Sinking.cpp.eruby" />
 		<Unit filename="src\model\state\State.cpp" />
 		<Unit filename="src\model\state\State.cpp.eruby" />
 		<Unit filename="src\model\state\Waiting.cpp" />

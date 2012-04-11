@@ -61,10 +61,14 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
         for(int x=0; x<width; ++x)
             if(cube_colors[x][y] == 0)
                 continue;
-            else
+            else {
                 insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
+            }
 
     fill_preview_queue(); // added
+
+    //This point should be the end of the last init step, so start timing now:
+    last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
     return *this;
 }
@@ -75,13 +79,37 @@ void <% debug_hook 'Map::cycle_cubes' do %>(){
     utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::cycle_a_cube, this, _1, _2, _3));
 }
 
+void Map::check_one_fadings() {
+    using namespace std::tr1::placeholders;
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3));
+}
+
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
 <% end %>
     if( !c->has_grounded() ){
         dropping_creatable_ = false;
         if( !c->is_garbage() && !c->is_broken() ) garbage_dumpable_ = false;
     }
-    if(  c->cycle_and_die() ) cubes_[x][y].reset(), owner_.lock()->release(c);
+    if( c->cycle_and_die(now_t_, last_t_) ) {
+        cubes_[x][y].reset();
+        owner_.lock()->release(c);
+    }
+}
+
+void Map::check_a_fade(pCube c, int x, int y)
+{
+    if( state::pWaiting waiting = c->is_waiting() ){
+        if( waiting->need_check() ){
+            c->set_grounded(); // once grounded, always grounded
+            pOneFadingOrig one_fading = make_OneFading(c);
+
+            if( one_fading ){
+                one_fading->fade(*this, c);
+                c->go_dying();
+            }
+            else waiting->checked();
+        }
+    }
 }
 
 Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
@@ -117,26 +145,12 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 // used Waiting::cycle
 state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 <% end %>
-    if( state::pWaiting waiting = cube->is_waiting() ){
-
-        if( waiting->need_check() ){
-            pOneFadingOrig one_fading = make_OneFading(cube);
-
-            if( one_fading ){
-                one_fading->fade(*this, cube);
-                return state::Dying::create(cube);
-            }
-            waiting->checked();
-            cube->set_grounded(); // once grounded, always grounded
-        }
-    }
-
     if( is_below_empty(cube) ){
-        // cubes_[cube->x()][cube->y()].reset();
-        // cube->drop_a_block(); // NOTE: we should call drop_a_block with state changing to dropping,
-                              //       don't call drop_a_block and then change the state.
-                              //       they should be called together.
-        // cubes_[cube->x()][cube->y()] = cube;
+        cube->drop_a_block(); // NOTE UPDATED: As a matter of fact, you have to drop the cube here,
+                              // to make the flow more clear in one place and more flexible for some
+                              // unexpected situation. To avoid floating point determinism problem,
+                              // we have to make some cube NOT drop a block sometimes, but keep the state
+                              // dropping.
         if( cube->is_dropping() )
             return state::pState();
         else
@@ -145,13 +159,50 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
     else{
         if( cube->is_waiting() )
             return state::pState();
+        else if( cube->y() > 0 && cubes_[cube->x()][cube->y()-1]->is_dropping() ) {
+            std::cout << "cube " << cube << ": This is a awkward situation we want to avoid.\n";
+            return state::pState();
+        }
         else {
+            cube->adjust_real_y();
+//            std::cout << "cube " << cube << " becomes waiting.\n";
             return state::Waiting::create(cube);
         }
     }
-    // throw "impossible flow";
+    //std::cout << "Map::next_state impossible flow.\n";
     return state::pState();
 }
+
+Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
+
+    last_t_ = now_t_;
+    now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+
+    if( last_t_ == now_t_ ) return *this; //if time is not changed, then cycle should be stopped;
+
+    garbage_dumpable_ = ms()->garbage_dumpable();
+    dropping_creatable_ = ms()->dropping_creatable();
+    if(garbage_dumpable_ && dropping_creatable_)
+        cycle_warning();
+    else {
+        warning_level_.reset();
+        alarm_sound_.reset();
+    }
+
+    update_chains();
+    cycle_cubes();
+    check_one_fadings();
+
+    if( garbage_dumpable_ && garbage_left_ > 0 )
+        cycle_creation_garbage();
+    else if( dropping_creatable_ ) {
+        cycle_creation();
+    }
+
+    return *this;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 // resolve the chain on the cube
 void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, pChain chain){
@@ -265,7 +316,8 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     presenter::pMap owner = owner_.lock();
     for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
         int x = is_empty[i];
-        insert_garbage( owner->make_cube(x, top)->model() );
+        pCube c = owner->make_cube(x, top)->model();
+        insert_garbage( c );
         --garbage_left_;
     }
 }
@@ -425,6 +477,13 @@ bool Map::all_waiting() const {
         }
     }
     return true;
+}
+
+double Map::get_sink_speed() const {
+    if( owner()->hasting_cond()() ) //hasting_cond is a delegated function
+        return ms()->drop_speed();
+    else
+        return ms()->sink_speed();
 }
 
 pSimpleMap Map::dump_data() const

@@ -151,12 +151,15 @@ function PuzzleGen:generate(chain_limit, w, h, de_bug)
   repeat
     self:reinit()
   until self:next_chain(2)
+
+  local ans
   if de_bug then
     self.chains:display()
     print("Ans: ", self.chains:top())
+    ans = tostring(self.chains:top())
   end
   local res = MapUtils.gen_map_from_exprs(w, h, self.chains)
-  return res
+  return res, ans
 end
 
 return PuzzleGen

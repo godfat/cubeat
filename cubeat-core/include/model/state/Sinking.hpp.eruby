@@ -21,7 +21,8 @@ public:
     Sinking(std::tr1::weak_ptr<Cube> owner): Dropping(owner){}
 
 protected:
-    // virtual pState init();
+    virtual pState init();
+    virtual void cycle(time_t const&, time_t const&);
 };
 
 }}} // end of namespace

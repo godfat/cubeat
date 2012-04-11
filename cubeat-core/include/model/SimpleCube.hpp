@@ -56,9 +56,11 @@ public:
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }
+    double real_y() const{ return data()->real_y(); }
     int color_id() const{ return data()->color_id(); }
     SimpleCube& x(int new_x){ data()->x(new_x); return *this; }
     SimpleCube& y(int new_y){ data()->y(new_y); return *this; }
+    SimpleCube& real_y(double new_real_y){ data()->real_y(new_real_y); return *this; }
     SimpleCube& color_id(int new_color_id){ data()->color_id(new_color_id); return *this; }
 
     // differs from model::Cube

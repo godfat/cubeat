@@ -115,6 +115,15 @@ Mt_Sprite.on_down                 = C.Sprite_on_down
 Mt_Sprite.on_enter_focus          = C.Sprite_on_enter_focus
 Mt_Sprite.on_leave_focus          = C.Sprite_on_leave_focus
 
+Mt_Sprite.on_tween_line_pos           = C.Sprite_on_tween_line_pos
+Mt_Sprite.on_tween_line_rotation      = C.Sprite_on_tween_line_rotation
+Mt_Sprite.on_tween_line_scale         = C.Sprite_on_tween_line_scale
+Mt_Sprite.on_tween_line_color_diffuse = C.Sprite_on_tween_line_color_diffuse
+Mt_Sprite.on_tween_line_red           = C.Sprite_on_tween_line_red
+Mt_Sprite.on_tween_line_green         = C.Sprite_on_tween_line_green
+Mt_Sprite.on_tween_line_blue          = C.Sprite_on_tween_line_blue
+Mt_Sprite.on_tween_line_alpha         = C.Sprite_on_tween_line_alpha
+
 ffi.metatype("pSprite", Mt_Sprite)
 
 local function new_sprite(name, scene, w, h, center)
@@ -159,6 +168,8 @@ Mt_SpriteText.on_up               = C.SpriteText_on_up
 Mt_SpriteText.on_down             = C.SpriteText_on_down
 Mt_SpriteText.on_enter_focus      = C.SpriteText_on_enter_focus
 Mt_SpriteText.on_leave_focus      = C.SpriteText_on_leave_focus
+
+Mt_SpriteText.on_tween_line_alpha = C.SpriteText_on_tween_line_alpha
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 

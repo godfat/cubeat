@@ -32,6 +32,7 @@ pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
     IAnimatedMeshSceneNode* temp = smgr_->addAnimatedMeshSceneNode( mesh, parent->body() );
     temp->setAnimationSpeed(0);
     body_ = temp;
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->getMaterial(0).Shininess = 0;
     for( size_t i = 0; i < body_->getMaterialCount(); ++i ) {
         body_->getMaterial(i).MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

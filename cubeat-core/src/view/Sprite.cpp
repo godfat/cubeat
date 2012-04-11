@@ -81,10 +81,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     mat.setTexture(0, driver->getTexture(oss.str().c_str()));
 
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
-
-    //test
-    body_->grab();
-
+    body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->getMaterial(0) = mat;
 
     pSprite self = static_pointer_cast<Sprite>( shared_from_this() );

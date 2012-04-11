@@ -203,6 +203,8 @@ void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, 
     heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
                 .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
 
+    ui_layout_->setPickable(false);
+
     gauge1_flag_ = gauge2_flag_ = false;
 }
 

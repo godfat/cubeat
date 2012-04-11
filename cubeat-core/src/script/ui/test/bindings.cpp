@@ -2,6 +2,7 @@
 #include "view/Sprite.hpp"
 #include "view/SpriteText.hpp"
 #include "Accessors.hpp"
+#include "EasingEquations.hpp"
 #include "Input.hpp"
 #include "test/test_ui.hpp"
 
@@ -9,6 +10,7 @@ using namespace psc;
 using namespace view;
 using namespace ctrl;
 using namespace accessor;
+using namespace easing;
 
 using std::tr1::bind;
 using namespace std::tr1::placeholders;
@@ -159,6 +161,46 @@ void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_P
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 
+void Sprite_on_tween_line_pos(pSprite* self, double x, double y, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Pos2D>(vec2(x, y), duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_rotation(pSprite* self, double x, double y, double z, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Rotation>(vec3(x, y, z), duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_scale(pSprite* self, double x, double y, double z, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Scale>(vec3(x, y, z), duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_color_diffuse(pSprite* self, int x, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, ColorDiffuse>(x, duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_red(pSprite* self, int r, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Red>(r, duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_green(pSprite* self, int g, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Green>(g, duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_blue(pSprite* self, int b, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Blue>(b, duration, loop, call, delay);
+}
+
+void Sprite_on_tween_line_alpha(pSprite* self, int a, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Alpha>(a, duration, loop, call, delay);
+}
+
 pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {
     pSpriteText* sp = new pSpriteText;
     *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
@@ -249,6 +291,11 @@ void SpriteText_on_enter_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBAC
 
 void SpriteText_on_leave_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void SpriteText_on_tween_line_alpha(pSpriteText* self, int a, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Alpha>(a, duration, loop, call, delay);
 }
 
 Input* Input_get_input1() {

@@ -18,7 +18,9 @@ namespace psc{ namespace model{
 
 class Cube: public SimpleCube{
     friend class state::State; // for state_ = ? used by switch_state
-    friend class state::Dropping; // for drop_a_block
+    friend class state::Dropping; // for drop_a_frame
+    friend class state::Sinking;  // for drop_a_frame
+    friend class Map;          // for drop_a_block
 public:
     typedef pCube pointer_type;
 
@@ -33,13 +35,15 @@ public:
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }
+    double real_y() const{ return data()->real_y(); }
     int color_id() const{ return data()->color_id(); }
     Cube& x(int new_x){ data()->x(new_x); return *this; }
     Cube& y(int new_y){ data()->y(new_y); return *this; }
+    Cube& real_y(double new_real_y){ data()->real_y(new_real_y); return *this; }
     Cube& color_id(int new_color_id){ data()->color_id(new_color_id); return *this; }
 
     // begin only used by Map::cycle
-    bool cycle_and_die();
+    bool cycle_and_die(time_t const&, time_t const&);
     // end
 
     // begin only used by Map::next_state
@@ -62,7 +66,7 @@ public:
     pChain const chain() const{ return chain_belonged_to_; }
     // end
 
-    // begin only used by OneFading::fade
+    // begin only used by OneFading::fade, Map::check_a_fade
     void go_dying();
     // end
 
@@ -96,6 +100,11 @@ public:
     // for presenter::Cube
     void next_state();
 
+    // 2012 added real_y. maybe we should consider add real_x, because
+    // view's cube_size actually influences on both. but whatever.
+    bool arrived_at_logical_y();
+    void adjust_real_y();
+
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>
@@ -106,6 +115,8 @@ private:
     bool is_dead() const{ return state_.use_count() == 0; }
     state::cpSinking is_sinking() const;
     void drop_a_block();
+    void drop_a_frame(time_t const&, time_t const&);
+    void sink_a_frame(time_t const&, time_t const&);
     pCube self() const{ return self_.lock(); }
 
 private:
@@ -113,7 +124,7 @@ private:
     wpMap map_;
     state::pState state_;
     wpCube self_;
-<%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event, :sink_a_block_event %>
+<%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event, :get_chain_event, :lose_chain_event, :sink_a_block_event, :update_pos_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>
 };

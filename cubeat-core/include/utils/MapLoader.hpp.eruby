@@ -67,7 +67,8 @@ public:
                 cube_dying_duration(m.I("cube_dying_duration")).
                 cube_sinking_duration(m.I("cube_sinking_duration")).
                 cube_dropping_duration(m.I("cube_dropping_duration")).
-                speed(m.F("speed")).
+                sink_speed(m.F("sink_speed")).
+                drop_speed(m.F("drop_speed")).
                 damage_factor(m.F("damage_factor")).
                 width(m.I("width")).
                 height(m.I("height")).

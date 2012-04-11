@@ -28,6 +28,7 @@ public:
     virtual void sink_a_block(){}
     virtual void drop_a_block_with_callback(callback_type){}
     virtual void sink_a_block_with_callback(callback_type){}
+    virtual void update_pos(){}
 
 protected:
     data::pCube data() const{ return data_.lock(); }

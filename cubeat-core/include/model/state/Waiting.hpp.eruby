@@ -19,7 +19,7 @@ public:
     Waiting(wpCube owner): State(owner), checked_(false){}
 
     virtual <% debug_hook '~Waiting' do %>(){<%end%>}
-    virtual void cycle();
+    virtual void cycle(time_t const&, time_t const&);
 
     // begin only used by Map::next_state
     bool need_check() const{ return checked_ == false; }

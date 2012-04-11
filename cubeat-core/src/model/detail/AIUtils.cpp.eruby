@@ -30,9 +30,9 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
         //AIUtils::get_base_attack should be exported as well.
     }
 
-    std::cout << " -------------------------------------- " << std::endl;
-    std::cout << " current base attack: " << highest_score << std::endl;
-    std::cout << " -------------------------------------- " << std::endl;
+//    std::cout << " -------------------------------------- " << std::endl;
+//    std::cout << " current base attack: " << highest_score << std::endl;
+//    std::cout << " -------------------------------------- " << std::endl;
 
     for( int y=map->ms()->height() - 1; y >= 0; --y ) {
         for( int x=0; x < map->ms()->width(); ++x ) {
@@ -43,13 +43,13 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
                     best_cube = c;
                     highest_score = current_score;
                 }
-                std::cout << current_score << " ";
+//                std::cout << current_score << " ";
             }
-            else std::cout << "X ";
+//            else std::cout << "X ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return best_cube;
 }
 

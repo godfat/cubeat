@@ -28,7 +28,7 @@ public:
     }
 
     Puzzle();
-    ~Puzzle();
+    virtual ~Puzzle();
 
     virtual void cycle();
 

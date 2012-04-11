@@ -1,12 +1,14 @@
 
 #include "model/state/Sinking.hpp"
-#include "model/Map.hpp"
-#include "EventDispatcher.hpp"
-
-#include <tr1/functional>
+#include "model/Cube.hpp"
 
 <%= debug_include %>
 
 using namespace psc;
 using namespace model;
 using namespace state;
+
+pState Sinking::init(){
+    owner()->drop_a_block();
+    return shared_from_this();
+}

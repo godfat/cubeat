@@ -1,5 +1,5 @@
 
-#include "model/state/Dropping.hpp"
+#include "model/state/Sinking.hpp"
 #include "model/Cube.hpp"
 
 <%= debug_include %>
@@ -8,15 +8,15 @@ using namespace psc;
 using namespace model;
 using namespace state;
 
-pState <% debug_hook 'Dropping::init' do %>(){
-<% end %>
+pState Sinking::init(){
     //owner()->drop_a_block();
     return shared_from_this();
 }
 
-void Dropping::cycle(time_t const& now_t, time_t const& last_t){
-    owner()->drop_a_frame(now_t, last_t);
+void Sinking::cycle(time_t const& now_t, time_t const& last_t){
+    owner()->sink_a_frame(now_t, last_t);
     if( owner()->arrived_at_logical_y() ) {
         next_state();
     }
 }
+

@@ -1,0 +1,7 @@
+# set "generate_level" between 3 to 20 to generate a puzzle at 
+# rc/config/tmp/puzzle.zzml when using the puzzle explorer.
+# all other number will make program to read from "puzzle_file"
+# puzzle_file's root is at rc/config
+
+generate_level: 8,
+puzzle_file: 'tmp/puzzle_level3.zzml'

@@ -34,6 +34,10 @@ void SFX::init_textures(pScene& s)
     Sprite::create("circle", s, 96, 96, true);
     Sprite::create("plight", s, 96, 96, true);
     Sprite::create("square", s, 192, 192, true);
+    Sprite::create("cubes/cubes1", s, 64, 64, true);
+    Sprite::create("cubes/cubes2", s, 64, 64, true);
+    Sprite::create("cubes/cubes3", s, 64, 64, true);
+    Sprite::create("cubes/cubes4", s, 64, 64, true);
 }
 
 void SFX::clear_obj(FXObjList::iterator obj)
@@ -106,4 +110,12 @@ void SFX::weapon_vfx3(pScene& s, vec2 const& pos)
     sp2->tween<IOQuad, Scale>(vec3(0,0,0), vec3(1,1,1), 400u, 0, bind(&SFX::clear_obj, this, effects_holder_.begin()));
 }
 
+void SFX::cube_explode(pSprite sp)
+{
+    sp->setDepth(-10); //so it is not blocked in view;
+    sp->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 300u);
+    sp->tween<Linear, Alpha>(0, 300u);
 
+    effects_holder_.push_front(sp);
+    sp->tween<Linear, GradientEmissive>(255, 300u, 0, bind(&SFX::clear_obj, this, effects_holder_.begin()));
+}

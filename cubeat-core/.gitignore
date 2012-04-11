@@ -1,6 +1,10 @@
 # generated bundle
 bundle
 
+# game option
+option
+rc/config/option
+
 # generated executable
 bin
 obj

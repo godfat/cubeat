@@ -73,40 +73,6 @@
 					<Add directory="C:\lang\luarocks\2.0" />
 				</Linker>
 			</Target>
-			<Target title="Debug">
-				<Option platforms="Windows;" />
-				<Option output="bin\Debug\CuBeat" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-fno-fast-math" />
-					<Add option="-Wno-missing-braces" />
-					<Add option="-DBOOST_DISABLE_ASSERTS" />
-					<Add option="-DNDEBUG" />
-					<Add directory="include" />
-					<Add directory="lib" />
-					<Add directory="C:\local_gitrepo\Irrlicht\include" />
-					<Add directory="C:\lang\luarocks\2.0\include" />
-					<Add directory="C:\libs\cpp\openal-soft\include" />
-					<Add directory="C:\libs\cpp\alure\include" />
-				</Compiler>
-				<Linker>
-					<Add library="Irrlicht" />
-					<Add library="winmm" />
-					<Add library="user32" />
-					<Add library="boost_thread-mgw46-mt-1_48" />
-					<Add library="boost_date_time-mgw46-mt-1_48" />
-					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
-					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
-					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
-					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
-					<Add directory="C:\lang\luarocks\2.0" />
-				</Linker>
-			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-O2" />
@@ -219,7 +185,6 @@
 		<Unit filename="include\view\All.hpp" />
 		<Unit filename="include\view\AnimatedSceneObject.hpp" />
 		<Unit filename="include\view\AnimatedSprite.hpp" />
-		<Unit filename="include\view\Button.hpp" />
 		<Unit filename="include\view\Cube.hpp" />
 		<Unit filename="include\view\Game.hpp" />
 		<Unit filename="include\view\Map.hpp" />
@@ -432,7 +397,6 @@
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />
 		<Unit filename="src\view\AnimatedSprite.cpp" />
-		<Unit filename="src\view\Button.cpp" />
 		<Unit filename="src\view\Cube.cpp" />
 		<Unit filename="src\view\Menu.cpp" />
 		<Unit filename="src\view\Object.cpp" />

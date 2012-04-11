@@ -75,6 +75,13 @@ TestUI::TestUI()
     btn_visible_char_->onPress( &(InputMgr::i().getInputByIndex(0)->trig2()) ) = hideChar;
     btn_visible_char_->onEnterFocus( InputMgr::i().getInputByIndex(0) ) = enter;
     btn_visible_char_->onLeaveFocus( InputMgr::i().getInputByIndex(0) ) = leave;
+
+    btn_test_cursor_    = view::Sprite::create("cubes/cube1", scene_, 128, 128);
+    btn_test_cursor_->moveTo(50, 400);
+    std::tr1::function<void(view::pSprite&)> showPos = bind(&TestUI::ShowPos, this, _1);
+    btn_test_cursor_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPos;
+    text_cursor_        = view::SpriteText::create("00", scene_, "Star Jedi", 24, true);
+    text_cursor_->moveTo(240, 400);
 }
 
 void TestUI::init()
@@ -125,6 +132,14 @@ void TestUI::ShowChar(view::pSprite& p) {
 
 void TestUI::HideChar(view::pSprite& p) {
     act_->set<Visible>(false);
+}
+
+void TestUI::ShowPos(view::pSprite& p) {
+    int posx = InputMgr::i().getInputByIndex(0)->cursor().x();
+    vec2 orgx = p->get<Pos2D>();
+    char s[8];
+    sprintf(s, "%d", (int)orgx.Y);
+    text_cursor_->changeText(s);
 }
 
 int main(){

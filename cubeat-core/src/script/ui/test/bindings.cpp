@@ -129,6 +129,30 @@ void Sprite_set_size(pSprite* self, double x, double y) {
     (*self)->set<Size2D>(vec2(x, y));
 }
 
+int Sprite_get_pos_x(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().X);
+}
+
+int Sprite_get_pos_y(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().Y);
+}
+
+int Sprite_get_size_x(pSprite* self) {
+    return (int)((*self)->get<Size2D>().X);
+}
+
+int Sprite_get_size_y(pSprite* self) {
+    return (int)((*self)->get<Size2D>().Y);
+}
+
+int Sprite_get_screen_pos_x(pSprite* self) {
+    return (int)((*self)->getScreenPos().X);
+}
+
+int Sprite_get_screen_pos_y(pSprite* self) {
+    return (int)((*self)->getScreenPos().Y);
+}
+
 void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
     cb(&sp);
 }
@@ -137,19 +161,19 @@ void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_WITH_PA
     cb(&sp, a, b);
 }
 
-void Sprite_on_release(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void Sprite_on_press(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void Sprite_on_press(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void Sprite_on_up(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void Sprite_on_up(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onUp( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void Sprite_on_down(pSprite* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void Sprite_on_down(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
@@ -269,19 +293,43 @@ void SpriteText_set_visible(pSpriteText* self, bool x) {
     (*self)->set<Visible>(x);
 }
 
-void SpriteText_on_release(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+int SpriteText_get_pos_x(pSpriteText* self) {
+    return (int)((*self)->get<Pos2D>().X);
+}
+
+int SpriteText_get_pos_y(pSpriteText* self) {
+    return (int)((*self)->get<Pos2D>().Y);
+}
+
+int SpriteText_get_size_x(pSpriteText* self) {
+    return (int)((*self)->get<Size2D>().X);
+}
+
+int SpriteText_get_size_y(pSpriteText* self) {
+    return (int)((*self)->get<Size2D>().Y);
+}
+
+int SpriteText_get_screen_pos_x(pSpriteText* self) {
+    return (int)((*self)->getScreenPos().X);
+}
+
+int SpriteText_get_screen_pos_y(pSpriteText* self) {
+    return (int)((*self)->getScreenPos().Y);
+}
+
+void SpriteText_on_release(pSpriteText* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void SpriteText_on_press(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void SpriteText_on_press(pSpriteText* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void SpriteText_on_up(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void SpriteText_on_up(pSpriteText* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onUp( btn ) = bind(delegate_for_cb_from_lua, _1, func );
 }
 
-void SpriteText_on_down(pSpriteText* self, InputButton const* btn, PSC_OBJCALLBACK func) {
+void SpriteText_on_down(pSpriteText* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func );
 }
 
@@ -291,6 +339,41 @@ void SpriteText_on_enter_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBAC
 
 void SpriteText_on_leave_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void SpriteText_on_tween_line_pos(pSpriteText* self, double x, double y, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Pos2D>(vec2(x, y), duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_rotation(pSpriteText* self, double x, double y, double z, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Rotation>(vec3(x, y, z), duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_scale(pSpriteText* self, double x, double y, double z, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Scale>(vec3(x, y, z), duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_color_diffuse(pSpriteText* self, int x, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, ColorDiffuse>(x, duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_red(pSpriteText* self, int r, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Red>(r, duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_green(pSpriteText* self, int g, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Green>(g, duration, loop, call, delay);
+}
+
+void SpriteText_on_tween_line_blue(pSpriteText* self, int b, double duration, int loop, PSC_OBJCALLBACK cb, int delay){
+    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
+    (*self)->tween<Linear, Blue>(b, duration, loop, call, delay);
 }
 
 void SpriteText_on_tween_line_alpha(pSpriteText* self, int a, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
@@ -306,32 +389,40 @@ Input* Input_get_input2() {
     return InputMgr::i().getInputByIndex(1);
 }
 
-InputButton const* Input_get_trig1(Input* p){
+Button const* Input_get_trig1(Input* p){
     return &p->trig1();
 }
 
-InputButton const* Input_get_trig2(Input* p){
+Button const* Input_get_trig2(Input* p){
     return &p->trig2();
 }
 
-InputButton const* Input_get_wep1(Input* p) {
+Button const* Input_get_wep1(Input* p) {
     return &p->wep1();
 }
 
-InputButton const* Input_get_wep2(Input* p) {
+Button const* Input_get_wep2(Input* p) {
     return &p->wep2();
 }
 
-InputButton const* Input_get_wep3(Input* p) {
+Button const* Input_get_wep3(Input* p) {
     return &p->wep3();
 }
 
-InputButton const* Input_get_haste(Input* p) {
+Button const* Input_get_haste(Input* p) {
     return &p->haste();
 }
 
-InputButton const* Input_get_pause(Input* p) {
+Button const* Input_get_pause(Input* p) {
     return &p->pause();
+}
+
+int Input_get_cursor_x(Input* p) {
+    return p->cursor().x();
+}
+
+int Input_get_cursor_y(Input* p) {
+    return p->cursor().y();
 }
 
 void Scene__gc(pScene* self) {

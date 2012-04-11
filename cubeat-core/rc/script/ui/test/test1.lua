@@ -3,6 +3,7 @@ local ffi      = require 'ffi'
 local C        = ffi.C
 
 local view     = require 'rc/script/ui/test/view'
+local msgpack  = require 'rc/script/ui/test/luajit-msgpack-pure'
 
 -------------------- scripts above this line should be separated -----------------
 ----------------------------------------------------------------------------------
@@ -108,125 +109,158 @@ function init_game_title(self)
   start_game_title_:on_press( C.Input_get_trig1(C.Input_get_input1()), title_press )
 end
 
-local panel1,
-      button1,
-      button2,
-      button3,
-      button4,
-      panel2,
-      ratio_icon1,
-      ratio_icon2,
-      ratio_title1,
-      ratio_title2,
-      ratio_value1,
-      ratio_value2,
-      arrow_left,
-      arrow_right,
-      arrow_title
+local panel1
+local button1 = {}
+local button2 = {}
+local button3 = {}
+local button4 = {}
+local panel2
+local back_btn = {}
+local ratio1 = {}
+local ratio2 = {}
+local selectbox1 = {}
+local selectbox_title = {"SELECT1", "SELECT2", "SELECT3"}
+local scrollbar1 = {}
+local title_image
+local option_data = {
+                      ratio1 = false,
+                      ratio2 = false,
+                      scrollbar1_index = 255,
+                      selectbox_index = 1
+                    }
 
 function init_test_menu(self)
+  option_data = view.load_option(option_data)
+  view.save_option(option_data)
+  --=======================INIT PANEL1=======================--
   panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
   panel1:set_pos(688, 384)
-  button1 = view.new_sprite_text_from_sprite("button1", panel1, "Star Jedi", 24, false, 255, 255, 0)
-  button2 = view.new_sprite_text_from_sprite("button2", panel1, "Star Jedi", 24, false, 255, 255, 0)
-  button3 = view.new_sprite_text_from_sprite("button3", panel1, "Star Jedi", 24, false, 255, 255, 0)
-  button4 = view.new_sprite_text_from_sprite("button4", panel1, "Star Jedi", 24, false, 255, 255, 0)
+  button1 = view.new_ui_button("button1", panel1)
+  button2 = view.new_ui_button("button2", panel1)
+  button3 = view.new_ui_button("button3", panel1)
+  button4 = view.new_ui_button("button4", panel1)
   button1:set_pos(-100, -100)
   button2:set_pos(-100, -50)
   button3:set_pos(-100, 0)
   button4:set_pos(-100, 50)
-  button1:set_depth(-1)
-  button2:set_depth(-1)
-  button3:set_depth(-1)
-  button4:set_depth(-1)
-  local button_focus1 =  function(self, x, y) button1:set_blue(255) end
-  local button_focus2 =  function(self, x, y) button2:set_blue(255) end
-  local button_focus3 =  function(self, x, y) button3:set_blue(255) end
-  local button_focus4 =  function(self, x, y) button4:set_blue(255) end
-  local button_leave1 =  function(self, x, y) button1:set_blue(0) end
-  local button_leave2 =  function(self, x, y) button2:set_blue(0) end
-  local button_leave3 =  function(self, x, y) button3:set_blue(0) end
-  local button_leave4 =  function(self, x, y) button4:set_blue(0) end
-  button1:on_enter_focus( C.Input_get_input1(), button_focus1 )
-  button1:on_leave_focus( C.Input_get_input1(), button_leave1 )
-  button2:on_enter_focus( C.Input_get_input1(), button_focus2 )
-  button2:on_leave_focus( C.Input_get_input1(), button_leave2 )
-  button3:on_enter_focus( C.Input_get_input1(), button_focus3 )
-  button3:on_leave_focus( C.Input_get_input1(), button_leave3 )
-  button4:on_enter_focus( C.Input_get_input1(), button_focus4 )
-  button4:on_leave_focus( C.Input_get_input1(), button_leave4 )
   
-  panel2 = view.new_sprite("area_rect", scene_, 512, 512, true)
+  --=======================INIT PANEL2=======================--
+  panel2  = view.new_sprite("area_rect", scene_, 512, 512, true)
   panel2:set_pos(688, 384)
-  ratio_icon1   = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
-  ratio_icon2   = view.new_sprite_from_sprite("cubes/cube1", panel2, 32, 32, false)
-  ratio_title1  = view.new_sprite_text_from_sprite("ratio1", panel2, "Star Jedi", 24, false, 255, 255, 255)
-  ratio_title2  = view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, false, 255, 255, 255)
-  ratio_icon1:set_pos(-200, -200)
-  ratio_icon2:set_pos(-200, -150)
-  ratio_title1:set_pos(-150, -200)
-  ratio_title2:set_pos(-150, -150)
-  ratio_value1 = false
-  ratio_value2 = false
-  arrow_left = view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
-  arrow_right= view.new_sprite_from_sprite("cubes/cube-r-1", panel2, 32, 32, false)
-  arrow_title= view.new_sprite_text_from_sprite("ratio2", panel2, "Star Jedi", 24, true, 255, 255, 255)
-  arrow_left:set_pos(-200, -100)
-  arrow_right:set_pos(80, -100)
-  arrow_title:set_pos(-50, -90)
   panel2:set_alpha(0)
-  ratio_icon1:set_alpha(0)
-  ratio_icon2:set_alpha(0)
-  ratio_title1:set_alpha(0)
-  ratio_title2:set_alpha(0)
-  arrow_left:set_alpha(0)
-  arrow_right:set_alpha(0)
-  arrow_title:set_alpha(0)
-  ratio_icon1:set_depth(-1)
-  ratio_icon2:set_depth(-1)
-  ratio_title1:set_depth(-1)
-  ratio_title2:set_depth(-1)
-  
+  panel2:set_visible(false)
+  --
+  back_btn = view.new_ui_button("BACK", panel2)
+  back_btn:set_pos(-200, 150)
+  back_btn:set_alpha(0)
+  back_btn:set_visible(false)
+  --
+  ratio1  = view.new_ui_ratio("ratio1", panel2)
+  ratio2  = view.new_ui_ratio("ratio2", panel2)
+  ratio1:set_pressed(option_data["ratio1"])
+  ratio2:set_pressed(option_data["ratio2"])
+  ratio1:set_pos(-200, -200)
+  ratio2:set_pos(-200, -150)
+  ratio1:set_alpha(0)
+  ratio2:set_alpha(0)
+  ratio1:set_visible(false)
+  ratio2:set_visible(false)
   local ratio1_press = function(self)
-    if ratio_value1 == false then
-      ratio_icon1:set_texture("cubes/cube-b-1")
-      ratio_value1 = true
-    else
-      ratio_icon1:set_texture("cubes/cube1")
-      ratio_value1 = false
-    end
-  end
+                        print("press ratio1")
+                        option_data["ratio1"] = ratio1.is_pressed
+                        view.save_option(option_data)
+                       end
   local ratio2_press = function(self)
-    if ratio_value2 == false then
-      ratio_icon2:set_texture("cubes/cube-b-1")
-      ratio_value2 = true
-    else
-      ratio_icon2:set_texture("cubes/cube1")
-      ratio_value2 = false
-    end
-  end
-  ratio_icon1:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio1_press )
-  ratio_icon2:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio2_press )
-  ratio_title1:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio1_press )
-  ratio_title2:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio2_press )
+                        print("press ratio2")
+                        option_data["ratio2"] = ratio2.is_pressed
+                        view.save_option(option_data)
+                       end
+  ratio1:on_press(ratio1_press)
+  ratio2:on_press(ratio2_press)
+  --
+  selectbox1 = view.new_ui_selectbox(panel2, selectbox_title)
+  selectbox1:set_index(option_data["selectbox_index"])
+  selectbox1:set_pos(-200, -100)
+  selectbox1:set_alpha(0)
+  selectbox1:set_visible(false)
+  local left_press  = function(self)
+                        print("press left button")
+                        --
+                        option_data["selectbox_index"] = selectbox1.index
+                        view.save_option(option_data)
+                      end
+  local right_press = function(self)
+                        print("press right button")
+                        --
+                        option_data["selectbox_index"] = selectbox1.index
+                        view.save_option(option_data)
+                      end
+  selectbox1:left_on_press(left_press)
+  selectbox1:right_on_press(right_press)
+  --
+  title_image = view.new_sprite_from_sprite("title", panel2, 128, 128, false)
+  title_image:set_pos(-200, 0)
+  title_image:set_alpha(0)
+  title_image:set_visible(false)
+  --
+  scrollbar1 = view.new_ui_scrollbar(panel2, 255)
+  scrollbar1:set_index(option_data["scrollbar1_index"])
+  scrollbar1:set_pos(-200, -50)
+  scrollbar1:set_alpha(0)
+  scrollbar1:set_visible(false)
+  local scrollbar_press = function(self)
+                            print("the index is "..tostring(scrollbar1.index))
+                            title_image:set_blue(scrollbar1.index)
+                            --
+                            option_data["scrollbar1_index"] = scrollbar1.index
+                            view.save_option(option_data)
+                          end
+  scrollbar1:on_press(scrollbar_press)
   
+  --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
+  local tween_cb_panel2 = function(self) panel2:set_visible(false) end
+  local tween_cb_title  = function(self) title_image:set_visible(false) end
+  local back_btn_press =  function(self)
+                            panel1:set_visible(true)
+                            panel1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                            button1:set_fade(255)
+                            button2:set_fade(255)
+                            button3:set_fade(255)
+                            button4:set_fade(255)
+                            panel2:set_visible(true)
+                            panel2:on_tween_line_alpha(0, 500, 0, tween_cb_panel2, 0)
+                            ratio1:set_fade(0)
+                            ratio2:set_fade(0)
+                            selectbox1:set_fade(0)
+                            title_image:set_visible(true)
+                            title_image:on_tween_line_alpha(0, 500, 0, tween_cb_title, 0)
+                            scrollbar1:set_fade(0)
+                            back_btn:set_fade(0)
+                          end
+  back_btn:on_press(back_btn_press)
+  
+  --=======================PANEL1 BUTTON2=======================--
+  local tween_cb =  function(self) end
+  local tween_cb_panel1 = function(self) panel1:set_visible(false) end
   local button2_press = function(self)
-                          panel1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                          button1:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                          button2:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                          button3:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
-                          button4:on_tween_line_alpha(0, 500, 0, tween_cb, 0)
+                          panel1:set_visible(true)
+                          panel1:on_tween_line_alpha(0, 500, 0, tween_cb_panel1, 0)
+                          button1:set_fade(0)
+                          button2:set_fade(0)
+                          button3:set_fade(0)
+                          button4:set_fade(0)
+                          panel2:set_visible(true)
                           panel2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_icon1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_icon2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_title1:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          ratio_title2:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_left:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_right:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
-                          arrow_title:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          ratio1:set_fade(255)
+                          ratio2:set_fade(255)
+                          selectbox1:set_fade(255)
+                          title_image:set_visible(true)
+                          title_image:on_tween_line_alpha(255, 500, 0, tween_cb, 0)
+                          scrollbar1:set_fade(255)
+                          back_btn:set_fade(255)
                         end
-  button2:on_press( C.Input_get_trig1(C.Input_get_input1()), button2_press )
+  button2:on_press( button2_press )
 end
 
 local test1,

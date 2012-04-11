@@ -149,6 +149,18 @@ Object& Object::setLighting(bool const& lighting)
     return *this;
 }
 
+//2012.03.27 This method is pretty expensive
+vec2 Object::getScreenPos()
+{
+    if( pScene s = scene() ) {
+        position2di pos =
+            s->getCollisionMgr()->getScreenCoordinatesFrom3DPosition(
+                body_->getAbsolutePosition(), s->camera());
+        return vec2(pos.X, pos.Y);
+    }
+    return vec2(-1,-1);
+}
+
 pScene Object::scene() const
 {
     return scene_.lock();

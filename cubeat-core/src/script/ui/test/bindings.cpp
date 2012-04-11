@@ -25,17 +25,17 @@ pScene* TestUI_get_ui_scene(TestUI* self) {
     return s;
 }
 
-pSprite* Sprite_create(char const* name, pScene* s, int w, int h, bool center) {
+pSprite* Sprite_create(char const* name, pObject* parent, int w, int h, bool center) {
     pSprite* sp = new pSprite;
-    *sp = Sprite::create(name, *s, w, h, center);
+    *sp = Sprite::create(name, *parent, w, h, center);
     return sp;
 }
 
-pSprite* Sprite_create_from_sprite(char const* name, pSprite* s, int w, int h, bool center) {
-    pSprite* sp = new pSprite;
-    *sp = Sprite::create(name, *s, w, h, center);
-    return sp;
-}
+//pSprite* Sprite_create_from_sprite(char const* name, pSprite* s, int w, int h, bool center) {
+//    pSprite* sp = new pSprite;
+//    *sp = Sprite::create(name, *s, w, h, center);
+//    return sp;
+//}
 
 void Sprite_set_texture(pSprite* self, const char* path) {
     (*self)->setTexture(path);
@@ -225,17 +225,17 @@ void Sprite_on_tween_line_alpha(pSprite* self, int a, double duration, int loop,
     (*self)->tween<Linear, Alpha>(a, duration, loop, call, delay);
 }
 
-pSpriteText* SpriteText_create(char const* text, pScene* s, char const* f, int size, bool center, int r, int g, int b) {
+pSpriteText* SpriteText_create(char const* text, pObject* parent, char const* f, int size, bool center, int r, int g, int b) {
     pSpriteText* sp = new pSpriteText;
-    *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
+    *sp = SpriteText::create(text, *parent, f, size, center, data::Color(r,g,b));
     return sp;
 }
 
-pSpriteText* SpriteText_create_from_sprite(char const* text, pSprite* s, char const* f, int size, bool center, int r, int g, int b) {
-    pSpriteText* sp = new pSpriteText;
-    *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
-    return sp;
-}
+//pSpriteText* SpriteText_create_from_sprite(char const* text, pSprite* s, char const* f, int size, bool center, int r, int g, int b) {
+//    pSpriteText* sp = new pSpriteText;
+//    *sp = SpriteText::create(text, *s, f, size, center, data::Color(r,g,b));
+//    return sp;
+//}
 
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);

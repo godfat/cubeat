@@ -24,13 +24,13 @@ function init(self)
   sp:texture_flipH()
   sp:texture_flipV()
   sp:set_size(32, 32)
-  
+
   sp:on_release(C.Input_get_trig1(C.Input_get_input1()), function(self)
-    print 'hi' 
+    print 'hi'
     self:on_release(C.Input_get_trig1(C.Input_get_input1()), function(self)
       print 'hello'
     end)
-  end)  
+  end)
 end
 
 local select_char_bg_,
@@ -43,32 +43,32 @@ function init_select_char_panel(self)
   select_char_bg_ = view.new_sprite("area_rect", scene_, 600, 720, false)
   select_char_bg_:set_pos( 300, 0)
   select_char_bg_:set_depth(1000)
-  
-  select_char_title_ = view.new_sprite_text_from_sprite("Please select character",
-                                                        select_char_bg_,
-                                                        "Star Jedi",
-                                                        24,
-                                                        true,
-                                                        255, 255, 255)
+
+  select_char_title_ = view.new_sprite_text("Please select character",
+                                            select_char_bg_,
+                                            "Star Jedi",
+                                            24,
+                                            true,
+                                            255, 255, 255)
   select_char_title_:set_pos(300, 60)
   select_char_title_:set_depth(1000)
-  
-  select_char_img_ = view.new_sprite_from_sprite("char1/full", select_char_bg_, 200, 600, false)
+
+  select_char_img_ = view.new_sprite("char1/full", select_char_bg_, 200, 600, false)
   select_char_img_:set_pos(40, 100)
   select_char_img_:set_depth(1000)
-  
-  select_char_ok_ = view.new_sprite_text_from_sprite("ok", select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
+
+  select_char_ok_ = view.new_sprite_text("ok", select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
   select_char_ok_:set_pos(340, 400)
   select_char_ok_:on_enter_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(100) end )
   select_char_ok_:on_leave_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(255) end )
   select_char_ok_:set_depth(-100)
-  
+
   for i=1,5 do
-    select_char_btn[i] = view.new_sprite_text_from_sprite("charactor"..i, select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
+    select_char_btn[i] = view.new_sprite_text("charactor"..i, select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
     select_char_btn[i]:set_pos(340, 100+i*40)
     select_char_btn[i]:set_depth(-100)
   end
-  
+
   local function sel_char1(self) select_char_img_:set_texture("char1/full") print("push") end
   local function sel_char2(self) select_char_img_:set_texture("char2/full") end
   local function sel_char3(self) select_char_img_:set_texture("char3/full") end
@@ -79,7 +79,7 @@ function init_select_char_panel(self)
   select_char_btn[3]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char3 )
   select_char_btn[4]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char4 )
   select_char_btn[5]:on_press( C.Input_get_trig1(C.Input_get_input1()), sel_char5 )
-  
+
   local btn_focus_in  = {}
   local btn_focus_out = {}
   for i=1,5 do
@@ -88,7 +88,7 @@ function init_select_char_panel(self)
     select_char_btn[i]:on_enter_focus( C.Input_get_input1(), btn_focus_in[i] )
     select_char_btn[i]:on_leave_focus( C.Input_get_input1(), btn_focus_out[i] )
   end
-  
+
   select_char_bg_:set_visible(false)
 end
 
@@ -97,7 +97,7 @@ local start_game_title_
 function init_game_title(self)
   start_game_title_ = view.new_sprite_text("Select Charactor", scene_, "Star Jedi", 36, true, 255, 255, 255)
   start_game_title_:set_pos(688, 480)
-  
+
   local title_focus_in  = function(self, x, y) start_game_title_:set_red(100) end
   local title_focus_out = function(self, x, y) start_game_title_:set_red(255) end
   local title_press     = function(self)
@@ -143,7 +143,7 @@ function init_test_menu(self)
   button2:set_pos(-100, -50)
   button3:set_pos(-100, 0)
   button4:set_pos(-100, 50)
-  
+
   --=======================INIT PANEL2=======================--
   panel2  = view.new_sprite("area_rect", scene_, 512, 512, true)
   panel2:set_pos(688, 384)
@@ -178,7 +178,7 @@ function init_test_menu(self)
   ratio1:on_press(ratio1_press)
   ratio2:on_press(ratio2_press)
   --
-  selectbox1 = view.new_ui_selectbox(panel2, selectbox_title)
+  selectbox1 = view.new_ui_selectbox(selectbox_title, panel2)
   selectbox1:set_index(option_data["selectbox_index"])
   selectbox1:set_pos(-200, -100)
   selectbox1:set_alpha(0)
@@ -198,12 +198,12 @@ function init_test_menu(self)
   selectbox1:left_on_press(left_press)
   selectbox1:right_on_press(right_press)
   --
-  title_image = view.new_sprite_from_sprite("title", panel2, 128, 128, false)
+  title_image = view.new_sprite("title", panel2, 128, 128, false)
   title_image:set_pos(-200, 0)
   title_image:set_alpha(0)
   title_image:set_visible(false)
   --
-  scrollbar1 = view.new_ui_scrollbar(panel2, 255)
+  scrollbar1 = view.new_ui_scrollbar(255, panel2)
   scrollbar1:set_index(option_data["scrollbar1_index"])
   scrollbar1:set_pos(-200, -50)
   scrollbar1:set_alpha(0)
@@ -216,7 +216,7 @@ function init_test_menu(self)
                             view.save_option(option_data)
                           end
   scrollbar1:on_press(scrollbar_press)
-  
+
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end
   local tween_cb_panel2 = function(self) panel2:set_visible(false) end
@@ -239,7 +239,7 @@ function init_test_menu(self)
                             back_btn:set_fade(0)
                           end
   back_btn:on_press(back_btn_press)
-  
+
   --=======================PANEL1 BUTTON2=======================--
   local tween_cb =  function(self) end
   local tween_cb_panel1 = function(self) panel1:set_visible(false) end
@@ -266,7 +266,7 @@ end
 local test1,
       test2,
       test3
-      
+
 function init_test_sprite(self)
   test1 = view.new_sprite("cubes/cube1", scene_, 64, 64, true)
   test1:set_pos(688, 384)
@@ -284,7 +284,7 @@ function init_test_sprite(self)
                             test2:on_tween_line_alpha(50, 4000, 0, tween_cb, 500)
                           end
   test1:on_press( C.Input_get_trig1(C.Input_get_input1()), test1_on_press )
-  
+
   test3 = view.new_sprite_text("click", scene_, "Star Jedi", 24, true, 255, 255, 255)
   test3:set_pos(688, 324)
 end

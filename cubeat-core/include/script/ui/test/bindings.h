@@ -12,8 +12,8 @@ typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
 
 APIEXPORT pScene*  TestUI_get_ui_scene(TestUI*);
 
-APIEXPORT pSprite* Sprite_create(char const*, pScene*, int, int, bool);
-APIEXPORT pSprite* Sprite_create_from_sprite(char const*, pSprite*, int, int, bool);
+APIEXPORT pSprite* Sprite_create(char const*, pObject*, int, int, bool);
+//APIEXPORT pSprite* Sprite_create_from_sprite(char const*, pSprite*, int, int, bool);
 
 APIEXPORT void     Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void     Sprite_set_center_aligned(pSprite*, bool);
@@ -63,8 +63,8 @@ APIEXPORT void     Sprite_on_tween_line_green(pSprite* self, int, double, int, P
 APIEXPORT void     Sprite_on_tween_line_blue(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
 APIEXPORT void     Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
 
-APIEXPORT pSpriteText*  SpriteText_create(char const*, pScene*, char const*, int, bool, int, int, int);
-APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);
+APIEXPORT pSpriteText*  SpriteText_create(char const*, pObject*, char const*, int, bool, int, int, int);
+//APIEXPORT pSpriteText*  SpriteText_create_from_sprite(char const*, pSprite*, char const*, int, bool, int, int, int);
 APIEXPORT void          SpriteText_set_center_aligned(pSpriteText*, bool);
 APIEXPORT void          SpriteText_set_depth(pSpriteText*, double);
 APIEXPORT void          SpriteText_change_text(pSpriteText*, char const*);

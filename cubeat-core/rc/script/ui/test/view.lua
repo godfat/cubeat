@@ -7,6 +7,7 @@ local C        = ffi.C
 
 ffi.cdef[[
 typedef struct TestUI TestUI;
+typedef struct pObject pObject;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
@@ -17,10 +18,10 @@ ffi.cdef( io.open( basepath().."rc/script/ui/test/bindings.ffi", 'r'):read('*a')
 
 ------------- Some utils rigged for ffi callback management ---------------
 --[[ Important notes:
-  I am just going to let ffi callbacks' resources go loose for now, 
+  I am just going to let ffi callbacks' resources go loose for now,
   Since it is mainly for UI use only, it will not duplicate like in-game
-  objects and keep creating new callbacks; moreover, lua_close(L) surely 
-  will reclaim everything that was in Lua. So I decide this is not worth 
+  objects and keep creating new callbacks; moreover, lua_close(L) surely
+  will reclaim everything that was in Lua. So I decide this is not worth
   it.
 
 local function _tracked_cb(btn_table, b, func)
@@ -43,10 +44,10 @@ local function tracked_cb(cb_table, o, b, func)
 end
 
 local function tracked_cb_removal(cb_table, o)
-  for k, v in pairs(cb_table) do 
+  for k, v in pairs(cb_table) do
     print(k, v)
   end
-  if type(cb_table[o]) == "table" then 
+  if type(cb_table[o]) == "table" then
     for _, v1 in pairs(cb_table[o]) do
       print(_, v1)
       v1:free()
@@ -135,8 +136,8 @@ Mt_Sprite.on_tween_line_alpha         = C.Sprite_on_tween_line_alpha
 
 ffi.metatype("pSprite", Mt_Sprite)
 
-local function new_sprite(name, scene, w, h, center)
-  -- return ffi.gc(C.Sprite_create(name, scene, w, h, center), function(self)
+local function new_sprite(name, parent, w, h, center)
+  -- return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), function(self)
     -- tracked_cb_removal (Mt_Sprite.__on_releases__, self)
     -- print '--------'
     -- tracked_cb_removal (Mt_Sprite.__on_presses__, self)
@@ -144,12 +145,12 @@ local function new_sprite(name, scene, w, h, center)
     -- tracked_cb_removal (Mt_Sprite.__on_ups__, self)
     -- C.Sprite__gc(self)
   -- end)
-  return ffi.gc(C.Sprite_create(name, scene, w, h, center), C.Sprite__gc)
+  return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), C.Sprite__gc)
 end
 
-local function new_sprite_from_sprite(name, sprite, w, h, center)
-  return ffi.gc(C.Sprite_create_from_sprite(name, sprite, w, h, center), C.Sprite__gc)
-end
+--local function new_sprite_from_sprite(name, sprite, w, h, center)
+--  return ffi.gc(C.Sprite_create_from_sprite(name, sprite, w, h, center), C.Sprite__gc)
+--end
 
 local Mt_SpriteText = {}
 Mt_SpriteText.__index             = Mt_SpriteText
@@ -196,17 +197,17 @@ Mt_SpriteText.on_tween_line_alpha         = C.SpriteText_on_tween_line_alpha
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
-local function new_sprite_text(text, scene, font, size, center, r, g, b)
-  return ffi.gc(C.SpriteText_create(text, scene, font, size, center, r, g, b), C.SpriteText__gc)
+local function new_sprite_text(text, parent, font, size, center, r, g, b)
+  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*",parent), font, size, center, r, g, b), C.SpriteText__gc)
 end
 
-local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, g, b)
-  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
-end
+--local function new_sprite_text_from_sprite(text, sprite, font, size, center, r, g, b)
+--  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
+--end
 
-local function new_ui_button(text, sprite)
+local function new_ui_button(text, parent)
   local button = {}
-  button.title        = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
+  button.title        = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
   local button_focus  = function(self) button.title:set_blue(255) end
   local button_leave  = function(self) button.title:set_blue(0) end
   button.title:set_depth(-10)
@@ -243,12 +244,12 @@ local function new_ui_button(text, sprite)
   return button
 end
 
-local function new_ui_ratio(text, sprite)
+local function new_ui_ratio(text, parent)
   local ratio = {}
   ratio.is_pressed  = false
-  ratio.icon        = new_sprite_from_sprite("cubes/cube1", sprite, 32, 32, false)
-  ratio.title       = new_sprite_text_from_sprite(text, sprite, "Star Jedi", 24, false, 255, 255, 0)
-  ratio.debug_text  = new_sprite_text_from_sprite("FALSE", sprite, "Star Jedi", 24, true, 100, 100, 255)
+  ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
+  ratio.title       = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
+  ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
   ratio.icon:set_depth(-10)
   ratio.title:set_depth(-10)
   --
@@ -335,14 +336,14 @@ local function new_ui_ratio(text, sprite)
   return ratio
 end
 
-local function new_ui_selectbox(sprite, tb)
+local function new_ui_selectbox(tb, parent)
   box = {}
   box.index     = 1
   box.title_tb  = tb
-  box.left      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
-  box.right     = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
-  box.title     = new_sprite_text_from_sprite(box.title_tb[box.index], sprite, "Star Jedi", 24, true, 255, 255, 0)
-  box.debug_text= new_sprite_text_from_sprite(tostring(box.index), sprite, "Star Jedi", 24, true, 100, 100, 255)
+  box.left      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
+  box.right     = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
+  box.title     = new_sprite_text(box.title_tb[box.index], parent, "Star Jedi", 24, true, 255, 255, 0)
+  box.debug_text= new_sprite_text(tostring(box.index), parent, "Star Jedi", 24, true, 100, 100, 255)
   box.left:set_depth(-10)
   box.right:set_depth(-10)
   --
@@ -445,17 +446,17 @@ local function new_ui_selectbox(sprite, tb)
   return box
 end
 
-local function new_ui_scrollbar(sprite, range)
+local function new_ui_scrollbar(range, parent)
   scrollbar = {}
-  scrollbar.parent      = sprite
+  scrollbar.parent      = parent
   scrollbar.range       = range
   scrollbar.index       = 0
   scrollbar.is_pressed  = false
   scrollbar.is_focus    = false
-  scrollbar.line        = new_sprite_from_sprite("cubes/cube1", sprite, 256, 16, false)
-  scrollbar.button      = new_sprite_from_sprite("cubes/cube-b-1", sprite, 32, 32, false)
-  scrollbar.title       = new_sprite_text_from_sprite("0", sprite, "Star Jedi", 24, true, 255, 255, 0)
-  scrollbar.debug_text  = new_sprite_text_from_sprite("off", sprite, "Star Jedi", 24, true, 100, 100, 255)
+  scrollbar.line        = new_sprite("cubes/cube1", parent, 256, 16, false)
+  scrollbar.button      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
+  scrollbar.title       = new_sprite_text("0", parent, "Star Jedi", 24, true, 255, 255, 0)
+  scrollbar.debug_text  = new_sprite_text("off", parent, "Star Jedi", 24, true, 100, 100, 255)
   scrollbar.line:set_depth(-50)
   scrollbar.button:set_depth(-100)
   --
@@ -620,9 +621,9 @@ end
 
 return {
   new_sprite                  = new_sprite,
-  new_sprite_from_sprite      = new_sprite_from_sprite,
+--new_sprite_from_sprite      = new_sprite_from_sprite,
   new_sprite_text             = new_sprite_text,
-  new_sprite_text_from_sprite = new_sprite_text_from_sprite,
+--new_sprite_text_from_sprite = new_sprite_text_from_sprite,
   --
   new_ui_button               = new_ui_button,
   new_ui_ratio                = new_ui_ratio,

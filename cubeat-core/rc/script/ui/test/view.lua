@@ -118,12 +118,12 @@ Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
   -- C.Sprite_on_release(self, tracked_cb(Mt_Sprite.__on_releases__, self, btn, func))
 -- end
 
-Mt_Sprite.on_release              = C.Sprite_on_release
-Mt_Sprite.on_press                = C.Sprite_on_press
-Mt_Sprite.on_up                   = C.Sprite_on_up
-Mt_Sprite.on_down                 = C.Sprite_on_down
-Mt_Sprite.on_enter_focus          = C.Sprite_on_enter_focus
-Mt_Sprite.on_leave_focus          = C.Sprite_on_leave_focus
+Mt_Sprite.on_release              = function(p, b, cb) C.Sprite_on_release(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_press                = function(p, b, cb) C.Sprite_on_press(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_up                   = function(p, b, cb) C.Sprite_on_up(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_down                 = function(p, b, cb) C.Sprite_on_down(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_enter_focus          = function(p, b, cb) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_leave_focus          = function(p, b, cb) C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), b, cb) end
 
 Mt_Sprite.on_tween_line_pos           = C.Sprite_on_tween_line_pos
 Mt_Sprite.on_tween_line_rotation      = C.Sprite_on_tween_line_rotation
@@ -152,7 +152,8 @@ end
 --  return ffi.gc(C.Sprite_create_from_sprite(name, sprite, w, h, center), C.Sprite__gc)
 --end
 
-local Mt_SpriteText = {}
+local Mt_SpriteText = setmetatable({}, {__index = Mt_Sprite}) -- jslin: inheritance chain added.
+
 Mt_SpriteText.__index             = Mt_SpriteText
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
 Mt_SpriteText.set_depth           = C.SpriteText_set_depth
@@ -178,13 +179,6 @@ Mt_SpriteText.get_size_x          = C.SpriteText_get_size_x
 Mt_SpriteText.get_size_y          = C.SpriteText_get_size_y
 Mt_SpriteText.get_screen_pos_x    = C.SpriteText_get_screen_pos_x
 Mt_SpriteText.get_screen_pos_y    = C.SpriteText_get_screen_pos_y
-
-Mt_SpriteText.on_release          = C.SpriteText_on_release
-Mt_SpriteText.on_press            = C.SpriteText_on_press
-Mt_SpriteText.on_up               = C.SpriteText_on_up
-Mt_SpriteText.on_down             = C.SpriteText_on_down
-Mt_SpriteText.on_enter_focus      = C.SpriteText_on_enter_focus
-Mt_SpriteText.on_leave_focus      = C.SpriteText_on_leave_focus
 
 Mt_SpriteText.on_tween_line_pos           = C.SpriteText_on_tween_line_pos
 Mt_SpriteText.on_tween_line_rotation      = C.SpriteText_on_tween_line_rotation
@@ -600,9 +594,9 @@ local function new_ui_scrollbar(range, parent)
 end
 
 local function load_option(option_data)
-  local file = io.open("game_option", "r")
+  local file = io.open("rc/config/option", "r")
   if file == nil then
-    io.output("game_option")
+    io.output("rc/config/option")
     io.close()
   else
     local offset
@@ -614,7 +608,7 @@ end
 
 local function save_option(option_data)
   local s = msgpack.pack(option_data)
-  local file = io.open("game_option", "w")
+  local file = io.open("rc/config/option", "w")
   file:write(s)
   file:close()
 end

@@ -135,14 +135,18 @@ function init_test_menu(self)
   --=======================INIT PANEL1=======================--
   panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
   panel1:set_pos(688, 384)
-  button1 = view.new_ui_button("button1", panel1)
-  button2 = view.new_ui_button("button2", panel1)
-  button3 = view.new_ui_button("button3", panel1)
-  button4 = view.new_ui_button("button4", panel1)
-  button1:set_pos(-100, -100)
-  button2:set_pos(-100, -50)
-  button3:set_pos(-100, 0)
-  button4:set_pos(-100, 50)
+  local button1_set = {x=-100, y=-100}
+  button1 = view.new_ui_button("button1", panel1, button1_set)
+  local button2_set = {x=-100, y=-50}
+  button2 = view.new_ui_button("button2", panel1, button2_set)
+  local button3_set = {x=-100, y=0}
+  button3 = view.new_ui_button("button3", panel1, button3_set)
+  local button4_set = {x=-100, y=50}
+  button4 = view.new_ui_button("button4", panel1, button4_set)
+  --button1:set_pos(-100, -100)
+  --button2:set_pos(-100, -50)
+  --button3:set_pos(-100, 0)
+  --button4:set_pos(-100, 50)
 
   --=======================INIT PANEL2=======================--
   panel2  = view.new_sprite("area_rect", scene_, 512, 512, true)
@@ -150,21 +154,24 @@ function init_test_menu(self)
   panel2:set_alpha(0)
   panel2:set_visible(false)
   --
-  back_btn = view.new_ui_button("BACK", panel2)
-  back_btn:set_pos(-200, 150)
-  back_btn:set_alpha(0)
-  back_btn:set_visible(false)
+  local back_btn_set = {x=-200, y=150, alpha=0, visible=false}
+  back_btn = view.new_ui_button("BACK", panel2, back_btn_set)
+  --back_btn:set_pos(-200, 150)
+  --back_btn:set_alpha(0)
+  --back_btn:set_visible(false)
   --
-  ratio1  = view.new_ui_ratio("ratio1", panel2)
-  ratio2  = view.new_ui_ratio("ratio2", panel2)
+  local ratio_set1 = {x=-200, y=-200, alpha=0, visible=false}
+  ratio1  = view.new_ui_ratio("ratio1", panel2, ratio_set1)
+  local ratio_set2 = {x=-200, y=-150, alpha=0, visible=false}
+  ratio2  = view.new_ui_ratio("ratio2", panel2, ratio_set2)
   ratio1:set_pressed(option_data["ratio1"])
   ratio2:set_pressed(option_data["ratio2"])
-  ratio1:set_pos(-200, -200)
-  ratio2:set_pos(-200, -150)
-  ratio1:set_alpha(0)
-  ratio2:set_alpha(0)
-  ratio1:set_visible(false)
-  ratio2:set_visible(false)
+  --ratio1:set_pos(-200, -200)
+  --ratio2:set_pos(-200, -150)
+  --ratio1:set_alpha(0)
+  --ratio2:set_alpha(0)
+  --ratio1:set_visible(false)
+  --ratio2:set_visible(false)
   local ratio1_press = function(self)
                         print("press ratio1")
                         option_data["ratio1"] = ratio1.is_pressed
@@ -178,11 +185,12 @@ function init_test_menu(self)
   ratio1:on_press(ratio1_press)
   ratio2:on_press(ratio2_press)
   --
-  selectbox1 = view.new_ui_selectbox(selectbox_title, panel2)
+  local selectbox_set = { x=-200, y=-100, alpha=0, visible=false}
+  selectbox1 = view.new_ui_selectbox(selectbox_title, panel2, selectbox_set)
   selectbox1:set_index(option_data["selectbox_index"])
-  selectbox1:set_pos(-200, -100)
-  selectbox1:set_alpha(0)
-  selectbox1:set_visible(false)
+  --selectbox1:set_pos(-200, -100)
+  --selectbox1:set_alpha(0)
+  --selectbox1:set_visible(false)
   local left_press  = function(self)
                         print("press left button")
                         --

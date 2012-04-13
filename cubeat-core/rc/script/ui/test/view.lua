@@ -199,8 +199,14 @@ end
 --  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 --end
 
-local function new_ui_button(text, parent)
+local function new_ui_button(text, parent, setting)
   local button = {}
+  button.setting = {x=0, y=0, alpha=255, visible=true}
+  for k,v in pairs(setting) do
+    if button.setting[k] then
+      button.setting[k] = v
+    end
+  end
   button.title        = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
   local button_focus  = function(self) button.title:set_blue(255) end
   local button_leave  = function(self) button.title:set_blue(0) end
@@ -235,11 +241,22 @@ local function new_ui_button(text, parent)
   button.on_press     = function(self, func)
                           button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
                         end
+  --
+  button:set_pos(button.setting.x, button.setting.y)
+  button:set_alpha(button.setting.alpha)
+  button:set_visible(button.setting.visible)
+  --
   return button
 end
 
-local function new_ui_ratio(text, parent)
+local function new_ui_ratio(text, parent, setting)
   local ratio = {}
+  ratio.setting = {x=0, y=0, alpha=255, visible=true}
+  for k,v in pairs(setting) do
+    if ratio.setting[k] then
+      ratio.setting[k] = v
+    end
+  end
   ratio.is_pressed  = false
   ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
   ratio.title       = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
@@ -327,11 +344,22 @@ local function new_ui_ratio(text, parent)
                         ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                         ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
+  --
+  ratio:set_pos(ratio.setting.x, ratio.setting.y)
+  ratio:set_alpha(ratio.setting.alpha)
+  ratio:set_visible(ratio.setting.visible)
+  --
   return ratio
 end
 
-local function new_ui_selectbox(tb, parent)
+local function new_ui_selectbox(tb, parent, setting)
   box = {}
+  box.setting = {x=0, y=0, alpha= 255, visible= true}
+  for k,v in pairs(setting) do
+    if box.setting[k] then
+      box.setting[k] = v
+    end
+  end
   box.index     = 1
   box.title_tb  = tb
   box.left      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
@@ -437,6 +465,11 @@ local function new_ui_selectbox(tb, parent)
                                           end
                         box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
+  --
+  box:set_pos(box.setting.x, box.setting.y)
+  box:set_alpha(box.setting.alpha)
+  box:set_visible(box.setting.visible)
+  --
   return box
 end
 
@@ -562,6 +595,7 @@ local function new_ui_scrollbar(range, parent)
                             end
                           end
   scrollbar.set_index   = function(self, index)
+                            if index == nil then index = 0 end
                             if index < 0 then index = 0 end
                             if index > scrollbar.range then index = scrollbar.range end
                             local bg_left = scrollbar.line:get_pos_x()

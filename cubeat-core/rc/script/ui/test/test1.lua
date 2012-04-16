@@ -135,13 +135,13 @@ function init_test_menu(self)
   --=======================INIT PANEL1=======================--
   panel1 = view.new_sprite("area_rect", scene_, 256, 256, true)
   panel1:set_pos(688, 384)
-  local button1_set = {x=-100, y=-100, title="button1"}
+  local button1_set = {x=-100,  y=-100, title="button1"}
+  local button2_set = {x=-100,  y=-50,  title="button2"}
+  local button3_set = {x=-100,  y=0,    title="button3"}
+  local button4_set = {x=-100,  y=50,   title="button4"}
   button1 = view.new_ui_button(panel1, button1_set)
-  local button2_set = {x=-100, y=-50, title="button2"}
   button2 = view.new_ui_button(panel1, button2_set)
-  local button3_set = {x=-100, y=0, title="button3"}
   button3 = view.new_ui_button(panel1, button3_set)
-  local button4_set = {x=-100, y=50, title="button4"}
   button4 = view.new_ui_button(panel1, button4_set)
 
   --=======================INIT PANEL2=======================--
@@ -154,8 +154,8 @@ function init_test_menu(self)
   back_btn = view.new_ui_button(panel2, back_btn_set)
   --
   local ratio_set1 = {x=-200, y=-200, alpha=0, visible=false, title="ratio1"}
-  ratio1  = view.new_ui_ratio(panel2, ratio_set1)
   local ratio_set2 = {x=-200, y=-150, alpha=0, visible=false, title="ratio2"}
+  ratio1  = view.new_ui_ratio(panel2, ratio_set1)
   ratio2  = view.new_ui_ratio(panel2, ratio_set2)
   ratio1:set_pressed(option_data["ratio1"])
   ratio2:set_pressed(option_data["ratio2"])
@@ -172,8 +172,8 @@ function init_test_menu(self)
   ratio1:on_press(ratio1_press)
   ratio2:on_press(ratio2_press)
   --
-  local selectbox_set = { x=-200, y=-100, alpha=0, visible=false, title_tb=selectbox_title}
-  selectbox1 = view.new_ui_selectbox(panel2, selectbox_set)
+  local selectbox_set1 = { x=-200, y=-100, alpha=0, visible=false, title_tb=selectbox_title}
+  selectbox1 = view.new_ui_selectbox(panel2, selectbox_set1)
   selectbox1:set_index(option_data["selectbox_index"])
   local left_press  = function(self)
                         print("press left button")
@@ -195,8 +195,8 @@ function init_test_menu(self)
   title_image:set_alpha(0)
   title_image:set_visible(false)
   --
-  local selectbox_set = { x=-200, y=-50, alpha=0, visible=false, range=255}
-  scrollbar1 = view.new_ui_scrollbar(panel2, selectbox_set)
+  local scrollbar_set1 = { x=-200, y=-50, alpha=0, visible=false, range=255}
+  scrollbar1 = view.new_ui_scrollbar(panel2, scrollbar_set1)
   scrollbar1:set_index(option_data["scrollbar1_index"])
   local scrollbar_press = function(self)
                             print("the index is "..tostring(scrollbar1.setting.index))

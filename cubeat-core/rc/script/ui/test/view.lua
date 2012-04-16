@@ -199,21 +199,39 @@ end
 --  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 --end
 
-local function new_ui_button(text, parent, setting)
-  local button = {}
-  button.setting = {x=0, y=0, alpha=255, visible=true}
+local function load_setting(ui_setting, setting)
   for k,v in pairs(setting) do
-    if button.setting[k] then
-      button.setting[k] = v
+    if ui_setting[k] then
+      ui_setting[k] = v
     end
   end
-  button.title        = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
-  local button_focus  = function(self) button.title:set_blue(255) end
-  local button_leave  = function(self) button.title:set_blue(0) end
-  button.title:set_depth(-10)
+end
+
+local function set_focus_leave_color(sprite, focus_color, leave_color)
+  local sprite_focus =  function(self)
+                          sprite:set_red(focus_color.r)
+                          sprite:set_green(focus_color.g)
+                          sprite:set_blue(focus_color.b)
+                        end
+  local sprite_leave =  function(self)
+                          sprite:set_red(leave_color.r)
+                          sprite:set_green(leave_color.g)
+                          sprite:set_blue(leave_color.b)
+                        end
+  sprite:on_enter_focus(C.Input_get_input1(), sprite_focus)
+  sprite:on_leave_focus(C.Input_get_input1(), sprite_leave)
+end
+
+local function new_ui_button(parent, setting)
+  local button = {}
+  button.setting = {x=0, y=0, alpha=255, visible=true, title="text", focus_color={r=255,g=255,b=255}, leave_color={r=255,g=255,b=0}}
+  load_setting(button.setting, setting)
   --
-  button.title:on_enter_focus( C.Input_get_input1(), button_focus )
-  button.title:on_leave_focus( C.Input_get_input1(), button_leave )
+  button.title = new_sprite_text(button.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
+  --local button_focus  = function(self) button.title:set_blue(255) end
+  --local button_leave  = function(self) button.title:set_blue(0) end
+  --button.title:on_enter_focus( C.Input_get_input1(), button_focus )
+  --button.title:on_leave_focus( C.Input_get_input1(), button_leave )
   --
   button.set_pos      = function(self, posx, posy)
                           button.title:set_pos(posx, posy)
@@ -242,6 +260,8 @@ local function new_ui_button(text, parent, setting)
                           button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
                         end
   --
+  set_focus_leave_color(button.title, button.setting.focus_color, button.setting.leave_color)
+  button.title:set_depth(-10)
   button:set_pos(button.setting.x, button.setting.y)
   button:set_alpha(button.setting.alpha)
   button:set_visible(button.setting.visible)
@@ -249,25 +269,19 @@ local function new_ui_button(text, parent, setting)
   return button
 end
 
-local function new_ui_ratio(text, parent, setting)
+local function new_ui_ratio(parent, setting)
   local ratio = {}
-  ratio.setting = {x=0, y=0, alpha=255, visible=true}
-  for k,v in pairs(setting) do
-    if ratio.setting[k] then
-      ratio.setting[k] = v
-    end
-  end
+  ratio.setting = {x=0, y=0, alpha=255, visible=true, title="ratio", focus_color={r=255,g=255,b=255}, leave_color={r=255,g=255,b=0}}
+  load_setting(ratio.setting, setting)
   ratio.is_pressed  = false
-  ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
-  ratio.title       = new_sprite_text(text, parent, "Star Jedi", 24, false, 255, 255, 0)
-  ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
-  ratio.icon:set_depth(-10)
-  ratio.title:set_depth(-10)
   --
-  local ratio_focus = function(self) ratio.title:set_blue(255) end
-  local ratio_leave = function(self) ratio.title:set_blue(0) end
-  ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
-  ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
+  ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
+  ratio.title       = new_sprite_text(ratio.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
+  ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
+  --local ratio_focus = function(self) ratio.title:set_blue(255) end
+  --local ratio_leave = function(self) ratio.title:set_blue(0) end
+  --ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
+  --ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
   --
   local ratio_press = function(self)
                         if ratio.is_pressed == false then
@@ -345,6 +359,9 @@ local function new_ui_ratio(text, parent, setting)
                         ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
   --
+  set_focus_leave_color(ratio.title, ratio.setting.focus_color, ratio.setting.leave_color)
+  ratio.icon:set_depth(-10)
+  ratio.title:set_depth(-10)
   ratio:set_pos(ratio.setting.x, ratio.setting.y)
   ratio:set_alpha(ratio.setting.alpha)
   ratio:set_visible(ratio.setting.visible)
@@ -352,45 +369,44 @@ local function new_ui_ratio(text, parent, setting)
   return ratio
 end
 
-local function new_ui_selectbox(tb, parent, setting)
+local function new_ui_selectbox(parent, setting)
   box = {}
-  box.setting = {x=0, y=0, alpha= 255, visible= true}
-  for k,v in pairs(setting) do
-    if box.setting[k] then
-      box.setting[k] = v
-    end
-  end
-  box.index     = 1
-  box.title_tb  = tb
+  box.setting = { x=0, y=0,
+                  alpha= 255,
+                  visible= true,
+                  index=1,
+                  title_tb={"SELECT1", "SELECT2", "SELECT3"},
+                  focus_color={r=255,g=255,b=0},
+                  leave_color={r=255,g=255,b=255} }
+  load_setting(box.setting, setting)
+  --
   box.left      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
   box.right     = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
-  box.title     = new_sprite_text(box.title_tb[box.index], parent, "Star Jedi", 24, true, 255, 255, 0)
-  box.debug_text= new_sprite_text(tostring(box.index), parent, "Star Jedi", 24, true, 100, 100, 255)
-  box.left:set_depth(-10)
-  box.right:set_depth(-10)
+  box.title     = new_sprite_text(box.setting.title_tb[box.setting.index], parent, "Star Jedi", 24, true, 255, 255, 0)
+  box.debug_text= new_sprite_text(tostring(box.setting.index), parent, "Star Jedi", 24, true, 100, 100, 255)
   --
-  local left_focus  = function(self) box.left:set_blue(0) end
-  local left_leave  = function(self) box.left:set_blue(255) end
-  local right_focus = function(self) box.right:set_blue(0) end
-  local right_leave = function(self) box.right:set_blue(255) end
-  box.left:on_enter_focus( C.Input_get_input1(), left_focus )
-  box.left:on_leave_focus( C.Input_get_input1(), left_leave )
-  box.right:on_enter_focus( C.Input_get_input1(), right_focus )
-  box.right:on_leave_focus( C.Input_get_input1(), right_leave )
+  --local left_focus  = function(self) box.left:set_blue(0) end
+  --local left_leave  = function(self) box.left:set_blue(255) end
+  --local right_focus = function(self) box.right:set_blue(0) end
+  --local right_leave = function(self) box.right:set_blue(255) end
+  --box.left:on_enter_focus( C.Input_get_input1(), left_focus )
+  --box.left:on_leave_focus( C.Input_get_input1(), left_leave )
+  --box.right:on_enter_focus( C.Input_get_input1(), right_focus )
+  --box.right:on_leave_focus( C.Input_get_input1(), right_leave )
   --
   local left_press  = function(self)
-                        box.index = box.index - 1
-                        if box.index < 1 then box.index = table.getn(box.title_tb) end
-                        box.title:change_text(box.title_tb[box.index])
-                        box.debug_text:change_text(tostring(box.index))
+                        box.setting.index = box.setting.index - 1
+                        if box.setting.index < 1 then box.setting.index = table.getn(box.setting.title_tb) end
+                        box.title:change_text(box.setting.title_tb[box.setting.index])
+                        box.debug_text:change_text(tostring(box.setting.index))
                       end
   box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), left_press )
   --
   local right_press = function(self)
-                        box.index = box.index + 1
-                        if box.index > table.getn(box.title_tb) then box.index = 1 end
-                        box.title:change_text(box.title_tb[box.index])
-                        box.debug_text:change_text(tostring(box.index))
+                        box.setting.index = box.setting.index + 1
+                        if box.setting.index > table.getn(box.setting.title_tb) then box.setting.index = 1 end
+                        box.title:change_text(box.setting.title_tb[box.setting.index])
+                        box.debug_text:change_text(tostring(box.setting.index))
                       end
   box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), right_press )
   --
@@ -433,10 +449,10 @@ local function new_ui_selectbox(tb, parent, setting)
                       end
   box.set_index     = function(self, index)
                         if index < 0 then return end
-                        if index > table.getn(box.title_tb) then return end
-                        box.index = index
-                        box.title:change_text(box.title_tb[box.index])
-                        box.debug_text:change_text(tostring(box.index))
+                        if index > table.getn(box.setting.title_tb) then return end
+                        box.setting.index = index
+                        box.title:change_text(box.setting.title_tb[box.setting.index])
+                        box.debug_text:change_text(tostring(box.setting.index))
                       end
   box.moveto        = function(self, posx, posy, duration, delay)
                         local tween_cb = function(self) end
@@ -447,25 +463,29 @@ local function new_ui_selectbox(tb, parent, setting)
                       end
   box.left_on_press = function(self, func)
                         local callback  = function(self)
-                                            box.index = box.index - 1
-                                            if box.index < 1 then box.index = table.getn(box.title_tb) end
-                                            box.title:change_text(box.title_tb[box.index])
-                                            box.debug_text:change_text(tostring(box.index))
+                                            box.setting.index = box.setting.index - 1
+                                            if box.setting.index < 1 then box.setting.index = table.getn(box.setting.title_tb) end
+                                            box.title:change_text(box.setting.title_tb[box.setting.index])
+                                            box.debug_text:change_text(tostring(box.setting.index))
                                             func(self)
                                           end
                         box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
   box.right_on_press= function(self, func)
                         local callback  = function(self)
-                                            box.index = box.index + 1
-                                            if box.index > table.getn(box.title_tb) then box.index = 1 end
-                                            box.title:change_text(box.title_tb[box.index])
-                                            box.debug_text:change_text(tostring(box.index))
+                                            box.setting.index = box.setting.index + 1
+                                            if box.setting.index > table.getn(box.setting.title_tb) then box.setting.index = 1 end
+                                            box.title:change_text(box.setting.title_tb[box.setting.index])
+                                            box.debug_text:change_text(tostring(box.setting.index))
                                             func(self)
                                           end
                         box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                       end
   --
+  set_focus_leave_color(box.left, box.setting.focus_color, box.setting.leave_color)
+  set_focus_leave_color(box.right, box.setting.focus_color, box.setting.leave_color)
+  box.left:set_depth(-10)
+  box.right:set_depth(-10)
   box:set_pos(box.setting.x, box.setting.y)
   box:set_alpha(box.setting.alpha)
   box:set_visible(box.setting.visible)

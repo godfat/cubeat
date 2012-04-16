@@ -136,6 +136,7 @@
 		<Unit filename="include\model\state\State.hpp.eruby" />
 		<Unit filename="include\model\state\Waiting.hpp" />
 		<Unit filename="include\model\state\Waiting.hpp.eruby" />
+		<Unit filename="include\net\Manager.hpp" />
 		<Unit filename="include\presenter\Cube.hpp" />
 		<Unit filename="include\presenter\Cube.hpp.eruby" />
 		<Unit filename="include\presenter\MainMenu.hpp" />
@@ -316,6 +317,7 @@
 		<Unit filename="src\model\state\State.cpp.eruby" />
 		<Unit filename="src\model\state\Waiting.cpp" />
 		<Unit filename="src\model\state\Waiting.cpp.eruby" />
+		<Unit filename="src\net\Manager.cpp" />
 		<Unit filename="src\presenter\Cube.cpp" />
 		<Unit filename="src\presenter\Cube.cpp.eruby" />
 		<Unit filename="src\presenter\MainMenu.cpp" />

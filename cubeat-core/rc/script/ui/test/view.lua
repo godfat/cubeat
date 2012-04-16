@@ -224,14 +224,16 @@ end
 
 local function new_ui_button(parent, setting)
   local button = {}
-  button.setting = {x=0, y=0, alpha=255, visible=true, title="text", focus_color={r=255,g=255,b=255}, leave_color={r=255,g=255,b=0}}
+  button.setting ={
+                    x=0, y=0, alpha=255, depth=-10,
+                    visible=true,
+                    title="text",
+                    focus_color={r=255,g=255,b=255},
+                    leave_color={r=255,g=255,b=0}
+                  }
   load_setting(button.setting, setting)
   --
   button.title = new_sprite_text(button.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
-  --local button_focus  = function(self) button.title:set_blue(255) end
-  --local button_leave  = function(self) button.title:set_blue(0) end
-  --button.title:on_enter_focus( C.Input_get_input1(), button_focus )
-  --button.title:on_leave_focus( C.Input_get_input1(), button_leave )
   --
   button.set_pos      = function(self, posx, posy)
                           button.title:set_pos(posx, posy)
@@ -241,6 +243,9 @@ local function new_ui_button(parent, setting)
                         end
   button.set_alpha    = function(self, alpha)
                           button.title:set_alpha(alpha)
+                        end
+  button.set_depth    = function(self, depth)
+                          button.title:set_depth(depth)
                         end
   button.set_fade     = function(self, alpha)
                           button:set_visible(true)
@@ -261,9 +266,9 @@ local function new_ui_button(parent, setting)
                         end
   --
   set_focus_leave_color(button.title, button.setting.focus_color, button.setting.leave_color)
-  button.title:set_depth(-10)
   button:set_pos(button.setting.x, button.setting.y)
   button:set_alpha(button.setting.alpha)
+  button:set_depth(button.setting.depth)
   button:set_visible(button.setting.visible)
   --
   return button
@@ -271,27 +276,29 @@ end
 
 local function new_ui_ratio(parent, setting)
   local ratio = {}
-  ratio.setting = {x=0, y=0, alpha=255, visible=true, title="ratio", focus_color={r=255,g=255,b=255}, leave_color={r=255,g=255,b=0}}
+  ratio.setting = {
+                    x=0, y=0, alpha=255, depth=-10,
+                    visible=true,
+                    title="ratio",
+                    is_pressed=false,
+                    focus_color={r=255,g=255,b=255},
+                    leave_color={r=255,g=255,b=0}
+                  }
   load_setting(ratio.setting, setting)
-  ratio.is_pressed  = false
   --
   ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
   ratio.title       = new_sprite_text(ratio.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
   ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
-  --local ratio_focus = function(self) ratio.title:set_blue(255) end
-  --local ratio_leave = function(self) ratio.title:set_blue(0) end
-  --ratio.title:on_enter_focus( C.Input_get_input1(), ratio_focus )
-  --ratio.title:on_leave_focus( C.Input_get_input1(), ratio_leave )
   --
   local ratio_press = function(self)
-                        if ratio.is_pressed == false then
+                        if ratio.setting.is_pressed == false then
                           ratio.icon:set_texture("cubes/cube-b-1")
-                          ratio.is_pressed = true
+                          ratio.setting.is_pressed = true
                         else
                           ratio.icon:set_texture("cubes/cube1")
-                          ratio.is_pressed = false
+                          ratio.setting.is_pressed = false
                         end
-                        ratio.debug_text:change_text(tostring(ratio.is_pressed))
+                        ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                       end
   ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
   ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
@@ -310,6 +317,10 @@ local function new_ui_ratio(parent, setting)
                         ratio.icon:set_alpha(alpha)
                         ratio.title:set_alpha(alpha)
                         ratio.debug_text:set_alpha(alpha)
+                      end
+  ratio.set_depth   = function(self, depth)
+                        ratio.icon:set_depth(depth)
+                        ratio.title:set_depth(depth)
                       end
   ratio.set_fade    = function(self, alpha)
                         ratio:set_visible(true)
@@ -330,12 +341,12 @@ local function new_ui_ratio(parent, setting)
   ratio.set_pressed = function(self, pressed)
                         if pressed == true then
                           ratio.icon:set_texture("cubes/cube-b-1")
-                          ratio.is_pressed = true
+                          ratio.setting.is_pressed = true
                         else
                           ratio.icon:set_texture("cubes/cube1")
-                          ratio.is_pressed = false
+                          ratio.setting.is_pressed = false
                         end
-                        ratio.debug_text:change_text(tostring(ratio.is_pressed))
+                        ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                       end
   ratio.moveto      = function(self, posx, posy, duration, delay)
                         local tween_cb = function(self) end
@@ -345,14 +356,14 @@ local function new_ui_ratio(parent, setting)
                       end
   ratio.on_press    = function(self, func)
                         local callback  = function(self)
-                                            if ratio.is_pressed == false then
+                                            if ratio.setting.is_pressed == false then
                                               ratio.icon:set_texture("cubes/cube-b-1")
-                                              ratio.is_pressed = true
+                                              ratio.setting.is_pressed = true
                                             else
                                               ratio.icon:set_texture("cubes/cube1")
-                                              ratio.is_pressed = false
+                                              ratio.setting.is_pressed = false
                                             end
-                                            ratio.debug_text:change_text(tostring(ratio.is_pressed))
+                                            ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                                             func(self)
                                           end
                         ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
@@ -360,10 +371,9 @@ local function new_ui_ratio(parent, setting)
                       end
   --
   set_focus_leave_color(ratio.title, ratio.setting.focus_color, ratio.setting.leave_color)
-  ratio.icon:set_depth(-10)
-  ratio.title:set_depth(-10)
   ratio:set_pos(ratio.setting.x, ratio.setting.y)
   ratio:set_alpha(ratio.setting.alpha)
+  ratio:set_depth(ratio.setting.depth)
   ratio:set_visible(ratio.setting.visible)
   --
   return ratio
@@ -371,28 +381,20 @@ end
 
 local function new_ui_selectbox(parent, setting)
   box = {}
-  box.setting = { x=0, y=0,
-                  alpha= 255,
+  box.setting = {
+                  x=0, y=0, alpha= 255, depth=-10,
                   visible= true,
                   index=1,
                   title_tb={"SELECT1", "SELECT2", "SELECT3"},
                   focus_color={r=255,g=255,b=0},
-                  leave_color={r=255,g=255,b=255} }
+                  leave_color={r=255,g=255,b=255}
+                }
   load_setting(box.setting, setting)
   --
   box.left      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
   box.right     = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
   box.title     = new_sprite_text(box.setting.title_tb[box.setting.index], parent, "Star Jedi", 24, true, 255, 255, 0)
   box.debug_text= new_sprite_text(tostring(box.setting.index), parent, "Star Jedi", 24, true, 100, 100, 255)
-  --
-  --local left_focus  = function(self) box.left:set_blue(0) end
-  --local left_leave  = function(self) box.left:set_blue(255) end
-  --local right_focus = function(self) box.right:set_blue(0) end
-  --local right_leave = function(self) box.right:set_blue(255) end
-  --box.left:on_enter_focus( C.Input_get_input1(), left_focus )
-  --box.left:on_leave_focus( C.Input_get_input1(), left_leave )
-  --box.right:on_enter_focus( C.Input_get_input1(), right_focus )
-  --box.right:on_leave_focus( C.Input_get_input1(), right_leave )
   --
   local left_press  = function(self)
                         box.setting.index = box.setting.index - 1
@@ -427,6 +429,10 @@ local function new_ui_selectbox(parent, setting)
                         box.right:set_alpha(alpha)
                         box.title:set_alpha(alpha)
                         box.debug_text:set_alpha(alpha)
+                      end
+  box.set_depth     = function(self, depth)
+                        box.left:set_depth(depth)
+                        box.right:set_depth(depth)
                       end
   box.set_fade      = function(self, alpha)
                         box:set_visible(true)
@@ -484,49 +490,54 @@ local function new_ui_selectbox(parent, setting)
   --
   set_focus_leave_color(box.left, box.setting.focus_color, box.setting.leave_color)
   set_focus_leave_color(box.right, box.setting.focus_color, box.setting.leave_color)
-  box.left:set_depth(-10)
-  box.right:set_depth(-10)
   box:set_pos(box.setting.x, box.setting.y)
   box:set_alpha(box.setting.alpha)
+  box:set_depth(box.setting.depth)
   box:set_visible(box.setting.visible)
   --
   return box
 end
 
-local function new_ui_scrollbar(range, parent)
+local function new_ui_scrollbar(parent, setting)
   scrollbar = {}
+  scrollbar.setting = {
+                        x=0, y=0, alpha=255, depth=-50,
+                        visible=true,
+                        index=0,
+                        range=10,
+                        is_pressed=false,
+                        is_focus=false,
+                        focus_color={r=255,g=255,b=255},
+                        leave_color={r=255,g=255,b=0}
+                      }
+  load_setting(scrollbar.setting, setting)
+  --
   scrollbar.parent      = parent
-  scrollbar.range       = range
-  scrollbar.index       = 0
-  scrollbar.is_pressed  = false
-  scrollbar.is_focus    = false
   scrollbar.line        = new_sprite("cubes/cube1", parent, 256, 16, false)
   scrollbar.button      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
   scrollbar.title       = new_sprite_text("0", parent, "Star Jedi", 24, true, 255, 255, 0)
   scrollbar.debug_text  = new_sprite_text("off", parent, "Star Jedi", 24, true, 100, 100, 255)
-  scrollbar.line:set_depth(-50)
-  scrollbar.button:set_depth(-100)
   --
   local scrollbar_button_press    = function(self)
-                                      scrollbar.is_pressed = true
+                                      scrollbar.setting.is_pressed = true
                                     end
   local scrollbar_button_release  = function(self)
-                                      scrollbar.is_pressed = false
+                                      scrollbar.setting.is_pressed = false
                                     end
   scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press )
   scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release )
   --
   local scrollbar_button_focus    = function(self)
                                       scrollbar.button:set_blue(0)
-                                      scrollbar.is_focus = true
+                                      scrollbar.setting.is_focus = true
                                       scrollbar.debug_text:change_text("on")
                                     end
   local scrollbar_button_leave    = function(self)
                                       scrollbar.button:set_blue(255)
-                                      scrollbar.is_focus = false
+                                      scrollbar.setting.is_focus = false
                                       scrollbar.debug_text:change_text("off")
                                       --
-                                      if scrollbar.is_pressed == true then
+                                      if scrollbar.setting.is_pressed == true then
                                         local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
                                         local pos_y = scrollbar.button:get_pos_y()
                                         local bg_left = scrollbar.line:get_pos_x()
@@ -535,16 +546,16 @@ local function new_ui_scrollbar(range, parent)
                                         if pos_x > bg_right then pos_x = bg_right end
                                         scrollbar.button:set_pos(pos_x, pos_y)
                                         --
-                                        scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-                                        scrollbar.title:change_text(tostring(scrollbar.index))
-                                        scrollbar.is_pressed = false
+                                        scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+                                        scrollbar.title:change_text(tostring(scrollbar.setting.index))
+                                        scrollbar.setting.is_pressed = false
                                       end
                                     end
   scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus )
   scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave )
   --
   local scrollbar_button_down = function(self)
-    if scrollbar.is_focus == true then
+    if scrollbar.setting.is_focus == true then
       local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
       local pos_y = scrollbar.button:get_pos_y()
       local bg_left = scrollbar.line:get_pos_x()
@@ -553,8 +564,8 @@ local function new_ui_scrollbar(range, parent)
       if pos_x > bg_right then pos_x = bg_right end
       scrollbar.button:set_pos(pos_x, pos_y)
       --
-      scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-      scrollbar.title:change_text(tostring(scrollbar.index))
+      scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+      scrollbar.title:change_text(tostring(scrollbar.setting.index))
     end
   end
   scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down )
@@ -568,8 +579,8 @@ local function new_ui_scrollbar(range, parent)
     if pos_x > bg_right then pos_x = bg_right end
     scrollbar.button:set_pos(pos_x, pos_y)
     --
-    scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-    scrollbar.title:change_text(tostring(scrollbar.index))
+    scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+    scrollbar.title:change_text(tostring(scrollbar.setting.index))
   end
   scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_line_press )
   --
@@ -577,7 +588,7 @@ local function new_ui_scrollbar(range, parent)
                             scrollbar.line:set_pos(posx, posy+10)
                             local bg_left = scrollbar.line:get_pos_x()
                             local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
-                            local btn_posx = ( scrollbar.index / scrollbar.range ) * (bg_right - bg_left) + bg_left
+                            local btn_posx = ( scrollbar.setting.index / scrollbar.setting.range ) * (bg_right - bg_left) + bg_left
                             scrollbar.button:set_pos(btn_posx, posy)
                             scrollbar.title:set_pos(posx+300, posy+10)
                             scrollbar.debug_text:set_pos(posx+370, posy+10)
@@ -593,6 +604,10 @@ local function new_ui_scrollbar(range, parent)
                             scrollbar.button:set_alpha(alpha)
                             scrollbar.title:set_alpha(alpha)
                             scrollbar.debug_text:set_alpha(alpha)
+                          end
+  scrollbar.set_depth   = function(self, depth)
+                            scrollbar.line:set_depth(depth)
+                            scrollbar.button:set_depth(depth-50)
                           end
   scrollbar.set_fade    = function(self, alpha)
                             scrollbar:set_visible(true)
@@ -617,18 +632,18 @@ local function new_ui_scrollbar(range, parent)
   scrollbar.set_index   = function(self, index)
                             if index == nil then index = 0 end
                             if index < 0 then index = 0 end
-                            if index > scrollbar.range then index = scrollbar.range end
+                            if index > scrollbar.setting.range then index = scrollbar.setting.range end
                             local bg_left = scrollbar.line:get_pos_x()
                             local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
-                            local posx = ( index / scrollbar.range ) * (bg_right - bg_left) + bg_left
+                            local posx = ( index / scrollbar.setting.range ) * (bg_right - bg_left) + bg_left
                             local posy = scrollbar.button:get_pos_y()
                             scrollbar.button:set_pos(posx, posy)
                             scrollbar.title:change_text(tostring(index))
-                            scrollbar.index = index
+                            scrollbar.setting.index = index
                           end
   scrollbar.on_press    = function(self, func)
                             local callback = function(self)
-                              if scrollbar.is_focus == true then
+                              if scrollbar.setting.is_focus == true then
                                 local pos_x = C.Input_get_cursor_x(C.Input_get_input1()) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
                                 local pos_y = scrollbar.button:get_pos_y()
                                 local bg_left = scrollbar.line:get_pos_x()
@@ -637,13 +652,18 @@ local function new_ui_scrollbar(range, parent)
                                 if pos_x > bg_right then pos_x = bg_right end
                                 scrollbar.button:set_pos(pos_x, pos_y)
                                 --
-                                scrollbar.index = math.floor( (pos_x-bg_left)*scrollbar.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-                                scrollbar.title:change_text(tostring(scrollbar.index))
+                                scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+                                scrollbar.title:change_text(tostring(scrollbar.setting.index))
                               end
                               func(self)
                             end
                             scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), callback )
                           end
+  --
+  scrollbar:set_depth(scrollbar.setting.depth)
+  scrollbar:set_pos(scrollbar.setting.x, scrollbar.setting.y)
+  scrollbar:set_alpha(scrollbar.setting.alpha)
+  scrollbar:set_visible(scrollbar.setting.visible)
   return scrollbar
 end
 

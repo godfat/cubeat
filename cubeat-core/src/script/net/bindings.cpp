@@ -1,10 +1,9 @@
 
-#include "test/test_basic_enet_main.hpp"
+#include "net/Manager.hpp"
 #include <cstdio>
 
 using namespace psc;
-//using namespace ctrl;
-using namespace presenter;
+using namespace net;
 
 extern "C" {
 #include "script/net/bindings.h"
@@ -23,6 +22,10 @@ void on_matched() {
 void on_disconnected() {
     printf("Lua->C: farside disconnected.\n");
 //    N_STATE = N_DEFAULT;
+}
+
+void on_received(char const* s) {
+    printf("Lua->C: farside received something.\n");
 }
 
 int poll_from_C() {

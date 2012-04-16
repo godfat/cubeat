@@ -17,6 +17,12 @@ public:
     TestBasicENet();
     void cycle();
 
+    //very fast tests, let's not use callbacks for now
+    void on_connected();
+    void on_matched();
+    void on_disconnected();
+    void on_received(char const* s);
+
 private:
     presenter::pStage stage_;
 };

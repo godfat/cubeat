@@ -8,5 +8,6 @@
 APIEXPORT void on_connected();
 APIEXPORT void on_matched();
 APIEXPORT void on_disconnected();
+APIEXPORT void on_received(char const*);
 APIEXPORT int poll_from_C();
 APIEXPORT bool check_quit();

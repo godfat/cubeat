@@ -222,6 +222,11 @@ local function set_focus_leave_color(sprite, focus_color, leave_color)
   sprite:on_leave_focus(C.Input_get_input1(), sprite_leave)
 end
 
+local function set_on_press_callback(sprite, func)
+  sprite:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+  sprite:on_press( C.Input_get_trig1(C.Input_get_input2()), func )
+end
+
 local function new_ui_button(parent, setting)
   local button = {}
   button.setting ={
@@ -262,7 +267,8 @@ local function new_ui_button(parent, setting)
                           button.title:on_tween_line_pos(posx, posy, duration, 0, tween_cb, delay)
                         end
   button.on_press     = function(self, func)
-                          button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+                          --button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
+                          set_on_press_callback(button.title, func)
                         end
   --
   set_focus_leave_color(button.title, button.setting.focus_color, button.setting.leave_color)
@@ -300,8 +306,10 @@ local function new_ui_ratio(parent, setting)
                         end
                         ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                       end
-  ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
-  ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
+  --ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
+  --ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
+  set_on_press_callback(ratio.icon, ratio_press)
+  set_on_press_callback(ratio.title, ratio_press)
   --
   ratio.set_pos     = function(self, posx, posy)
                         ratio.icon:set_pos(posx, posy)
@@ -366,8 +374,10 @@ local function new_ui_ratio(parent, setting)
                                             ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                                             func(self)
                                           end
-                        ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
-                        ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        --ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        --ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        set_on_press_callback(ratio.icon, callback)
+                        set_on_press_callback(ratio.title, callback)
                       end
   --
   set_focus_leave_color(ratio.title, ratio.setting.focus_color, ratio.setting.leave_color)
@@ -402,7 +412,8 @@ local function new_ui_selectbox(parent, setting)
                         box.title:change_text(box.setting.title_tb[box.setting.index])
                         box.debug_text:change_text(tostring(box.setting.index))
                       end
-  box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), left_press )
+  --box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), left_press )
+  set_on_press_callback(box.left, left_press)
   --
   local right_press = function(self)
                         box.setting.index = box.setting.index + 1
@@ -410,7 +421,8 @@ local function new_ui_selectbox(parent, setting)
                         box.title:change_text(box.setting.title_tb[box.setting.index])
                         box.debug_text:change_text(tostring(box.setting.index))
                       end
-  box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), right_press )
+  --box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), right_press )
+  set_on_press_callback(box.right, right_press)
   --
   box.set_pos       = function(self, posx, posy)
                         box.left:set_pos(posx, posy)
@@ -475,7 +487,8 @@ local function new_ui_selectbox(parent, setting)
                                             box.debug_text:change_text(tostring(box.setting.index))
                                             func(self)
                                           end
-                        box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        --box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        set_on_press_callback(box.left, callback)
                       end
   box.right_on_press= function(self, func)
                         local callback  = function(self)
@@ -485,7 +498,8 @@ local function new_ui_selectbox(parent, setting)
                                             box.debug_text:change_text(tostring(box.setting.index))
                                             func(self)
                                           end
-                        box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        --box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
+                        set_on_press_callback(box.right, callback)
                       end
   --
   set_focus_leave_color(box.left, box.setting.focus_color, box.setting.leave_color)

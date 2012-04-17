@@ -186,7 +186,6 @@
 		<Unit filename="include\view\All.hpp" />
 		<Unit filename="include\view\AnimatedSceneObject.hpp" />
 		<Unit filename="include\view\AnimatedSprite.hpp" />
-		<Unit filename="include\view\Button.hpp" />
 		<Unit filename="include\view\Cube.hpp" />
 		<Unit filename="include\view\Game.hpp" />
 		<Unit filename="include\view\Map.hpp" />
@@ -394,7 +393,6 @@
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />
 		<Unit filename="src\view\AnimatedSprite.cpp" />
-		<Unit filename="src\view\Button.cpp" />
 		<Unit filename="src\view\Cube.cpp" />
 		<Unit filename="src\view\Menu.cpp" />
 		<Unit filename="src\view\Object.cpp" />

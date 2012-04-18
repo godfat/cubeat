@@ -46,7 +46,7 @@ void Manager::start_lua(int type)
             lua_thread_ = 0;
         }
         lua_thread_ =
-            new boost::thread( std::tr1::bind(&Manager::start_lua, this, type) );
+            new boost::thread( std::tr1::bind(&Manager::start_lua_, this, type) );
     }
 }
 

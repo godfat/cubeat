@@ -115,6 +115,8 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   4. arriving at logical y when the cube below is still there dropping is worth investigating nonetheless.
      
   5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
+  
+  6. HAVE TO UPDATE TO IRRLICHT 1.8 BECAUSE FULL SCREEN UNDER MAC DONT WORK.
 
 * Feature / Gameplay Issues:
 

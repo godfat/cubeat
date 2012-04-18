@@ -14,7 +14,8 @@ namespace test {
 
 class TestBasicENet{
 public:
-    TestBasicENet();
+    TestBasicENet(int type);
+    ~TestBasicENet();
     void cycle();
 
     //very fast tests, let's not use callbacks for now
@@ -25,6 +26,7 @@ public:
 
 private:
     presenter::pStage stage_;
+    int type_;
 };
 
 } //test

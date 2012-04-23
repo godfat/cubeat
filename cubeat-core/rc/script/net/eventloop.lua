@@ -1,11 +1,7 @@
-local basepath = require 'rc/script/helper'.basepath
-package.path = basepath()..[[rc/script/net/?.lua;]]..package.path
-package.cpath= basepath()..[[rc/script/net/?.dll;]]..package.cpath
-
 local enet     = require 'enet'
 local socket   = require 'socket'
--- local gettime = require 'socket'.gettime
--- local sleep   = require 'socket'.sleep
+local gettime = require 'socket'.gettime
+local sleep   = require 'socket'.sleep
 local ffi      = require 'ffi'
 local C        = ffi.C
 local kit      = require 'kit'
@@ -31,29 +27,71 @@ local PORT_A = 2501
 local PORT_B = 2502
 local PORT = 2501
 local IP_LOCAL = socket.dns.toip( socket.dns.gethostname() )
-dump( "Lua: Local IP: "..IP_LOCAL )
+dump( "Local IP: "..IP_LOCAL )
 local SERVER=1
 local CLIENT=2
 
 local net  = {}
 local game = {}
+game.lobby_addr = {ip="173.255.254.41", port="54321"}
+game.hasPlayerList = function()
+  dump('has player list? '..tostring( game.ppl ~= nil and game.ppl[1] ~= nil ))
+  return ( game.ppl ~= nil and game.ppl[1] ~= nil )
+end
+
+-- state controls
+local Const = {
+  OFFLINE = 0,
+  CONN_TO_LOBBY  = 1,
+  IN_LOBBY       = 2,
+  CONN_TO_PLAYER = 3,
+  READY_TO_PLAY  = 4,
+  IN_GAME        = 5,
+  GIVE_UP = 9
+}
+net.gotoOffline = function()
+  dump('state=OFFLINE')
+  net.state = Const.OFFLINE
+  net.reset()
+end
+net.gotoLobby = function()
+  dump('state=CONN_TO_LOBBY')
+  net.state = Const.CONN_TO_LOBBY
+  return net.server(game.lobby_addr.ip, game.lobby_addr.port)
+end
+net.gotoLobbyReady = function()
+  dump('state=IN_LOBBY')
+  net.state = Const.IN_LOBBY
+end
+net.gotoPlayer = function()
+  dump('state=CONN_TO_PLAYER')
+  net.state = Const.CONN_TO_PLAYER
+  if game.hasPlayerList() then
+    net.farside(game.ppl[1].addr)
+  end
+end
+net.gotoPlayerReady = function()
+  dump('state=READY_TO_PLAY')
+  net.state = Const.READY_TO_PLAY
+  net.working = true
+  if net.asServer == true then
+    dump('Pose as '..'Server')
+  else
+    dump('Pose as '..'Client')
+  end
+
+end
+net.gotoGame   = function() net.state = Const.IN_GAME end
+net.gotoGiveup = function() net.state = Const.GIVE_UP end
 
 -- connection management
-net.conn_matcher = nil
+net.conn_server  = nil
 net.conn_farside = nil
-net.host    = nil
-net.working = false
-
---[[ state number
-0: disconnected
-1: start connection, wait for greetings
-2: connected
-3: ready to play
-9: give up
-]]
-net.state  = 0
-net.tar    = nil  -- farside information
-net.tm     = 0
+net.host     = nil
+net.working  = false
+net.state    = Const.OFFLINE
+net.tar      = nil  -- farside information
+net.tm       = 0
 net.greeting = 0
 
 function net:tarPriAddr(i)
@@ -69,18 +107,16 @@ function net:tarPubAddr(i)
 end
 
 net.init = function(ip, port)
-  --ip = 'localhost'
   dump('create host '..ip..':'..port)
   net.reset()
   net.host = enet.host_create(ip..":"..port)
 end
 
-net.matcher = function(ip, port)
+net.server = function(ip, port)
+  dump('connect to server...')
   local function foo()
-    --dump('connect to '..ip..":"..port)
-    net.conn_matcher = net.host:connect(ip..":"..port)
-    --net.conn_matcher = net.host:connect("localhost:12345")
-    --net.conn_matcher = net.host:connect(IP_LOCAL..":54321")
+    net.conn_server = net.host:connect(ip..":"..port)
+    -- net.conn_server = net.host:connect(IP_LOCAL..":54321")
   end
 
   local ok, err = pcall(foo)
@@ -91,6 +127,7 @@ net.matcher = function(ip, port)
 end
 
 net.farside = function(info)
+  dump('connect to farside...')
   if info then return ns.connect(net, info) end
   return ns.connect_next()
 end
@@ -106,13 +143,8 @@ net.setup = function(tar)
 end
 
 net.reset = function()
-  if net.conn_farside then
-    dump('disconnect from farside by hand')
-    net.conn_farside:disconnect()
-  end
-
-  if net.conn_matcher then net.conn_matcher:disconnect() end
-  net.state    = 0
+  if net.conn_farside then net.conn_farside:disconnect() end
+  if net.conn_server  then net.conn_server:disconnect() end
   net.greeting = 0
   net.working  = false
 end
@@ -121,77 +153,66 @@ net.waitGreeting = function()
   dump('wait for greetings...'..tostring(net.greeting))
   net.greeting = net.greeting + 1
 
-  if net.greeting >= 2 then
-    dump('wait too long... disconnect it')
-    net.reset()
-    if not net.farside() then
-      net.state = 9
-      dump('give up')
+  if net.greeting >= 3 then
+    dump('wait too long...')
+    if game.hasPlayerList() and (not net.farside()) then
+      net.gotoGiveup()
+    else
+      net.gotoLobbyReady()
     end
   end
 end
 
 net.gotGreeting = function(src)
-  net.state = 2
-  net.working = true
+  net.gotoPlayerReady()
   net.conn_farside = src
-  dump('got greetings. state=2 from '..tostring(src))
-end
-
-net.readyToPlay = function()
-  net.state = 3
-  if net.asServer == true then
-    dump('Pose as '..'Server')
-  else
-    dump('Pose as '..'Client')
-  end
 end
 
 net.tick = function(cc)
 
   -- commands from terminal
   if cc ~= 0 and cc ~= 65 and cc ~= nil then
-      dump('>>>>>>>>>'..cc)
-  end
 
-  if net.tm % 10 == 0 and net.state == 3 then
-    play.plist(net.conn_matcher)
+      if cc == 49 then
+        net.gotoPlayer()
+      elseif cc==50 then
+        if net.state >= Const.READY_TO_PLAY then
+          for i = 1, 100 do
+            play.hit(net.conn_farside, 0, i)
+            --net.host:flush()
+          end
+        end
+      elseif cc==51 then
+      elseif cc==52 then
+        prep.chat_lobby(net.conn_server, string.random(6)..os.time())
+      end
+
   end
 
   if (os.time() - net.tm > 0) then
     net.tm = os.time()
 
-    if net.state == 1 then
+    if net.state == Const.CONN_TO_PLAYER then
       net.waitGreeting()
     end
 
-    if net.tm % 90 == 0 and net.state >= 3 then
-      play.plist(net.conn_matcher)
+    if net.tm % 90 == 0 and net.state == Const.IN_LOBBY then
+      play.plist(net.conn_server)
     end
 
     -- keep-alive
-    if net.tm % 20 == 0 and net.working then
+    if net.tm % 10 == 0 and net.working then
       dump('poke server. tm='..net.tm..' state='..net.state)
-      prep.poke_server(net.conn_matcher)
-    end
-
-    -- can chat after login to matcher
-    if net.tm % 10 == 0 then
-      prep.chat_lobby(net.conn_matcher, 'lala'..string.random(4)..os.time())
+      prep.poke_server(net.conn_server)
     end
   end
 end
 
 net.proc_farside = function(e)
   if e.type == "receive" then
-    if net.state <= 2 then
-      prep.recv(e)
-    elseif net.state == 3 then
-      play.recv(e)
-    end
-
-  elseif e.type == "connect" and net.state < 2 then
-    print("Lua: farside connected:", e.peer)
+    play.recv(e)
+  elseif e.type == "connect" then
+    print("Lua: farside connected, send greeting:", e.peer)
     prep.greeting(e.peer)
   elseif e.type == "disconnect" then
     dump("disconnected:"..tostring(e.peer))
@@ -201,20 +222,26 @@ net.proc_farside = function(e)
   end
 end
 
-net.proc_matcher= function(e)
+net.proc_server = function(e)
   if e.type == "receive" then
     prep.recv(e)
   elseif e.type == "connect" then
-    print("Lua: matcher connected:", e.peer)
+    print("Lua: server connected:", e.peer)
 
-    if not net.conn_matcher then
-      net.conn_matcher = e.peer
+    if not net.conn_server then
+      net.conn_server = e.peer
+      C.on_connected()
     end
 
+    C.on_matched()
     net.working = true
-    C.on_connected()
 
-    prep.send_iam(IP_LOCAL, PORT, e.peer)
+    if net.state == Const.CONN_TO_LOBBY then
+      prep.send_iam(IP_LOCAL, PORT, e.peer)
+
+    elseif net.state == Const.IN_LOBBY then
+      prep.greeting(e.peer)
+    end
 
   elseif e.type == "disconnect" then
     print("Lua: disconnected:", e.peer)
@@ -225,39 +252,50 @@ net.proc_matcher= function(e)
   end
 end
 
+
+
 -- Entry point
 -- global function so it can be called from C++
-function run(sc_flag)
-  local ok = true
-
+function init(sc_flag)
   if sc_flag == SERVER then
     PORT = PORT_A
-    net.init(IP_LOCAL, PORT)
-    ok = net.matcher("173.255.254.41", "54321")
     net.asServer = true
     net.asClient = false
+    net.init(IP_LOCAL, PORT)
   elseif sc_flag == CLIENT then
     PORT = PORT_B
-    net.init(IP_LOCAL, PORT)
-    ok = net.matcher("173.255.254.41", "54321")
     net.asServer = false
     net.asClient = true
+    net.init(IP_LOCAL, PORT)
   end
-
-  if not ok then return false end
 
   prep.setup(net, game)
   play.setup(net, game)
+end
+
+function run()
+
+  if not net.gotoLobby() then return false end
+
+  local busy = false
 
   while not C.check_quit() do
 
-    local c = C.poll_from_C()        -- commands from c
-    local e = net.host:service(100)  -- network event
+    local c = C.poll_from_C()      -- commands from c
 
-    if net.state < 1 then
-      if e then net.proc_matcher(e) end
-    elseif net.state >= 1 then
-      if e then net.proc_farside(e) end
+    if busy then t = 1 else t = 100 end
+
+    local e = net.host:service(t)  -- network event
+
+    if e then
+      if net.state <= Const.IN_LOBBY then
+        net.proc_server(e)
+      else
+        net.proc_farside(e)
+      end
+      busy = true
+    else
+      busy = false
     end
 
     net.tick(c)

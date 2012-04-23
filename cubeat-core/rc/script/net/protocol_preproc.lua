@@ -15,32 +15,25 @@ local game   = nil
 -- recv functions : connection receiver
 local RECV = {}
 
--- replaced by plist()
--- RECV.TAR = function(m)
---   pmsg(m)
---   C.on_matched()
---   net.reset()     -- say goodbye to matcher
---   net.farside(m)  -- say hello to player
--- end
-
 RECV.URE = function(m)
-  dump(m)
+  dump(m.T)
   game.pid = m.pid
 
   table.foreach(m.ppl, function(k, v) v.addr = kit.addr_ext(v.addr) end)
   game.ppl = m.ppl
 
-  EXPORT.plist(m.src) -- test
+  net.gotoLobbyReady() -- switch net state
+
+  EXPORT.plist(m.src)  -- test
 end
 
 RECV.GREETING = function(m)
   pmsg(m)
   net.gotGreeting(m.src)
-  net.readyToPlay()         -- state=3
 end
 
 RECV.PLS_R = function(m)
-  dump(m)
+  dump(m.T)
   if m.C==0 then
     table.foreach(m.ppl, function(k, v) v.addr = kit.addr_ext(v.addr) end)
     game.ppl = m.ppl
@@ -63,7 +56,6 @@ local recv = kit.getRecv(function (m)
     dump('Incoming msg is not supported: '..m.T)
     return
   end
-
   RECV[m.T](m)
 end)
 
@@ -82,28 +74,27 @@ local function send_iam(ip, port, peer)
 end
 local function plist(peer)
   local m = msg('PLS')
-  m.pid = game.pid
+  m.pid   = game.pid
   kit.send(m, peer)
 end
 local function poke_server(peer)
   local m = msg('POKE')
-  m.pid = game.pid
+  m.pid   = game.pid
   kit.send(m, peer)
 end
 local function chat_lobby(peer, txt)
   local m = msg('CHAT')
-  m.pid  = game.pid
-  m.txt  = txt
-  m.type = 'b' -- lobby
+  m.pid   = game.pid
+  m.txt   = txt
+  m.type  = 'b' -- lobby
   kit.send(m, peer)
 end
 
-
-EXPORT.recv = recv
 EXPORT.chat_lobby  = chat_lobby
 EXPORT.poke_server = poke_server
 EXPORT.send_iam = send_iam
 EXPORT.greeting = greeting
+EXPORT.recv  = recv
 EXPORT.plist = plist
 EXPORT.setup = function(n, g)
   net  = n

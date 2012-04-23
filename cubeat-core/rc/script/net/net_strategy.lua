@@ -1,5 +1,5 @@
 local kit      = require 'kit'
-local dump     = kit.getDump('Lua-NS')
+local dump     = kit.getDump('Lua-NetStt')
 local sleep    = require 'socket'.sleep
 local addr_str = kit.addr_str
 
@@ -24,14 +24,6 @@ local function _step3() -- connect to public ip by increasing port number
   net.conn_farside = net.host:connect(net:tarPubAddr(inc))
 end
 
-local function _step4() -- connect to farside by opening new port
-  local addr = net.iam.prialt
-  net.init(addr.ip, addr.port)
-  sleep(2)  -- wait for farside's initialization
-  -- dump('connect to '..net:tarPriAddr(1000))
-  net.conn_farside = net.host:connect(net:tarPriAddr(1000))
-end
-
 EXPORT.reset = function (s)
   if s == nil then s = 1 end
   step = s
@@ -46,7 +38,6 @@ EXPORT.connect = function (n, tar, s)
   proc[1] = _step1
   proc[2] = _step2
   proc[3] = _step3
-  --proc[4] = _step4
 
   EXPORT.reset(s)
   return EXPORT.connect_next()
@@ -57,7 +48,7 @@ EXPORT.connect_next = function ()
   if step == nil then
     EXPORT.reset(1)
   elseif step > table.getn(proc) then
-    dump('Out of methods')
+    dump('stop trying to connect to player')
     return false
   end
 
@@ -66,8 +57,6 @@ EXPORT.connect_next = function ()
 
   if ok==false then
     dump(err)
-  else
-    net.state = 1
   end
 
   if step == 3 and inc < 5 then
@@ -75,6 +64,7 @@ EXPORT.connect_next = function ()
   else
     step = step + 1
   end
+
   return true
 end
 

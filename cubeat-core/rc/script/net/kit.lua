@@ -12,7 +12,7 @@ end
 
 
 -- random string generator
-math.randomseed(socket.gettime()*10000)
+math.randomseed(socket.gettime()*1000)
 
 local Chars = {}
 for Loop = 0, 255 do
@@ -143,6 +143,8 @@ local function _parse(hnd, e)
   if (type(m)=='table') then
     m.src = e.peer
     hnd(m)
+  else
+    dump('received command is not an object: '..m)
   end
 end
 
@@ -156,7 +158,7 @@ end
 
 -- prepare additional info for connection
 EXPORT.addr_ext = function(tar)
-    -- for ns method 3
+  -- for ns method 3
   tar.pubs = {}
   for i = 1, 5, 1 do
     tar.pubs[i] = {ip=tar.pub.ip, port=tar.pub.port+i}
@@ -168,6 +170,7 @@ EXPORT.addr_ext = function(tar)
   return tar
 end
 
-
+EXPORT.str_test1 = string.random(1024)
+EXPORT.str_test2 = string.random(10240)
 
 return EXPORT

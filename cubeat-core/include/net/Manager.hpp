@@ -54,6 +54,7 @@ private:
     boost::mutex   mq_mutex_;
 
     std::deque<int>              mqueue_;
+    std::deque<int>              rqueue_;
     std::map<std::string, NetCB> events_;
 };
 

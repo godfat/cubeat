@@ -1,3 +1,7 @@
+local basepath = require 'rc/script/helper'.basepath
+package.path = basepath()..[[rc/script/net/?.lua;]]..package.path
+package.cpath= basepath()..[[rc/script/net/?.dll;]]..package.cpath
+
 local enet     = require 'enet'
 local socket   = require 'socket'
 local gettime = require 'socket'.gettime

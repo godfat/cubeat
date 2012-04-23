@@ -23,8 +23,28 @@ TestBasicENet::TestBasicENet(int type)
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 2), 6000, -1);
 
+    using std::tr1::bind;
+    using namespace std::tr1::placeholders;
+    net::Manager::i().on("connected",   bind(&TestBasicENet::on_connected, this));
+    net::Manager::i().on("matched",     bind(&TestBasicENet::on_matched, this));
+    net::Manager::i().on("received",    bind(&TestBasicENet::on_received, this));
+    net::Manager::i().on("disconnected",bind(&TestBasicENet::on_disconnected, this));
+
     net::Manager::i().start_lua(type);
 }
+
+void TestBasicENet::on_connected() {
+}
+
+void TestBasicENet::on_matched() {
+}
+
+void TestBasicENet::on_received() {
+}
+
+void TestBasicENet::on_disconnected() {
+}
+
 
 TestBasicENet::~TestBasicENet() {
     net::Manager::i().quit_lua();

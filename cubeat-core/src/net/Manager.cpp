@@ -59,9 +59,10 @@ void Manager::start_lua_(int type)
     lua_quit_ = false; //indicate the event loop in Lua will run
 
     if( type == 1 )
-        Lua::call(L_, "run", 1); //server
+        Lua::call(L_, "init", 1); //server
     else
-        Lua::call(L_, "run", 2); //client
+        Lua::call(L_, "init", 2); //client
+    Lua::call(L_, "run");
 
     printf("C: Returned back to C.\n");
     {

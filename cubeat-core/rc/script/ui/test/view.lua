@@ -576,7 +576,27 @@ local function new_ui_scrollbar(parent, setting)
           scrollbar.title:change_text(tostring(scrollbar.setting.index))
   end
   --
-  local scrollbar_input1_button_press   = function(self)
+  local function scrollbar_button_press(input)
+    local function button_press(self)
+      if scrollbar.setting.input == nil then
+        set_input(input)
+      end
+    end
+    return button_press
+  end
+  local scrollbar_input1_button_press = scrollbar_button_press(C.Input_get_input1())
+  local scrollbar_input2_button_press = scrollbar_button_press(C.Input_get_input2())
+  local function scrollbar_button_release(input)
+    local function button_release(self)
+      if scrollbar.setting.input == input then
+        set_input(nil)
+      end
+    end
+    return button_release
+  end
+  local scrollbar_input1_button_release = scrollbar_button_release(C.Input_get_input1())
+  local scrollbar_input2_button_release = scrollbar_button_release(C.Input_get_input2())
+  --[[local scrollbar_input1_button_press   = function(self)
                                             if scrollbar.setting.input == nil then
                                               set_input(C.Input_get_input1())
                                               print("input1 press!!!"..tostring(scrollbar.setting.input))
@@ -599,7 +619,7 @@ local function new_ui_scrollbar(parent, setting)
                                               set_input(nil)
                                               print("scrollbar button release!!!"..tostring(scrollbar.setting.input))
                                             end
-                                          end
+                                          end]]--
   scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_button_press )
   scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_input2_button_press )
   scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_button_release )

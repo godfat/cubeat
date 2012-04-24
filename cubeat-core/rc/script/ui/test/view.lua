@@ -584,8 +584,6 @@ local function new_ui_scrollbar(parent, setting)
     end
     return button_press
   end
-  local scrollbar_input1_button_press = scrollbar_button_press(C.Input_get_input1())
-  local scrollbar_input2_button_press = scrollbar_button_press(C.Input_get_input2())
   local function scrollbar_button_release(input)
     local function button_release(self)
       if scrollbar.setting.input == input then
@@ -594,99 +592,63 @@ local function new_ui_scrollbar(parent, setting)
     end
     return button_release
   end
-  local scrollbar_input1_button_release = scrollbar_button_release(C.Input_get_input1())
-  local scrollbar_input2_button_release = scrollbar_button_release(C.Input_get_input2())
-  --[[local scrollbar_input1_button_press   = function(self)
-                                            if scrollbar.setting.input == nil then
-                                              set_input(C.Input_get_input1())
-                                              print("input1 press!!!"..tostring(scrollbar.setting.input))
-                                            end
-                                          end
-  local scrollbar_input2_button_press   = function(self)
-                                            if scrollbar.setting.input == nil then
-                                              set_input(C.Input_get_input2())
-                                              print("input2 press!!!"..tostring(scrollbar.setting.input))
-                                            end
-                                          end
-  local scrollbar_input1_button_release = function(self)
-                                            if scrollbar.setting.input == C.Input_get_input1() then
-                                              set_input(nil)
-                                              print("scrollbar button release!!!"..tostring(scrollbar.setting.input))
-                                            end
-                                          end
-  local scrollbar_input2_button_release = function(self)
-                                            if scrollbar.setting.input == C.Input_get_input2() then
-                                              set_input(nil)
-                                              print("scrollbar button release!!!"..tostring(scrollbar.setting.input))
-                                            end
-                                          end]]--
-  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_button_press )
-  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_input2_button_press )
-  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_button_release )
-  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input2()), scrollbar_input2_button_release )
+  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press(C.Input_get_input1()) )
+  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_press(C.Input_get_input2()) )
+  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release(C.Input_get_input1()) )
+  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_release(C.Input_get_input2()) )
   --
-  local scrollbar_input1_button_focus    =function(self)
-                                            scrollbar.button:set_blue(0)
-                                            scrollbar.setting.focus1 = true
-                                          end
-  local scrollbar_input2_button_focus    =function(self)
-                                            scrollbar.button:set_blue(0)
-                                            scrollbar.setting.focus2 = true
-                                          end
-  local scrollbar_input1_button_leave    =function(self)
-                                            scrollbar.setting.focus1 = false
-                                            if scrollbar.setting.focus2 == false then
-                                              scrollbar.button:set_blue(255)
-                                            end
-                                            --
-                                            if scrollbar.setting.input == C.Input_get_input1() then
-                                              update_button_position(C.Input_get_input1())
-                                              set_input(nil)
-                                            end
-                                          end
-  local scrollbar_input2_button_leave    =function(self)
-                                            scrollbar.setting.focus2 = false
-                                            if scrollbar.setting.focus1 == false then
-                                              scrollbar.button:set_blue(255)
-                                            end
-                                            --
-                                            if scrollbar.setting.input == C.Input_get_input2() then
-                                              update_button_position(C.Input_get_input2())
-                                              set_input(nil)
-                                            end
-                                          end
-  scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_input1_button_focus )
-  scrollbar.button:on_enter_focus( C.Input_get_input2(), scrollbar_input2_button_focus )
-  scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_input1_button_leave )
-  scrollbar.button:on_leave_focus( C.Input_get_input2(), scrollbar_input2_button_leave )
+  local function scrollbar_button_focus(input)
+    local function button_focus(self)
+      scrollbar.button:set_blue(0)
+      if input == C.Input_get_input1() then
+        scrollbar.setting.focus1 = true
+      else
+        scrollbar.setting.focus2 = true
+      end
+    end
+    return button_focus
+  end
+  local function scrollbar_button_leave(input)
+    local function button_leave(self)
+      if input == C.Input_get_input1() then
+        scrollbar.setting.focus1 = false
+        if scrollbar.setting.focus2 == false then scrollbar.button:set_blue(255) end
+      else
+        scrollbar.setting.focus2 = false
+        if scrollbar.setting.focus1 == false then scrollbar.button:set_blue(255) end
+      end
+      if scrollbar.setting.input == input then
+        update_button_position(input)
+        set_input(nil)
+      end
+    end
+    return button_leave
+  end
+  scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus(C.Input_get_input1()) )
+  scrollbar.button:on_enter_focus( C.Input_get_input2(), scrollbar_button_focus(C.Input_get_input2()) )
+  scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave(C.Input_get_input1()) )
+  scrollbar.button:on_leave_focus( C.Input_get_input2(), scrollbar_button_leave(C.Input_get_input2()) )
   --
-  local scrollbar_input1_button_down = function(self)
-    if scrollbar.setting.input == C.Input_get_input1() then
-      update_button_position(C.Input_get_input1())
+  local function scrollbar_button_down(input)
+    local button_down = function(self)
+      update_button_position(input)
     end
+    return button_down
   end
-  local scrollbar_input2_button_down = function(self)
-    if scrollbar.setting.input == C.Input_get_input2() then
-      update_button_position(C.Input_get_input2())
-    end
-  end
-  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_button_down )
-  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), scrollbar_input2_button_down )
+  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down(C.Input_get_input1()) )
+  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_down(C.Input_get_input2()) )
   --
-  local scrollbar_input1_line_press = function(self)
-    if scrollbar.setting.input == nil then
-      update_button_position(C.Input_get_input1())
-      set_input(C.Input_get_input1())
+  local function scrollbar_line_press(input)
+    local line_press = function(self)
+      if scrollbar.setting.input == nil then
+        update_button_position(input)
+        set_input(input)
+      end
     end
+    return line_press
   end
-  local scrollbar_input2_line_press = function(self)
-    if scrollbar.setting.input == nil then
-      update_button_position(C.Input_get_input2())
-      set_input(C.Input_get_input2())
-    end
-  end
-  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_input1_line_press )
-  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_input2_line_press )
+  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_line_press(C.Input_get_input1()) )
+  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_line_press(C.Input_get_input2()) )
   --
   scrollbar.set_pos     = function(self, posx, posy)
                             scrollbar.line:set_pos(posx, posy+10)
@@ -745,21 +707,18 @@ local function new_ui_scrollbar(parent, setting)
                             scrollbar.title:change_text(tostring(index))
                             scrollbar.setting.index = index
                           end
-  scrollbar.on_press    = function(self, func)
-                            local input1_callback = function(self)
-                              if scrollbar.setting.input == C.Input_get_input1() then
-                                update_button_position(C.Input_get_input1())
+  scrollbar.on_down     = function(self, func)
+                            local function press_callback(input)
+                              local callback = function(self)
+                                if scrollbar.setting.input == input then
+                                  update_button_position(input)
+                                  func(self)
+                                end
                               end
-                              func(self)
+                              return callback
                             end
-                            local input2_callback = function(self)
-                              if scrollbar.setting.input == C.Input_get_input2() then
-                                update_button_position(C.Input_get_input2())
-                              end
-                              func(self)
-                            end
-                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), input1_callback )
-                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), input2_callback )
+                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), press_callback(C.Input_get_input1()) )
+                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), press_callback(C.Input_get_input2()) )
                           end
   --
   scrollbar:set_depth(scrollbar.setting.depth)

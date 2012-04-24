@@ -199,13 +199,13 @@ function init_test_menu(self)
   scrollbar1 = view.new_ui_scrollbar(panel2, scrollbar_set1)
   scrollbar1:set_index(option_data["scrollbar1_index"])
   local scrollbar_press = function(self)
-                            --print("the index is "..tostring(scrollbar1.setting.index))
+                            print("the index is "..tostring(scrollbar1.setting.index))
                             title_image:set_blue(scrollbar1.setting.index)
                             --
                             option_data["scrollbar1_index"] = scrollbar1.setting.index
                             view.save_option(option_data)
                           end
-  scrollbar1:on_press(scrollbar_press)
+  scrollbar1:on_down(scrollbar_press)
 
   --=======================BACK BUTTON=======================--
   local tween_cb =  function(self) end

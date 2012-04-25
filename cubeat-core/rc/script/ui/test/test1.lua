@@ -157,7 +157,7 @@ function init_test_menu(self)
   local ratio_set2 = {x=-200, y=-150, alpha=0, visible=false, title="ratio2"}
   ratio1  = view.new_ui_ratio(panel2, ratio_set1)
   ratio2  = view.new_ui_ratio(panel2, ratio_set2)
-  ratio1:set_pressed(option_data["ratio1"])
+  ratio1.set_pressed(option_data["ratio1"])
   ratio2:set_pressed(option_data["ratio2"])
   local ratio1_press = function(self)
                         print("press ratio1")

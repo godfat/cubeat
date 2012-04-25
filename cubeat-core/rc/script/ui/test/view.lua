@@ -221,14 +221,6 @@ local function set_on_up_callback(sprite, func)
   sprite:on_up( Input2_left, func )
 end
 
-local function load_setting(ui_setting, setting)
-  for k,v in pairs(setting) do
-    if ui_setting[k] then
-      ui_setting[k] = v
-    end
-  end
-end
-
 local function set_focus_leave_color(sprite, focus_color, leave_color)
   local sprite_focus =  function(self)
                           sprite:set_red(focus_color.r)
@@ -244,6 +236,14 @@ local function set_focus_leave_color(sprite, focus_color, leave_color)
   sprite:on_leave_focus(Input1, sprite_leave)
   sprite:on_enter_focus(Input2, sprite_focus)
   sprite:on_leave_focus(Input2, sprite_leave)
+end
+
+local function load_setting(ui_setting, setting)
+  for k,v in pairs(setting) do
+    if ui_setting[k] then
+      ui_setting[k] = v
+    end
+  end
 end
 
 ----------
@@ -288,7 +288,6 @@ local function new_ui_button(parent, setting)
                           button.title:on_tween_line_pos(posx, posy, duration, 0, tween_cb, delay)
                         end
   button.on_press     = function(self, func)
-                          --button.title:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
                           set_on_press_callback(button.title, func)
                         end
   --
@@ -317,18 +316,24 @@ local function new_ui_ratio(parent, setting)
   ratio.title       = new_sprite_text(ratio.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
   ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
   --
+  local function ratio_set_press(pressed)
+    if pressed == true then
+      ratio.icon:set_texture("cubes/cube-b-1")
+      ratio.setting.is_pressed = true
+    else
+      ratio.icon:set_texture("cubes/cube1")
+      ratio.setting.is_pressed = false
+    end
+    ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
+  end
+  --
   local ratio_press = function(self)
                         if ratio.setting.is_pressed == false then
-                          ratio.icon:set_texture("cubes/cube-b-1")
-                          ratio.setting.is_pressed = true
+                          ratio_set_press(true)
                         else
-                          ratio.icon:set_texture("cubes/cube1")
-                          ratio.setting.is_pressed = false
+                          ratio_set_press(false)
                         end
-                        ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                       end
-  --ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
-  --ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), ratio_press )
   set_on_press_callback(ratio.icon, ratio_press)
   set_on_press_callback(ratio.title, ratio_press)
   --
@@ -368,14 +373,7 @@ local function new_ui_ratio(parent, setting)
                         end
                       end
   ratio.set_pressed = function(self, pressed)
-                        if pressed == true then
-                          ratio.icon:set_texture("cubes/cube-b-1")
-                          ratio.setting.is_pressed = true
-                        else
-                          ratio.icon:set_texture("cubes/cube1")
-                          ratio.setting.is_pressed = false
-                        end
-                        ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
+                        ratio_set_press(pressed)
                       end
   ratio.moveto      = function(self, posx, posy, duration, delay)
                         local tween_cb = function(self) end
@@ -386,17 +384,12 @@ local function new_ui_ratio(parent, setting)
   ratio.on_press    = function(self, func)
                         local callback  = function(self)
                                             if ratio.setting.is_pressed == false then
-                                              ratio.icon:set_texture("cubes/cube-b-1")
-                                              ratio.setting.is_pressed = true
+                                              ratio_set_press(true)
                                             else
-                                              ratio.icon:set_texture("cubes/cube1")
-                                              ratio.setting.is_pressed = false
+                                              ratio_set_press(false)
                                             end
-                                            ratio.debug_text:change_text(tostring(ratio.setting.is_pressed))
                                             func(self)
                                           end
-                        --ratio.icon:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
-                        --ratio.title:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                         set_on_press_callback(ratio.icon, callback)
                         set_on_press_callback(ratio.title, callback)
                       end
@@ -427,22 +420,25 @@ local function new_ui_selectbox(parent, setting)
   box.title     = new_sprite_text(box.setting.title_tb[box.setting.index], parent, "Star Jedi", 24, true, 255, 255, 0)
   box.debug_text= new_sprite_text(tostring(box.setting.index), parent, "Star Jedi", 24, true, 100, 100, 255)
   --
-  local left_press  = function(self)
-                        box.setting.index = box.setting.index - 1
-                        if box.setting.index < 1 then box.setting.index = table.getn(box.setting.title_tb) end
-                        box.title:change_text(box.setting.title_tb[box.setting.index])
-                        box.debug_text:change_text(tostring(box.setting.index))
-                      end
-  --box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), left_press )
-  set_on_press_callback(box.left, left_press)
+  local function box_change_text(index)
+    box.title:change_text(box.setting.title_tb[index])
+    box.debug_text:change_text(tostring(index))
+  end
+  local function box_index_plus()
+    box.setting.index = box.setting.index + 1
+    if box.setting.index > table.getn(box.setting.title_tb) then box.setting.index = 1 end
+    box_change_text(box.setting.index)
+  end
+  local function box_index_minus()
+    box.setting.index = box.setting.index - 1
+    if box.setting.index < 1 then box.setting.index = table.getn(box.setting.title_tb) end
+    box_change_text(box.setting.index)
+  end
   --
-  local right_press = function(self)
-                        box.setting.index = box.setting.index + 1
-                        if box.setting.index > table.getn(box.setting.title_tb) then box.setting.index = 1 end
-                        box.title:change_text(box.setting.title_tb[box.setting.index])
-                        box.debug_text:change_text(tostring(box.setting.index))
-                      end
-  --box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), right_press )
+  local left_press  = function(self) box_index_minus() end
+  set_on_press_callback(box.left, left_press)
+
+  local right_press = function(self) box_index_plus() end
   set_on_press_callback(box.right, right_press)
   --
   box.set_pos       = function(self, posx, posy)
@@ -490,8 +486,7 @@ local function new_ui_selectbox(parent, setting)
                         if index < 0 then return end
                         if index > table.getn(box.setting.title_tb) then return end
                         box.setting.index = index
-                        box.title:change_text(box.setting.title_tb[box.setting.index])
-                        box.debug_text:change_text(tostring(box.setting.index))
+                        box_change_text(box.setting.index)
                       end
   box.moveto        = function(self, posx, posy, duration, delay)
                         local tween_cb = function(self) end
@@ -502,24 +497,16 @@ local function new_ui_selectbox(parent, setting)
                       end
   box.left_on_press = function(self, func)
                         local callback  = function(self)
-                                            box.setting.index = box.setting.index - 1
-                                            if box.setting.index < 1 then box.setting.index = table.getn(box.setting.title_tb) end
-                                            box.title:change_text(box.setting.title_tb[box.setting.index])
-                                            box.debug_text:change_text(tostring(box.setting.index))
+                                            box_index_minus()
                                             func(self)
                                           end
-                        --box.left:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                         set_on_press_callback(box.left, callback)
                       end
   box.right_on_press= function(self, func)
                         local callback  = function(self)
-                                            box.setting.index = box.setting.index + 1
-                                            if box.setting.index > table.getn(box.setting.title_tb) then box.setting.index = 1 end
-                                            box.title:change_text(box.setting.title_tb[box.setting.index])
-                                            box.debug_text:change_text(tostring(box.setting.index))
+                                            box_index_plus()
                                             func(self)
                                           end
-                        --box.right:on_press( C.Input_get_trig1(C.Input_get_input1()), callback )
                         set_on_press_callback(box.right, callback)
                       end
   --
@@ -567,18 +554,17 @@ local function new_ui_scrollbar(parent, setting)
       end
     end
   end
-  --
   local function update_button_position(input)
-          local pos_x = C.Input_get_cursor_x(input) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
-          local pos_y = scrollbar.button:get_pos_y()
-          local bg_left = scrollbar.line:get_pos_x()
-          local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
-          if pos_x < bg_left then pos_x = bg_left end
-          if pos_x > bg_right then pos_x = bg_right end
-          scrollbar.button:set_pos(pos_x, pos_y)
-          --
-          scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
-          scrollbar.title:change_text(tostring(scrollbar.setting.index))
+    local pos_x = C.Input_get_cursor_x(input) - scrollbar.parent:get_screen_pos_x() - (scrollbar.button:get_size_x()/2)
+    local pos_y = scrollbar.button:get_pos_y()
+    local bg_left = scrollbar.line:get_pos_x()
+    local bg_right= bg_left + scrollbar.line:get_size_x() - scrollbar.button:get_size_x()
+    if pos_x < bg_left then pos_x = bg_left end
+    if pos_x > bg_right then pos_x = bg_right end
+    scrollbar.button:set_pos(pos_x, pos_y)
+    --
+    scrollbar.setting.index = math.floor( (pos_x-bg_left)*scrollbar.setting.range/(scrollbar.line:get_size_x()-scrollbar.button:get_size_x()) )
+    scrollbar.title:change_text(tostring(scrollbar.setting.index))
   end
   --
   local function scrollbar_button_press(input)

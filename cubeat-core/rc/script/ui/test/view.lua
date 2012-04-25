@@ -199,21 +199,26 @@ end
 --  return ffi.gc(C.SpriteText_create_from_sprite(text, sprite, font, size, center, r, g, b), C.SpriteText__gc)
 --end
 
+local Input1      = C.Input_get_input1()
+local Input2      = C.Input_get_input2()
+local Input1_left = C.Input_get_trig1(C.Input_get_input1())
+local Input2_left = C.Input_get_trig1(C.Input_get_input2())
+
 local function set_on_press_callback(sprite, func)
-  sprite:on_press( C.Input_get_trig1(C.Input_get_input1()), func )
-  sprite:on_press( C.Input_get_trig1(C.Input_get_input2()), func )
+  sprite:on_press( Input1_left, func )
+  sprite:on_press( Input2_left, func )
 end
 local function set_on_release_callback(sprite, func)
-  sprite:on_release( C.Input_get_trig1(C.Input_get_input1()), func )
-  sprite:on_release( C.Input_get_trig1(C.Input_get_input2()), func )
+  sprite:on_release( Input1_left, func )
+  sprite:on_release( Input2_left, func )
 end
 local function set_on_down_callback(sprite, func)
-  sprite:on_down( C.Input_get_trig1(C.Input_get_input1()), func )
-  sprite:on_down( C.Input_get_trig1(C.Input_get_input2()), func )
+  sprite:on_down( Input1_left, func )
+  sprite:on_down( Input2_left, func )
 end
 local function set_on_up_callback(sprite, func)
-  sprite:on_up( C.Input_get_trig1(C.Input_get_input1()), func )
-  sprite:on_up( C.Input_get_trig1(C.Input_get_input2()), func )
+  sprite:on_up( Input1_left, func )
+  sprite:on_up( Input2_left, func )
 end
 
 local function load_setting(ui_setting, setting)
@@ -235,10 +240,10 @@ local function set_focus_leave_color(sprite, focus_color, leave_color)
                           sprite:set_green(leave_color.g)
                           sprite:set_blue(leave_color.b)
                         end
-  sprite:on_enter_focus(C.Input_get_input1(), sprite_focus)
-  sprite:on_leave_focus(C.Input_get_input1(), sprite_leave)
-  sprite:on_enter_focus(C.Input_get_input2(), sprite_focus)
-  sprite:on_leave_focus(C.Input_get_input2(), sprite_leave)
+  sprite:on_enter_focus(Input1, sprite_focus)
+  sprite:on_leave_focus(Input1, sprite_leave)
+  sprite:on_enter_focus(Input2, sprite_focus)
+  sprite:on_leave_focus(Input2, sprite_leave)
 end
 
 ----------
@@ -555,7 +560,7 @@ local function new_ui_scrollbar(parent, setting)
       scrollbar.debug_text:change_text("off")
     else
       scrollbar.setting.input = input
-      if input == C.Input_get_input1() then
+      if input == Input1 then
         scrollbar.debug_text:change_text("1")
       else
         scrollbar.debug_text:change_text("2")
@@ -592,15 +597,15 @@ local function new_ui_scrollbar(parent, setting)
     end
     return button_release
   end
-  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_press(C.Input_get_input1()) )
-  scrollbar.button:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_press(C.Input_get_input2()) )
-  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_release(C.Input_get_input1()) )
-  scrollbar.button:on_release( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_release(C.Input_get_input2()) )
+  scrollbar.button:on_press( Input1_left, scrollbar_button_press(Input1) )
+  scrollbar.button:on_press( Input2_left, scrollbar_button_press(Input2) )
+  scrollbar.button:on_release( Input1_left, scrollbar_button_release(Input1) )
+  scrollbar.button:on_release( Input2_left, scrollbar_button_release(Input2) )
   --
   local function scrollbar_button_focus(input)
     local function button_focus(self)
       scrollbar.button:set_blue(0)
-      if input == C.Input_get_input1() then
+      if input == Input1 then
         scrollbar.setting.focus1 = true
       else
         scrollbar.setting.focus2 = true
@@ -610,7 +615,7 @@ local function new_ui_scrollbar(parent, setting)
   end
   local function scrollbar_button_leave(input)
     local function button_leave(self)
-      if input == C.Input_get_input1() then
+      if input == Input1 then
         scrollbar.setting.focus1 = false
         if scrollbar.setting.focus2 == false then scrollbar.button:set_blue(255) end
       else
@@ -624,10 +629,10 @@ local function new_ui_scrollbar(parent, setting)
     end
     return button_leave
   end
-  scrollbar.button:on_enter_focus( C.Input_get_input1(), scrollbar_button_focus(C.Input_get_input1()) )
-  scrollbar.button:on_enter_focus( C.Input_get_input2(), scrollbar_button_focus(C.Input_get_input2()) )
-  scrollbar.button:on_leave_focus( C.Input_get_input1(), scrollbar_button_leave(C.Input_get_input1()) )
-  scrollbar.button:on_leave_focus( C.Input_get_input2(), scrollbar_button_leave(C.Input_get_input2()) )
+  scrollbar.button:on_enter_focus( Input1, scrollbar_button_focus(Input1) )
+  scrollbar.button:on_enter_focus( Input2, scrollbar_button_focus(Input2) )
+  scrollbar.button:on_leave_focus( Input1, scrollbar_button_leave(Input1) )
+  scrollbar.button:on_leave_focus( Input2, scrollbar_button_leave(Input2) )
   --
   local function scrollbar_button_down(input)
     local button_down = function(self)
@@ -635,8 +640,8 @@ local function new_ui_scrollbar(parent, setting)
     end
     return button_down
   end
-  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), scrollbar_button_down(C.Input_get_input1()) )
-  scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), scrollbar_button_down(C.Input_get_input2()) )
+  scrollbar.button:on_down( Input1_left, scrollbar_button_down(Input1) )
+  scrollbar.button:on_down( Input2_left, scrollbar_button_down(Input2) )
   --
   local function scrollbar_line_press(input)
     local line_press = function(self)
@@ -647,8 +652,8 @@ local function new_ui_scrollbar(parent, setting)
     end
     return line_press
   end
-  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input1()), scrollbar_line_press(C.Input_get_input1()) )
-  scrollbar.line:on_press( C.Input_get_trig1(C.Input_get_input2()), scrollbar_line_press(C.Input_get_input2()) )
+  scrollbar.line:on_press( Input1_left, scrollbar_line_press(Input1) )
+  scrollbar.line:on_press( Input2_left, scrollbar_line_press(Input2) )
   --
   scrollbar.set_pos     = function(self, posx, posy)
                             scrollbar.line:set_pos(posx, posy+10)
@@ -717,8 +722,8 @@ local function new_ui_scrollbar(parent, setting)
                               end
                               return callback
                             end
-                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input1()), press_callback(C.Input_get_input1()) )
-                            scrollbar.button:on_down( C.Input_get_trig1(C.Input_get_input2()), press_callback(C.Input_get_input2()) )
+                            scrollbar.button:on_down( Input1_left, press_callback(Input1) )
+                            scrollbar.button:on_down( Input2_left, press_callback(Input2) )
                           end
   --
   scrollbar:set_depth(scrollbar.setting.depth)

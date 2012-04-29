@@ -18,12 +18,16 @@ public:
     ~TestBasicENet();
     void cycle();
 
-    void on_connected();
-    void on_matched();
-    void on_disconnected();
-    void on_received();
+    void on_connected(std::string const& msg);
+    void on_matched(std::string const& msg);
+    void on_disconnected(std::string const& msg);
+    void on_received(std::string const& msg);
+
+    void update_cursor_pos();
 
 private:
+    void on_mov(int, int);
+
     presenter::pStage stage_;
     int type_;
 };

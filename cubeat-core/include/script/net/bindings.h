@@ -5,9 +5,9 @@
 #define APIEXPORT
 #endif
 
-APIEXPORT void on_connected();
-APIEXPORT void on_matched();
-APIEXPORT void on_disconnected();
-APIEXPORT void on_received(int);
-APIEXPORT int poll_from_C();
+APIEXPORT void on_connected(char const*);
+APIEXPORT void on_matched(char const*);
+APIEXPORT void on_disconnected(char const*);
+APIEXPORT void on_received(char const*);
+APIEXPORT char const* poll_from_C();
 APIEXPORT bool check_quit();

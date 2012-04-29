@@ -22,7 +22,7 @@ struct State {
 
 class Manager
 {
-    typedef std::tr1::function<void()>     NetCB;
+    typedef std::tr1::function<void(std::string)>     NetCB;
     typedef std::pair<std::string, NetCB>  NetEvent;
 public:
     static Manager& i() {
@@ -32,14 +32,16 @@ public:
 
     //let's keep this simple now, don't use delegate syntax
     void on(std::string const& key, NetCB const& cb);
-    void dispatch(std::string const& key);
-    int  poll();
-    void send(int);
+    void dispatch(std::string const& key, std::string const& msg);
+    void send(std::string const&);
     void switch_state(State::ENUM const& s) { state_ = s; }
-    void start_lua(int type);
-
-    void quit_lua();
+    void init_lua(int type);
+    void process_lua();
+    void end_lua();
     bool check_quit() const { return lua_quit_; }
+
+    //only for binding usage
+    std::string poll();
 
 private:
     Manager();
@@ -50,11 +52,11 @@ private:
     bool           lua_quit_;
     State::ENUM    state_;
     lua_State*     L_;
-    boost::thread* lua_thread_;
-    boost::mutex   mq_mutex_;
+    //boost::thread* lua_thread_;
+    //boost::mutex   mq_mutex_;
 
-    std::deque<int>              mqueue_;
-    std::deque<int>              rqueue_;
+    std::deque<std::string>              mqueue_;
+    //std::deque<int>              rqueue_;
     std::map<std::string, NetCB> events_;
 };
 

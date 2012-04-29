@@ -4,8 +4,8 @@ package.cpath= basepath()..[[rc/script/net/?.dll;]]..package.cpath
 
 local enet     = require 'enet'
 local socket   = require 'socket'
-local gettime = require 'socket'.gettime
-local sleep   = require 'socket'.sleep
+local gettime  = require 'socket'.gettime
+local sleep    = require 'socket'.sleep
 local ffi      = require 'ffi'
 local C        = ffi.C
 local kit      = require 'kit'
@@ -20,10 +20,11 @@ local prep     = require 'protocol_preproc'
 local play     = require 'protocol_gameplay'
 
 ffi.cdef[[
-void on_connected();
-void on_matched();
-void on_disconnected();
-int  poll_from_C();
+void on_connected(char const*);
+void on_matched(char const*);
+void on_received(char const*);
+void on_disconnected(char const*);
+char const* poll_from_C();
 bool check_quit();
 ]]
 
@@ -67,12 +68,10 @@ net.gotoLobbyReady = function()
   dump('state=IN_LOBBY')
   net.state = Const.IN_LOBBY
 end
-net.gotoPlayer = function()
+net.gotoPlayer = function(tar)
   dump('state=CONN_TO_PLAYER')
   net.state = Const.CONN_TO_PLAYER
-  if game.hasPlayerList() then
-    net.farside(game.ppl[1].addr)
-  end
+  if tar then net.farside(tar.addr) end
 end
 net.gotoPlayerReady = function()
   dump('state=READY_TO_PLAY')
@@ -83,10 +82,12 @@ net.gotoPlayerReady = function()
   else
     dump('Pose as '..'Client')
   end
-
 end
 net.gotoGame   = function() net.state = Const.IN_GAME end
 net.gotoGiveup = function() net.state = Const.GIVE_UP end
+
+net.isInLobby = function() return (net.state == Const.IN_LOBBY) end
+net.isPlayerReady = function() return (net.state == Const.READY_TO_PLAY) end
 
 -- connection management
 net.conn_server  = nil
@@ -120,7 +121,7 @@ net.server = function(ip, port)
   dump('connect to server...')
   local function foo()
     net.conn_server = net.host:connect(ip..":"..port)
-    -- net.conn_server = net.host:connect(IP_LOCAL..":54321")
+    -- net.conn_server = net.host:connect(IP_LOCAL..":"..port)
   end
 
   local ok, err = pcall(foo)
@@ -137,7 +138,8 @@ net.farside = function(info)
 end
 
 net.setup = function(tar)
-  net.reset()
+  net.greeting = 0
+  net.working  = false
 
   net.iam = {}
   net.iam.pri = {ip=IP_LOCAL, port=PORT}
@@ -168,29 +170,53 @@ net.waitGreeting = function()
 end
 
 net.gotGreeting = function(src)
-  net.gotoPlayerReady()
-  net.conn_farside = src
+  if not net.isPlayerReady() then
+    net.gotoPlayerReady()
+    net.conn_farside = src
+  else
+    dump('ignore duplicated player connection from '..tostring(src))
+  end
+
 end
 
-net.tick = function(cc)
+local function old_tick_poll_core(cc)
+  -- if cc == 49 then
+    -- if game.hasPlayerList() then
+      -- prep.play_one(net.conn_server, game.ppl[1].pid)
+    -- end
+  -- elseif cc==50 then
+    -- if net.isPlayerReady() then
+      -- for i = 1, 100 do
+        -- play.hit(net.conn_farside, 0, i)
+        -- --net.host:flush()
+      -- end
+    -- end
+  -- elseif cc==51 then
+  -- elseif cc==52 then
+    -- prep.chat_lobby(net.conn_server, string.random(6)..os.time())
+  -- end
+end
+
+net.tick = function()
 
   -- commands from terminal
-  if cc ~= 0 and cc ~= 65 and cc ~= nil then
-
-      if cc == 49 then
-        net.gotoPlayer()
-      elseif cc==50 then
-        if net.state >= Const.READY_TO_PLAY then
-          for i = 1, 100 do
-            play.hit(net.conn_farside, 0, i)
-            --net.host:flush()
-          end
-        end
-      elseif cc==51 then
-      elseif cc==52 then
-        prep.chat_lobby(net.conn_server, string.random(6)..os.time())
+  local cc = ffi.string(C.poll_from_C())
+  while cc and cc ~= '' do 
+    -- tick_poll_core(cc)
+    -- print(cc)
+    local getT = loadstring(cc)
+    local t = getT()
+    t.tm = os.time() -- appenddum
+    
+    if not net.isPlayerReady() then 
+      if game.hasPlayerList() then 
+        prep.play_one(net.conn_server, game.ppl[1].pid)
       end
-
+    else
+      -- play.move(net.conn_farside, cc, 100)
+      kit.send(t, net.conn_farside)
+    end
+    cc = ffi.string(C.poll_from_C())
   end
 
   if (os.time() - net.tm > 0) then
@@ -200,7 +226,7 @@ net.tick = function(cc)
       net.waitGreeting()
     end
 
-    if net.tm % 90 == 0 and net.state == Const.IN_LOBBY then
+    if net.tm % 10 == 0 and net.state == Const.IN_LOBBY then
       play.plist(net.conn_server)
     end
 
@@ -234,15 +260,14 @@ net.proc_server = function(e)
 
     if not net.conn_server then
       net.conn_server = e.peer
-      C.on_connected()
+      C.on_connected('')
     end
 
-    C.on_matched()
+    C.on_matched('')
     net.working = true
 
     if net.state == Const.CONN_TO_LOBBY then
       prep.send_iam(IP_LOCAL, PORT, e.peer)
-
     elseif net.state == Const.IN_LOBBY then
       prep.greeting(e.peer)
     end
@@ -250,13 +275,11 @@ net.proc_server = function(e)
   elseif e.type == "disconnect" then
     print("Lua: disconnected:", e.peer)
     net.working = false
-    C.on_disconnected()
+    C.on_disconnected('')
   else
     dump(e)
   end
 end
-
-
 
 -- Entry point
 -- global function so it can be called from C++
@@ -264,48 +287,38 @@ function init(sc_flag)
   if sc_flag == SERVER then
     PORT = PORT_A
     net.asServer = true
-    net.asClient = false
     net.init(IP_LOCAL, PORT)
   elseif sc_flag == CLIENT then
     PORT = PORT_B
     net.asServer = false
-    net.asClient = true
     net.init(IP_LOCAL, PORT)
   end
 
   prep.setup(net, game)
   play.setup(net, game)
+
+  if not net.gotoLobby() then 
+    print('Lua: failed')
+    return false 
+  end
+  print('Lua: succeed')
+  return true
 end
 
 function run()
-
-  if not net.gotoLobby() then return false end
-
-  local busy = false
-
-  while not C.check_quit() do
-
-    local c = C.poll_from_C()      -- commands from c
-
-    if busy then t = 1 else t = 100 end
-
-    local e = net.host:service(t)  -- network event
-
-    if e then
-      if net.state <= Const.IN_LOBBY then
-        net.proc_server(e)
-      else
-        net.proc_farside(e)
-      end
-      busy = true
+  local e = net.host:service(0) -- network event
+  while e do
+    if net.state <= Const.IN_LOBBY then
+      net.proc_server(e)
     else
-      busy = false
+      net.proc_farside(e)
     end
-
-    net.tick(c)
-
+    e = net.host:service(0)  
   end
+  net.tick()
+end
 
+function dtor()
   net.reset()
   dump('event loop ended.')
 end

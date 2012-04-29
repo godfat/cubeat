@@ -10,6 +10,8 @@ class Crosshair
 public:
     int const& x() const { return x_; }
     int const& y() const { return y_; }
+    void x(int const& ix) { x_ = ix; }
+    void y(int const& iy) { y_ = iy; }
     int const& lx() const { return lx_; }
     int const& ly() const { return ly_; }
     int const width() const { return rightbound_ - leftbound_; }

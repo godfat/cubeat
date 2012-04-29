@@ -16,7 +16,9 @@ local game   = nil
 
 local RECV = {}
 RECV.MOV = function(m)
-  pmsg(m)
+  --pmsg(m)
+  -- ok now we assume it will always receive x value of cursor from C
+  C.on_received(string.format("mov %d %d %d", m.tm, m.x, m.y)) 
 end
 RECV.HIT = function(m)
   --pmsg(m)

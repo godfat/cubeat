@@ -76,7 +76,9 @@ end
 net.gotoPlayerReady = function()
   dump('state=READY_TO_PLAY')
   net.state = Const.READY_TO_PLAY
-  net.working = true
+  
+  C.on_matched('') -- only call matched when Player is READY_TO_PLAY
+  
   if net.asServer == true then
     dump('Pose as '..'Server')
   else
@@ -93,7 +95,6 @@ net.isPlayerReady = function() return (net.state == Const.READY_TO_PLAY) end
 net.conn_server  = nil
 net.conn_farside = nil
 net.host     = nil
-net.working  = false
 net.state    = Const.OFFLINE
 net.tar      = nil  -- farside information
 net.tm       = 0
@@ -139,7 +140,7 @@ end
 
 net.setup = function(tar)
   net.greeting = 0
-  net.working  = false
+  net.state    = Const.OFFLINE
 
   net.iam = {}
   net.iam.pri = {ip=IP_LOCAL, port=PORT}
@@ -152,7 +153,7 @@ net.reset = function()
   if net.conn_farside then net.conn_farside:disconnect() end
   if net.conn_server  then net.conn_server:disconnect() end
   net.greeting = 0
-  net.working  = false
+  net.state    = Const.OFFLINE
 end
 
 net.waitGreeting = function()
@@ -231,7 +232,7 @@ net.tick = function()
     end
 
     -- keep-alive
-    if net.tm % 10 == 0 and net.working then
+    if net.tm % 10 == 0 and net.state >= Const.IN_LOBBY then
       dump('poke server. tm='..net.tm..' state='..net.state)
       prep.poke_server(net.conn_server)
     end
@@ -245,8 +246,8 @@ net.proc_farside = function(e)
     print("Lua: farside connected, send greeting:", e.peer)
     prep.greeting(e.peer)
   elseif e.type == "disconnect" then
-    dump("disconnected:"..tostring(e.peer))
-    net.working = false
+    dump("Lua: disconnected to farside: "..tostring(e.peer))
+    net.state = Const.OFFLINE
   else
     dump(e)
   end
@@ -259,12 +260,10 @@ net.proc_server = function(e)
     print("Lua: server connected:", e.peer)
 
     if not net.conn_server then
-      net.conn_server = e.peer
-      C.on_connected('')
+      net.conn_server = e.peer -- jslin note: Is this even possible???
     end
-
-    C.on_matched('')
-    net.working = true
+    
+    C.on_connected('')
 
     if net.state == Const.CONN_TO_LOBBY then
       prep.send_iam(IP_LOCAL, PORT, e.peer)
@@ -273,8 +272,8 @@ net.proc_server = function(e)
     end
 
   elseif e.type == "disconnect" then
-    print("Lua: disconnected:", e.peer)
-    net.working = false
+    print("Lua: disconnected to server: ", e.peer)
+    net.state = Const.OFFLINE
     C.on_disconnected('')
   else
     dump(e)
@@ -298,10 +297,10 @@ function init(sc_flag)
   play.setup(net, game)
 
   if not net.gotoLobby() then 
-    print('Lua: failed')
+    print('Lua: connecting to lobby server failed')
     return false 
   end
-  print('Lua: succeed')
+  print('Lua: connecting to lobby server succeed')
   return true
 end
 

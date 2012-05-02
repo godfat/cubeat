@@ -37,6 +37,9 @@ TestBasicENet::TestBasicENet(int type)
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&TestBasicENet::update_cursor_pos, this), 10, -1);
 
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&TestBasicENet::initiate_matching, this), 5000); // mockup connection initiator
+
     net::Manager::i().init_lua(type);
 }
 
@@ -47,6 +50,10 @@ void TestBasicENet::update_cursor_pos(){
     char buf[32] = {0};
     sprintf(buf, "return {T='MOV', x=%d, y=%d}", x, y);
     net::Manager::i().send(buf);
+}
+
+void TestBasicENet::initiate_matching(){
+    net::Manager::i().send("1"); //mockup message
 }
 
 void TestBasicENet::on_connected(std::string const& msg) {

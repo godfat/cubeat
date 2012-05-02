@@ -24,6 +24,7 @@ public:
     void on_received(std::string const& msg);
 
     void update_cursor_pos();
+    void initiate_matching();
 
 private:
     void on_mov(int, int);

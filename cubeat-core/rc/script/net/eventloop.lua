@@ -140,7 +140,7 @@ end
 
 net.setup = function(tar)
   net.greeting = 0
-  net.state    = Const.OFFLINE
+  -- net.state    = Const.OFFLINE
 
   net.iam = {}
   net.iam.pri = {ip=IP_LOCAL, port=PORT}
@@ -204,16 +204,16 @@ net.tick = function()
   local cc = ffi.string(C.poll_from_C())
   while cc and cc ~= '' do 
     -- tick_poll_core(cc)
-    -- print(cc)
-    local getT = loadstring(cc)
-    local t = getT()
-    t.tm = os.time() -- appenddum
-    
     if not net.isPlayerReady() then 
-      if game.hasPlayerList() then 
-        prep.play_one(net.conn_server, game.ppl[1].pid)
+      if cc == '1' then
+        if game.hasPlayerList() then
+          prep.play_one(net.conn_server, game.ppl[1].pid)
+        end
       end
     else
+      local getT = loadstring(cc)
+      local t = getT()
+      t.tm = os.time() -- appenddum
       -- play.move(net.conn_farside, cc, 100)
       kit.send(t, net.conn_farside)
     end
@@ -230,7 +230,7 @@ net.tick = function()
     if net.tm % 10 == 0 and net.state == Const.IN_LOBBY then
       play.plist(net.conn_server)
     end
-
+    
     -- keep-alive
     if net.tm % 10 == 0 and net.state >= Const.IN_LOBBY then
       dump('poke server. tm='..net.tm..' state='..net.state)
@@ -259,16 +259,10 @@ net.proc_server = function(e)
   elseif e.type == "connect" then
     print("Lua: server connected:", e.peer)
 
-    if not net.conn_server then
-      net.conn_server = e.peer -- jslin note: Is this even possible???
-    end
-    
     C.on_connected('')
 
     if net.state == Const.CONN_TO_LOBBY then
       prep.send_iam(IP_LOCAL, PORT, e.peer)
-    elseif net.state == Const.IN_LOBBY then
-      prep.greeting(e.peer)
     end
 
   elseif e.type == "disconnect" then
@@ -307,6 +301,7 @@ end
 function run()
   local e = net.host:service(0) -- network event
   while e do
+    print ('trace current net.state: '..net.state)
     if net.state <= Const.IN_LOBBY then
       net.proc_server(e)
     else

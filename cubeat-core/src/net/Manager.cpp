@@ -14,6 +14,11 @@ Manager::Manager()
 {
 }
 
+void Manager::switch_state(State::ENUM const& e)
+{
+    state_ = e;
+}
+
 void Manager::on(std::string const& key, NetCB const& cb)
 {
     events_[key] = cb;

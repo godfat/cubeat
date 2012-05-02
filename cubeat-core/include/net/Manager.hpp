@@ -34,7 +34,7 @@ public:
     void on(std::string const& key, NetCB const& cb);
     void dispatch(std::string const& key, std::string const& msg);
     void send(std::string const&);
-    void switch_state(State::ENUM const& s) { state_ = s; }
+    void switch_state(State::ENUM const& s);
     void init_lua(int type);
     void process_lua();
     void end_lua();

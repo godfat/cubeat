@@ -9,7 +9,7 @@ extern "C" {
 }
 
 void on_connected(char const* str) {
-    printf("Lua->C: farside connected.\n");
+    printf("Lua->C: server connected.\n");
     net::Manager::i().dispatch("connected", str);
     net::Manager::i().switch_state(net::State::LOBBY);
 //    N_STATE = N_CONNECTED_SERV;
@@ -23,13 +23,13 @@ void on_matched(char const* str) {
 }
 
 void on_disconnected(char const* str) {
-    printf("Lua->C: farside disconnected.\n");
+    printf("Lua->C: disconnected.\n");
     net::Manager::i().dispatch("disconnected", str);
 //    N_STATE = N_DEFAULT;
 }
 
 void on_received(char const* str) {
-    printf("Lua->C: farside received something.\n");
+    printf("Lua->C: received something from farside.\n");
     net::Manager::i().dispatch("received", str);
 }
 

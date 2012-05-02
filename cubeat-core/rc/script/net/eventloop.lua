@@ -297,10 +297,10 @@ function init(sc_flag)
   play.setup(net, game)
 
   if not net.gotoLobby() then 
-    print('Lua: connecting to lobby server failed')
+    print('Lua: host:connect failed')
     return false 
   end
-  print('Lua: connecting to lobby server succeed')
+  print('Lua: host:connect succeed, but not yet acked.')
   return true
 end
 

@@ -301,7 +301,6 @@ end
 function run()
   local e = net.host:service(0) -- network event
   while e do
-    print ('trace current net.state: '..net.state)
     if net.state <= Const.IN_LOBBY then
       net.proc_server(e)
     else

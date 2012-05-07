@@ -57,8 +57,11 @@ WIP  2. ManyMouse on MacOSX 10.6+
        -- need tests.
      -- Bluetooth mouse with too-customized drivers are not working well.
      -- Issue: Only if 2 mice are movable by manymouse then we reinit both config to use manymouse.
+     
+  3. Zombie events/sprites still a problem! Don't know what happened after I delayed 
+     player->subscribe_player_specific_interaction() calls to Multi::game_start().
 
-  3. Something about lock and delayed cleanup:
+  4. Something about lock and delayed cleanup:
      I found many places in code where we should actually check on the weak_ptr.lock(),
      basically we have to assume it WILL somehow failed locking. if there's any performance hit,
      it would have been done already by locking, so I don't consider performance an issue here.
@@ -68,7 +71,7 @@ WIP  2. ManyMouse on MacOSX 10.6+
      event callback itself! When in doubt, or have no obvious ways to resolve it, at least we
      should try to use EventDispatcher's timer callback to delay it.
 
-  4. Something about Input scheme (see code Input.cpp around line 405):
+  5. Something about Input scheme (see code Input.cpp around line 405):
      The input scheme here should have a total revamp. we should only designate Button1, Button2,
      Button3... etc, never name it. It should have the flexibility to map every input to every
      abstract button you can have in game, and you can assign every event to every button!
@@ -112,6 +115,8 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   4. arriving at logical y when the cube below is still there dropping is worth investigating nonetheless.
      
   5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
+  
+  6. HAVE TO UPDATE TO IRRLICHT 1.8 BECAUSE FULL SCREEN UNDER MAC DONT WORK.
 
 * Feature / Gameplay Issues:
 

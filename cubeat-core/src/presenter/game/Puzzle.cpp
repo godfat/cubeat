@@ -64,7 +64,7 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
-    player0_ = ctrl::Player::create(input, 0, false);
+    player0_ = ctrl::Player::create(input, 0);
     player0_->push_ally(0).player_hit_event(bind(&Puzzle::puzzle_started, this));
 
     // setup map0
@@ -114,6 +114,8 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
     desc_text_ = view::SpriteText::create("puzzle:\n\nclear all cubes\nin 1 shot", scene_, "Star Jedi", 30, true);
     desc_text_->set<Pos2D>( vec2(s1->x_offset() + s1->cube_size()*3, s1->y_offset()/3) );
     desc_text_->setDepth(-20).setPickable(false);
+
+    player0_->subscribe_player_specific_interactions(false);
 
     return shared_from_this();
 }
@@ -366,7 +368,7 @@ void Puzzle::resume()
     ctrl::EventDispatcher::i().subscribe_btn_event(
         bind(&Puzzle::pause, this), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
 
-    input->player()->subscribe_player_specific_interactions(true);
+    input->player()->subscribe_player_specific_interactions(false);
 }
 
 void Puzzle::puzzle_started() //This is a callback for obj_event, so you cannot clear obj_event inside this.

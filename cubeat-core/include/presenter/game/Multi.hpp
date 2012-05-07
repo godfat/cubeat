@@ -40,6 +40,9 @@ protected:
     void cleanup();
     void end(pMap p);
     void reinit();
+    void game_start();
+
+    void ready_go(int);
     void update_ui_by_second();
     void update_ui();
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);
@@ -73,7 +76,7 @@ protected:
 
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_;
     pDummy timer_item_, timer_ui_, btn_reinit_, btn_pause_;
     std::string c1p_, c2p_, sconf_;
 

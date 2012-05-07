@@ -58,6 +58,9 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     c1p_ = c1p; c2p_ = c2p; sconf_ = sc; num_of_cpu_ = num_of_cpu; ai_level_ = ai_level;
 
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    scene_->allowPicking(false);
+
     gameplay_ = Conf::i().config_of("gameplay/multi");
 
     data::pViewSetting s0, s1;
@@ -127,6 +130,47 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
+    ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+    ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+    ready_go_text_->setPickable(false);
+
+    using std::tr1::bind;
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&Multi::game_start, this), 3000);
+
+    ready_go(3);
+
+    return shared_from_this();
+}
+
+//This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
+void Multi::ready_go(int step)
+{
+    if ( step < 0 ) {
+        ready_go_text_->tween<Linear, Alpha>(0, 500u);
+        return;
+    }
+    else if ( step == 0 ) {
+        ready_go_text_->changeText("go!");
+        ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
+        //need sound fx here
+    }
+    else {
+        ready_go_text_->showNumber(step);
+        ready_go_text_->set<Scale>(vec3(5,5,5));
+        //need sound fx here
+    }
+    ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        std::tr1::bind(&Multi::ready_go, this, step-1), 1000);
+}
+
+void Multi::game_start()
+{
     //start music
     stage_->playBGM();
 
@@ -134,24 +178,18 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
     timer_ui_   = pDummy(new int);
     //note: end of bad area
-    using std::tr1::bind;
 
+    using std::tr1::bind;
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Multi::update_ui_by_second, this), timer_ui_, 1000, -1);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&App::setLoading, &App::i(), 100), 100); //stupid and must?
-    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(     //2011.03.25 item temporarily removed
+    //2011.03.25 item temporarily removed
+    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
     //    bind(&Multi::item_creation, this), timer_item_, 15000);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
     }
-
-    if( num_of_cpu_ > 0 )
-        player1_->startThinking();
-    if( num_of_cpu_ > 1 )
-        player0_->startThinking();
 
     blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
     blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
@@ -165,7 +203,16 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
         pause_note_text_->setDepth(-100).setPickable(false);
     }
 
-    return shared_from_this();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    scene_->allowPicking(true);
+
+    player0_->subscribe_player_specific_interactions();
+    player1_->subscribe_player_specific_interactions();
+
+    if( num_of_cpu_ > 0 )
+        player1_->startThinking();
+    if( num_of_cpu_ > 1 )
+        player0_->startThinking();
 }
 
 void Multi::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
@@ -509,7 +556,7 @@ void Multi::resume(ctrl::Input const* controller)
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Multi::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
-        input->player()->subscribe_player_specific_interactions(true);
+        input->player()->subscribe_player_specific_interactions();
     }
 }
 

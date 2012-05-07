@@ -79,6 +79,18 @@ public:
         return *this;
     }
 
+    template <template <class> class Eq, class Accessor>
+    SpriteText& tween(typename Accessor::value_type const& start,
+                      typename Accessor::value_type const& end,
+                      unsigned int                  const& duration,
+                      int                           const& loop = 0,
+                      std::tr1::function<void()>    const& cb = 0,
+                      int                           const& delay = 0)
+    {
+        Object::tween<Eq, Accessor>(start, end, duration, loop, cb, delay);
+        return *this;
+    }
+
     // SpriteText version: an animation with speed control (current status, end)
     template <template <class> class Eq, class Accessor>
     SpriteText& tween(typename Accessor::value_type const& end,

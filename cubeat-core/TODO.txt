@@ -51,6 +51,8 @@ WIP  6. Lack of networking capability.
         7. when you want to send message: 
            net::Manager::i().send(s) //test plain text first, and then byte stream 
            let s be messy's ok for now. let's see how I can refactor that.
+        -- ABOVE FEATURE IS ALMOST DONE, NOW WE NEED TO PUT IT INTO PRODUCTION AND SEE WHAT HAPPENS
+     -- next is implementing the actual gameplay protocol.
 
 SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on
      view::Scene, How do I fix this?

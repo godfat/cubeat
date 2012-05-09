@@ -44,7 +44,7 @@ TestBasicENet::TestBasicENet(int type)
 }
 
 void TestBasicENet::update_cursor_pos(){
-    ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex( (type_ == 1 ? 0 : 1) );
+    ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
     int x = input->cursor().x();
     int y = input->cursor().y();
     char buf[32] = {0};
@@ -89,8 +89,7 @@ void TestBasicENet::on_disconnected(std::string const& msg) {
 }
 
 void TestBasicENet::on_mov(int x, int y) {
-    ctrl::InputMgr::i().getInputByIndex( (type_ == 1 ? 1 : 0) )->cursor().x( x );
-    ctrl::InputMgr::i().getInputByIndex( (type_ == 1 ? 1 : 0) )->cursor().y( y );
+    ctrl::InputMgr::i().getInputByIndex(1)->cursor().x( x ).y( y );
 }
 
 TestBasicENet::~TestBasicENet() {

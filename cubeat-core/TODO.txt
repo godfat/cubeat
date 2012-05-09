@@ -144,6 +144,8 @@ DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
 
 0.6  3. Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.
+       ** DONE, FOR NOW
+     -- now we need a real multiplayer test case.
 
 WIP  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
      -- Lua integration of this part done.

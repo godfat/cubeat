@@ -165,6 +165,7 @@
 		<Unit filename="include\script\lua_utility.hpp" />
 		<Unit filename="include\script\net\bindings.h" />
 		<Unit filename="include\test\test_basic_enet_main.hpp" />
+		<Unit filename="include\test\test_gameplay_protocol_main.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
 		<Unit filename="include\utils\ChainChecker.hpp" />
@@ -226,7 +227,9 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.cpp">
+			<Option link="0" />
+		</Unit>
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
@@ -347,6 +350,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_gameplay_protocol_main.cpp" />
 		<Unit filename="src\test\test_irr_device_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -347,7 +347,6 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_game_main.cpp">
-			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_gameplay_protocol_main.cpp" />

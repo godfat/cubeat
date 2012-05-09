@@ -211,6 +211,7 @@ net.tick = function()
         end
       end
     else
+      print("WTF?"..cc)
       local getT = loadstring(cc)
       local t = getT()
       t.tm = os.time() -- appenddum

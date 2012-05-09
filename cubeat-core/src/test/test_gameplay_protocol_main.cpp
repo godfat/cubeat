@@ -176,8 +176,9 @@ void TestNetGame::update_cursor_pos(){
     ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
     int x = input->cursor().x();
     int y = input->cursor().y();
-    char buf[32] = {0};
+    char buf[64] = {0};
     sprintf(buf, "return {T='MOV', x=%d, y=%d}", x, y);
+    printf("C: %s\n", buf);
     net::Manager::i().send(buf);
 }
 

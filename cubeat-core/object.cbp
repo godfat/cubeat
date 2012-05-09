@@ -226,9 +226,7 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
@@ -334,7 +332,9 @@
 		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\script\net\bindings.cpp" />
-		<Unit filename="src\test\test_basic_enet_main.cpp" />
+		<Unit filename="src\test\test_basic_enet_main.cpp">
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_font_input_method_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

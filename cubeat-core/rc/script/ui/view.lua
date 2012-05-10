@@ -7,6 +7,7 @@ ffi.cdef[[
 typedef struct pObject pObject;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
+typedef struct pSpriteText pSpriteText;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 
@@ -31,17 +32,39 @@ Mt_Sprite.set_depth               = C.Sprite_set_depth
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
+Mt_Sprite.on_tween_line_alpha     = C.Sprite_on_tween_line_alpha
 
 ffi.metatype("pSprite", Mt_Sprite)
+
+
+-- pSpriteText
+local Mt_SpriteText = setmetatable({}, {__index = Mt_Sprite})
+Mt_SpriteText.__index             = Mt_SpriteText
+Mt_SpriteText.set_pos             = C.SpriteText_set_pos
+Mt_SpriteText.set_depth           = C.SpriteText_set_depth
+Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
+Mt_SpriteText.set_visible         = C.SpriteText_set_visible
+Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
+Mt_SpriteText.on_tween_line_alpha = C.SpriteText_on_tween_line_alpha
+
+ffi.metatype("pSpriteText", Mt_SpriteText)
+
 
 --
 local function new_sprite(name, parent, w, h, center)
   return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), C.Sprite__gc)
 end
 
+
+--
+local function new_sprite_text(text, parent, font, size, center, r, g, b)
+  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*",parent), font, size, center, r, g, b), C.SpriteText__gc)
+end
+
 ----------------------------------------------------------------------------
 -- Main functions
 ----------------------------------------------------------------------------
 return {
-  new_sprite  = new_sprite
+  new_sprite        = new_sprite,
+  new_sprite_text   = new_sprite_text
 }

@@ -42,7 +42,7 @@
 			</Target>
 			<Target title="Debug">
 				<Option platforms="Windows;" />
-				<Option output="bin\Debug\object" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Debug\CuBeat" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\Debug\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -229,9 +229,7 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
@@ -353,7 +351,9 @@
 		<Unit filename="src\test\test_game_main.cpp">
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_gameplay_protocol_main.cpp" />
+		<Unit filename="src\test\test_gameplay_protocol_main.cpp">
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_irr_device_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

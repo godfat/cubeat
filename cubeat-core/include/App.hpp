@@ -29,6 +29,8 @@ public:
 
     App& setLoading(int const& cent);
     App& launchOpening();
+    App& launchOpening2();
+    App& launchDemo();
     App& launchMainMenu();
     App& launchMultiplayer(std::string const&, std::string const&, std::string const&, int, int);
     App& launchPuzzle     (std::string const&, std::string const&, int);

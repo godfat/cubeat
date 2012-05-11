@@ -4,7 +4,9 @@
 #include "presenter/Transitioner.hpp"
 #include "presenter/MainMenu.hpp"
 #include "presenter/OpeningSequence.hpp"
+#include "presenter/Opening2.hpp"
 
+#include "presenter/game/Demo.hpp"
 #include "presenter/game/Multi.hpp"
 #include "presenter/game/Puzzle.hpp"
 #include "view/SFX.hpp"
@@ -64,6 +66,13 @@ App& App::launchOpening()
 {
     temp_presenter_ = presenter::OpeningSequence::create();
     std::cout << "Opening launched." << std::endl;
+    return *this;
+}
+
+App& App::launchOpening2()
+{
+    temp_presenter_ = presenter::Opening2::create();
+    std::cout << "Opening2 launched." << std::endl;
     return *this;
 }
 

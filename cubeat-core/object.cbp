@@ -144,6 +144,7 @@
 		<Unit filename="include\presenter\Map.hpp.eruby" />
 		<Unit filename="include\presenter\Menu.hpp" />
 		<Unit filename="include\presenter\Object.hpp" />
+		<Unit filename="include\presenter\Opening2.hpp" />
 		<Unit filename="include\presenter\OpeningSequence.hpp" />
 		<Unit filename="include\presenter\PlayerView.hpp" />
 		<Unit filename="include\presenter\Stage.hpp" />
@@ -156,6 +157,7 @@
 		<Unit filename="include\presenter\cube\ViewSprite.hpp.eruby" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp.eruby" />
+		<Unit filename="include\presenter\game\Demo.hpp" />
 		<Unit filename="include\presenter\game\Multi.hpp" />
 		<Unit filename="include\presenter\game\Puzzle.hpp" />
 		<Unit filename="include\private\AVIVideo.hpp" />
@@ -324,10 +326,12 @@
 		<Unit filename="src\presenter\Map.cpp" />
 		<Unit filename="src\presenter\Map.cpp.eruby" />
 		<Unit filename="src\presenter\Object.cpp" />
+		<Unit filename="src\presenter\Opening2.cpp" />
 		<Unit filename="src\presenter\OpeningSequence.cpp" />
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />
+		<Unit filename="src\presenter\game\Demo.cpp" />
 		<Unit filename="src\presenter\game\Multi.cpp" />
 		<Unit filename="src\presenter\game\Puzzle.cpp" />
 		<Unit filename="src\private\AVIVideo.cpp" />

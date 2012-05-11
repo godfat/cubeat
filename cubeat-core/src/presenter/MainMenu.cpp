@@ -259,7 +259,7 @@ void MainMenu::initDecorator()
         deco_cubes_.push_back( temp );
     }
 
-    audio::Sound::i().playStream("title.ogg", true);
+    audio::Sound::i().playABStream("title_a.ogg", "title_b.ogg");
 
     App::i().setLoading(100);
 }

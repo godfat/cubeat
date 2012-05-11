@@ -101,6 +101,9 @@ DONE?1. I think we really need real_y(pixel_y) as a model property, either use t
      State pattern or revamp the state pattern.
      -- Why sometimes the bottom cubes' chain state isn't taken out?
      -- Map::next_state and states are modestly modified, consider the real_y addition done.
+     
+  2. OneFadings should not do full BFS for each of cubes. Rather, one full pass and check who are
+     connected and who aren't should suffice. (Not sure if it changes chain processing behavior)
 
 * UI / Gameplay Issues:
 
@@ -133,6 +136,10 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   5. Why vsync is so bad when 2 CPU fighting? threading makes vsync inaccurate?
   
   6. HAVE TO UPDATE TO IRRLICHT 1.8 BECAUSE FULL SCREEN UNDER MAC DONT WORK.
+
+0.6  7. Why Background can't use double type as xyz????
+
+0.6  8. Chain messages are somewhat delayed and disappeared early??? check newest video footage ...
 
 * Feature / Gameplay Issues:
 

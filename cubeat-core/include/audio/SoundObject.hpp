@@ -85,6 +85,9 @@ public:
     SoundObject& pause();
     SoundObject& stop();
     SoundObject& resume();
+    bool has_partB() const { return has_partB_; }
+    SoundObject& partB_path(std::string const& path);
+    std::string  partB_path() const { return partB_path_; }
 
     bool finished() const;
 
@@ -93,6 +96,9 @@ private:
     SoundObject(wpSoundBuffer const&, bool const&);
     void gen_source();
     ALuint source;
+
+    bool        has_partB_;
+    std::string partB_path_;
 };
 
 typedef SoundObject::pointer_type pSoundObject;

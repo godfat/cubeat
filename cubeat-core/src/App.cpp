@@ -130,6 +130,7 @@ int App::run(std::tr1::function<void()> tester)
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
+    int profile_time_start = 0;
 
     while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
@@ -137,6 +138,7 @@ int App::run(std::tr1::function<void()> tester)
         //    if( global_timer_.lock()->isStopped() )        //comment: temp for double tasking
         //        global_timer_.lock()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
+
             InputMgr::i().updateAll();
             EventDispatcher::i().dispatch();
             driver->beginScene(true, true, video::SColor(0,0,0,0));
@@ -150,6 +152,13 @@ int App::run(std::tr1::function<void()> tester)
             view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
 
             driver->endScene();
+
+            int elapsed_time = global_timer_.lock()->get_time() - profile_time_start;
+
+            if( elapsed_time > 35 )
+                std::cout << "frame time spike: " << elapsed_time << "\n";
+
+            profile_time_start = global_timer_.lock()->get_time();
 
             //FPS for debug
             int fps = driver->getFPS();

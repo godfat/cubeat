@@ -70,8 +70,9 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
     //This point should be the end of the last init step, so start timing now:
     last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
+//demo branch: don't use this yet
+//    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
 
     return *this;
 }
@@ -194,7 +195,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
     update_chains();
     cycle_cubes();
-    //check_one_fadings();
+    check_one_fadings();
 
     if( garbage_dumpable_ && garbage_left_ > 0 )
         cycle_creation_garbage();

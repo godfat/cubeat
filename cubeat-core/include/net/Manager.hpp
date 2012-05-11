@@ -40,6 +40,9 @@ public:
     void end_lua();
     bool check_quit() const { return lua_quit_; }
 
+    bool is_ingame() const { return state_ == State::INGAME; }
+    bool is_matched() const { return state_ == State::MATCHED; }
+
     //only for binding usage
     std::string poll();
 

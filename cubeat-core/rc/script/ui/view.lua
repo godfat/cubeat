@@ -8,6 +8,8 @@ typedef struct pObject pObject;
 typedef struct pScene pScene;
 typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
+typedef struct Input Input;
+typedef struct Button Button;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 
@@ -33,6 +35,8 @@ Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
 Mt_Sprite.on_tween_line_alpha     = C.Sprite_on_tween_line_alpha
+Mt_Sprite.on_release              = function(p, b, cb) C.Sprite_on_release(ffi.cast("pSprite*", p), b, cb) end
+Mt_Sprite.on_press                = function(p, b, cb) C.Sprite_on_press(ffi.cast("pSprite*", p), b, cb) end
 
 ffi.metatype("pSprite", Mt_Sprite)
 

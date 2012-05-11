@@ -18,6 +18,8 @@ APIEXPORT void      Sprite_set_alpha(pSprite*, int);
 APIEXPORT void      Sprite_set_visible(pSprite*, bool);
 APIEXPORT void      Sprite_set_center_aligned(pSprite*, bool);
 APIEXPORT void      Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
+APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 
 APIEXPORT void      SpriteText_set_pos(pSpriteText*, double, double);
 APIEXPORT void      SpriteText_set_depth(pSpriteText*, double);
@@ -28,6 +30,11 @@ APIEXPORT void      SpriteText_on_tween_line_alpha(pSpriteText* self, int, doubl
 
 APIEXPORT pSprite* Sprite_create(char const*, pObject*, int, int, bool);
 APIEXPORT pSpriteText*  SpriteText_create(char const*, pObject*, char const*, int, bool, int, int, int);
+
+APIEXPORT Input*    Input_get_input1();
+APIEXPORT Input*    Input_get_input2();
+APIEXPORT Button const* Input_get_trig1(Input* p);
+APIEXPORT Button const* Input_get_trig2(Input* p);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

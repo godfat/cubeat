@@ -3,9 +3,11 @@
 #include "view/SpriteText.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "Input.hpp"
 
 using namespace psc;
 using namespace view;
+using namespace ctrl;
 using namespace accessor;
 using namespace easing;
 
@@ -13,8 +15,8 @@ extern "C"{
 #include "script/ui/bindings.h"
 }
 
-void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
-    cb(&sp);
+void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK func) {
+    func(&sp);
 }
 
 void Sprite_set_texture(pSprite* self, const char* path) {
@@ -48,6 +50,14 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
 void Sprite_on_tween_line_alpha(pSprite* self, int alpha, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
     (*self)->tween<Linear, Alpha>(alpha, duration, loop, call, delay);
+}
+
+void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
+}
+
+void Sprite_on_press(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
 void SpriteText_set_pos(pSpriteText* self, double x, double y) {
@@ -85,6 +95,22 @@ pSpriteText* SpriteText_create(char const* text, pObject* parent, char const* f,
     pSpriteText* sp = new pSpriteText;
     *sp = SpriteText::create(text, *parent, f, size, center, data::Color(r,g,b));
     return sp;
+}
+
+Input* Input_get_input1() {
+    return InputMgr::i().getInputByIndex(0);
+}
+
+Input* Input_get_input2() {
+    return InputMgr::i().getInputByIndex(1);
+}
+
+Button const* Input_get_trig1(Input* p){
+    return &p->trig1();
+}
+
+Button const* Input_get_trig2(Input* p){
+    return &p->trig2();
 }
 
 void Scene__gc(pScene* self) {

@@ -307,11 +307,11 @@ int main(int argc, char* argv[]){
     psc::App::i();
     if( argc > 1 ) {
         TestNetGame tester(1);
-        return psc::App::i().run(std::tr1::bind(&TestNetGame::cycle, &tester));
+        return psc::App::i().init().run(std::tr1::bind(&TestNetGame::cycle, &tester));
     }
     else {
         TestNetGame tester(2);
-        return psc::App::i().run(std::tr1::bind(&TestNetGame::cycle, &tester));
+        return psc::App::i().init().run(std::tr1::bind(&TestNetGame::cycle, &tester));
     }
 }
 

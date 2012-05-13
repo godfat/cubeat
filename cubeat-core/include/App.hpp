@@ -27,6 +27,8 @@ public:
 
     int run(std::tr1::function<void()> = 0);
 
+    App& init();
+
     App& setLoading(int const& cent);
     App& launchOpening();
     App& launchOpening2();

@@ -44,6 +44,6 @@ int main(){
     psc::Conf::i().init("");
     psc::App::i();
     TestStage tester;
-    return psc::App::i().run(std::tr1::bind(&TestStage::cycle, &tester));
+    return psc::App::i().init().run(std::tr1::bind(&TestStage::cycle, &tester));
 }
 

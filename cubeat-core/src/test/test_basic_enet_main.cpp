@@ -113,11 +113,11 @@ int main(int argc, char* argv[]){
     psc::App::i();
     if( argc > 1 ) {
         TestBasicENet tester(1);
-        return psc::App::i().run(std::tr1::bind(&TestBasicENet::cycle, &tester));
+        return psc::App::i().init().run(std::tr1::bind(&TestBasicENet::cycle, &tester));
     }
     else {
         TestBasicENet tester(2);
-        return psc::App::i().run(std::tr1::bind(&TestBasicENet::cycle, &tester));
+        return psc::App::i().init().run(std::tr1::bind(&TestBasicENet::cycle, &tester));
     }
 }
 

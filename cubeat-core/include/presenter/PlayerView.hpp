@@ -17,7 +17,7 @@ class Input;
 
 namespace presenter {
 
-class PlayerView : public Object, public std::tr1::enable_shared_from_this<PlayerView>
+class PlayerView : public std::tr1::enable_shared_from_this<PlayerView>
 {
 public:
     enum STATE { STAND, ATTACK, HIT, NONE };

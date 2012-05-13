@@ -11,7 +11,7 @@
 namespace psc {
 namespace presenter {
 
-class Stage : public Object, public std::tr1::enable_shared_from_this<Stage>
+class Stage : public std::tr1::enable_shared_from_this<Stage>
 {
     typedef std::vector< view::pAnimatedSceneObject > SceneObjList;
 

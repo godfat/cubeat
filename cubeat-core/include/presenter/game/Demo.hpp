@@ -64,7 +64,7 @@ protected:
     void update_ui_by_second();
     void update_ui();
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);
-    void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path);
+    void setup_ui();
     //void item_creation();
     //void item_destruction();
     //void eat_item(ctrl::wpPlayer, int);

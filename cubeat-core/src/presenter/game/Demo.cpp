@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1"), c2p_("char/char2"), sconf_("stage/jungle"), num_of_cpu_(0),
+    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(0),
      ai_level_(0)
 {
 }
@@ -59,13 +59,16 @@ pDemo Demo::init()
     scene_->allowPicking(false);
 
     gameplay_ = Conf::i().config_of("gameplay/multi");
+    uiconf_   = Conf::i().config_of("ui/demo_layout");
 
     data::pViewSetting s0, s1;
 
-    s0 = data::ViewSetting::create(64);   //must use config
-    s0->x_offset(159).y_offset(684);
-    s1 = data::ViewSetting::create(64);   //must use config
-    s1->x_offset(740).y_offset(684);
+    s0 = data::ViewSetting::create( uiconf_.I("csize") );
+    s0->x_offset( uiconf_.I("xoff1") ).
+        y_offset( uiconf_.I("yoff") );
+    s1 = data::ViewSetting::create( uiconf_.I("csize") );
+    s1->x_offset( uiconf_.I("xoff2") ).
+        y_offset( uiconf_.I("yoff") );
 
     std::string ai_temp[4] =
         {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};
@@ -123,7 +126,7 @@ pDemo Demo::init()
 
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
-    setup_ui_by_config( c1p_, c2p_, "ui/in_game_2p_layout" );
+    setup_ui();
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
@@ -212,9 +215,8 @@ void Demo::game_start()
         player0_->startThinking();
 }
 
-void Demo::setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path )
+void Demo::setup_ui()
 {
-    uiconf_ = Conf::i().config_of(path);
     utils::map_any const& base = uiconf_.M("base");
     ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
     ui_layout_->set<Alpha>(192);
@@ -228,9 +230,10 @@ void Demo::setup_ui_by_config( std::string const& c1p, std::string const& c2p, s
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
 
-    vec2 center_pos( uiconf_.I("character_center_x"), uiconf_.I("character_center_y") );
-    pview1_ = presenter::PlayerView::create( c1p.size() ? c1p : "char/char1.zzml", scene_, center_pos );
-    pview2_ = presenter::PlayerView::create( c2p.size() ? c2p : "char/char2.zzml", scene_, center_pos );
+    vec2 center_pos1( uiconf_.I("character_center_x1"), uiconf_.I("character_center_y") );
+    vec2 center_pos2( uiconf_.I("character_center_x2"), uiconf_.I("character_center_y") );
+    pview1_ = presenter::PlayerView::create( c1p_, scene_, center_pos1 );
+    pview2_ = presenter::PlayerView::create( c2p_, scene_, center_pos2 );
     pview2_->flipPosition();
     pview1_->setMap( map0_ );
     pview2_->setMap( map1_ );

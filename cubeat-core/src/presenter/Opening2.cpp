@@ -67,7 +67,7 @@ pOpening2 Opening2::init()
 void Opening2::end()
 {
 //    movie_->set<Visible>(false);
-    App::i().launchMultiplayer("char/char1", "char/char1", "stage/jungle", 0, 0);
+    App::i().launchDemo();
     std::cout << "Opening2 end call finished." << std::endl;
 }
 

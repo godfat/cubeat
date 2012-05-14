@@ -318,12 +318,20 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
+    presenter::pMap main_enemy = owner->garbage_lands().front().lock();
     for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
         int x = is_empty[i];
-        pCube c = owner->make_cube(x, top)->model();
+
+        //2012.05 LULZ MAGIC!
+        pCube c = owner->make_cube(-3, 5)->model();
+        c->x(x).y(top);
+
         insert_garbage( c );
         --garbage_left_;
-        owner->pop_garbage_event()(1);
+
+        //2012.05 ok, this is a bit awkawrd. we have to substract the attack amounts
+        //above ENEMY's head, not above self's head...
+        main_enemy->pop_garbage_event()(1);
     }
 }
 

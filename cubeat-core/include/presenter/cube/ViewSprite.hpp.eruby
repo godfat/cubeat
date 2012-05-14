@@ -333,8 +333,11 @@ public:
     }
 
     virtual void pop_garbage(int amount) {
+        //std::cout << "Calling pop garbage...\n";
         for( int i = 0; i < amount; ++i ) {
+            //std::cout << "  Before popping: " << attack_cubes_.size() << "\n";
             attack_cubes_.pop_front();
+            //std::cout << "  After popping: " << attack_cubes_.size() << "\n";
         }
     }
 

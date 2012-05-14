@@ -110,8 +110,15 @@ public:
     virtual void approach_pos(){
         vec2 pos1 = pos_vec2();
         vec2 pos2 = body_->get<accessor::Pos2D>();
-        body_->set<accessor::Pos2D>( (pos1+pos2)/2 );
+        vec2 tmp_pos = (pos1-pos2)/30;
+        pos2 += tmp_pos;
+        body_->set<accessor::Pos2D>( pos2 );
+    }
 
+    virtual void goto_garbage_orig(){
+        vec2 origpos = view_orig_.lock()->get<accessor::Pos2D>();
+        vec2 pos( view_setting()->atf_x() - origpos.X, view_setting()->atf_y() - origpos.Y );
+        body_->set<accessor::Pos2D>( pos );
     }
 
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>

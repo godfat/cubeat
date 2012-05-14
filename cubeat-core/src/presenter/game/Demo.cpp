@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(0),
+    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
      ai_level_(1), some_ui_inited_(false)
 {
 }
@@ -79,11 +79,19 @@ void Demo::init_()
     int ats_x2 = uiconf_.M("misc").M("gar2p").I("x");
     int ats_y  = uiconf_.M("misc").M("gar1p").I("y");
     s0 = data::ViewSetting::create( uiconf_.I("csize") );
-    s0->x_offset( uiconf_.I("xoff1") ).y_offset( uiconf_.I("yoff") ).
-        ats_x( ats_x1 ).ats_y( ats_y );
+    s0->x_offset( uiconf_.I("xoff1") ).
+        y_offset( uiconf_.I("yoff") ).
+        ats_x( ats_x1 ).
+        ats_y( ats_y ).
+        atf_x( ats_x2 ).
+        atf_y( ats_y );
     s1 = data::ViewSetting::create( uiconf_.I("csize") );
-    s1->x_offset( uiconf_.I("xoff2") ).y_offset( uiconf_.I("yoff") ).
-        ats_x( ats_x2 ).ats_y( ats_y );
+    s1->x_offset( uiconf_.I("xoff2") ).
+        y_offset( uiconf_.I("yoff") ).
+        ats_x( ats_x2 ).
+        ats_y( ats_y ).
+        atf_x( ats_x1 ).
+        atf_y( ats_y );
 
     std::string ai_temp[4] =
         {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};
@@ -443,7 +451,9 @@ void Demo::end_sequence1()
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
     //stage_->releaseResource(); //release when player isn't going to replay
     //App::i().launchMainMenu();
-    std::cout << "game_demo end call finished." << std::endl;
+    std::cout << "game_demo end completed." << std::endl;
+
+    init_();
 }
 
 void Demo::pause_quit()

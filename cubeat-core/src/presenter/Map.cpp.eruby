@@ -162,6 +162,12 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     return cube;
 }
 
+pCube Map::make_garbage(int x, int y){
+    pCube c = make_cube(x, y, -1);
+    c->goto_garbage_orig();
+    return c;
+}
+
 pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
 <% end %>
     return make_cube(3, 14, color_id); //temp

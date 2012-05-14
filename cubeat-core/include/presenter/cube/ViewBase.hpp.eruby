@@ -32,6 +32,7 @@ public:
 
     //hack
     virtual void approach_pos(){}
+    virtual void goto_garbage_orig(){}
 
 protected:
     data::pCube data() const{ return data_.lock(); }

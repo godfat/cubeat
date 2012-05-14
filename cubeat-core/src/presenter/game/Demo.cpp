@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
+    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
      ai_level_(1), some_ui_inited_(false)
 {
 }
@@ -111,9 +111,9 @@ void Demo::init_()
     else {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        std::random_shuffle(ai_temp, ai_temp + 4);
-        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
+        //std::random_shuffle(ai_temp, ai_temp + 4);
+        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[2]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[3]);
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);

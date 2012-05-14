@@ -171,6 +171,9 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
             std::cout << "cube states: " << is_below_empty(cube) << ", " << cube->is_broken() << ", " << cube->is_new_garbage() << ", " << cube->is_dropping() << "\n";
             pCube cbel = cubes_[cube->x()][cube->y()-1];
             std::cout << "cbelow stat: " << is_below_empty(cbel) << ", " << cbel->is_broken() << ", " << cbel->is_new_garbage() << ", " << cbel->is_dropping() << "\n";
+            //forcefully correction of y position
+            double bry = cbel->real_y();
+            cube->real_y( bry - 64 );
             return state::pState();
         }
         else {
@@ -329,19 +332,19 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //so here you have a upside-down view of where to drop the garbages.
 
     // shuffle all the vectors
-    for( int i = 0; i < row_empty.size(); ++i ) {
+    for( unsigned int i = 0; i < row_empty.size(); ++i ) {
         std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
     }
 
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
     presenter::pMap main_enemy = owner->garbage_lands().front().lock();
-    for( int j = row_empty.size() - 1; j >= 0; --j ) {
-        //this actually starts from the very bottom, because row_empty is upside-down
+    for( unsigned int j = 0; j < row_empty.size(); ++j ) {
+        //CORRECTED: actually, we don't want to do it upside-down.
         for( int unsigned i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
             int x = row_empty[j][i];
 
-            pCube c = owner->make_garbage(x, top-j-1)->model(); //quite magic...
+            pCube c = owner->make_garbage( x, top - j )->model();
             insert_garbage( c );
 
             --garbage_left_;

@@ -76,7 +76,7 @@ player2: {
     cube_dying_duration: 500,
     sink_speed: 65.0,
     drop_speed: 450.0,
-    cube_dropping_duration: 150,
+    cube_dropping_duration: 600,
     use_broken_as_garbage: 1,
 
     weapon: {

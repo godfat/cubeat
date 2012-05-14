@@ -180,16 +180,12 @@ void Demo::game_start()
     stage_->playBGM();
 
     //note: bad area
-    //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
     timer_ui_   = pDummy(new int);
     //note: end of bad area
 
     using std::tr1::bind;
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::update_ui_by_second, this), timer_ui_, 1000, -1);
-    //2011.03.25 item temporarily removed
-    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-    //    bind(&Demo::item_creation, this), timer_item_, 15000);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -371,10 +367,8 @@ void Demo::update_ui_by_second(){
 
 void Demo::cleanup()
 {
-    timer_item_.reset();
     timer_ui_.reset();
     btn_pause_.reset();
-    if( item_ ) item_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
     audio::Sound::i().stopAll();
@@ -478,61 +472,6 @@ void Demo::reinit()
     std::cout << "game_demo re-initialized." << std::endl;
 }
 
-//note: not very elegant.
-//void Demo::item_creation()
-//{
-//    audio::Sound::i().playBuffer("3/3f/item.wav");
-//    item_ = view::AnimatedSprite::create("itembox", scene_, 64, 64, true);
-//    item_->playAnime("moving", 500, -1).setDepth(-60);
-//
-//    ctrl::wpPlayer wp0 = player0_;
-//    ctrl::wpPlayer wp1 = player1_;
-//    std::tr1::function<void(int)> const cb1 = std::tr1::bind(&Demo::eat_item, this, wp0, std::tr1::placeholders::_1);
-//    std::tr1::function<void(int)> const cb2 = std::tr1::bind(&Demo::eat_item, this, wp1, std::tr1::placeholders::_1);
-//    view::pSprite body_ = item_;
-//    player0_->subscribe_shot_event(body_, cb1);
-//    player1_->subscribe_shot_event(body_, cb2);
-//
-//    int y = utils::random(192) + 32;
-//    std::tr1::function<void()> endcall = bind(&Demo::item_destruction, this);
-//    item_->tween<OElastic, Scale>(vec3(0,0,0), vec3(1,1,1), 1000u);
-//    if( utils::random(2) )
-//        item_->tween<Linear, Pos2D>(vec2(32, y), vec2(Conf::i().SCREEN_W() + 64, y), 4000u, 0, endcall);
-//    else
-//        item_->tween<Linear, Pos2D>(vec2(Conf::i().SCREEN_W() - 32, y), vec2(-64, y), 4000u, 0, endcall);
-//}
-
-//void Demo::eat_item(ctrl::wpPlayer wp, int)
-//{
-//    if( ctrl::pPlayer p = wp.lock() ) {
-//        item_->setPickable(false);
-//        item_->tween<Linear, Alpha>(0, 400u);
-//        item_->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 400u);
-//
-//        utils::map_any iset = gameplay_.M("item");
-//        int percent = utils::random(100);
-//
-//        if( percent < iset.I("wep1_chance") ) {
-//            p->weapon(0)->ammo( p->weapon(0)->ammo()+iset.I("wep1_ammo") );
-//        }
-//        else if( percent < iset.I("wep1_chance") + iset.I("wep2_chance") ) {
-//            p->weapon(0)->ammo( p->weapon(1)->ammo()+iset.I("wep2_ammo") );
-//        }
-//        else {
-//            p->weapon(0)->ammo( p->weapon(2)->ammo()+iset.I("wep3_ammo") );
-//        }
-//        audio::Sound::i().playBuffer("1/e/getitem.wav");
-//    }
-//}
-
-//void Demo::item_destruction()
-//{
-//    timer_item_.reset();
-//    timer_item_ = pDummy(new int);
-//    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-//        bind(&Demo::item_creation, this), timer_item_, 15000);
-//}
-
 static void do_nothing(int, int){};
 
 void Demo::pause(ctrl::Input const* controller)
@@ -549,7 +488,6 @@ void Demo::pause(ctrl::Input const* controller)
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
-    if( item_ ) item_->setPickable(false);
 
     std::tr1::function<void(int, int)> clicka = bind(&Demo::pause_quit, this);
     std::tr1::function<void(int, int)> clickb = bind(&Demo::resume, this, controller);
@@ -585,7 +523,6 @@ void Demo::resume(ctrl::Input const* controller)
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);
     scene_->allowPicking(true);
-    if( item_ ) item_->setPickable(true);
 
     btn_pause_.reset(); //reset button event subscribed by this handle.
 

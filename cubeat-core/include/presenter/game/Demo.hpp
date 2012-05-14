@@ -65,9 +65,6 @@ protected:
     void update_ui();
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);
     void setup_ui();
-    //void item_creation();
-    //void item_destruction();
-    //void eat_item(ctrl::wpPlayer, int);
 
     void setup_end_button();
     void end_sequence1();

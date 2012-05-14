@@ -107,6 +107,13 @@ public:
         body_->set<accessor::Pos2D>(pos_vec2());
     }
 
+    virtual void approach_pos(){
+        vec2 pos1 = pos_vec2();
+        vec2 pos2 = body_->get<accessor::Pos2D>();
+        body_->set<accessor::Pos2D>( (pos1+pos2)/2 );
+
+    }
+
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
         unsigned int duration = map_setting()->cube_dying_duration();
         body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);

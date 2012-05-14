@@ -30,6 +30,9 @@ public:
     virtual void sink_a_block_with_callback(callback_type){}
     virtual void update_pos(){}
 
+    //hack
+    virtual void approach_pos(){}
+
 protected:
     data::pCube data() const{ return data_.lock(); }
 

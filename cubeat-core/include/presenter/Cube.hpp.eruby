@@ -61,6 +61,10 @@ public:
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->update_pos(); }
         if(view_master_) view_master_->update_pos();
     }
+    void approach_pos(){
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->approach_pos(); }
+        if(view_master_) view_master_->approach_pos();
+    }
     void <% debug_hook 'go_dying' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_dying(); }
         if(view_master_) view_master_->go_dying();

@@ -115,7 +115,12 @@ public:
         body_->set<accessor::Pos2D>( pos2 );
     }
 
-    virtual void goto_garbage_orig(){
+    virtual void garbage_fly(){ //only called once when model::Map::insert_garbage
+        std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::set_grounded, cube_.lock().get());
+        body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+    }
+
+    virtual void goto_garbage_orig(){ //called from presenter::Map
         vec2 origpos = view_orig_.lock()->get<accessor::Pos2D>();
         vec2 pos( view_setting()->atf_x() - origpos.X, view_setting()->atf_y() - origpos.Y );
         body_->set<accessor::Pos2D>( pos );
@@ -309,7 +314,7 @@ public:
         audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
     }
 
-    virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_lands, int n){
+    virtual void new_garbage(model::pChain chain, int n){
         int modelx = chain->last_step_x(), modely = chain->last_step_y();
 
         using namespace accessor; using namespace easing; using std::tr1::bind;
@@ -317,32 +322,31 @@ public:
         vec2 pos = pos_vec2(modelx, modely);
         view::pScene s = scene_.lock();
         int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
-        BOOST_FOREACH(wpMap const& mg, garbage_lands) {
-            //2012.05 changed from throwing to off-screen, now throwing to over-head
-            vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
 
-            for( int i = 0; i < num; ++i ) {
-                view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
-                vec2 midp = (pos + endp)/2;
-                midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
-                std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
-                //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
-                data::AnimatorParam<Linear, Rotation> rota;
-                data::AnimatorParam<IQuad, Alpha> alpha;
-                data::AnimatorParam<Linear, Scale> scale;
-                data::WaypointParam<ICirc, Pos2D> way;
-                rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
-                alpha.start(0).end(255).duration(700);
-                scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
-                //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
-                way.waypoints(wp).duration(700+utils::random(300));
+        //2012.05 changed from throwing to off-screen, now throwing to over-head
+        vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
 
-                attack_cubes_.push_back(g);
-                //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+        for( int i = 0; i < num; ++i ) {
+            view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
+            vec2 midp = (pos + endp)/2;
+            midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
+            std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
+            //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
+            data::AnimatorParam<Linear, Rotation> rota;
+            data::AnimatorParam<IQuad, Alpha> alpha;
+            data::AnimatorParam<Linear, Scale> scale;
+            data::WaypointParam<ICirc, Pos2D> way;
+            rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
+            alpha.start(0).end(255).duration(700);
+            scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
+            //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
+            way.waypoints(wp).duration(700+utils::random(300));
 
-                g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
-                  .tween(rota).tween(alpha).tween(scale).tween(way);
-            }
+            attack_cubes_.push_back(g);
+            //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+
+            g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
+              .tween(rota).tween(alpha).tween(scale).tween(way);
         }
     }
 

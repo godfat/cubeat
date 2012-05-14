@@ -122,7 +122,7 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     new_chain_event(
         std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
     new_garbage_event(
-        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2)).
     pop_garbage_event(
         std::tr1::bind(&cube::ViewMaster::pop_garbage, view.get(), _1)).
     warning_counting_event(
@@ -147,7 +147,8 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                    drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
                      update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).
-                   approach_pos_event( std::tr1::bind( &Cube::approach_pos, cube.get() ) );
+                   approach_pos_event( std::tr1::bind( &Cube::approach_pos, cube.get() ) ).
+                    garbage_fly_event( std::tr1::bind( &Cube::garbage_fly, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

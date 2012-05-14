@@ -45,11 +45,13 @@ public:
 
     SimpleCube(wpSimpleMap map, int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
-        is_broken_(false), is_garbage_(false), hp_(1), map_(map), is_dead_(false)
+        is_broken_(false), is_garbage_(false), is_new_garbage_(false),
+        hp_(1), map_(map), is_dead_(false)
     {}
     SimpleCube(int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
-        is_broken_(false), is_garbage_(false), hp_(1), map_(pSimpleMap()), is_dead_(false)
+        is_broken_(false), is_garbage_(false), is_new_garbage_(false),
+        hp_(1), map_(pSimpleMap()), is_dead_(false)
     {}
 
     ~SimpleCube(){ lose_chain(); }
@@ -83,9 +85,12 @@ public:
 
     bool is_garbage()   const{ return is_garbage_; }
     bool is_broken()    const{ return is_broken_; }
+    bool is_new_garbage()const{return is_new_garbage_; }
 	bool has_grounded() const{ return has_grounded_; }
 	int  hp()           const{ return hp_; }
-	void set_grounded() { has_grounded_ = true; }
+	void set_grounded() { has_grounded_ = true; new_garbage(false); }
+	void new_garbage(bool const& f) { is_new_garbage_ = f; }
+
 
     data::pCube data() const{ return data_; }
     SimpleCube& data(data::pCube const& new_data){ data_ = new_data; return *this; }
@@ -95,7 +100,7 @@ public:
 protected:
     data::pCube   data_;
     pChain        chain_belonged_to_;
-    bool has_grounded_, is_broken_, is_garbage_;
+    bool has_grounded_, is_broken_, is_garbage_, is_new_garbage_;
 	int hp_;
 
 private:

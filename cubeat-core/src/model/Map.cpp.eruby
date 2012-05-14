@@ -130,6 +130,9 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
     }
     else
         cube->be_garbage().go_dropping();
+
+    cube->new_garbage(true);
+    cube->garbage_fly_event()();
     return insert_cube(cube);
 }
 
@@ -254,8 +257,8 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
-void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
+static void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
 {
     be_subed_from -= amount;
     cb(amount);
@@ -278,7 +281,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
             o->new_chain_event()(*i);
-            o->new_garbage_event()(*i, o->garbage_lands(), amount);
+            o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             score_ += (*i)->score_step() * damage_factor;
@@ -306,29 +309,43 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
 void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
-    std::vector<int> is_empty;
+    std::vector< std::vector<int> > row_empty;
     int top = ms()->height()-1;
     // check empty columns
-    for( int x=0, width=ms()->width(); x < width; ++x )
-        if( !cubes_[x][top] && !cubes_[x][top-1] )
-            is_empty.push_back( x );
+    for( int y=top-1, i = 0; y >= 0; --y, ++i ) {
+        row_empty.push_back( std::vector<int>() );
+        for( int x=0, width=ms()->width(); x < width; ++x ) {
+            if( !cubes_[x][y+1] && !cubes_[x][y] )
+                row_empty[i].push_back( x );
+        }
+        if( row_empty[i].size() < 1 ) {
+            //ok, we go from top, and now we've encountered first row without any hole
+            break;
+        }
+    }
+    //so here you have a upside-down view of where to drop the garbages.
 
-    // shuffle the array
-    std::random_shuffle(is_empty.begin(), is_empty.end());
+    // shuffle all the vectors
+    for( int i = 0; i < row_empty.size(); ++i ) {
+        std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+    }
 
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
     presenter::pMap main_enemy = owner->garbage_lands().front().lock();
-    for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
-        int x = is_empty[i];
+    for( int j = row_empty.size() - 1; j >= 0; --j ) {
+        //this actually starts from the very bottom, because row_empty is upside-down
+        for( int unsigned i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
+            int x = row_empty[j][i];
 
-        pCube c = owner->make_garbage(x, top)->model();
-        insert_garbage( c );
+            pCube c = owner->make_garbage(x, top-j-1)->model(); //quite magic...
+            insert_garbage( c );
 
-        --garbage_left_;
-        //2012.05 ok, this is a bit awkawrd. we have to substract the attack amounts
-        //above ENEMY's head, not above self's head...
-        main_enemy->pop_garbage_event()(1);
+            --garbage_left_;
+            //2012.05 ok, this is a bit awkawrd. we have to substract the attack amounts
+            //above ENEMY's head, not above self's head...
+            main_enemy->pop_garbage_event()(1);
+        }
     }
 }
 

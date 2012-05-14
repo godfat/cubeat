@@ -32,6 +32,7 @@ public:
 
     //hack
     virtual void approach_pos(){}
+    virtual void garbage_fly(){}
     virtual void goto_garbage_orig(){}
 
 protected:

@@ -65,6 +65,10 @@ public:
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->approach_pos(); }
         if(view_master_) view_master_->approach_pos();
     }
+    void garbage_fly(){
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->garbage_fly(); }
+        if(view_master_) view_master_->garbage_fly();
+    }
     void goto_garbage_orig(){
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->goto_garbage_orig(); }
         if(view_master_) view_master_->goto_garbage_orig();

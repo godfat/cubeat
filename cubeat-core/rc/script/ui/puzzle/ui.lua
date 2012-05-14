@@ -22,6 +22,15 @@ local function set_on_press_callback(sprite, func)
   sprite:on_press( Input2_left, func )
 end
 
+local function set_focus_leave_color(sprite, focus_color, leave_color)
+  local sprite_focus =  function(self) sprite:set_color(focus_color.r, focus_color.g, focus_color.b) end
+  local sprite_leave =  function(self) sprite:set_color(leave_color.r, leave_color.g, leave_color.b) end
+  sprite:on_enter_focus(Input1, sprite_focus)
+  sprite:on_leave_focus(Input1, sprite_leave)
+  sprite:on_enter_focus(Input2, sprite_focus)
+  sprite:on_leave_focus(Input2, sprite_leave)
+end
+
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
@@ -137,7 +146,7 @@ local function new_ui_button(parent, setting)
   
   -- load setting
   button.setting  = { title='button', x=0, y=0, r=255, g=255, b=255, size=24,
-                      depth=-10, alpha=255, visible=true, center=false }
+                      depth=-10, alpha=255, visible=true, center=false, focus_color={r=0,g=255,b=255} }
   load_setting(button.setting, setting)
   
   -- create
@@ -175,12 +184,33 @@ local function new_ui_button(parent, setting)
                       end
 
   -- init setting
+  local leave_color = {r=button.setting.r, g=button.setting.g, b=button.setting.b}
+  set_focus_leave_color(button.title, button.setting.focus_color, leave_color)
   button:set_pos(button.setting.x, button.setting.y)
   button:set_depth(button.setting.depth)
   button:set_alpha(button.setting.alpha)
   button:set_visible(button.setting.visible)
   
   return button
+end
+
+----------------------------------------------------------------------------
+-- Ratio
+----------------------------------------------------------------------------
+local function new_ui_ratio(parent, setting)
+  local ratio = {}
+  
+  -- load setting
+  
+  -- create
+  ratio.icon  = new_ui_button(parent, setting)
+  ratio.title = new_ui_text(parent, setting)
+  
+  -- functions
+  
+  -- init setting
+  
+  return ratio
 end
 
 ----------------------------------------------------------------------------
@@ -191,5 +221,6 @@ view            = view,
 puzzle          = puzzle,
 new_ui_image    = new_ui_image,
 new_ui_text     = new_ui_text,
-new_ui_button   = new_ui_button
+new_ui_button   = new_ui_button,
+new_ui_ratio    = new_ui_ratio
 }

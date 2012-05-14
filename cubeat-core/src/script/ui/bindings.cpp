@@ -19,6 +19,10 @@ void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK func) {
     func(&sp);
 }
 
+void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_WITH_PARA func, int a, int b) {
+    func(&sp, a, b);
+}
+
 void Sprite_set_texture(pSprite* self, const char* path) {
     (*self)->setTexture(path);
 }
@@ -33,6 +37,24 @@ void Sprite_set_size(pSprite* self, double w, double h) {
 
 void Sprite_set_depth(pSprite* self, double depth) {
     (*self)->setDepth(depth);
+}
+
+void Sprite_set_color(pSprite* self, int r, int g, int b) {
+    (*self)->set<Red>(r);
+    (*self)->set<Green>(g);
+    (*self)->set<Blue>(b);
+}
+
+void Sprite_set_red(pSprite* self, int r) {
+    (*self)->set<Red>(r);
+}
+
+void Sprite_set_green(pSprite* self, int g) {
+    (*self)->set<Green>(g);
+}
+
+void Sprite_set_blue(pSprite* self, int b) {
+    (*self)->set<Blue>(b);
 }
 
 void Sprite_set_alpha(pSprite* self, int alpha) {
@@ -60,12 +82,38 @@ void Sprite_on_press(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
+void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+    (*self)->onEnterFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+    (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
 void SpriteText_set_pos(pSpriteText* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
 void SpriteText_set_depth(pSpriteText* self, double depth) {
     (*self)->setDepth(depth);
+}
+
+void SpriteText_set_color(pSpriteText* self, int r, int g, int b) {
+    (*self)->set<Red>(r);
+    (*self)->set<Green>(g);
+    (*self)->set<Blue>(b);
+}
+
+void SpriteText_set_red(pSpriteText* self, int r) {
+    (*self)->set<Red>(r);
+}
+
+void SpriteText_set_green(pSpriteText* self, int g) {
+    (*self)->set<Green>(g);
+}
+
+void SpriteText_set_blue(pSpriteText* self, int b) {
+    (*self)->set<Blue>(b);
 }
 
 void SpriteText_set_alpha(pSpriteText* self, int alpha) {

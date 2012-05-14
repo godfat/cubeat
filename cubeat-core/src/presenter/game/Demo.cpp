@@ -37,8 +37,8 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(0),
-     ai_level_(0)
+    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
+     ai_level_(1), some_ui_inited_(false)
 {
 }
 
@@ -55,11 +55,23 @@ pDemo Demo::init()
     //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
     scene_->setTo2DView();
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
-    scene_->allowPicking(false);
-
     gameplay_ = Conf::i().config_of("gameplay/multi");
     uiconf_   = Conf::i().config_of("ui/demo_layout");
+    // setup stage & ui & player's view objects:
+    stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
+
+    init_();
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(loading_complete_, 100), 100);
+
+    return shared_from_this();
+}
+
+void Demo::init_()
+{
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    scene_->allowPicking(false);
 
     data::pViewSetting s0, s1;
 
@@ -127,32 +139,22 @@ pDemo Demo::init()
     player0_->setMapList( map_list );
     player1_->setMapList( map_list );
 
-    // setup stage & ui & player's view objects:
-    stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
     setup_ui();
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
-    ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
-    ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-    ready_go_text_->setPickable(false);
-
     using std::tr1::bind;
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        bind(loading_complete_, 100), 100);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&Demo::game_start, this), 3000);
 
     ready_go(3);
-
-    return shared_from_this();
 }
 
 //This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
 void Demo::ready_go(int step)
 {
+    ready_go_text_->set<Visible>(true);
     if ( step < 0 ) {
         ready_go_text_->tween<Linear, Alpha>(0, 500u);
         return;
@@ -194,16 +196,9 @@ void Demo::game_start()
             bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
     }
 
-    blocker_ = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
-    blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-    blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false).set<Visible>(false);
-
     if( num_of_cpu_ == 2 ) {
         blocker_->set<Visible>(true);
-        pause_note_text_ = view::SpriteText::create("press middle button to\npause and leave", scene_, "Star Jedi", 30, true);
-        pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-        pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
-        pause_note_text_->setDepth(-100).setPickable(false);
+        pause_note_text_->set<Visible>(true);
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
@@ -256,6 +251,54 @@ void Demo::setup_ui()
     ui_layout_->setPickable(false);
 
     gauge1_flag_ = gauge2_flag_ = false;
+
+    // other UI related texts here
+
+    if( !some_ui_inited_ ) {
+        blocker_  = view::Sprite::create("blocker", scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
+
+        end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
+        end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "Star Jedi", 30, true);
+        win_t_    = view::Sprite::create("win", scene_, 384, 192, true);
+        lose_t_   = view::Sprite::create("lose", scene_, 384, 192, true);
+
+        pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
+        pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
+        pause_text_->setDepth(-450).setPickable(false);
+
+        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "Star Jedi", 30, true);
+        pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+        pause_text2_->setDepth(-450).setPickable(false);
+
+        pause_t_ = view::Sprite::create("pause", scene_, 384, 192, true);
+        pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
+        pause_t_->setDepth(-450).setPickable(false);
+
+        ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+        ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        ready_go_text_->setPickable(false);
+
+        pause_note_text_ = view::SpriteText::create("press middle button\nto pause", scene_, "Star Jedi", 30, true);
+        pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
+        pause_note_text_->setDepth(-100).setPickable(false);
+
+        some_ui_inited_ = true;
+    }
+
+    blocker_->set<Visible>(false);
+    end_text_->set<Visible>(false);
+    end_text2_->set<Visible>(false);
+    pause_text_->set<Visible>(false);
+    pause_text2_->set<Visible>(false);
+    ready_go_text_->set<Visible>(false);
+    pause_note_text_->set<Visible>(false);
+    win_t_->set<Visible>(false);
+    lose_t_->set<Visible>(false);
+    pause_t_->set<Visible>(false);
+    // o_Oa
 }
 
 void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag)
@@ -352,8 +395,8 @@ void Demo::end(pMap lose_map)
     if( pause_note_text_) pause_note_text_->set<Visible>(false);
     blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
-    win_t_  = view::Sprite::create("win", scene_, 384, 192, true);
-    lose_t_ = view::Sprite::create("lose", scene_, 384, 192, true);
+    win_t_->set<Visible>(true);
+    lose_t_->set<Visible>(true);
 
     vec2 pos1 = vec2(Conf::i().SCREEN_W() /4,   Conf::i().SCREEN_H() /2);
     vec2 pos2 = vec2(Conf::i().SCREEN_W() /4*3, Conf::i().SCREEN_H() /2);
@@ -374,8 +417,8 @@ void Demo::end(pMap lose_map)
     win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
     lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-    end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
-    end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "Star Jedi", 30, true);
+    end_text_->set<Visible>(true);
+    end_text2_->set<Visible>(true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
@@ -405,7 +448,7 @@ void Demo::end_sequence1()
 
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
     //stage_->releaseResource(); //release when player isn't going to replay
-    //App::i().launchDemo();
+    //App::i().launchMainMenu();
     std::cout << "game_demo end call finished." << std::endl;
 }
 
@@ -428,10 +471,11 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
+    init_();
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);
-    std::cout << "game_demo end call finished." << std::endl;
+    std::cout << "game_demo re-initialized." << std::endl;
 }
 
 //note: not very elegant.
@@ -497,24 +541,9 @@ void Demo::pause(ctrl::Input const* controller)
 
     if( pause_note_text_) pause_note_text_->set<Visible>(false);
 
-    if( !pause_text_ || !pause_text2_ ) {
-        pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
-        pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
-        pause_text_->setDepth(-450).setPickable(false);
-        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "Star Jedi", 30, true);
-        pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
-        pause_text2_->setDepth(-450).setPickable(false);
-    }
     pause_text_->set<Visible>(true);
     pause_text2_->set<Visible>(true);
-
-    if( !pause_t_ ) {
-        pause_t_ = view::Sprite::create("pause", scene_, 384, 192, true);
-        pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
-        pause_t_->setDepth(-450).setPickable(false);
-    }
     pause_t_->set<Visible>(true);
-
     blocker_->set<Alpha>(100).set<Visible>(true);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();

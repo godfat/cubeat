@@ -77,6 +77,9 @@ protected:
     void pause(ctrl::Input const*);
     void resume(ctrl::Input const*);
 
+private:
+    void init_();
+
 protected:
     view::pScene scene_;
     presenter::pStage stage_;
@@ -101,6 +104,7 @@ protected:
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
     int num_of_cpu_, ai_level_;
+    bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 };
 

@@ -16,9 +16,10 @@ public:
 
 private:
     ViewSetting(double cube_size = 50):
-    x_offset_(0), y_offset_(0), z_offset_(0), cube_size_(cube_size){}
+    x_offset_(0), y_offset_(0), z_offset_(0), cube_size_(cube_size), ats_x_(640), ats_y_(425)
+    {}
 
-<%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size %>
+<%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size, :ats_x, :ats_y %>
 };
 
 }} // end of namespace

@@ -63,12 +63,15 @@ pDemo Demo::init()
 
     data::pViewSetting s0, s1;
 
+    int ats_x1 = uiconf_.M("misc").M("gar1p").I("x");
+    int ats_x2 = uiconf_.M("misc").M("gar2p").I("x");
+    int ats_y  = uiconf_.M("misc").M("gar1p").I("y");
     s0 = data::ViewSetting::create( uiconf_.I("csize") );
-    s0->x_offset( uiconf_.I("xoff1") ).
-        y_offset( uiconf_.I("yoff") );
+    s0->x_offset( uiconf_.I("xoff1") ).y_offset( uiconf_.I("yoff") ).
+        ats_x( ats_x1 ).ats_y( ats_y );
     s1 = data::ViewSetting::create( uiconf_.I("csize") );
-    s1->x_offset( uiconf_.I("xoff2") ).
-        y_offset( uiconf_.I("yoff") );
+    s1->x_offset( uiconf_.I("xoff2") ).y_offset( uiconf_.I("yoff") ).
+        ats_x( ats_x2 ).ats_y( ats_y );
 
     std::string ai_temp[4] =
         {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};

@@ -232,7 +232,9 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
+		<Unit filename="rc\config\char\char1_demo.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
+		<Unit filename="rc\config\char\char2_demo.zzml" />
 		<Unit filename="rc\config\char\char3.zzml" />
 		<Unit filename="rc\config\char\char4.zzml" />
 		<Unit filename="rc\config\char\char5.zzml" />
@@ -265,6 +267,7 @@
 		<Unit filename="rc\config\stage\street.zzml" />
 		<Unit filename="rc\config\test_stage.zzml" />
 		<Unit filename="rc\config\tmp\puzzle.zzml" />
+		<Unit filename="rc\config\ui\demo_layout.zzml" />
 		<Unit filename="rc\config\ui\in_game_2p_layout.zzml" />
 		<Unit filename="rc\resource.rc">
 			<Option compilerVar="WINDRES" />
@@ -338,6 +341,7 @@
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\script\net\bindings.cpp" />
 		<Unit filename="src\test\test_basic_enet_main.cpp">
+			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_font_input_method_main.cpp">
@@ -349,9 +353,11 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_game_main.cpp">
+			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_gameplay_protocol_main.cpp">
+			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_irr_device_main.cpp">

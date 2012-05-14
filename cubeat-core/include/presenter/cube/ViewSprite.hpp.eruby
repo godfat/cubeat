@@ -29,8 +29,8 @@
 
 #include "all_fwd.hpp"
 
+#include <deque>
 #include <boost/foreach.hpp>
-
 #include <boost/tr1/functional.hpp>
 
 <%= debug_include %>
@@ -304,8 +304,9 @@ public:
         view::pScene s = scene_.lock();
         int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
         BOOST_FOREACH(wpMap const& mg, garbage_lands) {
-            data::pMapSetting ms = mg.lock()->map_setting();
-            vec2 endp = pos_vec2(mg.lock()->view_setting(), ms->width()/2, ms->height()+2);
+            //2012.05 changed from throwing to off-screen, now throwing to over-head
+            vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
+
             for( int i = 0; i < num; ++i ) {
                 view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
                 vec2 midp = (pos + endp)/2;
@@ -321,10 +322,19 @@ public:
                 scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
                 //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
                 way.waypoints(wp).duration(700+utils::random(300));
-                way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+
+                attack_cubes_.push_back(g);
+                //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+
                 g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
                   .tween(rota).tween(alpha).tween(scale).tween(way);
             }
+        }
+    }
+
+    virtual void pop_garbage(int amount) {
+        for( int i = 0; i < amount; ++i ) {
+            attack_cubes_.pop_front();
         }
     }
 
@@ -474,6 +484,7 @@ private:
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
+    std::deque< view::pSprite > attack_cubes_;
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
 };

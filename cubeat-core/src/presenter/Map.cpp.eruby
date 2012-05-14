@@ -123,6 +123,8 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
         std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
     new_garbage_event(
         std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+    pop_garbage_event(
+        std::tr1::bind(&cube::ViewMaster::pop_garbage, view.get(), _1)).
     warning_counting_event(
         std::tr1::bind(&cube::ViewMaster::warning_counting, view.get(), _1));
     alert_bar_update_event(

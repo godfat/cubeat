@@ -323,6 +323,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         pCube c = owner->make_cube(x, top)->model();
         insert_garbage( c );
         --garbage_left_;
+        owner->pop_garbage_event()(1);
     }
 }
 

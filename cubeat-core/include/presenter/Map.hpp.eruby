@@ -18,7 +18,6 @@
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
-<%= reader 'std::list<wpMap>', :garbage_lands %>
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
@@ -93,6 +92,7 @@ private:
 
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>
+<%= reader 'std::list<wpMap>', :garbage_lands %>
 <%= reader 'model::pMap', :model %>
     //view::pMap view_;                       //note: not used for now.
     cube::pViewMaster view_master_;           //note: must not be destructed before cubes_

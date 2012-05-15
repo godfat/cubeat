@@ -116,7 +116,7 @@ public:
     }
 
     virtual void garbage_fly(){ //only called once when model::Map::insert_garbage
-        std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::set_grounded, cube_.lock().get());
+        std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::new_garbage, cube_.lock().get(), false);
         body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
     }
 

@@ -126,6 +126,7 @@ void SpriteText_set_alpha(pSpriteText* self, int alpha) {
 
 void SpriteText_set_visible(pSpriteText* self, bool visible) {
     (*self)->set<Visible>(visible);
+    (*self)->setPickable( visible ? true : false ); // I had to add this? why?
 }
 
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {

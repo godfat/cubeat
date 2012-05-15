@@ -58,7 +58,7 @@ public:
     void init_vs_ppl();
 
     void leaving_effect();
-    void starting_effect();
+    void starting_effect(bool const&);
 
     view::pScene get_ui_scene();
 
@@ -88,7 +88,7 @@ protected:
     void hide_upper_layer_ui();
 
 private:
-    void init_(int const&);
+    void init_(int const&, bool const& inplace = false);
 
 protected:
     view::pScene scene_;

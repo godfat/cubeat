@@ -22,10 +22,14 @@ local function show_everything()
   end
 end
 
-function slide_out()
-  local s = ffi.new("v2", 480, 300)
-  local e = ffi.new("v2", 1480, 300)
-  vorig_:tween_osine_pos(s, e, 1000)
+function slide_out(inplace)
+  if inplace then
+    hide_everything()
+  else
+    local s = ffi.new("v2", 480, 300)
+    local e = ffi.new("v2", 1480, 300)
+    vorig_:tween_osine_pos(s, e, 1000)
+  end
 end
 
 function slide_in()

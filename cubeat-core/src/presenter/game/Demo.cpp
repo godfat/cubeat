@@ -80,12 +80,13 @@ pDemo Demo::init()
     return shared_from_this();
 }
 
-void Demo::init_(int const& num_of_cpu)
+void Demo::init_(int const& num_of_cpu, bool const& inplace)
 {
     num_of_cpu_ = num_of_cpu;
 
     //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->stop();
     scene_->allowPicking(false);
 
     data::pViewSetting s0, s1;
@@ -172,6 +173,7 @@ void Demo::init_(int const& num_of_cpu)
 
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&Demo::game_start, this), 4000);
@@ -180,7 +182,7 @@ void Demo::init_(int const& num_of_cpu)
     stage_->playBGM();
 
     //ready_go(4);
-    starting_effect();
+    starting_effect(inplace);
 }
 
 void Demo::init_vs_ppl()
@@ -210,14 +212,19 @@ void Demo::leaving_effect()
     script::Lua::call(L_, "slide_in");
 }
 
-void Demo::starting_effect()
+void Demo::starting_effect(bool const& inplace)
 {
-    std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 3);
-    scene_->tween<OSine, Pos2D>(
-        vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
-        vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
-        1000u, 0, cb);
-    script::Lua::call(L_, "slide_out");
+    if( inplace ) {
+        ready_go(4);
+    }
+    else {
+        std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 3);
+        scene_->tween<OSine, Pos2D>(
+            vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
+            vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
+            1000u, 0, cb);
+    }
+    script::Lua::call(L_, "slide_out", inplace);
 }
 
 //This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
@@ -554,7 +561,7 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_(num_of_cpu_);
+    init_(num_of_cpu_, true);
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);

@@ -85,6 +85,7 @@ protected:
 
     //lua UI integration
     void ask_for_tutorial();
+    void hide_upper_layer_ui();
 
 private:
     void init_(int const&);

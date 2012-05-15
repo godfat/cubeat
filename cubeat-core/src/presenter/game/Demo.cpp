@@ -205,7 +205,9 @@ view::pScene Demo::get_ui_scene()
 
 void Demo::leaving_effect()
 {
-    scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000);
+    hide_upper_layer_ui();
+    scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
+    script::Lua::call(L_, "slide_in");
 }
 
 void Demo::starting_effect()
@@ -214,7 +216,8 @@ void Demo::starting_effect()
     scene_->tween<OSine, Pos2D>(
         vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
         vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
-        1000, 0, cb);
+        1000u, 0, cb);
+    script::Lua::call(L_, "slide_out");
 }
 
 //This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
@@ -329,7 +332,9 @@ void Demo::setup_ui()
         blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
 
         end_text_ = view::SpriteText::create("play again?", ui_scene_, "Star Jedi", 30, true);
+        end_text_->setPickable(false);
         end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", ui_scene_, "Star Jedi", 30, true);
+        end_text2_->setPickable(false);
         win_t_    = view::Sprite::create("win", ui_scene_, 384, 192, true);
         lose_t_   = view::Sprite::create("lose", ui_scene_, 384, 192, true);
 
@@ -357,17 +362,24 @@ void Demo::setup_ui()
         some_ui_inited_ = true;
     }
 
-    blocker_->set<Visible>(false);
-    end_text_->set<Visible>(false);
-    end_text2_->set<Visible>(false);
-    pause_text_->set<Visible>(false);
-    pause_text2_->set<Visible>(false);
-    ready_go_text_->set<Visible>(false);
-    pause_note_text_->set<Visible>(false);
-    win_t_->set<Visible>(false);
-    lose_t_->set<Visible>(false);
-    pause_t_->set<Visible>(false);
-    // o_Oa
+    hide_upper_layer_ui();
+}
+
+void Demo::hide_upper_layer_ui()
+{
+    if( some_ui_inited_ ) {
+        blocker_->set<Visible>(false);
+        blocker_->set<Visible>(false);
+        end_text_->set<Visible>(false);
+        end_text2_->set<Visible>(false);
+        pause_text_->set<Visible>(false);
+        pause_text2_->set<Visible>(false);
+        ready_go_text_->set<Visible>(false);
+        pause_note_text_->set<Visible>(false);
+        win_t_->set<Visible>(false);
+        lose_t_->set<Visible>(false);
+        pause_t_->set<Visible>(false);
+    }
 }
 
 void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag)

@@ -57,6 +57,9 @@ public:
     void init_vs_cpu();
     void init_vs_ppl();
 
+    void leaving_effect();
+    void starting_effect();
+
     view::pScene get_ui_scene();
 
 protected:

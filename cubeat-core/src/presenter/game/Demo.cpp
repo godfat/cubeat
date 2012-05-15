@@ -84,6 +84,7 @@ void Demo::init_(int const& num_of_cpu)
 {
     num_of_cpu_ = num_of_cpu;
 
+    //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     scene_->allowPicking(false);
 
@@ -153,6 +154,8 @@ void Demo::init_(int const& num_of_cpu)
     map1_->push_garbage_land(map0_);
     map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
     map1_->lose_event(bind(&Demo::end, this, ref(map1_)));
+    map0_->stop_dropping(); //make them stop dropping from the very beginning.
+    map1_->stop_dropping();
 
     ///NEW: MAKE PLAYER KNOWS ABOUT MAP
     std::vector< presenter::wpMap > map_list;
@@ -167,13 +170,17 @@ void Demo::init_(int const& num_of_cpu)
 
     using std::tr1::bind;
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        bind(&Demo::game_start, this), 4000);
+    //start timer here.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+
+//    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+//        bind(&Demo::game_start, this), 4000);
 
     //start music
     stage_->playBGM();
 
-    ready_go(4);
+    //ready_go(4);
+    starting_effect();
 }
 
 void Demo::init_vs_ppl()
@@ -196,6 +203,20 @@ view::pScene Demo::get_ui_scene()
     return ui_scene_;
 }
 
+void Demo::leaving_effect()
+{
+    scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000);
+}
+
+void Demo::starting_effect()
+{
+    std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 3);
+    scene_->tween<OSine, Pos2D>(
+        vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
+        vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
+        1000, 0, cb);
+}
+
 //This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
 void Demo::ready_go(int step)
 {
@@ -208,6 +229,8 @@ void Demo::ready_go(int step)
         ready_go_text_->changeText("go!");
         ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
         ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+
+        game_start();
     }
     else if ( step <= 3 ) {
         audio::Sound::i().playBuffer("count.wav");
@@ -245,6 +268,9 @@ void Demo::game_start()
 
     player0_->subscribe_player_specific_interactions();
     player1_->subscribe_player_specific_interactions();
+
+    map0_->start_dropping();
+    map1_->start_dropping();
 
     if( num_of_cpu_ > 0 )
         player1_->startThinking();
@@ -494,6 +520,7 @@ void Demo::end_sequence1()
     std::cout << "game_demo end completed." << std::endl;
 
     script::Lua::call(L_, "mainmenu");
+    leaving_effect();
 }
 
 void Demo::pause_quit()

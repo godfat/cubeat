@@ -43,6 +43,8 @@ void Object::init(pObject const& parent)
     body_ = smgr_->addEmptySceneNode( parent->body() );
     body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->setIsDebugObject(true);
+    //test
+    body_->grab();
 }
 
 Object& Object::moveTo(int x, int y, int z)
@@ -147,6 +149,18 @@ Object& Object::setLighting(bool const& lighting)
     return *this;
 }
 
+//2012.03.27 This method is pretty expensive
+vec2 Object::getScreenPos()
+{
+    if( pScene s = scene() ) {
+        position2di pos =
+            s->getCollisionMgr()->getScreenCoordinatesFrom3DPosition(
+                body_->getAbsolutePosition(), s->camera());
+        return vec2(pos.X, pos.Y);
+    }
+    return vec2(-1,-1);
+}
+
 pScene Object::scene() const
 {
     return scene_.lock();
@@ -169,6 +183,9 @@ Object::~Object()
 {
     clearAllQueuedTween();
     if( body_ ) {
+        //debug:
+        printf("view::Object: %x, ref: %d, name: %s destructing...\n", body_, body_->getReferenceCount(), body_->getName());
+
         if( scene() ) {
             scene()->removePickMapping( body_ );
         }

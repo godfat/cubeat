@@ -8,6 +8,10 @@
 
 #include <string>
 
+//add by maxwell
+struct lua_State;
+//add by maxwell end
+
 namespace psc {
 
 namespace ctrl {
@@ -31,6 +35,10 @@ public:
     virtual ~Puzzle();
 
     virtual void cycle();
+
+    //add by maxwell
+    view::pScene getUIScene() { return scene_; }
+    //add by maxwell end
 
 protected:
     pointer_type init(std::string const&, std::string const&, int puzzle_level);
@@ -74,6 +82,10 @@ protected:
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
     bool gauge1_flag_;
+
+    //add by maxwell
+    lua_State* L_;
+    //add by maxwell end
 };
 
 } //game

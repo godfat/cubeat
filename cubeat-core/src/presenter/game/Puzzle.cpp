@@ -117,6 +117,13 @@ pPuzzle Puzzle::init(std::string const& c1p, std::string const& sc, int puzzle_l
 
     player0_->subscribe_player_specific_interactions(false);
 
+    //Lua Call -- add by maxwell
+    L_ = luaL_newstate();
+    luaL_openlibs(L_);
+    script::Lua::run_script(L_, Conf::i().script_path("ui/puzzle/puzzle.lua").c_str());
+    script::Lua::call(L_, "init", static_cast<void*>(this));
+    //add by maxwell end
+
     return shared_from_this();
 }
 

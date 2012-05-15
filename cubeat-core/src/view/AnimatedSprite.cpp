@@ -38,6 +38,9 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
     body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->getMaterial(0) = mat;
 
+    //test
+    body_->grab();
+
     pAnimatedSprite self = static_pointer_cast<AnimatedSprite>( shared_from_this() );
     scene()->addPickMapping( body_, self );
 

@@ -166,6 +166,10 @@
 		<Unit filename="include\script\ai\bindings.h" />
 		<Unit filename="include\script\lua_utility.hpp" />
 		<Unit filename="include\script\net\bindings.h" />
+		<Unit filename="include\script\ui\bindings.h" />
+		<Unit filename="include\script\ui\puzzle\bindings.h" />
+		<Unit filename="include\script\ui\test\bindings.h" />
+    <Unit filename="include\test\test_ui.hpp" />
 		<Unit filename="include\test\test_basic_enet_main.hpp" />
 		<Unit filename="include\test\test_gameplay_protocol_main.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
@@ -272,6 +276,12 @@
 		<Unit filename="rc\resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="rc\script\ai\ai.lua" />
+		<Unit filename="rc\script\ai\bindings.ffi" />
+		<Unit filename="rc\script\ai\easy.lua" />
+		<Unit filename="rc\script\ai\hard.lua" />
+		<Unit filename="rc\script\ai\insane.lua" />
+		<Unit filename="rc\script\ai\normal.lua" />
 		<Unit filename="rc\script\puzzle\chain.lua" />
 		<Unit filename="rc\script\puzzle\helpers.lua" />
 		<Unit filename="rc\script\puzzle\maputils.lua" />
@@ -279,6 +289,17 @@
 		<Unit filename="rc\script\puzzle\puzzle_gen_interface.lua" />
 		<Unit filename="rc\script\test.lua" />
 		<Unit filename="rc\script\test2.lua" />
+		<Unit filename="rc\script\ui\bindings.ffi" />
+		<Unit filename="rc\script\ui\puzzle\bindings.ffi" />
+		<Unit filename="rc\script\ui\puzzle\puzzle.lua" />
+		<Unit filename="rc\script\ui\puzzle\ui.lua" />
+		<Unit filename="rc\script\ui\puzzle\view.lua" />
+		<Unit filename="rc\script\ui\test\bindigns.ffi" />
+		<Unit filename="rc\script\ui\test\bindings.ffi" />
+		<Unit filename="rc\script\ui\test\luajit-msgpack-pure.lua" />
+		<Unit filename="rc\script\ui\test\test1.lua" />
+		<Unit filename="rc\script\ui\test\view.lua" />
+		<Unit filename="rc\script\ui\view.lua" />
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -340,6 +361,9 @@
 		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\script\net\bindings.cpp" />
+    <Unit filename="src\script\ui\bindings.cpp" />
+		<Unit filename="src\script\ui\puzzle\bindings.cpp" />
+		<Unit filename="src\script\ui\test\bindings.cpp" />
 		<Unit filename="src\test\test_basic_enet_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -393,7 +417,6 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_ui_main.cpp">
-			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_view1_main.cpp">

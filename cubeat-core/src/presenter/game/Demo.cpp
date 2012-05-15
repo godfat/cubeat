@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char1_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
+    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
      ai_level_(1), some_ui_inited_(false)
 {
 }
@@ -232,6 +232,10 @@ void Demo::setup_ui()
            .getSpriteText(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
     }
 
+    //2012.05 attack effect changed. I still need their position but don't show them
+    ui_layout_->getSpriteText("gar1p").set<Visible>(false);
+    ui_layout_->getSpriteText("gar2p").set<Visible>(false);
+
     vec2 center_pos1( uiconf_.I("character_center_x1"), uiconf_.I("character_center_y") );
     vec2 center_pos2( uiconf_.I("character_center_x2"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p_, scene_, center_pos1 );
@@ -329,8 +333,9 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
 void Demo::update_ui(){
     int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
     int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
-    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
-    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
+// 2012.05 substituted by attack effect
+//    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
+//    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
 

@@ -7,6 +7,8 @@
 
 #include <string>
 
+struct lua_State;
+
 namespace psc {
 
 namespace ctrl {
@@ -52,6 +54,10 @@ public:
     ~Demo();
 
     virtual void cycle();
+    void init_vs_cpu();
+    void init_vs_ppl();
+
+    view::pScene get_ui_scene();
 
 protected:
     pointer_type init();
@@ -74,8 +80,11 @@ protected:
     void pause(ctrl::Input const*);
     void resume(ctrl::Input const*);
 
+    //lua UI integration
+    void ask_for_tutorial();
+
 private:
-    void init_();
+    void init_(int const&);
 
 protected:
     view::pScene scene_;
@@ -104,6 +113,8 @@ protected:
     int num_of_cpu_, ai_level_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
+
+    lua_State* L_;
 };
 
 typedef Demo::pointer_type pDemo;

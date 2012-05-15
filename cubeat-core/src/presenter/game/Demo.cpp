@@ -25,6 +25,7 @@
 #include "utils/MapLoader.hpp"
 #include "utils/to_s.hpp"
 #include "utils/Logger.hpp"
+#include "script/lua_utility.hpp"
 #include <boost/foreach.hpp>
 #include <algorithm>
 
@@ -38,12 +39,14 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
-     ai_level_(1), some_ui_inited_(false)
+     ai_level_(1), some_ui_inited_(false), L_(0)
 {
 }
 
 Demo::~Demo()
 {
+    lua_close(L_);
+
     std::cout << "Demoplayer Game destructing ..." << std::endl;
     std::cout << " player0 use count: " << player0_.use_count() << std::endl;
     std::cout << " player1 use count: " << player1_.use_count() << std::endl;
@@ -63,7 +66,12 @@ pDemo Demo::init()
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
-    init_();
+    L_ = luaL_newstate();
+    luaL_openlibs(L_);
+    script::Lua::run_script(L_, Conf::i().script_path("ui/demo/demo.lua").c_str());
+    script::Lua::call(L_, "init", static_cast<void*>(this));
+
+    init_vs_ppl();
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
@@ -71,8 +79,10 @@ pDemo Demo::init()
     return shared_from_this();
 }
 
-void Demo::init_()
+void Demo::init_(int const& num_of_cpu)
 {
+    num_of_cpu_ = num_of_cpu;
+
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     scene_->allowPicking(false);
 
@@ -116,7 +126,7 @@ void Demo::init_()
         input1->setControlledByAI(true);
         //std::random_shuffle(ai_temp, ai_temp + 4);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[2]);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[3]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[2]);
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);
@@ -163,6 +173,26 @@ void Demo::init_()
     stage_->playBGM();
 
     ready_go(4);
+}
+
+void Demo::init_vs_ppl()
+{
+    init_(0);
+}
+
+void Demo::init_vs_cpu()
+{
+    init_(1);
+}
+
+void Demo::ask_for_tutorial()
+{
+    //call Lua
+}
+
+view::pScene Demo::get_ui_scene()
+{
+    return ui_scene_;
 }
 
 //This is currently a mockup, of course we can't use normal fonts as countdown text. image needed.
@@ -462,7 +492,7 @@ void Demo::end_sequence1()
     //App::i().launchMainMenu();
     std::cout << "game_demo end completed." << std::endl;
 
-    init_();
+    init_(num_of_cpu_);
 }
 
 void Demo::pause_quit()
@@ -484,7 +514,7 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_();
+    init_(num_of_cpu_);
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);

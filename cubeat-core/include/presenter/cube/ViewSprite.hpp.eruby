@@ -345,7 +345,7 @@ public:
             attack_cubes_.push_back(g);
             //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
 
-            g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
+            g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64))
               .tween(rota).tween(alpha).tween(scale).tween(way);
         }
     }

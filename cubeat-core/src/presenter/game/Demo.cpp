@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
+    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
      ai_level_(1), some_ui_inited_(false)
 {
 }

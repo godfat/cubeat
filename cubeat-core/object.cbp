@@ -169,9 +169,9 @@
 		<Unit filename="include\script\ui\bindings.h" />
 		<Unit filename="include\script\ui\puzzle\bindings.h" />
 		<Unit filename="include\script\ui\test\bindings.h" />
-    <Unit filename="include\test\test_ui.hpp" />
 		<Unit filename="include\test\test_basic_enet_main.hpp" />
 		<Unit filename="include\test\test_gameplay_protocol_main.hpp" />
+		<Unit filename="include\test\test_ui.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
 		<Unit filename="include\utils\ChainChecker.hpp" />
@@ -361,9 +361,12 @@
 		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\script\net\bindings.cpp" />
-    <Unit filename="src\script\ui\bindings.cpp" />
+		<Unit filename="src\script\ui\bindings.cpp" />
 		<Unit filename="src\script\ui\puzzle\bindings.cpp" />
-		<Unit filename="src\script\ui\test\bindings.cpp" />
+		<Unit filename="src\script\ui\test\bindings.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_basic_enet_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

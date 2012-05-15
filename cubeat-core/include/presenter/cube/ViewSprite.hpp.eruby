@@ -276,9 +276,9 @@ public:
         show_warning_at(at, false);
     }
 
-    virtual void new_chain(model::pChain chain){
-        int combo = chain->step();
-        int amounts = chain->last_step_amounts();
+    virtual void new_chain(model::wpChain const& chain){
+        int combo = chain.lock()->step();
+        int amounts = chain.lock()->last_step_amounts();
 
         using namespace accessor; using namespace easing;
         std::string str("Chain " + utils::to_s(combo));
@@ -314,8 +314,8 @@ public:
         audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
     }
 
-    virtual void new_garbage(model::pChain chain, int n){
-        int modelx = chain->last_step_x(), modely = chain->last_step_y();
+    virtual void new_garbage(model::wpChain const& chain, int n){
+        int modelx = chain.lock()->last_step_x(), modely = chain.lock()->last_step_y();
 
         using namespace accessor; using namespace easing; using std::tr1::bind;
         using utils::to_s;

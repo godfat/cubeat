@@ -102,8 +102,8 @@ private:
 <%= accessor 'std::tr1::function<void()>', :lose_event %>
 <%= accessor 'std::tr1::function<void(bool)>', :overheat_event %>
 <%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event, :alert_bar_update_event, :pop_garbage_event %>
-<%= accessor 'std::tr1::function<void(model::pChain)>', :new_chain_event %>
-<%= accessor 'std::tr1::function<void(model::pChain, int)>', :new_garbage_event %>
+<%= accessor 'std::tr1::function<void(model::wpChain const&)>', :new_chain_event %>
+<%= accessor 'std::tr1::function<void(model::wpChain const&, int)>', :new_garbage_event %>
 
 <%= accessor 'std::tr1::function<bool()>', :hasting_cond %>
 };

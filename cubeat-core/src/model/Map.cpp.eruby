@@ -276,6 +276,9 @@ void <% debug_hook 'Map::update_chains' do %>(){
     int damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
 
+//    if( !chains_.empty() )
+//        std::cout << "map: " << this << "\n";
+
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
         // when the Chain's rear is not zero we notify to add a new combo
@@ -295,6 +298,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
         }
 
         // when the Chain's all dead then we fire up the attack and make this one null
+        //std::cout << "  chain " << (*i) << " use count: " << (*i).use_count() << "\n";
+
         if( (*i).use_count() == 1 ){
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->power_factor()*damage_factor;
@@ -321,9 +326,14 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     for( int y=top-1, i = 0; y >= 0; --y, ++i ) {
         row_empty.push_back( std::vector<int>() );
         for( int x=0, width=ms()->width(); x < width; ++x ) {
-            if( !cubes_[x][y+1] && !cubes_[x][y] )
+            if( !cubes_[x][y+1] && !cubes_[x][y] ) {
                 row_empty[i].push_back( x );
+                //printf("0 ");
+            }
+            //else
+                //printf("1 ");
         }
+        //printf("\n");
         if( row_empty[i].size() < 1 ) {
             //ok, we go from top, and now we've encountered first row without any hole
             break;
@@ -341,6 +351,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     presenter::pMap main_enemy = owner->garbage_lands().front().lock();
     for( unsigned int j = 0; j < row_empty.size(); ++j ) {
         //CORRECTED: actually, we don't want to do it upside-down.
+        //printf("garbage_left_: %d, emptyness of row %d (from top): %d\n", garbage_left_, j, row_empty[j].size());
         for( int unsigned i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
             int x = row_empty[j][i];
 
@@ -353,6 +364,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
             main_enemy->pop_garbage_event()(1);
         }
     }
+    //printf("\n");
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){

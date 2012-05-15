@@ -72,7 +72,7 @@ end
 
 --
 local function new_sprite_text(text, parent, font, size, center, r, g, b)
-  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*",parent), font, size, center, r, g, b), C.SpriteText__gc)
+  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), C.SpriteText__gc)
 end
 
 ----------------------------------------------------------------------------

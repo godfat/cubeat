@@ -94,6 +94,10 @@ void SpriteText_set_pos(pSpriteText* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
+void SpriteText_set_scale(pSpriteText* self, double uniform_scale) {
+    (*self)->set<Scale>(vec3(uniform_scale, uniform_scale, uniform_scale));
+}
+
 void SpriteText_set_depth(pSpriteText* self, double depth) {
     (*self)->setDepth(depth);
 }

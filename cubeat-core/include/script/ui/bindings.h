@@ -30,6 +30,7 @@ APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCA
 APIEXPORT void      Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
 APIEXPORT void      SpriteText_set_pos(pSpriteText*, double, double);
+APIEXPORT void      SpriteText_set_scale(pSpriteText*, double);
 APIEXPORT void      SpriteText_set_depth(pSpriteText*, double);
 APIEXPORT void      SpriteText_set_color(pSpriteText*, int, int, int);
 APIEXPORT void      SpriteText_set_red(pSpriteText*, int);

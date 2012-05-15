@@ -58,7 +58,7 @@ pDemo Demo::init()
     ui_scene_ = view::Scene::create("ui");
     //scene_->setTo2DView().enableGlobalHittingEvent(); //2011.03.28 weapon temporary removal
     scene_->setTo2DView();
-    ui_scene_->setTo2DView().allowPicking(false);
+    ui_scene_->setTo2DView();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui");
 
     gameplay_ = Conf::i().config_of("gameplay/multi");
@@ -70,8 +70,9 @@ pDemo Demo::init()
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("ui/demo/demo.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
+    script::Lua::call(L_, "mainmenu");
 
-    init_vs_ppl();
+    /*** Ok, we handover the control to script from here on. ***/
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
@@ -492,7 +493,7 @@ void Demo::end_sequence1()
     //App::i().launchMainMenu();
     std::cout << "game_demo end completed." << std::endl;
 
-    init_(num_of_cpu_);
+    script::Lua::call(L_, "mainmenu");
 }
 
 void Demo::pause_quit()
@@ -584,17 +585,21 @@ void Demo::resume(ctrl::Input const* controller)
 
 void Demo::cycle()
 {
-    pview1_->cycle();
-    pview2_->cycle();
-    update_ui();
+    if( map0_ ) { //it's just some condition that the game is initialized.
+        pview1_->cycle();
+        pview2_->cycle();
+        update_ui();
+        map0_->cycle();
+        map1_->cycle();
+
+        if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
+            player0_->cycle();
+            player1_->cycle();
+        }
+    }
+
     stage_->cycle();
     scene_->redraw();
-    map0_->redraw().cycle();
-    map1_->redraw().cycle();
     ui_scene_->redraw();
-    if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
-        player0_->cycle();
-        player1_->cycle();
-    }
 }
 

@@ -33,7 +33,7 @@ end
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
-local function new_ui_image(parent, setting)
+local function new_image(parent, setting)
   local image = {}
   
   -- load setting
@@ -89,7 +89,7 @@ end
 ----------------------------------------------------------------------------
 -- Text
 ----------------------------------------------------------------------------
-local function new_ui_text(parent, setting)
+local function new_text(parent, setting)
   local text = {}
 
   -- load setting
@@ -140,7 +140,7 @@ end
 ----------------------------------------------------------------------------
 -- Button
 ----------------------------------------------------------------------------
-local function new_ui_button(parent, setting)
+local function new_button(parent, setting)
   local button = {}
   
   -- load setting
@@ -202,8 +202,8 @@ local function new_ui_ratio(parent, setting)
   -- load setting
   
   -- create
-  ratio.icon  = new_ui_button(parent, setting)
-  ratio.title = new_ui_text(parent, setting)
+  ratio.icon  = new_button(parent, setting)
+  ratio.title = new_text(parent, setting)
   
   -- functions
   
@@ -216,8 +216,8 @@ end
 -- Main functions
 ----------------------------------------------------------------------------
 return{
-new_ui_image    = new_ui_image,
-new_ui_text     = new_ui_text,
-new_ui_button   = new_ui_button,
+new_image    = new_image,
+new_text     = new_text,
+new_button   = new_button,
 new_ui_ratio    = new_ui_ratio
 }

@@ -51,6 +51,7 @@ ffi.metatype("pSprite", Mt_Sprite)
 local Mt_SpriteText = setmetatable({}, {__index = Mt_Sprite})
 Mt_SpriteText.__index             = Mt_SpriteText
 Mt_SpriteText.set_pos             = C.SpriteText_set_pos
+Mt_SpriteText.set_scale           = C.SpriteText_set_scale     
 Mt_SpriteText.set_depth           = C.SpriteText_set_depth
 Mt_SpriteText.set_color           = C.SpriteText_set_color
 Mt_SpriteText.set_red             = C.SpriteText_set_red

@@ -15,3 +15,11 @@ pScene* Demo_get_ui_scene(Demo* self) { // not shared_ptr!
     *s = self->get_ui_scene();
     return s;
 }
+
+void Demo_init_vs_ppl(Demo* self) { // not shared_ptr!
+    self->init_vs_ppl();
+}
+
+void Demo_init_vs_cpu(Demo* self) { // not shared_ptr!
+    self->init_vs_cpu();
+}

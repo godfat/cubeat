@@ -37,7 +37,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(2),
+    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
      ai_level_(1), some_ui_inited_(false)
 {
 }
@@ -156,6 +156,9 @@ void Demo::init_()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(&Demo::game_start, this), 3000);
 
+    //start music
+    stage_->playBGM();
+
     ready_go(3);
 }
 
@@ -168,14 +171,14 @@ void Demo::ready_go(int step)
         return;
     }
     else if ( step == 0 ) {
+        audio::Sound::i().playBuffer("go.wav");
         ready_go_text_->changeText("go!");
         ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
-        //need sound fx here
     }
     else {
+        if( step <= 2 ) { audio::Sound::i().playBuffer("count.wav"); }
         ready_go_text_->showNumber(step);
         ready_go_text_->set<Scale>(vec3(5,5,5));
-        //need sound fx here
     }
     ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
@@ -184,9 +187,6 @@ void Demo::ready_go(int step)
 
 void Demo::game_start()
 {
-    //start music
-    stage_->playBGM();
-
     //note: bad area
     timer_ui_   = pDummy(new int);
     //note: end of bad area

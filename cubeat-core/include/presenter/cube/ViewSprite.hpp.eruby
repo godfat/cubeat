@@ -329,7 +329,7 @@ public:
         for( int i = 0; i < num; ++i ) {
             view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
             vec2 midp = (pos + endp)/2;
-            midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
+            midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
             std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
             //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
             data::AnimatorParam<Linear, Rotation> rota;

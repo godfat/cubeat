@@ -79,6 +79,7 @@ private:
 
 protected:
     view::pScene scene_;
+    view::pScene ui_scene_;
     presenter::pStage stage_;
     presenter::pMap map0_;
     presenter::pMap map1_;

@@ -7,6 +7,9 @@
 #define APIEXPORT
 #endif
 
+typedef struct { double x, y; } v2;
+typedef struct { double x, y, z; } v3;
+
 typedef void (*PSC_OBJCALLBACK)(pSprite*);
 typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
 void delegate_for_cb_from_lua(pSprite, PSC_OBJCALLBACK);
@@ -23,6 +26,8 @@ APIEXPORT void      Sprite_set_blue(pSprite*, int);
 APIEXPORT void      Sprite_set_alpha(pSprite*, int);
 APIEXPORT void      Sprite_set_visible(pSprite*, bool);
 APIEXPORT void      Sprite_set_center_aligned(pSprite*, bool);
+APIEXPORT void      Sprite_tween_isine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_osine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);

@@ -38,6 +38,12 @@ Mt_Sprite.set_blue                = C.Sprite_set_blue
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
+Mt_Sprite.tween_isine_pos          = function(self, s, e, dur, l, cb, d) 
+  C.Sprite_tween_isine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
+end
+Mt_Sprite.tween_osine_pos          = function(self, s, e, dur, l, cb, d) 
+  C.Sprite_tween_osine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
+end
 Mt_Sprite.on_tween_line_alpha     = C.Sprite_on_tween_line_alpha
 Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end

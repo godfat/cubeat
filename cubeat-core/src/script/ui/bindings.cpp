@@ -69,6 +69,22 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
+void Sprite_tween_isine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<ISine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
+}
+
+void Sprite_tween_osine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<OSine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
+}
+
 void Sprite_on_tween_line_alpha(pSprite* self, int alpha, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
     (*self)->tween<Linear, Alpha>(alpha, duration, loop, call, delay);

@@ -25,6 +25,12 @@ Map& Map::stop_dropping()
     return *this;
 }
 
+Map& Map::start_dropping()
+{
+    map_setting()->garbage_dumpable(true).dropping_creatable(true);
+    return *this;
+}
+
 int Map::sum_of_all_enemy() const {
     int sum = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_)

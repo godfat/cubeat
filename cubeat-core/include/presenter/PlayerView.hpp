@@ -56,8 +56,8 @@ protected:
     presenter::wpMap map_;
     ctrl::Input* input_;
 
-    int last_garbage_;
-    int last_attack_;
+    int last_my_garbage_;
+    int last_enemy_garbage_;
     STATE current_state_;
     FACE  current_face_;
     int face_pos_idx_;

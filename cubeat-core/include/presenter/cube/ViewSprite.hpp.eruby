@@ -117,7 +117,29 @@ public:
 
     virtual void garbage_fly(){ //only called once when model::Map::insert_garbage
         std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::new_garbage, cube_.lock().get(), false);
-        body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+        switch( utils::random(6) ) {
+            case 0:
+                body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            case 1:
+                body_->tween<easing::IOCubic, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            case 2:
+                body_->tween<easing::IOQuart, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            case 3:
+                body_->tween<easing::IOExpo, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            case 4:
+                body_->tween<easing::IOCirc, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            case 5:
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+            default:
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                break;
+        }
     }
 
     virtual void goto_garbage_orig(){ //called from presenter::Map
@@ -336,17 +358,28 @@ public:
             data::AnimatorParam<IQuad, Alpha> alpha;
             data::AnimatorParam<Linear, Scale> scale;
             data::WaypointParam<ICirc, Pos2D> way;
+            data::CirclingParam<Linear, Pos3D> circle;
+
             rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
             alpha.start(0).end(255).duration(700);
-            scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
+            double sc = (utils::random(20)/100.0) + .6;
+            scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
             //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
             way.waypoints(wp).duration(700+utils::random(300));
+            int rad = utils::random(30)+20;
+            int arc = utils::random(180);
+            circle.center(vec3(endp.X,-endp.Y,0)).
+                          start(vec2(rad, arc)).
+                          end(vec2(rad, arc+360)).
+                          rotation(vec3(utils::random(180)-90,0,0)).
+                          duration(1666+utils::random(666)).
+                          loop(-1);
 
             attack_cubes_.push_back(g);
             //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
 
-            g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64))
-              .tween(rota).tween(alpha).tween(scale).tween(way);
+            g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota).tween(alpha).tween(scale);
+            g->queue(way).tween(circle);
         }
     }
 

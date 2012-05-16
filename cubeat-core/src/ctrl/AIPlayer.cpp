@@ -128,7 +128,7 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
         switch( *btn ) {
             case BtnID::TRIG_1:
                 if( pPosition pos = cmd->pos() ) {
-                    shoot( pos->first, pos->second );
+                    shoot( pos->first, pos->second, !cmd->inter() );
                 }
                 break;
             case BtnID::TRIG_2:
@@ -141,18 +141,19 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
 }
 
 //you can only call this after setMapList is called
-data::pViewSetting AIPlayer::view_setting() const
+data::pViewSetting AIPlayer::view_setting(bool const& self) const
 {
-    if( presenter::pMap m = map_list_[id_].lock() )
+    int id = self ? id_ : enemy_input_ids_.front();
+    if( presenter::pMap m = map_list_[id].lock() )
         return m->view_setting();
     else return data::pViewSetting();
 }
 
-void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
+void AIPlayer::shoot(int x, int y, bool const& self) //we must know ViewSetting here.
 {
     using namespace accessor;
     using namespace easing;
-    int c_size = view_setting()->cube_size();
+    int c_size = view_setting(self)->cube_size();
 
     int handshaking_x = utils::random(c_size/2) - c_size/4;
     int handshaking_y = utils::random(c_size/2) - c_size/4;
@@ -162,14 +163,17 @@ void AIPlayer::shoot(int x, int y) //we must know ViewSetting here.
         handshaking_y *= 4;
     }
 
-    vec2 dest(x*c_size + c_size/2 + view_setting()->x_offset() + handshaking_x,
-              -y*c_size - c_size/2 + view_setting()->y_offset() + handshaking_y);
+    vec2 dest(x*c_size + c_size/2 + view_setting(self)->x_offset() + handshaking_x,
+              -y*c_size - c_size/2 + view_setting(self)->y_offset() + handshaking_y);
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;
 
     function<void()> cb = bind(&AIPlayer::hold_button, this, ref(trig1_), 1);
 
-    input_->getCursor()->tween<IOExpo, Pos2D>(dest, think_interval_ - 100, 0, cb);
+    int mov_duration = think_interval_ - 100;
+    if ( !self ) mov_duration *= 1.5; //interrupt your opponents should be more costly
+
+    input_->getCursor()->tween<IOExpo, Pos2D>(dest, mov_duration, 0, cb);
 }
 
 void AIPlayer::haste(int ms)

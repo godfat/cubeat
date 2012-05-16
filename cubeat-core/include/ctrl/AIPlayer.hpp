@@ -62,7 +62,7 @@ protected:
 
     void open_thread_to_think();
     void issue_command(model::pAICommand const&);
-    void shoot(int, int);
+    void shoot(int, int, bool const& self = true);
     void haste(int);
     void hold_button(bool&, int);
     void press_button(bool&);
@@ -70,7 +70,7 @@ protected:
     pointer_type self() { return self_.lock(); }
 
     //you can only call this after setMapList is called
-    data::pViewSetting view_setting() const;
+    data::pViewSetting view_setting(bool const& self = true) const;
 
     void              think();
     void              update_map_models();

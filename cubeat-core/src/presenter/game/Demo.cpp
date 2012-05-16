@@ -207,6 +207,8 @@ view::pScene Demo::get_ui_scene()
 
 void Demo::leaving_effect()
 {
+    heatgauge1_->set<Visible>(false);
+    heatgauge2_->set<Visible>(false);
     hide_upper_layer_ui();
     scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
     script::Lua::call(L_, "slide_in");
@@ -320,16 +322,22 @@ void Demo::setup_ui()
     utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
     vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
     vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
-    heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
-    heatgauge2_ = view::Sprite::create("heatgauge2", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
-    heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
-                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
-    heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
-                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+
+//2012.05 new heatgauge
+//    heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+//    heatgauge2_ = view::Sprite::create("heatgauge2", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
+//    heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+//                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+//    heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
+//                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
+    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+    heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
+    heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
 
     ui_layout_->setPickable(false);
 
-    gauge1_flag_ = gauge2_flag_ = false;
+    gauge1_flag_ = gauge2_flag_ = false; // ?????
 
     // other UI related texts here
 
@@ -389,9 +397,12 @@ void Demo::hide_upper_layer_ui()
     }
 }
 
+//2012.05 fix
 void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag)
 {
-    gauge->set<Scale>( vec3(player->heat(), 1, 1) );
+    gauge->set<Pos2D>( player->input()->getCursor()->get<Pos2D>() );
+    //gauge->set<Scale>( vec3(player->heat(), 1, 1) );
+    gauge->setTexture( "heat/"+utils::to_s( static_cast<int>(player->heat() * 12.0) ) );
 
     if( !player->is_overheat() ) {
         out_flag = false;
@@ -399,10 +410,10 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
             gauge->set<Green>(255);
             gauge->set<Red>( player->heat()*2*255 );
         }
-        else {
-            gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
-            gauge->set<Red>(255);
-        }
+//        else {
+//            gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
+//            gauge->set<Red>(255);
+//        }
     }
     else if( !out_flag ) {
         out_flag = true;

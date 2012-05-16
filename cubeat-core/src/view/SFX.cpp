@@ -5,6 +5,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "IrrDevice.hpp"
+#include "utils/to_s.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -38,6 +39,10 @@ void SFX::init_textures(pScene& s)
     Sprite::create("cubes/cubes2", s, 64, 64, true);
     Sprite::create("cubes/cubes3", s, 64, 64, true);
     Sprite::create("cubes/cubes4", s, 64, 64, true);
+
+    for( int i = 0 ; i <= 12; ++i ) {
+        Sprite::create("heat/"+utils::to_s(i), s, 64, 64, true);
+    }
 }
 
 void SFX::clear_obj(FXObjList::iterator obj)

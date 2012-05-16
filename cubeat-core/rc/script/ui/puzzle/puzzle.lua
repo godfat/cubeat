@@ -11,31 +11,31 @@ function init(self)
   scene_  = self:get_ui_scene()
 
   local main_setting  = {path='area_rect', x=800, y=400, w=300, h=200}
-  local main          = ui.new_ui_image(scene_, main_setting)
+  local main          = ui.new_image(scene_, main_setting)
   local btnSound_setting  = {title='sound setting', x=30, y=30}
   local btnVideo_setting  = {title='video setting', x=30, y=60}
-  local btnSound  = ui.new_ui_button(main.pic, btnSound_setting)
-  local btnVideo  = ui.new_ui_button(main.pic, btnVideo_setting)
+  local btnSound  = ui.new_button(main.pic, btnSound_setting)
+  local btnVideo  = ui.new_button(main.pic, btnVideo_setting)
   
   local sound_setting = {path='area_rect', x=800, y=400, w=300, h=200, alpha=0, visible=false}
-  local sound         = ui.new_ui_image(scene_, sound_setting)
+  local sound         = ui.new_image(scene_, sound_setting)
   local btnSound1_setting     = {title='level',     x=30, y=30,  alpha=0, visible=false}
   local btnSound2_setting     = {title='turn on',   x=30, y=60,  alpha=0, visible=false}
   local btnSound3_setting     = {title='turn off',  x=30, y=90,  alpha=0, visible=false}
   local btnSoundBack_setting  = {title='back',      x=30, y=140, alpha=0, visible=false}
-  local btnSound1     = ui.new_ui_button(sound.pic, btnSound1_setting)
-  local btnSound2     = ui.new_ui_button(sound.pic, btnSound2_setting)
-  local btnSound3     = ui.new_ui_button(sound.pic, btnSound3_setting)
-  local btnSoundBack  = ui.new_ui_button(sound.pic, btnSoundBack_setting)
+  local btnSound1     = ui.new_button(sound.pic, btnSound1_setting)
+  local btnSound2     = ui.new_button(sound.pic, btnSound2_setting)
+  local btnSound3     = ui.new_button(sound.pic, btnSound3_setting)
+  local btnSoundBack  = ui.new_button(sound.pic, btnSoundBack_setting)
   
   local video_setting = {path='area_rect', x=800, y=400, w=300, h=200, alpha=0, visible=false}
-  local video         = ui.new_ui_image(scene_, video_setting)
+  local video         = ui.new_image(scene_, video_setting)
   local btnVideo1_setting     = {title='size',  x=30, y=30,   alpha=0, visible=false}
   local btnVideo2_setting     = {title='level', x=30, y=60,   alpha=0, visible=false}
   local btnVideoBack_setting  = {title='back',  x=30, y=140,  alpha=0, visible=false}
-  local btnVideo1     = ui.new_ui_button(video.pic, btnVideo1_setting)
-  local btnVideo2     = ui.new_ui_button(video.pic, btnVideo2_setting)
-  local btnVideoBack  = ui.new_ui_button(video.pic, btnVideoBack_setting)
+  local btnVideo1     = ui.new_button(video.pic, btnVideo1_setting)
+  local btnVideo2     = ui.new_button(video.pic, btnVideo2_setting)
+  local btnVideoBack  = ui.new_button(video.pic, btnVideoBack_setting)
   
   local function main_setvisible(visible)
     local alpha = 0
@@ -93,7 +93,7 @@ function init(self)
   
   --
   local ask_setting = {}
-  local ask = ui.new_ui_askbox(scene_, ask_setting)
+  local ask = ui.new_askbox(scene_, ask_setting)
   
   local show_ask  = function(title)
                       local show = function(self)

@@ -362,7 +362,11 @@ public:
             data::AnimatorParam<Linear, Rotation> rota;
             data::AnimatorParam<IQuad, Alpha> alpha;
             data::AnimatorParam<Linear, Scale> scale;
-            data::WaypointParam<ICirc, Pos2D> way;
+
+            //data::WaypointParam<ICirc, Pos2D> way;
+            data::AnimatorParam<ISine, Pos2D> way1;
+            data::AnimatorParam<Linear, Pos2D> way2;
+
             data::CirclingParam<Linear, Pos3D> circle;
 
             rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
@@ -370,7 +374,11 @@ public:
             double sc = (utils::random(20)/100.0) + .6;
             scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
             //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
-            way.waypoints(wp).duration(700+utils::random(300));
+            //way.waypoints(wp).duration(700+utils::random(300)); //buggy
+
+            way1.start(pos).end(midp).duration(500+utils::random(150));
+            way2.start(midp).end(endp).duration(100+utils::random(100));
+
             int rad = utils::random(30)+20;
             int arc = utils::random(180);
             circle.center(vec3(endp.X,-endp.Y,0)).
@@ -384,7 +392,7 @@ public:
             //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
 
             g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota).tween(alpha).tween(scale);
-            g->queue(way).tween(circle);
+            g->queue(way1).queue(way2).tween(circle);
         }
     }
 

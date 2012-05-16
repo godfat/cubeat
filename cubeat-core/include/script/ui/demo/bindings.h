@@ -10,5 +10,6 @@
 APIEXPORT pScene* Demo_get_ui_scene(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_init_vs_ppl(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_init_vs_cpu(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_init_cpudemo(Demo*); // not shared_ptr!
 
 #endif // _SHOOTING_CUBES_SCRIPT_UI_DEMO_BINDINGS_H_

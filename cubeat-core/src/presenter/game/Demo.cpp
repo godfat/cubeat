@@ -195,6 +195,11 @@ void Demo::init_vs_cpu()
     init_(1);
 }
 
+void Demo::init_cpudemo()
+{
+    init_(2);
+}
+
 void Demo::ask_for_tutorial()
 {
     //call Lua
@@ -271,7 +276,7 @@ void Demo::game_start()
     }
 
     if( num_of_cpu_ == 2 ) {
-        blocker_->set<Visible>(true);
+        //blocker_->set<Visible>(true);
         pause_note_text_->set<Visible>(true);
     }
 
@@ -369,8 +374,8 @@ void Demo::setup_ui()
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
         ready_go_text_->setPickable(false);
 
-        pause_note_text_ = view::SpriteText::create("press middle button\nto pause", ui_scene_, "Star Jedi", 30, true);
-        pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "Star Jedi", 30, true);
+        pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() - 30 ) );
         pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
         pause_note_text_->setDepth(-100).setPickable(false);
 

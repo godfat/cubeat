@@ -29,6 +29,7 @@ local Mt_Sprite = {}
 Mt_Sprite.__index                 = Mt_Sprite
 Mt_Sprite.set_texture             = C.Sprite_set_texture
 Mt_Sprite.set_pos                 = C.Sprite_set_pos
+Mt_Sprite.set_rotation            = C.Sprite_set_rotation
 Mt_Sprite.set_size                = C.Sprite_set_size
 Mt_Sprite.set_depth               = C.Sprite_set_depth
 Mt_Sprite.set_color               = C.Sprite_set_color
@@ -38,13 +39,18 @@ Mt_Sprite.set_blue                = C.Sprite_set_blue
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
+Mt_Sprite.tween_elastic_pos          = function(self, s, e, dur, l, cb, d) 
+  C.Sprite_tween_elastic_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
+end
 Mt_Sprite.tween_isine_pos          = function(self, s, e, dur, l, cb, d) 
   C.Sprite_tween_isine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
 end
 Mt_Sprite.tween_osine_pos          = function(self, s, e, dur, l, cb, d) 
   C.Sprite_tween_osine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
 end
-Mt_Sprite.on_tween_line_alpha     = C.Sprite_on_tween_line_alpha
+Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
+  C.Sprite_tween_linear_alpha(self, s, e, dur, l or 0, cb or nil, d or 0)
+end
 Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_enter_focus          = function(p, b, func) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), b, func) end

@@ -17,6 +17,7 @@ void delegate_for_cb_from_lua_with_parameter(pSprite, PSC_OBJCALLBACK_WITH_PARA,
 
 APIEXPORT void      Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void      Sprite_set_pos(pSprite*, double, double);
+APIEXPORT void      Sprite_set_rotation(pSprite*, double);
 APIEXPORT void      Sprite_set_size(pSprite*, double, double);
 APIEXPORT void      Sprite_set_depth(pSprite*, double);
 APIEXPORT void      Sprite_set_color(pSprite*, int, int, int);
@@ -26,9 +27,10 @@ APIEXPORT void      Sprite_set_blue(pSprite*, int);
 APIEXPORT void      Sprite_set_alpha(pSprite*, int);
 APIEXPORT void      Sprite_set_visible(pSprite*, bool);
 APIEXPORT void      Sprite_set_center_aligned(pSprite*, bool);
+APIEXPORT void      Sprite_tween_elastic_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween_isine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween_osine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
-APIEXPORT void      Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_linear_alpha(pSprite*, int, int, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);

@@ -56,6 +56,7 @@ public:
     virtual void cycle();
     void init_vs_cpu();
     void init_vs_ppl();
+    void init_cpudemo();
 
     void leaving_effect();
     void starting_effect(bool const&);

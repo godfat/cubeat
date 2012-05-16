@@ -19,6 +19,7 @@ local Mt_Demo = {}
 Mt_Demo.__index      = Mt_Demo
 Mt_Demo.init_vs_ppl  = C.Demo_init_vs_ppl
 Mt_Demo.init_vs_cpu  = C.Demo_init_vs_cpu
+Mt_Demo.init_cpudemo = C.Demo_init_cpudemo
 Mt_Demo.get_ui_scene = function(self)
   return ffi.gc(C.Demo_get_ui_scene(self), C.Scene__gc)
 end

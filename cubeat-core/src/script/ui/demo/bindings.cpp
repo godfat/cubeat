@@ -23,3 +23,7 @@ void Demo_init_vs_ppl(Demo* self) { // not shared_ptr!
 void Demo_init_vs_cpu(Demo* self) { // not shared_ptr!
     self->init_vs_cpu();
 }
+
+void Demo_init_cpudemo(Demo* self) { // not shared_ptr!
+    self->init_cpudemo();
+}

@@ -497,6 +497,10 @@ void Demo::cleanup()
 
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
     ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
+    ctrl::InputMgr::i().getInputByIndex(0)->trig1().now() = false;
+    ctrl::InputMgr::i().getInputByIndex(0)->trig1().last() = false;
+    ctrl::InputMgr::i().getInputByIndex(1)->trig1().now() = false;
+    ctrl::InputMgr::i().getInputByIndex(1)->trig1().last() = false;
     player0_->stopAllActions();
     player1_->stopAllActions();
 }

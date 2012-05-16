@@ -117,27 +117,32 @@ public:
 
     virtual void garbage_fly(){ //only called once when model::Map::insert_garbage
         std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::new_garbage, cube_.lock().get(), false);
+        int factor = utils::random(4)-1;
+        int dur = map_setting()->cube_dropping_duration();
+        if (factor <= 0) { factor -= 1; } //make sure no one is zero
+        vec3 rot(0, 0, 360 * factor);
+        body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
         switch( utils::random(6) ) {
             case 0:
-                body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             case 1:
-                body_->tween<easing::IOCubic, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOCubic, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             case 2:
-                body_->tween<easing::IOQuart, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOQuart, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             case 3:
-                body_->tween<easing::IOExpo, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOExpo, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             case 4:
-                body_->tween<easing::IOCirc, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOCirc, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             case 5:
-                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
             default:
-                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), map_setting()->cube_dropping_duration(), 0, cb);
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
                 break;
         }
     }
@@ -152,7 +157,7 @@ public:
         unsigned int duration = map_setting()->cube_dying_duration();
         body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
         body_->tween<easing::Linear, accessor::Alpha>(0, duration);
-        body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,180), duration);
+        body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
         body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
     }
 

@@ -4,6 +4,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "Input.hpp"
+#include "Conf.hpp"
 
 using namespace psc;
 using namespace view;
@@ -21,6 +22,16 @@ void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK func) {
 
 void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_WITH_PARA func, int a, int b) {
     func(&sp, a, b);
+}
+
+int Get_SCREEN_W() {
+    int w = Conf::i().SCREEN_W();
+    return w;
+}
+
+int Get_SCREEN_H() {
+    int h = Conf::i().SCREEN_H();
+    return h;
 }
 
 void Sprite_set_texture(pSprite* self, const char* path) {
@@ -88,6 +99,10 @@ void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_P
 
 void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+void SpriteText_change_text(pSpriteText* self, char const* text) {
+    (*self)->changeText(text);
 }
 
 void SpriteText_set_pos(pSpriteText* self, double x, double y) {

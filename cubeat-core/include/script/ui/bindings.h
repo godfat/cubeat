@@ -12,6 +12,9 @@ typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
 void delegate_for_cb_from_lua(pSprite, PSC_OBJCALLBACK);
 void delegate_for_cb_from_lua_with_parameter(pSprite, PSC_OBJCALLBACK_WITH_PARA, int, int);
 
+APIEXPORT int       Get_SCREEN_W();
+APIEXPORT int       Get_SCREEN_H();
+
 APIEXPORT void      Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void      Sprite_set_pos(pSprite*, double, double);
 APIEXPORT void      Sprite_set_size(pSprite*, double, double);
@@ -29,6 +32,7 @@ APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBAC
 APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 APIEXPORT void      Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
 
+APIEXPORT void      SpriteText_change_text(pSpriteText*, char const*);
 APIEXPORT void      SpriteText_set_pos(pSpriteText*, double, double);
 APIEXPORT void      SpriteText_set_depth(pSpriteText*, double);
 APIEXPORT void      SpriteText_set_color(pSpriteText*, int, int, int);

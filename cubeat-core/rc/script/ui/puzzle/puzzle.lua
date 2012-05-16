@@ -38,45 +38,33 @@ function init(self)
   local btnVideoBack  = ui.new_ui_button(video.pic, btnVideoBack_setting)
   
   local function main_setvisible(visible)
-    if(visible) then
-      main:set_fade(255)
-      btnSound:set_fade(255)
-      btnVideo:set_fade(255)
-    else
-      main:set_fade(0)
-      btnSound:set_fade(0)
-      btnVideo:set_fade(0)
-    end
+    local alpha = 0
+    if(visible) then alpha=255 end
+    
+    main:set_fade(alpha)
+    btnSound:set_fade(alpha)
+    btnVideo:set_fade(alpha)
   end
   
   local function sound_setvisible(visible)
-    if(visible) then
-      sound:set_fade(255)
-      btnSound1:set_fade(255)
-      btnSound2:set_fade(255)
-      btnSound3:set_fade(255)
-      btnSoundBack:set_fade(255)
-    else
-      sound:set_fade(0)
-      btnSound1:set_fade(0)
-      btnSound2:set_fade(0)
-      btnSound3:set_fade(0)
-      btnSoundBack:set_fade(0)
-    end
+    local alpha = 0
+    if(visible) then alpha=255 end
+
+    sound:set_fade(alpha)
+    btnSound1:set_fade(alpha)
+    btnSound2:set_fade(alpha)
+    btnSound3:set_fade(alpha)
+    btnSoundBack:set_fade(alpha)
   end
   
   local function video_setvisible(visible)
-    if(visible) then
-      video:set_fade(255)
-      btnVideo1:set_fade(255)
-      btnVideo2:set_fade(255)
-      btnVideoBack:set_fade(255)
-    else
-      video:set_fade(0)
-      btnVideo1:set_fade(0)
-      btnVideo2:set_fade(0)
-      btnVideoBack:set_fade(0)
-    end
+    local alpha = 0
+    if(visible) then alpha=255 end
+
+    video:set_fade(alpha)
+    btnVideo1:set_fade(alpha)
+    btnVideo2:set_fade(alpha)
+    btnVideoBack:set_fade(alpha)
   end
   
   local btnSound_on_press = function(self)
@@ -102,4 +90,23 @@ function init(self)
                                   video_setvisible(false)
                                 end
   btnVideoBack:on_press(btnVideoBack_on_press)
+  
+  --
+  local ask_setting = {}
+  local ask = ui.new_ui_askbox(scene_, ask_setting)
+  
+  local show_ask  = function(title)
+                      local show = function(self)
+                        ask:set_title(title)
+                        ask:set_visible(true)
+                      end
+                      return show
+                    end
+  local hide_ask  = function(self) ask:set_visible(false) end
+  btnSound1:on_press( show_ask('Set level ?') )
+  btnSound2:on_press( show_ask('Set turn on ?') )
+  btnSound3:on_press( show_ask('Set turn off ?') )
+  ask:on_press_ok(hide_ask)
+  ask:on_press_cancel(hide_ask)
+  ask:set_visible(false)
 end

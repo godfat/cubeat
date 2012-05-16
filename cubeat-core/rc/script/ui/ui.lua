@@ -76,6 +76,9 @@ local function new_image(parent, setting)
                           image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         end
                       end
+  image.on_press   = function(self, func)
+                       set_on_press_callback(image.pic, func)
+                     end
 
   -- init setting
   image:set_pos(image.setting.x, image.setting.y)

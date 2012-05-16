@@ -27,3 +27,8 @@ void Demo_init_vs_cpu(Demo* self) { // not shared_ptr!
 void Demo_init_cpudemo(Demo* self) { // not shared_ptr!
     self->init_cpudemo();
 }
+
+void Demo_quit(Demo* self) { // not shared_ptr!
+    self->quit();
+}
+

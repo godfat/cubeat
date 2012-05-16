@@ -14,6 +14,8 @@ local title_
 local demobuild_
 local teamname_
 
+local tuts_ = {}
+
 local function hide_everything()
   for _, item in pairs(menu_) do
     item:set_visible(false)
@@ -25,6 +27,23 @@ local function show_everything()
     item:set_visible(true)
   end
 end
+
+local function load_tutorials()
+  for i = 1, 7 do 
+    tuts_[i] = ui.new_image(scene_, {
+      path='tut/'..i, x=0, y=0, w=1280, h=720 })
+    tuts_[i].pic:set_depth(-100)
+    tuts_[i].pic:set_visible(false)
+    tuts_[i]:on_press(function(self) 
+      if i < 7 then
+        tuts_[i+1].pic:set_visible(true)
+      end
+      tuts_[i].pic:set_visible(false)
+    end)
+  end
+end
+
+------------------------------------------
 
 function slide_out(inplace)
   if inplace then
@@ -77,6 +96,8 @@ function init(demo)
   vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
   
+  load_tutorials();
+  
   --------------------------------------
   
   title_   = ui.new_image(scene_, {
@@ -126,10 +147,22 @@ function init(demo)
     --hide_everything()
   end)
   
+  menu_.btn_tut = ui.new_button(vorig_, {
+    title='show tutorial', x=0, y=180, size=32, visible = false
+  })
+  menu_.btn_tut.title:set_scale(1.5)
+  menu_.btn_tut:on_press(function(self) 
+    tuts_[1].pic:set_visible(true)
+    --hide_everything()
+  end)
+  
   menu_.btn_quit = ui.new_button(vorig_, {
-    title='quit', x=0, y=180, size=32, visible = false
+    title='quit', x=0, y=240, size=32, visible = false
   })
   menu_.btn_quit.title:set_scale(1.5)
+  menu_.btn_quit:on_press(function(self) 
+    demo:quit()
+  end)
   
 end
 

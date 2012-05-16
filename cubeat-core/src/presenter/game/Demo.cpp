@@ -19,6 +19,7 @@
 #include "Weapon.hpp"
 #include "audio/Sound.hpp"
 #include "Conf.hpp"
+#include "App.hpp"
 
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
@@ -211,6 +212,11 @@ void Demo::ask_for_tutorial()
 view::pScene Demo::get_ui_scene()
 {
     return ui_scene_;
+}
+
+void Demo::quit()
+{
+    App::i().quit();
 }
 
 void Demo::leaving_effect()

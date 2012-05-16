@@ -4,7 +4,9 @@
 #include "presenter/Transitioner.hpp"
 #include "presenter/MainMenu.hpp"
 #include "presenter/OpeningSequence.hpp"
+#include "presenter/Opening2.hpp"
 
+#include "presenter/game/Demo.hpp"
 #include "presenter/game/Multi.hpp"
 #include "presenter/game/Puzzle.hpp"
 #include "view/SFX.hpp"
@@ -25,16 +27,26 @@ using namespace video;
 
 using namespace psc;
 using namespace ctrl;
-using std::tr1::bind;
 using std::tr1::ref;
 
 App::App()
     : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0), quit_(false)
 {
-    std::cout << "App constructed." << std::endl;
+}
+
+App::~App()
+{
+    std::cout << "App destructing, before deleting inputs" << std::endl;
+}
+
+//2012.05 apparently, if we want to initialized some App related callbacks to
+//presenters or others, it'll have to do outside of App's c'tor!
+App& App::init()
+{
+    std::cout << "App started initializing. (not constructor)" << std::endl;
     if( !IrrDevice::i().init(true) ) {
         std::cout << "Graphic engine initialization failed. Halting..." << std::endl;
-        return;
+        return *this;
     }
 
     global_timer_ = EventDispatcher::i().get_timer_dispatcher("global");
@@ -47,11 +59,8 @@ App::App()
 
     view::pScene preload = view::Scene::create("PreLoad Scene");
     view::SFX::i().init_textures(preload);
-}
-
-App::~App()
-{
-    std::cout << "App destructing, before deleting inputs" << std::endl;
+    std::cout << "App fully initialized." << std::endl;
+    return *this;
 }
 
 App& App::setLoading(int const& cent)
@@ -65,6 +74,19 @@ App& App::launchOpening()
     temp_presenter_ = presenter::OpeningSequence::create();
     std::cout << "Opening launched." << std::endl;
     return *this;
+}
+
+App& App::launchOpening2()
+{
+    temp_presenter_ = presenter::Opening2::create();
+    std::cout << "Opening2 launched." << std::endl;
+    return *this;
+}
+
+App& App::launchDemo()
+{
+    temp_presenter_ = presenter::game::Demo::create();
+    std::cout << "Demo launched." << std::endl;
 }
 
 App& App::launchMainMenu()
@@ -130,6 +152,7 @@ int App::run(std::tr1::function<void()> tester)
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
+    int profile_time_start = 0;
 
     while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
@@ -137,6 +160,7 @@ int App::run(std::tr1::function<void()> tester)
         //    if( global_timer_.lock()->isStopped() )        //comment: temp for double tasking
         //        global_timer_.lock()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
+
             InputMgr::i().updateAll();
             EventDispatcher::i().dispatch();
             driver->beginScene(true, true, video::SColor(0,0,0,0));
@@ -150,6 +174,13 @@ int App::run(std::tr1::function<void()> tester)
             view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
 
             driver->endScene();
+
+            int elapsed_time = global_timer_.lock()->get_time() - profile_time_start;
+
+            if( elapsed_time > 35 )
+                std::cout << "frame time spike: " << elapsed_time << "\n";
+
+            profile_time_start = global_timer_.lock()->get_time();
 
             //FPS for debug
             int fps = driver->getFPS();

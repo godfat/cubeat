@@ -29,5 +29,5 @@ int main()
     psc::Conf::i().init(""); // doesn't need to find working_path on win32, not sure about linux though
 #endif
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
-    return psc::App::i().launchOpening().run();
+    return psc::App::i().init().launchOpening2().run();
 }

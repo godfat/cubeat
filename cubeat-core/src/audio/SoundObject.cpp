@@ -49,7 +49,7 @@ SoundBuffer::~SoundBuffer()
 
 /// ----------- SoundObject below ---------- ///
 
-SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
+SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop) : has_partB_(false)
 {
     gen_source();
     if( pSoundStream s = stream.lock() ) {
@@ -63,7 +63,7 @@ SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
     }
 }
 
-SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
+SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop) : has_partB_(false)
 {
     gen_source();
     if( pSoundBuffer s = buffer.lock() ) {
@@ -114,6 +114,13 @@ SoundObject& SoundObject::resume()
         stop();
         //even if the stream cannot be resumed, it should be tolerable. (just skip it.)
     }
+    return *this;
+}
+
+SoundObject& SoundObject::partB_path(std::string const& path)
+{
+    partB_path_ = path;
+    has_partB_ = true;
     return *this;
 }
 

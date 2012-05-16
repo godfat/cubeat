@@ -19,7 +19,7 @@ using namespace accessor;
 using utils::Logger;
 
 PlayerView::PlayerView()
-    :input_(0), last_garbage_(0), current_state_(NONE), current_face_(NORMAL), face_pos_idx_(0)
+    :input_(0), last_my_garbage_(0), last_enemy_garbage_(0), current_state_(NONE), current_face_(NORMAL), face_pos_idx_(0)
 {
 }
 
@@ -136,31 +136,33 @@ void PlayerView::faceUpdate() {
 void PlayerView::cycle()
 {
     if( pMap map = map_.lock() ) {
-        int new_garbage = map->garbage_left() + map->sum_of_all_enemy();
-        int new_attack  = map->current_sum_of_attack();
+        int my_garbage    = map->garbage_left() + map->sum_of_all_enemy();
+        int enemy_garbage = map->garbage_lands().front().lock()->garbage_left();
         int state1p = current_state_;
 
-        if( state1p != HIT && last_garbage_ > new_garbage ) {
+        if( state1p != HIT && last_my_garbage_ > my_garbage ) {
 #ifdef _USE_WIIMOTE_
             if( input_ ) {
-                int rumble_factor = last_garbage_ - new_garbage;
+                int rumble_factor = last_my_garbage_ - my_garbage;
                 if( rumble_factor > 10 ) rumble_factor = 10;
                 input_->rumbleWiimote( rumble_factor * 50 ); //unit: millisecond
             }
 #endif //_USE_WIIMOTE_
             switchCharacterState( HIT );
         }
-        else if( state1p != ATTACK && state1p != HIT && last_attack_ == 0 && new_attack > 0 )
+        //2012.05 attack effect logic changed. so the state switching condition changed.
+        else if( state1p != ATTACK && state1p != HIT && last_enemy_garbage_ > enemy_garbage )
             switchCharacterState( ATTACK );
         else if( state1p == NONE )
             switchCharacterState( STAND );
 
         bool self_full = map->has_column_full(), enemy_full = map->enemy_column_full();
 
-        if( !self_full && !enemy_full ) switchCharacterFace(NORMAL);
-        else switchCharacterFace( self_full ? BAD : GOOD );
+// 2012.05 No faces for now.
+//        if( !self_full && !enemy_full ) switchCharacterFace(NORMAL);
+//        else switchCharacterFace( self_full ? BAD : GOOD );
 
-        last_garbage_ = new_garbage;
-        last_attack_  = new_attack;
+        last_my_garbage_    = my_garbage;
+        last_enemy_garbage_ = enemy_garbage;
     }
 }

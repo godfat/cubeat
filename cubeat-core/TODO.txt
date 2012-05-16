@@ -32,11 +32,27 @@ WIP  4. A better way to present the UI programatically (usually means the presen
   5. We need more resolution options and more configs for different resolutions.
 
 WIP  6. Lack of networking capability.
-     -- enet + Lua modules (using lua-enet)
      -- a matcher (doing hole-punching as well) in pure lua(jit) 
      -- Preparation for networking
-       -- "no-model" version of Map and Cube.
        -- client synchonization of Map states and Cube states
+     -- memo 
+        ..... in presenter::Game .... 
+        ... blah blah ... 
+        1. still have to subscribe callbacks cuz scope problem. 
+           net::Manager::i().on_matched( tr1::bind(...) )
+           net::Manager::i().on_connected( tr1::bind(...) )
+           net::Manager::i().on_received( tr1::bind(...) ) 
+        2. net::Manager::i().start_lua() //use two mockup callbacks for Server/Client 
+        3. handles on_matched()
+        4. handles on_connected()
+        5. Lua starts calling poll_from_C() 
+        6. handles on_received() (not yet implemented) and presenter::Game parses data,
+           this can be refactored when message types start to bloat
+        7. when you want to send message: 
+           net::Manager::i().send(s) //test plain text first, and then byte stream 
+           let s be messy's ok for now. let's see how I can refactor that.
+        -- ABOVE FEATURE IS ALMOST DONE, NOW WE NEED TO PUT IT INTO PRODUCTION AND SEE WHAT HAPPENS
+     -- next is implementing the actual gameplay protocol.
 
 SKIP 7. Now EventDispatcher has "Focus Events" and "Ranged-picking Events" which depends on
      view::Scene, How do I fix this?
@@ -85,6 +101,9 @@ DONE?1. I think we really need real_y(pixel_y) as a model property, either use t
      State pattern or revamp the state pattern.
      -- Why sometimes the bottom cubes' chain state isn't taken out?
      -- Map::next_state and states are modestly modified, consider the real_y addition done.
+     
+  2. OneFadings should not do full BFS for each of cubes. Rather, one full pass and check who are
+     connected and who aren't should suffice. (Not sure if it changes chain processing behavior)
 
 * UI / Gameplay Issues:
 
@@ -118,6 +137,10 @@ WIP  -- Marvin's http leaderboard is largely done, just lack testings.
   
   6. HAVE TO UPDATE TO IRRLICHT 1.8 BECAUSE FULL SCREEN UNDER MAC DONT WORK.
 
+0.6  7. Why Background can't use double type as xyz????
+
+0.6  8. Chain messages are somewhat delayed and disappeared early??? check newest video footage ...
+
 * Feature / Gameplay Issues:
 
 0.6  1. Training mode and tutorials.
@@ -128,6 +151,8 @@ DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
 
 0.6  3. Multiplayer over the network.
      -- require the networking modules first. and then we'll need servers.
+       ** DONE, FOR NOW
+     -- now we need a real multiplayer test case.
 
 WIP  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
      -- Lua integration of this part done.

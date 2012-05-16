@@ -57,7 +57,10 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
     //so smgr_->getGUIEnvironment() is NULL !? ...well, guess I have to live with that.
 
     std::ostringstream oss;
-    oss << Conf::i().expand("rc/fonts/") << font_path << ".ttf";
+
+    //2012.05 BAD! but had to do this for now.
+    //oss << Conf::i().expand("rc/fonts/") << font_path << ".ttf";
+    oss << Conf::i().expand("rc/fonts/") << "kimberley.otf";
 
     ttfont_ = gui->getFont(oss.str().c_str(), size);
     ttfont_->setBatchLoadSize(64);

@@ -23,34 +23,47 @@ using namespace psc;
 using namespace easing;
 using namespace accessor;
 using utils::to_s;
+using std::tr1::bind;
 
 class TestGame{
-
+    typedef std::tr1::shared_ptr<int> pDummy;
 public:
     TestGame(){
         scene_ = psc::view::Scene::create("game");
-        scene_->setTo2DView().enableGlobalHittingEvent();     //important
+        scene_->setTo2DView()/*.enableGlobalHittingEvent()*/;   //2011.03.28 weapon temporary removal
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+        scene_->allowPicking(false);
+
+        gameplay_ = Conf::i().config_of("gameplay/multi");
 
         data::pViewSetting s0, s1;
 
         s0 = data::ViewSetting::create(64);   //must use config
-        s0->x_offset(159).y_offset(684).push_ally(0).push_enemy(1);
+        s0->x_offset(159).y_offset(684);
         s1 = data::ViewSetting::create(64);   //must use config
-        s1->x_offset(740).y_offset(684).push_ally(1).push_enemy(0);
+        s1->x_offset(740).y_offset(684);
 
         ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
-        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), s0);
-        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), s1);
+        player0_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(0), 0);
+        player1_ = ctrl::Player::create(ctrl::InputMgr::i().getInputByIndex(1), 1);
         player0_->debug_reset_all_weapon();
         player1_->debug_reset_all_weapon();
+        player0_->push_ally(0).push_enemy(1);
+        player1_->push_ally(1).push_enemy(0);
+
+        // setup player settings
+        player0_->set_config(gameplay_.M("player1").M("weapon"));
+        player1_->set_config(gameplay_.M("player2").M("weapon"));
+
         // setup map0
-        data::pMapSetting set0 = data::MapSetting::create();
+        data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
         //map0_ = presenter::Map::create(set0, utils::MapLoader::load_cube_colors("config/puzzle.zzml"));
         map0_ = presenter::Map::create(set0);
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1
-        data::pMapSetting set1 = data::MapSetting::create();
+        data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
         map1_ = presenter::Map::create(set1);
         map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
@@ -58,24 +71,79 @@ public:
         map0_->push_garbage_land(map1_);
         map1_->push_garbage_land(map0_);
 
+        ///NEW: MAKE PLAYER KNOWS ABOUT MAP
+        std::vector< presenter::wpMap > map_list;
+        map_list.push_back(map0_);
+        map_list.push_back(map1_);
+        player0_->setMapList( map_list );
+        player1_->setMapList( map_list );
+
         // setup stage & ui & player's view objects:
-        utils::map_any stage = utils::map_any::construct( utils::fetchConfig("config/test_stage.zzml") );
+        utils::map_any stage = Conf::i().config_of("test_stage");
         stage_ = presenter::Stage::create( stage.S("test_stage") );
-        setup_ui_by_config( "config/char/char1.zzml",
-                            "config/char/char2.zzml",
-                            "config/ui/in_game_2p_layout.zzml" );
+        setup_ui_by_config( "char/char1.zzml",
+                            "char/char2.zzml",
+                            "ui/in_game_2p_layout.zzml" );
 
         min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
+        ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+        ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
+        ready_go_text_->setPickable(false);
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            bind(&TestGame::game_start, this), 3000);
+
+        ready_go(3);
+    }
+
+    void ready_go(int step) {
+        if ( step < 0 ) {
+            ready_go_text_->tween<Linear, Alpha>(0, 500u);
+            return;
+        }
+        else if ( step == 0 ) {
+            ready_go_text_->changeText("go!");
+            ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
+            //need sound fx here
+        }
+        else {
+            ready_go_text_->showNumber(step);
+            ready_go_text_->set<Scale>(vec3(5,5,5));
+            //need sound fx here
+        }
+        ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            std::tr1::bind(&TestGame::ready_go, this, step-1), 1000);
+    }
+
+
+    void game_start() {
         //start music
         stage_->playBGM();
 
+        //note: bad area
+        //timer_item_ = pDummy(new int);                  //2011.03.25 item temporarily removed
+        timer_ui_   = pDummy(new int);
+        //note: end of bad area
+
+        using std::tr1::bind;
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            std::tr1::bind(&TestGame::update_ui_by_second, this), 1000, -1);
+            bind(&TestGame::update_ui_by_second, this), timer_ui_, 1000, -1);
+        //2011.03.25 item temporarily removed
+        //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        //    bind(&Multi::item_creation, this), timer_item_, 15000);
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+        scene_->allowPicking(true);
+
+        player0_->subscribe_player_specific_interactions();
+        player1_->subscribe_player_specific_interactions();
     }
 
+
     void setup_ui_by_config( std::string const& c1p, std::string const& c2p, std::string const& path ) {
-        uiconf_ = utils::map_any::construct( utils::fetchConfig( path ) );
+        uiconf_ = Conf::i().config_of(path);
         utils::map_any const& base = uiconf_.M("base");
         ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
         ui_layout_->set<Alpha>(192);
@@ -115,12 +183,12 @@ public:
         ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_);
         ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
         ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
-        ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
-        ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
-        ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
-        ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
+//        ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
 
         if( pview1_->getState() == presenter::PlayerView::HIT &&
             last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
@@ -140,6 +208,8 @@ public:
     }
 
 private:
+    utils::map_any gameplay_;
+
     view::pScene scene_;
     presenter::pStage stage_;
     presenter::pMap map0_;
@@ -149,6 +219,9 @@ private:
 
     utils::map_any uiconf_;
     view::pMenu ui_layout_;
+
+    view::pSpriteText ready_go_text_;
+    pDummy timer_ui_;
 
     presenter::pPlayerView pview1_;
     presenter::pPlayerView pview2_;
@@ -165,7 +238,8 @@ private:
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
+    psc::Conf::i().init("");
     psc::App::i();
     TestGame tester;
-    return psc::App::i().run(std::tr1::bind(&TestGame::cycle, &tester));
+    return psc::App::i().init().run(std::tr1::bind(&TestGame::cycle, &tester));
 }

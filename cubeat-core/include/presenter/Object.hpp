@@ -4,6 +4,8 @@
 #include "utils/ObjectPool.hpp"
 #include "all_fwd.hpp"
 
+#include <boost/tr1/functional.hpp>
+
 namespace psc { namespace presenter {
 
 class Object
@@ -16,13 +18,16 @@ public:
         return p;
     }
 
+    Object();
+
     virtual void cycle();
+    virtual ~Object();
 
 protected:
     void init();
 
 protected:
-
+    std::tr1::function<void(int)> loading_complete_;
 };
 
 } //presenter

@@ -38,6 +38,7 @@ public:
     Sound& loadBuffer(std::string const& path);
     Sound& playStream(std::string const& path, bool const& loop = false);
     Sound& playBuffer(std::string const& path, bool const& loop = false);
+    Sound& playABStream(std::string const& path_a, std::string const& path_b);
     Sound& stopAll();
     Sound& pauseAll(bool const&);
     Sound& cycle();

@@ -1,10 +1,11 @@
-local ffi       = require 'ffi'
-local C         = ffi.C
-local ui        = require 'rc/script/ui/puzzle/ui'
+local ffi = require 'ffi'
+local C   = ffi.C
+local ui  = require 'rc/script/ui/ui'
+require 'rc/script/ui/puzzle/defs'
 
 ----------------------------------------------------------------------------
 
-local scene_, sp_
+local scene_
 
 function init(self)
   self    = ffi.cast("Puzzle*", self);

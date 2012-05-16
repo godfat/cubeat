@@ -5,7 +5,7 @@ local stub = io.open("stub.c", "w")
 stub:write("#include <script/"..arg[1]..".h>")
 stub:close()
 
-local str2 = "gcc -I include -E stub.c | grep -v '^#' > rc/script/"..arg[1]..".ffi"
+local str2 = "gcc -I include -E -P stub.c > rc/script/"..arg[1]..".ffi"
 print(str2)
 
 os.execute(str2)

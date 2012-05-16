@@ -25,6 +25,12 @@ Map& Map::stop_dropping()
     return *this;
 }
 
+Map& Map::start_dropping()
+{
+    map_setting()->garbage_dumpable(true).dropping_creatable(true);
+    return *this;
+}
+
 int Map::sum_of_all_enemy() const {
     int sum = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_)
@@ -122,7 +128,9 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     new_chain_event(
         std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
     new_garbage_event(
-        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2)).
+    pop_garbage_event(
+        std::tr1::bind(&cube::ViewMaster::pop_garbage, view.get(), _1)).
     warning_counting_event(
         std::tr1::bind(&cube::ViewMaster::warning_counting, view.get(), _1));
     alert_bar_update_event(
@@ -144,7 +152,9 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
                    drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
-                     update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) );
+                     update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).
+                   approach_pos_event( std::tr1::bind( &Cube::approach_pos, cube.get() ) ).
+                    garbage_fly_event( std::tr1::bind( &Cube::garbage_fly, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
@@ -159,9 +169,15 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     return cube;
 }
 
+pCube Map::make_garbage(int x, int y){
+    pCube c = make_cube(x, y, -1);
+    c->goto_garbage_orig();
+    return c;
+}
+
 pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
 <% end %>
-    return make_cube(3, 14, color_id); //temp
+    return make_cube(3, 11, color_id); //temp
 }
 
 Map& <% debug_hook 'Map::cycle' do %>(){

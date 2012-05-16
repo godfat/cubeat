@@ -5,6 +5,7 @@ CuBeat 測試版使用說明
   
 問題回報：
   cubeat.tw@gmail.com
+  arch.jslin@gmail.com
   http://cubeat.game.tw/devblog/?page_id=2
   
   
@@ -82,6 +83,7 @@ Linux 版：
 =========================================================
 若有其他任何疑問或建議，請來信：
   
+  arch.jslin@gmail.com
   cubeat.tw@gmail.com 
   
   或是至 

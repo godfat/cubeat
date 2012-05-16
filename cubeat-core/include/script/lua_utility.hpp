@@ -259,6 +259,9 @@ struct Lua
 
 }; // struct Lua
 
+template<> inline bool        Lua::fetch_(lua_State* L, int n) {
+    return static_cast<bool>(lua_isboolean(L, n) ? lua_toboolean(L, n) : luaL_checkint(L, n));
+}
 template<> inline double      Lua::fetch_(lua_State* L, int n) { return luaL_checknumber(L, n); }
 template<> inline    int      Lua::fetch_(lua_State* L, int n) { return luaL_checkint(L, n); }
 template<> inline char const* Lua::fetch_(lua_State* L, int n) { return luaL_checkstring(L, n); }

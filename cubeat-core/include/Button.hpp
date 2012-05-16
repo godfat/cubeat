@@ -21,7 +21,8 @@ public:
 
     Input const* owner() const { return owner_; }
 
-    bool& now() { return now_; }
+    bool& now()  { return now_; }
+    bool& last() { return last_; }
 
     void write_state_now_to_last() { last_ = now_; now_ = false; }
     void update_state() {

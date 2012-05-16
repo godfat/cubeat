@@ -17,7 +17,7 @@ class Input;
 
 namespace presenter {
 
-class PlayerView : public Object, public std::tr1::enable_shared_from_this<PlayerView>
+class PlayerView : public std::tr1::enable_shared_from_this<PlayerView>
 {
 public:
     enum STATE { STAND, ATTACK, HIT, NONE };
@@ -56,8 +56,8 @@ protected:
     presenter::wpMap map_;
     ctrl::Input* input_;
 
-    int last_garbage_;
-    int last_attack_;
+    int last_my_garbage_;
+    int last_enemy_garbage_;
     STATE current_state_;
     FACE  current_face_;
     int face_pos_idx_;

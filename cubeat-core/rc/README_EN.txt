@@ -4,6 +4,7 @@ website:
   http://cubeat.game.tw/en
   
 bug report: 
+  arch.jslin@gmail.com
   cubeat.tw@gmail.com
   http://cubeat.game.tw/devblog/?page_id=2 
 
@@ -94,7 +95,8 @@ Linux version
 Contacts
 ==========================================================
 If you have further questions or suggestions, please mail to:
-  
+
+  arch.jslin@gmail.com  
   cubeat.tw@gmail.com 
   
   or go to

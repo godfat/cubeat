@@ -224,5 +224,5 @@ int main(){
     psc::Conf::i().init("");
     psc::App::i();
     pTestPuzzle tester = TestPuzzle::create();
-    return psc::App::i().run(std::tr1::bind(&TestPuzzle::cycle, tester.get()));
+    return psc::App::i().init().run(std::tr1::bind(&TestPuzzle::cycle, tester.get()));
 }

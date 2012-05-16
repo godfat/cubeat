@@ -29,8 +29,8 @@
 
 #include "all_fwd.hpp"
 
+#include <deque>
 #include <boost/foreach.hpp>
-
 #include <boost/tr1/functional.hpp>
 
 <%= debug_include %>
@@ -107,11 +107,57 @@ public:
         body_->set<accessor::Pos2D>(pos_vec2());
     }
 
+    virtual void approach_pos(){
+        vec2 pos1 = pos_vec2();
+        vec2 pos2 = body_->get<accessor::Pos2D>();
+        vec2 tmp_pos = (pos1-pos2)/30;
+        pos2 += tmp_pos;
+        body_->set<accessor::Pos2D>( pos2 );
+    }
+
+    virtual void garbage_fly(){ //only called once when model::Map::insert_garbage
+        std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::new_garbage, cube_.lock().get(), false);
+        int factor = utils::random(4)-1;
+        int dur = map_setting()->cube_dropping_duration();
+        if (factor <= 0) { factor -= 1; } //make sure no one is zero
+        vec3 rot(0, 0, 360 * factor);
+        body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
+        switch( utils::random(6) ) {
+            case 0:
+                body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            case 1:
+                body_->tween<easing::IOCubic, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            case 2:
+                body_->tween<easing::IOQuart, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            case 3:
+                body_->tween<easing::IOExpo, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            case 4:
+                body_->tween<easing::IOCirc, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            case 5:
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+            default:
+                body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
+                break;
+        }
+    }
+
+    virtual void goto_garbage_orig(){ //called from presenter::Map
+        vec2 origpos = view_orig_.lock()->get<accessor::Pos2D>();
+        vec2 pos( view_setting()->atf_x() - origpos.X, view_setting()->atf_y() - origpos.Y );
+        body_->set<accessor::Pos2D>( pos );
+    }
+
     virtual void <% debug_hook 'go_dying' do %>(){ <% end %>
         unsigned int duration = map_setting()->cube_dying_duration();
         body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
         body_->tween<easing::Linear, accessor::Alpha>(0, duration);
-        body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,180), duration);
+        body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
         body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
     }
 
@@ -257,9 +303,9 @@ public:
         show_warning_at(at, false);
     }
 
-    virtual void new_chain(model::pChain chain){
-        int combo = chain->step();
-        int amounts = chain->last_step_amounts();
+    virtual void new_chain(model::wpChain const& chain){
+        int combo = chain.lock()->step();
+        int amounts = chain.lock()->last_step_amounts();
 
         using namespace accessor; using namespace easing;
         std::string str("Chain " + utils::to_s(combo));
@@ -295,36 +341,67 @@ public:
         audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
     }
 
-    virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_lands, int n){
-        int modelx = chain->last_step_x(), modely = chain->last_step_y();
+    virtual void new_garbage(model::wpChain const& chain, int n){
+        int modelx = chain.lock()->last_step_x(), modely = chain.lock()->last_step_y();
 
         using namespace accessor; using namespace easing; using std::tr1::bind;
         using utils::to_s;
         vec2 pos = pos_vec2(modelx, modely);
         view::pScene s = scene_.lock();
         int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
-        BOOST_FOREACH(wpMap const& mg, garbage_lands) {
-            data::pMapSetting ms = mg.lock()->map_setting();
-            vec2 endp = pos_vec2(mg.lock()->view_setting(), ms->width()/2, ms->height()+2);
-            for( int i = 0; i < num; ++i ) {
-                view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
-                vec2 midp = (pos + endp)/2;
-                midp.X += utils::random(200) - 100; midp.Y += utils::random(200) - 100;
-                std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
-                //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
-                data::AnimatorParam<Linear, Rotation> rota;
-                data::AnimatorParam<IQuad, Alpha> alpha;
-                data::AnimatorParam<Linear, Scale> scale;
-                data::WaypointParam<ICirc, Pos2D> way;
-                rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
-                alpha.start(0).end(255).duration(700);
-                scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(700);
-                //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
-                way.waypoints(wp).duration(700+utils::random(300));
-                way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
-                g->setDepth(-50).set<GradientDiffuse>(100+utils::random(66))
-                  .tween(rota).tween(alpha).tween(scale).tween(way);
-            }
+
+        //2012.05 changed from throwing to off-screen, now throwing to over-head
+        vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
+
+        for( int i = 0; i < num; ++i ) {
+            view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
+            vec2 midp = (pos + endp)/2;
+            midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
+            std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
+            //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
+            data::AnimatorParam<Linear, Rotation> rota;
+            data::AnimatorParam<IQuad, Alpha> alpha;
+            data::AnimatorParam<Linear, Scale> scale;
+
+            //data::WaypointParam<ICirc, Pos2D> way;
+            data::AnimatorParam<ISine, Pos2D> way1;
+            data::AnimatorParam<Linear, Pos2D> way2;
+
+            data::CirclingParam<Linear, Pos3D> circle;
+
+            rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
+            alpha.start(0).end(255).duration(700);
+            double sc = (utils::random(20)/100.0) + .6;
+            scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
+            //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
+            //way.waypoints(wp).duration(700+utils::random(300)); //buggy
+
+            way1.start(pos).end(midp).duration(500+utils::random(150));
+            way2.start(midp).end(endp).duration(100+utils::random(100));
+
+            int rad = utils::random(30)+20;
+            int arc = utils::random(180);
+            circle.center(vec3(endp.X,-endp.Y,0)).
+                          start(vec2(rad, arc)).
+                          end(vec2(rad, arc+360)).
+                          rotation(vec3(utils::random(180)-90,0,0)).
+                          duration(1666+utils::random(666)).
+                          loop(-1);
+
+            attack_cubes_.push_back(g);
+            //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+
+            g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota).tween(alpha).tween(scale);
+            g->queue(way1).queue(way2).tween(circle);
+        }
+    }
+
+    virtual void pop_garbage(int amount) {
+        //std::cout << "Calling pop garbage...\n";
+        for( int i = 0; i < amount; ++i ) {
+            //std::cout << "  Before popping: " << attack_cubes_.size() << "\n";
+            attack_cubes_.pop_front();
+            //std::cout << "  After popping: " << attack_cubes_.size() << "\n";
         }
     }
 
@@ -474,6 +551,7 @@ private:
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
+    std::deque< view::pSprite > attack_cubes_;
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
 };

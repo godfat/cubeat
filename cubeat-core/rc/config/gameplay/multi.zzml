@@ -37,7 +37,8 @@ player1: {
     #and cubes that already dropped.
     #(suggestion: 120 ~ 200 milliseconds)
     #NOTE: THIS IS DEPRECATED.
-    cube_dropping_duration: 150,
+    #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "NEW GARBAGE" ANIMATION (new scheme 2012.05)
+    cube_dropping_duration: 600,
 
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
@@ -75,7 +76,7 @@ player2: {
     cube_dying_duration: 500,
     sink_speed: 65.0,
     drop_speed: 450.0,
-    cube_dropping_duration: 150,
+    cube_dropping_duration: 600,
     use_broken_as_garbage: 1,
 
     weapon: {

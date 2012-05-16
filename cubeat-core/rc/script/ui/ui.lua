@@ -1,7 +1,6 @@
 local ffi       = require 'ffi'
 local C         = ffi.C
 local view      = require 'rc/script/ui/view'
-local puzzle    = require 'rc/script/ui/puzzle/view'
 
 local function load_setting(ui_setting, setting)
   for k,v in pairs(setting) do
@@ -34,7 +33,7 @@ end
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
-local function new_ui_image(parent, setting)
+local function new_image(parent, setting)
   local image = {}
   
   -- load setting
@@ -77,6 +76,9 @@ local function new_ui_image(parent, setting)
                           image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         end
                       end
+  image.on_press   = function(self, func)
+                       set_on_press_callback(image.pic, func)
+                     end
 
   -- init setting
   image:set_pos(image.setting.x, image.setting.y)
@@ -90,7 +92,7 @@ end
 ----------------------------------------------------------------------------
 -- Text
 ----------------------------------------------------------------------------
-local function new_ui_text(parent, setting)
+local function new_text(parent, setting)
   local text = {}
 
   -- load setting
@@ -141,7 +143,7 @@ end
 ----------------------------------------------------------------------------
 -- Button
 ----------------------------------------------------------------------------
-local function new_ui_button(parent, setting)
+local function new_button(parent, setting)
   local button = {}
   
   -- load setting
@@ -197,7 +199,7 @@ end
 ----------------------------------------------------------------------------
 -- AskBox
 ----------------------------------------------------------------------------
-local function new_ui_askbox(parent, setting)
+local function new_askbox(parent, setting)
   local askbox = {}
   
   -- load setting
@@ -266,10 +268,10 @@ end
 -- Main functions
 ----------------------------------------------------------------------------
 return{
-view              = view,
-puzzle            = puzzle,
-new_ui_image      = new_ui_image,
-new_ui_text       = new_ui_text,
-new_ui_button     = new_ui_button,
-new_ui_askbox     = new_ui_askbox
+view            = view,
+puzzle          = puzzle,
+new_image       = new_image,
+new_text        = new_text,
+new_button      = new_button,
+new_askbox      = new_askbox
 }

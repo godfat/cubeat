@@ -241,5 +241,5 @@ int main(){
     psc::Conf::i().init("");
     psc::App::i();
     TestGame tester;
-    return psc::App::i().run(std::tr1::bind(&TestGame::cycle, &tester));
+    return psc::App::i().init().run(std::tr1::bind(&TestGame::cycle, &tester));
 }

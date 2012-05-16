@@ -373,7 +373,7 @@ void Input::rumbleWiimote(int ms)
 
 void Input::init_graphic()
 {
-    cursor_mark_ = view::Sprite::create(cursor_texture_name_, InputMgr::i().scene(), 128, 128, true);
+    cursor_mark_ = view::Sprite::create(cursor_texture_name_, InputMgr::i().scene(), 64, 64, true);
     cursor_mark_->tween<Linear, Rotation>(vec3(0,0,360), 3000u, -1);
     range_shape_ = view::Sprite::create(area_texture_name_, InputMgr::i().scene(), 191, 191, true);
     //must use config or changes dynamically when weapon's area predicate changes.
@@ -391,7 +391,7 @@ void Input::redraw()
         cursor_mark_->tween<OBack, Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
 }
 
-view::pSprite Input::getCursor()
+view::pSprite Input::getCursor() const
 {
     return cursor_mark_;
 }

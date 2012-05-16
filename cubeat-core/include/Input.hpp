@@ -130,7 +130,7 @@ public:
     pPlayer player() const;
     void setRangeShapeVisible(bool);
     void setCursorVisible(bool);
-    view::pSprite getCursor();
+    view::pSprite getCursor() const;
 
 private:
     Input(Input const&);    //No copy constructor

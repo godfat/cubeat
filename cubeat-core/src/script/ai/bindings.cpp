@@ -16,16 +16,17 @@ extern "C" {
 }
 
 void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
+    pAICommand cmd = AICommand::create();
     if( c->type == LuaAICommand::PSC_AI_SHOOT ) {
-        pAICommand cmd = AICommand::create();
         cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
-        p->pushCommand(cmd);
+    }
+    if( c->type == LuaAICommand::PSC_AI_SHOOT_OTHER ) {
+        cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y).inter(true);
     }
     else if( c->type == LuaAICommand::PSC_AI_HASTE ) {
-        pAICommand cmd = AICommand::create();
         cmd->press_trig2();
-        p->pushCommand(cmd);
     }
+    p->pushCommand(cmd);
 }
 
 pSimpleMap* AIPlayer_get_ally_map(AIPlayer* p, unsigned int index) { //not shared_ptr!

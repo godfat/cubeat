@@ -42,7 +42,7 @@
 			</Target>
 			<Target title="Debug">
 				<Option platforms="Windows;" />
-				<Option output="bin\Debug\object" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Debug\CuBeat" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\Debug\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -136,6 +136,7 @@
 		<Unit filename="include\model\state\State.hpp.eruby" />
 		<Unit filename="include\model\state\Waiting.hpp" />
 		<Unit filename="include\model\state\Waiting.hpp.eruby" />
+		<Unit filename="include\net\Manager.hpp" />
 		<Unit filename="include\presenter\Cube.hpp" />
 		<Unit filename="include\presenter\Cube.hpp.eruby" />
 		<Unit filename="include\presenter\MainMenu.hpp" />
@@ -143,6 +144,7 @@
 		<Unit filename="include\presenter\Map.hpp.eruby" />
 		<Unit filename="include\presenter\Menu.hpp" />
 		<Unit filename="include\presenter\Object.hpp" />
+		<Unit filename="include\presenter\Opening2.hpp" />
 		<Unit filename="include\presenter\OpeningSequence.hpp" />
 		<Unit filename="include\presenter\PlayerView.hpp" />
 		<Unit filename="include\presenter\Stage.hpp" />
@@ -155,6 +157,7 @@
 		<Unit filename="include\presenter\cube\ViewSprite.hpp.eruby" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp.eruby" />
+		<Unit filename="include\presenter\game\Demo.hpp" />
 		<Unit filename="include\presenter\game\Multi.hpp" />
 		<Unit filename="include\presenter\game\Puzzle.hpp" />
 		<Unit filename="include\private\AVIVideo.hpp" />
@@ -162,7 +165,13 @@
 		<Unit filename="include\private\MouseState.hpp" />
 		<Unit filename="include\script\ai\bindings.h" />
 		<Unit filename="include\script\lua_utility.hpp" />
+		<Unit filename="include\script\net\bindings.h" />
+		<Unit filename="include\script\ui\bindings.h" />
+		<Unit filename="include\script\ui\demo\bindings.h" />
+		<Unit filename="include\script\ui\puzzle\bindings.h" />
 		<Unit filename="include\script\ui\test\bindings.h" />
+		<Unit filename="include\test\test_basic_enet_main.hpp" />
+		<Unit filename="include\test\test_gameplay_protocol_main.hpp" />
 		<Unit filename="include\test\test_ui.hpp" />
 		<Unit filename="include\testcase\AVITest.hpp" />
 		<Unit filename="include\testcase\ViewTest1.hpp" />
@@ -225,13 +234,12 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
+		<Unit filename="rc\config\char\char1_demo.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
+		<Unit filename="rc\config\char\char2_demo.zzml" />
 		<Unit filename="rc\config\char\char3.zzml" />
 		<Unit filename="rc\config\char\char4.zzml" />
 		<Unit filename="rc\config\char\char5.zzml" />
@@ -264,6 +272,7 @@
 		<Unit filename="rc\config\stage\street.zzml" />
 		<Unit filename="rc\config\test_stage.zzml" />
 		<Unit filename="rc\config\tmp\puzzle.zzml" />
+		<Unit filename="rc\config\ui\demo_layout.zzml" />
 		<Unit filename="rc\config\ui\in_game_2p_layout.zzml" />
 		<Unit filename="rc\resource.rc">
 			<Option compilerVar="WINDRES" />
@@ -274,6 +283,14 @@
 		<Unit filename="rc\script\ai\hard.lua" />
 		<Unit filename="rc\script\ai\insane.lua" />
 		<Unit filename="rc\script\ai\normal.lua" />
+		<Unit filename="rc\script\helper.lua" />
+		<Unit filename="rc\script\net\eventloop.lua" />
+		<Unit filename="rc\script\net\kit.lua" />
+		<Unit filename="rc\script\net\luajit-msgpack-pure.lua" />
+		<Unit filename="rc\script\net\net_strategy.lua" />
+		<Unit filename="rc\script\net\protocol_gameplay.lua" />
+		<Unit filename="rc\script\net\protocol_preproc.lua" />
+		<Unit filename="rc\script\net\socket.lua" />
 		<Unit filename="rc\script\puzzle\chain.lua" />
 		<Unit filename="rc\script\puzzle\helpers.lua" />
 		<Unit filename="rc\script\puzzle\maputils.lua" />
@@ -281,9 +298,19 @@
 		<Unit filename="rc\script\puzzle\puzzle_gen_interface.lua" />
 		<Unit filename="rc\script\test.lua" />
 		<Unit filename="rc\script\test2.lua" />
+		<Unit filename="rc\script\ui\bindings.ffi" />
+		<Unit filename="rc\script\ui\demo\defs.lua" />
+		<Unit filename="rc\script\ui\demo\demo.lua" />
+		<Unit filename="rc\script\ui\puzzle\bindings.ffi" />
+		<Unit filename="rc\script\ui\puzzle\defs.lua" />
+		<Unit filename="rc\script\ui\puzzle\puzzle.lua" />
+		<Unit filename="rc\script\ui\test\bindigns.ffi" />
 		<Unit filename="rc\script\ui\test\bindings.ffi" />
+		<Unit filename="rc\script\ui\test\luajit-msgpack-pure.lua" />
 		<Unit filename="rc\script\ui\test\test1.lua" />
 		<Unit filename="rc\script\ui\test\view.lua" />
+		<Unit filename="rc\script\ui\ui.lua" />
+		<Unit filename="rc\script\ui\view.lua" />
 		<Unit filename="src\App.cpp" />
 		<Unit filename="src\Button_vc.cpp" />
 		<Unit filename="src\CallbackDelegate.cpp" />
@@ -325,23 +352,37 @@
 		<Unit filename="src\model\state\State.cpp.eruby" />
 		<Unit filename="src\model\state\Waiting.cpp" />
 		<Unit filename="src\model\state\Waiting.cpp.eruby" />
+		<Unit filename="src\net\Manager.cpp" />
 		<Unit filename="src\presenter\Cube.cpp" />
 		<Unit filename="src\presenter\Cube.cpp.eruby" />
 		<Unit filename="src\presenter\MainMenu.cpp" />
 		<Unit filename="src\presenter\Map.cpp" />
 		<Unit filename="src\presenter\Map.cpp.eruby" />
 		<Unit filename="src\presenter\Object.cpp" />
+		<Unit filename="src\presenter\Opening2.cpp" />
 		<Unit filename="src\presenter\OpeningSequence.cpp" />
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />
+		<Unit filename="src\presenter\game\Demo.cpp" />
 		<Unit filename="src\presenter\game\Multi.cpp" />
 		<Unit filename="src\presenter\game\Puzzle.cpp" />
 		<Unit filename="src\private\AVIVideo.cpp" />
 		<Unit filename="src\private\MastEventReceiver.cpp" />
 		<Unit filename="src\script\ai\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
-		<Unit filename="src\script\ui\test\bindings.cpp" />
+		<Unit filename="src\script\net\bindings.cpp" />
+		<Unit filename="src\script\ui\bindings.cpp" />
+		<Unit filename="src\script\ui\demo\bindings.cpp" />
+		<Unit filename="src\script\ui\puzzle\bindings.cpp" />
+		<Unit filename="src\script\ui\test\bindings.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_basic_enet_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_font_input_method_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -351,6 +392,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_game_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="src\test\test_gameplay_protocol_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
@@ -386,7 +431,9 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_ui_main.cpp" />
+		<Unit filename="src\test\test_ui_main.cpp">
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_view1_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

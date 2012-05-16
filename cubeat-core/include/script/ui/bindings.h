@@ -7,6 +7,9 @@
 #define APIEXPORT
 #endif
 
+typedef struct { double x, y; } v2;
+typedef struct { double x, y, z; } v3;
+
 typedef void (*PSC_OBJCALLBACK)(pSprite*);
 typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
 void delegate_for_cb_from_lua(pSprite, PSC_OBJCALLBACK);
@@ -17,6 +20,7 @@ APIEXPORT int       Get_SCREEN_H();
 
 APIEXPORT void      Sprite_set_texture(pSprite*, const char*);
 APIEXPORT void      Sprite_set_pos(pSprite*, double, double);
+APIEXPORT void      Sprite_set_rotation(pSprite*, double);
 APIEXPORT void      Sprite_set_size(pSprite*, double, double);
 APIEXPORT void      Sprite_set_depth(pSprite*, double);
 APIEXPORT void      Sprite_set_color(pSprite*, int, int, int);
@@ -26,7 +30,10 @@ APIEXPORT void      Sprite_set_blue(pSprite*, int);
 APIEXPORT void      Sprite_set_alpha(pSprite*, int);
 APIEXPORT void      Sprite_set_visible(pSprite*, bool);
 APIEXPORT void      Sprite_set_center_aligned(pSprite*, bool);
-APIEXPORT void      Sprite_on_tween_line_alpha(pSprite* self, int, double, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_elastic_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_isine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_osine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_linear_alpha(pSprite*, int, int, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
@@ -34,6 +41,7 @@ APIEXPORT void      Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCA
 
 APIEXPORT void      SpriteText_change_text(pSpriteText*, char const*);
 APIEXPORT void      SpriteText_set_pos(pSpriteText*, double, double);
+APIEXPORT void      SpriteText_set_scale(pSpriteText*, double);
 APIEXPORT void      SpriteText_set_depth(pSpriteText*, double);
 APIEXPORT void      SpriteText_set_color(pSpriteText*, int, int, int);
 APIEXPORT void      SpriteText_set_red(pSpriteText*, int);

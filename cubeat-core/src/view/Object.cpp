@@ -184,7 +184,7 @@ Object::~Object()
     clearAllQueuedTween();
     if( body_ ) {
         //debug:
-        printf("view::Object: %x, ref: %d, name: %s destructing...\n", body_, body_->getReferenceCount(), body_->getName());
+        //printf("view::Object: %x, ref: %d, name: %s destructing...\n", body_, body_->getReferenceCount(), body_->getName());
 
         if( scene() ) {
             scene()->removePickMapping( body_ );

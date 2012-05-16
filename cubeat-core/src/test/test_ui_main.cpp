@@ -148,5 +148,5 @@ int main(){
     psc::App::i();
     psc::TestUI tester;
     tester.init();
-    return psc::App::i().run(std::tr1::bind(&psc::TestUI::cycle, &tester));
+    return psc::App::i().init().run(std::tr1::bind(&psc::TestUI::cycle, &tester));
 }

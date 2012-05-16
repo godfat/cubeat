@@ -50,8 +50,10 @@ void <% debug_hook 'Cube::drop_a_block' do %>(){
 }
 
 void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
-    real_y(real_y() - (map()->ms()->drop_speed() * static_cast<double>(now_t - last_t) / 1000.0 ));
-    update_pos_event()();
+    if( !is_new_garbage() ) {
+        real_y(real_y() - (map()->ms()->drop_speed() * static_cast<double>(now_t - last_t) / 1000.0 ));
+        update_pos_event()();
+    }
 }
 
 void Cube::sink_a_frame(time_t const& now_t, time_t const& last_t){

@@ -13,6 +13,15 @@ local function setcmd(buf, type, delay, x, y)
   buf.x, buf.y, buf.delay, buf.type = x, y, delay, type
 end
 
+local function pick_a_coord_from(map)
+  local x, y
+  repeat
+    x = random(map:width())
+    y = random(map:height()/2) -- consider lower half only
+  until map:get_grounded_cube(x, y):exist()
+  return x, y
+end
+
 local ATTACK_PWR     = 9
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
@@ -79,15 +88,25 @@ function ai_entry(self)
     
     if self:cmdqueue_size() < 1 then
       if my_map:grounded_cube_count() >= 48 and not my_map:still_chaining() then
-        local x, y
-        repeat
-          x = random(my_map:width())
-          y = random(my_map:height()/2)
-        until my_map:get_grounded_cube(x, y):exist()
+        local x, y = pick_a_coord_from(my_map)
         setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf) 
       else
-        if self:get_heat() < 0.7 then
+        local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
+        if interrupt_cube:exist() then 
+          local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
+          local chance = random(3)+1
+          local x = dir[chance][1] + interrupt_cube:x()
+          local y = dir[chance][2] + interrupt_cube:y()
+          if x >= 0 and x < enemy_map:width() and y >= 0 and y < enemy_map:height()-1 then
+            local c = enemy_map:get_cube(x, y)
+            if c:exist() and not c:is_broken() then
+              io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
+              setcmd(cmdbuf, C.PSC_AI_SHOOT_OTHER, 0, x, y)
+              self:push_command(cmdbuf) 
+            end
+          end
+        elseif self:get_heat() < 0.7 then
           setcmd(cmdbuf, C.PSC_AI_HASTE, 0, 0, 0) 
           self:push_command(cmdbuf) 
         end

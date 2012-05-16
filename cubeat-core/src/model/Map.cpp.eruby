@@ -70,6 +70,10 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
     //This point should be the end of the last init step, so start timing now:
     last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
+//demo branch: don't use this yet
+//    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
+
     return *this;
 }
 
@@ -126,6 +130,9 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
     }
     else
         cube->be_garbage().go_dropping();
+
+    cube->new_garbage(true);
+    cube->garbage_fly_event()();
     return insert_cube(cube);
 }
 
@@ -160,7 +167,13 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
         if( cube->is_waiting() )
             return state::pState();
         else if( cube->y() > 0 && cubes_[cube->x()][cube->y()-1]->is_dropping() ) {
-            std::cout << "cube " << cube << ": This is a awkward situation we want to avoid.\n";
+            std::cout << "cube (" << cube->x() << ", " << cube->y() << "): pass through bug.\n";
+            std::cout << "cube states: " << is_below_empty(cube) << ", " << cube->is_broken() << ", " << cube->is_new_garbage() << ", " << cube->is_dropping() << "\n";
+            pCube cbel = cubes_[cube->x()][cube->y()-1];
+            std::cout << "cbelow stat: " << is_below_empty(cbel) << ", " << cbel->is_broken() << ", " << cbel->is_new_garbage() << ", " << cbel->is_dropping() << "\n";
+            //forcefully correction of y position
+            double bry = cbel->real_y();
+            cube->real_y( bry - 65.0 ); //deliberately 64 + 1
             return state::pState();
         }
         else {
@@ -250,8 +263,8 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
-void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
+static void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
 {
     be_subed_from -= amount;
     cb(amount);
@@ -262,6 +275,9 @@ void <% debug_hook 'Map::update_chains' do %>(){
     using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
     int damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
+
+//    if( !chains_.empty() )
+//        std::cout << "map: " << this << "\n";
 
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
@@ -274,7 +290,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
             o->new_chain_event()(*i);
-            o->new_garbage_event()(*i, o->garbage_lands(), amount);
+            o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             score_ += (*i)->score_step() * damage_factor;
@@ -282,6 +298,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
         }
 
         // when the Chain's all dead then we fire up the attack and make this one null
+        //std::cout << "  chain " << (*i) << " use count: " << (*i).use_count() << "\n";
+
         if( (*i).use_count() == 1 ){
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->power_factor()*damage_factor;
@@ -302,24 +320,51 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
 void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
-    std::vector<int> is_empty;
+    std::vector< std::vector<int> > row_empty;
     int top = ms()->height()-1;
     // check empty columns
-    for( int x=0, width=ms()->width(); x < width; ++x )
-        if( !cubes_[x][top] && !cubes_[x][top-1] )
-            is_empty.push_back( x );
+    for( int y=top-1, i = 0; y >= 0; --y, ++i ) {
+        row_empty.push_back( std::vector<int>() );
+        for( int x=0, width=ms()->width(); x < width; ++x ) {
+            if( !cubes_[x][y+1] && !cubes_[x][y] ) {
+                row_empty[i].push_back( x );
+                //printf("0 ");
+            }
+            //else
+                //printf("1 ");
+        }
+        //printf("\n");
+        if( row_empty[i].size() < 1 ) {
+            //ok, we go from top, and now we've encountered first row without any hole
+            break;
+        }
+    }
+    //so here you have a upside-down view of where to drop the garbages.
 
-    // shuffle the array
-    std::random_shuffle(is_empty.begin(), is_empty.end());
+    // shuffle all the vectors
+    for( unsigned int i = 0; i < row_empty.size(); ++i ) {
+        std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+    }
 
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
-    for( int unsigned i=0; i < is_empty.size() && garbage_left_ > 0 ; ++i ){
-        int x = is_empty[i];
-        pCube c = owner->make_cube(x, top)->model();
-        insert_garbage( c );
-        --garbage_left_;
+    presenter::pMap main_enemy = owner->garbage_lands().front().lock();
+    for( unsigned int j = 0; j < row_empty.size(); ++j ) {
+        //CORRECTED: actually, we don't want to do it upside-down.
+        //printf("garbage_left_: %d, emptyness of row %d (from top): %d\n", garbage_left_, j, row_empty[j].size());
+        for( int unsigned i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
+            int x = row_empty[j][i];
+
+            pCube c = owner->make_garbage( x, top - j )->model();
+            insert_garbage( c );
+
+            --garbage_left_;
+            //2012.05 ok, this is a bit awkawrd. we have to substract the attack amounts
+            //above ENEMY's head, not above self's head...
+            main_enemy->pop_garbage_event()(1);
+        }
     }
+    //printf("\n");
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){
@@ -473,7 +518,11 @@ bool Map::all_empty() const {
 bool Map::all_waiting() const {
     for( int x=0; x < ms()->width(); ++x ) {
         for( int y=0; y < ms()->height(); ++y ) {
-            if( cubes_[x][y] && !cubes_[x][y]->is_waiting() ) return false;
+            if( cubes_[x][y] ) {
+                state::pWaiting w = cubes_[x][y]->is_waiting();
+                if( !w || w->need_check() )
+                    return false;
+            }
         }
     }
     return true;

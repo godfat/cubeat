@@ -1,10 +1,10 @@
 #where to read acknowledgements' & copyright disclaims' page
 startup_image_path: 'assets/copyright',
-startup_time: 5000,
+startup_time: 2000,
 
 #not used for now.
 #movie_path : '',
 #startframe : 999,
 
 #in milliseconds
-fade_period: 500
+fade_period: 200

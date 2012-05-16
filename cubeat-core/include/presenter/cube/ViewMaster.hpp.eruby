@@ -30,8 +30,9 @@ public:
     data::pViewSetting view_setting() const{ return view_setting_; }
     virtual void column_full(int at){}
     virtual void column_not_full(int at){}
-    virtual void new_chain(model::pChain chain){}
-    virtual void new_garbage(model::pChain chain, std::list<wpMap> const& garbage_land, int tmp_amounts){}
+    virtual void new_chain(model::wpChain const& chain){}
+    virtual void new_garbage(model::wpChain const& chain, int tmp_amounts){}
+    virtual void pop_garbage(int tmp_amounts){}
     virtual void warning_counting(int level){}
     virtual void alert_bar_update(int level){}
     virtual void show_overheat(bool show){}

@@ -18,7 +18,6 @@
 namespace psc{ namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
-<%= reader 'std::list<wpMap>', :garbage_lands %>
 public:
     typedef pMap pointer_type;
     typedef std::map<model::wpCube, pCube> container_type;
@@ -38,9 +37,11 @@ public:
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
     Map& stop_dropping();
+    Map& start_dropping();
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
+    pCube make_garbage(int x = 0, int y = 0);
     pCube make_cube_preview(int color_id = -1);
     Map& cycle();
 //    Map& cycle_slow();
@@ -92,6 +93,7 @@ private:
 
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>
+<%= reader 'std::list<wpMap>', :garbage_lands %>
 <%= reader 'model::pMap', :model %>
     //view::pMap view_;                       //note: not used for now.
     cube::pViewMaster view_master_;           //note: must not be destructed before cubes_
@@ -100,9 +102,9 @@ private:
 
 <%= accessor 'std::tr1::function<void()>', :lose_event %>
 <%= accessor 'std::tr1::function<void(bool)>', :overheat_event %>
-<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event, :alert_bar_update_event %>
-<%= accessor 'std::tr1::function<void(model::pChain)>', :new_chain_event %>
-<%= accessor 'std::tr1::function<void(model::pChain, std::list<wpMap> const&, int)>', :new_garbage_event %>
+<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event, :alert_bar_update_event, :pop_garbage_event %>
+<%= accessor 'std::tr1::function<void(model::wpChain const&)>', :new_chain_event %>
+<%= accessor 'std::tr1::function<void(model::wpChain const&, int)>', :new_garbage_event %>
 
 <%= accessor 'std::tr1::function<bool()>', :hasting_cond %>
 };

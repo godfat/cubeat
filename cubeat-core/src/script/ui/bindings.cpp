@@ -42,6 +42,10 @@ void Sprite_set_pos(pSprite* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
 }
 
+void Sprite_set_rotation(pSprite* self, double deg) {
+    (*self)->set<Rotation>(vec3(0, 0, deg));
+}
+
 void Sprite_set_size(pSprite* self, double w, double h) {
     (*self)->set<Size2D>(vec2(w, h));
 }
@@ -80,9 +84,36 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
-void Sprite_on_tween_line_alpha(pSprite* self, int alpha, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
-    (*self)->tween<Linear, Alpha>(alpha, duration, loop, call, delay);
+void Sprite_tween_elastic_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<OElastic, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
+}
+
+void Sprite_tween_isine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<ISine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
+}
+
+void Sprite_tween_osine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<OSine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
+}
+
+void Sprite_tween_linear_alpha(pSprite* self, int s, int e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    (*self)->tween<Linear, Alpha>(s, e, duration, loop, call, delay);
 }
 
 void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
@@ -107,6 +138,10 @@ void SpriteText_change_text(pSpriteText* self, char const* text) {
 
 void SpriteText_set_pos(pSpriteText* self, double x, double y) {
     (*self)->set<Pos2D>(vec2(x, y));
+}
+
+void SpriteText_set_scale(pSpriteText* self, double uniform_scale) {
+    (*self)->set<Scale>(vec3(uniform_scale, uniform_scale, uniform_scale));
 }
 
 void SpriteText_set_depth(pSpriteText* self, double depth) {
@@ -137,6 +172,7 @@ void SpriteText_set_alpha(pSpriteText* self, int alpha) {
 
 void SpriteText_set_visible(pSpriteText* self, bool visible) {
     (*self)->set<Visible>(visible);
+    (*self)->setPickable( visible ? true : false ); // I had to add this? why?
 }
 
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {

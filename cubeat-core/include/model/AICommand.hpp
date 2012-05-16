@@ -33,11 +33,11 @@ public:
     }
 
     AICommand():
-        weight_(0), delay_(0), priority_(10), btn_press_(false)
+        weight_(0), delay_(0), priority_(10), inter_(false), btn_press_(false)
     {}
 
     AICommand(int weight, int delay, int priority):
-        weight_(weight), delay_(delay), priority_(priority), btn_press_(false)
+        weight_(weight), delay_(delay), priority_(priority), inter_(false), btn_press_(false)
     {}
 
     AICommand& move_to(int x = -1, int y = -1);
@@ -65,12 +65,14 @@ public:
     AICommand& weight(int w)   { weight_ = w;   return *this; }
     AICommand& delay(int d)    { delay_  = d;   return *this; }
     AICommand& priority(int p) { priority_ = p; return *this; }
+    AICommand& inter(bool f)   { inter_ = f;    return *this; }
 
     pPosition pos()      const { return pos_; }
     pButton   btn()      const { return btn_; }
     int       weight()   const { return weight_; }
     int       delay()    const { return delay_; }
     int       priority() const { return priority_; }
+    bool      inter()    const { return inter_; }
     bool      press_btn()const { return btn_press_; }
 
 private:
@@ -80,6 +82,7 @@ private:
     int weight_;
     int delay_;
     int priority_;
+    bool inter_;
     bool btn_press_;
 };
 

@@ -135,10 +135,9 @@ void TestUI::HideChar(view::pSprite& p) {
 }
 
 void TestUI::ShowPos(view::pSprite& p) {
-    int posx = InputMgr::i().getInputByIndex(0)->cursor().x();
     vec2 orgx = p->get<Pos2D>();
     char s[8];
-    sprintf(s, "%d", (int)orgx.Y);
+    sprintf(s, "%d", static_cast<int>(orgx.Y) );
     text_cursor_->changeText(s);
 }
 

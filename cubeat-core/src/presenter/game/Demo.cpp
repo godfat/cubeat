@@ -362,18 +362,18 @@ void Demo::setup_ui()
         blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
         blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
 
-        end_text_ = view::SpriteText::create("play again?", ui_scene_, "Star Jedi", 30, true);
+        end_text_ = view::SpriteText::create("play again?", ui_scene_, "kimberley", 30, true);
         end_text_->setPickable(false);
-        end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", ui_scene_, "Star Jedi", 30, true);
+        end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", ui_scene_, "kimberley", 30, true);
         end_text2_->setPickable(false);
         win_t_    = view::Sprite::create("win", ui_scene_, 384, 192, true);
         lose_t_   = view::Sprite::create("lose", ui_scene_, 384, 192, true);
 
-        pause_text_ = view::SpriteText::create("back to menu?", ui_scene_, "Star Jedi", 30, true);
+        pause_text_ = view::SpriteText::create("back to menu?", ui_scene_, "kimberley", 30, true);
         pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
         pause_text_->setDepth(-450).setPickable(false);
 
-        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", ui_scene_, "Star Jedi", 30, true);
+        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", ui_scene_, "kimberley", 30, true);
         pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
         pause_text2_->setDepth(-450).setPickable(false);
 
@@ -381,11 +381,11 @@ void Demo::setup_ui()
         pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
         pause_t_->setDepth(-450).setPickable(false);
 
-        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "Star Jedi", 30, true);
+        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "kimberley", 30, true);
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
         ready_go_text_->setPickable(false);
 
-        pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "Star Jedi", 30, true);
+        pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "kimberley", 30, true);
         pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() - 30 ) );
         pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
         pause_note_text_->setDepth(-100).setPickable(false);

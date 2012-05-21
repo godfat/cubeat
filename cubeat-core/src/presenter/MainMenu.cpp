@@ -91,7 +91,7 @@ pMainMenu MainMenu::init()
 
     //temporary notice in mainmenu:
     notice_text_ = view::SpriteText::create("version: " + Conf::i().VERSION() + "\nplease consult the readme file in case of problems.",
-                                            mainmenu_scene_, "Star Jedi", 24, false);
+                                            mainmenu_scene_, "kimberley", 24, false);
     notice_text_->set<Pos2D>( vec2(200, Conf::i().SCREEN_H()-60) ).set<Scale>(vec3(0.66, 0.66, 1));
     notice_text_->set<GradientDiffuse>(0).setPickable(false);
 
@@ -104,23 +104,23 @@ void MainMenu::setupMenus()
     view::pMenu mode = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("mode_select", mode) );
 
-    mode->addSpriteText("text", "choose a game mode", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("text", "choose a game mode", "kimberley", 0, 40, false);
     mode->getSprite("text").set<Pos2D>( vec2(-300, -180) );
-    mode->addSpriteText("multi_one_cpu", "player vs cpu", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("multi_one_cpu", "player vs cpu", "kimberley", 0, 40, false);
     mode->getSprite("multi_one_cpu").set<Pos2D>( vec2(-150, -120) );
-    mode->addSpriteText("multi_no_cpu", "player vs player", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("multi_no_cpu", "player vs player", "kimberley", 0, 40, false);
     mode->getSprite("multi_no_cpu").set<Pos2D>( vec2(-150, -60) );
-    mode->addSpriteText("multi_two_cpu", "cpu vs cpu demo", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("multi_two_cpu", "cpu vs cpu demo", "kimberley", 0, 40, false);
     mode->getSprite("multi_two_cpu").set<Pos2D>( vec2(-150, 0) );
-    mode->addSpriteText("puzzle", "puzzle game", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("puzzle", "puzzle game", "kimberley", 0, 40, false);
     mode->getSprite("puzzle").set<Pos2D>( vec2(-150, 60) );
-    mode->addSpriteText("quit", "quit game", "Star Jedi", 0, 40, false);
+    mode->addSpriteText("quit", "quit game", "kimberley", 0, 40, false);
     mode->getSprite("quit").set<Pos2D>( vec2(-150, 120) );
 
     view::pMenu temp = view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("player_select", temp) );
 
-    temp->addSpriteText("text", "choose character", "Star Jedi", 0, 40, false);
+    temp->addSpriteText("text", "choose character", "kimberley", 0, 40, false);
     temp->getSprite("text").set<Pos2D>( vec2(-450, -180) );
     for( int i = 1; i <= 5; ++i ) {
         pvlist_.push_back(
@@ -143,15 +143,15 @@ void MainMenu::setupMenus()
     view::pMenu temp3= view::Menu::create("", mainmenu_scene_, 1, 1, true);
     menus_.insert( std::make_pair("ai_select", temp3) );
 
-    temp3->addSpriteText("text", "choose ai level", "Star Jedi", 0, 40, false);
+    temp3->addSpriteText("text", "choose ai level", "kimberley", 0, 40, false);
     temp3->getSprite("text").set<Pos2D>( vec2(-300, -180) );
-    temp3->addSpriteText("easy", "easy", "Star Jedi", 0, 40, false);
+    temp3->addSpriteText("easy", "easy", "kimberley", 0, 40, false);
     temp3->getSprite("easy").set<Pos2D>( vec2(-150, -120) );
-    temp3->addSpriteText("normal", "normal", "Star Jedi", 0, 40, false);
+    temp3->addSpriteText("normal", "normal", "kimberley", 0, 40, false);
     temp3->getSprite("normal").set<Pos2D>( vec2(-150, -60) );
-    temp3->addSpriteText("hard", "hard", "Star Jedi", 0, 40, false);
+    temp3->addSpriteText("hard", "hard", "kimberley", 0, 40, false);
     temp3->getSprite("hard").set<Pos2D>( vec2(-150, 0) );
-    temp3->addSpriteText("insane", "insane", "Star Jedi", 0, 40, false);
+    temp3->addSpriteText("insane", "insane", "kimberley", 0, 40, false);
     temp3->getSprite("insane").set<Pos2D>( vec2(-150, 60) );
 
     view::pMenu temp2= view::Menu::create("", mainmenu_scene_, 1, 1, true);
@@ -161,7 +161,7 @@ void MainMenu::setupMenus()
     function<void(view::pSprite&)> stage2 = bind(&MainMenu::stage_select, this, _1, "school");
     function<void(view::pSprite&)> stage3 = bind(&MainMenu::stage_select, this, _1, "street");
     function<void(view::pSprite&)> stage4 = bind(&MainMenu::stage_select, this, _1, "hospital");
-    temp2->addSpriteText("text", "choose stage", "Star Jedi", 0, 40, true);
+    temp2->addSpriteText("text", "choose stage", "kimberley", 0, 40, true);
     temp2->addSprite("stage1", stage1, 250, 150, true, "stage_preview/jungle_thumb")
           .addSprite("stage2", stage2, 250, 150, true, "stage_preview/school_thumb")
           .addSprite("stage3", stage3, 250, 150, true, "stage_preview/street_thumb")
@@ -176,8 +176,8 @@ void MainMenu::setupMenus()
     temp2->set<Pos2D>( vec2(-400, Conf::i().SCREEN_H() / 2) );
     mode->set<Pos2D>( vec2(-300, Conf::i().SCREEN_H() / 2) );
 
-    player1text_ = view::SpriteText::create("player1", temp, "Star Jedi", 24, true, data::Color(255,0,0));
-    player2text_ = view::SpriteText::create("player2", temp, "Star Jedi", 24, true, data::Color(0,0,255));
+    player1text_ = view::SpriteText::create("player1", temp, "kimberley", 24, true, data::Color(255,0,0));
+    player2text_ = view::SpriteText::create("player2", temp, "kimberley", 24, true, data::Color(0,0,255));
     player1text_->set<Pos2D>( vec2(-300, 150) ).set<Alpha>(100);
     player2text_->set<Pos2D>( vec2(-300, 180) ).set<Alpha>(100);
 

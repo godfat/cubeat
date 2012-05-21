@@ -42,7 +42,7 @@ TestUI::TestUI()
     bg_->moveTo(140, 140);
     act_ = view::Sprite::create("char1/test", bg_, 192, 192, true);
     act_->moveTo(128, 128);
-    text_= view::SpriteText::create("Test Panel", bg_, "Star Jedi", 24, true);
+    text_= view::SpriteText::create("Test Panel", bg_, "kimberley", 24, true);
     text_->moveTo(128, -20);
     bg_->set<Visible>(false);
 
@@ -80,7 +80,7 @@ TestUI::TestUI()
     btn_test_cursor_->moveTo(50, 400);
     std::tr1::function<void(view::pSprite&)> showPos = bind(&TestUI::ShowPos, this, _1);
     btn_test_cursor_->onPress( &(InputMgr::i().getInputByIndex(0)->trig1()) ) = showPos;
-    text_cursor_        = view::SpriteText::create("00", scene_, "Star Jedi", 24, true);
+    text_cursor_        = view::SpriteText::create("00", scene_, "kimberley", 24, true);
     text_cursor_->moveTo(240, 400);
 }
 

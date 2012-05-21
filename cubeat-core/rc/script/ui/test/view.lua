@@ -259,7 +259,7 @@ local function new_ui_button(parent, setting)
                   }
   load_setting(button.setting, setting)
   --
-  button.title = new_sprite_text(button.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
+  button.title = new_sprite_text(button.setting.title, parent, "kimberley", 24, false, 255, 255, 0)
   --
   button.set_pos      = function(self, posx, posy)
                           button.title:set_pos(posx, posy)
@@ -313,8 +313,8 @@ local function new_ui_ratio(parent, setting)
   load_setting(ratio.setting, setting)
   --
   ratio.icon        = new_sprite("cubes/cube1", parent, 32, 32, false)
-  ratio.title       = new_sprite_text(ratio.setting.title, parent, "Star Jedi", 24, false, 255, 255, 0)
-  ratio.debug_text  = new_sprite_text("FALSE", parent, "Star Jedi", 24, true, 100, 100, 255)
+  ratio.title       = new_sprite_text(ratio.setting.title, parent, "kimberley", 24, false, 255, 255, 0)
+  ratio.debug_text  = new_sprite_text("FALSE", parent, "kimberley", 24, true, 100, 100, 255)
   --
   local function ratio_set_press(pressed)
     if pressed == true then
@@ -417,8 +417,8 @@ local function new_ui_selectbox(parent, setting)
   --
   box.left      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
   box.right     = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
-  box.title     = new_sprite_text(box.setting.title_tb[box.setting.index], parent, "Star Jedi", 24, true, 255, 255, 0)
-  box.debug_text= new_sprite_text(tostring(box.setting.index), parent, "Star Jedi", 24, true, 100, 100, 255)
+  box.title     = new_sprite_text(box.setting.title_tb[box.setting.index], parent, "kimberley", 24, true, 255, 255, 0)
+  box.debug_text= new_sprite_text(tostring(box.setting.index), parent, "kimberley", 24, true, 100, 100, 255)
   --
   local function box_change_text(index)
     box.title:change_text(box.setting.title_tb[index])
@@ -538,8 +538,8 @@ local function new_ui_scrollbar(parent, setting)
   scrollbar.parent      = parent
   scrollbar.line        = new_sprite("cubes/cube1", parent, 256, 16, false)
   scrollbar.button      = new_sprite("cubes/cube-b-1", parent, 32, 32, false)
-  scrollbar.title       = new_sprite_text("0", parent, "Star Jedi", 24, true, 255, 255, 0)
-  scrollbar.debug_text  = new_sprite_text("off", parent, "Star Jedi", 24, true, 100, 100, 255)
+  scrollbar.title       = new_sprite_text("0", parent, "kimberley", 24, true, 255, 255, 0)
+  scrollbar.debug_text  = new_sprite_text("off", parent, "kimberley", 24, true, 100, 100, 255)
   --
   local function set_input(input)
     if input == nil then

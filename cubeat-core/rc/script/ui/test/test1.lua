@@ -46,7 +46,7 @@ function init_select_char_panel(self)
 
   select_char_title_ = view.new_sprite_text("Please select character",
                                             select_char_bg_,
-                                            "Star Jedi",
+                                            "kimberley",
                                             24,
                                             true,
                                             255, 255, 255)
@@ -57,14 +57,14 @@ function init_select_char_panel(self)
   select_char_img_:set_pos(40, 100)
   select_char_img_:set_depth(1000)
 
-  select_char_ok_ = view.new_sprite_text("ok", select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
+  select_char_ok_ = view.new_sprite_text("ok", select_char_bg_, "kimberley", 24, false, 255, 255, 255)
   select_char_ok_:set_pos(340, 400)
   select_char_ok_:on_enter_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(100) end )
   select_char_ok_:on_leave_focus( C.Input_get_input1(), function(self, x, y) select_char_ok_:set_red(255) end )
   select_char_ok_:set_depth(-100)
 
   for i=1,5 do
-    select_char_btn[i] = view.new_sprite_text("charactor"..i, select_char_bg_, "Star Jedi", 24, false, 255, 255, 255)
+    select_char_btn[i] = view.new_sprite_text("charactor"..i, select_char_bg_, "kimberley", 24, false, 255, 255, 255)
     select_char_btn[i]:set_pos(340, 100+i*40)
     select_char_btn[i]:set_depth(-100)
   end
@@ -95,7 +95,7 @@ end
 local start_game_title_
 
 function init_game_title(self)
-  start_game_title_ = view.new_sprite_text("Select Charactor", scene_, "Star Jedi", 36, true, 255, 255, 255)
+  start_game_title_ = view.new_sprite_text("Select Charactor", scene_, "kimberley", 36, true, 255, 255, 255)
   start_game_title_:set_pos(688, 480)
 
   local title_focus_in  = function(self, x, y) start_game_title_:set_red(100) end
@@ -275,7 +275,7 @@ function init_test_sprite(self)
                           end
   test1:on_press( C.Input_get_trig1(C.Input_get_input1()), test1_on_press )
 
-  test3 = view.new_sprite_text("click", scene_, "Star Jedi", 24, true, 255, 255, 255)
+  test3 = view.new_sprite_text("click", scene_, "kimberley", 24, true, 255, 255, 255)
   test3:set_pos(688, 324)
 end
 

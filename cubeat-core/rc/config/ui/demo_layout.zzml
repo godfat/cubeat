@@ -9,22 +9,22 @@ base: {
 
 # texts setup data
 misc: {
-    gar1p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 570, y: 425 },
-    gar2p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 710, y: 425 },
-    stage:  { text: 'stage 0', font: 'Star Jedi', fsize: 25, center: 1, x: 640, y:149 },
-    time :  { text: '00:00',   font: 'Star Jedi', fsize: 30, center: 1, x: 640, y:230 },
-    #vic1p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 600, y:310 },
-    #vic2p:  { text: '0',       font: 'Star Jedi', fsize: 30, center: 1, x: 680, y:310 },
-    scr1p:  { text: '00000',   font: 'Star Jedi', fsize: 30, center: 1, x: 570, y:40 },
-    scr2p:  { text: '00000',   font: 'Star Jedi', fsize: 30, center: 1, x: 710, y:40 },
-    #wep1p1: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 326, y:730 },
-    #wep1p2: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 376, y:730 },
-    #wep1p3: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 351, y:710 },
-    #wep2p1: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 906, y:730 },
-    #wep2p2: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 956, y:730 },
-    #wep2p3: { text: '0',       font: 'Star Jedi', fsize: 18, center: 1, x: 931, y:710 },
-    #name1p: { text: 'PPL1',    font: 'Star Jedi', fsize: 30, center: 1, x: 223, y:725 },
-    #name2p: { text: 'PPL2',    font: 'Star Jedi', fsize: 30, center: 1, x:1060, y:725 }
+    gar1p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 570, y: 425 },
+    gar2p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 710, y: 425 },
+    stage:  { text: 'stage 0', font: 'kimberley', fsize: 25, center: 1, x: 640, y:149 },
+    time :  { text: '00:00',   font: 'kimberley', fsize: 30, center: 1, x: 640, y:230 },
+    #vic1p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 600, y:310 },
+    #vic2p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 680, y:310 },
+    scr1p:  { text: '00000',   font: 'kimberley', fsize: 30, center: 1, x: 570, y:40 },
+    scr2p:  { text: '00000',   font: 'kimberley', fsize: 30, center: 1, x: 710, y:40 },
+    #wep1p1: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 326, y:730 },
+    #wep1p2: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 376, y:730 },
+    #wep1p3: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 351, y:710 },
+    #wep2p1: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 906, y:730 },
+    #wep2p2: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 956, y:730 },
+    #wep2p3: { text: '0',       font: 'kimberley', fsize: 18, center: 1, x: 931, y:710 },
+    #name1p: { text: 'PPL1',    font: 'kimberley', fsize: 30, center: 1, x: 223, y:725 },
+    #name2p: { text: 'PPL2',    font: 'kimberley', fsize: 30, center: 1, x:1060, y:725 }
 },
 
 # 1p & 2p character sprite positions

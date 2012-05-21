@@ -328,12 +328,8 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         for( int x=0, width=ms()->width(); x < width; ++x ) {
             if( !cubes_[x][y+1] && !cubes_[x][y] ) {
                 row_empty[i].push_back( x );
-                //printf("0 ");
             }
-            //else
-                //printf("1 ");
         }
-        //printf("\n");
         if( row_empty[i].size() < 1 ) {
             //ok, we go from top, and now we've encountered first row without any hole
             break;
@@ -349,22 +345,23 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
     presenter::pMap main_enemy = owner->garbage_lands().front().lock();
+    int this_frame_lands = 0;
     for( unsigned int j = 0; j < row_empty.size(); ++j ) {
         //CORRECTED: actually, we don't want to do it upside-down.
         //printf("garbage_left_: %d, emptyness of row %d (from top): %d\n", garbage_left_, j, row_empty[j].size());
-        for( int unsigned i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
+        for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
             int x = row_empty[j][i];
 
             pCube c = owner->make_garbage( x, top - j )->model();
             insert_garbage( c );
 
             --garbage_left_;
-            //2012.05 ok, this is a bit awkawrd. we have to substract the attack amounts
-            //above ENEMY's head, not above self's head...
-            main_enemy->pop_garbage_event()(1);
+            ++this_frame_lands;
         }
     }
-    //printf("\n");
+    //2012.05 self garbage_left_ minus n,
+    //means garbage effects that the opponent has to minus n
+    main_enemy->pop_garbage_event()(this_frame_lands);
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){

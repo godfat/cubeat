@@ -130,7 +130,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
-    ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+    ready_go_text_ = view::SpriteText::create("3", scene_, "kimberley", 30, true);
     ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     ready_go_text_->setPickable(false);
 
@@ -197,7 +197,7 @@ void Multi::game_start()
 
     if( num_of_cpu_ == 2 ) {
         blocker_->set<Visible>(true);
-        pause_note_text_ = view::SpriteText::create("press middle button to\npause and leave", scene_, "Star Jedi", 30, true);
+        pause_note_text_ = view::SpriteText::create("press middle button to\npause and leave", scene_, "kimberley", 30, true);
         pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
         pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
         pause_note_text_->setDepth(-100).setPickable(false);
@@ -371,8 +371,8 @@ void Multi::end(pMap lose_map)
     win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
     lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-    end_text_ = view::SpriteText::create("play again?", scene_, "Star Jedi", 30, true);
-    end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "Star Jedi", 30, true);
+    end_text_ = view::SpriteText::create("play again?", scene_, "kimberley", 30, true);
+    end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", scene_, "kimberley", 30, true);
     end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
     end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
     end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
@@ -491,10 +491,10 @@ void Multi::pause(ctrl::Input const* controller)
     if( pause_note_text_) pause_note_text_->set<Visible>(false);
 
     if( !pause_text_ || !pause_text2_ ) {
-        pause_text_ = view::SpriteText::create("back to menu?", scene_, "Star Jedi", 30, true);
+        pause_text_ = view::SpriteText::create("back to menu?", scene_, "kimberley", 30, true);
         pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
         pause_text_->setDepth(-450).setPickable(false);
-        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "Star Jedi", 30, true);
+        pause_text2_ = view::SpriteText::create("\nyes: left click\nno: right click", scene_, "kimberley", 30, true);
         pause_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
         pause_text2_->setDepth(-450).setPickable(false);
     }

@@ -35,15 +35,15 @@ end
 ----------------------------------------------------------------------------
 local function new_image(parent, setting)
   local image = {}
-  
+
   -- load setting
   image.setting = { path='title', x=0, y=0, w=128, h= 128,
                     depth=-10, alpha=255, visible=true, center=false }
   load_setting(image.setting, setting)
-  
+
   -- create
   image.pic = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
-  
+
   -- functions
   image.set_texture = function(self, path)
                         image.pic:set_texture(path)
@@ -85,7 +85,7 @@ local function new_image(parent, setting)
   image:set_depth(image.setting.depth)
   image:set_alpha(image.setting.alpha)
   image:set_visible(image.setting.visible)
-  
+
   return image
 end
 
@@ -99,11 +99,11 @@ local function new_text(parent, setting)
   text.setting  = { title='new', x=0, y=0, r=255, g=255, b=255, size=24,
                     depth=-10, alpha=255, visible=true, center=false }
   load_setting(text.setting, setting)
-  
+
   -- create
-  text.title = view.new_sprite_text(text.setting.title, parent, "Star Jedi", text.setting.size,
+  text.title = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
                                     text.setting.center, text.setting.r, text.setting.g, text.setting.b)
-  
+
   -- functions
   text.set_pos    = function(self, x, y)
                       text.title:set_pos(x, y)
@@ -130,13 +130,13 @@ local function new_text(parent, setting)
                         text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                       end
                     end
-  
+
   -- init setting
   text:set_pos(text.setting.x, text.setting.y)
   text:set_depth(text.setting.depth)
   text:set_alpha(text.setting.alpha)
   text:set_visible(text.setting.visible)
-  
+
   return text
 end
 
@@ -145,16 +145,16 @@ end
 ----------------------------------------------------------------------------
 local function new_button(parent, setting)
   local button = {}
-  
+
   -- load setting
   button.setting  = { title='button', x=0, y=0, r=255, g=255, b=255, size=24,
                       depth=-10, alpha=255, visible=true, center=false, focus_color={r=0,g=255,b=255} }
   load_setting(button.setting, setting)
-  
+
   -- create
-  button.title = view.new_sprite_text(button.setting.title, parent, "Star Jedi", button.setting.size,
+  button.title = view.new_sprite_text(button.setting.title, parent, "kimberley", button.setting.size,
                                       button.setting.center, button.setting.r, button.setting.g, button.setting.b)
-  
+
   -- functions
   button.set_pos    = function(self, x, y)
                         button.title:set_pos(x, y)
@@ -192,7 +192,7 @@ local function new_button(parent, setting)
   button:set_depth(button.setting.depth)
   button:set_alpha(button.setting.alpha)
   button:set_visible(button.setting.visible)
-  
+
   return button
 end
 

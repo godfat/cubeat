@@ -324,10 +324,10 @@ public:
         } else y_offset = chain_texts_[chain]->get<Pos2D>().Y;
 
         view::pMenu m = view::Menu::create("", s, 100, 100, true);
-        m->addSpriteText("chaino",  str, "Star Jedi", 0, 40, true, data::Color(255,0,0))
-          .addSpriteText("chain",   str, "Star Jedi", 0, 40, true)
-          .addSpriteText("amounto", str2,"Star Jedi", 0, 25, true, data::Color(255,0,0))
-          .addSpriteText("amount",  str2,"Star Jedi", 0, 25, true)
+        m->addSpriteText("chaino",  str, "kimberley", 0, 40, true, data::Color(255,0,0))
+          .addSpriteText("chain",   str, "kimberley", 0, 40, true)
+          .addSpriteText("amounto", str2,"kimberley", 0, 25, true, data::Color(255,0,0))
+          .addSpriteText("amount",  str2,"kimberley", 0, 25, true)
           .setPickable(false);
         m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
         m->getSprite("chain").setDepth(-10).setPickable(false);
@@ -397,12 +397,11 @@ public:
     }
 
     virtual void pop_garbage(int amount) {
-        //std::cout << "Calling pop garbage...\n";
-        for( int i = 0; i < amount; ++i ) {
-            //std::cout << "  Before popping: " << attack_cubes_.size() << "\n";
-            attack_cubes_.pop_front();
-            //std::cout << "  After popping: " << attack_cubes_.size() << "\n";
+        if( static_cast<unsigned int>(amount) >= attack_cubes_.size() ) {
+            amount = attack_cubes_.size();
         }
+        for( int i = 0; i < amount; ++i )
+            attack_cubes_.pop_front();
     }
 
     virtual void <% debug_hook 'warning_counting' do %>(int warning_level){ <% end %>

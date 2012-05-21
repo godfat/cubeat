@@ -156,9 +156,9 @@ void PlayerView::cycle()
         else if( state1p == NONE )
             switchCharacterState( STAND );
 
-        bool self_full = map->has_column_full(), enemy_full = map->enemy_column_full();
-
 // 2012.05 No faces for now.
+//        bool self_full = map->has_column_full(), enemy_full = map->enemy_column_full();
+
 //        if( !self_full && !enemy_full ) switchCharacterFace(NORMAL);
 //        else switchCharacterFace( self_full ? BAD : GOOD );
 

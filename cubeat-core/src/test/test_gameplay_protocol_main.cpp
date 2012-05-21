@@ -94,7 +94,7 @@ TestNetGame::TestNetGame(int type)
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
-    ready_go_text_ = view::SpriteText::create("3", scene_, "Star Jedi", 30, true);
+    ready_go_text_ = view::SpriteText::create("3", scene_, "kimberley", 30, true);
     ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
     ready_go_text_->setPickable(false);
 

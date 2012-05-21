@@ -11,13 +11,13 @@ bar_setting:
 text1:
 {
     text: '... loading ...',
-    font: 'Star Jedi',
+    font: 'kimberley',
     fade_period: 1000
 },
 
 text2:
 {
     text: '... please wait ...',
-    font: 'Star Jedi',
+    font: 'kimberley',
     fade_period: 1000
 }

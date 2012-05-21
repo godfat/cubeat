@@ -87,6 +87,7 @@ App& App::launchDemo()
 {
     temp_presenter_ = presenter::game::Demo::create();
     std::cout << "Demo launched." << std::endl;
+    return *this;
 }
 
 App& App::launchMainMenu()

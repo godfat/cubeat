@@ -18,6 +18,15 @@ local function basepath()
   return (getcwd(buf, 256).."/") -- get working directory with trailing / 
 end
 
+local function copy_cdata_mt(mt, base_mt)
+  local t = base_mt and setmetatable({}, {__index = base_mt}) or {}
+  for k, v in pairs(mt) do
+    t[k] = function(self, ...) return mt[k](self._cdata, ...) end
+  end
+  t.__index = t
+  return t
+end
+
 local function random(n) return math.floor(math.random()*n) end
 
 local function C_random_shuffle(array, size)
@@ -28,6 +37,7 @@ local function C_random_shuffle(array, size)
 end
 
 return {
+  copy_cdata_mt = copy_cdata_mt,
   basepath = basepath,
   random   = random,
   C_random_shuffle = C_random_shuffle

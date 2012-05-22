@@ -164,7 +164,7 @@ void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
-void SpriteText_on_tween_line_alpha(pSpriteText* self, int alpha, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+void SpriteText_tween_linear_alpha(pSpriteText* self, int alpha, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> const& call = bind(delegate_for_cb_from_lua, (*self), cb);
     (*self)->tween<Linear, Alpha>(alpha, duration, loop, call, delay);
 }

@@ -2,13 +2,6 @@ local ffi       = require 'ffi'
 local C         = ffi.C
 local view      = require 'rc/script/ui/view'
 
-local function check_parent(object)
-  if object.parent == nil then
-    print('error - parent is nil')
-  end
-  return object.parent
-end
-
 local function load_setting(ui_setting, setting)
   for k,v in pairs(setting) do
     local no_key = (ui_setting[k] == nil)
@@ -47,8 +40,8 @@ end
 
 view.Mt_SpriteText_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
-  local leave_color = {r = self.setting.r, g = self.setting.g, b = self.setting.b}
-  set_focus_leave_color(self, self.setting.focus_color, leave_color)
+  local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
+  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end
 
 local Sprite_Based_Mt     = {__index = view.Mt_Sprite_Ex}
@@ -57,121 +50,40 @@ local SpriteText_Based_Mt = {__index = view.Mt_SpriteText_Ex}
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
-local function new_image(parent, setting)
-  local image = setmetatable({}, Sprite_Based_Mt)
+local function new_image(object)
+  if object.parent == nil then error('parent is nil') end
 
-  -- load setting
-  image.setting = { path='title', x=0, y=0, w=128, h= 128,
-                    depth=-10, alpha=255, visible=true, center=false }
-  load_setting(image.setting, setting)
-  
-  --[[
-  -- create
-  image.pic = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
+  setmetatable(object, Sprite_Based_Mt)
 
-  -- functions
-  image.set_texture = function(self, path)
-                        image.pic:set_texture(path)
-                      end
-  image.set_pos     = function(self, x, y)
-                        image.pic:set_pos(x, y)
-                      end
-  image.set_size    = function(self, w, h)
-                        image.pic:set_size(w, h)
-                      end
-  image.set_depth   = function(self, depth)
-                        image.pic:set_depth(depth)
-                      end
-  image.set_alpha   = function(self, alpha)
-                        image.pic:set_alpha(alpha)
-                      end
-  image.set_visible = function(self, visible)
-                        image.pic:set_visible(visible)
-                      end
-  image.set_center_aligned  = function(self, center)
-                                image.pic:set_center_aligned(center)
-                              end
-  image.set_fade    = function(self, alpha)
-                        image:set_visible(true)
-                        if alpha == 0 then
-                          local cb = function(self) image:set_visible(false) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                        else
-                          local cb = function(self) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                        end
-                      end
-  image.on_press   = function(self, func)
-                       set_on_press_callback(image.pic, func)
-                     end
-  --]]
-
-  image._cdata = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
+  object._cdata = view.new_sprite(object.path or 'title', object.parent, object.w or 128, object.h or 128, object.center or false)
                    
   -- init setting
-  image:set_pos(image.setting.x, image.setting.y)
-  image:set_depth(image.setting.depth)
-  image:set_alpha(image.setting.alpha)
-  image:set_visible(image.setting.visible)
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_alpha(object.alpha or 255)
+  object:set_visible(object.visible or true)
 
-  return image
+  return object
 end
 
 ----------------------------------------------------------------------------
 -- Text
 ----------------------------------------------------------------------------
-local function new_text(parent, setting)
-  local text = setmetatable({}, SpriteText_Based_Mt)
+local function new_text(object)
+  if object.parent == nil then error('parent is nil') end
   
-  -- load setting
-  text.setting  = { title='new', x=0, y=0, r=255, g=255, b=255, size=24,
-                    depth=-10, alpha=255, visible=true, center=false, 
-                    focus_color = {r=0,g=255,b=255} }
-  load_setting(text.setting, setting)
-  
-  --[[
-  -- create
-  text.title = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
-                                    text.setting.center, text.setting.r, text.setting.g, text.setting.b)
+  setmetatable(object, SpriteText_Based_Mt)
 
-  -- functions
-  text.set_pos    = function(self, x, y)
-                      text.title:set_pos(x, y)
-                    end
-  text.set_depth  = function(self, depth)
-                      text.title:set_depth(depth)
-                    end
-  text.set_alpha  = function(self, alpha)
-                      text.title:set_alpha(alpha)
-                    end
-  text.set_visible= function(self, visible)
-                      text.title:set_visible(visible)
-                    end
-  text.set_center_aligned = function(self, center)
-                              text.title:set_center_aligned(center)
-                            end
-  text.set_fade   = function(self, alpha)
-                      text:set_visible(true)
-                      if alpha == 0 then
-                        local cb = function(self) text:set_visible(false) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                      else
-                        local cb = function(self) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                      end
-                    end
-  --]]
-
-  text._cdata = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
-                                     text.setting.center, text.setting.r, text.setting.g, text.setting.b)
+  object._cdata = view.new_sprite_text( object.title or 'new', object.parent, "kimberley", object.size or 24,
+                                        object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
   -- init setting
-  text:set_pos(text.setting.x, text.setting.y)
-  text:set_depth(text.setting.depth)
-  text:set_alpha(text.setting.alpha)
-  text:set_visible(text.setting.visible)
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_alpha(object.alpha or 255)
+  object:set_visible(object.visible or true)
 
-  return text
+  return object
 end
 
 ----------------------------------------------------------------------------

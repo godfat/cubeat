@@ -2,6 +2,7 @@ local ffi       = require 'ffi'
 local C         = ffi.C
 local helper    = require 'rc/script/helper'
 local basepath  = helper.basepath
+local copy_cdata_mt = helper.copy_cdata_mt
 
 ffi.cdef[[
 typedef struct pObject pObject;
@@ -39,13 +40,13 @@ Mt_Sprite.set_blue                = C.Sprite_set_blue
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
-Mt_Sprite.tween_elastic_pos          = function(self, s, e, dur, l, cb, d) 
+Mt_Sprite.tween_elastic_pos       = function(self, s, e, dur, l, cb, d) 
   C.Sprite_tween_elastic_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
 end
-Mt_Sprite.tween_isine_pos          = function(self, s, e, dur, l, cb, d) 
+Mt_Sprite.tween_isine_pos         = function(self, s, e, dur, l, cb, d) 
   C.Sprite_tween_isine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
 end
-Mt_Sprite.tween_osine_pos          = function(self, s, e, dur, l, cb, d) 
+Mt_Sprite.tween_osine_pos         = function(self, s, e, dur, l, cb, d) 
   C.Sprite_tween_osine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
 end
 Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
@@ -73,10 +74,26 @@ Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
-Mt_SpriteText.on_tween_line_alpha = C.SpriteText_on_tween_line_alpha
+Mt_SpriteText.tween_linear_alpha  = C.SpriteText_tween_linear_alpha
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
+-- Extended (or for extending) metatables will be exported
+
+local Mt_Sprite_Ex     = copy_cdata_mt(Mt_Sprite)
+
+Mt_Sprite_Ex.set_fade = function(self, alpha)
+  self:set_visible(true)
+  if alpha == 0 then
+    local cb = function(self) self:set_visible(false) end
+    self:tween_linear_alpha(alpha, 500, 0, cb, 0)
+  else
+    local cb = function(self) end
+    self:tween_linear_alpha(alpha, 500, 0, cb, 0)
+  end
+end
+
+local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex) 
 
 --
 local function new_sprite(name, parent, w, h, center)
@@ -94,5 +111,7 @@ end
 ----------------------------------------------------------------------------
 return {
   new_sprite        = new_sprite,
-  new_sprite_text   = new_sprite_text
+  new_sprite_text   = new_sprite_text,
+  Mt_Sprite_Ex      = Mt_Sprite_Ex,
+  Mt_SpriteText_Ex  = Mt_SpriteText_Ex
 }

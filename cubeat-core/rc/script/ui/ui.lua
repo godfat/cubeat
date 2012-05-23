@@ -21,65 +21,46 @@ local function set_on_press_callback(sprite, func)
   sprite:on_press( Input2_left, func )
 end
 
-local function set_focus_leave_color(sprite, focus_color, leave_color)
-  local sprite_focus =  function(self) sprite:set_color(focus_color.r, focus_color.g, focus_color.b) end
-  local sprite_leave =  function(self) sprite:set_color(leave_color.r, leave_color.g, leave_color.b) end
-  sprite:on_enter_focus(Input1, sprite_focus)
-  sprite:on_leave_focus(Input1, sprite_leave)
-  sprite:on_enter_focus(Input2, sprite_focus)
-  sprite:on_leave_focus(Input2, sprite_leave)
+local function set_focus_leave_color(obj, focus_color, leave_color)
+  local focus_f = function(self) obj:set_color(focus_color.r, focus_color.g, focus_color.b) end
+  local leave_f = function(self) obj:set_color(leave_color.r, leave_color.g, leave_color.b) end
+  obj:on_enter_focus(Input1, focus_f)
+  obj:on_leave_focus(Input1, leave_f)
+  obj:on_enter_focus(Input2, focus_f)
+  obj:on_leave_focus(Input2, leave_f)
 end
+
+----------------------------------------------------------------------------
+-- Metatable supplementals
+----------------------------------------------------------------------------
+
+view.Mt_Sprite_Ex.on_press = function(self, func)
+  set_on_press_callback(self._cdata, func)
+end
+
+view.Mt_SpriteText_Ex.on_press = function(self, func)
+  set_on_press_callback(self._cdata, func)
+  local leave_color = {r = self.setting.r, g = self.setting.g, b = self.setting.b}
+  set_focus_leave_color(self, self.setting.focus_color, leave_color)
+end
+
+local Sprite_Based_Mt     = {__index = view.Mt_Sprite_Ex}
+local SpriteText_Based_Mt = {__index = view.Mt_SpriteText_Ex}
 
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
 local function new_image(parent, setting)
-  local image = {}
-
+  local image = setmetatable({}, Sprite_Based_Mt)
+  
   -- load setting
   image.setting = { path='title', x=0, y=0, w=128, h= 128,
                     depth=-10, alpha=255, visible=true, center=false }
   load_setting(image.setting, setting)
 
   -- create
-  image.pic = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
-
-  -- functions
-  image.set_texture = function(self, path)
-                        image.pic:set_texture(path)
-                      end
-  image.set_pos     = function(self, x, y)
-                        image.pic:set_pos(x, y)
-                      end
-  image.set_size    = function(self, w, h)
-                        image.pic:set_size(w, h)
-                      end
-  image.set_depth   = function(self, depth)
-                        image.pic:set_depth(depth)
-                      end
-  image.set_alpha   = function(self, alpha)
-                        image.pic:set_alpha(alpha)
-                      end
-  image.set_visible = function(self, visible)
-                        image.pic:set_visible(visible)
-                      end
-  image.set_center_aligned  = function(self, center)
-                                image.pic:set_center_aligned(center)
-                              end
-  image.set_fade    = function(self, alpha)
-                        image:set_visible(true)
-                        if alpha == 0 then
-                          local cb = function(self) image:set_visible(false) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                        else
-                          local cb = function(self) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                        end
-                      end
-  image.on_press   = function(self, func)
-                       set_on_press_callback(image.pic, func)
-                     end
-
+  image._cdata = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
+                   
   -- init setting
   image:set_pos(image.setting.x, image.setting.y)
   image:set_depth(image.setting.depth)
@@ -93,43 +74,17 @@ end
 -- Text
 ----------------------------------------------------------------------------
 local function new_text(parent, setting)
-  local text = {}
-
+  local text = setmetatable({}, SpriteText_Based_Mt)
+  
   -- load setting
   text.setting  = { title='new', x=0, y=0, r=255, g=255, b=255, size=24,
-                    depth=-10, alpha=255, visible=true, center=false }
+                    depth=-10, alpha=255, visible=true, center=false, 
+                    focus_color = {r=0,g=255,b=255} }
   load_setting(text.setting, setting)
 
   -- create
-  text.title = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
-                                    text.setting.center, text.setting.r, text.setting.g, text.setting.b)
-
-  -- functions
-  text.set_pos    = function(self, x, y)
-                      text.title:set_pos(x, y)
-                    end
-  text.set_depth  = function(self, depth)
-                      text.title:set_depth(depth)
-                    end
-  text.set_alpha  = function(self, alpha)
-                      text.title:set_alpha(alpha)
-                    end
-  text.set_visible= function(self, visible)
-                      text.title:set_visible(visible)
-                    end
-  text.set_center_aligned = function(self, center)
-                              text.title:set_center_aligned(center)
-                            end
-  text.set_fade   = function(self, alpha)
-                      text:set_visible(true)
-                      if alpha == 0 then
-                        local cb = function(self) text:set_visible(false) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                      else
-                        local cb = function(self) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
-                      end
-                    end
+  text._cdata = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
+                                     text.setting.center, text.setting.r, text.setting.g, text.setting.b)
 
   -- init setting
   text:set_pos(text.setting.x, text.setting.y)

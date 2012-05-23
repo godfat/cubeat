@@ -2,6 +2,13 @@ local ffi       = require 'ffi'
 local C         = ffi.C
 local view      = require 'rc/script/ui/view'
 
+local function check_parent(object)
+  if object.parent == nil then
+    print('error - parent is nil')
+  end
+  return object.parent
+end
+
 local function load_setting(ui_setting, setting)
   for k,v in pairs(setting) do
     local no_key = (ui_setting[k] == nil)
@@ -33,167 +40,187 @@ end
 ----------------------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------------------
-local function new_image(parent, setting)
+--local function new_image(parent, setting)
+local function new_image(object)
   local image = {}
-
+  
+  local check = check_parent(object)
+  if check == nil then return end
+  --[[
   -- load setting
   image.setting = { path='title', x=0, y=0, w=128, h= 128,
                     depth=-10, alpha=255, visible=true, center=false }
   load_setting(image.setting, setting)
-
+  --]]
   -- create
-  image.pic = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
+  --image.pic = view.new_sprite(image.setting.path, parent, image.setting.w, image.setting.h, image.setting.center)
+  object.pic = view.new_sprite(object.path or 'title', object.parent, object.w or 0, object.h or 0, object.center or false)
 
   -- functions
-  image.set_texture = function(self, path)
-                        image.pic:set_texture(path)
+  object.set_texture = function(self, path)
+                        object.pic:set_texture(path)
                       end
-  image.set_pos     = function(self, x, y)
-                        image.pic:set_pos(x, y)
+  object.set_pos     = function(self, x, y)
+                        object.pic:set_pos(x, y)
                       end
-  image.set_size    = function(self, w, h)
-                        image.pic:set_size(w, h)
+  object.set_size    = function(self, w, h)
+                        object.pic:set_size(w, h)
                       end
-  image.set_depth   = function(self, depth)
-                        image.pic:set_depth(depth)
+  object.set_depth   = function(self, depth)
+                        object.pic:set_depth(depth)
                       end
-  image.set_alpha   = function(self, alpha)
-                        image.pic:set_alpha(alpha)
+  object.set_alpha   = function(self, alpha)
+                        object.pic:set_alpha(alpha)
                       end
-  image.set_visible = function(self, visible)
-                        image.pic:set_visible(visible)
+  object.set_visible = function(self, visible)
+                        object.pic:set_visible(visible)
                       end
-  image.set_center_aligned  = function(self, center)
-                                image.pic:set_center_aligned(center)
+  object.set_center_aligned  = function(self, center)
+                                object.pic:set_center_aligned(center)
                               end
-  image.set_fade    = function(self, alpha)
-                        image:set_visible(true)
+  object.set_fade    = function(self, alpha)
+                        object:set_visible(true)
                         if alpha == 0 then
-                          local cb = function(self) image:set_visible(false) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                          local cb = function(self) object:set_visible(false) end
+                          object.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         else
                           local cb = function(self) end
-                          image.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                          object.pic:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         end
                       end
-  image.on_press   = function(self, func)
-                       set_on_press_callback(image.pic, func)
+  object.on_press   = function(self, func)
+                       set_on_press_callback(object.pic, func)
                      end
 
   -- init setting
-  image:set_pos(image.setting.x, image.setting.y)
-  image:set_depth(image.setting.depth)
-  image:set_alpha(image.setting.alpha)
-  image:set_visible(image.setting.visible)
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_alpha(object.alpha or 255)
+  object:set_visible(object.visible or true)
 
-  return image
+  return object
 end
 
 ----------------------------------------------------------------------------
 -- Text
 ----------------------------------------------------------------------------
-local function new_text(parent, setting)
+--local function new_text(parent, setting)
+local function new_text(object)
   local text = {}
+  
+  local check = check_parent(object)
+  if check == nil then return end
 
+  --[[
   -- load setting
   text.setting  = { title='new', x=0, y=0, r=255, g=255, b=255, size=24,
                     depth=-10, alpha=255, visible=true, center=false }
   load_setting(text.setting, setting)
-
+  --]]
+  
   -- create
-  text.title = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
-                                    text.setting.center, text.setting.r, text.setting.g, text.setting.b)
+  --text.title = view.new_sprite_text(text.setting.title, parent, "kimberley", text.setting.size,
+                                    --text.setting.center, text.setting.r, text.setting.g, text.setting.b)
+  object.title = view.new_sprite_text(object.title or 'new', object.parent, "kimberley", object.size or 24,
+                                    object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
   -- functions
-  text.set_pos    = function(self, x, y)
-                      text.title:set_pos(x, y)
+  object.set_pos    = function(self, x, y)
+                      object.title:set_pos(x, y)
                     end
-  text.set_depth  = function(self, depth)
-                      text.title:set_depth(depth)
+  object.set_depth  = function(self, depth)
+                      object.title:set_depth(depth)
                     end
-  text.set_alpha  = function(self, alpha)
-                      text.title:set_alpha(alpha)
+  object.set_alpha  = function(self, alpha)
+                      object.title:set_alpha(alpha)
                     end
-  text.set_visible= function(self, visible)
-                      text.title:set_visible(visible)
+  object.set_visible= function(self, visible)
+                      object.title:set_visible(visible)
                     end
-  text.set_center_aligned = function(self, center)
-                              text.title:set_center_aligned(center)
+  object.set_center_aligned = function(self, center)
+                              object.title:set_center_aligned(center)
                             end
-  text.set_fade   = function(self, alpha)
-                      text:set_visible(true)
+  object.set_fade   = function(self, alpha)
+                      object:set_visible(true)
                       if alpha == 0 then
-                        local cb = function(self) text:set_visible(false) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                        local cb = function(self) object:set_visible(false) end
+                        object.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                       else
                         local cb = function(self) end
-                        text.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                        object.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                       end
                     end
 
   -- init setting
-  text:set_pos(text.setting.x, text.setting.y)
-  text:set_depth(text.setting.depth)
-  text:set_alpha(text.setting.alpha)
-  text:set_visible(text.setting.visible)
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_alpha(object.alpha or 255)
+  object:set_visible(object.visible or true)
 
-  return text
+  return object
 end
 
 ----------------------------------------------------------------------------
 -- Button
 ----------------------------------------------------------------------------
-local function new_button(parent, setting)
+--local function new_button(parent, setting)
+local function new_button(object)
   local button = {}
-
+  
+  local check = check_parent(object)
+  if check == nil then return end
+  
+  --[[
   -- load setting
   button.setting  = { title='button', x=0, y=0, r=255, g=255, b=255, size=24,
                       depth=-10, alpha=255, visible=true, center=false, focus_color={r=0,g=255,b=255} }
   load_setting(button.setting, setting)
-
+  --]]
   -- create
-  button.title = view.new_sprite_text(button.setting.title, parent, "kimberley", button.setting.size,
-                                      button.setting.center, button.setting.r, button.setting.g, button.setting.b)
+  --button.title = view.new_sprite_text(button.setting.title, parent, "kimberley", button.setting.size,
+                                      --button.setting.center, button.setting.r, button.setting.g, button.setting.b)
+  object.title = view.new_sprite_text(object.title or 'button', object.parent, "kimberley", object.size or 24,
+                                      object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
   -- functions
-  button.set_pos    = function(self, x, y)
-                        button.title:set_pos(x, y)
+  object.set_pos    = function(self, x, y)
+                        object.title:set_pos(x, y)
                       end
-  button.set_depth  = function(self, depth)
-                        button.title:set_depth(depth)
+  object.set_depth  = function(self, depth)
+                        object.title:set_depth(depth)
                       end
-  button.set_alpha  = function(self, alpha)
-                        button.title:set_alpha(alpha)
+  object.set_alpha  = function(self, alpha)
+                        object.title:set_alpha(alpha)
                       end
-  button.set_visible= function(self, visible)
-                        button.title:set_visible(visible)
+  object.set_visible= function(self, visible)
+                        object.title:set_visible(visible)
                       end
-  button.set_center_aligned = function(self, center)
-                                button.title:set_center_aligned(center)
+  object.set_center_aligned = function(self, center)
+                                object.title:set_center_aligned(center)
                               end
-  button.set_fade   = function(self, alpha)
-                        button:set_visible(true)
+  object.set_fade   = function(self, alpha)
+                        object:set_visible(true)
                         if alpha == 0 then
-                          local cb = function(self) button:set_visible(false) end
-                          button.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                          local cb = function(self) object:set_visible(false) end
+                          object.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         else
                           local cb = function(self) end
-                          button.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
+                          object.title:on_tween_line_alpha(alpha, 500, 0, cb, 0)
                         end
                       end
-  button.on_press   = function(self, func)
-                        set_on_press_callback(button.title, func)
+  object.on_press   = function(self, func)
+                        set_on_press_callback(object.title, func)
                       end
 
   -- init setting
-  local leave_color = {r=button.setting.r, g=button.setting.g, b=button.setting.b}
-  set_focus_leave_color(button.title, button.setting.focus_color, leave_color)
-  button:set_pos(button.setting.x, button.setting.y)
-  button:set_depth(button.setting.depth)
-  button:set_alpha(button.setting.alpha)
-  button:set_visible(button.setting.visible)
+  local leave_color = {r=object.r or 255, g=object.g or 255, b=object.b or 255}
+  set_focus_leave_color(object.title or 'button', object.focus_color or {r=0,g=255,b=255}, leave_color)
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_alpha(object.alpha or 255)
+  object:set_visible(object.visible or true)
 
-  return button
+  return object
 end
 
 ----------------------------------------------------------------------------

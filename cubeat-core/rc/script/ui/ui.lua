@@ -61,7 +61,7 @@ local function new_image(object)
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_alpha(object.alpha or 255)
-  object:set_visible(object.visible or true)
+  object:set_visible(object.visible==nil or object.visible)
 
   return object
 end
@@ -81,7 +81,7 @@ local function new_text(object)
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_alpha(object.alpha or 255)
-  object:set_visible(object.visible or true)
+  object:set_visible(object.visible==nil or object.visible)
 
   return object
 end
@@ -130,6 +130,7 @@ local function new_askbox(object)
   
   --init setting
   object:set_depth(object.depth or -10)
+  object:set_visible(object.visible==nil or object.visible)
   
   return object
 end

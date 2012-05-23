@@ -30,8 +30,8 @@ end
 
 local function load_tutorials()
   for i = 1, 7 do 
-    tuts_[i] = ui.new_image( { parent = scene_,
-      path='tut/'..i, x=0, y=0, w=1280, h=720 })
+    tuts_[i] = ui.new_image{ parent = scene_,
+      path='tut/'..i, x=0, y=0, w=1280, h=720 }
     tuts_[i]:set_depth(-100)
     tuts_[i]:set_visible(false)
     tuts_[i]:on_press(function(self) 
@@ -100,18 +100,18 @@ function init(demo)
   
   --------------------------------------
   
-  title_   = ui.new_image( { parent = scene_,
-    path='title2', x=640, y=150, w=840, h=250, center=true})
+  title_   = ui.new_image{ parent = scene_,
+    path='title2', x=640, y=150, w=840, h=250, center=true}
     
-  demobuild_ = ui.new_image( { parent = scene_,
-    path='demobuild', x=1000, y=780, w=246, h=76, center=true})
+  demobuild_ = ui.new_image{ parent = scene_,
+    path='demobuild', x=1000, y=780, w=246, h=76, center=true}
   demobuild_:set_rotation(9)
   local s = ffi.new("v2", 1000, 740)
   local e = ffi.new("v2", 1000, 280)
   demobuild_:tween_elastic_pos(s, e, 2000, 0, nil, 1000) -- delay 1000
     
-  teamname_ = ui.new_image( { parent = scene_,
-    path='teampsc', x=640, y=690, w=300, h=50, center=true})
+  teamname_ = ui.new_image{ parent = scene_,
+    path='teampsc', x=640, y=690, w=300, h=50, center=true}
   
   blocker_ = view.new_sprite("blahblah", scene_, 1280, 720, false)
   blocker_:set_pos(0, 0)
@@ -120,45 +120,45 @@ function init(demo)
   
   --------------------------------------
 
-  menu_.btn_vs_cpu = ui.new_text( { parent = vorig_,
+  menu_.btn_vs_cpu = ui.new_text{ parent = vorig_,
     title='player vs cpu', x=0, y=0, size=32, visible = false
-  })
+  }
   menu_.btn_vs_cpu:set_scale(1.5)
   menu_.btn_vs_cpu:on_press(function(self) 
     demo:init_vs_cpu()
     --hide_everything()
   end)
   
-  menu_.btn_vs_ppl = ui.new_text( { parent = vorig_,
+  menu_.btn_vs_ppl = ui.new_text{ parent = vorig_,
     title='player vs player', x=0, y=60, size=32, visible = false
-  })
+  }
   menu_.btn_vs_ppl:set_scale(1.5)
   menu_.btn_vs_ppl:on_press(function(self) 
     demo:init_vs_ppl()
     --hide_everything()
   end)
   
-  menu_.btn_cpudemo = ui.new_text( { parent = vorig_,
+  menu_.btn_cpudemo = ui.new_text{ parent = vorig_,
     title='cpu demo mode', x=0, y=120, size=32, visible = false
-  })
+  }
   menu_.btn_cpudemo:set_scale(1.5)
   menu_.btn_cpudemo:on_press(function(self) 
     demo:init_cpudemo()
     --hide_everything()
   end)
   
-  menu_.btn_tut = ui.new_text( { parent = vorig_,
+  menu_.btn_tut = ui.new_text{ parent = vorig_,
     title='show tutorial', x=0, y=180, size=32, visible = false
-  })
+  }
   menu_.btn_tut:set_scale(1.5)
   menu_.btn_tut:on_press(function(self) 
     tuts_[1]:set_visible(true)
     --hide_everything()
   end)
   
-  menu_.btn_quit = ui.new_text( { parent = vorig_,
+  menu_.btn_quit = ui.new_text{ parent = vorig_,
     title='quit', x=0, y=240, size=32, visible = false
-  })
+  }
   menu_.btn_quit:set_scale(1.5)
   menu_.btn_quit:on_press(function(self) 
     demo:quit()

@@ -53,8 +53,8 @@ local SpriteText_Based_Mt = {__index = view.Mt_SpriteText_Ex}
 local function new_image(object)
   if object.parent == nil then error('parent is nil') end
 
+  -- create
   setmetatable(object, Sprite_Based_Mt)
-
   object._cdata = view.new_sprite(object.path or 'title', object.parent, object.w or 128, object.h or 128, object.center or false)
                    
   -- init setting
@@ -72,8 +72,8 @@ end
 local function new_text(object)
   if object.parent == nil then error('parent is nil') end
   
+  -- create
   setmetatable(object, SpriteText_Based_Mt)
-
   object._cdata = view.new_sprite_text( object.title or 'new', object.parent, "kimberley", object.size or 24,
                                         object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
@@ -89,68 +89,49 @@ end
 ----------------------------------------------------------------------------
 -- AskBox
 ----------------------------------------------------------------------------
-local function new_askbox(parent, setting)
-  local askbox = {}
-  
-  -- load setting
-  askbox.setting  = { title='new', w=300, h=200, r=255, g=255, b=255, size=24, depth=-100,
-                      focus_color={r=0,g=255,b=255} }
-  load_setting(askbox.setting, setting)
+local function new_askbox(object)
+  if object.parent == nil then error('parent is nil') end
 
+  -- create
   local screen_w  = C.Get_SCREEN_W()
-  local screen_h  = C.Get_SCREEN_H()
-  askbox.filter   = view.new_sprite('cubes/cube-b-1', parent, screen_w, screen_h, true)
-  askbox.filter:set_pos(screen_w/2, screen_h/2)
-  askbox.filter:set_color(0, 0, 0)
-  askbox.filter:set_alpha(100)
+  local screen_h  = C.Get_SCREEN_H()  
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('cubes/cube-b-1', object.parent, screen_w, screen_h, true)
+  object:set_pos(screen_w/2, screen_h/2)
+  object:set_color(0, 0, 0)
+  object:set_alpha(100)
   
-  askbox.panel  = view.new_sprite('area_rect', askbox.filter, askbox.setting.w, askbox.setting.h, true)
+  object.panel  = new_image{parent=object._cdata, path='area_rect',
+                            w=object.w or 300, h=object.h or 200, center=true}
   
-  askbox.title  = view.new_sprite_text( askbox.setting.title, askbox.panel, "Star Jedi",
-                                        askbox.setting.size, true,
-                                        askbox.setting.r, askbox.setting.g, askbox.setting.b )
-  askbox.ok     = view.new_sprite_text( 'ok', askbox.panel, "Star Jedi", askbox.setting.size, true,
-                                        askbox.setting.r, askbox.setting.g, askbox.setting.b )
-  askbox.cancel = view.new_sprite_text( 'cancel', askbox.panel, "Star Jedi", askbox.setting.size, true,
-                                        askbox.setting.r, askbox.setting.g, askbox.setting.b )
-  askbox.title:set_pos(0, -30)
-  askbox.title:set_depth(-10)
-  askbox.ok:set_pos(-60, 30)
-  askbox.ok:set_depth(-10)
-  askbox.cancel:set_pos(60, 30)
-  askbox.cancel:set_depth(-10)
+  object.text   = new_text{ parent=object.panel._cdata, title=object.title, size=object.size,
+                            r=object.r, g=object.g, b=object.b, center=true }
+  object.ok     = new_text{ parent=object.panel._cdata, title='ok', size=object.size,
+                            r=object.r, g=object.g, b=object.b, center=true }
+  object.cancel = new_text{ parent=object.panel._cdata, title='cancel', size=object.size,
+                            r=object.r, g=object.g, b=object.b, center=true }
+  object.text:set_pos(0, -30)
+  object.text:set_depth(-10)
+  object.ok:set_pos(-60, 30)
+  object.ok:set_depth(-10)
+  object.cancel:set_pos(60, 30)
+  object.cancel:set_depth(-10)
   
   -- functions
-  askbox.set_title        = function(self, title)
-                              askbox.title:change_text(title)
+  object.set_title        = function(self, title)
+                              object.text:change_text(title)
                             end
-  askbox.set_size         = function(self, w, h)
-                              askbox.panel:set_size(w, h)
+  object.on_press_ok      = function(self, func)
+                              object.ok:on_press(func)
                             end
-  askbox.set_depth        = function(self, depth)
-                              askbox.filter:set_depth(depth)
-                            end
-  askbox.set_visible      = function(self, visible)
-                              askbox.filter:set_visible(visible)
-                              askbox.panel:set_visible(visible)
-                              askbox.title:set_visible(visible)
-                              askbox.ok:set_visible(visible)
-                              askbox.cancel:set_visible(visible)
-                            end
-  askbox.on_press_ok      = function(self, func)
-                              set_on_press_callback(askbox.ok, func)
-                            end
-  askbox.on_press_cancel  = function(self, func)
-                              set_on_press_callback(askbox.cancel, func)
+  object.on_press_cancel  = function(self, func)
+                              object.cancel:on_press(func)
                             end
   
-  -- init setting
-  local leave_color = {r=askbox.setting.r, g=askbox.setting.g, b=askbox.setting.b}
-  set_focus_leave_color(askbox.ok, askbox.setting.focus_color, leave_color)
-  set_focus_leave_color(askbox.cancel, askbox.setting.focus_color, leave_color)
-  askbox:set_depth(askbox.setting.depth)
+  --init setting
+  object:set_depth(object.depth or -10)
   
-  return askbox
+  return object
 end
 
 ----------------------------------------------------------------------------

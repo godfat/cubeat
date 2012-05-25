@@ -117,6 +117,21 @@ function init(demo)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(96)
+
+  --------------------------------------
+  
+  local score_list = ui.new_list{ parent=scene_, depth=-1000, visible=false }
+  local score_record  = { john=100,
+                          jordan=1389,
+                          micheal=84621,
+                          michelle=938
+                        }
+  score_list:load_list(score_record)
+  score_list:on_press_back(function(self)
+    show_everything()
+    title_:set_visible(true)
+    score_list:set_visible(false)
+  end)
   
   --------------------------------------
 
@@ -162,6 +177,16 @@ function init(demo)
   menu_.btn_quit:set_scale(1.5)
   menu_.btn_quit:on_press(function(self) 
     demo:quit()
+  end)
+  
+  menu_.btn_score = ui.new_text{ parent = vorig_,
+    title='score', x=0, y=300, size=32, visible = false
+  }
+  menu_.btn_score:set_scale(1.5)
+  menu_.btn_score:on_press(function(self)
+    hide_everything()
+    title_:set_visible(false)
+    score_list:set_visible(true)
   end)
   
 end

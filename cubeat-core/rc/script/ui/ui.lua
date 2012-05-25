@@ -136,11 +136,54 @@ local function new_askbox(object)
 end
 
 ----------------------------------------------------------------------------
+-- List
+----------------------------------------------------------------------------
+local function new_list(object)
+  if object.parent == nil then error('parent is nil') end
+  
+  -- create
+  local width = 400
+  local height= 600
+  local screen_w  = C.Get_SCREEN_W()
+  local screen_h  = C.Get_SCREEN_H()  
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
+  object:set_pos(screen_w/2, screen_h/2)
+  
+  local score_pos_y = 60 - (height/2)
+  object.score      = new_text{parent=object._cdata, title='score', x=0, y=score_pos_y, center=true, size=40}
+  
+  local back_pos_y  = (height/2) - 60
+  object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-10}
+  
+  -- functions
+  object.load_list    = function(self, list)
+                          object.list = list
+                          local pos_y = 120 - (height/2)
+                          for k,v in pairs(object.list) do
+                            new_text{parent=object._cdata, title=k, x=-100, y=pos_y, center=true}
+                            new_text{parent=object._cdata, title=tostring(v), x=100, y=pos_y, center=true}
+                            pos_y=pos_y+30
+                          end
+                        end
+  object.on_press_back= function(self, func)
+                          object.back:on_press(func)
+                        end
+  
+  --init setting
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible==nil or object.visible)
+  
+  return object
+end
+
+----------------------------------------------------------------------------
 -- Main functions
 ----------------------------------------------------------------------------
 return{
 view            = view,
 new_image       = new_image,
 new_text        = new_text,
-new_askbox      = new_askbox
+new_askbox      = new_askbox,
+new_list        = new_list
 }

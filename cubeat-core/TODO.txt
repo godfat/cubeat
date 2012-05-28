@@ -94,6 +94,8 @@ WIP  2. ManyMouse on MacOSX 10.6+
 
      The current implementation was based on more or less a wii remote idea, some group of buttons
      and other group of buttons are just not interchangable. This is not the optimal solution.
+     
+  6. Frame spike problem now is not neglectable. HAVE TO FIX THIS.
 
 * Model / Gameplay Issues:
 

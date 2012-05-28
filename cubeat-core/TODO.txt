@@ -183,6 +183,8 @@ WIP  5. Character Differentiations - Special abilities
 
   3. Better particle emitter interfaces.
      -- Lua modules?
+     
+  4. audio doesn't have the abilities of fade-in/out and stop a single track.
 
 * Management / Distribution Issues:
 

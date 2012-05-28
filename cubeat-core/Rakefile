@@ -75,6 +75,9 @@ end
 file "#{B}/CuBeat.app/Contents/Resources" do
   sh "mkdir -p #{B}/CuBeat.app/Contents/Resources"
   sh 'luajit generate_ffi.lua ai/bindings'
+  sh 'luajit generate_ffi.lua net/bindings'
+  sh 'luajit generate_ffi.lua ui/bindings'
+  sh 'luajit generate_ffi.lua ui/demo/bindings'
   sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
 end
 

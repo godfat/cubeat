@@ -82,18 +82,12 @@ ffi.metatype("pSpriteText", Mt_SpriteText)
 
 local Mt_Sprite_Ex     = copy_cdata_mt(Mt_Sprite)
 
-Mt_Sprite_Ex.set_fade = function(self, alpha)
+Mt_Sprite_Ex.set_fade = function(self, setting)
   self:set_visible(true)
-  if alpha == 0 then
-    local cb = function(self) self:set_visible(false) end
-    self:tween_linear_alpha(alpha, 500, 0, cb, 0)
-  else
-    local cb = function(self) end
-    self:tween_linear_alpha(alpha, 500, 0, cb, 0)
-  end
+  self:tween_linear_alpha(setting.s or 255, setting.e or 0, 500, 0, setting.cb or nil, 0)
 end
 
-local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex) 
+local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
 --
 local function new_sprite(name, parent, w, h, center)

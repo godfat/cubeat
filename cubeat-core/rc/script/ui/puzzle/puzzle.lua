@@ -11,61 +11,61 @@ function init(self)
   self    = ffi.cast("Puzzle*", self);
   scene_  = self:get_ui_scene()
 
-  local main_setting  = {path='area_rect', x=800, y=400, w=300, h=200}
-  local main          = ui.new_image(scene_, main_setting)
-  local btnSound_setting  = {title='sound setting', x=30, y=30}
-  local btnVideo_setting  = {title='video setting', x=30, y=60}
-  local btnSound  = ui.new_button(main.pic, btnSound_setting)
-  local btnVideo  = ui.new_button(main.pic, btnVideo_setting)
+  local main      = ui.new_image{parent=scene_, path='area_rect', x=800, y=400, w=300, h=200}
+  local btnSound  = ui.new_text{parent=main._cdata, title='sound setting', x=30, y=30}
+  local btnVideo  = ui.new_text{parent=main._cdata, title='video setting', x=30, y=60}
   
-  local sound_setting = {path='area_rect', x=800, y=400, w=300, h=200, alpha=0, visible=false}
-  local sound         = ui.new_image(scene_, sound_setting)
-  local btnSound1_setting     = {title='level',     x=30, y=30,  alpha=0, visible=false}
-  local btnSound2_setting     = {title='turn on',   x=30, y=60,  alpha=0, visible=false}
-  local btnSound3_setting     = {title='turn off',  x=30, y=90,  alpha=0, visible=false}
-  local btnSoundBack_setting  = {title='back',      x=30, y=140, alpha=0, visible=false}
-  local btnSound1     = ui.new_button(sound.pic, btnSound1_setting)
-  local btnSound2     = ui.new_button(sound.pic, btnSound2_setting)
-  local btnSound3     = ui.new_button(sound.pic, btnSound3_setting)
-  local btnSoundBack  = ui.new_button(sound.pic, btnSoundBack_setting)
+  local sound         = ui.new_image{parent=scene_, path='area_rect', x=800, y=400, w=300, h=200, visible=false}
+  local btnSound1     = ui.new_text{parent=sound._cdata, title='level',     x=30, y=30}
+  local btnSound2     = ui.new_text{parent=sound._cdata, title='turn on',   x=30, y=60}
+  local btnSound3     = ui.new_text{parent=sound._cdata, title='turn off',  x=30, y=90}
+  local btnSoundBack  = ui.new_text{parent=sound._cdata, title='back',      x=30, y=140}
   
-  local video_setting = {path='area_rect', x=800, y=400, w=300, h=200, alpha=0, visible=false}
-  local video         = ui.new_image(scene_, video_setting)
-  local btnVideo1_setting     = {title='size',  x=30, y=30,   alpha=0, visible=false}
-  local btnVideo2_setting     = {title='level', x=30, y=60,   alpha=0, visible=false}
-  local btnVideoBack_setting  = {title='back',  x=30, y=140,  alpha=0, visible=false}
-  local btnVideo1     = ui.new_button(video.pic, btnVideo1_setting)
-  local btnVideo2     = ui.new_button(video.pic, btnVideo2_setting)
-  local btnVideoBack  = ui.new_button(video.pic, btnVideoBack_setting)
+  local video         = ui.new_image{parent=scene_, path='area_rect', x=800, y=400, w=300, h=200, visible=false}
+  local btnVideo1     = ui.new_text{parent=video._cdata, title='size',  x=30, y=30}
+  local btnVideo2     = ui.new_text{parent=video._cdata, title='level', x=30, y=60}
+  local btnVideoBack  = ui.new_text{parent=video._cdata, title='back',  x=30, y=140}
   
   local function main_setvisible(visible)
-    local alpha = 0
-    if(visible) then alpha=255 end
-    
-    main:set_fade(alpha)
-    btnSound:set_fade(alpha)
-    btnVideo:set_fade(alpha)
+    if(visible) then
+      main:set_fade{s=0, e=255, cb=nil}
+      btnSound:set_fade{s=0, e=255, cb=nil}
+      btnVideo:set_fade{s=0, e=255, cb=nil}
+    else
+      main:set_fade{s=255, e=0, cb=function(self) self:set_visible(false) end}
+      btnSound:set_fade{s=255, e=0, cb=nil}
+      btnVideo:set_fade{s=255, e=0, cb=nil}
+    end
   end
   
   local function sound_setvisible(visible)
-    local alpha = 0
-    if(visible) then alpha=255 end
-
-    sound:set_fade(alpha)
-    btnSound1:set_fade(alpha)
-    btnSound2:set_fade(alpha)
-    btnSound3:set_fade(alpha)
-    btnSoundBack:set_fade(alpha)
+    if(visible) then
+      sound:set_fade{s=0, e=255, cb=nil}
+      btnSound1:set_fade{s=0, e=255, cb=nil}
+      btnSound2:set_fade{s=0, e=255, cb=nil}
+      btnSound3:set_fade{s=0, e=255, cb=nil}
+      btnSoundBack:set_fade{s=0, e=255, cb=nil}
+    else
+      sound:set_fade{s=255, e=0, cb=function(self) self:set_visible(false) end}
+      btnSound1:set_fade{s=255, e=0, cb=nil}
+      btnSound2:set_fade{s=255, e=0, cb=nil}
+      btnSound3:set_fade{s=255, e=0, cb=nil}
+      btnSoundBack:set_fade{s=255, e=0, cb=nil}
+    end
   end
   
   local function video_setvisible(visible)
-    local alpha = 0
-    if(visible) then alpha=255 end
-
-    video:set_fade(alpha)
-    btnVideo1:set_fade(alpha)
-    btnVideo2:set_fade(alpha)
-    btnVideoBack:set_fade(alpha)
+    if(visible) then
+      video:set_fade{s=0, e=255, cb=nil}
+      btnVideo1:set_fade{s=0, e=255, cb=nil}
+      btnVideo2:set_fade{s=0, e=255, cb=nil}
+      btnVideoBack:set_fade{s=0, e=255, cb=nil}
+    else
+      video:set_fade{s=255, e=0, cb=function(self) self:set_visible(false) end}
+      btnVideo1:set_fade{s=255, e=0, cb=nil}
+      btnVideo2:set_fade{s=255, e=0, cb=nil}
+      btnVideoBack:set_fade{s=255, e=0, cb=nil}
+    end
   end
   
   local btnSound_on_press = function(self)
@@ -93,8 +93,7 @@ function init(self)
   btnVideoBack:on_press(btnVideoBack_on_press)
   
   --
-  local ask_setting = {}
-  local ask = ui.new_askbox(scene_, ask_setting)
+  local ask = ui.new_askbox{parent=scene_}
   
   local show_ask  = function(title)
                       local show = function(self)
@@ -110,4 +109,22 @@ function init(self)
   ask:on_press_ok(hide_ask)
   ask:on_press_cancel(hide_ask)
   ask:set_visible(false)
+  
+  --
+  local score_list = {yui     = 100,
+                      jessica = 1500,
+                      roy     = 35}
+  local score = ui.new_list{parent=scene_, visible=false}
+  score:load_list(score_list)
+  
+  local show_list = function(visible)
+                      local show = function(self)
+                        score:set_visible(visible)
+                        video:set_visible(visible==false or false)
+                      end
+                      return show
+                    end
+  btnVideo1:on_press(show_list(true))
+  btnVideo2:on_press(show_list(true))
+  score:on_press_back(show_list(false))
 end

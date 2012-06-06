@@ -1,6 +1,7 @@
 local ffi       = require 'ffi'
 local C         = ffi.C
 local view      = require 'rc/script/ui/view'
+local file      = require 'rc/script/ui/file'
 
 local function load_setting(ui_setting, setting)
   for k,v in pairs(setting) do
@@ -142,6 +143,9 @@ local function new_list(object)
   if object.parent == nil then error('parent is nil') end
   
   -- create
+  object.text_name  = {}
+  object.text_score = {}
+  object.list = {}
   local width = 400
   local height= 600
   local screen_w  = C.Get_SCREEN_W()
@@ -157,25 +161,42 @@ local function new_list(object)
   object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-10}
   
   -- functions
-  object.load_list    = function(self, list)
+  object.clear_list   = function(self)
+                          object.text_name  = {}
+                          object.text_score = {}
+                          object.list = {}
+                          collectgarbage('collect')
+                        end
+  object.set_list     = function(self, list)
+                          object:clear_list()
                           object.list = list
                           local pos_y = 120 - (height/2)
+                          local i = 1
                           for k,v in pairs(object.list) do
-                            new_text{parent=object._cdata, title=k, x=-100, y=pos_y, center=true}
-                            new_text{parent=object._cdata, title=tostring(v), x=100, y=pos_y, center=true}
+                            object.text_score[i] = new_text{parent=object._cdata, title=k,           x=-100, y=pos_y, center=true}
+                            object.text_name[i]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
                             pos_y=pos_y+30
+                            i=i+1
                           end
+                        end
+  object.load_list    = function(self, filename)
+                          self:set_list( file.load_data(object.list, filename) )
+                        end
+  object.save_list    = function(self, filename)
+                          file.save_data( object.list, filename )
                         end
   object.on_press_back= function(self, func)
                           object.back:on_press(func)
                         end
   
-  --init setting
+  -- init setting
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible==nil or object.visible)
   
   return object
 end
+
+
 
 ----------------------------------------------------------------------------
 -- Main functions

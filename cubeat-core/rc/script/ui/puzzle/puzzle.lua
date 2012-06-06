@@ -111,20 +111,38 @@ function init(self)
   ask:set_visible(false)
   
   --
-  local score_list = {yui     = 100,
+  local score = ui.new_list{parent=scene_, visible=false}
+  score:load_list('score')
+  for k, v in pairs(score.list) do
+    print(k, v)
+  end
+  
+  local score_list1 ={yui     = 100,
                       jessica = 1500,
                       roy     = 35}
-  local score = ui.new_list{parent=scene_, visible=false}
-  score:load_list(score_list)
-  
-  local show_list = function(visible)
+  local score_list2 ={john    = 100,
+                      alex    = 200,
+                      bill    = 300,
+                      jj      = 400}
+  local show_list = function(list_type)
                       local show = function(self)
-                        score:set_visible(visible)
-                        video:set_visible(visible==false or false)
+                        if list_type == 1 then
+                          score:set_list(score_list1)
+                        else
+                          score:set_list(score_list2)
+                        end
+                        score:save_list('score')
+                        
+                        score:set_visible(true)
+                        video:set_visible(false)
                       end
                       return show
                     end
-  btnVideo1:on_press(show_list(true))
-  btnVideo2:on_press(show_list(true))
-  score:on_press_back(show_list(false))
+  local hide_list = function(self)
+                      score:set_visible(false)
+                      video:set_visible(true)
+                    end
+  btnVideo1:on_press(show_list(1))
+  btnVideo2:on_press(show_list(2))
+  score:on_press_back(hide_list)
 end

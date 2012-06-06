@@ -175,6 +175,9 @@ WIP  5. Character Differentiations - Special abilities
 
   6. Other game modes:
      -- Time attack, Score attack, challenge mode, etc.
+     
+0.6  7. I need to implement different garbage path for different character (So ViewSprite have to do header/src separation)
+        AND I need to implement different curves (even hand made curves) for AnimatedSprite::playAnime();
 
 * Tools / Libraries Issues:
 

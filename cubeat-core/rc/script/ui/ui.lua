@@ -196,6 +196,43 @@ local function new_list(object)
   return object
 end
 
+----------------------------------------------------------------------------
+-- Checkbox
+----------------------------------------------------------------------------
+local function new_checkbox(object)
+  if object.parent == nil then error('parent is nil') end
+
+  -- create
+  object.pressed = object.pressed or false
+  local width = 256
+  local height= 24
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
+  
+  object.box    = new_image{parent=object._cdata, path='cubes/cube1.bak', w=20, h=20, x=0, y=2}
+  object.text   = new_text{parent=object._cdata, title=object.title or 'checkbox', x=40, y=-4}
+  
+  -- functions
+  object.on_press = function(self, func)
+                      local press = function(self)
+                                      local path = object.pressed and 'cubes/cube1.bak' or 'cubes/cube-b-1'
+                                      object.box:set_texture(path)
+                                      if object.pressed then object.pressed = false
+                                      else object.pressed = true end
+                                      func(self)
+                                    end
+                      object.box:on_press(press)
+                      object.text:on_press(press)
+                    end
+  
+  -- init setting
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible or true)
+  
+  return object
+end
+
 
 
 ----------------------------------------------------------------------------
@@ -206,5 +243,6 @@ view            = view,
 new_image       = new_image,
 new_text        = new_text,
 new_askbox      = new_askbox,
-new_list        = new_list
+new_list        = new_list,
+new_checkbox    = new_checkbox
 }

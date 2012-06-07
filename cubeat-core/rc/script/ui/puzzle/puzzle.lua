@@ -15,6 +15,10 @@ function init(self)
   local btnSound  = ui.new_text{parent=main._cdata, title='sound setting', x=30, y=30}
   local btnVideo  = ui.new_text{parent=main._cdata, title='video setting', x=30, y=60}
   
+  local checkbox  = ui.new_checkbox{parent=main._cdata, title='test checkbox', x=30, y=90}
+  local checkbox_press = function(self) end
+  checkbox:on_press(checkbox_press)
+  
   local sound         = ui.new_image{parent=scene_, path='area_rect', x=800, y=400, w=300, h=200, visible=false}
   local btnSound1     = ui.new_text{parent=sound._cdata, title='level',     x=30, y=30}
   local btnSound2     = ui.new_text{parent=sound._cdata, title='turn on',   x=30, y=60}

@@ -15,9 +15,13 @@ function init(self)
   local btnSound  = ui.new_text{parent=main._cdata, title='sound setting', x=30, y=30}
   local btnVideo  = ui.new_text{parent=main._cdata, title='video setting', x=30, y=60}
   
+  --[[
   local ratio     = ui.new_ratio{parent=main._cdata, title='test ratio', x=30, y=90}
   local ratio_press = function(self) end
   ratio:on_press(ratio_press)
+  --]]
+  
+  local selectbox = ui.new_selectbox{parent=main._cdata, x=30, y=90}
   
   local sound         = ui.new_image{parent=scene_, path='area_rect', x=800, y=400, w=300, h=200, visible=false}
   local btnSound1     = ui.new_text{parent=sound._cdata, title='level',     x=30, y=30}

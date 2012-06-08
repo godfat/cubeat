@@ -37,6 +37,8 @@ end
 
 view.Mt_Sprite_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
+  local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
+  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end
 
 view.Mt_SpriteText_Ex.on_press = function(self, func)
@@ -233,6 +235,45 @@ local function new_ratio(object)
   return object
 end
 
+----------------------------------------------------------------------------
+-- SelectBox
+----------------------------------------------------------------------------
+local function new_selectbox(object)
+  if object.parent == nil then error('parent is nil') end
+  
+  -- create
+  object.list   = object.list or {'select1', 'select2', 'select3'}
+  object.index  = object.index or 1
+  local width   = 256
+  local height  = 24
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
+  
+  object.left   = new_image{parent=object._cdata, path='cubes/cube1.bak', w=20, h=20, x=0, y=2}
+  object.right  = new_image{parent=object._cdata, path='cubes/cube1.bak', w=20, h=20, x=width-20, y=2}
+  object.text   = new_text{parent=object._cdata, title=object.list[object.index], x=128, y=12, center=true}
+  
+  -- functions
+  object.add_index  = function(self, v)
+                        object.index = object.index + v
+                        if object.index>table.getn(object.list) then object.index=1 end
+                        if object.index<1 then object.index = table.getn(object.list) end
+                        object.text:change_text(object.list[object.index])
+                      end
+  
+  -- init setting
+  local press_left  = function(self) object:add_index(-1) end
+  local press_right = function(self) object:add_index(1) end
+  object.left:on_press(press_left)
+  object.right:on_press(press_right)
+  
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible or true)
+  
+  return object
+end
+
 
 
 ----------------------------------------------------------------------------
@@ -244,5 +285,6 @@ new_image       = new_image,
 new_text        = new_text,
 new_askbox      = new_askbox,
 new_list        = new_list,
-new_ratio       = new_ratio
+new_ratio       = new_ratio,
+new_selectbox   = new_selectbox
 }

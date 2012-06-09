@@ -22,7 +22,7 @@ SoundStream::SoundStream(std::string const& path, int const& chunk_length)
 
 SoundStream::~SoundStream()
 {
-    std::cerr << "SoundStream " << name_ << " killed." << std::endl;
+    std::cout << "SoundStream " << name_ << " killed." << std::endl;
     if(ALstream_)
         alureDestroyStream(ALstream_, NUM_BUFS, buffer_);
     delete [] buffer_;
@@ -42,9 +42,38 @@ SoundBuffer::SoundBuffer(std::string const& path)
 
 SoundBuffer::~SoundBuffer()
 {
-    std::cerr << "SoundBuffer " << name_ << " killed." << std::endl;
+    std::cout << "SoundBuffer " << name_ << " killed." << std::endl;
     if(ALbuffer_)
         alDeleteBuffers(1, &ALbuffer_);
+}
+
+/// ----------- SoundSample below ---------- ///
+
+SoundSample::SoundSample(std::string const& path, bool const& streamed)
+    :name_(Conf::i().expand(path)), data_(0)
+{
+    if ( streamed ) {
+        data_ = ALmixer_LoadStream( name_.c_str(),
+                                    ALMIXER_DEFAULT_BUFFERSIZE,
+                                    ALMIXER_DEFAULT_QUEUE_BUFFERS,
+                                    ALMIXER_DEFAULT_STARTUP_BUFFERS,
+                                    ALMIXER_DEFAULT_BUFFERS_TO_QUEUE_PER_UPDATE_PASS,
+                                    AL_FALSE );
+    }
+    else {
+        data_ = ALmixer_LoadAll( name_.c_str(), AL_FALSE );
+    }
+    if( !data_ ) {
+        std::cerr << "OpenAL (ALmixer): Could not load " << name_ << ": " << ALmixer_GetError() << std::endl;
+        //even if the buffer is cannot be created, it should be tolerable. (just skip it.)
+    }
+}
+
+SoundSample::~SoundSample()
+{
+    std::cout << "SoundSample " << name_ << " killed." << std::endl;
+    if( data_ )
+        ALmixer_FreeData( data_ );
 }
 
 /// ----------- SoundObject below ---------- ///
@@ -78,8 +107,25 @@ SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop) : has_pa
     }
 }
 
-void SoundObject::gen_source()
+SoundObject::SoundObject(wpSoundSample const& sample, unsigned int const& fade, bool const& loop)
+    :src_(0), ch_(0), has_partB_(false)
 {
+    if( pSoundSample s = sample.lock() ) {
+        if( fade > 0 ) { ch_ = ALmixer_FadeInChannel(-1, s->data_, loop?-1:0, fade); }
+        else           { ch_ = ALmixer_PlayChannel(-1, s->data_, loop?-1:0); }
+
+        src_ = ALmixer_GetSource(ch_); // just for future reference. will be useful to determine if a source stopped.
+
+        if( ch_ == -1 ) {
+            std::cerr << "OpenAL (ALmixer): Failed to play sample " << s->name_ << ": " << ALmixer_GetError() << std::endl;
+            stop();
+            //even if the stream cannot be played, it should be tolerable. (just skip it.)
+        }
+    }
+}
+
+void SoundObject::gen_source()
+{   //this is internal and won't be called when using ALmixer
     alGenSources(1, &source);
     if(alGetError() != AL_NO_ERROR) {
         std::cerr << "OpenAL: Failed to create source." << std::endl;
@@ -89,8 +135,10 @@ void SoundObject::gen_source()
 
 SoundObject& SoundObject::pause()
 {
-    if( !alurePauseSource(source) ) {
-        std::cerr << "OpenAL: Failed to pause source " << this << ": " << alureGetErrorString() << std::endl;
+//    if( !alurePauseSource(source) ) {
+    if( ALmixer_PauseChannel(ch_) == -1 ) { // PauseChannel is -1 on error
+//        std::cerr << "OpenAL: Failed to pause source " << this << ": " << alureGetErrorString() << std::endl;
+        std::cerr << "OpenAL (ALmixer): Failed to pause sound " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
         stop();
         //even if the stream cannot be paused, it should be tolerable. (just skip it.)
     }
@@ -99,18 +147,23 @@ SoundObject& SoundObject::pause()
 
 SoundObject& SoundObject::stop()
 {
-    if( !alureStopSource(source, AL_FALSE) ) {
-        std::cerr << "OpenAL: Failed to stop source " << this << ": " << alureGetErrorString() << std::endl;
-        alSourcei(source, AL_SOURCE_STATE, AL_STOPPED);
+//    if( !alureStopSource(source, AL_FALSE) ) {
+    if( ALmixer_HaltChannel(ch_) == -1 ) { // HaltChannel is -1 on error
+//        std::cerr << "OpenAL: Failed to stop source " << this << ": " << alureGetErrorString() << std::endl;
+        std::cerr << "OpenAL (ALmixer): Failed to stop sound " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+//        alSourcei(source, AL_SOURCE_STATE, AL_STOPPED);
         //even if the stream cannot be stopped, it should be tolerable. (just skip it.)
     }
+    ch_ = -1; //otherwise we have no idea if this is stopped.
     return *this;
 }
 
 SoundObject& SoundObject::resume()
 {
-    if( !alureResumeSource(source) ) {
-        std::cerr << "OpenAL: Failed to resume source " << this << ": " << alureGetErrorString() << std::endl;
+//    if( !alureResumeSource(source) ) {
+    if( ALmixer_ResumeChannel(ch_) == -1 ) { // ResumeChannel is -1 on error
+        //std::cerr << "OpenAL: Failed to resume source " << this << ": " << alureGetErrorString() << std::endl;
+        std::cerr << "OpenAL (ALmixer): Failed to resume sound " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
         stop();
         //even if the stream cannot be resumed, it should be tolerable. (just skip it.)
     }
@@ -126,12 +179,14 @@ SoundObject& SoundObject::partB_path(std::string const& path)
 
 bool SoundObject::finished() const
 {
-    ALenum state;
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-    return state == AL_STOPPED;
+//    ALenum state;
+//    alGetSourcei(source, AL_SOURCE_STATE, &state);
+//    return state == AL_STOPPED;
+    bool active = ALmixer_IsActiveChannel(ch_);
+    return !active;
 }
 
 SoundObject::~SoundObject()
 {
-    alDeleteSources(1, &source);
+    //alDeleteSources(1, &source);
 }

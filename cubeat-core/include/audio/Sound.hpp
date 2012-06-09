@@ -12,11 +12,14 @@ namespace audio {
 
 class SoundStream;
 class SoundBuffer;
+class SoundSample;
 class SoundObject;
 typedef std::tr1::shared_ptr<SoundStream> pSoundStream;
 typedef std::tr1::weak_ptr<SoundStream> wpSoundStream;
 typedef std::tr1::shared_ptr<SoundBuffer> pSoundBuffer;
 typedef std::tr1::weak_ptr<SoundBuffer> wpSoundBuffer;
+typedef std::tr1::shared_ptr<SoundSample> pSoundSample;
+typedef std::tr1::weak_ptr<SoundSample> wpSoundSample;
 typedef std::tr1::shared_ptr<SoundObject> pSoundObject;
 typedef std::tr1::weak_ptr<SoundObject> wpSoundObject;
 
@@ -26,6 +29,8 @@ class Sound
     typedef std::pair <std::string const, pSoundStream>  SoundStreamMapPair;
     typedef std::map  <std::string, pSoundBuffer>        SoundBufferMap;
     typedef std::pair <std::string const, pSoundBuffer>  SoundBufferMapPair;
+    typedef std::map  <std::string, pSoundSample>        SoundSampleMap;
+    typedef std::pair <std::string const, pSoundSample>  SoundSampleMapPair;
     typedef std::list <pSoundObject>                     SoundList;
     typedef std::list <SoundList::iterator>              SoundListRemoval;
 public:
@@ -36,8 +41,10 @@ public:
 
     Sound& loadStream(std::string const& path);
     Sound& loadBuffer(std::string const& path);
+    Sound& loadSample(std::string const& path);
     Sound& playStream(std::string const& path, bool const& loop = false);
     Sound& playBuffer(std::string const& path, bool const& loop = false);
+    Sound& playSample(std::string const& path, unsigned int const& fade = 0, bool const& loop = false);
     Sound& playABStream(std::string const& path_a, std::string const& path_b);
     Sound& stopAll();
     Sound& pauseAll(bool const&);
@@ -54,7 +61,9 @@ private:
     bool inited_;
 
     SoundStreamMap sound_streams_;
-    SoundBufferMap sound_buffers_;
+    //SoundBufferMap sound_buffers_;
+    SoundSampleMap sound_buffers_;
+    SoundSampleMap sound_samples_;
     SoundList      sound_list_;
     SoundListRemoval sound_to_be_cleared_;
 };

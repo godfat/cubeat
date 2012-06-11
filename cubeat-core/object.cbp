@@ -19,6 +19,7 @@
 					<Add option="-fno-fast-math" />
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
 					<Add option="-DNDEBUG" />
 					<Add directory="include" />
 					<Add directory="lib" />
@@ -26,6 +27,7 @@
 					<Add directory="C:\lang\luarocks\2.0\include" />
 					<Add directory="C:\libs\cpp\openal-soft\include" />
 					<Add directory="C:\libs\cpp\alure\include" />
+					<Add directory="C:\libs\cpp\almixer_isolated\include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -36,6 +38,7 @@
 					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
+					<Add library="C:\libs\cpp\almixer_isolated\lib\libalmixer.dll.a" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
 					<Add directory="C:\lang\luarocks\2.0" />
 				</Linker>
@@ -53,6 +56,7 @@
 					<Add option="-fno-fast-math" />
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
 					<Add option="-DNDEBUG" />
 					<Add directory="include" />
 					<Add directory="lib" />
@@ -60,6 +64,7 @@
 					<Add directory="C:\lang\luarocks\2.0\include" />
 					<Add directory="C:\libs\cpp\openal-soft\include" />
 					<Add directory="C:\libs\cpp\alure\include" />
+					<Add directory="C:\libs\cpp\almixer_isolated\include" />
 				</Compiler>
 				<Linker>
 					<Add library="Irrlicht" />
@@ -69,6 +74,7 @@
 					<Add library="C:\lang\luarocks\2.0\lua5.1.lib" />
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
+					<Add library="C:\libs\cpp\almixer_isolated\lib\libalmixer.dll.a" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
 					<Add directory="C:\lang\luarocks\2.0" />
 				</Linker>
@@ -97,6 +103,7 @@
 		<Unit filename="include\all_fwd.hpp.eruby" />
 		<Unit filename="include\audio\Sound.hpp" />
 		<Unit filename="include\audio\SoundObject.hpp" />
+		<Unit filename="include\audio\detail\ALmixer.hpp" />
 		<Unit filename="include\audio\detail\OpenAL.hpp" />
 		<Unit filename="include\ctrl\AIPlayer.hpp" />
 		<Unit filename="include\data\BasicViewTypes.hpp" />
@@ -301,6 +308,7 @@
 		<Unit filename="rc\script\ui\bindings.ffi" />
 		<Unit filename="rc\script\ui\demo\defs.lua" />
 		<Unit filename="rc\script\ui\demo\demo.lua" />
+		<Unit filename="rc\script\ui\file.lua" />
 		<Unit filename="rc\script\ui\puzzle\bindings.ffi" />
 		<Unit filename="rc\script\ui\puzzle\defs.lua" />
 		<Unit filename="rc\script\ui\puzzle\puzzle.lua" />
@@ -323,6 +331,7 @@
 		<Unit filename="src\Weapon.cpp" />
 		<Unit filename="src\audio\Sound.cpp" />
 		<Unit filename="src\audio\SoundObject.cpp" />
+		<Unit filename="src\audio\detail\ALmixer.cpp" />
 		<Unit filename="src\audio\detail\OpenAL.cpp" />
 		<Unit filename="src\ctrl\AIPlayer.cpp" />
 		<Unit filename="src\ctrl\TimerDispatcher.cpp" />
@@ -364,6 +373,7 @@
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />
+		<Unit filename="src\presenter\cube\ViewSprite.cpp" />
 		<Unit filename="src\presenter\game\Demo.cpp" />
 		<Unit filename="src\presenter\game\Multi.cpp" />
 		<Unit filename="src\presenter\game\Puzzle.cpp" />

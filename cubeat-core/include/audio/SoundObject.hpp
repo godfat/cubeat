@@ -9,6 +9,8 @@
 #endif
 #endif
 
+#include <ALmixer.h>
+
 #include <string>
 #include <boost/tr1/memory.hpp>
 
@@ -68,6 +70,30 @@ private:
 typedef SoundBuffer::pointer_type pSoundBuffer;
 typedef SoundBuffer::wpointer_type wpSoundBuffer;
 
+class SoundSample
+{
+public:
+    typedef std::tr1::shared_ptr<SoundSample> pointer_type;
+    typedef std::tr1::weak_ptr<SoundSample> wpointer_type;
+
+    static pointer_type create(std::string const& path, bool const& streamed = false)
+    {
+        return pointer_type(new SoundSample(path, streamed));
+    }
+    ~SoundSample();
+
+private:
+    SoundSample(std::string const&, bool const&);
+
+    std::string name_;
+    ALmixer_Data* data_;
+
+    friend class SoundObject;
+};
+
+typedef SoundSample::pointer_type pSoundSample;
+typedef SoundSample::wpointer_type wpSoundSample;
+
 class SoundObject
 {
 public:
@@ -79,6 +105,9 @@ public:
     }
     static pointer_type create(wpSoundBuffer const& buffer, bool const& loop = false) {
         return pointer_type(new SoundObject(buffer, loop));
+    }
+    static pointer_type create(wpSoundSample const& sample, unsigned int const& fade = 0, bool const& loop = false) {
+        return pointer_type(new SoundObject(sample, fade, loop));
     }
     ~SoundObject();
 
@@ -94,8 +123,13 @@ public:
 private:
     SoundObject(wpSoundStream const&, bool const&);
     SoundObject(wpSoundBuffer const&, bool const&);
-    void gen_source();
-    ALuint source;
+    SoundObject(wpSoundSample const&, unsigned int const&, bool const&);
+    void gen_source();  //probably not going to be used.
+    ALuint source;      //probably not going to be used.
+
+    //for ALmixer
+    ALuint src_; //do we need this?
+    ALint  ch_;  //do we need this?
 
     bool        has_partB_;
     std::string partB_path_;

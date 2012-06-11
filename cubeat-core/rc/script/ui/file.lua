@@ -1,9 +1,11 @@
 local msgpack   = require 'rc/script/ui/luajit-msgpack-pure'
+local helper    = require 'rc/script/helper'
+local basepath  = helper.basepath
 
 local function load_data(filename, data)
   if data == nil then data = {} end
   
-  local file = io.open("rc/config/"..filename, "r")
+  local file = io.open(basepath().."rc/config/"..filename, "r")
   if file == nil then
     io.output("rc/config/"..filename)
     io.close()
@@ -19,7 +21,7 @@ local function save_data(filename, data)
   if data == nil then data = {} end
   
   local s = msgpack.pack(data)
-  local file = io.open("rc/config/"..filename, "w")
+  local file = io.open(basepath().."rc/config/"..filename, "w")
   file:write(s)
   file:close()
 end

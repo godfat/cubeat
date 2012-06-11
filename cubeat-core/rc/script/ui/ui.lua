@@ -22,6 +22,15 @@ local function set_on_press_callback(sprite, func)
   sprite:on_press( Input2_left, func )
 end
 
+local function set_focus_leave_pic(obj, focus_pic, leave_pic)
+  local focus_f = function(self) obj:set_texture(focus_pic) end
+  local leave_f = function(self) obj:set_texture(leave_pic) end
+  obj:on_enter_focus(Input1, focus_f)
+  obj:on_leave_focus(Input1, leave_f)
+  obj:on_enter_focus(Input2, focus_f)
+  obj:on_leave_focus(Input2, leave_f)
+end
+
 local function set_focus_leave_color(obj, focus_color, leave_color)
   local focus_f = function(self) obj:set_color(focus_color.r, focus_color.g, focus_color.b) end
   local leave_f = function(self) obj:set_color(leave_color.r, leave_color.g, leave_color.b) end
@@ -260,6 +269,8 @@ local function new_selectbox(object)
                       end
   
   -- init setting
+  set_focus_leave_pic(object.left._cdata,   'cubes/cube-b-1', 'cubes/cube1.bak')
+  set_focus_leave_pic(object.right._cdata,  'cubes/cube-b-1', 'cubes/cube1.bak')
   local press_left  = function(self) object:add_index(-1) end
   local press_right = function(self) object:add_index(1) end
   object.left:on_press(press_left)

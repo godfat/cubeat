@@ -121,12 +121,7 @@ function init(demo)
   --------------------------------------
   
   local score_list = ui.new_list{ parent=scene_, depth=-1000, visible=false }
-  local score_record  = { john=100,
-                          jordan=1389,
-                          micheal=84621,
-                          michelle=938
-                        }
-  score_list:load_list(score_record)
+  score_list:load_list('score')
   score_list:on_press_back(function(self)
     show_everything()
     title_:set_visible(true)

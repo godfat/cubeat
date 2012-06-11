@@ -37,8 +37,6 @@ end
 
 view.Mt_Sprite_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
-  local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
-  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end
 
 view.Mt_SpriteText_Ex.on_press = function(self, func)
@@ -151,7 +149,7 @@ local function new_list(object)
   local width = 400
   local height= 600
   local screen_w  = C.Get_SCREEN_W()
-  local screen_h  = C.Get_SCREEN_H()  
+  local screen_h  = C.Get_SCREEN_H()
   setmetatable(object, Sprite_Based_Mt)
   object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
   object:set_pos(screen_w/2, screen_h/2)
@@ -182,10 +180,10 @@ local function new_list(object)
                           end
                         end
   object.load_list    = function(self, filename)
-                          self:set_list( file.load_data(object.list, filename) )
+                          self:set_list( file.load_data(filename, object.list) )
                         end
   object.save_list    = function(self, filename)
-                          file.save_data( object.list, filename )
+                          file.save_data(filename, object.list)
                         end
   object.on_press_back= function(self, func)
                           object.back:on_press(func)

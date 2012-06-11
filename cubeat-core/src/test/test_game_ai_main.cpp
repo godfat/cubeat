@@ -149,8 +149,8 @@ public:
         stage_->cycle();
         //IrrDevice::i().d()->getVideoDriver()->clearZBuffer();
         scene_->redraw();
-        map0_->redraw().cycle();
-        map1_->redraw().cycle();
+        map0_->cycle();
+        map1_->cycle();
         player0_->cycle();
         player1_->cycle();
     }

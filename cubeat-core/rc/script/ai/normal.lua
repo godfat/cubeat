@@ -30,6 +30,9 @@ function THINK_INTERVAL() return 400 end --ms
 function MISSRATE()       return 15  end --percentage. 0 ~ 100
 
 function ai_entry(self)
+
+  local t = os.clock()
+
   self = ffi.cast("AIPlayer*", self)
   
   --since we only have two map, one for each side, so let the first in ally-list be one's self.
@@ -50,6 +53,9 @@ function ai_entry(self)
   end
   
   local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  
+  local t2 = os.clock() - t
+  
   if keycube:exist() and 
      enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
   then 
@@ -114,6 +120,6 @@ function ai_entry(self)
     end
   end
   
-  print(collectgarbage("count"))
-  collectgarbage("collect")
+  io.write(string.format("Nrml AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
+  
 end

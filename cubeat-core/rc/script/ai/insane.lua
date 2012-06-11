@@ -13,6 +13,15 @@ local function setcmd(buf, type, delay, x, y)
   buf.x, buf.y, buf.delay, buf.type = x, y, delay, type
 end
 
+local function pick_a_coord_from(map)
+  local x, y
+  repeat
+    x = random(map:width())
+    y = random(map:height()/2) -- consider lower half only
+  until map:get_grounded_cube(x, y):exist()
+  return x, y
+end
+
 local ATTACK_PWR     = 99
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
@@ -21,6 +30,9 @@ function THINK_INTERVAL() return 300 end --ms
 function MISSRATE()       return 4   end --percentage. 0 ~ 100
 
 function ai_entry(self)
+
+  local t = os.clock()
+
   self = ffi.cast("AIPlayer*", self)
   
   --since we only have two map, one for each side, so let the first in ally-list be one's self.
@@ -41,6 +53,9 @@ function ai_entry(self)
   end
   
   local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  
+  local t2 = os.clock() - t
+  
   if keycube:exist() and 
      enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
   then 
@@ -75,20 +90,29 @@ function ai_entry(self)
       setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
       self:push_command(cmdbuf)
     end
-    
     -- don't do garbages for now.
     
     if self:cmdqueue_size() < 1 then
       if my_map:grounded_cube_count() >= 48 and not my_map:still_chaining() then
-        local x, y
-        repeat
-          x = random(my_map:width())
-          y = random(my_map:height()/2)
-        until my_map:get_grounded_cube(x, y):exist()
+        local x, y = pick_a_coord_from(my_map)
         setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf) 
       else
-        if self:get_heat() < 0.7 then
+        local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
+        if interrupt_cube:exist() then 
+          local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
+          local chance = random(3)+1
+          local x = dir[chance][1] + interrupt_cube:x()
+          local y = dir[chance][2] + interrupt_cube:y()
+          if x >= 0 and x < enemy_map:width() and y >= 0 and y < enemy_map:height()-1 then
+            local c = enemy_map:get_cube(x, y)
+            if c:exist() and not c:is_broken() then
+              io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
+              setcmd(cmdbuf, C.PSC_AI_SHOOT_OTHER, 0, x, y)
+              self:push_command(cmdbuf) 
+            end
+          end
+        elseif self:get_heat() < 0.7 then
           setcmd(cmdbuf, C.PSC_AI_HASTE, 0, 0, 0) 
           self:push_command(cmdbuf) 
         end
@@ -96,6 +120,6 @@ function ai_entry(self)
     end
   end
   
-  print(collectgarbage("count"))
-  collectgarbage("collect")
+  io.write(string.format("Isne AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
+  
 end

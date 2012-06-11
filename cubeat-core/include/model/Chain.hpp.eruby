@@ -6,15 +6,14 @@
 #include <boost/tr1/memory.hpp>
 #include <vector>
 
-// #include "audio/Sound.hpp"
-
 namespace psc{ namespace model{
 
 class Chain{
 public:
     typedef std::tr1::shared_ptr<Chain> pointer_type;
-    static pChain create(){ return utils::ObjectPool<Chain>::create(); }
-    static pChain create(pChain const& that){ return utils::ObjectPool<Chain>::create(that); }
+    typedef std::tr1::weak_ptr<Chain> wpointer_type;
+    static pointer_type create(){ return utils::ObjectPool<Chain>::create(); }
+    static pointer_type create(pointer_type const& that){ return utils::ObjectPool<Chain>::create(that); }
 
 public:
     int last_step_amounts() const{ return chain_step_.back(); }
@@ -64,7 +63,7 @@ public:
 
     Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
 
-    Chain(pChain const& that):
+    Chain(pointer_type const& that):
         chain_step_(that->chain_step_),
         last_step_x_(that->last_step_x_),
         last_step_y_(that->last_step_y_),
@@ -78,6 +77,9 @@ private:
     int power_factor_, last_power_factor_;
     // int damage_factor_;
 };
+
+typedef Chain::pointer_type pChain;
+typedef Chain::wpointer_type wpChain;
 
 }} // end of namespace
 

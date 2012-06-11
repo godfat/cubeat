@@ -373,6 +373,7 @@
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />
+		<Unit filename="src\presenter\cube\ViewSprite.cpp" />
 		<Unit filename="src\presenter\game\Demo.cpp" />
 		<Unit filename="src\presenter\game\Multi.cpp" />
 		<Unit filename="src\presenter\game\Puzzle.cpp" />

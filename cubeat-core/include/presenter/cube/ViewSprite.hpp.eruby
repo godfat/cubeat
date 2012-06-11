@@ -128,10 +128,10 @@ public:
         pointer_type result(new ViewSpriteMaster(scene, setting, player));
         return result;
     }
-    static ViewMaster::pointer_type create(view::pScene scene)
-    {
-        return create(scene, data::ViewSetting::create());
-    }
+//    static ViewMaster::pointer_type create(view::pScene scene)
+//    {
+//        return create(scene, data::ViewSetting::create());
+//    }
 public:
     // no covariant return type
     virtual ViewBase::pointer_type create(model::pCube cube) const;
@@ -143,6 +143,8 @@ public:
     virtual void warning_counting(int warning_level);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
+
+    virtual void cycle(Map const& map);
 
     void cleanup_chaintext();
 

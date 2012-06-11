@@ -14,7 +14,7 @@ public:
         return ViewMaster::pointer_type(new ViewStdoutMaster);
     }
 public:
-    virtual void redraw(Map const& map){
+    virtual void cycle(Map const& map){
         std::clock_t now = std::clock();
         if( now - last_ < CLOCKS_PER_SEC/10.0 ) return;
         else last_ = now;

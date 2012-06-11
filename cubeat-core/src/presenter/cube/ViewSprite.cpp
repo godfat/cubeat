@@ -254,7 +254,9 @@ void ViewSprite::check_if_need_callback(callback_type callback){
     if(model::pCube c = cube_.lock()) callback();
 }
 
-static void ViewSprite::check_cube_and_do(ShotEvent method, model::wpCube c, int dmg)
+///// Class method /////
+
+void ViewSprite::check_cube_and_do(ShotEvent method, model::wpCube c, int dmg)
 {
     if(model::pCube cube = c.lock()) method(cube, dmg);
 }
@@ -269,8 +271,12 @@ ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting settin
     view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
 
     //moved from ViewSpriteMaster::create to here
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&ViewSpriteMaster::cleanup, this), result, 10, -1);
+//    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//        std::tr1::bind(&ViewSpriteMaster::cleanup_chaintext, this), result, 10, -1);
+}
+
+ViewBase::pointer_type ViewSpriteMaster::create(model::pCube cube) const {
+    return ViewSprite::create(cube, view_orig_, map_setting(), view_setting(), player_);
 }
 
 void ViewSpriteMaster::column_full(int at){
@@ -501,7 +507,13 @@ vec2 ViewSpriteMaster::pos_vec2(int const& x, int const& y) const{
     return pos_vec2(view_setting(), x, y);
 }
 
-static ViewSpriteMaster::vec2 pos_vec2(data::pViewSetting const& setting, int const& x, int const& y){
+void ViewSpriteMaster::cycle(Map const& map) {
+    cleanup_chaintext();
+}
+
+///// Class Method /////
+
+vec2 ViewSpriteMaster::pos_vec2(data::pViewSetting const& setting, int const& x, int const& y){
     return vec2( setting->x_offset() + x*setting->cube_size() + setting->cube_size()/2,
                  setting->y_offset() +(y*setting->cube_size() + setting->cube_size()/2)*-1 );
                  //note: y reversed

@@ -121,7 +121,7 @@ function init(demo)
   --------------------------------------
   
   local score_list = ui.new_list{ parent=scene_, depth=-1000, visible=false }
-  score_list:load_list('score')
+  --score_list:load_list('score') --function not prepare
   score_list:on_press_back(function(self)
     show_everything()
     title_:set_visible(true)

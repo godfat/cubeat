@@ -8,7 +8,7 @@ local function load_data(filename, data)
   
   local file = io.open(basepath().."rc/config/"..filename, "r")
   if file == nil then
-    io.output("rc/config/"..filename)
+    io.output(basepath().."rc/config/"..filename)
     io.close()
   else
     local offset

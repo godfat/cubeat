@@ -188,15 +188,12 @@ local function new_list(object)
                             i=i+1
                           end
                         end
---[[
---function not prepare
   object.load_list    = function(self, filename)
-                          self:set_list( file.load_data(filename, object.list) )
+                          self:set_list( file.load_data(filename) or object.list )
                         end
   object.save_list    = function(self, filename)
                           file.save_data(filename, object.list)
                         end
---]]
   object.on_press_back= function(self, func)
                           object.back:on_press(func)
                         end

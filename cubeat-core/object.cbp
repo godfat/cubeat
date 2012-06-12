@@ -50,7 +50,6 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O" />
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-fno-fast-math" />
@@ -162,6 +161,7 @@
 		<Unit filename="include\presenter\cube\ViewMaster.hpp.eruby" />
 		<Unit filename="include\presenter\cube\ViewSprite.hpp" />
 		<Unit filename="include\presenter\cube\ViewSprite.hpp.eruby" />
+		<Unit filename="include\presenter\cube\ViewSpriteMaster.hpp" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp" />
 		<Unit filename="include\presenter\cube\ViewStdout.hpp.eruby" />
 		<Unit filename="include\presenter\game\Demo.hpp" />
@@ -374,6 +374,7 @@
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />
 		<Unit filename="src\presenter\cube\ViewSprite.cpp" />
+		<Unit filename="src\presenter\cube\ViewSpriteMaster.cpp" />
 		<Unit filename="src\presenter\game\Demo.cpp" />
 		<Unit filename="src\presenter\game\Multi.cpp" />
 		<Unit filename="src\presenter\game\Puzzle.cpp" />

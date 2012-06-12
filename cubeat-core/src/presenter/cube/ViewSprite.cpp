@@ -8,8 +8,8 @@
 #include "view/SpriteText.hpp"
 #include "view/SFX.hpp"
 
-#include "presenter/cube/ViewMaster.hpp"
 #include "presenter/cube/ViewSprite.hpp"
+#include "presenter/cube/viewSpriteMaster.hpp"
 
 #include "data/ViewSetting.hpp"
 #include "data/Color.hpp"

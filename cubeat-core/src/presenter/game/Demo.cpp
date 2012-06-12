@@ -13,7 +13,7 @@
 #include "presenter/Stage.hpp"
 #include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
-#include "presenter/cube/ViewSprite.hpp"
+#include "presenter/cube/ViewSpriteMaster.hpp"
 
 #include "EventDispatcher.hpp"
 #include "Input.hpp"

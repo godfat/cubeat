@@ -118,7 +118,7 @@ function init(self)
   
   --
   local score = ui.new_list{parent=scene_, visible=false}
-  --score:load_list('score') --function not prepare
+  score:load_list('score')
   for k, v in pairs(score.list) do
     print(k, v)
   end
@@ -137,7 +137,7 @@ function init(self)
                         else
                           score:set_list(score_list2)
                         end
-                        --score:save_list('score') --function not prepare
+                        score:save_list('score')
                         
                         score:set_visible(true)
                         video:set_visible(false)

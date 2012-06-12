@@ -169,7 +169,7 @@ void Multi::ready_go(int step)
     }
     ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        std::tr1::bind(&Multi::ready_go, this, step-1), 1000);
+        std::tr1::bind(&Multi::ready_go, this, step-1), shared_from_this(), 1000);
 }
 
 void Multi::game_start()

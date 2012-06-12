@@ -1,5 +1,8 @@
 
 #include "presenter/game/Puzzle.hpp"
+
+#include "data/ViewSetting.hpp"
+
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
@@ -391,8 +394,8 @@ void Puzzle::cycle()
     update_ui();
     stage_->cycle();
     scene_->redraw();
-    map0_->redraw().cycle();
-    map1_->redraw().cycle();
+    map0_->cycle();
+    map1_->cycle();
 
     //note: bad way........ but have no time.
     if( !end_ ) {

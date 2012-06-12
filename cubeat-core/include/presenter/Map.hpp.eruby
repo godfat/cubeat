@@ -51,13 +51,6 @@ public:
     void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
 
     color_map_type color_map() const{ return model_->color_map(); }
-    Map& redraw(){
-        BOOST_FOREACH(cube::pViewMaster& view, view_slaves_){
-            view->redraw(*this);
-        }
-        if(view_master_) view_master_->redraw(*this);
-        return *this;
-    }
     Map& throw_garbage(int amounts){
         BOOST_FOREACH(wpMap map, garbage_lands_){
             map.lock()->push_garbage(amounts);

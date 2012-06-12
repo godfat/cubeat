@@ -57,7 +57,6 @@ int main(){
     psc::ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(std::tr1::bind(&std::exit, 0), 10000);
     while(IrrDevice::i().d()->run()){
         map->cycle();
-        map->redraw();
 #ifdef WIN32
         Sleep(10);
 #else

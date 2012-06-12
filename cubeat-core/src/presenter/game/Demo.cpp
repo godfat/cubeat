@@ -1,5 +1,8 @@
 
 #include "presenter/game/Demo.hpp"
+
+#include "data/ViewSetting.hpp"
+
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"

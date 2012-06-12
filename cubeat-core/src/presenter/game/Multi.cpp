@@ -1,5 +1,8 @@
 
 #include "presenter/game/Multi.hpp"
+
+#include "data/ViewSetting.hpp"
+
 #include "view/Scene.hpp"
 #include "view/AnimatedSprite.hpp"
 #include "view/SpriteText.hpp"
@@ -567,8 +570,8 @@ void Multi::cycle()
     update_ui();
     stage_->cycle();
     scene_->redraw();
-    map0_->redraw().cycle();
-    map1_->redraw().cycle();
+    map0_->cycle();
+    map1_->cycle();
     if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
         player0_->cycle();
         player1_->cycle();

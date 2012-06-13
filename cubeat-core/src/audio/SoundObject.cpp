@@ -54,10 +54,10 @@ SoundSample::SoundSample(std::string const& path, bool const& streamed)
 {
     if ( streamed ) {
         data_ = ALmixer_LoadStream( name_.c_str(),
-                                    ALMIXER_DEFAULT_BUFFERSIZE,
-                                    ALMIXER_DEFAULT_QUEUE_BUFFERS,
-                                    ALMIXER_DEFAULT_STARTUP_BUFFERS,
-                                    ALMIXER_DEFAULT_BUFFERS_TO_QUEUE_PER_UPDATE_PASS,
+                                    16384,      //ALMIXER_DEFAULT_BUFFERSIZE = 8192
+                                    4,          //ALMIXER_DEFAULT_QUEUE_BUFFERS = 12 <--- why soo many???
+                                    2,          //ALMIXER_DEFAULT_STARTUP_BUFFERS = 4 <--- what does it do?
+                                    2,          //ALMIXER_DEFAULT_BUFFERS_TO_QUEUE_PER_UPDATE_PASS = 2 <-- huh?
                                     AL_FALSE );
     }
     else {

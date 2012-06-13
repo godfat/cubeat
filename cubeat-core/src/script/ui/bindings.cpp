@@ -124,12 +124,44 @@ void Sprite_on_press(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onPress( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
+void Sprite_on_up(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onUp( btn ) = bind(delegate_for_cb_from_lua, _1, func);
+}
+
+void Sprite_on_down(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
+    (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func);
+}
+
 void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onEnterFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 
 void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
+}
+
+int Sprite_get_pos_x(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().X);
+}
+
+int Sprite_get_pos_y(pSprite* self) {
+    return (int)((*self)->get<Pos2D>().Y);
+}
+
+int Sprite_get_size_x(pSprite* self) {
+    return (int)((*self)->get<Size2D>().X);
+}
+
+int Sprite_get_size_y(pSprite* self) {
+    return (int)((*self)->get<Size2D>().Y);
+}
+
+int Sprite_get_screen_pos_x(pSprite* self) {
+    return (int)((*self)->getScreenPos().X);
+}
+
+int Sprite_get_screen_pos_y(pSprite* self) {
+    return (int)((*self)->getScreenPos().Y);
 }
 
 void SpriteText_change_text(pSpriteText* self, char const* text) {
@@ -213,6 +245,14 @@ Button const* Input_get_trig1(Input* p){
 
 Button const* Input_get_trig2(Input* p){
     return &p->trig2();
+}
+
+int Input_get_cursor_x(Input* p) {
+    return p->cursor().x();
+}
+
+int Input_get_cursor_y(Input* p) {
+    return p->cursor().y();
 }
 
 void Scene__gc(pScene* self) {

@@ -70,6 +70,7 @@ protected:
     void end(pMap p);
     void reinit();
     void game_start();
+    void game_stop();
 
     void ready_go(int);
     void update_ui_by_second();

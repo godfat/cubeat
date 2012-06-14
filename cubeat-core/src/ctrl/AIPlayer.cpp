@@ -88,9 +88,7 @@ void AIPlayer::open_thread_to_think()
     //note: heat and cmd_queue_ size should be considered INSIDE thinking process.
     typedef boost::posix_time::milliseconds ms;
     if( (!think_thread_ || (think_thread_ && think_thread_->timed_join(ms(0))) ) && //memo: FUCK YOU.
-        !is_executing_ &&
-        cmd_queue_.empty() &&
-        heat() < 0.75 )  //WTF: all these are pieces of shit.
+        !is_executing_ )
     {
         think_thread_ = pThread( new boost::thread( bind(&AIPlayer::think, this) ) );
     }

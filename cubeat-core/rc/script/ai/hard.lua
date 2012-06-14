@@ -121,5 +121,6 @@ function ai_entry(self)
   end
   
   io.write(string.format("Hard AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
+  collectgarbage("collect")
   
 end

@@ -52,6 +52,8 @@ function ai_entry(self)
     emergency_level = 1
   end
   
+  if self:get_heat() > 0.7 then return end -- fix for insane computer, too fast.
+  
   local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
   
   local t2 = os.clock() - t
@@ -121,5 +123,6 @@ function ai_entry(self)
   end
   
   io.write(string.format("Isne AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
+  collectgarbage("collect")
   
 end

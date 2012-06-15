@@ -31,7 +31,6 @@ public:
         return *this;
     }
 
-    virtual SpriteMovie* clone() const { return 0; }
     virtual SpriteMovie& redraw();
     virtual SpriteMovie& play();
     virtual SpriteMovie& stop();

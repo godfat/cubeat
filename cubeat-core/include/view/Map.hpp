@@ -32,7 +32,6 @@ public:
 
     Map(int index):index_(index){}
 
-    virtual Map* clone() const;
     virtual Map& addCube(pCube);
     virtual ~Map();
 

@@ -20,7 +20,6 @@ public:
 
     Cube():SceneObject("test_cube"), owner_hit_(0), enemy_hit_(0){}
 
-    virtual Cube* clone() const;
     virtual void ownerHit();
     virtual void enemyHit();
     virtual Cube& setOwnerHit( HitCallback const& );

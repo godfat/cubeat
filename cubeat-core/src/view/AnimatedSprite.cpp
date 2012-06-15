@@ -19,12 +19,6 @@ using namespace view;
 using namespace easing;
 using std::tr1::static_pointer_cast;
 
-AnimatedSprite* AnimatedSprite::clone() const
-{
-    AnimatedSprite* obj = new AnimatedSprite(*this);
-    return obj;
-}
-
 pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int const& h)
 {
     setupSceneAndManager(parent);

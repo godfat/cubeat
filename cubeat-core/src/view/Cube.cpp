@@ -16,12 +16,6 @@ using namespace psc;
 using namespace view;
 using std::tr1::static_pointer_cast;
 
-Cube* Cube::clone() const
-{
-    Cube* obj = new Cube(*this);
-    return obj;
-}
-
 pCube Cube::init(pMap& parent)
 {
     SceneObject::init(parent);

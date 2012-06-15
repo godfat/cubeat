@@ -45,7 +45,6 @@ public:
         :Sprite(name, center){}
 
     virtual ~Menu(){}
-    virtual Menu* clone() const;
 
     template <class Accessor>
     Menu& set(typename Accessor::value_type const& value) {

@@ -36,8 +36,6 @@ public:
     SpriteText(std::string const& name, bool const& center)
         : Sprite(name, center){}
 
-    virtual SpriteText* clone() const { return 0; }
-
     template <class Accessor>
     SpriteText& set(typename Accessor::value_type const& value) {
         accessor::AT::ATEnum e = static_cast<accessor::AT::ATEnum>(Accessor::TYPE);

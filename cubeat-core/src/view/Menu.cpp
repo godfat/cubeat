@@ -18,12 +18,6 @@ using namespace accessor;
 using std::tr1::static_pointer_cast;
 using std::tr1::dynamic_pointer_cast;
 
-Menu* Menu::clone() const
-{
-    Menu* obj = new Menu(*this);
-    return obj;
-}
-
 Menu& Menu::addSprite(std::string const& name,
                       std::tr1::function<void(pSprite&)> cb,
                       int const& w,

@@ -127,12 +127,6 @@ Scene& Scene::deactivate()
     return *this;
 }
 
-Scene* Scene::clone() const
-{
-    Scene* obj = new Scene(*this);
-    return obj;
-}
-
 ICameraSceneNode* Scene::camera() const
 {
     return camera_;

@@ -33,7 +33,6 @@ public:
 
     Scene();
 
-    virtual Scene* clone() const;
     virtual Scene& setTo2DView();
     virtual Scene& setTo3DView(float FoV = PI/3.0f);
     virtual Scene& activate();

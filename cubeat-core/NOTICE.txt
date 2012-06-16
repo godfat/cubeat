@@ -29,9 +29,13 @@ Please see doc/library_gpl_2_0.txt or http://www.gnu.org/licenses/old-licenses/l
 And please notice this is only included in Windows versions of the program.
 In both MacOSX and Linux distributions of the program, platform supported OpenAL is used.
 
-* ALURE is included under MIT/X License
+* ALURE is included under MIX/X License
 Copyright (c) 2009-2010 Chris Robinson
 Please see doc/mit_license.txt or http://kcat.strangesoft.net/alure.html
+
+* An specialized version of ALmixer is included under LGPL(2.1) License
+Copyright (c) Copyright 2002, 2010 Eric Wing <ewing . public @ playcontrol.net>
+Please see doc/lesser_gpl_2_1.txt or http://www.assembla.com/code/almixer_isolated/mercurial/nodes
 
 * libogg is included under BSD License
 Copyright (c) 2002, Xiph.org Foundation

@@ -61,7 +61,7 @@ public:
     int score()        const { return model()->score(); }
     int garbage_left() const { return model()->garbage_left(); }
     int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
-    bool has_column_full() const { return model()->check_column_full(); }
+    int column_full_num() const { return model()->column_full_num(); }
     bool all_empty() const { return model()->all_empty(); }
     bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;

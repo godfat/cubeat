@@ -85,6 +85,8 @@ public:
 private:
     SoundSample(std::string const&, bool const&);
 
+    void init(bool const&);
+
     std::string name_;
     ALmixer_Data* data_;
 
@@ -114,9 +116,9 @@ public:
     SoundObject& pause();
     SoundObject& stop();
     SoundObject& resume();
-    bool has_partB() const { return has_partB_; }
-    SoundObject& partB_path(std::string const& path);
-    std::string  partB_path() const { return partB_path_; }
+
+    void partB(wpSoundSample const& partB);
+    void cycle();
 
     bool finished() const;
 
@@ -124,15 +126,15 @@ private:
     SoundObject(wpSoundStream const&, bool const&);
     SoundObject(wpSoundBuffer const&, bool const&);
     SoundObject(wpSoundSample const&, unsigned int const&, bool const&);
-    void gen_source();  //probably not going to be used.
-    ALuint source;      //probably not going to be used.
+    void gen_source();  //probably not going to be used after ALmixer used.
+    ALuint source;      //probably not going to be used after ALmixer used.
 
     //for ALmixer
-    ALuint src_; //do we need this?
-    ALint  ch_;  //do we need this?
+    ALuint src_;
+    ALint  ch_;
 
-    bool        has_partB_;
-    std::string partB_path_;
+    wpSoundSample sampleA_;
+    wpSoundSample sampleB_;
 };
 
 typedef SoundObject::pointer_type pSoundObject;

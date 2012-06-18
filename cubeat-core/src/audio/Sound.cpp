@@ -90,7 +90,7 @@ pSoundObject Sound::playABStream(std::string const& path_a, std::string const& p
         loadSample(path_b);
 
     pSoundObject new_sound = SoundObject::create(sound_samples_[path_a], 0, false);
-    new_sound->partB_path(path_b);
+    new_sound->partB(sound_samples_[path_b]);
     sound_list_.push_back(new_sound);
 
 //    if( !sound_streams_[path_a] )
@@ -148,12 +148,16 @@ Sound& Sound::cycle()
     //detail::sound_update();
     detail2::sound_update();
     for(SoundList::iterator it = sound_list_.begin(), iend = sound_list_.end(); it != iend; ++it) {
+        (*it)->cycle();
         if( (*it)->finished() ) {
-            if( (*it)->has_partB() ) {
-                pSoundObject new_sound = SoundObject::create(sound_samples_[ (*it)->partB_path() ], 0, true);
-                //pSoundObject new_sound = SoundObject::create(sound_streams_[ (*it)->partB_path() ], true);
-                sound_list_.push_back(new_sound);
-            }
+
+            //move this part to inside of SoundObject::cycle();
+
+//            if( (*it)->has_partB() ) {
+//                pSoundObject new_sound = SoundObject::create(sound_samples_[ (*it)->partB_path() ], 0, true);
+//                //pSoundObject new_sound = SoundObject::create(sound_streams_[ (*it)->partB_path() ], true);
+//                sound_list_.push_back(new_sound);
+//            }
             sound_to_be_cleared_.push_back(it);
         }
     }

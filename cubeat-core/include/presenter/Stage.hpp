@@ -27,6 +27,7 @@ public:
     virtual void cycle();
     Stage& hitGroup(int const&);
     Stage& playBGM();
+    Stage& playFastBGM();
     Stage& releaseResource(); //tell engine to release some of the cached resources.
 
 protected:

@@ -42,10 +42,12 @@ public:
     Sound& loadStream(std::string const& path);
     Sound& loadBuffer(std::string const& path);
     Sound& loadSample(std::string const& path);
-    Sound& playStream(std::string const& path, bool const& loop = false);
-    Sound& playBuffer(std::string const& path, bool const& loop = false);
-    Sound& playSample(std::string const& path, unsigned int const& fade = 0, bool const& loop = false);
-    Sound& playABStream(std::string const& path_a, std::string const& path_b);
+
+    pSoundObject playStream(std::string const& path, bool const& loop = false);
+    pSoundObject playBuffer(std::string const& path, bool const& loop = false);
+    pSoundObject playSample(std::string const& path, unsigned int const& fade = 0, bool const& loop = false);
+    pSoundObject playABStream(std::string const& path_a, std::string const& path_b);
+
     Sound& stopAll();
     Sound& pauseAll(bool const&);
     Sound& cycle();

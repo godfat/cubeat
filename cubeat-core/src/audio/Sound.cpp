@@ -30,8 +30,8 @@ void audio::Sound::init()
 
 Sound& Sound::loadStream(std::string const& path)
 {
-    std::string relative_path = base_path_ + path;
-    pSoundStream new_stream = SoundStream::create(relative_path);
+    std::string absolute_path = base_path_ + path;
+    pSoundStream new_stream = SoundStream::create(absolute_path);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
     sound_streams_[path] = new_stream;
     return *this;
@@ -39,9 +39,9 @@ Sound& Sound::loadStream(std::string const& path)
 
 Sound& Sound::loadBuffer(std::string const& path)
 {
-    std::string relative_path = base_path_ + path;
-    //pSoundBuffer new_buffer = SoundBuffer::create(relative_path);
-    pSoundSample new_buffer = SoundSample::create(relative_path, false);
+    std::string absolute_path = base_path_ + path;
+    //pSoundBuffer new_buffer = SoundBuffer::create(absolute_path);
+    pSoundSample new_buffer = SoundSample::create(absolute_path, false);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
     sound_buffers_[path] = new_buffer;
     return *this;
@@ -49,17 +49,17 @@ Sound& Sound::loadBuffer(std::string const& path)
 
 Sound& Sound::loadSample(std::string const& path)
 {
-    std::string relative_path = base_path_ + path;
-    pSoundSample new_sample = SoundSample::create(relative_path, true);
+    std::string absolute_path = base_path_ + path;
+    pSoundSample new_sample = SoundSample::create(absolute_path, true);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
     sound_samples_[path] = new_sample;
     return *this;
 }
 
-Sound& Sound::playStream(std::string const& path, bool const& loop)
+pSoundObject Sound::playStream(std::string const& path, bool const& loop)
 {
     // temp: HACK!!!!!
-    playSample(path, 0, loop);
+    return playSample(path, 0, loop);
 
 //    if( !sound_streams_[path] )   //each path name -> stream(file) is unique.
 //        loadStream(path);         //normally we should avoid this for big audio files.
@@ -69,20 +69,20 @@ Sound& Sound::playStream(std::string const& path, bool const& loop)
 
     //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
 
-    return *this;
+    //return *this;
 }
 
-Sound& Sound::playSample(std::string const& path, unsigned int const& fade, bool const& loop)
+pSoundObject Sound::playSample(std::string const& path, unsigned int const& fade, bool const& loop)
 {
     if( !sound_samples_[path] )   //each path name -> sample(file is unique.
         loadSample(path);         //normally we should avoid this for big audio files.
 
     pSoundObject new_sound = SoundObject::create(sound_samples_[path], fade, loop);
     sound_list_.push_back(new_sound);
-    return *this;
+    return new_sound;
 }
 
-Sound& Sound::playABStream(std::string const& path_a, std::string const& path_b)
+pSoundObject Sound::playABStream(std::string const& path_a, std::string const& path_b)
 {
     if( !sound_samples_[path_a] )
         loadSample(path_a);
@@ -102,10 +102,10 @@ Sound& Sound::playABStream(std::string const& path_a, std::string const& path_b)
 //    new_sound->partB_path(path_b);
 //    sound_list_.push_back(new_sound);
 
-    return *this;
+    return new_sound;
 }
 
-Sound& Sound::playBuffer(std::string const& path, bool const& loop)
+pSoundObject Sound::playBuffer(std::string const& path, bool const& loop)
 {
     if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
         loadBuffer(path);         //normally we should avoid this for big audio files.
@@ -115,7 +115,7 @@ Sound& Sound::playBuffer(std::string const& path, bool const& loop)
 
     //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
 
-    return *this;
+    return new_sound;
 }
 
 Sound& Sound::stopAll()

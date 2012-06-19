@@ -129,6 +129,32 @@ function init(demo)
     score_list:save_list('score')
   end)
   
+  local target  = ui.new_image{ parent=score_list._cdata, x=0, y= 0, center=true }
+  local btn1    = ui.new_text { parent=score_list._cdata, x=0, y= 90, center=true, title='alpha' }
+  local btn2    = ui.new_text { parent=score_list._cdata, x=0, y=120, center=true, title='pos' }
+  local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='rotation'}
+  local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=180, center=true, title='scale'}
+  
+  local alpha_s = ffi.new("value1", 255)
+  local alpha_e = ffi.new("value1", 50)
+  local tween_alpha  = function(self) target:tween('OElastic', 'Alpha', alpha_s, alpha_e, 2000, 0, nil, 0) end
+  btn1:on_press(tween_alpha)
+  
+  local pos_s = ffi.new("value2",   0, 0)
+  local pos_e = ffi.new("value2", 100, 0)
+  local tween_pos = function(self) target:tween('OElastic', 'Pos2D', pos_s, pos_e, 2000, 0, nil, 0) end
+  btn2:on_press(tween_pos)
+  
+  local rotation_s  = ffi.new("value3", 0, 0,   0)
+  local rotation_e  = ffi.new("value3", 0, 0, -180)
+  local tween_rotation = function(self) target:tween('OElastic', 'Rotation', rotation_s, rotation_e, 2000, 0, nil, 0) end
+  btn3:on_press(tween_rotation)
+  
+  local scale_s = ffi.new("value3", 1, 1, 0)
+  local scale_e = ffi.new("value3", 2, 2, 0)
+  local tween_scale = function(self) target:tween('OElastic', 'Scale', scale_s, scale_e, 2000, 0, nil, 0) end
+  btn4:on_press(tween_scale)
+  
   --------------------------------------
 
   menu_.btn_vs_cpu = ui.new_text{ parent = vorig_,

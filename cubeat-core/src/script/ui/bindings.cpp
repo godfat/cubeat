@@ -5,6 +5,7 @@
 #include "EasingEquations.hpp"
 #include "Input.hpp"
 #include "Conf.hpp"
+#include "script/ui/tween_call.h"
 
 using namespace psc;
 using namespace view;
@@ -114,6 +115,14 @@ void Sprite_tween_linear_alpha(pSprite* self, int s, int e, unsigned int duratio
         call = bind(delegate_for_cb_from_lua, (*self), cb);
     }
     (*self)->tween<Linear, Alpha>(s, e, duration, loop, call, delay);
+}
+
+void Sprite_tween(pSprite* self, const char* Eq, const char* Accessor, void* s, void* e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
 }
 
 void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {

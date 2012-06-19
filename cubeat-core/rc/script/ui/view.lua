@@ -11,6 +11,9 @@ typedef struct pSprite pSprite;
 typedef struct pSpriteText pSpriteText;
 typedef struct Input Input;
 typedef struct Button Button;
+typedef struct { int x; } value1;
+typedef struct { double x, y; } value2;
+typedef struct { double x, y, z; } value3;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 
@@ -51,6 +54,9 @@ Mt_Sprite.tween_osine_pos         = function(self, s, e, dur, l, cb, d)
 end
 Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
   C.Sprite_tween_linear_alpha(self, s, e, dur, l or 0, cb or nil, d or 0)
+end
+Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, cb, d)
+  C.Sprite_tween(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
 end
 Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end

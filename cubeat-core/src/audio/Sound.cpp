@@ -3,6 +3,7 @@
 #include "audio/SoundObject.hpp"
 #include "audio/detail/OpenAL.hpp"
 #include "audio/detail/ALmixer.hpp"
+#include "EventDispatcher.hpp"
 
 #include <utility>
 #include <boost/foreach.hpp>
@@ -13,7 +14,7 @@ using namespace psc;
 using namespace audio;
 
 Sound::Sound()
-    :base_path_("rc/sound/"), inited_(false)
+    :base_path_("rc/sound/"), inited_(false), main_track_(0)
 {
     //detail::sound_init();
     detail2::sound_init();
@@ -55,57 +56,124 @@ Sound& Sound::loadSample(std::string const& path)
     sound_samples_[path] = new_sample;
     return *this;
 }
-
-pSoundObject Sound::playStream(std::string const& path, bool const& loop)
-{
-    // temp: HACK!!!!!
-    return playSample(path, 0, loop);
-
-//    if( !sound_streams_[path] )   //each path name -> stream(file) is unique.
-//        loadStream(path);         //normally we should avoid this for big audio files.
 //
-//    pSoundObject new_sound = SoundObject::create(sound_streams_[path], loop);
-//    sound_list_.push_back(new_sound);
+//pSoundObject Sound::playStream(std::string const& path, bool const& loop)
+//{
+//    // temp: HACK!!!!!
+//    return playSample(path, 0, loop);
+//
+////    if( !sound_streams_[path] )   //each path name -> stream(file) is unique.
+////        loadStream(path);         //normally we should avoid this for big audio files.
+////
+////    pSoundObject new_sound = SoundObject::create(sound_streams_[path], loop);
+////    sound_list_.push_back(new_sound);
+//
+//    //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
+//
+//    //return *this;
+//}
 
-    //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
-
-    //return *this;
-}
-
-pSoundObject Sound::playSample(std::string const& path, unsigned int const& fade, bool const& loop)
+Sound& Sound::playSample(std::string const& path, time_t const& fade_t, bool const& loop)
 {
     if( !sound_samples_[path] )   //each path name -> sample(file is unique.
         loadSample(path);         //normally we should avoid this for big audio files.
 
-    pSoundObject new_sound = SoundObject::create(sound_samples_[path], fade, loop);
+    pSoundObject new_sound = SoundObject::create(sound_samples_[path], fade_t, loop);
     sound_list_.push_back(new_sound);
-    return new_sound;
+    return *this;
 }
 
-pSoundObject Sound::playABStream(std::string const& path_a, std::string const& path_b)
+Sound& Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
 {
     if( !sound_samples_[path_a] )
         loadSample(path_a);
     if( !sound_samples_[path_b] )
         loadSample(path_b);
 
-    pSoundObject new_sound = SoundObject::create(sound_samples_[path_a], 0, false);
-    new_sound->partB(sound_samples_[path_b]);
-    sound_list_.push_back(new_sound);
-
-//    if( !sound_streams_[path_a] )
-//        loadStream(path_a);
-//    if( !sound_streams_[path_b] )
-//        loadStream(path_b);
-
-//    pSoundObject new_sound = SoundObject::create(sound_streams_[path_a], false);
-//    new_sound->partB_path(path_b);
-//    sound_list_.push_back(new_sound);
-
-    return new_sound;
+    if( !bgm_[0] )      internal_so_init(bgm_[0], path_a, false, path_b);
+    else if( !bgm_[1] ) internal_so_init(bgm_[1], path_a, false, path_b);
+    else {
+        int track = main_track_ == 0 ? 1 : 0;
+        bgm_[track]->stop();
+        bgm_[track].reset();
+        internal_so_init(bgm_[track], path_a, false, path_b);
+    }
+    // not sure if the last one works... choose a not currently playing bgm track to substitute
+    return *this;
 }
 
-pSoundObject Sound::playBuffer(std::string const& path, bool const& loop)
+Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b)
+{
+    //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
+    //this is just for convenience usages
+    loadBGM_AB(path_a, path_b);
+    trackFlip(0);
+    return *this;
+}
+
+void Sound::internal_so_init(pSoundObject& s, std::string const& a, bool const& l, std::string const& b) {
+    s = SoundObject::create(sound_samples_[a], 0, l);
+    if( b.size() ) s->partB(sound_samples_[b]);
+    s->volume(0);
+    s->pause();
+}
+
+Sound& Sound::loadBGM(std::string const& path, bool const& loop)
+{
+    if( !sound_samples_[path] )
+        loadSample(path);
+
+    if( !bgm_[0] )      internal_so_init(bgm_[0], path, loop);
+    else if( !bgm_[1] ) internal_so_init(bgm_[1], path, loop);
+    else {
+        int track = main_track_ == 0 ? 1 : 0;
+        bgm_[track]->stop();
+        bgm_[track].reset();
+        internal_so_init(bgm_[track], path, loop);
+    }
+    // not sure if the last one works... choose a not currently playing bgm track to substitute
+    return *this;
+}
+
+Sound& Sound::playBGM(std::string const& path, bool const& loop)
+{
+    //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
+    //this is just for convenience usages
+    loadBGM(path, loop);
+    trackFlip(0);
+    return *this;
+}
+
+Sound& Sound::trackFlip(time_t const& fade_t)
+{
+    if( bgm_[0] && bgm_[0]->is_paused() ) {
+        exchange(bgm_[1], bgm_[0], fade_t);
+        main_track_ = 0;
+    }
+    else if( bgm_[1] && bgm_[1]->is_paused() ) {
+        exchange(bgm_[0], bgm_[1], fade_t);
+        main_track_ = 1;
+    }
+    return *this;
+}
+
+void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t)
+{
+    if( before && before->is_playing() ) {
+        before->volume(1);
+        before->fade_volume(0, t);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            std::tr1::bind(&SoundObject::pause, before.get()), t);
+    }
+    if( after && after->is_paused() ) {
+        after->rewind(); //added
+        after->resume();
+        after->volume(0);
+        after->fade_volume(1, t);
+    }
+}
+
+Sound& Sound::playBuffer(std::string const& path, bool const& loop)
 {
     if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
         loadBuffer(path);         //normally we should avoid this for big audio files.
@@ -113,9 +181,7 @@ pSoundObject Sound::playBuffer(std::string const& path, bool const& loop)
     pSoundObject new_sound = SoundObject::create(sound_buffers_[path], loop);
     sound_list_.push_back(new_sound);
 
-    //std::cout << " Sound: we have " << sound_list_.size() << " sounds playing now." << std::endl;
-
-    return new_sound;
+    return *this;
 }
 
 Sound& Sound::stopAll()
@@ -123,22 +189,34 @@ Sound& Sound::stopAll()
     BOOST_FOREACH(pSoundObject& p, sound_list_)
         p->stop();
 
+    if( bgm_[0] ) bgm_[0]->stop();
+    if( bgm_[1] ) bgm_[1]->stop();
+    bgm_[0].reset();
+    bgm_[1].reset();
+    main_track_ = 0;
+
     sound_list_.clear();
     sound_streams_.clear();
     sound_buffers_.clear();
     sound_samples_.clear();
+
+    detail2::sound_channel_restore();
+    std::cout << " Sound: all stopped, and all channels' volumn setting go back to 1." << std::endl;
     return *this;
 }
 
 Sound& Sound::pauseAll(bool const& f)
 {
-    if( f )
+    if( f ) {
+        bgm_[main_track_]->pause();
         BOOST_FOREACH(pSoundObject& p, sound_list_)
             p->pause();
-    else
+    }
+    else {
+        bgm_[main_track_]->resume();
         BOOST_FOREACH(pSoundObject& p, sound_list_)
             p->resume();
-
+    }
     return *this;
 }
 
@@ -149,7 +227,7 @@ Sound& Sound::cycle()
     detail2::sound_update();
     for(SoundList::iterator it = sound_list_.begin(), iend = sound_list_.end(); it != iend; ++it) {
         (*it)->cycle();
-        if( (*it)->finished() ) {
+        if( !(*it)->is_active() ) {
 
             //move this part to inside of SoundObject::cycle();
 
@@ -159,6 +237,15 @@ Sound& Sound::cycle()
 //                sound_list_.push_back(new_sound);
 //            }
             sound_to_be_cleared_.push_back(it);
+        }
+    }
+
+    for( int i = 0; i < 2; ++i ) {
+        if( bgm_[i] ) {
+            bgm_[i]->cycle();
+            if( !bgm_[i]->is_active() ) {
+                bgm_[i].reset();
+            }
         }
     }
 

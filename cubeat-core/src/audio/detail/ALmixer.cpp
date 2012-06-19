@@ -20,6 +20,16 @@ bool sound_init()
     return true;
 }
 
+void sound_channel_restore()
+{
+    int n = ALmixer_CountTotalChannels();
+    for( int i = 0; i < n; ++i ) {
+        if( !ALmixer_IsActiveChannel(i) ) { //restore all non-active channel
+            ALmixer_SetVolumeChannel(i, 1);
+        }
+    }
+}
+
 void sound_update()
 {
     ALmixer_Update();

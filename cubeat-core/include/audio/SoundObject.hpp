@@ -113,14 +113,20 @@ public:
     }
     ~SoundObject();
 
+    SoundObject& rewind();
     SoundObject& pause();
     SoundObject& stop();
     SoundObject& resume();
+    SoundObject& fade_volume(double const&, time_t const&);
+    SoundObject& volume(double const&);
+
+    bool is_active() const;
+    bool is_playing() const;
+    bool is_paused() const;
+    double volume() const;
 
     void partB(wpSoundSample const& partB);
     void cycle();
-
-    bool finished() const;
 
 private:
     SoundObject(wpSoundStream const&, bool const&);

@@ -309,7 +309,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount),
                 self(),
-                1000);
+                850); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
             i = chains_.erase(i);
         }
         else{
@@ -501,6 +501,26 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
     }
 
     return counter;
+}
+
+int Map::garbage_count() const {
+    int num = 0;
+    for( int x=0; x < ms()->width(); ++x )
+        for( int y=0; y < ms()->height(); ++y )
+            if( pCube c = cubes_[x][y] )
+                if( c->is_broken() || c->is_garbage() )
+                    ++num;
+    return num;
+}
+
+int Map::grounded_cube_count() const {
+    int num = 0;
+    for( int x=0; x < ms()->width(); ++x )
+        for( int y=0; y < ms()->height(); ++y )
+            if( pCube c = cubes_[x][y] )
+                if( c->has_grounded() )
+                    ++num;
+    return num;
 }
 
 bool Map::all_empty() const {

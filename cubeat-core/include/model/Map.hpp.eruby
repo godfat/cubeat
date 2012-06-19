@@ -68,6 +68,8 @@ public:
 
     color_map_type color_map() const;
 
+    int  garbage_count() const;
+    int  grounded_cube_count() const;
     int  column_full_num() const;
     bool all_empty() const;
     bool all_waiting() const;

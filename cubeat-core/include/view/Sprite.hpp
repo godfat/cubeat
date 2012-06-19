@@ -54,7 +54,6 @@ public:
         return *this;
     }
 
-    virtual Sprite* clone() const;
     virtual Sprite& setCenterAligned(bool const&);
     virtual Sprite& setDepth(float);
     virtual Sprite& moveTo(int,int);

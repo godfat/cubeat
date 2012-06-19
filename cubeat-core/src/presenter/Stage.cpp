@@ -143,6 +143,17 @@ Stage& Stage::playBGM()
     return *this;
 }
 
+Stage& Stage::playFastBGM()
+{
+    try {
+        audio::Sound::i().playABStream( conf_.S("fast_music"), conf_.S("fast_music2") );
+    }
+    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+        audio::Sound::i().playStream( conf_.S("music"), true );
+    }
+    return *this;
+}
+
 void Stage::cycle()
 {
     scene_->redraw();

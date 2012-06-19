@@ -20,8 +20,6 @@ public:
 
     SceneObject(std::string const& name):Object(name){}
 
-    virtual SceneObject* clone() const;
-
     virtual ~SceneObject(){}
 
 protected:

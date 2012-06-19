@@ -4,7 +4,7 @@
 #include "presenter/Stage.hpp"
 #include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
-#include "presenter/cube/ViewSprite.hpp"
+#include "presenter/cube/ViewSpriteMaster.hpp"
 #include "presenter/game/Puzzle.hpp"
 
 #include "EventDispatcher.hpp"

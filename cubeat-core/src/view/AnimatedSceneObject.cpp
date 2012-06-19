@@ -16,12 +16,6 @@ using namespace psc;
 using namespace view;
 using std::tr1::static_pointer_cast;
 
-AnimatedSceneObject* AnimatedSceneObject::clone() const
-{
-    AnimatedSceneObject* obj = new AnimatedSceneObject(*this);
-    return obj;
-}
-
 pAnimatedSceneObject AnimatedSceneObject::init(pObject const& parent)
 {
     setupSceneAndManager(parent);

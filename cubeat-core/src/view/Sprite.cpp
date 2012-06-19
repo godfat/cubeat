@@ -202,13 +202,6 @@ Sprite& Sprite::moveTween(int x, int y, int duration, function<void()> cb, int d
     return *this;
 }
 
-Sprite* Sprite::clone() const
-{
-    Sprite* obj = new Sprite(*this);
-    return obj;
-}
-
-
 /// Maybe this feature should move to another class and use multiple inheritance.
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {

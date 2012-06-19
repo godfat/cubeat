@@ -52,12 +52,17 @@ SoundBuffer::~SoundBuffer()
 SoundSample::SoundSample(std::string const& path, bool const& streamed)
     :name_(Conf::i().expand(path)), data_(0)
 {
+    init(streamed);
+}
+
+void SoundSample::init(bool const& streamed)
+{
     if ( streamed ) {
         data_ = ALmixer_LoadStream( name_.c_str(),
-                                    ALMIXER_DEFAULT_BUFFERSIZE,
-                                    ALMIXER_DEFAULT_QUEUE_BUFFERS,
-                                    ALMIXER_DEFAULT_STARTUP_BUFFERS,
-                                    ALMIXER_DEFAULT_BUFFERS_TO_QUEUE_PER_UPDATE_PASS,
+                                    16384,      //ALMIXER_DEFAULT_BUFFERSIZE = 8192
+                                    4,          //ALMIXER_DEFAULT_QUEUE_BUFFERS = 12 <--- why soo many???
+                                    2,          //ALMIXER_DEFAULT_STARTUP_BUFFERS = 4 <--- what does it do?
+                                    2,          //ALMIXER_DEFAULT_BUFFERS_TO_QUEUE_PER_UPDATE_PASS = 2 <-- huh?
                                     AL_FALSE );
     }
     else {
@@ -78,7 +83,7 @@ SoundSample::~SoundSample()
 
 /// ----------- SoundObject below ---------- ///
 
-SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop) : has_partB_(false)
+SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
 {
     gen_source();
     if( pSoundStream s = stream.lock() ) {
@@ -92,7 +97,7 @@ SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop) : has_pa
     }
 }
 
-SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop) : has_partB_(false)
+SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
 {
     gen_source();
     if( pSoundBuffer s = buffer.lock() ) {
@@ -108,9 +113,9 @@ SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop) : has_pa
 }
 
 SoundObject::SoundObject(wpSoundSample const& sample, unsigned int const& fade, bool const& loop)
-    :src_(0), ch_(0), has_partB_(false)
+    :src_(0), ch_(0), sampleA_(sample), sampleB_(pSoundSample())
 {
-    if( pSoundSample s = sample.lock() ) {
+    if( pSoundSample s = sampleA_.lock() ) {
         if( fade > 0 ) { ch_ = ALmixer_FadeInChannel(-1, s->data_, loop?-1:0, fade); }
         else           { ch_ = ALmixer_PlayChannel(-1, s->data_, loop?-1:0); }
 
@@ -170,11 +175,9 @@ SoundObject& SoundObject::resume()
     return *this;
 }
 
-SoundObject& SoundObject::partB_path(std::string const& path)
+void SoundObject::partB(wpSoundSample const& partB)
 {
-    partB_path_ = path;
-    has_partB_ = true;
-    return *this;
+    sampleB_ = partB;
 }
 
 bool SoundObject::finished() const
@@ -184,6 +187,19 @@ bool SoundObject::finished() const
 //    return state == AL_STOPPED;
     bool active = ALmixer_IsActiveChannel(ch_);
     return !active;
+}
+
+void SoundObject::cycle()
+{
+    // finished() will be called twice. if it is finished the first time in the cycle(), then
+    // it should check again for partB, if still not, then the second call to finished in Sound::cycle()
+    // will find out it is really finished, otherwise it will init a new sample here and hence not finished.
+    if( finished() ) {
+        if( pSoundSample s = sampleB_.lock() ) {
+            ch_  = ALmixer_PlayChannel(-1, s->data_, -1); //of course it will be looping partB forever
+            src_ = ALmixer_GetSource(ch_); // for future reference.
+        }
+    }
 }
 
 SoundObject::~SoundObject()

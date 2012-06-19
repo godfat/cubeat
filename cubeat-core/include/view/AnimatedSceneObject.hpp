@@ -27,7 +27,6 @@ public:
 
     AnimatedSceneObject(std::string const& path):SceneObject(path){}
 
-    virtual AnimatedSceneObject* clone() const;
     virtual bool isPlaying() const;
 
 protected:

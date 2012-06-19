@@ -41,7 +41,7 @@ public:
     AnimatedSprite(std::string const& name, bool const& center)
         :Sprite(name, center){}
 
-    virtual AnimatedSprite* clone() const;
+    //virtual AnimatedSprite* clone() const;
     virtual AnimatedSprite& addAnime(std::string const& anime_name, int total_frames);
     virtual AnimatedSprite&
         playAnime(std::string const& anime_name,

@@ -5,6 +5,8 @@ FoV: 36,
 name: 'jungle',
 music: 'jungle/bgm_a.ogg',
 music2: 'jungle/bgm_b.ogg',
+fast_music: 'jungle/bgm_quick_a.ogg',
+fast_music2: 'jungle/bgm_quick_b.ogg',
 
 all_items: [
     # item group 0

@@ -25,8 +25,8 @@ Object::Object(std::string const& name)
 
 Object* Object::clone() const
 {
-    Object* obj = new Object(*this);
-    return obj;
+    std::cerr << "ERROR: You should not call view::Object::clone() at all. \n";
+    return 0;
 }
 
 void Object::setupSceneAndManager(pObject const& parent)
@@ -106,8 +106,10 @@ Object& Object::clearQueuedTween(AT::ATEnum const& eType)
         if( static_cast<int>((*it)->getType()) == static_cast<int>(eType) ) //work?
             removal.push_back(it);
     }
-    BOOST_FOREACH(AnimList::iterator& it, removal)
+    BOOST_FOREACH(AnimList::iterator& it, removal) {
+        (*it)->drop(); //of course we should drop it before we erase it, why didn't I?
         anim_queue_.erase(it);
+    }
     removal.clear();
     return *this;
 }

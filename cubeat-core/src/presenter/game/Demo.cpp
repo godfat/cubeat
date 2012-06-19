@@ -13,7 +13,7 @@
 #include "presenter/Stage.hpp"
 #include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
-#include "presenter/cube/ViewSprite.hpp"
+#include "presenter/cube/ViewSpriteMaster.hpp"
 
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
@@ -231,6 +231,9 @@ void Demo::leaving_effect()
     script::Lua::call(L_, "slide_in");
 
     audio::Sound::i().playStream("day.ogg", true);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Demo::cleanup, this), shared_from_this(), 1000); //1000 ms
 }
 
 void Demo::starting_effect(bool const& inplace)
@@ -271,7 +274,7 @@ void Demo::ready_go(int step)
         ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
     }
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        std::tr1::bind(&Demo::ready_go, this, step-1), 1000);
+        std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);
 }
 
 void Demo::game_start()
@@ -488,7 +491,7 @@ void Demo::update_ui_by_second(){
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 }
 
-void Demo::cleanup()
+void Demo::game_stop()
 {
     timer_ui_.reset();
     btn_pause_.reset();
@@ -500,18 +503,22 @@ void Demo::cleanup()
 
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
     ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-    ctrl::InputMgr::i().getInputByIndex(0)->trig1().now() = false;
-    ctrl::InputMgr::i().getInputByIndex(0)->trig1().last() = false;
-    ctrl::InputMgr::i().getInputByIndex(1)->trig1().now() = false;
-    ctrl::InputMgr::i().getInputByIndex(1)->trig1().last() = false;
     player0_->stopAllActions();
     player1_->stopAllActions();
+}
+
+void Demo::cleanup()
+{
+    map0_.reset();
+    map1_.reset();
+    player0_.reset();
+    player1_.reset();
 }
 
 //note: temp code
 void Demo::end(pMap lose_map)
 {
-    cleanup();
+    game_stop();
 
     if( pause_note_text_) pause_note_text_->set<Visible>(false);
     blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
@@ -579,14 +586,14 @@ void Demo::end_sequence1()
 void Demo::pause_quit()
 {
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
-    audio::Sound::i().pauseAll(false);
+    //audio::Sound::i().pauseAll(false);
     btn_pause_.reset(); //reset button event subscribed by this handle.
+
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::cleanup, this), shared_from_this(), 1); //1 ms
-        //because we call this here.. it's gonna cleanup a lot of things.
-        //it's better we delay this call.
+        bind(&Demo::game_stop, this), shared_from_this(), 1); //1 ms
+
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::end_sequence1, this), shared_from_this(), 100); //100 ms
+        bind(&Demo::end_sequence1, this), shared_from_this(), 1); //1 ms
 }
 
 void Demo::reinit()
@@ -665,7 +672,7 @@ void Demo::resume(ctrl::Input const* controller)
 
 void Demo::cycle()
 {
-    if( map0_ ) { //it's just some condition that the game is initialized.
+    if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
         pview1_->cycle();
         pview2_->cycle();
         update_ui();

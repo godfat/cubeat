@@ -93,6 +93,9 @@ protected:
 private:
     void init_(int const&, bool const& inplace = false);
 
+    //temp: hack for music test
+    void music_state(bool);
+
 protected:
     view::pScene scene_;
     view::pScene ui_scene_;
@@ -120,6 +123,10 @@ protected:
     int num_of_cpu_, ai_level_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
+
+    // temp: hack, just for test
+    bool music_state_, music_state_old_;
+    pDummy timer_music_state_;
 
     lua_State* L_;
 };

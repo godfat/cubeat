@@ -5,6 +5,8 @@
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "audio/Sound.hpp"
+#include "audio/SoundObject.hpp"
+#include "EventDispatcher.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>
@@ -107,6 +109,24 @@ pStage Stage::init( std::string const& path )
     return shared_from_this();
 }
 
+Stage& Stage::loadBGM()
+{
+    try {
+        audio::Sound::i().loadBGM_AB( conf_.S("music"), conf_.S("music2") );
+    }
+    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+        audio::Sound::i().loadBGM( conf_.S("music"), true );
+    }
+
+    try {
+        audio::Sound::i().loadBGM_AB( conf_.S("fast_music"), conf_.S("fast_music2") );
+    }
+    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+        audio::Sound::i().loadBGM( conf_.S("music"), true );
+    }
+    return *this;
+}
+
 Stage& Stage::hitGroup(int const& id)
 {
     SceneObjList& slist = slists_[id];
@@ -132,25 +152,16 @@ Stage& Stage::hitGroup(int const& id)
     return *this;
 }
 
-Stage& Stage::playBGM()
+Stage& Stage::playBGM(time_t const& fade_t)
 {
-    try {
-        audio::Sound::i().playABStream( conf_.S("music"), conf_.S("music2") );
-    }
-    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().playStream( conf_.S("music"), true );
-    }
+    audio::Sound::i().trackFlip(fade_t);
     return *this;
 }
 
-Stage& Stage::playFastBGM()
+Stage& Stage::playFastBGM(time_t const& fade_t)
 {
-    try {
-        audio::Sound::i().playABStream( conf_.S("fast_music"), conf_.S("fast_music2") );
-    }
-    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().playStream( conf_.S("music"), true );
-    }
+    //WTF, no difference here? Is it just make sure you call playBGM first?
+    audio::Sound::i().trackFlip(fade_t);
     return *this;
 }
 

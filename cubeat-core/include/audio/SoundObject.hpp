@@ -108,11 +108,12 @@ public:
     static pointer_type create(wpSoundBuffer const& buffer, bool const& loop = false) {
         return pointer_type(new SoundObject(buffer, loop));
     }
-    static pointer_type create(wpSoundSample const& sample, unsigned int const& fade = 0, bool const& loop = false) {
-        return pointer_type(new SoundObject(sample, fade, loop));
+    static pointer_type create(wpSoundSample const& sample) {
+        return pointer_type(new SoundObject(sample));
     }
     ~SoundObject();
 
+    SoundObject& play(time_t const& fade_t = 0, int const& loop = 0);
     SoundObject& rewind();
     SoundObject& pause();
     SoundObject& stop();
@@ -131,7 +132,7 @@ public:
 private:
     SoundObject(wpSoundStream const&, bool const&);
     SoundObject(wpSoundBuffer const&, bool const&);
-    SoundObject(wpSoundSample const&, unsigned int const&, bool const&);
+    SoundObject(wpSoundSample const&);
     void gen_source();  //probably not going to be used after ALmixer used.
     ALuint source;      //probably not going to be used after ALmixer used.
 

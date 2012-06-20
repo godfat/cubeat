@@ -45,17 +45,17 @@ public:
 
     //Sound& playStream(std::string const& path, bool const& loop = false);
     Sound& playBuffer(std::string const& path, bool const& loop = false);
-    Sound& playSample(std::string const& path, time_t const& fade_t = 0, bool const& loop = false);
+    Sound& playSample(std::string const& path, time_t const& fade_t = 0, int const& loop = 0);
 
     //these are very important when you need to load 2 BGM at the same time and flip-flop between them
     Sound& loadBGM_AB(std::string const& path_a, std::string const& path_b);
-    Sound& loadBGM(std::string const& path, bool const& loop = false);
+    Sound& loadBGM(std::string const& path);
 
     //just play this if you want to play a single music track
     Sound& playBGM_AB(std::string const& path_a, std::string const& path_b);
-    Sound& playBGM(std::string const& path, bool const& loop = false);
+    Sound& playBGM(std::string const& path, int const& loop = 0);
 
-    Sound& trackFlip(time_t const& fade_t = 0);
+    Sound& trackFlip(time_t const& fade_t = 0, int const& loop = 0);
 
     //This may very well be extended to a multi-track system, abstracted from AL channels and sources that,
     //when you need arbitrary 3 or more BGM stand-by and somehow play them in-turn
@@ -71,8 +71,8 @@ public:
 private:
     Sound();
 
-    void exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t);
-    void internal_so_init(pSoundObject& s, std::string const& a, bool const& l, std::string const& b = std::string());
+    void exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop);
+    void internal_so_init(pSoundObject& s, std::string const& a, std::string const& b = std::string());
 
 private:
     std::string base_path_;

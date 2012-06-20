@@ -73,12 +73,13 @@ Sound& Sound::loadSample(std::string const& path)
 //    //return *this;
 //}
 
-Sound& Sound::playSample(std::string const& path, time_t const& fade_t, bool const& loop)
+Sound& Sound::playSample(std::string const& path, time_t const& fade_t, int const& loop)
 {
     if( !sound_samples_[path] )   //each path name -> sample(file is unique.
         loadSample(path);         //normally we should avoid this for big audio files.
 
-    pSoundObject new_sound = SoundObject::create(sound_samples_[path], fade_t, loop);
+    pSoundObject new_sound = SoundObject::create(sound_samples_[path]);
+    new_sound->play(fade_t, loop);
     sound_list_.push_back(new_sound);
     return *this;
 }
@@ -90,13 +91,13 @@ Sound& Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
     if( !sound_samples_[path_b] )
         loadSample(path_b);
 
-    if( !bgm_[0] )      internal_so_init(bgm_[0], path_a, false, path_b);
-    else if( !bgm_[1] ) internal_so_init(bgm_[1], path_a, false, path_b);
+    if( !bgm_[0] )      internal_so_init(bgm_[0], path_a, path_b);
+    else if( !bgm_[1] ) internal_so_init(bgm_[1], path_a, path_b);
     else {
         int track = main_track_ == 0 ? 1 : 0;
         bgm_[track]->stop();
         bgm_[track].reset();
-        internal_so_init(bgm_[track], path_a, false, path_b);
+        internal_so_init(bgm_[track], path_a, path_b);
     }
     // not sure if the last one works... choose a not currently playing bgm track to substitute
     return *this;
@@ -107,57 +108,58 @@ Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b)
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
     loadBGM_AB(path_a, path_b);
-    trackFlip(0);
+    trackFlip(0, 0);
     return *this;
 }
 
-void Sound::internal_so_init(pSoundObject& s, std::string const& a, bool const& l, std::string const& b) {
-    s = SoundObject::create(sound_samples_[a], 0, l);
+void Sound::internal_so_init(pSoundObject& s, std::string const& a, std::string const& b) {
+    s = SoundObject::create(sound_samples_[a]);
     if( b.size() ) s->partB(sound_samples_[b]);
-    s->volume(0);
-    s->pause();
 }
 
-Sound& Sound::loadBGM(std::string const& path, bool const& loop)
+Sound& Sound::loadBGM(std::string const& path)
 {
     if( !sound_samples_[path] )
         loadSample(path);
 
-    if( !bgm_[0] )      internal_so_init(bgm_[0], path, loop);
-    else if( !bgm_[1] ) internal_so_init(bgm_[1], path, loop);
+    if( !bgm_[0] )      internal_so_init(bgm_[0], path);
+    else if( !bgm_[1] ) internal_so_init(bgm_[1], path);
     else {
         int track = main_track_ == 0 ? 1 : 0;
         bgm_[track]->stop();
         bgm_[track].reset();
-        internal_so_init(bgm_[track], path, loop);
+        internal_so_init(bgm_[track], path);
     }
     // not sure if the last one works... choose a not currently playing bgm track to substitute
     return *this;
 }
 
-Sound& Sound::playBGM(std::string const& path, bool const& loop)
+Sound& Sound::playBGM(std::string const& path, int const& loop)
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
-    loadBGM(path, loop);
-    trackFlip(0);
+    loadBGM(path);
+    trackFlip(0, loop);
     return *this;
 }
 
-Sound& Sound::trackFlip(time_t const& fade_t)
+Sound& Sound::trackFlip(time_t const& fade_t, int const& loop)
 {
-    if( bgm_[0] && bgm_[0]->is_paused() ) {
-        exchange(bgm_[1], bgm_[0], fade_t);
+    std::cout << " flipping " << bgm_[0] << " and " << bgm_[1] << std::endl;
+    if( bgm_[0] && ( bgm_[0]->is_paused() || !bgm_[0]->is_active() ) ) {
+        exchange(bgm_[1], bgm_[0], fade_t, loop);
         main_track_ = 0;
     }
-    else if( bgm_[1] && bgm_[1]->is_paused() ) {
-        exchange(bgm_[0], bgm_[1], fade_t);
+    else if( bgm_[1] && ( bgm_[1]->is_paused() || !bgm_[1]->is_active() ) ) {
+        exchange(bgm_[0], bgm_[1], fade_t, loop);
         main_track_ = 1;
     }
+    std::cout << " - " << bgm_[0]->is_paused() << " " << bgm_[0]->is_active() << std::endl;
+    if (bgm_[1]) std::cout << " | " << bgm_[1]->is_paused() << " " << bgm_[1]->is_active() << std::endl;
     return *this;
 }
 
-void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t)
+void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop)
 {
     if( before && before->is_playing() ) {
         before->volume(1);
@@ -165,20 +167,28 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&SoundObject::pause, before.get()), t);
     }
-    if( after && after->is_paused() ) {
-        after->rewind(); //added
-        after->resume();
+    if( after && ( after->is_paused() || !after->is_active() ) ) {
+        if( after->is_paused() ) {
+            after->rewind();
+            after->resume();
+        }
+        else if ( !after->is_active() ) {
+            after->play(t, loop);
+        }
         after->volume(0);
         after->fade_volume(1, t);
     }
 }
 
+//deprecated API: use playSample instead in the future.
+//kept for compatibility
 Sound& Sound::playBuffer(std::string const& path, bool const& loop)
 {
     if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
         loadBuffer(path);         //normally we should avoid this for big audio files.
 
-    pSoundObject new_sound = SoundObject::create(sound_buffers_[path], loop);
+    pSoundObject new_sound = SoundObject::create(sound_buffers_[path]);
+    new_sound->play(0, loop?-1:0);
     sound_list_.push_back(new_sound);
 
     return *this;

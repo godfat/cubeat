@@ -115,14 +115,14 @@ Stage& Stage::loadBGM()
         audio::Sound::i().loadBGM_AB( conf_.S("music"), conf_.S("music2") );
     }
     catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().loadBGM( conf_.S("music"), true );
+        audio::Sound::i().loadBGM( conf_.S("music") );
     }
 
     try {
         audio::Sound::i().loadBGM_AB( conf_.S("fast_music"), conf_.S("fast_music2") );
     }
     catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().loadBGM( conf_.S("music"), true );
+        audio::Sound::i().loadBGM( conf_.S("music") );
     }
     return *this;
 }
@@ -154,14 +154,14 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM(time_t const& fade_t)
 {
-    audio::Sound::i().trackFlip(fade_t);
+    audio::Sound::i().trackFlip(fade_t, 0);
     return *this;
 }
 
 Stage& Stage::playFastBGM(time_t const& fade_t)
 {
     //WTF, no difference here? Is it just make sure you call playBGM first?
-    audio::Sound::i().trackFlip(fade_t);
+    audio::Sound::i().trackFlip(fade_t, 0);
     return *this;
 }
 

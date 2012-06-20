@@ -81,7 +81,7 @@ pDemo Demo::init()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
 
-    audio::Sound::i().playBGM("day.ogg", true);
+    audio::Sound::i().playBGM("day.ogg", -1);
 
     return shared_from_this();
 }
@@ -189,7 +189,7 @@ void Demo::init_(int const& num_of_cpu, bool const& inplace)
     //start music
     audio::Sound::i().stopAll(); //stop old
     stage_->loadBGM();
-    stage_->playBGM();
+    //stage_->playBGM();
 
     //ready_go(4);
     starting_effect(inplace);
@@ -233,7 +233,7 @@ void Demo::leaving_effect()
     scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
     script::Lua::call(L_, "slide_in");
 
-    audio::Sound::i().playBGM("day.ogg", true);
+    audio::Sound::i().playBGM("day.ogg", -1);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::cleanup, this), shared_from_this(), 1000); //1000 ms

@@ -309,7 +309,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount),
                 self(),
-                1000);
+                850); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
             i = chains_.erase(i);
         }
         else{
@@ -442,9 +442,9 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 
 // temp
 void Map::inc_warning(int& warning_lv) {
-    if( has_column_full_ && chains_.empty() && warning_lv < 100 )
+    if( column_full_num_ && chains_.empty() && warning_lv < 100 )
         warning_lv += 1;
-    else if( !has_column_full_ && warning_lv > 0 ) {
+    else if( !column_full_num_ && warning_lv > 0 ) {
         warning_lv -= 2;
         if( warning_lv < 0 )
             warning_lv = 0;
@@ -456,14 +456,14 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 <% end %>
     using std::tr1::bind; using std::tr1::ref;
 
-    has_column_full_ = check_column_full();
+    column_full_num_ = column_full_num();
 
-    if( !has_column_full_ ) {
+    if( !column_full_num_ ) {
         if( warning_level_ && *warning_level_ == 0 )
             warning_level_.reset();
         alarm_sound_.reset();
     }
-    //else if( has_column_full_ && !warning_level_ ) {
+    //else if( column_full_num_ && !warning_level_ ) {
     else {
         if( !warning_level_ ) {
             warning_level_ = std::tr1::shared_ptr<int>(new int(0));
@@ -489,7 +489,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     }
 }
 
-bool <% debug_hook 'Map::check_column_full' do %>() const{
+int <% debug_hook 'Map::column_full_num' do %>() const{
 <% end %>
     int counter = 0;
     for( int x=0, width = ms()->width(), y = ms()->height()-2; x < width; ++x ){
@@ -500,7 +500,27 @@ bool <% debug_hook 'Map::check_column_full' do %>() const{
         else owner()->column_not_full_event()(x);
     }
 
-    return counter > 0;
+    return counter;
+}
+
+int Map::garbage_count() const {
+    int num = 0;
+    for( int x=0; x < ms()->width(); ++x )
+        for( int y=0; y < ms()->height(); ++y )
+            if( pCube c = cubes_[x][y] )
+                if( c->is_broken() || c->is_garbage() )
+                    ++num;
+    return num;
+}
+
+int Map::grounded_cube_count() const {
+    int num = 0;
+    for( int x=0; x < ms()->width(); ++x )
+        for( int y=0; y < ms()->height(); ++y )
+            if( pCube c = cubes_[x][y] )
+                if( c->has_grounded() )
+                    ++num;
+    return num;
 }
 
 bool Map::all_empty() const {

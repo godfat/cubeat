@@ -1,14 +1,26 @@
 #ifndef _SHOOTING_CUBES_PRESENTER_STAGE_
 #define _SHOOTING_CUBES_PRESENTER_STAGE_
 
-#include "presenter/Object.hpp"
 #include "utils/ObjectPool.hpp"
 #include "utils/dictionary.hpp"
-#include "all_fwd.hpp"
 
 #include <string>
+#include <boost/tr1/memory.hpp>
 
 namespace psc {
+
+namespace view {
+class Scene;
+class AnimatedSceneObject;
+typedef std::tr1::shared_ptr<AnimatedSceneObject> pAnimatedSceneObject;
+typedef std::tr1::shared_ptr<Scene> pScene;
+}
+
+namespace audio {
+class SoundObject;
+typedef std::tr1::weak_ptr<SoundObject> wpSoundObject;
+}
+
 namespace presenter {
 
 class Stage : public std::tr1::enable_shared_from_this<Stage>
@@ -25,9 +37,10 @@ public:
     ~Stage();
 
     virtual void cycle();
+    Stage& loadBGM();
     Stage& hitGroup(int const&);
-    Stage& playBGM();
-    Stage& playFastBGM();
+    Stage& playBGM(time_t const& t = 200);
+    Stage& playFastBGM(time_t const& t = 200);
     Stage& releaseResource(); //tell engine to release some of the cached resources.
 
 protected:

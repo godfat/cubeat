@@ -43,7 +43,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
-     ai_level_(1), some_ui_inited_(false), L_(0)
+     ai_level_(2), some_ui_inited_(false), L_(0)
 {
 }
 
@@ -81,7 +81,7 @@ pDemo Demo::init()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
 
-    audio::Sound::i().playStream("day.ogg", true);
+    audio::Sound::i().playBGM("day.ogg", -1);
 
     return shared_from_this();
 }
@@ -89,6 +89,8 @@ pDemo Demo::init()
 void Demo::init_(int const& num_of_cpu, bool const& inplace)
 {
     num_of_cpu_ = num_of_cpu;
+    music_state_ = false;
+    music_state_old_ = false;
 
     //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
@@ -186,7 +188,8 @@ void Demo::init_(int const& num_of_cpu, bool const& inplace)
 
     //start music
     audio::Sound::i().stopAll(); //stop old
-    stage_->playBGM();
+    stage_->loadBGM();
+    //stage_->playBGM();
 
     //ready_go(4);
     starting_effect(inplace);
@@ -230,7 +233,7 @@ void Demo::leaving_effect()
     scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
     script::Lua::call(L_, "slide_in");
 
-    audio::Sound::i().playStream("day.ogg", true);
+    audio::Sound::i().playBGM("day.ogg", -1);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::cleanup, this), shared_from_this(), 1000); //1000 ms
@@ -670,6 +673,25 @@ void Demo::resume(ctrl::Input const* controller)
     }
 }
 
+void Demo::music_state(bool f) {
+    music_state_ = f;
+}
+
+//temp: hack
+bool predicate_column_full_and_has_enough_garbage(pMap const& m0, pMap const& m1)
+{
+    int map_width = m0->map_setting()->width();              // this should be the same for both map
+    int cube_max  = m0->map_setting()->height() * map_width; // this should be the same for both map
+    return ( ( m0->column_full_num() + m1->column_full_num() > 4 ) &&
+             ( ( m0->column_full_num() > 2 && m0->garbage_count() > map_width ) ||
+               ( m1->column_full_num() > 2 && m1->garbage_count() > map_width ) ) )
+            //column full above. but you should at the same time have at least *some* garbage to be emergent
+               ||
+            //enough garbage below. means YOU ARE GOING DOWN... many garbages on the way!!!
+           ( m0->grounded_cube_count() + m0->garbage_left() > cube_max ||
+             m1->grounded_cube_count() + m1->garbage_left() > cube_max );
+}
+
 void Demo::cycle()
 {
     if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
@@ -678,6 +700,43 @@ void Demo::cycle()
         update_ui();
         map0_->cycle();
         map1_->cycle();
+
+        // temp: hack, just for test
+        if( predicate_column_full_and_has_enough_garbage(map0_, map1_) ) {
+            if( timer_music_state_ ) {
+                printf("Demo: nope.. we are very dangerous again.\n");
+                timer_music_state_.reset();
+            }
+            music_state(true);
+        }
+        else {
+            if( music_state_ ) {
+                if( map0_->warning_level() + map1_->warning_level() == 0 ) {
+                    if( !timer_music_state_ ) {
+                        printf("Demo: countdown 5 secs to music_state = false\n");
+                        timer_music_state_ = pDummy(new int);
+                        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 5000);
+                        //this means you have to be in no-danger situation for 3 seconds to leave emergency music
+                    }
+                } else {
+                    if( timer_music_state_ ) {
+                        printf("Demo: nope.. it's still pretty dangerous.\n");
+                        timer_music_state_.reset();
+                    }
+                }
+            }
+        }
+
+        // temp: hack, just for test
+        if( music_state_ == true && music_state_old_ == false ) {
+            printf("Demo: true -> music_state\n");
+            stage_->playFastBGM(400);
+        }
+        if( music_state_ == false && music_state_old_ == true ) {
+            printf("Demo: false -> music_state\n");
+            stage_->playBGM(400);
+        }
 
         if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
             player0_->cycle();
@@ -688,5 +747,8 @@ void Demo::cycle()
     stage_->cycle();
     scene_->redraw();
     ui_scene_->redraw();
+
+    // temp: hack, just for test
+    music_state_old_ = music_state_;
 }
 

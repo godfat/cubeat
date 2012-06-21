@@ -112,21 +112,25 @@ SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
     }
 }
 
-SoundObject::SoundObject(wpSoundSample const& sample, unsigned int const& fade, bool const& loop)
-    :src_(0), ch_(0), sampleA_(sample), sampleB_(pSoundSample())
+SoundObject::SoundObject(wpSoundSample const& sample)
+    :src_(0), ch_(-1), sampleA_(sample), sampleB_(pSoundSample())
+{   //un-init ALsource is 0, but un-init Channel is -1
+}
+
+SoundObject& SoundObject::play(time_t const& fade_t, int const& loop)
 {
     if( pSoundSample s = sampleA_.lock() ) {
-        if( fade > 0 ) { ch_ = ALmixer_FadeInChannel(-1, s->data_, loop?-1:0, fade); }
-        else           { ch_ = ALmixer_PlayChannel(-1, s->data_, loop?-1:0); }
+        if( fade_t > 0 ) { ch_ = ALmixer_FadeInChannel(-1, s->data_, loop, fade_t); }
+        else             { ch_ = ALmixer_PlayChannel(-1, s->data_, loop); }
 
         src_ = ALmixer_GetSource(ch_); // just for future reference. will be useful to determine if a source stopped.
 
         if( ch_ == -1 ) {
             std::cerr << "OpenAL (ALmixer): Failed to play sample " << s->name_ << ": " << ALmixer_GetError() << std::endl;
-            stop();
             //even if the stream cannot be played, it should be tolerable. (just skip it.)
         }
     }
+    return *this;
 }
 
 void SoundObject::gen_source()
@@ -163,6 +167,32 @@ SoundObject& SoundObject::stop()
     return *this;
 }
 
+SoundObject& SoundObject::rewind()
+{
+    if( pSoundSample s2 = sampleB_.lock() ) {
+        bool paused = is_paused(); //get original paused state before all the rewinding
+        stop();
+        pSoundSample s1 = sampleA_.lock();
+        if( ALmixer_SeekData( s1->data_, 0 ) == -1 ) {
+            std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s1->name_ << ": " << ALmixer_GetError() << std::endl;
+            return *this;
+        }
+        if( ALmixer_SeekData( s2->data_, 0 ) == -1 ) {
+            std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s2->name_ << ": " << ALmixer_GetError() << std::endl;
+            return *this;
+        }
+        ch_  = ALmixer_PlayChannel(-1, s1->data_, 0);
+        src_ = ALmixer_GetSource(ch_); // for future reference.
+        if( paused ) pause();      //restore pause state if necessary.
+    } else {
+        if( ALmixer_RewindChannel(ch_) == -1 ) {
+            std::cerr << "OpenAL (ALmixer): Failed to rewind sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+            stop();
+        }
+    }
+    return *this;
+}
+
 SoundObject& SoundObject::resume()
 {
 //    if( !alureResumeSource(source) ) {
@@ -180,21 +210,60 @@ void SoundObject::partB(wpSoundSample const& partB)
     sampleB_ = partB;
 }
 
-bool SoundObject::finished() const
+bool SoundObject::is_active() const
 {
 //    ALenum state;
 //    alGetSourcei(source, AL_SOURCE_STATE, &state);
-//    return state == AL_STOPPED;
-    bool active = ALmixer_IsActiveChannel(ch_);
-    return !active;
+//    return state == AL_STOPPED; //this was finished(), beware
+    if( ch_ == -1 ) return false;
+    return static_cast<bool>(ALmixer_IsActiveChannel(ch_));
+}
+
+bool SoundObject::is_paused() const
+{
+    if( ch_ == -1 ) return false;
+    return static_cast<bool>(ALmixer_IsPausedChannel(ch_));
+}
+
+bool SoundObject::is_playing() const
+{
+    if( ch_ == -1 ) return false;
+    return static_cast<bool>(ALmixer_IsPlayingChannel(ch_));
+}
+
+double SoundObject::volume() const
+{
+    if( ch_ == -1 ) return 0;
+    return ALmixer_GetVolumeChannel(ch_);
+}
+
+SoundObject& SoundObject::volume(double const& v)
+{
+    if( ALmixer_SetVolumeChannel(ch_, v) == -1 ) { // SetVolumeChannel is -1 on error
+        std::cerr << "OpenAL (ALmixer): Failed to adjust volume of " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+        stop();
+        //even if the stream cannot be resumed, it should be tolerable. (just skip it.)
+    }
+    return *this;
+}
+
+SoundObject& SoundObject::fade_volume(double const& v, time_t const& t)
+{
+    std::cout << "Sound: going to fade " << sampleA_.lock()->name_ << " from " << volume() << " to " << v << ", time = " << t << std::endl;
+    if( ALmixer_FadeChannel(ch_, t, v) == -1 ) { // FadeChannel is -1 on error
+        std::cerr << "OpenAL (ALmixer): Failed to fade volume of " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+        stop();
+        //even if the stream cannot be resumed, it should be tolerable. (just skip it.)
+    }
+    return *this;
 }
 
 void SoundObject::cycle()
 {
-    // finished() will be called twice. if it is finished the first time in the cycle(), then
+    // is_active() will be called twice. if it is finished the first time in the cycle(), then
     // it should check again for partB, if still not, then the second call to finished in Sound::cycle()
     // will find out it is really finished, otherwise it will init a new sample here and hence not finished.
-    if( finished() ) {
+    if( !is_active() ) {
         if( pSoundSample s = sampleB_.lock() ) {
             ch_  = ALmixer_PlayChannel(-1, s->data_, -1); //of course it will be looping partB forever
             src_ = ALmixer_GetSource(ch_); // for future reference.

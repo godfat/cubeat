@@ -7,6 +7,7 @@ namespace detail2 {
 
 bool sound_init();
 void sound_update();
+void sound_channel_restore();
 bool sound_cleanup();
 
 } //detail

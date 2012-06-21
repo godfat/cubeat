@@ -43,7 +43,7 @@ bool Map::enemy_column_full() const {
     int full = 0, not_full = 0;
     BOOST_FOREACH(wpMap const& wmg, garbage_lands_) {
         if( pMap mg = wmg.lock() ) {
-            if( mg->has_column_full() ) ++full;
+            if( mg->column_full_num() ) ++full;
             else ++not_full;
         }
     }

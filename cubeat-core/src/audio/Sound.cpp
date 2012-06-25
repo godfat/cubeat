@@ -161,18 +161,20 @@ Sound& Sound::trackFlip(time_t const& fade_t, int const& loop)
 
 void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop)
 {
-    if( before && before->is_playing() ) {
-        before->volume(1);
-        before->fade_volume(0, t);
-        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            std::tr1::bind(&SoundObject::pause, before.get()), t);
+    if( before ) {
+        if( before->is_playing() ) {
+            before->volume(1);
+            before->fade_volume(0, t);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+                std::tr1::bind(&SoundObject::pause, before.get()), t);
+        }
     }
-    if( after && ( after->is_paused() || !after->is_active() ) ) {
+    if( after ) {
         if( after->is_paused() ) {
             after->rewind();
             after->resume();
         }
-        else if ( !after->is_active() ) {
+        else if ( !after->is_loaded() ) {
             after->play(t, loop);
         }
         after->volume(0);
@@ -251,7 +253,7 @@ Sound& Sound::cycle()
     }
 
     for( int i = 0; i < 2; ++i ) {
-        if( bgm_[i] ) {
+        if( bgm_[i] && bgm_[i]->is_loaded() ) {
             bgm_[i]->cycle();
             if( !bgm_[i]->is_active() ) {
                 bgm_[i].reset();

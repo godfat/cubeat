@@ -129,19 +129,20 @@ function init(demo)
     score_list:save_list('score')
   end)
   
-  local target  = ui.new_image{ parent=score_list._cdata, x=0, y= 0, center=true }
-  local btn1    = ui.new_text { parent=score_list._cdata, x=0, y= 90, center=true, title='alpha' }
-  local btn2    = ui.new_text { parent=score_list._cdata, x=0, y=120, center=true, title='pos' }
-  local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='rotation'}
-  local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=180, center=true, title='scale'}
+  local target  = ui.new_image{ parent=score_list._cdata, x=0, y= -50, center=true }
+  local btn1    = ui.new_text { parent=score_list._cdata, x=0, y= 60, center=true, title='alpha' }
+  local btn2    = ui.new_text { parent=score_list._cdata, x=0, y= 90, center=true, title='pos' }
+  local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=120, center=true, title='rotation'}
+  local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='scale'}
+  local scroll  = ui.new_scrollbar{ parent=score_list._cdata, x=-80, y=180, range=255 }
   
   local alpha_s = 255
   local alpha_e = 50
   local tween_alpha  = function(self) target:tween('OElastic', 'Alpha', alpha_s, alpha_e, 2000, 0, nil, 0) end
   btn1:on_press(tween_alpha)
   
-  local pos_s = ffi.new("value2",   0, 0)
-  local pos_e = ffi.new("value2", 100, 0)
+  local pos_s = ffi.new("value2",   0, -50)
+  local pos_e = ffi.new("value2", 100, -50)
   local tween_pos = function(self) target:tween('OElastic', 'Pos2D', pos_s, pos_e, 2000, 0, nil, 0) end
   btn2:on_press(tween_pos)
   
@@ -154,6 +155,11 @@ function init(demo)
   local scale_e = ffi.new("value3", 2, 2, 0)
   local tween_scale = function(self) target:tween('OElastic', 'Scale', scale_s, scale_e, 2000, 0, nil, 0) end
   btn4:on_press(tween_scale)
+  
+  local on_down_scroll = function(self)
+    target:set_red( 255-scroll.index )
+  end
+  scroll:on_down(on_down_scroll)
   
   --------------------------------------
 

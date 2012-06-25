@@ -35,6 +35,7 @@ APIEXPORT void      Sprite_tween_isine_pos(pSprite*, v2*, v2*, unsigned int, int
 APIEXPORT void      Sprite_tween_osine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween_linear_alpha(pSprite*, int, int, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween(pSprite*, const char*, const char*, void*, void*, unsigned int, int, PSC_OBJCALLBACK, int);
+APIEXPORT void      Sprite_tween_double(pSprite*, const char*, const char*, double, double, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_up(pSprite* self, Button const*, PSC_OBJCALLBACK);

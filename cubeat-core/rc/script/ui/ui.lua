@@ -22,6 +22,11 @@ local function set_on_press_callback(sprite, func)
   sprite:on_press( Input2_left, func )
 end
 
+local function set_on_down_callback(sprite, func1, func2)
+  sprite:on_down( Input1_left, func1 )
+  sprite:on_down( Input2_left, func2 or func1 )
+end
+
 local function set_focus_leave_pic(obj, focus_pic, leave_pic)
   local focus_f = function(self) obj:set_texture(focus_pic) end
   local leave_f = function(self) obj:set_texture(leave_pic) end
@@ -50,6 +55,16 @@ end
 
 view.Mt_SpriteText_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
+  local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
+  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
+end
+
+view.Mt_Sprite_Ex.on_down = function(self, func1, func2)
+  set_on_down_callback(self._cdata, func1, func2)
+end
+
+view.Mt_SpriteText_Ex.on_down = function(self, func1, func2)
+  set_on_down_callback(self._cdata, func1, func2)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
   set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end

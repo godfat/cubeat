@@ -125,6 +125,14 @@ void Sprite_tween(pSprite* self, const char* Eq, const char* Accessor, void* s, 
     tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
 }
 
+void Sprite_tween_double(pSprite* self, const char* Eq, const char* Accessor, double s, double e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
+    std::tr1::function<void()> call = 0;
+    if( cb ) {
+        call = bind(delegate_for_cb_from_lua, (*self), cb);
+    }
+    tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
+}
+
 void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }

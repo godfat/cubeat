@@ -135,8 +135,8 @@ function init(demo)
   local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='rotation'}
   local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=180, center=true, title='scale'}
   
-  local alpha_s = ffi.new("value1", 255)
-  local alpha_e = ffi.new("value1", 50)
+  local alpha_s = 255
+  local alpha_e = 50
   local tween_alpha  = function(self) target:tween('OElastic', 'Alpha', alpha_s, alpha_e, 2000, 0, nil, 0) end
   btn1:on_press(tween_alpha)
   

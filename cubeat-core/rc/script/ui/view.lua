@@ -56,7 +56,7 @@ Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
 end
 Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, cb, d)
   if type(s)=='number' and type(e)=='number' then
-    C.Sprite_tween_double(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
+    C.Sprite_tween_1d(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
   else
     C.Sprite_tween(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
   end

@@ -23,8 +23,8 @@ local function set_on_press_callback(sprite, func)
 end
 
 local function set_on_down_callback(sprite, func1, func2)
-  sprite:on_down( Input1_left, func1 )
   sprite:on_down( Input2_left, func2 or func1 )
+  sprite:on_down( Input1_left, func1 )
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic)
@@ -298,6 +298,59 @@ local function new_selectbox(object)
   return object
 end
 
+----------------------------------------------------------------------------
+-- ScrollBar
+----------------------------------------------------------------------------
+local function new_scrollbar(object)
+  if object.parent == nil then error('parent is nil') end
+  
+  -- create
+  object.index  = object.index or 0
+  object.range  = object.range or 100
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('', object.parent, 256, 32, false)
+  
+  object.line   = new_image{parent=object._cdata, path='cubes/cube1',     w=100, h= 8, x=0, y=12}
+  object.button = new_image{parent=object._cdata, path='cubes/cube1.bak', w= 20, h=20, x=0, y= 6, depth=-100}
+  
+  object.text   = new_text{parent=object._cdata, title='0', x=160, y=16, center=true}
+  
+  -- functions
+  local function update_button_position(input)
+    local pos_x = C.Input_get_cursor_x(input) - object.parent:get_screen_pos_x() - (object.x or 0) - (object.button:get_size_x()/2)
+    local pos_y = object.button:get_pos_y()
+    local bg_left = object.line:get_pos_x()
+    local bg_right= bg_left + object.line:get_size_x() - object.button:get_size_x()
+    if pos_x < bg_left  then pos_x = bg_left  end
+    if pos_x > bg_right then pos_x = bg_right end
+    object.button:set_pos(pos_x, pos_y)
+    --
+    object.index = math.floor( (pos_x-bg_left)*object.range / (object.line:get_size_x()-object.button:get_size_x()) )
+    object.text:change_text(tostring(object.index))
+  end
+  object.on_down= function(self, func)
+                    local down_input1 = function(self)
+                                          update_button_position(Input1)
+                                          if func then func(self) end
+                                        end
+                    local down_input2 = function(self)
+                                          update_button_position(Input2)
+                                          if func then func(self) end
+                                        end
+                    object.button:on_down( down_input1, down_input2 )
+                    object.line:on_down( down_input1, down_input2 )
+                  end
+  
+  -- init setting
+  object.on_down(nil)
+  set_focus_leave_pic(object.button, 'cubes/cube-b-1', 'cubes/cube1.bak')
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible or true)
+  
+  return object
+end
+
 
 
 ----------------------------------------------------------------------------
@@ -310,5 +363,6 @@ new_text        = new_text,
 new_askbox      = new_askbox,
 new_list        = new_list,
 new_ratio       = new_ratio,
-new_selectbox   = new_selectbox
+new_selectbox   = new_selectbox,
+new_scrollbar   = new_scrollbar
 }

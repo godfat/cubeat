@@ -121,6 +121,7 @@ public:
     SoundObject& fade_volume(double const&, time_t const&);
     SoundObject& volume(double const&);
 
+    bool is_loaded() const;
     bool is_active() const;
     bool is_playing() const;
     bool is_paused() const;
@@ -142,6 +143,8 @@ private:
 
     wpSoundSample sampleA_;
     wpSoundSample sampleB_;
+
+    bool loaded_into_channel_;
 };
 
 typedef SoundObject::pointer_type pSoundObject;

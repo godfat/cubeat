@@ -189,7 +189,7 @@ void Demo::init_(int const& num_of_cpu, bool const& inplace)
     //start music
     audio::Sound::i().stopAll(); //stop old
     stage_->loadBGM();
-    //stage_->playBGM();
+    stage_->playBGM();
 
     //ready_go(4);
     starting_effect(inplace);

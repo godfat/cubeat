@@ -113,7 +113,7 @@ SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
 }
 
 SoundObject::SoundObject(wpSoundSample const& sample)
-    :src_(0), ch_(-1), sampleA_(sample), sampleB_(pSoundSample())
+    :src_(0), ch_(-1), sampleA_(sample), sampleB_(pSoundSample()), loaded_into_channel_(false)
 {   //un-init ALsource is 0, but un-init Channel is -1
 }
 
@@ -128,7 +128,9 @@ SoundObject& SoundObject::play(time_t const& fade_t, int const& loop)
         if( ch_ == -1 ) {
             std::cerr << "OpenAL (ALmixer): Failed to play sample " << s->name_ << ": " << ALmixer_GetError() << std::endl;
             //even if the stream cannot be played, it should be tolerable. (just skip it.)
+            return *this;
         }
+        loaded_into_channel_ = true;
     }
     return *this;
 }
@@ -210,6 +212,11 @@ void SoundObject::partB(wpSoundSample const& partB)
     sampleB_ = partB;
 }
 
+bool SoundObject::is_loaded() const
+{
+    return loaded_into_channel_;
+}
+
 bool SoundObject::is_active() const
 {
 //    ALenum state;
@@ -260,6 +267,7 @@ SoundObject& SoundObject::fade_volume(double const& v, time_t const& t)
 
 void SoundObject::cycle()
 {
+    if( !loaded_into_channel_ ) return;
     // is_active() will be called twice. if it is finished the first time in the cycle(), then
     // it should check again for partB, if still not, then the second call to finished in Sound::cycle()
     // will find out it is really finished, otherwise it will init a new sample here and hence not finished.

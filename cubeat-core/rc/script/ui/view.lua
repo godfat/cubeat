@@ -61,6 +61,8 @@ Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, c
     C.Sprite_tween(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
   end
 end
+Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
+Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
 Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.on_up                   = function(p, b, func) C.Sprite_on_up(ffi.cast("pSprite*", p), b, func) end
@@ -117,6 +119,15 @@ local function new_sprite_text(text, parent, font, size, center, r, g, b)
   return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), C.SpriteText__gc)
 end
 
+
+--
+local function GET_SCREEN_W()
+  return C.Get_SCREEN_W()
+end
+local function GET_SCREEN_H()
+  return C.Get_SCREEN_H()
+end
+
 ----------------------------------------------------------------------------
 -- Main functions
 ----------------------------------------------------------------------------
@@ -124,5 +135,8 @@ return {
   new_sprite        = new_sprite,
   new_sprite_text   = new_sprite_text,
   Mt_Sprite_Ex      = Mt_Sprite_Ex,
-  Mt_SpriteText_Ex  = Mt_SpriteText_Ex
+  Mt_SpriteText_Ex  = Mt_SpriteText_Ex,
+  --
+  GET_SCREEN_W      = GET_SCREEN_W,
+  GET_SCREEN_H      = GET_SCREEN_H
 }

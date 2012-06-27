@@ -133,6 +133,14 @@ void Sprite_tween_1d(pSprite* self, const char* Eq, const char* Accessor, double
     tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
 }
 
+void Sprite_texture_flipH(pSprite* self) {
+    (*self)->textureFlipH();
+}
+
+void Sprite_texture_flipV(pSprite* self) {
+    (*self)->textureFlipV();
+}
+
 void Sprite_on_release(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onRelease( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }

@@ -134,7 +134,7 @@ function init(demo)
   local btn2    = ui.new_text { parent=score_list._cdata, x=0, y= 90, center=true, title='pos' }
   local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=120, center=true, title='rotation'}
   local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='scale'}
-  local scroll  = ui.new_scrollbar{ parent=score_list._cdata, x=-80, y=180, range=255 }
+  local scroll  = ui.new_scrollbar{ parent=score_list._cdata, x=-80, y=180, range=255, index=255 }
   
   local alpha_s = 255
   local alpha_e = 50
@@ -157,7 +157,7 @@ function init(demo)
   btn4:on_press(tween_scale)
   
   local on_down_scroll = function(self)
-    target:set_red( 255-scroll.index )
+    target:set_red( scroll.index )
   end
   scroll:on_down(on_down_scroll)
   

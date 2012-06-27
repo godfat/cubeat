@@ -328,18 +328,31 @@ local function new_scrollbar(object)
     object.index = math.floor( (pos_x-bg_left)*object.range / (object.line:get_size_x()-object.button:get_size_x()) )
     object.text:change_text(tostring(object.index))
   end
-  object.on_down= function(self, func)
-                    local down_input1 = function(self)
-                                          update_button_position(Input1)
-                                          if func then func(self) end
-                                        end
-                    local down_input2 = function(self)
-                                          update_button_position(Input2)
-                                          if func then func(self) end
-                                        end
-                    object.button:on_down( down_input1, down_input2 )
-                    object.line:on_down( down_input1, down_input2 )
-                  end
+  object.set_index= function(self, index)
+                      if index==nil then index=0 end
+                      if index<0 then index=0 end
+                      if index>object.range then index=object.range end
+                      local bg_left = object.line:get_pos_x()
+                      local bg_right= bg_left + object.line:get_size_x() - object.button:get_size_x()
+                      local pos_x = ( index / object.range ) * (bg_right - bg_left) + bg_left
+                      local pos_y = object.button:get_pos_y()
+                      object.button:set_pos(pos_x, pos_y)
+                      --
+                      object.text:change_text(tostring(object.index))
+                      object.index = index
+                    end
+  object.on_down  = function(self, func)
+                      local down_input1 = function(self)
+                                            update_button_position(Input1)
+                                            if func then func(self) end
+                                          end
+                      local down_input2 = function(self)
+                                            update_button_position(Input2)
+                                            if func then func(self) end
+                                          end
+                      object.button:on_down( down_input1, down_input2 )
+                      object.line:on_down( down_input1, down_input2 )
+                    end
   
   -- init setting
   object.on_down(nil)
@@ -347,6 +360,7 @@ local function new_scrollbar(object)
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible or true)
+  object:set_index(object.index or 0)
   
   return object
 end

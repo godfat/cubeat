@@ -117,49 +117,88 @@ function init(demo)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(96)
-
+  
   --------------------------------------
+  
+  local test_menu = ui.new_image{ parent=scene_, path='', x=480, y=300, w=500, h=500, center=true, visible=false }
+  local btn_score = ui.new_text{ parent=test_menu._cdata, x=0, y=0, size=32, title='score' }
+  btn_score:set_scale(1.5)
+  local btn_tween = ui.new_text{ parent=test_menu._cdata, x=0, y=60, size=32, title='tween test' }
+  btn_tween:set_scale(1.5)
+  --[[
+  local btn_select= ui.new_text{ parent=test_menu._cdata, x=0, y=120, size=32, title='select actor' }
+  btn_select:set_scale(1.5)
+  --]]
+  local btn_back  = ui.new_text{ parent=test_menu._cdata, x=0, y=240, size=32, title='back to title' }
+  btn_back:set_scale(1.5)
   
   local score_list = ui.new_list{ parent=scene_, depth=-1000, visible=false }
   score_list:load_list('score')
   score_list:on_press_back(function(self)
-    show_everything()
     title_:set_visible(true)
+    test_menu:set_visible(true)
     score_list:set_visible(false)
     score_list:save_list('score')
   end)
   
-  local target  = ui.new_image{ parent=score_list._cdata, x=0, y= -50, center=true }
-  local btn1    = ui.new_text { parent=score_list._cdata, x=0, y= 60, center=true, title='alpha' }
-  local btn2    = ui.new_text { parent=score_list._cdata, x=0, y= 90, center=true, title='pos' }
-  local btn3    = ui.new_text { parent=score_list._cdata, x=0, y=120, center=true, title='rotation'}
-  local btn4    = ui.new_text { parent=score_list._cdata, x=0, y=150, center=true, title='scale'}
-  local scroll  = ui.new_scrollbar{ parent=score_list._cdata, x=-80, y=180, range=255, index=255 }
-  
+  local tween_panel = ui.new_image{ parent=scene_, path='', x=600, y=300, w=500, h=500, center=true, visible=false }
+  local target  = ui.new_image{ parent=tween_panel._cdata, x=0, y= -50, center=true }
+  local btn1    = ui.new_text { parent=tween_panel._cdata, x=-100, y= 110, title='alpha' }
+  local btn2    = ui.new_text { parent=tween_panel._cdata, x=-100, y= 140, title='pos' }
+  local btn3    = ui.new_text { parent=tween_panel._cdata, x=-100, y= 170, title='rotation'}
+  local btn4    = ui.new_text { parent=tween_panel._cdata, x=-100, y= 200, title='scale'}
+  local scroll  = ui.new_scrollbar{ parent=tween_panel._cdata, x=-80,y=230, range=255, index=255 }
+  local btn5    = ui.new_text { parent=tween_panel._cdata, x=-100, y= 300, size=32, title='back' }
+
   local alpha_s = 255
   local alpha_e = 50
   local tween_alpha  = function(self) target:tween('OElastic', 'Alpha', alpha_s, alpha_e, 2000, 0, nil, 0) end
   btn1:on_press(tween_alpha)
-  
   local pos_s = ffi.new("value2",   0, -50)
   local pos_e = ffi.new("value2", 100, -50)
   local tween_pos = function(self) target:tween('OElastic', 'Pos2D', pos_s, pos_e, 2000, 0, nil, 0) end
   btn2:on_press(tween_pos)
-  
   local rotation_s  = ffi.new("value3", 0, 0,   0)
   local rotation_e  = ffi.new("value3", 0, 0, -180)
   local tween_rotation = function(self) target:tween('OElastic', 'Rotation', rotation_s, rotation_e, 2000, 0, nil, 0) end
   btn3:on_press(tween_rotation)
-  
   local scale_s = ffi.new("value3", 1, 1, 0)
   local scale_e = ffi.new("value3", 2, 2, 0)
   local tween_scale = function(self) target:tween('OElastic', 'Scale', scale_s, scale_e, 2000, 0, nil, 0) end
   btn4:on_press(tween_scale)
-  
   local on_down_scroll = function(self)
     target:set_red( scroll.index )
   end
   scroll:on_down(on_down_scroll)
+  btn5:on_press(function(self)
+    title_:set_visible(true)
+    test_menu:set_visible(true)
+    tween_panel:set_visible(false)
+  end)
+  
+  btn_score:on_press(function(self)
+    score_list:set_visible(true)
+    title_:set_visible(false)
+    test_menu:set_visible(false)
+  end)
+  btn_tween:on_press(function(self)
+    tween_panel:set_visible(true)
+    title_:set_visible(false)
+    test_menu:set_visible(false)
+  end)
+  --[[
+  btn_select:on_press(function(self)
+    select_actor:set_visible(true)
+    title_:set_visible(false)
+    demobuild_:set_visible(false)
+    test_menu:set_visible(false)
+  end)
+  --]]
+  btn_back:on_press(function(self)
+    show_everything(true)
+    title_:set_visible(true)
+    test_menu:set_visible(false)
+  end)
   
   --------------------------------------
 
@@ -207,14 +246,13 @@ function init(demo)
     demo:quit()
   end)
   
-  menu_.btn_score = ui.new_text{ parent = vorig_,
-    title='score', x=0, y=300, size=32, visible = false
+  menu_.btn_test = ui.new_text{ parent = vorig_,
+    title='test menu', x=0, y=300, size=32, visible = false
   }
-  menu_.btn_score:set_scale(1.5)
-  menu_.btn_score:on_press(function(self)
+  menu_.btn_test:set_scale(1.5)
+  menu_.btn_test:on_press(function(self)
     hide_everything()
-    title_:set_visible(false)
-    score_list:set_visible(true)
+    test_menu:set_visible(true)
   end)
   
 end

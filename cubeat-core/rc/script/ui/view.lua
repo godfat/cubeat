@@ -128,6 +128,15 @@ local function GET_SCREEN_H()
   return C.Get_SCREEN_H()
 end
 
+
+--
+local Input1      = C.Input_get_input1()
+local Input2      = C.Input_get_input2()
+local Input1_left = C.Input_get_trig1(C.Input_get_input1())
+local Input2_left = C.Input_get_trig1(C.Input_get_input2())
+local Input1_right= C.Input_get_trig2(C.Input_get_input1())
+local Input2_right= C.Input_get_trig2(C.Input_get_input2())
+
 ----------------------------------------------------------------------------
 -- Main functions
 ----------------------------------------------------------------------------
@@ -138,5 +147,12 @@ return {
   Mt_SpriteText_Ex  = Mt_SpriteText_Ex,
   --
   GET_SCREEN_W      = GET_SCREEN_W,
-  GET_SCREEN_H      = GET_SCREEN_H
+  GET_SCREEN_H      = GET_SCREEN_H,
+  --
+  Input1            = Input1,
+  Input2            = Input2,
+  Input1_left       = Input1_left,
+  Input2_left       = Input2_left,
+  Input1_right      = Input1_right,
+  Input2_right      = Input2_right
 }

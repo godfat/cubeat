@@ -1,7 +1,8 @@
-local ffi  = require 'ffi'
-local C    = ffi.C
-local view = require 'rc/script/ui/view'
-local ui   = require 'rc/script/ui/ui'
+local ffi   = require 'ffi'
+local C     = ffi.C
+local view  = require 'rc/script/ui/view'
+local ui    = require 'rc/script/ui/ui'
+local select= require 'rc/script/ui/select/select'
 require 'rc/script/ui/demo/defs'
 
 ----------------------------------------------------------------------------
@@ -125,10 +126,8 @@ function init(demo)
   btn_score:set_scale(1.5)
   local btn_tween = ui.new_text{ parent=test_menu._cdata, x=0, y=60, size=32, title='tween test' }
   btn_tween:set_scale(1.5)
-  --[[
   local btn_select= ui.new_text{ parent=test_menu._cdata, x=0, y=120, size=32, title='select actor' }
   btn_select:set_scale(1.5)
-  --]]
   local btn_back  = ui.new_text{ parent=test_menu._cdata, x=0, y=240, size=32, title='back to title' }
   btn_back:set_scale(1.5)
   
@@ -176,6 +175,15 @@ function init(demo)
     tween_panel:set_visible(false)
   end)
   
+  local select_actor_page = select.init(scene_)
+  local leave_select_actor = function(self)
+    select_actor_page:set_visible(false)
+    title_:set_visible(true)
+    demobuild_:set_visible(true)
+    test_menu:set_visible(true)
+  end
+  select_actor_page:on_press_r(leave_select_actor)
+  
   btn_score:on_press(function(self)
     score_list:set_visible(true)
     title_:set_visible(false)
@@ -186,14 +194,12 @@ function init(demo)
     title_:set_visible(false)
     test_menu:set_visible(false)
   end)
-  --[[
   btn_select:on_press(function(self)
-    select_actor:set_visible(true)
+    select_actor_page:set_visible(true)
     title_:set_visible(false)
     demobuild_:set_visible(false)
     test_menu:set_visible(false)
   end)
-  --]]
   btn_back:on_press(function(self)
     show_everything(true)
     title_:set_visible(true)

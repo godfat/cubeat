@@ -16,10 +16,17 @@ local Input1      = C.Input_get_input1()
 local Input2      = C.Input_get_input2()
 local Input1_left = C.Input_get_trig1(C.Input_get_input1())
 local Input2_left = C.Input_get_trig1(C.Input_get_input2())
+local Input1_right= C.Input_get_trig2(C.Input_get_input1())
+local Input2_right= C.Input_get_trig2(C.Input_get_input2())
 
 local function set_on_press_callback(sprite, func)
   sprite:on_press( Input1_left, func )
   sprite:on_press( Input2_left, func )
+end
+
+local function set_on_press_callback_r(sprite, func)
+  sprite:on_press( Input1_right, func )
+  sprite:on_press( Input2_right, func )
 end
 
 local function set_on_down_callback(sprite, func1, func2)
@@ -57,6 +64,10 @@ view.Mt_SpriteText_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
   set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
+end
+
+view.Mt_Sprite_Ex.on_press_r = function(self, func)
+  set_on_press_callback_r(self._cdata, func)
 end
 
 view.Mt_Sprite_Ex.on_down = function(self, func1, func2)

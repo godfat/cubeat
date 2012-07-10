@@ -86,9 +86,11 @@ pDemo Demo::init()
     return shared_from_this();
 }
 
-void Demo::init_(int const& num_of_cpu, bool const& inplace)
+void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string const& c2p, bool const& inplace)
 {
     num_of_cpu_ = num_of_cpu;
+    c1p_ = c1p;
+    c2p_ = c2p;
     music_state_ = false;
     music_state_old_ = false;
 
@@ -195,19 +197,19 @@ void Demo::init_(int const& num_of_cpu, bool const& inplace)
     starting_effect(inplace);
 }
 
-void Demo::init_vs_ppl()
+void Demo::init_vs_ppl(std::string const& c1p, std::string const& c2p)
 {
-    init_(0);
+    init_(0, c1p, c2p);
 }
 
-void Demo::init_vs_cpu()
+void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p)
 {
-    init_(1);
+    init_(1, c1p, c2p);
 }
 
-void Demo::init_cpudemo()
+void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p)
 {
-    init_(2);
+    init_(2, c1p, c2p);
 }
 
 void Demo::ask_for_tutorial()
@@ -605,7 +607,7 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_(num_of_cpu_, true);
+    init_(num_of_cpu_, c1p_, c2p_, true);
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);

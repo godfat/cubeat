@@ -213,7 +213,7 @@ function init(demo)
   }
   menu_.btn_vs_cpu:set_scale(1.5)
   menu_.btn_vs_cpu:on_press(function(self) 
-    demo:init_vs_cpu()
+    demo:init_vs_cpu("char/char1_new", "char/char2_new")
     --hide_everything()
   end)
   
@@ -222,7 +222,7 @@ function init(demo)
   }
   menu_.btn_vs_ppl:set_scale(1.5)
   menu_.btn_vs_ppl:on_press(function(self) 
-    demo:init_vs_ppl()
+    demo:init_vs_ppl("char/char1_new", "char/char2_new")
     --hide_everything()
   end)
   
@@ -231,7 +231,7 @@ function init(demo)
   }
   menu_.btn_cpudemo:set_scale(1.5)
   menu_.btn_cpudemo:on_press(function(self) 
-    demo:init_cpudemo()
+    demo:init_cpudemo("char/char1_new", "char/char2_new")
     --hide_everything()
   end)
   

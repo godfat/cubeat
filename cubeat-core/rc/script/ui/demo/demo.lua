@@ -15,6 +15,9 @@ local title_
 local demobuild_
 local teamname_
 
+local select_actor_page_ 
+local test_menu_
+
 local tuts_ = {}
 
 local function hide_everything()
@@ -67,6 +70,10 @@ function slide_out(inplace)
     teamname_:tween_isine_pos(s4, e4, 400)
     
     blocker_:tween_linear_alpha(96, 0, 500, 0, nil, 0)
+    
+    --hack
+    test_menu_:set_visible(false)
+    select_actor_page_:set_visible(false)
   end
 end
 
@@ -88,6 +95,10 @@ function slide_in()
   teamname_:tween_osine_pos(s4, e4, 400)
   
   blocker_:tween_linear_alpha(0, 96, 500, 0, nil, 0)
+  
+  --hack
+  title_:set_visible(true)
+  demobuild_:set_visible(true)
 end
 
 function init(demo)
@@ -121,21 +132,21 @@ function init(demo)
   
   --------------------------------------
   
-  local test_menu = ui.new_image{ parent=scene_, path='', x=480, y=300, w=500, h=500, center=true, visible=false }
-  local btn_score = ui.new_text{ parent=test_menu._cdata, x=0, y=0, size=32, title='score' }
+  test_menu_ = ui.new_image{ parent=scene_, path='', x=480, y=300, w=500, h=500, center=true, visible=false }
+  local btn_score = ui.new_text{ parent=test_menu_._cdata, x=0, y=0, size=32, title='score' }
   btn_score:set_scale(1.5)
-  local btn_tween = ui.new_text{ parent=test_menu._cdata, x=0, y=60, size=32, title='tween test' }
+  local btn_tween = ui.new_text{ parent=test_menu_._cdata, x=0, y=60, size=32, title='tween test' }
   btn_tween:set_scale(1.5)
-  local btn_select= ui.new_text{ parent=test_menu._cdata, x=0, y=120, size=32, title='select actor' }
+  local btn_select= ui.new_text{ parent=test_menu_._cdata, x=0, y=120, size=32, title='select actor' }
   btn_select:set_scale(1.5)
-  local btn_back  = ui.new_text{ parent=test_menu._cdata, x=0, y=240, size=32, title='back to title' }
+  local btn_back  = ui.new_text{ parent=test_menu_._cdata, x=0, y=240, size=32, title='back to title' }
   btn_back:set_scale(1.5)
   
   local score_list = ui.new_list{ parent=scene_, depth=-1000, visible=false }
   score_list:load_list('score')
   score_list:on_press_back(function(self)
     title_:set_visible(true)
-    test_menu:set_visible(true)
+    test_menu_:set_visible(true)
     score_list:set_visible(false)
     score_list:save_list('score')
   end)
@@ -171,39 +182,39 @@ function init(demo)
   scroll:on_down(on_down_scroll)
   btn5:on_press(function(self)
     title_:set_visible(true)
-    test_menu:set_visible(true)
+    test_menu_:set_visible(true)
     tween_panel:set_visible(false)
   end)
   
-  local select_actor_page = select.init(scene_)
+  select_actor_page_ = select.init(demo, scene_)
   local leave_select_actor = function(self)
-    select_actor_page:set_visible(false)
+    select_actor_page_:set_visible(false)
     title_:set_visible(true)
     demobuild_:set_visible(true)
-    test_menu:set_visible(true)
+    test_menu_:set_visible(true)
   end
-  select_actor_page:on_press_r(leave_select_actor)
+  select_actor_page_:on_press_r(leave_select_actor)
   
   btn_score:on_press(function(self)
     score_list:set_visible(true)
     title_:set_visible(false)
-    test_menu:set_visible(false)
+    test_menu_:set_visible(false)
   end)
   btn_tween:on_press(function(self)
     tween_panel:set_visible(true)
     title_:set_visible(false)
-    test_menu:set_visible(false)
+    test_menu_:set_visible(false)
   end)
   btn_select:on_press(function(self)
-    select_actor_page:set_visible(true)
+    select_actor_page_:set_visible(true)
     title_:set_visible(false)
     demobuild_:set_visible(false)
-    test_menu:set_visible(false)
+    test_menu_:set_visible(false)
   end)
   btn_back:on_press(function(self)
     show_everything(true)
     title_:set_visible(true)
-    test_menu:set_visible(false)
+    test_menu_:set_visible(false)
   end)
   
   --------------------------------------
@@ -258,7 +269,7 @@ function init(demo)
   menu_.btn_test:set_scale(1.5)
   menu_.btn_test:on_press(function(self)
     hide_everything()
-    test_menu:set_visible(true)
+    test_menu_:set_visible(true)
   end)
   
 end

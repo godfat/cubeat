@@ -1,7 +1,9 @@
-#this corresponds to sprite: rc/texture/char1_demo
+#this corresponds to sprite: rc/texture/char1_new
+#passionate boy
+#the sound part is currently re-using old ones, so the number order doesn't match
 
 anim_attr: {
-    body: { anim:'char1_demo',w:256, h:256, x:  0, y:  0 ,defanim:'stand' , ms:1000, loop:-1 },
+    body: { anim:'char1_new', w:256, h:256, x:  0, y:  0 ,defanim:'stand' , ms:1000, loop:-1 },
     gdeco:{ anim:'good_deco', w:50,  h:50 , x:  1, y:-71 ,defanim:'moving', ms:1000, loop:-1 },
     bdeco:{ anim:'bad_deco',  w:50,  h:75 , x:-71, y:-59 ,defanim:'moving', ms:1000, loop:-1 }
 },
@@ -11,16 +13,16 @@ face_h: 50,
 
 # face texture for corresponding enum FACE { NORMAL=0, GOOD=1, BAD=2 }
 face: [
-    { tex: 'char1_demo/face_normal', bdeco:0, gdeco:0 },
-    { tex: 'char1_demo/face_good',   bdeco:0, gdeco:1 },
-    { tex: 'char1_demo/face_bad',    bdeco:1, gdeco:0 }
+    { tex: 'char1_new/face_normal', bdeco:0, gdeco:0 },
+    { tex: 'char1_new/face_good',   bdeco:0, gdeco:1 },
+    { tex: 'char1_new/face_bad',    bdeco:1, gdeco:0 }
 ],
 
 # actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }
 state : [
     { anim: 'stand',  face_visible: 0, sound: '' },
-    { anim: 'attack', face_visible: 0, sound: 'char1/attack.wav' },
-    { anim: 'hit'  ,  face_visible: 0, sound: 'char1/hit.wav' }
+    { anim: 'attack', face_visible: 0, sound: 'char4/attack.wav' },
+    { anim: 'hit'  ,  face_visible: 0, sound: 'char4/hit.wav' }
 ],
 
 # face pos from frame0 to frame3

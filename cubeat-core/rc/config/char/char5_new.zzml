@@ -1,7 +1,9 @@
-#this corresponds to sprite: rc/texture/char1_demo
+#this corresponds to sprite: rc/texture/char5_new
+#karate rider
+#the sound part is currently re-using old ones, so the number order doesn't match
 
 anim_attr: {
-    body: { anim:'char2_demo',w:256, h:256, x:  0, y:  0 ,defanim:'stand' , ms:1000, loop:-1 },
+    body: { anim:'char5_new', w:256, h:256, x:  0, y:  0 ,defanim:'stand' , ms:1000, loop:-1 },
     gdeco:{ anim:'good_deco', w:50,  h:50 , x:  4, y:-71 ,defanim:'moving', ms:1000, loop:-1 },
     bdeco:{ anim:'bad_deco',  w:50,  h:75 , x:-71, y:-59 ,defanim:'moving', ms:1000, loop:-1 }
 },
@@ -11,9 +13,9 @@ face_h: 50,
 
 # face texture for corresponding enum FACE { NORMAL=0, GOOD=1, BAD=2 }
 face: [
-    { tex: 'char2_demo/face_normal', bdeco:0, gdeco:0 },
-    { tex: 'char2_demo/face_good',   bdeco:0, gdeco:1 },
-    { tex: 'char2_demo/face_bad',    bdeco:1, gdeco:0 }
+    { tex: 'char5_new/face_normal', bdeco:0, gdeco:0 },
+    { tex: 'char5_new/face_good',   bdeco:0, gdeco:1 },
+    { tex: 'char5_new/face_bad',    bdeco:1, gdeco:0 }
 ],
 
 # actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }

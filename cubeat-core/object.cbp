@@ -246,11 +246,18 @@
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char1_demo.zzml" />
+		<Unit filename="rc\config\char\char1_new.zzml" />
 		<Unit filename="rc\config\char\char2.zzml" />
 		<Unit filename="rc\config\char\char2_demo.zzml" />
+		<Unit filename="rc\config\char\char2_new.zzml" />
 		<Unit filename="rc\config\char\char3.zzml" />
+		<Unit filename="rc\config\char\char3_new.zzml" />
 		<Unit filename="rc\config\char\char4.zzml" />
+		<Unit filename="rc\config\char\char4_demo.zzml" />
+		<Unit filename="rc\config\char\char4_new.zzml" />
 		<Unit filename="rc\config\char\char5.zzml" />
+		<Unit filename="rc\config\char\char5_new.zzml" />
+		<Unit filename="rc\config\char\char6_new.zzml" />
 		<Unit filename="rc\config\data\color.zzml" />
 		<Unit filename="rc\config\device.zzml" />
 		<Unit filename="rc\config\gameplay\multi.zzml" />
@@ -309,6 +316,8 @@
 		<Unit filename="rc\script\ui\bindings.ffi" />
 		<Unit filename="rc\script\ui\demo\defs.lua" />
 		<Unit filename="rc\script\ui\demo\demo.lua" />
+		<Unit filename="rc\script\ui\demo\select\select.lua" />
+		<Unit filename="rc\script\ui\demo\select\value.lua" />
 		<Unit filename="rc\script\ui\file.lua" />
 		<Unit filename="rc\script\ui\puzzle\bindings.ffi" />
 		<Unit filename="rc\script\ui\puzzle\defs.lua" />

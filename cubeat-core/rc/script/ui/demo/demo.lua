@@ -2,7 +2,7 @@ local ffi   = require 'ffi'
 local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
-local select= require 'rc/script/ui/select/select'
+local select= require 'rc/script/ui/demo/select/select'
 require 'rc/script/ui/demo/defs'
 
 ----------------------------------------------------------------------------

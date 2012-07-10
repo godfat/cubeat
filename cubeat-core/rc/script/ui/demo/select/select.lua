@@ -2,7 +2,7 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 local ui   = require 'rc/script/ui/ui'
-local value= require 'rc/script/ui/select/value'
+local value= require 'rc/script/ui/demo/select/value'
 
 local select_actor_page
 local actor_icon  = {}

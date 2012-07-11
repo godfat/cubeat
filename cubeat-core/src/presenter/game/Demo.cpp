@@ -81,16 +81,17 @@ pDemo Demo::init()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
 
-    audio::Sound::i().playBGM("day.ogg", -1);
+    audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
 
     return shared_from_this();
 }
 
-void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string const& c2p, bool const& inplace)
+void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace)
 {
     num_of_cpu_ = num_of_cpu;
     c1p_ = c1p;
     c2p_ = c2p;
+    sconf_ = scene_name;
     music_state_ = false;
     music_state_old_ = false;
 
@@ -98,6 +99,12 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->stop();
     scene_->allowPicking(false);
+
+    //load scene again first
+    if( !inplace ) {
+        stage_->releaseResource();
+    }
+    stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     data::pViewSetting s0, s1;
 
@@ -197,19 +204,19 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     starting_effect(inplace);
 }
 
-void Demo::init_vs_ppl(std::string const& c1p, std::string const& c2p)
+void Demo::init_vs_ppl(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    init_(0, c1p, c2p);
+    init_(0, c1p, c2p, scene_name);
 }
 
-void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p)
+void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    init_(1, c1p, c2p);
+    init_(1, c1p, c2p, scene_name);
 }
 
-void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p)
+void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    init_(2, c1p, c2p);
+    init_(2, c1p, c2p, scene_name);
 }
 
 void Demo::ask_for_tutorial()
@@ -607,7 +614,7 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_(num_of_cpu_, c1p_, c2p_, true);
+    init_(num_of_cpu_, c1p_, c2p_, sconf_, true);
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);

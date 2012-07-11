@@ -54,9 +54,9 @@ public:
     ~Demo();
 
     virtual void cycle();
-    void init_vs_cpu(std::string const&, std::string const&);
-    void init_vs_ppl(std::string const&, std::string const&);
-    void init_cpudemo(std::string const&, std::string const&);
+    void init_vs_cpu(std::string const&, std::string const&, std::string const&);
+    void init_vs_ppl(std::string const&, std::string const&, std::string const&);
+    void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void quit();
 
     void leaving_effect();
@@ -91,7 +91,7 @@ protected:
     void hide_upper_layer_ui();
 
 private:
-    void init_(int const&, std::string const&, std::string const&, bool const& inplace = false);
+    void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false);
 
     //temp: hack for music test
     void music_state(bool);

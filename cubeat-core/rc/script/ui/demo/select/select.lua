@@ -15,7 +15,8 @@ local function choose_character(self)
   if demo_game_ then
     local ch1 = "char/char"..tostring(ch_choose_[1]).."_new"
     local ch2 = "char/char"..tostring(ch_choose_[2]).."_new"
-    demo_game_:init_vs_cpu(ch1, ch2)
+    local sconf = "stage/jungle"..tostring(ch_choose_[1])
+    demo_game_:init_vs_cpu(ch1, ch2, sconf)
   end
 end
 

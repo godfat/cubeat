@@ -242,7 +242,7 @@ void Demo::leaving_effect()
     scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
     script::Lua::call(L_, "slide_in");
 
-    audio::Sound::i().playBGM("day.ogg", -1);
+    audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::cleanup, this), shared_from_this(), 1000); //1000 ms

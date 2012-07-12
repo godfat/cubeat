@@ -148,7 +148,10 @@ void PlayerView::cycle()
                 input_->rumbleWiimote( rumble_factor * 50 ); //unit: millisecond
             }
 #endif //_USE_WIIMOTE_
-            switchCharacterState( HIT );
+            //switchCharacterState( HIT );
+            //delay this effect for 850ms
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                std::tr1::bind(&PlayerView::switchCharacterState, this, HIT), shared_from_this(), 850);
         }
         //2012.05 attack effect logic changed. so the state switching condition changed.
         else if( state1p != ATTACK && state1p != HIT && last_enemy_garbage_ > enemy_garbage )

@@ -17,6 +17,45 @@ typedef struct { double x, y, z; } value3;
 ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 
 ----------------------------------------------------------------------------
+-- FFI callback hackery
+----------------------------------------------------------------------------
+
+local weakkey = {__mode = "k"}
+
+-- Ok, the problem here is we now have to different signature for callbacks,
+-- But, ffi.cast to C functions seemed to have the magic to treat them all the same!
+-- I assume there's another internal check for argument amounts.... 
+-- so I don't care about PSC_CALLBACK_WITH_PARAM now
+
+local cb_final = function(self) io.write("callback collected.\n"); self:free() end
+
+local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
+local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
+
+local function _tracked_cb(btn_table, T, b, func)
+  if btn_table[b] == nil then
+    btn_table[b] = ffi.gc(ffi.cast(T, func), cb_final)
+  else
+    btn_table[b]:set(func)
+  end
+end
+
+local function tracked_cb(cb_table, T, obj, btn, func)
+  if cb_table[obj] == nil then
+    cb_table[obj] = {}
+  end
+  _tracked_cb(cb_table[obj], T, btn, func)
+  return cb_table[obj][btn]
+end
+
+local __on_press__   = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_release__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_down__    = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_up__      = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_enter_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_leave_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+
+----------------------------------------------------------------------------
 -- "Class" definitions
 ----------------------------------------------------------------------------
 
@@ -63,18 +102,42 @@ Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, c
 end
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
 Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
-Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_up                   = function(p, b, func) C.Sprite_on_up(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_down                 = function(p, b, func) C.Sprite_on_down(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_enter_focus          = function(p, input, func) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, func) end
-Mt_Sprite.on_leave_focus          = function(p, input, func) C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, func) end
+-- Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
+-- Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
+-- Mt_Sprite.on_up                   = function(p, b, func) C.Sprite_on_up(ffi.cast("pSprite*", p), b, func) end
+-- Mt_Sprite.on_down                 = function(p, b, func) C.Sprite_on_down(ffi.cast("pSprite*", p), b, func) end
+-- Mt_Sprite.on_enter_focus          = function(p, input, func) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, func) end
+-- Mt_Sprite.on_leave_focus          = function(p, input, func) C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, func) end
 Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
 Mt_Sprite.get_pos_y               = C.Sprite_get_pos_y
 Mt_Sprite.get_size_x              = C.Sprite_get_size_x
 Mt_Sprite.get_size_y              = C.Sprite_get_size_y
 Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
+
+Mt_Sprite.on_release              = function(p, b, func) 
+  C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, CallbackT, p, b, func)) 
+end
+ 
+Mt_Sprite.on_press                = function(p, b, func) 
+  C.Sprite_on_press(ffi.cast("pSprite*", p), b, tracked_cb(__on_press__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_up                   = function(p, b, func) 
+  C.Sprite_on_up(ffi.cast("pSprite*", p), b, tracked_cb(__on_up__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_down                 = function(p, b, func) 
+  C.Sprite_on_down(ffi.cast("pSprite*", p), b, tracked_cb(__on_down__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_enter_focus          = function(p, input, func) 
+  C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_enter_focus__, Callback_with_paramT, p, input, func)) 
+end
+
+Mt_Sprite.on_leave_focus          = function(p, input, func) 
+  C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func)) 
+end
 
 ffi.metatype("pSprite", Mt_Sprite)
 
@@ -108,26 +171,26 @@ end
 
 local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
---
+-- Constructors & Finalizers
+
 local function new_sprite(name, parent, w, h, center)
   return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), C.Sprite__gc)
 end
 
-
 --
+
 local function new_sprite_text(text, parent, font, size, center, r, g, b)
   return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), C.SpriteText__gc)
 end
 
+------------------------------------------------------------------------
 
---
 local function GET_SCREEN_W()
   return C.Get_SCREEN_W()
 end
 local function GET_SCREEN_H()
   return C.Get_SCREEN_H()
 end
-
 
 --
 local Input1      = C.Input_get_input1()

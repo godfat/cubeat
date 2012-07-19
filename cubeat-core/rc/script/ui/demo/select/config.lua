@@ -29,7 +29,7 @@ local icon_y      = screen_h-250
 local icon_depth  = -100
 
 -- actor_full
-local full_path = function(i) return ('char'..tostring(i)..'_new/cubeat_character_'..tostring(i)) end
+local full_path = function(i) return ('char'..tostring(i)..'_new/glad') end
 local full_w    = 480
 local full_h    = 720
 local full_x    = { 0,

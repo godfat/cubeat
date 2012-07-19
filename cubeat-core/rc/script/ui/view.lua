@@ -27,14 +27,12 @@ local weakkey = {__mode = "k"}
 -- I assume there's another internal check for argument amounts.... 
 -- so I don't care about PSC_CALLBACK_WITH_PARAM now
 
-local cb_final = function(self) io.write("callback collected.\n"); self:free() end
-
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
 local function _tracked_cb(btn_table, T, b, func)
   if btn_table[b] == nil then
-    btn_table[b] = ffi.gc(ffi.cast(T, func), cb_final)
+    btn_table[b] = ffi.cast(T, func)
   else
     btn_table[b]:set(func)
   end
@@ -46,6 +44,15 @@ local function tracked_cb(cb_table, T, obj, btn, func)
   end
   _tracked_cb(cb_table[obj], T, btn, func)
   return cb_table[obj][btn]
+end
+
+local function tracked_cb_removal(cb_table, obj)
+  if cb_table[obj] ~= nil then
+    for _, v1 in pairs(cb_table[obj]) do
+      io.write("callback collected.\n")
+      v1:free()
+    end
+  end
 end
 
 local __on_press__   = setmetatable({}, weakkey) -- use object (cdata) as the weak key
@@ -173,14 +180,29 @@ local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
 -- Constructors & Finalizers
 
+local function __finalizer__(actual_finalizer)
+  return function(self)
+    tracked_cb_removal(__on_press__, self)
+    tracked_cb_removal(__on_release__, self)
+    tracked_cb_removal(__on_down__, self)
+    tracked_cb_removal(__on_up__, self)
+    tracked_cb_removal(__on_enter_focus__, self)
+    tracked_cb_removal(__on_leave_focus__, self)
+    actual_finalizer(self)
+  end
+end
+
+local sprite_dtor_      = __finalizer__(C.Sprite__gc)
+local sprite_text_dtor_ = __finalizer__(C.Sprite__gc)
+
 local function new_sprite(name, parent, w, h, center)
-  return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), C.Sprite__gc)
+  return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), sprite_dtor_)
 end
 
 --
 
 local function new_sprite_text(text, parent, font, size, center, r, g, b)
-  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), C.SpriteText__gc)
+  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), sprite_text_dtor_)
 end
 
 ------------------------------------------------------------------------

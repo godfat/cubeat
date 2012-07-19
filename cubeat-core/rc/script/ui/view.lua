@@ -30,26 +30,24 @@ local weakkey = {__mode = "k"}
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
-local function _tracked_cb(btn_table, T, b, func)
-  if btn_table[b] == nil then
-    btn_table[b] = ffi.cast(T, func)
-  else
-    btn_table[b]:set(func)
-  end
-end
+local function cb_final(self) io.write("callback collected (position 2).\n"); self:free() end
 
 local function tracked_cb(cb_table, T, obj, btn, func)
   if cb_table[obj] == nil then
     cb_table[obj] = {}
   end
-  _tracked_cb(cb_table[obj], T, btn, func)
+  if cb_table[obj][btn] == nil then
+    cb_table[obj][btn] = ffi.gc(ffi.cast(T, func), cb_final)
+  else
+    cb_table[obj][btn]:set(func)
+  end
   return cb_table[obj][btn]
 end
 
 local function tracked_cb_removal(cb_table, obj)
   if cb_table[obj] ~= nil then
     for _, v1 in pairs(cb_table[obj]) do
-      io.write("callback collected.\n")
+      io.write("callback collected (position 1).\n")
       v1:free()
     end
   end
@@ -61,6 +59,14 @@ local __on_down__    = setmetatable({}, weakkey) -- use object (cdata) as the we
 local __on_up__      = setmetatable({}, weakkey) -- use object (cdata) as the weak key
 local __on_enter_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
 local __on_leave_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+
+local function debug_hack()
+  local c = 0
+  for k, v in pairs(__on_press__) do 
+    c = c + 1
+  end
+  print("total obj count for on_press callback table: ", c)
+end
 
 ----------------------------------------------------------------------------
 -- "Class" definitions
@@ -239,5 +245,7 @@ return {
   Input1_left       = Input1_left,
   Input2_left       = Input2_left,
   Input1_right      = Input1_right,
-  Input2_right      = Input2_right
+  Input2_right      = Input2_right,
+  
+  debug_hack        = debug_hack
 }

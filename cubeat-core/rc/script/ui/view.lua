@@ -193,7 +193,7 @@ local function __finalizer__(actual_finalizer)
 end
 
 local sprite_dtor_      = __finalizer__(C.Sprite__gc)
-local sprite_text_dtor_ = __finalizer__(C.Sprite__gc)
+local sprite_text_dtor_ = __finalizer__(C.SpriteText__gc)
 
 local function new_sprite(name, parent, w, h, center)
   return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), sprite_dtor_)

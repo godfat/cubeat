@@ -376,7 +376,8 @@ void Demo::setup_ui()
     // other UI related texts here
 
     if( !some_ui_inited_ ) {
-        blocker_  = view::Sprite::create("blocker", ui_scene_, Conf::i().SCREEN_W() ,350, true);
+        //blocker_  = view::Sprite::create("blocker", ui_scene_, Conf::i().SCREEN_W() ,350, true);
+        blocker_  = view::Sprite::create("blocker", ui_scene_, Conf::i().SCREEN_W() ,368, true);
         blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
         blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
 
@@ -410,6 +411,12 @@ void Demo::setup_ui()
 
         some_ui_inited_ = true;
     }
+
+    // temp: hack for cutin effect
+    ppl1_special_img_ = view::Sprite::create(c1p_.substr(5, 9)+"/cutin", ui_scene_, 425, 368, true);
+    ppl1_special_img_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) ).setDepth(-100).setPickable(false);
+    ppl1_special_img_->set<Visible>(false);
+    ppl1_special_img_->textureFlipH();
 
     hide_upper_layer_ui();
 }
@@ -682,6 +689,63 @@ void Demo::resume(ctrl::Input const* controller)
     }
 }
 
+void Demo::timed_pause(std::time_t const& t)
+{
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    audio::Sound::i().pauseAll(true);
+    btn_pause_ = pDummy(new int);
+    scene_->allowPicking(false);
+
+    //these probably should not belong here
+    blocker_->set<Alpha>(100).set<Visible>(true);
+    ppl1_special_img_->set<Visible>(true);
+
+    data::AnimatorParam<OSine, Pos2D>  mov1;
+    data::AnimatorParam<Linear, Pos2D> mov2;
+    data::AnimatorParam<ISine, Pos2D>  mov3;
+
+    mov1.start( vec2(-300, Conf::i().SCREEN_H() / 2) ).end( vec2( 300, Conf::i().SCREEN_H() / 2) ).duration(200);
+    mov2.start( vec2( 300, Conf::i().SCREEN_H() / 2) ).end( vec2( 900, Conf::i().SCREEN_H() / 2) ).duration(550);
+    mov3.start( vec2( 900, Conf::i().SCREEN_H() / 2) ).end( vec2(1600, Conf::i().SCREEN_H() / 2) ).duration(200);
+
+    ppl1_special_img_->queue(mov1).queue(mov2).tween(mov3);
+    //---
+
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
+    }
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+        bind(&Demo::resume2, this), shared_from_this(), t);
+}
+
+void Demo::resume2()
+{
+    if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
+
+    blocker_->set<Visible>(false);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    audio::Sound::i().pauseAll(false);
+    scene_->allowPicking(true);
+
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+
+    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+        input->player()->subscribe_player_specific_interactions();
+    }
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Demo::ppl1_special_attacked, this, false), shared_from_this(), 1000);
+}
+
 void Demo::music_state(bool f) {
     music_state_ = f;
 }
@@ -750,6 +814,12 @@ void Demo::cycle()
         if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
             player0_->cycle();
             player1_->cycle();
+        }
+
+        // temp: hack, just for test (cut-in)
+        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
+            timed_pause(1000);
+            ppl1_special_attacked_ = true;
         }
     }
 

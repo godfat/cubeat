@@ -86,6 +86,10 @@ protected:
     void pause(ctrl::Input const*);
     void resume(ctrl::Input const*);
 
+    //temp: has to be refactored
+    void timed_pause(std::time_t const& t);
+    void resume2();
+
     //lua UI integration
     void ask_for_tutorial();
     void hide_upper_layer_ui();
@@ -123,6 +127,11 @@ protected:
     int num_of_cpu_, ai_level_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
+
+    // temp: hack
+    bool ppl1_special_attacked_;
+    void ppl1_special_attacked(bool const& f) { ppl1_special_attacked_ = f; }
+    view::pSprite ppl1_special_img_;
 
     // temp: hack, just for test
     bool music_state_, music_state_old_;

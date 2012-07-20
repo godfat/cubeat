@@ -28,7 +28,9 @@ ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
-local function cdata_addr(cdata) return tonumber(ffi.cast('int', cdata)) end
+-- which version is better?
+local cdata_addr = function (cd) return tonumber(ffi.cast('uintptr_t', cd)) end 
+-- local cdata_addr = function (cd) return tostring(cd) end
 
 local function tracked_cb(cb_table, T, obj, btn, func)
   if cb_table[ cdata_addr(obj) ] == nil then
@@ -114,12 +116,6 @@ Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, c
 end
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
 Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
--- Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
--- Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
--- Mt_Sprite.on_up                   = function(p, b, func) C.Sprite_on_up(ffi.cast("pSprite*", p), b, func) end
--- Mt_Sprite.on_down                 = function(p, b, func) C.Sprite_on_down(ffi.cast("pSprite*", p), b, func) end
--- Mt_Sprite.on_enter_focus          = function(p, input, func) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, func) end
--- Mt_Sprite.on_leave_focus          = function(p, input, func) C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, func) end
 Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
 Mt_Sprite.get_pos_y               = C.Sprite_get_pos_y
 Mt_Sprite.get_size_x              = C.Sprite_get_size_x

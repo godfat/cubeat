@@ -20,8 +20,6 @@ ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
-local weakkey = {__mode = "k"}
-
 -- Ok, the problem here is we now have to different signature for callbacks,
 -- But, ffi.cast to C functions seemed to have the magic to treat them all the same!
 -- I assume there's another internal check for argument amounts.... 
@@ -30,35 +28,36 @@ local weakkey = {__mode = "k"}
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
-local function cb_final(self) io.write("callback collected (position 2).\n"); self:free() end
+local function cdata_addr(cdata) return tonumber(ffi.cast('int', cdata)) end
 
 local function tracked_cb(cb_table, T, obj, btn, func)
-  if cb_table[obj] == nil then
-    cb_table[obj] = {}
+  if cb_table[ cdata_addr(obj) ] == nil then
+    cb_table[ cdata_addr(obj) ] = {}
   end
-  if cb_table[obj][btn] == nil then
-    cb_table[obj][btn] = ffi.gc(ffi.cast(T, func), cb_final)
+  if cb_table[ cdata_addr(obj) ][btn] == nil then
+    cb_table[ cdata_addr(obj) ][btn] = ffi.cast(T, func)
   else
-    cb_table[obj][btn]:set(func)
+    cb_table[ cdata_addr(obj) ][btn]:set(func)
   end
-  return cb_table[obj][btn]
+  return cb_table[ cdata_addr(obj) ][btn]
 end
 
 local function tracked_cb_removal(cb_table, obj)
-  if cb_table[obj] ~= nil then
-    for _, v1 in pairs(cb_table[obj]) do
+  if cb_table[ cdata_addr(obj) ] ~= nil then
+    for _, v1 in pairs(cb_table[ cdata_addr(obj) ]) do
       io.write("callback collected (position 1).\n")
       v1:free()
     end
+    cb_table[ cdata_addr(obj) ] = nil -- have to remove the record ourselves.
   end
 end
 
-local __on_press__   = setmetatable({}, weakkey) -- use object (cdata) as the weak key
-local __on_release__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
-local __on_down__    = setmetatable({}, weakkey) -- use object (cdata) as the weak key
-local __on_up__      = setmetatable({}, weakkey) -- use object (cdata) as the weak key
-local __on_enter_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
-local __on_leave_focus__ = setmetatable({}, weakkey) -- use object (cdata) as the weak key
+local __on_press__   = {} -- we use cdata address number as key, it doesn't have to be weak
+local __on_release__ = {}
+local __on_down__    = {}
+local __on_up__      = {}
+local __on_enter_focus__ = {}
+local __on_leave_focus__ = {}
 
 local function debug_hack()
   local c = 0

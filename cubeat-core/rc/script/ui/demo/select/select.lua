@@ -50,8 +50,8 @@ local function init(demo_game, parent)
   demo_game_ = demo_game
   
   -- create select_actor_page
-  select_actor_page = ui.new_image{ parent=parent, path=value.bg_path, visible=false,
-                                    w=value.bg_w, h=value.bg_h }
+  local select_actor_page = ui.new_image{ parent=parent, path=value.bg_path, visible=false,
+                                          w=value.bg_w, h=value.bg_h }
 
   -- create actor_icon
   for i=1,6 do

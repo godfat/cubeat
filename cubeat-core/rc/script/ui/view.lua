@@ -17,6 +17,59 @@ typedef struct { double x, y, z; } value3;
 ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 
 ----------------------------------------------------------------------------
+-- FFI callback hackery
+----------------------------------------------------------------------------
+
+-- Ok, the problem here is we now have to different signature for callbacks,
+-- But, ffi.cast to C functions seemed to have the magic to treat them all the same!
+-- I assume there's another internal check for argument amounts.... 
+-- so I don't care about PSC_CALLBACK_WITH_PARAM now
+
+local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
+local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
+
+-- which version is better?
+local cdata_addr = function (cd) return tonumber(ffi.cast('uintptr_t', cd)) end 
+-- local cdata_addr = function (cd) return tostring(cd) end
+
+local function tracked_cb(cb_table, T, obj, btn, func)
+  if cb_table[ cdata_addr(obj) ] == nil then
+    cb_table[ cdata_addr(obj) ] = {}
+  end
+  if cb_table[ cdata_addr(obj) ][btn] == nil then
+    cb_table[ cdata_addr(obj) ][btn] = ffi.cast(T, func)
+  else
+    cb_table[ cdata_addr(obj) ][btn]:set(func)
+  end
+  return cb_table[ cdata_addr(obj) ][btn]
+end
+
+local function tracked_cb_removal(cb_table, obj)
+  if cb_table[ cdata_addr(obj) ] ~= nil then
+    for _, v1 in pairs(cb_table[ cdata_addr(obj) ]) do
+      io.write("callback collected (position 1).\n")
+      v1:free()
+    end
+    cb_table[ cdata_addr(obj) ] = nil -- have to remove the record ourselves.
+  end
+end
+
+local __on_press__   = {} -- we use cdata address number as key, it doesn't have to be weak
+local __on_release__ = {}
+local __on_down__    = {}
+local __on_up__      = {}
+local __on_enter_focus__ = {}
+local __on_leave_focus__ = {}
+
+local function debug_hack()
+  local c = 0
+  for k, v in pairs(__on_press__) do 
+    c = c + 1
+  end
+  print("total obj count for on_press callback table: ", c)
+end
+
+----------------------------------------------------------------------------
 -- "Class" definitions
 ----------------------------------------------------------------------------
 
@@ -63,18 +116,45 @@ Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, c
 end
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
 Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
-Mt_Sprite.on_release              = function(p, b, func) C.Sprite_on_release(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_press                = function(p, b, func) C.Sprite_on_press(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_up                   = function(p, b, func) C.Sprite_on_up(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_down                 = function(p, b, func) C.Sprite_on_down(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_enter_focus          = function(p, b, func) C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), b, func) end
-Mt_Sprite.on_leave_focus          = function(p, b, func) C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), b, func) end
 Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
 Mt_Sprite.get_pos_y               = C.Sprite_get_pos_y
 Mt_Sprite.get_size_x              = C.Sprite_get_size_x
 Mt_Sprite.get_size_y              = C.Sprite_get_size_y
 Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
+
+Mt_Sprite.on_release              = function(p, b, func) 
+  C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, CallbackT, p, b, func)) 
+end
+ 
+Mt_Sprite.on_press                = function(p, b, func) 
+  C.Sprite_on_press(ffi.cast("pSprite*", p), b, tracked_cb(__on_press__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_up                   = function(p, b, func) 
+  C.Sprite_on_up(ffi.cast("pSprite*", p), b, tracked_cb(__on_up__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_down                 = function(p, b, func) 
+  C.Sprite_on_down(ffi.cast("pSprite*", p), b, tracked_cb(__on_down__, CallbackT, p, b, func)) 
+end
+
+Mt_Sprite.on_enter_focus          = function(p, input, func) 
+  C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_enter_focus__, Callback_with_paramT, p, input, func)) 
+end
+
+Mt_Sprite.on_leave_focus          = function(p, input, func) 
+  C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func)) 
+end
+
+Mt_Sprite.remove_callbacks        = function(p)
+  tracked_cb_removal(__on_press__, p)
+  tracked_cb_removal(__on_release__, p)
+  tracked_cb_removal(__on_down__, p)
+  tracked_cb_removal(__on_up__, p)
+  tracked_cb_removal(__on_enter_focus__, p)
+  tracked_cb_removal(__on_leave_focus__, p)
+end
 
 ffi.metatype("pSprite", Mt_Sprite)
 
@@ -108,26 +188,36 @@ end
 
 local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
---
+-- Constructors & Finalizers
+
+local function __finalizer__(actual_finalizer)
+  return function(self)
+    self:remove_callbacks()
+    actual_finalizer(self)
+  end
+end
+
+local sprite_dtor_      = __finalizer__(C.Sprite__gc)
+local sprite_text_dtor_ = __finalizer__(C.SpriteText__gc)
+
 local function new_sprite(name, parent, w, h, center)
-  return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), C.Sprite__gc)
+  return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), sprite_dtor_)
 end
 
-
 --
+
 local function new_sprite_text(text, parent, font, size, center, r, g, b)
-  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), C.SpriteText__gc)
+  return ffi.gc(C.SpriteText_create(text, ffi.cast("pObject*", parent), font, size, center, r, g, b), sprite_text_dtor_)
 end
 
+------------------------------------------------------------------------
 
---
 local function GET_SCREEN_W()
   return C.Get_SCREEN_W()
 end
 local function GET_SCREEN_H()
   return C.Get_SCREEN_H()
 end
-
 
 --
 local Input1      = C.Input_get_input1()
@@ -154,5 +244,7 @@ return {
   Input1_left       = Input1_left,
   Input2_left       = Input2_left,
   Input1_right      = Input1_right,
-  Input2_right      = Input2_right
+  Input2_right      = Input2_right,
+  
+  debug_hack        = debug_hack
 }

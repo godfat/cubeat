@@ -35,8 +35,8 @@ local function set_on_down_callback(sprite, func1, func2)
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic)
-  local focus_f = function(self) obj:set_texture(focus_pic) end
-  local leave_f = function(self) obj:set_texture(leave_pic) end
+  local focus_f = function() obj:set_texture(focus_pic) end
+  local leave_f = function() obj:set_texture(leave_pic) end
   obj:on_enter_focus(Input1, focus_f)
   obj:on_leave_focus(Input1, leave_f)
   obj:on_enter_focus(Input2, focus_f)
@@ -44,8 +44,8 @@ local function set_focus_leave_pic(obj, focus_pic, leave_pic)
 end
 
 local function set_focus_leave_color(obj, focus_color, leave_color)
-  local focus_f = function(self) obj:set_color(focus_color.r, focus_color.g, focus_color.b) end
-  local leave_f = function(self) obj:set_color(leave_color.r, leave_color.g, leave_color.b) end
+  local focus_f = function(self) ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
+  local leave_f = function(self) ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
   obj:on_enter_focus(Input1, focus_f)
   obj:on_leave_focus(Input1, leave_f)
   obj:on_enter_focus(Input2, focus_f)
@@ -63,7 +63,7 @@ end
 view.Mt_SpriteText_Ex.on_press = function(self, func)
   set_on_press_callback(self._cdata, func)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
-  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
+  set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end
 
 view.Mt_Sprite_Ex.on_press_r = function(self, func)
@@ -77,7 +77,7 @@ end
 view.Mt_SpriteText_Ex.on_down = function(self, func1, func2)
   set_on_down_callback(self._cdata, func1, func2)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
-  set_focus_leave_color(self, self.focus_color or {r=0, g=255, b=255}, leave_color)
+  set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color)
 end
 
 local Sprite_Based_Mt     = {__index = view.Mt_Sprite_Ex}

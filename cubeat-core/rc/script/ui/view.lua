@@ -147,6 +147,15 @@ Mt_Sprite.on_leave_focus          = function(p, input, func)
   C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func)) 
 end
 
+Mt_Sprite.remove_callbacks        = function(p)
+  tracked_cb_removal(__on_press__, p)
+  tracked_cb_removal(__on_release__, p)
+  tracked_cb_removal(__on_down__, p)
+  tracked_cb_removal(__on_up__, p)
+  tracked_cb_removal(__on_enter_focus__, p)
+  tracked_cb_removal(__on_leave_focus__, p)
+end
+
 ffi.metatype("pSprite", Mt_Sprite)
 
 
@@ -183,12 +192,7 @@ local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
 local function __finalizer__(actual_finalizer)
   return function(self)
-    tracked_cb_removal(__on_press__, self)
-    tracked_cb_removal(__on_release__, self)
-    tracked_cb_removal(__on_down__, self)
-    tracked_cb_removal(__on_up__, self)
-    tracked_cb_removal(__on_enter_focus__, self)
-    tracked_cb_removal(__on_leave_focus__, self)
+    self:remove_callbacks()
     actual_finalizer(self)
   end
 end

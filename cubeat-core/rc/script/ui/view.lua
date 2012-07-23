@@ -29,7 +29,7 @@ local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
 -- which version is better?
-local cdata_addr = function (cd) return tonumber(ffi.cast('uintptr_t', cd)) end 
+local cdata_addr = function (cd) return tonumber(ffi.cast('intptr_t', cd)) end 
 -- local cdata_addr = function (cd) return tostring(cd) end
 
 local function tracked_cb(cb_table, T, obj, btn, func)
@@ -47,7 +47,6 @@ end
 local function tracked_cb_removal(cb_table, obj)
   if cb_table[ cdata_addr(obj) ] ~= nil then
     for _, v1 in pairs(cb_table[ cdata_addr(obj) ]) do
-      io.write("callback collected (position 1).\n")
       v1:free()
     end
     cb_table[ cdata_addr(obj) ] = nil -- have to remove the record ourselves.
@@ -147,14 +146,22 @@ Mt_Sprite.on_leave_focus          = function(p, input, func)
   C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func)) 
 end
 
-Mt_Sprite.remove_callbacks        = function(p)
-  tracked_cb_removal(__on_press__, p)
-  tracked_cb_removal(__on_release__, p)
-  tracked_cb_removal(__on_down__, p)
-  tracked_cb_removal(__on_up__, p)
-  tracked_cb_removal(__on_enter_focus__, p)
-  tracked_cb_removal(__on_leave_focus__, p)
+local function __finalizer__(actual_finalizer)
+  return function(self)
+    tracked_cb_removal(__on_press__, self)
+    tracked_cb_removal(__on_release__, self)
+    tracked_cb_removal(__on_down__, self)
+    tracked_cb_removal(__on_up__, self)
+    tracked_cb_removal(__on_enter_focus__, self)
+    tracked_cb_removal(__on_leave_focus__, self)
+    actual_finalizer(self)
+  end
 end
+
+local sprite_dtor_      = __finalizer__(C.Sprite__gc)
+local sprite_text_dtor_ = __finalizer__(C.SpriteText__gc)
+
+Mt_Sprite.remove                  = sprite_dtor_
 
 ffi.metatype("pSprite", Mt_Sprite)
 
@@ -174,6 +181,7 @@ Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
 Mt_SpriteText.tween_linear_alpha  = C.SpriteText_tween_linear_alpha
+Mt_SpriteText.remove              = sprite_text_dtor_
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
@@ -189,16 +197,6 @@ end
 local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
 -- Constructors & Finalizers
-
-local function __finalizer__(actual_finalizer)
-  return function(self)
-    self:remove_callbacks()
-    actual_finalizer(self)
-  end
-end
-
-local sprite_dtor_      = __finalizer__(C.Sprite__gc)
-local sprite_text_dtor_ = __finalizer__(C.SpriteText__gc)
 
 local function new_sprite(name, parent, w, h, center)
   return ffi.gc(C.Sprite_create(name, ffi.cast("pObject*", parent), w, h, center), sprite_dtor_)

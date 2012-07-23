@@ -20,16 +20,11 @@ ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
--- Ok, the problem here is we now have to different signature for callbacks,
--- But, ffi.cast to C functions seemed to have the magic to treat them all the same!
--- I assume there's another internal check for argument amounts.... 
--- so I don't care about PSC_CALLBACK_WITH_PARAM now
-
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 
 -- which version is better?
-local cdata_addr = function (cd) return tonumber(ffi.cast('uintptr_t', cd)) end 
+local cdata_addr = function (cd) return tonumber(ffi.cast('intptr_t', cd)) end 
 -- local cdata_addr = function (cd) return tostring(cd) end
 
 local function tracked_cb(cb_table, T, obj, btn, func)
@@ -47,7 +42,6 @@ end
 local function tracked_cb_removal(cb_table, obj)
   if cb_table[ cdata_addr(obj) ] ~= nil then
     for _, v1 in pairs(cb_table[ cdata_addr(obj) ]) do
-      io.write("callback collected (position 1).\n")
       v1:free()
     end
     cb_table[ cdata_addr(obj) ] = nil -- have to remove the record ourselves.
@@ -60,6 +54,15 @@ local __on_down__    = {}
 local __on_up__      = {}
 local __on_enter_focus__ = {}
 local __on_leave_focus__ = {}
+
+local function remove_callbacks(p)
+  tracked_cb_removal(__on_press__, p)
+  tracked_cb_removal(__on_release__, p)
+  tracked_cb_removal(__on_down__, p)
+  tracked_cb_removal(__on_up__, p)
+  tracked_cb_removal(__on_enter_focus__, p)
+  tracked_cb_removal(__on_leave_focus__, p)
+end
 
 local function debug_hack()
   local c = 0
@@ -147,13 +150,9 @@ Mt_Sprite.on_leave_focus          = function(p, input, func)
   C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func)) 
 end
 
-Mt_Sprite.remove_callbacks        = function(p)
-  tracked_cb_removal(__on_press__, p)
-  tracked_cb_removal(__on_release__, p)
-  tracked_cb_removal(__on_down__, p)
-  tracked_cb_removal(__on_up__, p)
-  tracked_cb_removal(__on_enter_focus__, p)
-  tracked_cb_removal(__on_leave_focus__, p)
+Mt_Sprite.remove                  = function(p)
+  remove_callbacks(p)
+  p:set_visible(false)
 end
 
 ffi.metatype("pSprite", Mt_Sprite)
@@ -174,6 +173,10 @@ Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
 Mt_SpriteText.tween_linear_alpha  = C.SpriteText_tween_linear_alpha
+Mt_SpriteText.remove              = function(p)
+  remove_callbacks(p)
+  p:set_visible(false)
+end
 
 ffi.metatype("pSpriteText", Mt_SpriteText)
 
@@ -192,7 +195,7 @@ local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)
 
 local function __finalizer__(actual_finalizer)
   return function(self)
-    self:remove_callbacks()
+    remove_callbacks(self)
     actual_finalizer(self)
   end
 end

@@ -178,6 +178,10 @@ WIP  5. Character Differentiations - Special abilities
      
 0.6  7. I need to implement different garbage path for different character (So ViewSprite have to do header/src separation)
         AND I need to implement different curves (even hand made curves) for AnimatedSprite::playAnime();
+        
+0.6  8. Music changes now are implemented, but warning sound and music changing notification sound may be intertwined.
+
+0.6  9. Other things see my hand written note. 
 
 * Tools / Libraries Issues:
 

@@ -182,6 +182,7 @@ DONE -- AI scripting, and hassling other players
         
 0.6  8. Music changes now are implemented, but warning sound and music changing notification sound may be intertwined.
      -- match the gameplay with BPM of the musics?
+     -- The volumn system (setting volumn when playing or guarantee volumn for AB loop streams are not yet implemented)
 
 0.6  9. Other things see my hand written note. 
 

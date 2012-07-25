@@ -44,7 +44,7 @@ Sound& Sound::loadBuffer(std::string const& path)
     //pSoundBuffer new_buffer = SoundBuffer::create(absolute_path);
     pSoundSample new_buffer = SoundSample::create(absolute_path, false);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
-    sound_buffers_[path] = new_buffer;
+    sound_samples_[path] = new_buffer;
     return *this;
 }
 
@@ -73,10 +73,26 @@ Sound& Sound::loadSample(std::string const& path)
 //    //return *this;
 //}
 
+//deprecated API: use playSample instead in the future.
+//kept for compatibility
+Sound& Sound::playBuffer(std::string const& path, bool const& loop)
+{
+//    if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
+//        loadBuffer(path);         //normally we should avoid this for big audio files.
+//
+//    pSoundObject new_sound = SoundObject::create(sound_buffers_[path]);
+//    new_sound->play(0, loop?-1:0);
+//    sound_list_.push_back(new_sound);
+//
+//    return *this;
+    playSample(path, 0, loop);
+    return *this;
+}
+
 Sound& Sound::playSample(std::string const& path, time_t const& fade_t, int const& loop)
 {
     if( !sound_samples_[path] )   //each path name -> sample(file is unique.
-        loadSample(path);         //normally we should avoid this for big audio files.
+        loadBuffer(path);         //normally we should avoid this for big audio files.
 
     pSoundObject new_sound = SoundObject::create(sound_samples_[path]);
     new_sound->play(fade_t, loop);
@@ -182,20 +198,6 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
     }
 }
 
-//deprecated API: use playSample instead in the future.
-//kept for compatibility
-Sound& Sound::playBuffer(std::string const& path, bool const& loop)
-{
-    if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
-        loadBuffer(path);         //normally we should avoid this for big audio files.
-
-    pSoundObject new_sound = SoundObject::create(sound_buffers_[path]);
-    new_sound->play(0, loop?-1:0);
-    sound_list_.push_back(new_sound);
-
-    return *this;
-}
-
 Sound& Sound::stopAll()
 {
     BOOST_FOREACH(pSoundObject& p, sound_list_)
@@ -240,14 +242,6 @@ Sound& Sound::cycle()
     for(SoundList::iterator it = sound_list_.begin(), iend = sound_list_.end(); it != iend; ++it) {
         (*it)->cycle();
         if( !(*it)->is_active() ) {
-
-            //move this part to inside of SoundObject::cycle();
-
-//            if( (*it)->has_partB() ) {
-//                pSoundObject new_sound = SoundObject::create(sound_samples_[ (*it)->partB_path() ], 0, true);
-//                //pSoundObject new_sound = SoundObject::create(sound_streams_[ (*it)->partB_path() ], true);
-//                sound_list_.push_back(new_sound);
-//            }
             sound_to_be_cleared_.push_back(it);
         }
     }

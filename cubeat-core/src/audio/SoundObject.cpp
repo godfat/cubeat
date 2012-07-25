@@ -186,9 +186,11 @@ SoundObject& SoundObject::rewind()
             return *this;
         }
     } else {
-        if( ALmixer_RewindChannel(ch_) == -1 ) {
-            std::cerr << "OpenAL (ALmixer): Failed to rewind sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
-            stop();
+        if( ch_ != -1 ) { // You will never use this API to rewind ALL CHANNELS. -1 is for un-initialized object.
+            if( ALmixer_RewindChannel(ch_) == -1 ) {
+                std::cerr << "OpenAL (ALmixer): Failed to rewind sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+                stop();
+            }
         }
     }
     return *this;
@@ -272,7 +274,7 @@ void SoundObject::cycle()
     // will find out it is really finished, otherwise it will init a new sample here and hence not finished.
     if( !is_active() ) {
         if( pSoundSample s = sampleB_.lock() ) {
-            ch_  = ALmixer_PlayChannel(-1, s->data_, -1); //of course it will be looping partB forever
+            ALmixer_PlayChannel(ch_, s->data_, -1); //loop it on top of the old channel as part A.
             src_ = ALmixer_GetSource(ch_); // for future reference.
         }
     }

@@ -21,7 +21,7 @@ int main()
 {
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::Conf::i().init("");
-    psc::App::i(); // init irr
+    psc::App::i().init();
 
     std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);
     viewtest->init();

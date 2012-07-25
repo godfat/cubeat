@@ -156,10 +156,11 @@ DONE?-- Puzzle explorer done. Maybe "Puzzle Editor" in the future.
        ** DONE, FOR NOW
      -- now we need a real multiplayer test case.
 
-WIP  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
-     -- Lua integration of this part done.
+0.6  4. AI needs more caring. They still don't use items (if any) or hassle the other one directly.
+DONE -- AI scripting, and hassling other players
+     -- AI now needs fine tuning for different "charactistics."
      
-WIP  5. Character Differentiations - Special abilities
+0.6  5. Character Differentiations - Special abilities
      -- Determine death countdown by character(player) data
      -- Determine heat accumulating speed by character(player) data
      -- Determine restore color_id random percentage by character(player) data
@@ -180,8 +181,16 @@ WIP  5. Character Differentiations - Special abilities
         AND I need to implement different curves (even hand made curves) for AnimatedSprite::playAnime();
         
 0.6  8. Music changes now are implemented, but warning sound and music changing notification sound may be intertwined.
+     -- match the gameplay with BPM of the musics?
+     -- The volumn system (setting volumn when playing or guarantee volumn for AB loop streams are not yet implemented)
 
 0.6  9. Other things see my hand written note. 
+
+0.6  10. Good solution about cut-in specials.
+
+0.6  11. Backgrounds with multi-layer (NEW backgrounds.. old 3D backgrounds are all obsolete.)
+
+0.6  12. Talking scene design (speechbox, 9patch, font, visual effects, etc) 
 
 * Tools / Libraries Issues:
 
@@ -192,8 +201,6 @@ WIP  5. Character Differentiations - Special abilities
 
   3. Better particle emitter interfaces.
      -- Lua modules?
-     
-  4. audio doesn't have the abilities of fade-in/out and stop a single track.
 
 * Management / Distribution Issues:
 

@@ -304,7 +304,7 @@ void TestNetGame::cycle() {
 int main(int argc, char* argv[]){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::Conf::i().init("");
-    psc::App::i();
+    psc::App::i().init();
     if( argc > 1 ) {
         TestNetGame tester(1);
         return psc::App::i().init().run(std::tr1::bind(&TestNetGame::cycle, &tester));

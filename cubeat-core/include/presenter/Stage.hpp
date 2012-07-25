@@ -51,6 +51,7 @@ protected:
     view::pScene scene_;
     utils::map_any conf_;
     std::vector< SceneObjList > slists_;
+    std::string music_path_a_, music_path_b_, fmusic_path_a_, fmusic_path_b_;
 
     struct AnimParam {
         int s; //start frame

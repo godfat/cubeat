@@ -106,26 +106,32 @@ pStage Stage::init( std::string const& path )
         }
         anim_group_.push_back( anim_list );
     }
+
+    music_path_a_ = conf_.S("music");
+    music_path_b_ = conf_.S("music2");
+    fmusic_path_a_= conf_.S("fast_music");
+    fmusic_path_b_= conf_.S("fast_music2");
+
     return shared_from_this();
 }
 
-Stage& Stage::loadBGM()
-{
-    try {
-        audio::Sound::i().loadBGM_AB( conf_.S("music"), conf_.S("music2") );
-    }
-    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().loadBGM( conf_.S("music") );
-    }
-
-    try {
-        audio::Sound::i().loadBGM_AB( conf_.S("fast_music"), conf_.S("fast_music2") );
-    }
-    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
-        audio::Sound::i().loadBGM( conf_.S("music") );
-    }
-    return *this;
-}
+//Stage& Stage::loadBGM()
+//{
+//    try {
+//        audio::Sound::i().loadBGM_AB( conf_.S("music"), conf_.S("music2") );
+//    }
+//    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+//        audio::Sound::i().loadBGM( conf_.S("music") );
+//    }
+//
+//    try {
+//        audio::Sound::i().loadBGM_AB( conf_.S("fast_music"), conf_.S("fast_music2") );
+//    }
+//    catch(boost::bad_any_cast&) { // GDC 2012 Mockup: We should really start to use Lua for everything scriptable....
+//        audio::Sound::i().loadBGM( conf_.S("music") );
+//    }
+//    return *this;
+//}
 
 Stage& Stage::hitGroup(int const& id)
 {
@@ -154,14 +160,17 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM(time_t const& fade_t)
 {
-    audio::Sound::i().trackFlip(fade_t, 0);
+    audio::Sound::i().playBGM_AB(music_path_a_, music_path_b_);
     return *this;
 }
 
 Stage& Stage::playFastBGM(time_t const& fade_t)
 {
-    //WTF, no difference here? Is it just make sure you call playBGM first?
-    audio::Sound::i().trackFlip(fade_t, 0);
+    audio::Sound::i().playBGM("smb_warning.wav", 200);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&audio::Sound::playBGM_AB, &audio::Sound::i(), fmusic_path_a_, fmusic_path_b_, 300),
+        shared_from_this(),
+        2500);
     return *this;
 }
 

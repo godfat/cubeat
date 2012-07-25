@@ -197,7 +197,6 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
 
     //start music
     audio::Sound::i().stopAll(); //stop old
-    stage_->loadBGM();
     stage_->playBGM();
 
     //ready_go(4);

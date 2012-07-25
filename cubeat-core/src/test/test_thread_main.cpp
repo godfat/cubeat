@@ -58,7 +58,8 @@ private:
 
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
-    psc::App::i();
+    psc::Conf::i().init("");
+    psc::App::i().init();
     TestThread tester;
     return psc::App::i().init().run(std::tr1::bind(&TestThread::cycle, &tester));
 }

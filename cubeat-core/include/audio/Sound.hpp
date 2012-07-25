@@ -52,8 +52,8 @@ public:
     Sound& loadBGM(std::string const& path);
 
     //just play this if you want to play a single music track
-    Sound& playBGM_AB(std::string const& path_a, std::string const& path_b);
-    Sound& playBGM(std::string const& path, int const& loop = 0);
+    Sound& playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t = 0);
+    Sound& playBGM(std::string const& path, time_t const& fade_t = 0, int const& loop = 0);
 
     Sound& trackFlip(time_t const& fade_t = 0, int const& loop = 0);
 
@@ -64,6 +64,8 @@ public:
     Sound& stopAll();
     Sound& pauseAll(bool const&);
     Sound& cycle();
+
+    void check_sound_volumes();
 
     void init();
     ~Sound();

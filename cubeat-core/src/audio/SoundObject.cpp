@@ -120,6 +120,9 @@ SoundObject::SoundObject(wpSoundSample const& sample)
 SoundObject& SoundObject::play(time_t const& fade_t, int const& loop)
 {
     if( pSoundSample s = sampleA_.lock() ) {
+
+        rewind(); // rewind here to ensure before this playback,
+                  // the actual audio stream is not half way through.
         if( fade_t > 0 ) { ch_ = ALmixer_FadeInChannel(-1, s->data_, loop, fade_t); }
         else             { ch_ = ALmixer_PlayChannel(-1, s->data_, loop); }
 
@@ -153,6 +156,7 @@ SoundObject& SoundObject::pause()
         stop();
         //even if the stream cannot be paused, it should be tolerable. (just skip it.)
     }
+    std::cout << this << " is paused." << std::endl;
     return *this;
 }
 
@@ -172,8 +176,6 @@ SoundObject& SoundObject::stop()
 SoundObject& SoundObject::rewind()
 {
     if( pSoundSample s2 = sampleB_.lock() ) {
-        bool paused = is_paused(); //get original paused state before all the rewinding
-        stop();
         pSoundSample s1 = sampleA_.lock();
         if( ALmixer_SeekData( s1->data_, 0 ) == -1 ) {
             std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s1->name_ << ": " << ALmixer_GetError() << std::endl;
@@ -183,9 +185,6 @@ SoundObject& SoundObject::rewind()
             std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s2->name_ << ": " << ALmixer_GetError() << std::endl;
             return *this;
         }
-        ch_  = ALmixer_PlayChannel(-1, s1->data_, 0);
-        src_ = ALmixer_GetSource(ch_); // for future reference.
-        if( paused ) pause();      //restore pause state if necessary.
     } else {
         if( ALmixer_RewindChannel(ch_) == -1 ) {
             std::cerr << "OpenAL (ALmixer): Failed to rewind sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;

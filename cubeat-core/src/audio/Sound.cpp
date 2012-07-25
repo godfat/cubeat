@@ -103,12 +103,12 @@ Sound& Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
     return *this;
 }
 
-Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b)
+Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t)
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
     loadBGM_AB(path_a, path_b);
-    trackFlip(0, 0);
+    trackFlip(fade_t, 0);
     return *this;
 }
 
@@ -134,12 +134,12 @@ Sound& Sound::loadBGM(std::string const& path)
     return *this;
 }
 
-Sound& Sound::playBGM(std::string const& path, int const& loop)
+Sound& Sound::playBGM(std::string const& path, time_t const& fade_t, int const& loop)
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
     loadBGM(path);
-    trackFlip(0, loop);
+    trackFlip(fade_t, loop);
     return *this;
 }
 
@@ -171,7 +171,7 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
     }
     if( after ) {
         if( after->is_paused() ) {
-            after->rewind();
+            //after->rewind(); unneeded feature, pick out now
             after->resume();
         }
         else if ( !after->is_loaded() ) {
@@ -266,6 +266,14 @@ Sound& Sound::cycle()
 
     sound_to_be_cleared_.clear();
     return *this;
+}
+
+void Sound::check_sound_volumes()
+{
+    for( int i = 0; i < 16; ++i ) {
+        std::cout << ALmixer_GetVolumeChannel(i) << " ";
+    }
+    std::cout << std::endl;
 }
 
 Sound::~Sound()

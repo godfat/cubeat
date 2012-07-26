@@ -20,11 +20,6 @@ ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
--- Ok, the problem here is we now have to different signature for callbacks,
--- But, ffi.cast to C functions seemed to have the magic to treat them all the same!
--- I assume there's another internal check for argument amounts.... 
--- so I don't care about PSC_CALLBACK_WITH_PARAM now
-
 local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
 local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_WITH_PARA")
 

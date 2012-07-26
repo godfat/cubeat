@@ -44,7 +44,7 @@ Sound& Sound::loadBuffer(std::string const& path)
     //pSoundBuffer new_buffer = SoundBuffer::create(absolute_path);
     pSoundSample new_buffer = SoundSample::create(absolute_path, false);
     //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
-    sound_buffers_[path] = new_buffer;
+    sound_samples_[path] = new_buffer;
     return *this;
 }
 
@@ -73,10 +73,26 @@ Sound& Sound::loadSample(std::string const& path)
 //    //return *this;
 //}
 
+//deprecated API: use playSample instead in the future.
+//kept for compatibility
+Sound& Sound::playBuffer(std::string const& path, bool const& loop)
+{
+//    if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
+//        loadBuffer(path);         //normally we should avoid this for big audio files.
+//
+//    pSoundObject new_sound = SoundObject::create(sound_buffers_[path]);
+//    new_sound->play(0, loop?-1:0);
+//    sound_list_.push_back(new_sound);
+//
+//    return *this;
+    playSample(path, 0, loop);
+    return *this;
+}
+
 Sound& Sound::playSample(std::string const& path, time_t const& fade_t, int const& loop)
 {
     if( !sound_samples_[path] )   //each path name -> sample(file is unique.
-        loadSample(path);         //normally we should avoid this for big audio files.
+        loadBuffer(path);         //normally we should avoid this for big audio files.
 
     pSoundObject new_sound = SoundObject::create(sound_samples_[path]);
     new_sound->play(fade_t, loop);
@@ -103,12 +119,12 @@ Sound& Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
     return *this;
 }
 
-Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b)
+Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t)
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
     loadBGM_AB(path_a, path_b);
-    trackFlip(0, 0);
+    trackFlip(fade_t, 0);
     return *this;
 }
 
@@ -134,12 +150,12 @@ Sound& Sound::loadBGM(std::string const& path)
     return *this;
 }
 
-Sound& Sound::playBGM(std::string const& path, int const& loop)
+Sound& Sound::playBGM(std::string const& path, time_t const& fade_t, int const& loop)
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
     loadBGM(path);
-    trackFlip(0, loop);
+    trackFlip(fade_t, loop);
     return *this;
 }
 
@@ -171,7 +187,7 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
     }
     if( after ) {
         if( after->is_paused() ) {
-            after->rewind();
+            //after->rewind(); unneeded feature, pick out now
             after->resume();
         }
         else if ( !after->is_loaded() ) {
@@ -180,20 +196,6 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
         after->volume(0);
         after->fade_volume(1, t);
     }
-}
-
-//deprecated API: use playSample instead in the future.
-//kept for compatibility
-Sound& Sound::playBuffer(std::string const& path, bool const& loop)
-{
-    if( !sound_buffers_[path] )   //each path name -> stream(file) is unique.
-        loadBuffer(path);         //normally we should avoid this for big audio files.
-
-    pSoundObject new_sound = SoundObject::create(sound_buffers_[path]);
-    new_sound->play(0, loop?-1:0);
-    sound_list_.push_back(new_sound);
-
-    return *this;
 }
 
 Sound& Sound::stopAll()
@@ -240,14 +242,6 @@ Sound& Sound::cycle()
     for(SoundList::iterator it = sound_list_.begin(), iend = sound_list_.end(); it != iend; ++it) {
         (*it)->cycle();
         if( !(*it)->is_active() ) {
-
-            //move this part to inside of SoundObject::cycle();
-
-//            if( (*it)->has_partB() ) {
-//                pSoundObject new_sound = SoundObject::create(sound_samples_[ (*it)->partB_path() ], 0, true);
-//                //pSoundObject new_sound = SoundObject::create(sound_streams_[ (*it)->partB_path() ], true);
-//                sound_list_.push_back(new_sound);
-//            }
             sound_to_be_cleared_.push_back(it);
         }
     }
@@ -266,6 +260,14 @@ Sound& Sound::cycle()
 
     sound_to_be_cleared_.clear();
     return *this;
+}
+
+void Sound::check_sound_volumes()
+{
+    for( int i = 0; i < 16; ++i ) {
+        std::cout << ALmixer_GetVolumeChannel(i) << " ";
+    }
+    std::cout << std::endl;
 }
 
 Sound::~Sound()

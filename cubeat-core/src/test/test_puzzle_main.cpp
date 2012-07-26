@@ -222,7 +222,7 @@ typedef TestPuzzle::pointer_type pTestPuzzle;
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::Conf::i().init("");
-    psc::App::i();
+    psc::App::i().init();
     pTestPuzzle tester = TestPuzzle::create();
     return psc::App::i().init().run(std::tr1::bind(&TestPuzzle::cycle, tester.get()));
 }

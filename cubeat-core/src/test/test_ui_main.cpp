@@ -144,7 +144,7 @@ void TestUI::ShowPos(view::pSprite& p) {
 int main(){
     std::srand(std::time(0)^std::clock()); //  init srand for global rand...
     psc::Conf::i().init("");
-    psc::App::i();
+    psc::App::i().init();
     psc::TestUI tester;
     tester.init();
     return psc::App::i().init().run(std::tr1::bind(&psc::TestUI::cycle, &tester));

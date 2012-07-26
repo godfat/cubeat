@@ -35,8 +35,9 @@ local function set_on_down_callback(sprite, func1, func2)
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic)
-  local focus_f = function() obj:set_texture(focus_pic) end
-  local leave_f = function() obj:set_texture(leave_pic) end
+  local focus_f = function(self) self:set_texture(focus_pic) end
+  local leave_f = function(self) self:set_texture(leave_pic) end
+
   obj:on_enter_focus(Input1, focus_f)
   obj:on_leave_focus(Input1, leave_f)
   obj:on_enter_focus(Input2, focus_f)
@@ -46,6 +47,7 @@ end
 local function set_focus_leave_color(obj, focus_color, leave_color)
   local focus_f = function(self) ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
   local leave_f = function(self) ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
+
   obj:on_enter_focus(Input1, focus_f)
   obj:on_leave_focus(Input1, leave_f)
   obj:on_enter_focus(Input2, focus_f)
@@ -187,7 +189,7 @@ local function new_list(object)
   local screen_h  = C.Get_SCREEN_H()
   setmetatable(object, Sprite_Based_Mt)
   object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
-  object:set_pos(screen_w/2, screen_h/2)
+  object:set_pos(object.x or screen_w/2, object.y or screen_h/2)
   
   local score_pos_y = 60 - (height/2)
   object.score      = new_text{parent=object._cdata, title='score', x=0, y=score_pos_y, center=true, size=40}
@@ -222,6 +224,10 @@ local function new_list(object)
                         end
   object.on_press_back= function(self, func)
                           object.back:on_press(func)
+                        end
+  object.remove_cb    = function(self)
+                          object.score:remove()
+                          object.back:remove()
                         end
   
   -- init setting
@@ -363,6 +369,11 @@ local function new_scrollbar(object)
                                           end
                       object.button:on_down( down_input1, down_input2 )
                       object.line:on_down( down_input1, down_input2 )
+                    end
+  object.remove_cb= function(self)
+                      object.text:remove()
+                      object.line:remove()
+                      object.button:remove()
                     end
   
   -- init setting

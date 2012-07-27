@@ -39,17 +39,9 @@ public:
         return singleton;
     }
 
-    Sound& loadStream(std::string const& path);
-    Sound& loadBuffer(std::string const& path);
-    Sound& loadSample(std::string const& path);
-
     //Sound& playStream(std::string const& path, bool const& loop = false);
     Sound& playBuffer(std::string const& path, bool const& loop = false);
     Sound& playSample(std::string const& path, time_t const& fade_t = 0, int const& loop = 0);
-
-    //these are very important when you need to load 2 BGM at the same time and flip-flop between them
-    Sound& loadBGM_AB(std::string const& path_a, std::string const& path_b);
-    Sound& loadBGM(std::string const& path);
 
     //just play this if you want to play a single music track
     Sound& playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t = 0);
@@ -70,12 +62,20 @@ public:
 private:
     Sound();
 
-    Sound& trackFlip(time_t const& fade_t = 0, int const& loop = 0);
+    Sound& loadStream(std::string const& path);
+    Sound& loadBuffer(std::string const& path);
+    Sound& loadSample(std::string const& path);
+
+    //load is internal. you essentially just play. it returns "next" main_track_.
+    int loadBGM_AB(std::string const& path_a, std::string const& path_b);
+    int loadBGM(std::string const& path);
+
+    void trackFlip(time_t const& fade_t = 0, int const& loop = 0, int const& seek = 0);
     //This may very well be extended to a multi-track system, abstracted from AL channels and sources that,
     //when you need arbitrary 3 or more BGM stand-by and somehow play them in-turn
     //However, what is the use case? I never bump into one.
 
-    void exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop);
+    void exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop, int const& seek = 0);
     void internal_so_init(pSoundObject& s, std::string const& a, std::string const& b = std::string());
 
 private:

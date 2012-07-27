@@ -204,10 +204,11 @@ SoundObject& SoundObject::seek(time_t const& ms)
         time_t t1 = ALmixer_GetTotalTime(s1->data_);
         if( ms < t1 ) {
             ALmixer_HaltChannel(ch_);
-            ALmixer_PlayChannel(ch_, s1->data_, -1);
+            ALmixer_PlayChannel(ch_, s1->data_, 0);
             ALmixer_SeekChannel(ch_, ms);
         } else {
             int ms_into_part_B = ms - t1;
+            std::cout << "Seeking to " << ms << " and it's " << ms_into_part_B << " into part B of this AB loop track. " << "(" << s2->name_ <<  ")" << std::endl;
             ALmixer_HaltChannel(ch_);
             ALmixer_PlayChannel(ch_, s2->data_, -1);
             ALmixer_SeekChannel(ch_, ms_into_part_B);

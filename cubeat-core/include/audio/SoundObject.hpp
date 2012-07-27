@@ -115,6 +115,7 @@ public:
 
     SoundObject& play(time_t const& fade_t = 0, int const& loop = 0);
     SoundObject& rewind();
+    SoundObject& seek(time_t const& ms);
     SoundObject& pause();
     SoundObject& stop();
     SoundObject& resume();

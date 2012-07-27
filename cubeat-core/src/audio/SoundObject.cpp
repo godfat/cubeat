@@ -175,7 +175,7 @@ SoundObject& SoundObject::stop()
 
 SoundObject& SoundObject::rewind()
 {
-    if( pSoundSample s2 = sampleB_.lock() ) {
+    if( pSoundSample s2 = sampleB_.lock() ) { // AB-loop tracks are special cases
         pSoundSample s1 = sampleA_.lock();
         if( ALmixer_SeekData( s1->data_, 0 ) == -1 ) {
             std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s1->name_ << ": " << ALmixer_GetError() << std::endl;
@@ -185,12 +185,39 @@ SoundObject& SoundObject::rewind()
             std::cerr << "OpenAL (ALmixer): Failed to rewind data " << s2->name_ << ": " << ALmixer_GetError() << std::endl;
             return *this;
         }
-    } else {
+    }
+    else {
         if( ch_ != -1 ) { // You will never use this API to rewind ALL CHANNELS. -1 is for un-initialized object.
             if( ALmixer_RewindChannel(ch_) == -1 ) {
                 std::cerr << "OpenAL (ALmixer): Failed to rewind sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
                 stop();
             }
+        }
+    }
+    return *this;
+}
+
+SoundObject& SoundObject::seek(time_t const& ms)
+{
+    if( pSoundSample s2 = sampleB_.lock() ) { // AB-loop tracks are special cases
+        pSoundSample s1 = sampleA_.lock();
+        time_t t1 = ALmixer_GetTotalTime(s1->data_);
+        if( ms < t1 ) {
+            ALmixer_HaltChannel(ch_);
+            ALmixer_PlayChannel(ch_, s1->data_, -1);
+            ALmixer_SeekChannel(ch_, ms);
+        } else {
+            int ms_into_part_B = ms - t1;
+            ALmixer_HaltChannel(ch_);
+            ALmixer_PlayChannel(ch_, s2->data_, -1);
+            ALmixer_SeekChannel(ch_, ms_into_part_B);
+        }
+        src_ = ALmixer_GetSource(ch_); // for future reference.
+    }
+    else {
+        if( ALmixer_SeekChannel(ch_, ms) == -1 ) {
+            std::cerr << "OpenAL (ALmixer): Failed to seek sound/stream " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
+            stop();
         }
     }
     return *this;

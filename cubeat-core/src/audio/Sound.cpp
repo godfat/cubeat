@@ -159,6 +159,28 @@ Sound& Sound::playBGM(std::string const& path, time_t const& fade_t, int const& 
     return *this;
 }
 
+Sound& Sound::seek_and_playBGM_AB(
+    std::string const& pa, std::string const& pb, time_t const& seekms, time_t const& fade_t = 0)
+{
+    loadBGM_AB(pa, pb);
+    //alright, which API do I use here to pass seek_time before trackFlip?
+    //probably can't do after trackFlip, because the track is already fading...
+    trackFlip(fade_t, 0);
+    return *this;
+}
+
+Sound& Sound::seek_and_playBGM(
+    std::string const& p, time_t const& seekms, time_t const& fade_t = 0, int const& loop = 0)
+{
+    loadBGM(p);
+    //alright, which API do I use here to pass seek_time before trackFlip?
+    //probably can't do after trackFlip, because the track is already fading...
+    trackFlip(fade_t, loop);
+    return *this;
+}
+
+//actually, you should not use trackFlip outside.
+//this is considered an implementation detail.
 Sound& Sound::trackFlip(time_t const& fade_t, int const& loop)
 {
     std::cout << " flipping " << bgm_[0] << " and " << bgm_[1] << std::endl;

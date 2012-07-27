@@ -55,11 +55,8 @@ public:
     Sound& playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t = 0);
     Sound& playBGM(std::string const& path, time_t const& fade_t = 0, int const& loop = 0);
 
-    Sound& trackFlip(time_t const& fade_t = 0, int const& loop = 0);
-
-    //This may very well be extended to a multi-track system, abstracted from AL channels and sources that,
-    //when you need arbitrary 3 or more BGM stand-by and somehow play them in-turn
-    //However, what is the use case? I never bump into one.
+    Sound& seek_and_playBGM_AB(std::string const& pa, std::string const& pb, time_t const& seekms, time_t const& fade_t = 0);
+    Sound& seek_and_playBGM(std::string const& p, time_t const& seekms, time_t const& fade_t = 0, int const& loop = 0);
 
     Sound& stopAll();
     Sound& pauseAll(bool const&);
@@ -72,6 +69,11 @@ public:
 
 private:
     Sound();
+
+    Sound& trackFlip(time_t const& fade_t = 0, int const& loop = 0);
+    //This may very well be extended to a multi-track system, abstracted from AL channels and sources that,
+    //when you need arbitrary 3 or more BGM stand-by and somehow play them in-turn
+    //However, what is the use case? I never bump into one.
 
     void exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop);
     void internal_so_init(pSoundObject& s, std::string const& a, std::string const& b = std::string());

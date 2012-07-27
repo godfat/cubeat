@@ -51,6 +51,11 @@ public:
         play_time += 2500;
 
         playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", play_time);
+        play_time += 6000;
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            std::tr1:;bind(&audio::Sound), play_time);
+
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);

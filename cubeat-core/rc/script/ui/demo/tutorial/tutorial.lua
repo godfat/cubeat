@@ -19,7 +19,7 @@ local function init(demo, parent)
         menu['tuts_'..tostring(i+1)]:set_visible(true)
         menu[k]:set_visible(false)
       else
-        switch.load_page(demo, 'mainmenu')
+        switch.load_page('mainmenu')
       end
     end)    
   end

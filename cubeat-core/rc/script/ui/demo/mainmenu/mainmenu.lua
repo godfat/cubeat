@@ -57,7 +57,7 @@ local function init(demo, parent)
   menu.btn_tut:set_scale(1.5)
   menu.btn_tut:on_press(function(self) 
     --menu['tuts_1']:set_visible(true)
-    switch.load_page(demo, 'tutorial')
+    switch.load_page('tutorial')
   end)
   
   menu.btn_quit = ui.new_text{ parent = parent,
@@ -73,7 +73,7 @@ local function init(demo, parent)
   }
   menu.btn_test:set_scale(1.5)
   menu.btn_test:on_press(function(self)
-    switch.load_page(demo, 'testmenu')
+    switch.load_page('testmenu')
   end)
   
   return menu

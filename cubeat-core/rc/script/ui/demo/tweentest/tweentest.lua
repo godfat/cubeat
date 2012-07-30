@@ -37,7 +37,7 @@ local function init(demo, parent)
   end
   menu.scroll:on_down(on_down_scroll)
   menu.btn5:on_press(function(self)
-    switch.load_page(demo, 'testmenu')
+    switch.load_page('testmenu')
   end)
   
   return menu

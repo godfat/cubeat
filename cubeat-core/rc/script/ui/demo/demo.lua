@@ -43,15 +43,15 @@ function init(demo)
   
   --------------------------------------
   
-  switch.init(scene_)
+  switch.init(scene_, demo)
   
   --preload all ui
-  switch.load_page(demo, 'tutorial' )
-  switch.load_page(demo, 'score'    )
-  switch.load_page(demo, 'tweentest')
-  switch.load_page(demo, 'select'   )
-  switch.load_page(demo, 'testmenu' )
-  switch.load_page(demo, 'mainmenu' )
+  switch.load_page('tutorial' )
+  switch.load_page('score'    )
+  switch.load_page('tweentest')
+  switch.load_page('select'   )
+  switch.load_page('testmenu' )
+  switch.load_page('mainmenu' )
 end
 
 function mainmenu()

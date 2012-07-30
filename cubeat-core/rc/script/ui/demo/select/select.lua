@@ -56,7 +56,7 @@ local function init(demo, parent)
   menu.select_actor_page = ui.new_image{ parent=parent, path=value.bg_path, visible=true, x= -480, y= -300,
                                          w=value.bg_w, h=value.bg_h }
   menu.select_actor_page:on_press_r(function(self)
-                                      switch.load_page(demo, 'testmenu', 'in')
+                                      switch.load_page('testmenu', 'in')
                                     end)
 
   -- create actor_icon

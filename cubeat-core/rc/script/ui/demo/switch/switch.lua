@@ -7,6 +7,7 @@ local ui   = require 'rc/script/ui/ui'
 local page_obj_ = {}
 local to_be_delete_
 
+local game_demo_
 local vorig_ 
 local title_
 local demobuild_
@@ -15,7 +16,9 @@ local blocker_
 
 ------------------------------------------------------------
 
-local function init(parent)
+local function init(parent, demo)
+  game_demo_ = demo
+
   vorig_ = view.new_sprite("blahblah", parent, 1, 1, true) 
   vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
@@ -99,7 +102,7 @@ local function remove_to_be_delete()
   end
 end
 
-local function load_page(demo, name, slide_title)
+local function load_page(name, slide_title)
   remove_to_be_delete()
   hide_page_obj()
 
@@ -108,7 +111,7 @@ local function load_page(demo, name, slide_title)
   
   to_be_delete_ = page_obj_
   local p = require ('rc/script/ui/demo/'..name..'/'..name)
-  page_obj_ = p.init(demo, vorig_)
+  page_obj_ = p.init(game_demo_, vorig_)
   
   view.debug_hack()
 end
@@ -123,5 +126,5 @@ return {
   slide_out_page_obj  = slide_out_page_obj,
   slide_in_page_obj   = slide_in_page_obj,
   load_page           = load_page,
-  get_page_obj        = get_page_obj
+  get_page_obj        = get_page_obj,
 }

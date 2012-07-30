@@ -25,7 +25,7 @@ local function init(demo, parent)
   
   menu.back     = ui.new_text{ parent=parent, title='Back', x=0, y=300, size=32, depth=-100 }
   menu.back:on_press(function(self)
-    switch.load_page(demo, 'testmenu', 'in')
+    switch.load_page('testmenu', 'in')
   end)
   
   return menu

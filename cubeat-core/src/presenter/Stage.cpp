@@ -171,6 +171,13 @@ Stage& Stage::playFastBGM(time_t const& fade_t)
         std::tr1::bind(&audio::Sound::playBGM_AB, &audio::Sound::i(), fmusic_path_a_, fmusic_path_b_, 300),
         shared_from_this(),
         2500);
+
+    return *this;
+}
+
+Stage& Stage::playNormalBGM_without_leading(time_t const& lead_t, time_t const& fade_t)
+{
+    audio::Sound::i().seek_and_playBGM_AB(music_path_a_, music_path_b_, lead_t, fade_t);
     return *this;
 }
 

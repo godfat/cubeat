@@ -37,20 +37,29 @@ public:
         playSample_delayed("2/2b_7.wav", 6666);
 
         int play_time = 10000;
+//
+//        playBGM_delayed("smb_warning.wav", play_time);
+//        play_time += 2500;
+//
+//        playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", play_time);
+//        play_time += 10000;
+//
+//        playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", play_time);
+//        play_time += 10000;
 
         playBGM_delayed("smb_warning.wav", play_time);
         play_time += 2500;
 
         playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", play_time);
-        play_time += 10000;
+        play_time += 12000;
 
-        playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", play_time);
+        seek_and_playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", 9321, play_time);
         play_time += 10000;
 
         playBGM_delayed("smb_warning.wav", play_time);
         play_time += 2500;
 
-        playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", play_time);
+        seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 789, play_time);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
@@ -79,6 +88,11 @@ public:
     void playSample_delayed(std::string const& sf, time_t const& play_time){
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&audio::Sound::playSample, &audio::Sound::i(), sf, 0, 0), play_time);
+    }
+
+    void seek_and_playBGM_AB_delayed(std::string const& pa, std::string const& pb, time_t const& seekms, time_t const& play_time){
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            std::tr1::bind(&audio::Sound::seek_and_playBGM_AB, &audio::Sound::i(), pa, pb, seekms, 500), play_time);
     }
 
 private:

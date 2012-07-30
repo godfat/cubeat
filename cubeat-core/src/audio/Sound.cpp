@@ -100,23 +100,55 @@ Sound& Sound::playSample(std::string const& path, time_t const& fade_t, int cons
     return *this;
 }
 
-Sound& Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
+void Sound::internal_so_init(pSoundObject& s, std::string const& a, std::string const& b) {
+    s = SoundObject::create(sound_samples_[a]);
+    if( b.size() ) s->partB(sound_samples_[b]);
+}
+
+int Sound::loadBGM_AB(std::string const& path_a, std::string const& path_b)
 {
     if( !sound_samples_[path_a] )
         loadSample(path_a);
     if( !sound_samples_[path_b] )
         loadSample(path_b);
 
-    if( !bgm_[0] )      internal_so_init(bgm_[0], path_a, path_b);
-    else if( !bgm_[1] ) internal_so_init(bgm_[1], path_a, path_b);
+    if( !bgm_[0] ) {
+        internal_so_init(bgm_[0], path_a, path_b);
+        return 0;
+    }
+    else if( !bgm_[1] ) {
+        internal_so_init(bgm_[1], path_a, path_b);
+        return 1;
+    }
     else {
         int track = main_track_ == 0 ? 1 : 0;
         bgm_[track]->stop();
         bgm_[track].reset();
         internal_so_init(bgm_[track], path_a, path_b);
+        return track;
     }
-    // not sure if the last one works... choose a not currently playing bgm track to substitute
-    return *this;
+}
+
+int Sound::loadBGM(std::string const& path)
+{
+    if( !sound_samples_[path] )
+        loadSample(path);
+
+    if( !bgm_[0] ) {
+        internal_so_init(bgm_[0], path);
+        return 0;
+    }
+    else if( !bgm_[1] ) {
+        internal_so_init(bgm_[1], path);
+        return 1;
+    }
+    else {
+        int track = main_track_ == 0 ? 1 : 0;
+        bgm_[track]->stop();
+        bgm_[track].reset();
+        internal_so_init(bgm_[track], path);
+        return track;
+    }
 }
 
 Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b, time_t const& fade_t)
@@ -125,28 +157,6 @@ Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b, t
     //this is just for convenience usages
     loadBGM_AB(path_a, path_b);
     trackFlip(fade_t, 0);
-    return *this;
-}
-
-void Sound::internal_so_init(pSoundObject& s, std::string const& a, std::string const& b) {
-    s = SoundObject::create(sound_samples_[a]);
-    if( b.size() ) s->partB(sound_samples_[b]);
-}
-
-Sound& Sound::loadBGM(std::string const& path)
-{
-    if( !sound_samples_[path] )
-        loadSample(path);
-
-    if( !bgm_[0] )      internal_so_init(bgm_[0], path);
-    else if( !bgm_[1] ) internal_so_init(bgm_[1], path);
-    else {
-        int track = main_track_ == 0 ? 1 : 0;
-        bgm_[track]->stop();
-        bgm_[track].reset();
-        internal_so_init(bgm_[track], path);
-    }
-    // not sure if the last one works... choose a not currently playing bgm track to substitute
     return *this;
 }
 
@@ -159,23 +169,40 @@ Sound& Sound::playBGM(std::string const& path, time_t const& fade_t, int const& 
     return *this;
 }
 
-Sound& Sound::trackFlip(time_t const& fade_t, int const& loop)
+Sound& Sound::seek_and_playBGM_AB(
+    std::string const& pa, std::string const& pb, time_t const& seekms, time_t const& fade_t)
+{
+    loadBGM_AB(pa, pb);
+    trackFlip(fade_t, 0, seekms);
+    return *this;
+}
+
+Sound& Sound::seek_and_playBGM(
+    std::string const& p, time_t const& seekms, time_t const& fade_t, int const& loop)
+{
+    loadBGM(p);
+    trackFlip(fade_t, loop, seekms);
+    return *this;
+}
+
+// actually, you should not use trackFlip outside.
+// this is considered an implementation detail.
+void Sound::trackFlip(time_t const& fade_t, int const& loop, int const& seek)
 {
     std::cout << " flipping " << bgm_[0] << " and " << bgm_[1] << std::endl;
     if( bgm_[0] && ( bgm_[0]->is_paused() || !bgm_[0]->is_active() ) ) {
-        exchange(bgm_[1], bgm_[0], fade_t, loop);
+        exchange(bgm_[1], bgm_[0], fade_t, loop, seek);
         main_track_ = 0;
     }
     else if( bgm_[1] && ( bgm_[1]->is_paused() || !bgm_[1]->is_active() ) ) {
-        exchange(bgm_[0], bgm_[1], fade_t, loop);
+        exchange(bgm_[0], bgm_[1], fade_t, loop, seek);
         main_track_ = 1;
     }
     std::cout << " - " << bgm_[0]->is_paused() << " " << bgm_[0]->is_active() << std::endl;
     if (bgm_[1]) std::cout << " | " << bgm_[1]->is_paused() << " " << bgm_[1]->is_active() << std::endl;
-    return *this;
 }
 
-void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop)
+void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time_t const& t, int const& loop, int const& seek)
 {
     if( before ) {
         if( before->is_playing() ) {
@@ -189,9 +216,11 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
         if( after->is_paused() ) {
             //after->rewind(); unneeded feature, pick out now
             after->resume();
+            // well, you can't seek in this situation. (like if you want to resume, it's should only resume at where you paused.)
         }
         else if ( !after->is_loaded() ) {
             after->play(t, loop);
+            if( seek > 0 ) after->seek(seek); //only seek if it's not zero.
         }
         after->volume(0);
         after->fade_volume(1, t);

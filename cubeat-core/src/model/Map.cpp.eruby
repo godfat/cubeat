@@ -489,6 +489,8 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     }
 }
 
+// note/NOTE/WTF/temp: WHY? it is just a getter-like function, why have this emit events???
+// VERY DANGEROUS.
 int <% debug_hook 'Map::column_full_num' do %>() const{
 <% end %>
     int counter = 0;
@@ -499,7 +501,6 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
         }
         else owner()->column_not_full_event()(x);
     }
-
     return counter;
 }
 

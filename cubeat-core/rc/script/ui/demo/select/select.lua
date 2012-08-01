@@ -7,13 +7,12 @@ local switch= require 'rc/script/ui/demo/switch/switch'
 
 
 --temporary addition
-local ch_choose_ = {1, 2}
 local demo_game_ = nil
 local function choose_character(self)
   if demo_game_ then
-    local ch1 = "char/char"..tostring(ch_choose_[1]).."_new"
-    local ch2 = "char/char"..tostring(ch_choose_[2]).."_new"
-    local sconf = "stage/jungle"..tostring(ch_choose_[1])
+    local ch1 = "char/char"..tostring(config.ch_choose[1]).."_new"
+    local ch2 = "char/char"..tostring(config.ch_choose[2]).."_new"
+    local sconf = "stage/jungle"..tostring(config.ch_choose[1])
     demo_game_:init_vs_cpu(ch1, ch2, sconf)
   end
 end
@@ -30,10 +29,8 @@ local function enter_icon(input, icon_no, menu)
   local show = function(self)
     local fullkey = 'actor_full_'..tostring(input)
     local fadekey = 'actor_fade_'..tostring(input)
-    
-    ch_choose_[input] = icon_no
   
-    if icon_no==config.player[input] then
+    if icon_no==config.ch_choose[input] then
       return
     end
     if menu[fullkey]:get_pos_x()==config.full_x[input] then
@@ -43,7 +40,7 @@ local function enter_icon(input, icon_no, menu)
     menu[fullkey]:set_pos(-config.full_w, config.full_y)
     menu[fullkey]:set_texture(config.full_path(icon_no))
     menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], config.move_end[input], config.move_time)
-    config.player[input] = icon_no
+    config.ch_choose[input] = icon_no
   end  
   return show
 end

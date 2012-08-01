@@ -3,7 +3,7 @@ local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
 -- player selected actor no.
-local player = { 1, 1 }
+local ch_choose = { 1, 1 }
 
 -- screen
 local screen_w  = view.GET_SCREEN_W()
@@ -43,7 +43,7 @@ local move_start= { ffi.new("value2", -full_w,   full_y), ffi.new("value2", scre
 local move_end  = { ffi.new("value2", full_x[1], full_y), ffi.new("value2", full_x[2], full_y) }
 
 return {
-  player    = player,
+  ch_choose = ch_choose,
   --
   screen_w  = screen_w,
   screen_h  = screen_h,

@@ -191,12 +191,26 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     last_t_ = now_t_;
     now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
+    // 2012 note: This cycle is getting bigger and bigger. I should refactor it to event-based style
+    // e.g:
+    // at init or some other specific point, not in the model loop:
+    // if( ms()->garbage_dumpable && ms()->dropping_creatable() )
+    //     add_task( "cycle_warning", model::Map::cycle_warning );
+    //
+    // and you can add/remove this task dynamically.
+    // same for cycle_creation_garbage && cycle_creation.
+    // the point is, only change task when the state changes,
+    // when no state changes between each loop, no task is add or removed.
+    // and then model::Map will execute tasks by a certain priority.
+    // like, cycle_warning > cycle_creation_garbage > cycle_creation
+
     if( last_t_ == now_t_ ) return *this; //if time is not changed, then cycle should be stopped;
 
     garbage_dumpable_ = ms()->garbage_dumpable();
     dropping_creatable_ = ms()->dropping_creatable();
-    if(garbage_dumpable_ && dropping_creatable_)
+    if( garbage_dumpable_ && dropping_creatable_ ) {
         cycle_warning();
+    }
     else {
         warning_level_.reset();
         alarm_sound_.reset();
@@ -206,8 +220,12 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     cycle_cubes();
     check_one_fadings();
 
-    if( garbage_dumpable_ && garbage_left_ > 0 )
+    // 2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ here
+    // not ms()->dropping_creatable(). it will affect cycle_warning().
+
+    if( garbage_dumpable_ && garbage_left_ > 0 ) {
         cycle_creation_garbage();
+    }
     else if( dropping_creatable_ ) {
         cycle_creation();
     }

@@ -111,6 +111,7 @@ protected:
 
     utils::map_any gameplay_;
     utils::map_any uiconf_;
+    utils::map_any passive_conf0_, passive_conf1_;
     view::pMenu ui_layout_;
 
     presenter::pPlayerView pview1_;

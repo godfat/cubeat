@@ -43,8 +43,8 @@ player1: {
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
     
-    #default for how many *seconds* for death-countdown
-    countdown: 5,
+    #how many ms between a single warning (alarm) sound. 
+    warning_gap: 1000,
     
     #damage_factor
     damage_factor: 1.0,
@@ -54,6 +54,16 @@ player1: {
     
     #possibility of dropping normal cube instead of garbages (0 ~ 100):
     drop_normal_chance: 0, 
+    
+    #color restore percentage (0 ~ 100):
+    restore: {
+        r: 25,
+        g: 25,
+        b: 25,
+        y: 25,
+        rb: 0,
+        gb: 0
+    },
 
     #weapon state, cooling event happens every 100ms,
     #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
@@ -68,16 +78,6 @@ player1: {
         item3_start_ammo: 1,
         heat_for_haste: 0.02,
         heat_for_jama: 0.18
-    },
-    
-    #color restore percentage (0 ~ 100):
-    restore: {
-        r: 25,
-        g: 25,
-        b: 25,
-        y: 25,
-        rb: 0,
-        gb: 0
     },
 
     #currently not controllable or thing that should not be changed:
@@ -99,10 +99,20 @@ player2: {
     drop_speed: 450.0,
     cube_dropping_duration: 600,
     use_broken_as_garbage: 1,
-    countdown: 1,
+    warning_gap: 1000,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 0,
+    
+    restore: {
+        r: 25,
+        g: 25,
+        b: 25,
+        y: 25,
+        rb: 0,
+        gb: 0
+    },
+    
     weapon: {
         heat_rate: 0.18,
         cool_rate: 0.06,
@@ -112,15 +122,6 @@ player2: {
         item3_start_ammo: 1,
         heat_for_haste: 0.02,
         heat_for_jama: 0.18
-    },
-    
-    restore: { # 0 ~ 100
-        r: 25,
-        g: 25,
-        b: 25,
-        y: 25,
-        rb: 0,
-        gb: 0
     },
 
     #currently not controllable or thing that should not be changed:

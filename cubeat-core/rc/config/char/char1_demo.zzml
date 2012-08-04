@@ -31,7 +31,7 @@ face_pos: [
     {x:-47, y:-40 }
 ],
 
-ability_mod: {
+passive_mod: {
     countdown: 7,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,

@@ -23,11 +23,12 @@ public:
         return pointer_type(new MapSetting(conf));
     }
 
-<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay %>
-<%= accessor :double, :sink_speed, :drop_speed, :damage_factor %>
+<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :drop_normal_chance %>
+<%= accessor :double, :sink_speed, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage %>
+<%= accessor :int, :rez_chance_r, :rez_chance_g, :rez_chance_b, :rez_chance_y, :rez_chance_gb, :rez_chance_rb %>
 public:
     MapSetting& <% debug_hook 'width' do %>(int const& new_width){
 <% end %>
@@ -56,7 +57,16 @@ public:
                .height(height_)
                .dropping_creatable(dropping_creatable_)
                .garbage_dumpable(garbage_dumpable_)
-               .use_broken_as_garbage(use_broken_as_garbage_);
+               .use_broken_as_garbage(use_broken_as_garbage_)
+               .warning_gap(warning_gap_)
+               .negate_damage_factor(negate_damage_factor_)
+               .drop_normal_chance(drop_normal_chance_)
+               .rez_chance_r(rez_chance_r_)
+               .rez_chance_g(rez_chance_g_)
+               .rez_chance_b(rez_chance_b_)
+               .rez_chance_y(rez_chance_y_)
+               .rez_chance_gb(rez_chance_gb_)
+               .rez_chance_rb(rez_chance_rb_);
         return result;
     }
 
@@ -66,10 +76,11 @@ private:
     MapSetting():
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
-        cube_dropping_duration_(135), warning_check_delay_(100),
-        sink_speed_(80.0), drop_speed_(450.0), damage_factor_(1.00),
+        cube_dropping_duration_(135), warning_check_delay_(100), warning_gap_(1000), drop_normal_chance_(0),
+        sink_speed_(80.0), drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
-        use_broken_as_garbage_(false)
+        use_broken_as_garbage_(false), rez_chance_r_(25),
+        rez_chance_g_(25), rez_chance_b_(25), rez_chance_y_(25), rez_chance_gb_(0), rez_chance_rb_(0)
     { reset_size(); }
 
     MapSetting(utils::map_any const& conf);

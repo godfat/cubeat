@@ -14,14 +14,23 @@ MapSetting::MapSetting(utils::map_any const& conf):
     cube_sinking_duration_( conf.I("cube_sinking_duration") ),
     cube_dropping_duration_( conf.I("cube_dropping_duration") ),
     warning_check_delay_( conf.I("warning_check_delay") ),
+    warning_gap_( conf.I("warning_gap") ),
+    drop_normal_chance_( conf.I("drop_normal_chance") ),
     sink_speed_( conf.F("sink_speed") ),
     drop_speed_( conf.F("drop_speed") ),
     damage_factor_( conf.F("damage_factor") ),
+    negate_damage_factor_( conf.F("negate_damage_factor") ),
     width_( conf.I("width") ),
     height_( conf.I("height") ),
     dropping_creatable_( static_cast<bool>(conf.I("dropping_creatable")) ),
     garbage_dumpable_( static_cast<bool>(conf.I("garbage_dumpable")) ),
-    use_broken_as_garbage_( static_cast<bool>(conf.I("use_broken_as_garbage")) )
+    use_broken_as_garbage_( static_cast<bool>(conf.I("use_broken_as_garbage")) ),
+    rez_chance_r_( conf.M("restore").I("r") ),
+    rez_chance_g_( conf.M("restore").I("g") ),
+    rez_chance_b_( conf.M("restore").I("b") ),
+    rez_chance_y_( conf.M("restore").I("y") ),
+    rez_chance_gb_( conf.M("restore").I("gb") ),
+    rez_chance_rb_( conf.M("restore").I("rb") )
 {
     reset_size();
 }

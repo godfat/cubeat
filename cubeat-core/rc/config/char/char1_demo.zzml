@@ -29,4 +29,27 @@ face_pos: [
     {x:-47, y:-40 },
     {x:-47, y:-41 },
     {x:-47, y:-40 }
-]
+],
+
+ability_mod: {
+    countdown: 7,
+    damage_factor: 1.0,
+    negate_damage_factor: 1.0,
+    drop_normal_chance: 0, 
+    weapon: {
+        heat_rate: 0.18,
+        cool_rate: 0.06,
+        downtime: 2000,
+        item1_start_ammo: 10,
+        item2_start_ammo: 10,
+        item3_start_ammo: 1,
+        heat_for_haste: 0.02,
+        heat_for_jama: 0.18
+    },
+    restore: {
+        r: 25,
+        g: 25,
+        b: 25,
+        y: 25
+    },
+}

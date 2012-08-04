@@ -206,6 +206,11 @@ public:
     template<class T>
     inline T const& at(std::string const& i) const { return boost::any_cast<T const&>(dict_[i]); }
 
+    inline iterator       find(std::string const& k) { return dict_.find(k); }
+    inline const_iterator find(std::string const& k) const { return dict_.find(k); }
+    inline iterator       find(int         const& k) { return dict_.find(k); }
+    inline const_iterator find(int         const& k) const { return dict_.find(k); }
+
     inline void insert(std::string const& k, int         const& v) { dict_.insert(std::make_pair(k,v)); }
     inline void insert(std::string const& k, double      const& v) { dict_.insert(std::make_pair(k,v)); }
     inline void insert(std::string const& k, std::string const& v) { dict_.insert(std::make_pair(k,v)); }

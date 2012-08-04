@@ -54,16 +54,6 @@ player1: {
     
     #possibility of dropping normal cube instead of garbages (0 ~ 100):
     drop_normal_chance: 0, 
-    
-    #color restore percentage (0 ~ 100):
-    restore: {
-        r: 25,
-        g: 25,
-        b: 25,
-        y: 25,
-        rb: 0,
-        gb: 0
-    },
 
     #weapon state, cooling event happens every 100ms,
     #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
@@ -103,15 +93,6 @@ player2: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 0,
-    
-    restore: {
-        r: 25,
-        g: 25,
-        b: 25,
-        y: 25,
-        rb: 0,
-        gb: 0
-    },
     
     weapon: {
         heat_rate: 0.18,

@@ -157,12 +157,22 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
+
+    // note WTF temp
+    utils::map_any cc1 = Conf::i().config_of(c1p).M("passive_mod").M("restore");
+    set0->setup_color_chances(cc1);
+
     map0_ = presenter::Map::create(set0);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
+
+    // note WTF temp
+    utils::map_any cc2 = Conf::i().config_of(c2p).M("passive_mod").M("restore");
+    set1->setup_color_chances(cc2);
+
     map1_ = presenter::Map::create(set1);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );

@@ -131,27 +131,9 @@ void <% debug_hook 'Cube::be_broken' do %>(int){
 void <% debug_hook 'Cube::restore' do %>(int){
 <% end %>
     is_broken_ = false;
-    double roll = static_cast<double>( utils::random(1000) ) / 10.0; // 0 ~ 99.9
-    bool ok = false;
     //color_id(utils::random(map()->ms()->color_amounts())+1);
-    std::vector<double> const& rez_chances = map()->ms()->rez_chances();
 
-    for( size_t i = 0; i < rez_chances.size(); ++i ) {
-        if( roll >= rez_chances[i] ) {
-            roll -= rez_chances[i];
-        } else {
-            ok = true;
-            // determine cube color_id by dropping the roll into the right gap
-            color_id( i+1 );
-            // fuck, our id2rgb table is 1,2,3,4,5,6 not 0,1,2,3,4,5.... 0 means random(limit) ...
-            break;
-        }
-    }
-
-    if( !ok ) { //exception! no color_id decided!
-        std::cerr << "model::Cube debug: restoring to unknown color!\n";
-        color_id( rez_chances.size() ); //default
-    }
+    color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 );
 
     if( state::pWaiting w = is_waiting() )
         w->uncheck();

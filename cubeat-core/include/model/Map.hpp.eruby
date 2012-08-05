@@ -57,7 +57,7 @@ public:
     // end
 
     // only used by Game::make_garbage
-    void <% debug_hook 'push_garbage' do %>(int amounts){ <%end%> garbage_left_ += amounts; }
+    void push_garbage(double amounts);
     // end
 
     // for Cube#lose_chain
@@ -97,6 +97,7 @@ private:
     bool is_below_empty(cpCube) const;
     void update_chains();
     void inc_warning(int&);
+    void dec_warning(int&);
     presenter::pMap owner() const{ return owner_.lock(); }
     pMap self()             const{ return self_.lock(); }
 

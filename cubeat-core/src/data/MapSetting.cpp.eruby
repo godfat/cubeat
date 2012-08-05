@@ -56,6 +56,17 @@ MapSetting::pointer_type MapSetting::clone() const {
     return result;
 }
 
+MapSetting& MapSetting::apply_player_passive_mods(utils::map_any const& conf) {
+    setup_color_chances( conf.M("restore") );
+
+    warning_gap_          = conf.I("warning_gap");
+    damage_factor_        = conf.F("damage_factor");
+    negate_damage_factor_ = conf.F("negate_damage_factor");
+    drop_normal_chance_   = conf.I("drop_normal_chance");
+
+    return *this;
+}
+
 MapSetting& MapSetting::setup_color_chances(utils::map_any const& conf) {
     setup_color_chances();
     utils::map_any::const_iterator end = conf.end();

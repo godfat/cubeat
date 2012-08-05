@@ -49,7 +49,7 @@ public:
         height_ = new_height;
         return reset_size();
     }
-    MapSetting& setup_color_chances(utils::map_any const& conf);
+    MapSetting& apply_player_passive_mods(utils::map_any const& conf);
 
     pointer_type clone() const;
     <% debug_hook '~MapSetting' do %>(){<%end%>}
@@ -70,6 +70,7 @@ private:
     MapSetting(utils::map_any const& conf);
 
 private:
+    MapSetting& setup_color_chances(utils::map_any const& conf);
     MapSetting& setup_color_chances();
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };

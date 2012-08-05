@@ -39,8 +39,7 @@ passive_mod: {
     negate_damage_factor: 1.0,
     drop_normal_chance: 0, 
     restore: {
-        g: 1.0,
-        y: 1.0
+        y: 0.6
     },
     weapon: {
         heat_rate: 0.18,

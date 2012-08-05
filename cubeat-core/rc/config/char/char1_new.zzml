@@ -43,14 +43,14 @@ passive_mod: {
         g: 1.0
     },
     weapon: {
-        heat_rate: 0.18,
+        heat_rate: 0.165,
         cool_rate: 0.06,
         downtime: 2000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,
         heat_for_haste: 0.02,
-        heat_for_jama: 0.18
+        heat_for_jama: 0.16
     }
 }
 

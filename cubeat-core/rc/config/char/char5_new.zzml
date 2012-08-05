@@ -35,7 +35,7 @@ face_pos: [
 
 passive_mod: {
     warning_gap: 1000,
-    damage_factor: 1.0,
+    damage_factor: 1.2,
     negate_damage_factor: 1.0,
     drop_normal_chance: 0, 
     restore: {

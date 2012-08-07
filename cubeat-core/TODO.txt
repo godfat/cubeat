@@ -161,11 +161,11 @@ DONE -- AI scripting, and hassling other players
      -- AI now needs fine tuning for different "charactistics."
      
 0.6  5. Character Differentiations - Special abilities
-     -- Determine death countdown by character(player) data
-     -- Determine heat accumulating speed by character(player) data
-     -- Determine restore color_id random percentage by character(player) data
-     -- Determine other(or self)'s "attack_factor" when init
-     -- Determine if garbage drops can occasionally be normal cubes by character(player) data
+DONE -- Determine death countdown by character(player) data
+DONE -- Determine heat accumulating speed by character(player) data
+DONE -- Determine restore color_id random percentage by character(player) data
+DONE -- Determine other(or self)'s "attack_factor" when init
+DONE -- Determine if garbage drops can occasionally be normal cubes by character(player) data
      -- means to change creation & garbage flags (in ms) to false for sometime   **** THIS CAN BE TROBLUESOME
      -- means to directly restore cubes to a specific color_id
      -- means to affect other(or self)'s "garbage_left" directly

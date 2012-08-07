@@ -166,6 +166,15 @@ DONE -- Determine heat accumulating speed by character(player) data
 DONE -- Determine restore color_id random percentage by character(player) data
 DONE -- Determine other(or self)'s "attack_factor" when init
 DONE -- Determine if garbage drops can occasionally be normal cubes by character(player) data
+
+     -- Ok, firstly, I think we should add configs to data::ViewSetting.
+     -- add special attack button to ViewSpriteMaster
+     -- in the ViewSpriteMaster call ......... who? ctrl::Player or presenter::Map ?
+     -- either ctrl::Player or presenter::Map has to have access to a new class called PlayerSpecial, either in model or presenter ns.
+     -- PlayerSpecial::invoke_ability()
+     -- This probably has to be hardcoded for now. foreach player.
+     -- check my other note.
+
      -- means to change creation & garbage flags (in ms) to false for sometime   **** THIS CAN BE TROBLUESOME
      -- means to directly restore cubes to a specific color_id
      -- means to affect other(or self)'s "garbage_left" directly

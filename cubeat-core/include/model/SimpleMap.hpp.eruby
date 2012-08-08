@@ -112,7 +112,8 @@ protected:
     void dump_preview_to(pointer_type, preview_list_type const&) const;
 
     data::pMapSetting map_setting_;
-    int garbage_left_, score_, current_sum_of_attack_;
+    double garbage_left_;
+    int score_, current_sum_of_attack_;
     chain_list_type chains_;// someday make it to be std::list
     std::tr1::shared_ptr<int> warning_level_; //warning timer dummy
 

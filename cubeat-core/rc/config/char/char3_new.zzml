@@ -31,4 +31,26 @@ face_pos: [
     {x:-45, y:-37 },
     {x:-47, y:-36 },
     {x:-45, y:-37 }
-]
+],
+
+passive_mod: {
+    warning_gap: 1000,
+    damage_factor: 1.0,
+    negate_damage_factor: 0.8,
+    drop_normal_chance: 0, 
+    restore: {
+        r: 1.0,
+        g: 1.0
+    },
+    weapon: {
+        heat_rate: 0.18,
+        cool_rate: 0.06,
+        downtime: 2000,
+        item1_start_ammo: 10,
+        item2_start_ammo: 10,
+        item3_start_ammo: 1,
+        heat_for_haste: 0.02,
+        heat_for_jama: 0.18
+    }
+}
+

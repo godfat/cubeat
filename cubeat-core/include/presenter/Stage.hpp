@@ -41,6 +41,7 @@ public:
     Stage& hitGroup(int const&);
     Stage& playBGM(time_t const& t = 200);
     Stage& playFastBGM(time_t const& t = 200);
+    Stage& playNormalBGM_without_leading(time_t const& lt, time_t const& ft = 200);
     Stage& releaseResource(); //tell engine to release some of the cached resources.
 
 protected:

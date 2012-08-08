@@ -133,6 +133,12 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
 
     cube->new_garbage(true);
     cube->garbage_fly_event()();
+
+    //add restoration here for passive ability
+    if( utils::random(100) < ms()->drop_normal_chance() ) {
+        cube->restore(1); // ok?
+    }
+
     return insert_cube(cube);
 }
 
@@ -191,12 +197,26 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     last_t_ = now_t_;
     now_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
+    // 2012 note: This cycle is getting bigger and bigger. I should refactor it to event-based style
+    // e.g:
+    // at init or some other specific point, not in the model loop:
+    // if( ms()->garbage_dumpable && ms()->dropping_creatable() )
+    //     add_task( "cycle_warning", model::Map::cycle_warning );
+    //
+    // and you can add/remove this task dynamically.
+    // same for cycle_creation_garbage && cycle_creation.
+    // the point is, only change task when the state changes,
+    // when no state changes between each loop, no task is add or removed.
+    // and then model::Map will execute tasks by a certain priority.
+    // like, cycle_warning > cycle_creation_garbage > cycle_creation
+
     if( last_t_ == now_t_ ) return *this; //if time is not changed, then cycle should be stopped;
 
     garbage_dumpable_ = ms()->garbage_dumpable();
     dropping_creatable_ = ms()->dropping_creatable();
-    if(garbage_dumpable_ && dropping_creatable_)
+    if( garbage_dumpable_ && dropping_creatable_ ) {
         cycle_warning();
+    }
     else {
         warning_level_.reset();
         alarm_sound_.reset();
@@ -206,8 +226,12 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     cycle_cubes();
     check_one_fadings();
 
-    if( garbage_dumpable_ && garbage_left_ > 0 )
+    // 2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ here
+    // not ms()->dropping_creatable(). it will affect cycle_warning().
+
+    if( garbage_dumpable_ && garbage_left_ > 0.99 ) { // garbage_left_ is double here, ignore some epslion.
         cycle_creation_garbage();
+    }
     else if( dropping_creatable_ ) {
         cycle_creation();
     }
@@ -264,16 +288,26 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 }
 
 static void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
-static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(int)> cb, int amount)
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount)
 {
     be_subed_from -= amount;
-    cb(amount);
+    cb(actual_amount);
 }
 
 void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
     using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
-    int damage_factor = ms()->damage_factor();
+
+
+
+    //int!? INT!? INTEGER!??????????
+    //ARE YOU FUCKING SERIOUS????????????
+
+    //int damage_factor = ms()->damage_factor();
+
+    double damage_factor = ms()->damage_factor();
+
+
     presenter::pMap o = owner();
 
 //    if( !chains_.empty() )
@@ -285,7 +319,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
         if( (*i)->last_step_amounts() != 0 ){
             (*i)->update_power_factor();
             // damage_factor adjustment (1.00 ~ 2.00)
-            int amount = (*i)->attack_of_current_step()*damage_factor;
+            int amount = (*i)->attack_of_current_step(); // it is just superficial effects, so don't use damage_factor here.
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
@@ -293,7 +327,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
-            score_ += (*i)->score_step() * damage_factor;
+            score_ += (*i)->score_step(); // 2012 note: damage_factor should not affect score
             (*i)->step_one();
         }
 
@@ -302,12 +336,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
         if( (*i).use_count() == 1 ){
             // damage_factor adjustment (1.00 ~ 2.00)
-            int amount = (*i)->power_factor()*damage_factor;
+            int amount = (*i)->power_factor();
+            double actual_amount = amount * damage_factor;
             //current_sum_of_attack_ -= amount;
             //o->throw_garbage( amount );
-            std::tr1::function<void(int)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
+            std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount),
+                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
                 850); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
             i = chains_.erase(i);
@@ -316,6 +351,11 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ++i;
         }
     }
+}
+
+void Map::push_garbage(double amounts)
+{
+    garbage_left_ += amounts;
 }
 
 void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
@@ -349,19 +389,29 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     for( unsigned int j = 0; j < row_empty.size(); ++j ) {
         //CORRECTED: actually, we don't want to do it upside-down.
         //printf("garbage_left_: %d, emptyness of row %d (from top): %d\n", garbage_left_, j, row_empty[j].size());
-        for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ > 0 ; ++i ){
+
+        //garbage_left_ is double here. The remainder of less than 1 garbage_left_ will be kept for future use.
+        for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ > 0.99 ; ++i ){
             int x = row_empty[j][i];
 
             pCube c = owner->make_garbage( x, top - j )->model();
             insert_garbage( c );
 
-            --garbage_left_;
+            garbage_left_ -= 1; //garbage_left_ is double here.
             ++this_frame_lands;
         }
     }
     //2012.05 self garbage_left_ minus n,
     //means garbage effects that the opponent has to minus n
     main_enemy->pop_garbage_event()(this_frame_lands);
+
+    if( this_frame_lands > 0 && garbage_left_ <= 0.99 ) { //if garbage is actually less then 1, just pop all garbage animations
+        // ok, but there's a problem with this method:
+        // garbages in the delay_adder ( 1 sec delay, and the first second of flying animation )
+        // will not account for this_frame_lands, but they will get deleted as well...
+        // however the attacking amount seems to be correct.
+        main_enemy->pop_garbage_event()(9999);
+    }
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){
@@ -395,8 +445,9 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 <% end %>
     cubes_preview_.clear();
     int unsigned width = ms()->width();
+    std::vector<double> const& rez_chances = ms()->rez_chances();
     std::vector<int> preview_set; // color set
-    preview_set.push_back(utils::random( ms()->color_amounts() )+1);
+    preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
 
     if( utils::random(2) ) // need two?
         preview_set.push_back(preview_set.front());
@@ -404,14 +455,16 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
     while( preview_set.size() != width ){
         int color = fill_preview_create_color(preview_set);
         if( width - preview_set.size() == 1 ){
-                  preview_set.push_back(color);
+            preview_set.push_back(color);
         }
         else{
             if( utils::random(2) ){
-                  preview_set.push_back(color);
-                  preview_set.push_back(color);
+                preview_set.push_back(color);
+                preview_set.push_back(color);
             }
-            else{ preview_set.push_back(color); }
+            else{
+                preview_set.push_back(color);
+            }
         }
     }
 
@@ -422,10 +475,12 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 
 int <% debug_hook 'Map::fill_preview_create_color' do %>(std::vector<int>& preview_set){
 <% end %>
-    int color, color_amounts = ms()->color_amounts();
+    int color/*, color_amounts = ms()->color_amounts()*/;
+    std::vector<double> const& rez_chances = ms()->rez_chances();
     do{
-        color = utils::random( color_amounts )+1;
-    }while( color == preview_set.back() );
+        //color = utils::random( color_amounts )+1;
+        color = utils::distributed_random( rez_chances ) + 1;
+    } while ( color == preview_set.back() );
     return color;
 }
 
@@ -444,7 +499,16 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 void Map::inc_warning(int& warning_lv) {
     if( column_full_num_ && chains_.empty() && warning_lv < 100 )
         warning_lv += 1;
-    else if( !column_full_num_ && warning_lv > 0 ) {
+//    else if( !column_full_num_ && warning_lv > 0 ) {
+//        warning_lv -= 2;
+//        if( warning_lv < 0 )
+//            warning_lv = 0;
+//    }
+// 2012 note: separate inc_warning and dec_warning for different countdown speed control
+}
+
+void Map::dec_warning(int& warning_lv) {
+    if( !column_full_num_ && warning_lv > 0 ) {
         warning_lv -= 2;
         if( warning_lv < 0 )
             warning_lv = 0;
@@ -457,6 +521,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     using std::tr1::bind; using std::tr1::ref;
 
     column_full_num_ = column_full_num();
+    int warning_gap  = ms()->warning_gap();
 
     if( !column_full_num_ ) {
         if( warning_level_ && *warning_level_ == 0 )
@@ -470,7 +535,10 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 
             owner()->warning_counting_event()(0); //added for call warning as soon as column full
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Map::inc_warning, this, ref(*warning_level_)), warning_level_, 50u, -1);
+                bind(&Map::inc_warning, this, ref(*warning_level_)), warning_level_, warning_gap / 20, -1);
+
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                bind(&Map::dec_warning, this, ref(*warning_level_)), warning_level_, 50u, -1);
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->alert_bar_update_event(), ref(*warning_level_)), warning_level_, 50u, -1);
@@ -479,7 +547,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(owner()->warning_counting_event(), ref(*warning_level_)), alarm_sound_, 1000u, -1);
+                bind(owner()->warning_counting_event(), ref(*warning_level_)), alarm_sound_, warning_gap, -1);
         }
     }
 
@@ -489,6 +557,8 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     }
 }
 
+// note/NOTE/WTF/temp: WHY? it is just a getter-like function, why have this emit events???
+// VERY DANGEROUS.
 int <% debug_hook 'Map::column_full_num' do %>() const{
 <% end %>
     int counter = 0;
@@ -499,7 +569,6 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
         }
         else owner()->column_not_full_event()(x);
     }
-
     return counter;
 }
 

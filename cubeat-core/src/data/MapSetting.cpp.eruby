@@ -2,6 +2,8 @@
 #include "data/MapSetting.hpp"
 #include "utils/dictionary.hpp"
 
+#include <iostream>
+
 using namespace psc;
 using namespace data;
 
@@ -14,9 +16,12 @@ MapSetting::MapSetting(utils::map_any const& conf):
     cube_sinking_duration_( conf.I("cube_sinking_duration") ),
     cube_dropping_duration_( conf.I("cube_dropping_duration") ),
     warning_check_delay_( conf.I("warning_check_delay") ),
+    warning_gap_( conf.I("warning_gap") ),
+    drop_normal_chance_( conf.I("drop_normal_chance") ),
     sink_speed_( conf.F("sink_speed") ),
     drop_speed_( conf.F("drop_speed") ),
     damage_factor_( conf.F("damage_factor") ),
+    negate_damage_factor_( conf.F("negate_damage_factor") ),
     width_( conf.I("width") ),
     height_( conf.I("height") ),
     dropping_creatable_( static_cast<bool>(conf.I("dropping_creatable")) ),
@@ -24,4 +29,72 @@ MapSetting::MapSetting(utils::map_any const& conf):
     use_broken_as_garbage_( static_cast<bool>(conf.I("use_broken_as_garbage")) )
 {
     reset_size();
+    setup_color_chances();
+}
+
+MapSetting::pointer_type MapSetting::clone() const {
+    pointer_type result = MapSetting::create();
+    result->color_amounts(color_amounts_)
+           .chain_amounts(chain_amounts_)
+           .starting_line(starting_line_)
+           .chaining_duration(chaining_duration_)
+           .cube_dying_duration(cube_dying_duration_)
+           .cube_dropping_duration(cube_dropping_duration_)
+           .warning_check_delay(warning_check_delay_)
+           .sink_speed(sink_speed_)
+           .drop_speed(drop_speed_)
+           .damage_factor(damage_factor_)
+           .width(width_)
+           .height(height_)
+           .dropping_creatable(dropping_creatable_)
+           .garbage_dumpable(garbage_dumpable_)
+           .use_broken_as_garbage(use_broken_as_garbage_)
+           .warning_gap(warning_gap_)
+           .negate_damage_factor(negate_damage_factor_)
+           .drop_normal_chance(drop_normal_chance_)
+           .rez_chances(rez_chances_);
+    return result;
+}
+
+MapSetting& MapSetting::apply_player_passive_mods(utils::map_any const& conf) {
+    setup_color_chances( conf.M("restore") );
+
+    warning_gap_          = conf.I("warning_gap");
+    damage_factor_        = conf.F("damage_factor");
+    negate_damage_factor_ = conf.F("negate_damage_factor");
+    drop_normal_chance_   = conf.I("drop_normal_chance");
+
+    return *this;
+}
+
+MapSetting& MapSetting::setup_color_chances(utils::map_any const& conf) {
+    setup_color_chances();
+    utils::map_any::const_iterator end = conf.end();
+    if( conf.find("r")  != end && rez_chances_.size() > 0 ) rez_chances_[0] *= conf.F("r");
+    if( conf.find("g")  != end && rez_chances_.size() > 1 ) rez_chances_[1] *= conf.F("g");
+    if( conf.find("b")  != end && rez_chances_.size() > 2 ) rez_chances_[2] *= conf.F("b");
+    if( conf.find("y")  != end && rez_chances_.size() > 3 ) rez_chances_[3] *= conf.F("y");
+    if( conf.find("gb") != end && rez_chances_.size() > 4 ) rez_chances_[4] *= conf.F("gb");
+    if( conf.find("rb") != end && rez_chances_.size() > 5 ) rez_chances_[5] *= conf.F("rb");
+
+    //normalize back to 100.0 percentage
+    double total = 0.0;
+    for( size_t i = 0; i < rez_chances_.size() ; ++i ) {
+        total += rez_chances_[i];
+    }
+    for( size_t i = 0; i < rez_chances_.size() ; ++i ) {
+        rez_chances_[i] *= 100.0 / total;
+        std::cout << " -- color rez chance " << i << " = " << rez_chances_[i] << std::endl;
+    }
+
+    return *this;
+}
+
+MapSetting& MapSetting::setup_color_chances() {
+    double avg = 100.0 / color_amounts_;
+    rez_chances_.clear();
+    for( int i = 0; i < color_amounts_; ++i ) {
+        rez_chances_.push_back( avg );
+    }
+    return *this;
 }

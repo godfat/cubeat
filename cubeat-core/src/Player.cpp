@@ -237,8 +237,9 @@ void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
         if( !p->is_overheat() ) {
             std::list<int> const& that_allies = p->ally_input_ids();
             std::list<int> const& self_allies = ally_input_ids_;
-            if( that_allies == self_allies )
+            if( that_allies == self_allies ) {
                 hit_cb(1);
+            }
             else {
                 hit_cb(1);
                 p->generate_heat(heat_for_jama_shoot_); //if enemy hit, generate extra heat.

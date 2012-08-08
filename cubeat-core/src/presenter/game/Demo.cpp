@@ -95,6 +95,9 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     music_state_ = false;
     music_state_old_ = false;
 
+    passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
+    passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
+
     //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->stop();
@@ -157,12 +160,22 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
+
+    // setup map1
+    data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
+
+    // update map settings with player passive modification:
+    set0->apply_player_passive_mods( passive_conf0_ );
+    set1->apply_player_passive_mods( passive_conf1_ );
+
+    // some interacting settings have to be resolved first:
+    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
+    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
+
     map0_ = presenter::Map::create(set0);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
-    // setup map1
-    data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
     map1_ = presenter::Map::create(set1);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );

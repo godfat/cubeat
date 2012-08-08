@@ -2,6 +2,7 @@
 <% header_guard do %>
 <%= debug_include %>
 
+#include <vector>
 #include <boost/tr1/memory.hpp>
 
 namespace psc{
@@ -23,11 +24,20 @@ public:
         return pointer_type(new MapSetting(conf));
     }
 
-<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay %>
-<%= accessor :double, :sink_speed, :drop_speed, :damage_factor %>
+<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :drop_normal_chance %>
+<%= accessor :double, :sink_speed, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage %>
+
+public:
+    std::vector<double> rez_chances() const { return rez_chances_; }
+    // The assignment operator of std::vector is copy right??
+    MapSetting& rez_chances(std::vector<double> const& o) { rez_chances_ = o; return *this; }
+
+private:
+    std::vector<double> rez_chances_;
+
 public:
     MapSetting& <% debug_hook 'width' do %>(int const& new_width){
 <% end %>
@@ -39,42 +49,29 @@ public:
         height_ = new_height;
         return reset_size();
     }
+    MapSetting& apply_player_passive_mods(utils::map_any const& conf);
 
-    pointer_type clone() const {
-        pointer_type result = MapSetting::create();
-        result->color_amounts(color_amounts_)
-               .chain_amounts(chain_amounts_)
-               .starting_line(starting_line_)
-               .chaining_duration(chaining_duration_)
-               .cube_dying_duration(cube_dying_duration_)
-               .cube_dropping_duration(cube_dropping_duration_)
-               .warning_check_delay(warning_check_delay_)
-               .sink_speed(sink_speed_)
-               .drop_speed(drop_speed_)
-               .damage_factor(damage_factor_)
-               .width(width_)
-               .height(height_)
-               .dropping_creatable(dropping_creatable_)
-               .garbage_dumpable(garbage_dumpable_)
-               .use_broken_as_garbage(use_broken_as_garbage_);
-        return result;
-    }
-
+    pointer_type clone() const;
     <% debug_hook '~MapSetting' do %>(){<%end%>}
 
 private:
     MapSetting():
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
-        cube_dropping_duration_(135), warning_check_delay_(100),
-        sink_speed_(80.0), drop_speed_(450.0), damage_factor_(1.00),
+        cube_dropping_duration_(135), warning_check_delay_(100), warning_gap_(1000), drop_normal_chance_(0),
+        sink_speed_(80.0), drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
         use_broken_as_garbage_(false)
-    { reset_size(); }
+    {
+        reset_size();
+        setup_color_chances();
+    }
 
     MapSetting(utils::map_any const& conf);
 
 private:
+    MapSetting& setup_color_chances(utils::map_any const& conf);
+    MapSetting& setup_color_chances();
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };
 

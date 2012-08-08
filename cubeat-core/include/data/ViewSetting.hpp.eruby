@@ -4,7 +4,13 @@
 #include <boost/tr1/memory.hpp>
 #include <list>
 
-namespace psc{ namespace data{
+namespace psc{
+
+namespace utils{
+class map_any;
+} //utils
+
+namespace data{
 
 class ViewSetting{
 public:
@@ -14,10 +20,17 @@ public:
         return pointer_type(new ViewSetting(cube_size));
     }
 
+    static pointer_type create(utils::map_any const& conf)
+    {
+        return pointer_type(new ViewSetting(conf));
+    }
+
 private:
     ViewSetting(double cube_size = 50):
     x_offset_(0), y_offset_(0), z_offset_(0), cube_size_(cube_size), ats_x_(640), ats_y_(425), atf_x_(640), atf_y_(425)
     {}
+
+    ViewSetting(utils::map_any const& conf);
 
 <%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size, :ats_x, :ats_y, :atf_x, :atf_y; %>
 };

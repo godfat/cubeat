@@ -114,6 +114,13 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
 
 int Player::invoke_ability()
 {
+    int ability_left = ability_queue_.size();
+    if( ability_left > 0 ) {
+        presenter::pPlayerAbility ab = ability_queue_.front();
+        ability_queue_.pop_front();
+        ab->invoke_ability(shared_from_this(), map_list_[id_]);
+        return ability_left;
+    }
     return 0;
 }
 
@@ -127,6 +134,9 @@ Player& Player::set_config(utils::map_any const& config)
     overheat_downtime_= config.I("downtime");
     heat_for_haste_   = config.F("heat_for_haste");
     heat_for_jama_shoot_ = config.F("heat_for_jama");
+
+    ability_queue_.push_back( presenter::Ability1::create() );
+
     return *this;
 }
 

@@ -6,6 +6,7 @@
 #include "all_fwd.hpp"
 #include "utils/dictionary.hpp"
 #include <vector>
+#include <deque>
 #include <list>
 #include <boost/tr1/functional.hpp>
 
@@ -101,7 +102,7 @@ protected:
 	std::vector<Weapon*>          weplist_;
 	std::vector<presenter::wpMap> map_list_;
 	std::list<int>                ally_input_ids_, enemy_input_ids_;
-	std::vector<presenter::pPlayerAbility> ability_queue_;
+	std::deque<presenter::pPlayerAbility> ability_queue_;
 
 	std::tr1::function<void()> player_hit_event_;
 public:

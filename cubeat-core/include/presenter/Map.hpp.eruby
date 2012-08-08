@@ -58,13 +58,13 @@ public:
         return *this;
     }
 
-    int score()        const { return model()->score(); }
-    int garbage_left() const { return model()->garbage_left(); }
-    int current_sum_of_attack() const { return model()->current_sum_of_attack(); }
-    int garbage_count() const { return model()->garbage_count(); }
-    int grounded_cube_count() const { return model()->grounded_cube_count(); }
-    int column_full_num() const { return model()->column_full_num(); }
-    int warning_level() const { return model()->warning_level(); }
+    int  score()        const { return model()->score(); }
+    int  garbage_left() const { return model()->garbage_left(); }
+    int  current_sum_of_attack() const { return model()->current_sum_of_attack(); }
+    int  garbage_count() const { return model()->garbage_count(); }
+    int  grounded_cube_count() const { return model()->grounded_cube_count(); }
+    int  column_full_num() const { return model()->column_full_num(); }
+    int  warning_level() const { return model()->warning_level(); }
     bool all_empty() const { return model()->all_empty(); }
     bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;
@@ -74,6 +74,8 @@ public:
                 view_master_->view_setting() :
                 data::pViewSetting();
     }
+
+    Map& set_garbage_amount(int const& n) { model()->set_garbage_amount(n); return *this; }
 
 private:
     pMap init();

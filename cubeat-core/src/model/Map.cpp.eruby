@@ -621,6 +621,10 @@ double Map::get_sink_speed() const {
         return ms()->sink_speed();
 }
 
+void Map::set_garbage_amount(int const& n) {
+    garbage_left_ = n;
+}
+
 pSimpleMap Map::dump_data() const
 {
     data::pMapSetting cloned_ms = map_setting_->clone();

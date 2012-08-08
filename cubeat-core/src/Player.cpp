@@ -8,6 +8,7 @@
 #include "audio/Sound.hpp"
 #include "utils/Random.hpp"
 #include "presenter/Map.hpp"
+#include "presenter/PlayerAbility.hpp"
 #include "Accessors.hpp"        //for some basic visual effects
 #include "EasingEquations.hpp"  //for some basic visual effects
 #include <boost/foreach.hpp>
@@ -109,6 +110,11 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
 
     }
     return *this;
+}
+
+int Player::invoke_ability()
+{
+    return 0;
 }
 
 Player& Player::set_config(utils::map_any const& config)

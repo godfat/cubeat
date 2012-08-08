@@ -32,7 +32,7 @@ private:
 
     ViewSetting(utils::map_any const& conf);
 
-<%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size, :ats_x, :ats_y, :atf_x, :atf_y; %>
+<%= accessor :double, :x_offset, :y_offset, :z_offset, :cube_size, :ats_x, :ats_y, :atf_x, :atf_y, :abl_btn_x, :abl_btn_y; %>
 };
 
 }} // end of namespace

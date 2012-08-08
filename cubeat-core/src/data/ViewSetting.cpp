@@ -14,7 +14,9 @@ ViewSetting::ViewSetting(utils::map_any const& conf):
     ats_x_( conf.I("garbage_src_x") ),
     ats_y_( conf.I("garbage_src_y") ),
     atf_x_( conf.I("garbage_ene_x") ),
-    atf_y_( ats_y_ )
+    atf_y_( ats_y_ ),
+    abl_btn_x_( conf.I("ability_btn_x") ),
+    abl_btn_y_( conf.I("ability_btn_y") )
 {
 }
 

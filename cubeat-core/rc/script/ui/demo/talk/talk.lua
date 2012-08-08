@@ -24,8 +24,24 @@ local function action(menu, rundown)
     menu[panel]:set_visible(true)
     first_talk_[ch]=true
   end
-  menu[actor]:set_texture(rundown[index_].img)
-  menu[content]:change_text(rundown[index_].text)
+  
+  if rundown[index_].img then
+    menu[actor]:set_texture(rundown[index_].img)
+  end
+  if rundown[index_].text then
+    menu[content]:change_text(rundown[index_].text)
+  end
+  if rundown[index_].frame then
+    menu[panel]:set_texture(rundown[index_].frame)
+  end
+  if rundown[index_].Eq and rundown[index_].Accessor then
+    local target = rundown[index_].target..tostring(ch)
+    menu[target]:tween( rundown[index_].Eq,
+                        rundown[index_].Accessor,
+                        rundown[index_].s,
+                        rundown[index_].e,
+                        rundown[index_].dur )
+  end
   
   index_=index_+1
   if index_>table.getn(rundown) then index_=1 end

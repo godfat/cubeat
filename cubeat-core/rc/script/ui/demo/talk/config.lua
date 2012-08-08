@@ -22,6 +22,13 @@ local conBG_y = {con_y[1]-20, con_y[2]-20}
 local conBG_w = 300
 local conBG_h = 150
 
+local block_x = bg_x
+local block_y = bg_y
+local block_w = bg_w
+local block_h = bg_h
+local block_a = 0
+local block_d = -100
+
 
 return {
   bg_path   = bg_path,
@@ -42,5 +49,12 @@ return {
   conBG_x   = conBG_x,
   conBG_y   = conBG_y,
   conBG_w   = conBG_w,
-  conBG_h   = conBG_h
+  conBG_h   = conBG_h,
+  ----
+  block_x   = block_x,
+  block_y   = block_y,
+  block_w   = block_w,
+  block_h   = block_h,
+  block_a   = block_a,
+  block_d   = block_d
 }

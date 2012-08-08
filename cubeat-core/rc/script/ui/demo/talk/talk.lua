@@ -72,8 +72,6 @@ local function init(demo, parent)
   
   menu.TalkBackGround = ui.new_image{ parent=parent, path=config.bg_path, x=config.bg_x, y=config.bg_y,
                                       w=config.bg_w, h=config.bg_h }
-  menu.TalkBackGround:on_press(play)
-  menu.TalkBackGround:on_press_r(leave)
   
   for ch=1,2 do
     local ch_path = 'char'..tostring(ch_choose[ch])..'_new/glad'
@@ -87,6 +85,11 @@ local function init(demo, parent)
     menu[panel]   = ui.new_image{ parent=parent, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, visible=false }
   end
+  
+  menu.clickBlock = ui.new_image{ parent=parent, path='blahblah', x=config.block_x, y=config.block_y,
+                                  w=config.block_w, h=config.block_h, alpha=config.block_a, depth=config.block_d }
+  menu.clickBlock:on_press(play)
+  menu.clickBlock:on_press_r(leave)
   
   return menu
 end

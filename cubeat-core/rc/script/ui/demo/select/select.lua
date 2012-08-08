@@ -65,17 +65,17 @@ local function init(demo, parent)
   end
   
   -- create actor_full & actor_fade
-  for i=1,2 do
-    local fullkey = 'actor_full_'..tostring(i)
-    local fadekey = 'actor_fade_'..tostring(i)
+  for ch=1,2 do
+    local fullkey = 'actor_full_'..tostring(ch)
+    local fadekey = 'actor_fade_'..tostring(ch)
     menu[fullkey] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.full_path(1),
-                                  x=config.full_x[i], y=config.full_y, w=config.full_w, h=config.full_h,
+                                  x=config.full_x[ch], y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
     menu[fadekey] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.full_path(1), alpha=0,
-                                  x=config.full_x[i], y=config.full_y, w=config.full_w, h=config.full_h,
+                                  x=config.full_x[ch], y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
   end
-  for i=6,1,-1 do--load texture
+  for i=6,1,-1 do--preload texture
     menu.actor_full_1:set_texture(config.full_path(i))
     menu.actor_full_2:set_texture(config.full_path(i))
     menu.actor_fade_1:set_texture(config.full_path(i))
@@ -91,6 +91,12 @@ local function init(demo, parent)
     menu[k]:on_leave_focus( view.Input2, leave_icon(2, i, menu) )
     menu[k]:on_enter_focus( view.Input2, enter_icon(2, i, menu) )
   end
+  
+  --load ch_choose texture
+  menu.actor_full_1:set_texture(config.full_path(config.ch_choose[1]))
+  menu.actor_full_2:set_texture(config.full_path(config.ch_choose[2]))
+  menu.actor_fade_1:set_texture(config.full_path(config.ch_choose[1]))
+  menu.actor_fade_2:set_texture(config.full_path(config.ch_choose[2]))
   
   return menu
 end

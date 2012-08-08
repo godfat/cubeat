@@ -112,9 +112,9 @@ Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
 end
 Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, cb, d)
   if type(s)=='number' and type(e)=='number' then
-    C.Sprite_tween_1d(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
+    C.Sprite_tween_1d(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
   else
-    C.Sprite_tween(self, Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
+    C.Sprite_tween(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
   end
 end
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH

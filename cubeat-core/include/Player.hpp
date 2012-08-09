@@ -12,11 +12,6 @@
 
 namespace psc {
 
-namespace presenter {
-class PlayerAbility;
-typedef std::tr1::shared_ptr<PlayerAbility> pPlayerAbility;
-}
-
 namespace ctrl {
 
 class Input;
@@ -102,7 +97,10 @@ protected:
 	std::vector<Weapon*>          weplist_;
 	std::vector<presenter::wpMap> map_list_;
 	std::list<int>                ally_input_ids_, enemy_input_ids_;
-	std::deque<presenter::pPlayerAbility> ability_queue_;
+
+	typedef std::tr1::function<void(wpointer_type const& player, presenter::wpMap const& self_map, presenter::wpMap const& enemy_map)>
+	    AbilityCallback;
+	std::deque< AbilityCallback > ability_queue_;
 
 	std::tr1::function<void()> player_hit_event_;
 public:

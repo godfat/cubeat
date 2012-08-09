@@ -116,9 +116,12 @@ int Player::invoke_ability()
 {
     int ability_left = ability_queue_.size();
     if( ability_left > 0 ) {
-        presenter::pPlayerAbility ab = ability_queue_.front();
+        presenter::PlayerAbility::Callback ab = ability_queue_.front();
         ability_queue_.pop_front();
-        ab->invoke_ability(shared_from_this(), map_list_[id_]);
+
+        //NOTE WTF TEMP 2012: let's be lazy for now. It probably will always be only 2 maps anyway.
+        ab(shared_from_this(), map_list_[id_], map_list_[enemy_input_ids_.front()] );
+
         return ability_left;
     }
     return 0;
@@ -135,7 +138,10 @@ Player& Player::set_config(utils::map_any const& config)
     heat_for_haste_   = config.F("heat_for_haste");
     heat_for_jama_shoot_ = config.F("heat_for_jama");
 
-    ability_queue_.push_back( presenter::Ability1::create() );
+    using std::tr1::bind;
+    using presenter::PlayerAbility;
+
+    ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) );
 
     return *this;
 }

@@ -40,7 +40,10 @@ local function action(menu, rundown)
                         rundown[index_].Accessor,
                         rundown[index_].s,
                         rundown[index_].e,
-                        rundown[index_].dur )
+                        rundown[index_].dur,
+                        rundown[index_].l or 0,
+                        rundown[index_].cb or nil,
+                        rundown[index_].d or 0)
   end
   
   index_=index_+1

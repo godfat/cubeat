@@ -382,10 +382,7 @@
 		<Unit filename="src\presenter\Object.cpp" />
 		<Unit filename="src\presenter\Opening2.cpp" />
 		<Unit filename="src\presenter\OpeningSequence.cpp" />
-		<Unit filename="src\presenter\PlayerAbility.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="src\presenter\PlayerAbility.cpp" />
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />

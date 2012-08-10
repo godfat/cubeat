@@ -160,7 +160,7 @@ Stage& Stage::hitGroup(int const& id)
 
 Stage& Stage::playBGM(time_t const& fade_t)
 {
-    audio::Sound::i().playBGM_AB(music_path_a_, music_path_b_);
+    audio::Sound::i().seek_and_playBGM_AB(music_path_a_, music_path_b_, 1000, fade_t);
     return *this;
 }
 
@@ -168,7 +168,7 @@ Stage& Stage::playFastBGM(time_t const& fade_t)
 {
     audio::Sound::i().playBGM("smb_warning.wav", 200);
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&audio::Sound::playBGM_AB, &audio::Sound::i(), fmusic_path_a_, fmusic_path_b_, 300),
+        std::tr1::bind(&audio::Sound::seek_and_playBGM_AB, &audio::Sound::i(), fmusic_path_a_, fmusic_path_b_, 789, fade_t),
         shared_from_this(),
         2500);
 

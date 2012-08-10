@@ -106,6 +106,7 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     //load scene again first
     if( !inplace ) {
         stage_->releaseResource();
+        stage_.reset();
     }
     stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
@@ -194,6 +195,7 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
 //        bind(&Demo::game_start, this), 4000);
 
     //start music
+
     audio::Sound::i().stopAll(); //stop old
     stage_->playBGM();
 
@@ -783,10 +785,10 @@ void Demo::cycle()
             if( music_state_ ) {
                 if( map0_->warning_level() + map1_->warning_level() == 0 ) {
                     if( !timer_music_state_ ) {
-                        printf("Demo: countdown 5 secs to music_state = false\n");
+                        printf("Demo: countdown 6.5 secs to music_state = false\n");
                         timer_music_state_ = pDummy(new int);
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 5000);
+                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 6500);
                         //this means you have to be in no-danger situation for 3 seconds to leave emergency music
                     }
                 } else {
@@ -805,7 +807,7 @@ void Demo::cycle()
         }
         if( music_state_ == false && music_state_old_ == true ) {
             printf("Demo: false -> music_state\n");
-            stage_->playBGM(400);
+            stage_->playBGM(500);
         }
 
         if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs

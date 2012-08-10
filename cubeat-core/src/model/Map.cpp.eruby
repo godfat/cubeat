@@ -703,8 +703,8 @@ void Map::new_cube_at(int x, int y, int color_id)
 {
     pCube c = owner()->make_cube(x, y, color_id)->model();
     if( color_id == -1 ) { //no color
-        if( ms()->use_broken_as_garbage() ) c->be_broken();
-        else c->be_garbage();
+        if( ms()->use_broken_as_garbage() ) c->be_broken(99);
+        else c->be_garbage(/*99*/); // note temp 2012 WTF: why no damage?
     }
     //c->go_sinking();
     insert_cube(c);

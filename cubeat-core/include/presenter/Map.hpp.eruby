@@ -76,7 +76,6 @@ public:
     }
 
     Map& set_garbage_amount(int const& n) { model()->set_garbage_amount(n); return *this; }
-    Map& foreach_cube
 
 private:
     pMap init();

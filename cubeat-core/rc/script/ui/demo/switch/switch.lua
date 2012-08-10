@@ -78,14 +78,14 @@ end
 
 local function slide_out_page_obj()
   local s1 = ffi.new("v2", 480, 300)
-  local e1 = ffi.new("v2", 1960, 300)
+  local e1 = ffi.new("v2", 2480, 300)
   vorig_:tween_osine_pos(s1, e1, 1000)
 end
 
 local function slide_in_page_obj()
-  local s = ffi.new("v2", -680, 300)
-  local e = ffi.new("v2", 480, 300)
-  vorig_:tween_isine_pos(s, e, 1000)
+  local s1 = ffi.new("v2", -1680, 300)
+  local e1 = ffi.new("v2", 480, 300)
+  vorig_:tween_isine_pos(s1, e1, 1000)
 end
 
 local function hide_page_obj()

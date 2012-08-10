@@ -94,6 +94,7 @@ void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                             bind(&Map::for_row, m0.get(), y, row_do), m0, delay_time);
                         delay_time += 300;
+                        break; //FUCK, if forgetting breaking here.............
                     }
                 }
             }
@@ -122,7 +123,8 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     for( int y = 0; y < height - 1 && count < 15; ++y ) {
         for( int x = 0; x < width && count < 15; ++x ) {
             if( !m1->exist(x, y) && !m1->below_is_dropping(x, y) ) {
-                m1->make_cube(x, y, m0_cube_data[count]->color_id());
+                m1->new_cube_at(x, y, m0_cube_data[count]->color_id());
+                m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
                 ++count;
             }
         }

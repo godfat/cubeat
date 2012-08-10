@@ -80,6 +80,8 @@ public:
     Map& for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f) { model()->for_row(r, f); return *this; }
     Map& apply_func_at(int x, int y, std::tr1::function<void(model::pCube&, int, int)> f) { model()->apply_func_at(x, y, f); return *this; }
     Map& lock_dropping(bool const& f) { model()->lock_dropping(f); return *this; }
+    Map& kill_cube_at(int x, int y) { model()->kill_cube_at(x, y); return *this; }
+    Map& new_cube_at(int x, int y, int color_id = -1) { model()->new_cube_at(x, y, color_id); return *this; }
 
     bool exist(int x, int y) const             { return model()->exist(x, y); }
     bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }

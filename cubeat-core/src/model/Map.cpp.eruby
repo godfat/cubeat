@@ -689,7 +689,21 @@ std::vector< data::pCube > Map::clone_linear_data() const
 
 bool Map::below_is_dropping(int x, int y) const
 {
-    return y > 0 && cubes_[x][y-1]->is_dropping();
+    if( y == 0 ) return false;
+    return cubes_[x][y-1] ? cubes_[x][y-1]->is_dropping() : false;
+}
+
+void Map::kill_cube_at(int x, int y)
+{
+    if( cubes_[x][y] && !cubes_[x][y]->is_dying() )
+        cubes_[x][y]->go_exploding(99);
+}
+
+void Map::new_cube_at(int x, int y, int color_id)
+{
+    pCube c = owner()->make_cube(x, y, color_id)->model();
+    c->go_sinking();
+    insert_cube(c);
 }
 
 pSimpleMap Map::dump_data() const

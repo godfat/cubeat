@@ -140,8 +140,8 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     player1_->push_ally(1).push_enemy(0);
 
     // setup player settings
-    player0_->set_config(gameplay_.M("player1").M("weapon"));
-    player1_->set_config(gameplay_.M("player2").M("weapon"));
+    player0_->set_config( !passive_conf0_.empty() ? passive_conf0_.M("weapon") : gameplay_.M("player1").M("weapon") );
+    player1_->set_config( !passive_conf1_.empty() ? passive_conf1_.M("weapon") : gameplay_.M("player2").M("weapon") );
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
@@ -813,11 +813,11 @@ void Demo::cycle()
             player1_->cycle();
         }
 
-        // temp: hack, just for test (cut-in)
-        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
-            timed_pause(1000);
-            ppl1_special_attacked_ = true;
-        }
+//        // temp: hack, just for test (cut-in)
+//        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
+//            timed_pause(1000);
+//            ppl1_special_attacked_ = true;
+//        }
     }
 
     stage_->cycle();

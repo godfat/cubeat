@@ -113,6 +113,7 @@ private:
         state_ = state::Waiting::create(self());
         return self();
     }
+    void restore_internal();
     bool is_dead() const{ return state_.use_count() == 0; }
     state::cpSinking is_sinking() const;
     void drop_a_block();

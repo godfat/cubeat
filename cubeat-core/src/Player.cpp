@@ -140,6 +140,8 @@ Player& Player::set_config(utils::map_any const& config)
     using std::tr1::bind;
     using presenter::PlayerAbility;
 
+    std::cout << "Player " << id_ << " ability kind: " << config.I("ability_kind") << std::endl;
+
     switch( config.I("ability_kind") ) {
         case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;
         case 2: ability_queue_.push_back( bind(&PlayerAbility::C2, _1, _2, _3) ); break;

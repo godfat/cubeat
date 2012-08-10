@@ -277,7 +277,7 @@ void ViewSpriteMaster::invoke_ability(view::pSprite const& sp) {
     if( ctrl::pPlayer p = player_.lock() ) {
         if( int left = p->invoke_ability() ) {
             ability_btn_->setTexture("cubes/garbage" + utils::to_s(left-1) );
-            std::cout << "Test." << std::endl;
+
             // and other (delayed) visual effects here.
 
         }

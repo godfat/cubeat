@@ -14,7 +14,24 @@ using std::tr1::bind;
 
 ///////////////////////////// Character 1 Ability //////////////////////////////
 
+static void check_garbage_and_restore(model::pCube& c, int, int)
+{
+    if( !c->is_dying() && ( c->is_garbage() || c->is_broken() ) )
+        c->restore(99); //99 means damage. originally all these functions can only pass weapon damage.
+}
+
 void PlayerAbility::C1(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
+{
+    if( ctrl::pPlayer p = player.lock() ) {
+        if( pMap m0 = self_map.lock() ) {
+            m0->foreach(check_garbage_and_restore);
+        }
+    }
+}
+
+///////////////////////////// Character 2 Ability //////////////////////////////
+
+void PlayerAbility::C2(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
 {
     pMap m0 = self_map.lock();
     if( !m0 ) return;
@@ -23,23 +40,6 @@ void PlayerAbility::C1(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Map::lock_dropping, m0.get(), false), m0, 5000);
-}
-
-///////////////////////////// Character 2 Ability //////////////////////////////
-
-static void check_garbage_and_restore(model::pCube& c, int, int)
-{
-    if( !c->is_dying() && ( c->is_garbage() || c->is_broken() ) )
-        c->restore(99); //99 means damage. originally all these functions can only pass weapon damage.
-}
-
-void PlayerAbility::C2(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
-{
-    if( ctrl::pPlayer p = player.lock() ) {
-        if( pMap m0 = self_map.lock() ) {
-            m0->foreach(check_garbage_and_restore);
-        }
-    }
 }
 
 ///////////////////////////// Character 3 Ability //////////////////////////////
@@ -133,7 +133,7 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 static void cube_broken(model::pCube& c, int, int)
 {
-    if( !c->is_dying() )
+    if( !c->is_dying() && !c->is_broken() )
         c->be_broken(99); //99 means damage
 }
 

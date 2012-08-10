@@ -89,6 +89,7 @@ public:
 
     void be_broken(int);
 	void restore(int);
+	void restore_to(int);
 
     void go_exploding(int);
 

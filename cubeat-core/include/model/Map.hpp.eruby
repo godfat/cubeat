@@ -77,10 +77,17 @@ public:
     // used by Cube#drop_a_frame or sink_a_frame
     double get_sink_speed() const;
 
-    // add a intrusive method to change garbage_left_ from external program. For character special ability.
-    // SimpleMap probably won't need to do this, so I added it at Map level
+    // add intrusive methods for character special ability.
+    // SimpleMap probably won't need to do this, so I added them at Map level
     void set_garbage_amount(int const& n);
+    void foreach_cube(std::tr1::function<void(pCube&, int, int)> f);
+    void for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f);
 
+    bool exist(int x, int y) const;
+    bool below_is_dropping(int x, int y) const;
+
+    std::vector< std::pair<int, int> > count_colors() const;
+    std::vector< data::pCube > clone_linear_data() const;
 
     pSimpleMap dump_data() const;
 

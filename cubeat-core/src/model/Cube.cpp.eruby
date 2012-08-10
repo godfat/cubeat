@@ -130,12 +130,13 @@ void <% debug_hook 'Cube::be_broken' do %>(int){
 
 void <% debug_hook 'Cube::restore' do %>(int){
 <% end %>
-    is_broken_ = false;
     //color_id(utils::random(map()->ms()->color_amounts())+1);
-
     color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 );
+    restore_to(color_id());
+}
 
-    if( state::pWaiting w = is_waiting() )
-        w->uncheck();
+void Cube::restore_to(int color){
+    is_broken_ = false;
+    if( state::pWaiting w = is_waiting() ) w->uncheck();
     restore_event()(color_id());
 }

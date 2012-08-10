@@ -76,6 +76,14 @@ public:
     }
 
     Map& set_garbage_amount(int const& n) { model()->set_garbage_amount(n); return *this; }
+    Map& foreach_cube(std::tr1::function<void(model::pCube&, int, int)> f)   { model()->foreach_cube(f); return *this; }
+    Map& for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f) { model()->for_row(r, f); return *this; }
+
+    bool exist(int x, int y) const             { return model()->exist(x, y); }
+    bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }
+
+    std::vector< std::pair<int, int> > count_colors() const { return model()->count_colors(); }
+    std::vector< data::pCube > clone_linear_data() const    { return model()->clone_linear_data(); }
 
 private:
     pMap init();

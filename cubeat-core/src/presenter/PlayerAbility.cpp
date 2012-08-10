@@ -11,7 +11,6 @@
 using namespace psc;
 using namespace presenter;
 using std::tr1::bind;
-using std::tr1::ref;
 
 ///////////////////////////// Character 1 Ability //////////////////////////////
 
@@ -22,10 +21,10 @@ void PlayerAbility::C1(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 ///////////////////////////// Character 2 Ability //////////////////////////////
 
-void check_garbage_and_restore(model::Cube& c)
+void check_garbage_and_restore(model::pCube& c, int, int)
 {
-    if( c->is_garbage() || c->is_broken() )
-        c->restore();
+    if( !c->is_dying() && ( c->is_garbage() || c->is_broken() ) )
+        c->restore(99); //99 means damage. originally all these functions can only pass weapon damage.
 }
 
 void PlayerAbility::C2(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
@@ -50,9 +49,9 @@ void PlayerAbility::C3(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 ///////////////////////////// Character 4 Ability //////////////////////////////
 
-void check_color_and_restore(model::Cube& c, int color_2nd, int color_1st)
+void check_color_and_restore(model::pCube& c, int, int, int color_2nd, int color_1st)
 {
-    if( c->color_id() == color_2nd )
+    if( !c->is_dying() && c->color_id() == color_2nd )
         c->restore_to(color_1st);
 }
 
@@ -63,17 +62,17 @@ void PlayerAbility::C4(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             // pair(color_id, count), and it's sorted using count
             std::vector< std::pair<int, int> > const& color_counts = m0->count_colors();
             int max_1st_color = color_counts[0].first;
-            int max_2nd_color = color_counts[0].second;
-            m0->foreach_cube(bind(&check_color, _1, max_2nd_color, max_1st_color));
+            int max_2nd_color = color_counts[1].first;
+            m0->foreach_cube(bind(&check_color_and_restore, _1, _2, _3, max_2nd_color, max_1st_color));
         }
     }
 }
 
 ///////////////////////////// Character 5 Ability //////////////////////////////
 
-void row_do(model::Cube& c)
+void row_do(model::pCube& c, int, int)
 {
-    if( c ) c->go_exploding();
+    if( c && !c->is_dying() ) c->go_exploding(99); //99 means damage, see above note.
 }
 
 void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
@@ -83,8 +82,8 @@ void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             int delay_time = 1;
             int width = m0->map_setting()->width();
             int height= m0->map_setting()->height();
-            for( size_t y = height - 1 ; y >= 5; --y ) {
-                for( size_t x = 0; x < width; ++x ) {
+            for( int y = height - 1 ; y >= 5; --y ) {
+                for( int x = 0; x < width; ++x ) {
                     if( m0->exist(x, y) ) {
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                             bind(&presenter::Map::for_row, m0.get(), y, row_do), m0, delay_time);
@@ -108,14 +107,14 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     if( !m1 ) return;
 
     std::vector< data::pCube > m0_cube_data = m0->clone_linear_data();
-    std::random_shuffle(m0_cube_data);
+    std::random_shuffle(m0_cube_data.begin(), m0_cube_data.end());
 
     int count = 0;
 
     int width = m1->map_setting()->width();
     int height= m1->map_setting()->height();
-    for( size_t y = 0; y < height - 1 && count < 15; ++y ) {
-        for( size_t x = 0; x < width && count < 15; ++x ) {
+    for( int y = 0; y < height - 1 && count < 15; ++y ) {
+        for( int x = 0; x < width && count < 15; ++x ) {
             if( !m1->exist(x, y) && !m1->below_is_dropping(x, y) ) {
                 m1->make_cube(x, y, m0_cube_data[count]->color_id());
                 ++count;

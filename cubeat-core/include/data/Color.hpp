@@ -32,6 +32,8 @@ public:
         return Color(utils::random(white+1));
     }
 
+    static int const MAX;
+
 public:
     Color(): rgb_(0){}
     explicit Color(int rgb): rgb_(rgb){}

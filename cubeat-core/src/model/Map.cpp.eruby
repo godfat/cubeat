@@ -1,4 +1,5 @@
 
+#include "data/Color.hpp"
 #include "presenter/Map.hpp"
 #include "presenter/Cube.hpp"
 #include "model/Map.hpp"
@@ -623,6 +624,62 @@ double Map::get_sink_speed() const {
 
 void Map::set_garbage_amount(int const& n) {
     garbage_left_ = n;
+}
+
+void Map::foreach_cube(std::tr1::function<void(pCube&, int, int)> f) {
+    utils::for_each_ignore_null(cubes_, f);
+}
+
+bool sort_by_second_gte(std::pair<int, int> const& a, std::pair<int, int> const& b)
+{
+    return a.second >= b.second;
+}
+
+std::vector< std::pair<int, int> > Map::count_colors() const{
+    std::vector< std::pair<int, int> > ret;
+    for( int i = 0; i < data::Color::MAX; ++i ) {
+        ret.push_back( std::make_pair(i, 0) );
+    }
+    for( int x = 0; x < ms()->width(); ++x ) {
+        for( int y = 0; y < ms()->height() - 1; ++y ) {
+            pCube c = cubes_[x][y];
+            if( c && !c->is_dying() ) {
+                ret[ c->color_id() ].second += 1;
+            }
+        }
+    }
+    std::sort(ret.begin(), ret.end(), sort_by_second_gte);
+    return ret;
+}
+
+bool Map::exist(int x, int y) const
+{
+    return !!cubes_[x][y];
+}
+
+void Map::for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f)
+{
+    for( int x = 0; x < ms()->width(); ++x ) {
+        f( cubes_[x][r], x, r );
+    }
+}
+
+std::vector< data::pCube > Map::clone_linear_data() const{
+    std::vector< data::pCube > ret;
+    for( int x = 0; x < ms()->width(); ++x ) {
+        for( int y = 0; y < ms()->height() - 1; ++y ) {
+            pCube c = cubes_[x][y];
+            if( c && !c->is_dying() ) {
+                ret.push_back( data::Cube::create(c->x(), c->y(), c->color_id()) );
+            }
+        }
+    }
+    return ret;
+}
+
+bool Map::below_is_dropping(int x, int y) const
+{
+    return y > 0 && cubes_[x][y-1]->is_dropping();
 }
 
 pSimpleMap Map::dump_data() const

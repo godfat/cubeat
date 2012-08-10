@@ -229,7 +229,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     // 2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ here
     // not ms()->dropping_creatable(). it will affect cycle_warning().
 
-    if( garbage_dumpable_ && garbage_left_ > 0.99 ) { // garbage_left_ is double here, ignore some epslion.
+    if( garbage_dumpable_ && garbage_left_ >= 1 ) { // garbage_left_ is double here, ignore some epslion.
         cycle_creation_garbage();
     }
     else if( dropping_creatable_ ) {
@@ -391,7 +391,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         //printf("garbage_left_: %d, emptyness of row %d (from top): %d\n", garbage_left_, j, row_empty[j].size());
 
         //garbage_left_ is double here. The remainder of less than 1 garbage_left_ will be kept for future use.
-        for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ > 0.99 ; ++i ){
+        for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ >= 1 ; ++i ){
             int x = row_empty[j][i];
 
             pCube c = owner->make_garbage( x, top - j )->model();
@@ -405,7 +405,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //means garbage effects that the opponent has to minus n
     main_enemy->pop_garbage_event()(this_frame_lands);
 
-    if( this_frame_lands > 0 && garbage_left_ <= 0.99 ) { //if garbage is actually less then 1, just pop all garbage animations
+    if( this_frame_lands > 0 && garbage_left_ < 1 ) { //if garbage is actually less then 1, just pop all garbage animations
         // ok, but there's a problem with this method:
         // garbages in the delay_adder ( 1 sec delay, and the first second of flying animation )
         // will not account for this_frame_lands, but they will get deleted as well...
@@ -619,6 +619,10 @@ double Map::get_sink_speed() const {
         return ms()->drop_speed();
     else
         return ms()->sink_speed();
+}
+
+void Map::set_garbage_amount(int const& n) {
+    garbage_left_ = n;
 }
 
 pSimpleMap Map::dump_data() const

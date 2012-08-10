@@ -8,6 +8,7 @@
 #include "audio/Sound.hpp"
 #include "utils/Random.hpp"
 #include "presenter/Map.hpp"
+#include "presenter/PlayerAbility.hpp"
 #include "Accessors.hpp"        //for some basic visual effects
 #include "EasingEquations.hpp"  //for some basic visual effects
 #include <boost/foreach.hpp>
@@ -111,6 +112,21 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
     return *this;
 }
 
+int Player::invoke_ability()
+{
+    int ability_left = ability_queue_.size();
+    if( ability_left > 0 ) {
+        presenter::PlayerAbility::Callback ab = ability_queue_.front();
+        ability_queue_.pop_front();
+
+        //NOTE WTF TEMP 2012: let's be lazy for now. It probably will always be only 2 maps anyway.
+        ab(shared_from_this(), map_list_[id_], map_list_[enemy_input_ids_.front()] );
+
+        return ability_left;
+    }
+    return 0;
+}
+
 Player& Player::set_config(utils::map_any const& config)
 {
     weplist_[0]->ammo( config.I("item1_start_ammo") );
@@ -121,6 +137,12 @@ Player& Player::set_config(utils::map_any const& config)
     overheat_downtime_= config.I("downtime");
     heat_for_haste_   = config.F("heat_for_haste");
     heat_for_jama_shoot_ = config.F("heat_for_jama");
+
+    using std::tr1::bind;
+    using presenter::PlayerAbility;
+
+    ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) );
+
     return *this;
 }
 

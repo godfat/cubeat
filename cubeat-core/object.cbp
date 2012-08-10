@@ -152,6 +152,7 @@
 		<Unit filename="include\presenter\Object.hpp" />
 		<Unit filename="include\presenter\Opening2.hpp" />
 		<Unit filename="include\presenter\OpeningSequence.hpp" />
+		<Unit filename="include\presenter\PlayerAbility.hpp" />
 		<Unit filename="include\presenter\PlayerView.hpp" />
 		<Unit filename="include\presenter\Stage.hpp" />
 		<Unit filename="include\presenter\Transitioner.hpp" />
@@ -348,6 +349,7 @@
 		<Unit filename="src\data\Color.cpp" />
 		<Unit filename="src\data\MapSetting.cpp" />
 		<Unit filename="src\data\MapSetting.cpp.eruby" />
+		<Unit filename="src\data\ViewSetting.cpp" />
 		<Unit filename="src\model\AICommand.cpp" />
 		<Unit filename="src\model\Cube.cpp" />
 		<Unit filename="src\model\Cube.cpp.eruby" />
@@ -380,6 +382,7 @@
 		<Unit filename="src\presenter\Object.cpp" />
 		<Unit filename="src\presenter\Opening2.cpp" />
 		<Unit filename="src\presenter\OpeningSequence.cpp" />
+		<Unit filename="src\presenter\PlayerAbility.cpp" />
 		<Unit filename="src\presenter\PlayerView.cpp" />
 		<Unit filename="src\presenter\Stage.cpp" />
 		<Unit filename="src\presenter\Transitioner.cpp" />

@@ -77,6 +77,11 @@ public:
     // used by Cube#drop_a_frame or sink_a_frame
     double get_sink_speed() const;
 
+    // add a intrusive method to change garbage_left_ from external program. For character special ability.
+    // SimpleMap probably won't need to do this, so I added it at Map level
+    void set_garbage_amount(int const& n);
+
+
     pSimpleMap dump_data() const;
 
 private:

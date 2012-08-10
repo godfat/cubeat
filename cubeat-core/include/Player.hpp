@@ -6,10 +6,12 @@
 #include "all_fwd.hpp"
 #include "utils/dictionary.hpp"
 #include <vector>
+#include <deque>
 #include <list>
 #include <boost/tr1/functional.hpp>
 
 namespace psc {
+
 namespace ctrl {
 
 class Input;
@@ -39,9 +41,10 @@ public:
     Player& push_ally(int id);
     Player& push_enemy(int id);
     Player& subscribe_player_specific_interactions(bool const& can_haste = true);
-
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
+
     //I'd better refactor this afterwards.
+    int  invoke_ability();
     void eat_item();
 
     Input const* input()          const;
@@ -91,9 +94,13 @@ protected:
 
     Input*               input_;
 	Weapon*              current_wep_;
-	std::vector<Weapon*> weplist_;
+	std::vector<Weapon*>          weplist_;
 	std::vector<presenter::wpMap> map_list_;
-	std::list<int> ally_input_ids_, enemy_input_ids_;
+	std::list<int>                ally_input_ids_, enemy_input_ids_;
+
+	typedef std::tr1::function<void(wpointer_type const& player, presenter::wpMap const& self_map, presenter::wpMap const& enemy_map)>
+	    AbilityCallback;
+	std::deque< AbilityCallback > ability_queue_;
 
 	std::tr1::function<void()> player_hit_event_;
 public:

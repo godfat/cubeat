@@ -111,23 +111,8 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
 
     data::pViewSetting s0, s1;
 
-    int ats_x1 = uiconf_.M("misc").M("gar1p").I("x");
-    int ats_x2 = uiconf_.M("misc").M("gar2p").I("x");
-    int ats_y  = uiconf_.M("misc").M("gar1p").I("y");
-    s0 = data::ViewSetting::create( uiconf_.I("csize") );
-    s0->x_offset( uiconf_.I("xoff1") ).
-        y_offset( uiconf_.I("yoff") ).
-        ats_x( ats_x1 ).
-        ats_y( ats_y ).
-        atf_x( ats_x2 ).
-        atf_y( ats_y );
-    s1 = data::ViewSetting::create( uiconf_.I("csize") );
-    s1->x_offset( uiconf_.I("xoff2") ).
-        y_offset( uiconf_.I("yoff") ).
-        ats_x( ats_x2 ).
-        ats_y( ats_y ).
-        atf_x( ats_x1 ).
-        atf_y( ats_y );
+    s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
+    s1 = data::ViewSetting::create( uiconf_.M("mapview1") );
 
     std::string ai_temp[4] =
         {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};

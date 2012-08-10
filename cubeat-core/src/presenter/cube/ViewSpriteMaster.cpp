@@ -20,6 +20,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 #include "Player.hpp"
+#include "Input.hpp"
 #include "audio/Sound.hpp"
 
 #include <boost/foreach.hpp>
@@ -36,6 +37,12 @@ ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting settin
 {   //temporary
     view_orig_ = view::Object::create( scene );
     view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
+
+    ability_btn_ = view::Sprite::create( "cubes/garbage1", scene, 100, 100, true );
+    ability_btn_->set<accessor::Pos2D>(vec2( setting->abl_btn_x(), setting->abl_btn_y() ));
+
+    ctrl::Button const* b = &player.lock()->input()->trig1();
+    ability_btn_->onPress(b) = std::tr1::bind(&ViewSpriteMaster::invoke_ability, this, _1);
 }
 
 ViewBase::pointer_type ViewSpriteMaster::create(model::pCube cube) const {
@@ -264,6 +271,17 @@ void ViewSpriteMaster::cleanup_chaintext(){
 
 vec2 ViewSpriteMaster::garbage_endpoint_vec2() const {
     return pos_vec2(map_setting()->width()/2, map_setting()->height()+2); //endpoint is out of bound
+}
+
+void ViewSpriteMaster::invoke_ability(view::pSprite const& sp) {
+    if( ctrl::pPlayer p = player_.lock() ) {
+        if( int left = p->invoke_ability() ) {
+            ability_btn_->setTexture("cubes/garbage" + utils::to_s(left-1) );
+            std::cout << "Test." << std::endl;
+            // and other (delayed) visual effects here.
+
+        }
+    }
 }
 
 vec2 ViewSpriteMaster::pos_vec2(int const& x, int const& y) const{

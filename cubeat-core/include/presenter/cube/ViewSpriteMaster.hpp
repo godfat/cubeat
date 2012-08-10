@@ -90,6 +90,7 @@ private:
     void create_overheat_overlay();
     void show_warning_at(int x, bool visible);
     void pop_a_chain_text(model::wpChain const& key);
+    void invoke_ability(view::pSprite const& sp);
 
     vec2 garbage_endpoint_vec2() const;
     vec2 pos_vec2(int const& x, int const& y) const;
@@ -100,6 +101,7 @@ private:
     ctrl::wpPlayer player_;
     view::pSprite overheat_;
     view::pSprite overheat_bg_;
+    view::pSprite ability_btn_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
     std::vector< view::pSprite > warning_strip_;

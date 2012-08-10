@@ -11,7 +11,7 @@ int const Color::id2rgb[] = {-1, blue,         green,        red,
                                  red_green, red_blue, green_blue,
                                  0,   white};
 
-int const MAX = 9; //make it the same as id2rgb.
+int const Color::MAX = 9; //make it the same as id2rgb.
 
 Color& Color::offset()
 {

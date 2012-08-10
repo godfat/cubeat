@@ -21,7 +21,8 @@ using namespace std::tr1::placeholders;
 Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
-     overheat_downtime_(2000), overheat_(false), hasting_(false), input_(input), player_hit_event_(0)
+     overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false),
+     input_(input), player_hit_event_(0)
 {
 }
 
@@ -75,9 +76,7 @@ void Player::heat_cooling()
     if( !overheat_ ) { //2011.03.28 when hasting you shouldn't cool
         if( !hasting_ ) {
             if( accumulated_heat_ > 0 ) {
-                accumulated_heat_ -= cooling_speed_;
-                if( accumulated_heat_ < 0 )
-                    accumulated_heat_ = 0;
+                delta_heat( - cooling_speed_ );
             }
         }
         else {
@@ -141,8 +140,16 @@ Player& Player::set_config(utils::map_any const& config)
     using std::tr1::bind;
     using presenter::PlayerAbility;
 
-    ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) );
-
+    switch( config.I("ability_kind") ) {
+        case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;
+        case 2: ability_queue_.push_back( bind(&PlayerAbility::C2, _1, _2, _3) ); break;
+        case 3: ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) ); break;
+        case 4: ability_queue_.push_back( bind(&PlayerAbility::C4, _1, _2, _3) ); break;
+        case 5: ability_queue_.push_back( bind(&PlayerAbility::C5, _1, _2, _3) ); break;
+        case 6: ability_queue_.push_back( bind(&PlayerAbility::C6, _1, _2, _3) ); break;
+        default:
+            ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
+    }
     return *this;
 }
 
@@ -214,12 +221,25 @@ void Player::end_overheat()
     }
 }
 
+int Player::delta_heat(double d)
+{
+    if( lock_heat_ ) return 0;
+    accumulated_heat_ += d;
+    if( accumulated_heat_ > 1 ) {
+        accumulated_heat_ = 1;
+        return 1;
+    }
+    else if( accumulated_heat_ < 0 ) {
+        accumulated_heat_ = 0;
+        return -1;
+    }
+    return 0;
+}
+
 void Player::generate_heat(double heat)
 {
     using std::tr1::ref;
-    accumulated_heat_ += heat;
-    if( accumulated_heat_ > 1 ) {
-        accumulated_heat_ = 1;
+    if( delta_heat( heat ) ) {
         overheat_ = true;
         if( presenter::pMap m = map_list_[id_].lock() ) {
             m->overheat_event()(true);

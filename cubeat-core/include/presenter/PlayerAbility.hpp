@@ -27,6 +27,8 @@ struct PlayerAbility
     static void C4(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
     static void C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
     static void C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
+    static void C7(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
+    static void C8(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
 };
 
 } //presenter

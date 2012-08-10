@@ -229,6 +229,10 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
     // 2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ here
     // not ms()->dropping_creatable(). it will affect cycle_warning().
+    if( lock_dropping_ ) {
+        garbage_dumpable_   = false;
+        dropping_creatable_ = false;
+    }
 
     if( garbage_dumpable_ && garbage_left_ >= 1 ) { // garbage_left_ is double here, ignore some epslion.
         cycle_creation_garbage();
@@ -626,7 +630,7 @@ void Map::set_garbage_amount(int const& n) {
     garbage_left_ = n;
 }
 
-void Map::foreach_cube(std::tr1::function<void(pCube&, int, int)> f) {
+void Map::foreach(std::tr1::function<void(pCube&, int, int)> f) {
     utils::for_each_ignore_null(cubes_, f);
 }
 
@@ -659,12 +663,18 @@ bool Map::exist(int x, int y) const
 
 void Map::for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f)
 {
-    for( int x = 0; x < ms()->width(); ++x ) {
-        f( cubes_[x][r], x, r );
-    }
+    for( int x = 0; x < ms()->width(); ++x )
+        apply_func_at(x, r, f);
 }
 
-std::vector< data::pCube > Map::clone_linear_data() const{
+void Map::apply_func_at(int x, int y, std::tr1::function<void(model::pCube&, int, int)> f)
+{
+    if( cubes_[x][y] )
+        f(cubes_[x][y], x, y);
+}
+
+std::vector< data::pCube > Map::clone_linear_data() const
+{
     std::vector< data::pCube > ret;
     for( int x = 0; x < ms()->width(); ++x ) {
         for( int y = 0; y < ms()->height() - 1; ++y ) {

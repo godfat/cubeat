@@ -65,6 +65,7 @@ public:
     std::list<int> const& enemy_input_ids() const;
 
     void generate_heat(double);
+    void lock_heat(bool const& f) { lock_heat_ = f; }
     //float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
@@ -82,6 +83,7 @@ protected:
     void process_input();
     void heat_cooling();
     void end_overheat();
+    int  delta_heat(double); //return 1 for overflow, 0 for nothing, -1 for underflow
 
 protected:
     int       id_;
@@ -91,6 +93,7 @@ protected:
     double    accumulated_heat_, cooling_speed_, heat_for_normal_shoot_, heat_for_haste_, heat_for_jama_shoot_;
     int       overheat_downtime_;
     bool      overheat_, hasting_;
+    bool      lock_heat_; // 2012 note: setup a state to lock heat value.
 
     Input*               input_;
 	Weapon*              current_wep_;

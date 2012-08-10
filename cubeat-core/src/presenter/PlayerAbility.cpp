@@ -16,12 +16,18 @@ using std::tr1::bind;
 
 void PlayerAbility::C1(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
 {
+    pMap m0 = self_map.lock();
+    if( !m0 ) return;
 
+    m0->lock_dropping(true);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Map::lock_dropping, m0.get(), false), m0, 5000);
 }
 
 ///////////////////////////// Character 2 Ability //////////////////////////////
 
-void check_garbage_and_restore(model::pCube& c, int, int)
+static void check_garbage_and_restore(model::pCube& c, int, int)
 {
     if( !c->is_dying() && ( c->is_garbage() || c->is_broken() ) )
         c->restore(99); //99 means damage. originally all these functions can only pass weapon damage.
@@ -31,7 +37,7 @@ void PlayerAbility::C2(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 {
     if( ctrl::pPlayer p = player.lock() ) {
         if( pMap m0 = self_map.lock() ) {
-            m0->foreach_cube(check_garbage_and_restore);
+            m0->foreach(check_garbage_and_restore);
         }
     }
 }
@@ -49,7 +55,7 @@ void PlayerAbility::C3(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 ///////////////////////////// Character 4 Ability //////////////////////////////
 
-void check_color_and_restore(model::pCube& c, int, int, int color_2nd, int color_1st)
+static void check_color_and_restore(model::pCube& c, int, int, int color_2nd, int color_1st)
 {
     if( !c->is_dying() && c->color_id() == color_2nd )
         c->restore_to(color_1st);
@@ -63,16 +69,16 @@ void PlayerAbility::C4(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             std::vector< std::pair<int, int> > const& color_counts = m0->count_colors();
             int max_1st_color = color_counts[0].first;
             int max_2nd_color = color_counts[1].first;
-            m0->foreach_cube(bind(&check_color_and_restore, _1, _2, _3, max_2nd_color, max_1st_color));
+            m0->foreach(bind(&check_color_and_restore, _1, _2, _3, max_2nd_color, max_1st_color));
         }
     }
 }
 
 ///////////////////////////// Character 5 Ability //////////////////////////////
 
-void row_do(model::pCube& c, int, int)
+static void row_do(model::pCube& c, int, int)
 {
-    if( c && !c->is_dying() ) c->go_exploding(99); //99 means damage, see above note.
+    if( !c->is_dying() ) c->go_exploding(99); //99 means damage, see above note.
 }
 
 void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
@@ -86,7 +92,7 @@ void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
                 for( int x = 0; x < width; ++x ) {
                     if( m0->exist(x, y) ) {
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                            bind(&presenter::Map::for_row, m0.get(), y, row_do), m0, delay_time);
+                            bind(&Map::for_row, m0.get(), y, row_do), m0, delay_time);
                         delay_time += 300;
                     }
                 }
@@ -125,5 +131,36 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 ///////////////////////////// Character 7 Ability //////////////////////////////
 
+static void cube_broken(model::pCube& c, int, int)
+{
+    if( !c->is_dying() )
+        c->be_broken(99); //99 means damage
+}
+
+void PlayerAbility::C7(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
+{
+    ctrl::pPlayer p = player.lock();
+    pMap m1 = enemy_map.lock();
+    if( !p ) return;
+    if( !m1 ) return;
+
+    std::vector< data::pCube > m1_cube_data = m1->clone_linear_data();
+    std::random_shuffle(m1_cube_data.begin(), m1_cube_data.end());
+
+    for( size_t i = 0; i < m1_cube_data.size() && i < 15; ++i ) {
+        m1->apply_func_at(m1_cube_data[i]->x(), m1_cube_data[i]->y(), cube_broken);
+    }
+}
+
 ///////////////////////////// Character 8 Ability //////////////////////////////
 
+void PlayerAbility::C8(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map)
+{
+    ctrl::pPlayer p = player.lock();
+    if( !p ) return;
+
+    p->lock_heat(true);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&ctrl::Player::lock_heat, p.get(), false), p, 15000);
+}

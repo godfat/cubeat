@@ -40,7 +40,7 @@ public:
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0)
+        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0), lock_dropping_(false)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
@@ -80,14 +80,16 @@ public:
     // add intrusive methods for character special ability.
     // SimpleMap probably won't need to do this, so I added them at Map level
     void set_garbage_amount(int const& n);
-    void foreach_cube(std::tr1::function<void(pCube&, int, int)> f);
+    void foreach(std::tr1::function<void(pCube&, int, int)> f);
     void for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f);
+    void apply_func_at(int x, int y, std::tr1::function<void(model::pCube&, int, int)> f);
 
     bool exist(int x, int y) const;
     bool below_is_dropping(int x, int y) const;
 
     std::vector< std::pair<int, int> > count_colors() const;
     std::vector< data::pCube > clone_linear_data() const;
+    void lock_dropping(bool const& f) { lock_dropping_ = f; }
 
     pSimpleMap dump_data() const;
 
@@ -125,6 +127,7 @@ private:
     time_t now_t_, last_t_;
 
     bool dropping_creatable_, garbage_dumpable_;
+    bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy
     preview_list_type cubes_preview_;

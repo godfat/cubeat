@@ -702,7 +702,11 @@ void Map::kill_cube_at(int x, int y)
 void Map::new_cube_at(int x, int y, int color_id)
 {
     pCube c = owner()->make_cube(x, y, color_id)->model();
-    c->go_sinking();
+    if( color_id == -1 ) { //no color
+        if( ms()->use_broken_as_garbage() ) c->be_broken();
+        else c->be_garbage();
+    }
+    //c->go_sinking();
     insert_cube(c);
 }
 

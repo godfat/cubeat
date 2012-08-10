@@ -129,6 +129,9 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             }
         }
     }
+    for( ; count < 15; ++count ) {
+        m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
+    }
 }
 
 ///////////////////////////// Character 7 Ability //////////////////////////////

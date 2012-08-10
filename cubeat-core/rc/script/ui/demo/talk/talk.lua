@@ -44,7 +44,9 @@ local function action(menu, rundown)
   end
   
   index_=index_+1
-  if index_>table.getn(rundown) then index_=1 end
+  if index_>table.getn(rundown) then
+    index_=1
+  end
 end
 
 local function reset()
@@ -78,15 +80,15 @@ local function init(demo, parent)
     local actor   = 'actor'..tostring(ch)
     local content = 'content'..tostring(ch)
     local panel   = 'panel'..tostring(ch)
-    menu[actor]   = ui.new_image{ parent=parent, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
+    menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
-    menu[content] = ui.new_text { parent=parent, title=' ', x=config.con_x[ch], y=config.con_y[ch],
+    menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
                                   size=32, visible=false }
-    menu[panel]   = ui.new_image{ parent=parent, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
+    menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, visible=false }
   end
   
-  menu.clickBlock = ui.new_image{ parent=parent, path='blahblah', x=config.block_x, y=config.block_y,
+  menu.clickBlock = ui.new_image{ parent=menu.TalkBackGround._cdata, path='blahblah', x=config.block_x, y=config.block_y,
                                   w=config.block_w, h=config.block_h, alpha=config.block_a, depth=config.block_d }
   menu.clickBlock:on_press(play)
   menu.clickBlock:on_press_r(leave)

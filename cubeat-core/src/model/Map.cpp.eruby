@@ -647,7 +647,7 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
     for( int x = 0; x < ms()->width(); ++x ) {
         for( int y = 0; y < ms()->height() - 1; ++y ) {
             pCube c = cubes_[x][y];
-            if( c && !c->is_dying() ) {
+            if( c && !c->is_dying() && !c->is_broken() && !c->is_garbage() ) {
                 ret[ c->color_id() ].second += 1;
             }
         }

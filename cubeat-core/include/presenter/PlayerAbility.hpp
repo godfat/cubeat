@@ -1,6 +1,7 @@
 #ifndef _SHOOTING_CUBES_PRESENTER_PLAYER_ABILITY_
 #define _SHOOTING_CUBES_PRESENTER_PLAYER_ABILITY_
 
+#include "utils/dictionary.hpp"
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/functional.hpp>
 
@@ -29,6 +30,8 @@ struct PlayerAbility
     static void C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
     static void C7(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
     static void C8(ctrl::wpPlayer const& player, wpMap const& self_map, wpMap const& enemy_map);
+
+    static void ability_modify(utils::map_any const& conf);
 };
 
 } //presenter

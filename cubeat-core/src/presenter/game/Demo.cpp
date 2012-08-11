@@ -14,6 +14,7 @@
 #include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
 #include "presenter/cube/ViewSpriteMaster.hpp"
+#include "presenter/PlayerAbility.hpp"
 
 #include "EventDispatcher.hpp"
 #include "Input.hpp"
@@ -42,7 +43,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_demo"), c2p_("char/char2_demo"), sconf_("stage/jungle"), num_of_cpu_(1),
+    :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle"), num_of_cpu_(1),
      ai_level_(2), some_ui_inited_(false), L_(0)
 {
 }
@@ -66,6 +67,7 @@ pDemo Demo::init()
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui");
 
     gameplay_ = Conf::i().config_of("gameplay/multi");
+    PlayerAbility::ability_modify( gameplay_.M("ability_constants") );
     uiconf_   = Conf::i().config_of("ui/demo_layout");
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );

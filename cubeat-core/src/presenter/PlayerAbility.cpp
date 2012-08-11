@@ -4,6 +4,7 @@
 #include "presenter/PlayerAbility.hpp"
 #include "presenter/Map.hpp"
 #include "EventDispatcher.hpp"
+#include "utils/Random.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -12,10 +13,36 @@ using namespace psc;
 using namespace presenter;
 using std::tr1::bind;
 
+///////////////////////////// some internal constant ///////////////////////////
+
+static int restore_percentage_ = 100;
+static int restore_percentage2_ = 100;
+static int lock_dropping_second_ = 5000;
+static double garbage_ratio_ = 0.333;
+static int head_crush_layer_ = 5;
+static int head_crush_layer_delay_ = 200;
+static int magic_transfer_limit_ = 15;
+static int broken_cube_limit_ = 15;
+static int lock_heat_second_ = 15000;
+
+void PlayerAbility::ability_modify(utils::map_any const& conf)
+{
+    restore_percentage_     = conf.I("restore_percentage");
+    restore_percentage2_    = conf.I("restore_percentage2");
+    lock_dropping_second_   = conf.I("lock_dropping_second");
+    garbage_ratio_          = conf.F("garbage_ratio");
+    head_crush_layer_       = conf.I("head_crush_layer");
+    head_crush_layer_delay_ = conf.I("head_crush_layer_delay");
+    magic_transfer_limit_   = conf.I("magic_transfer_limit");
+    broken_cube_limit_      = conf.I("broken_cube_limit");
+    lock_heat_second_       = conf.I("lock_heat_second");
+}
+
 ///////////////////////////// Character 1 Ability //////////////////////////////
 
 static void check_garbage_and_restore(model::pCube& c, int, int)
 {
+    if( utils::random(100) > restore_percentage_ ) return;
     if( !c->is_dying() && ( c->is_garbage() || c->is_broken() ) )
         c->restore(99); //99 means damage. originally all these functions can only pass weapon damage.
 }
@@ -39,7 +66,7 @@ void PlayerAbility::C2(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     m0->lock_dropping(true);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Map::lock_dropping, m0.get(), false), m0, 5000);
+        bind(&Map::lock_dropping, m0.get(), false), m0, lock_dropping_second_);
 }
 
 ///////////////////////////// Character 3 Ability //////////////////////////////
@@ -48,7 +75,7 @@ void PlayerAbility::C3(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 {
     if( ctrl::pPlayer p = player.lock() ) {
         if ( pMap m0 = self_map.lock() ) {
-            m0->set_garbage_amount( m0->garbage_left() / 3 );
+            m0->set_garbage_amount( static_cast<int>( m0->garbage_left() * garbage_ratio_ )  );
         }
     }
 }
@@ -57,6 +84,7 @@ void PlayerAbility::C3(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
 static void check_color_and_restore(model::pCube& c, int, int, int color_2nd, int color_1st)
 {
+    if( utils::random(100) > restore_percentage2_ ) return;
     if( !c->is_dying() && c->color_id() == color_2nd )
         c->restore_to(color_1st);
 }
@@ -88,12 +116,12 @@ void PlayerAbility::C5(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             int delay_time = 1;
             int width = m0->map_setting()->width();
             int height= m0->map_setting()->height();
-            for( int y = height - 1 ; y >= 5; --y ) {
+            for( int y = height - 1 ; y >= height - 1 - head_crush_layer_; --y ) {
                 for( int x = 0; x < width; ++x ) {
                     if( m0->exist(x, y) ) {
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                             bind(&Map::for_row, m0.get(), y, row_do), m0, delay_time);
-                        delay_time += 300;
+                        delay_time += head_crush_layer_delay_;
                         break; //FUCK, if forgetting breaking here.............
                     }
                 }
@@ -120,8 +148,8 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
 
     int width = m1->map_setting()->width();
     int height= m1->map_setting()->height();
-    for( int y = 0; y < height - 1 && count < 15; ++y ) {
-        for( int x = 0; x < width && count < 15; ++x ) {
+    for( int y = 0; y < height - 1 && count < magic_transfer_limit_; ++y ) {
+        for( int x = 0; x < width && count < magic_transfer_limit_; ++x ) {
             if( !m1->exist(x, y) && !m1->below_is_dropping(x, y) ) {
                 m1->new_cube_at(x, y, m0_cube_data[count]->color_id());
                 m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
@@ -129,7 +157,7 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
             }
         }
     }
-    for( ; count < 15; ++count ) {
+    for( ; count < magic_transfer_limit_ ; ++count ) {
         m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
     }
 }
@@ -152,7 +180,7 @@ void PlayerAbility::C7(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     std::vector< data::pCube > m1_cube_data = m1->clone_linear_data();
     std::random_shuffle(m1_cube_data.begin(), m1_cube_data.end());
 
-    for( size_t i = 0; i < m1_cube_data.size() && i < 15; ++i ) {
+    for( size_t i = 0; i < m1_cube_data.size() && i < static_cast<size_t>(broken_cube_limit_) ; ++i ) {
         m1->apply_func_at(m1_cube_data[i]->x(), m1_cube_data[i]->y(), cube_broken);
     }
 }
@@ -167,5 +195,5 @@ void PlayerAbility::C8(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     p->lock_heat(true);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ctrl::Player::lock_heat, p.get(), false), p, 15000);
+        bind(&ctrl::Player::lock_heat, p.get(), false), p, lock_heat_second_);
 }

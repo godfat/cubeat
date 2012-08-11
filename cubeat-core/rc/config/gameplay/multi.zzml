@@ -42,18 +42,18 @@ player1: {
 
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
-    
-    #how many ms between a single warning (alarm) sound. 
+
+    #how many ms between a single warning (alarm) sound.
     warning_gap: 1000,
-    
+
     #damage_factor
     damage_factor: 1.0,
-    
+
     #negate enemy's damage_factor
     negate_damage_factor: 1.0,
-    
+
     #possibility of dropping normal cube instead of garbages (0 ~ 100):
-    drop_normal_chance: 0, 
+    drop_normal_chance: 0,
 
     #weapon state, cooling event happens every 100ms,
     #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
@@ -94,7 +94,7 @@ player2: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 0,
-    
+
     weapon: {
         heat_rate: 0.18,
         cool_rate: 0.06,
@@ -114,6 +114,35 @@ player2: {
     height: 11,
     dropping_creatable: 1,
     garbage_dumpable: 1
+},
+
+ability_constants: {
+    #restore probability for restore self's broken cube (0~100)
+    restore_percentage:    100,
+
+    #restore probability for changing 1 color to another (0~100)
+    restore_percentage2:   100,
+
+    #as title (ms)
+    lock_dropping_second:  10000,
+
+    #weaken enemy's attack to .. (0.0 ~ 1.0)
+    garbage_ratio:         0.333,
+
+    #how many layer (row) can it crush (0~10)
+    head_crush_layer:      5,
+
+    #delay between crushing each layer (ms)
+    head_crush_layer_delay:200,
+
+    #how many cubes can you magically transfer to others randomly (0~60)
+    magic_transfer_limit:  15,
+
+    #how many cubes of the enemy can you broken (0~60)
+    broken_cube_limit:     15,
+
+    #as title (ms)
+    lock_heat_second:      15000
 },
 
 item: {

@@ -3,6 +3,7 @@
 #include "view/SpriteMovie.hpp"
 #include "view/Scene.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"

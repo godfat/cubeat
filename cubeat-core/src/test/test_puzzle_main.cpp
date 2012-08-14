@@ -8,6 +8,7 @@
 #include "presenter/game/Puzzle.hpp"
 
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Player.hpp"
 #include "Accessors.hpp"
 #include "utils/Random.hpp"

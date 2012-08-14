@@ -3,7 +3,6 @@
 
 #include "model/state/State.hpp"
 #include "utils/ObjectPool.hpp"
-#include "EventDispatcher.hpp"
 
 #include <boost/tr1/functional.hpp>
 

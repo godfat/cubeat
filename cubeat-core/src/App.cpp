@@ -16,6 +16,7 @@
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <iostream>
 #include <boost/tr1/functional.hpp>
@@ -154,6 +155,7 @@ int App::run(std::tr1::function<void()> tester)
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
     int profile_time_start = 0;
+    clock_t t0 = clock(), t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 
     while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
@@ -162,26 +164,38 @@ int App::run(std::tr1::function<void()> tester)
         //        global_timer_.lock()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
 
+            //t1 = clock();
             InputMgr::i().updateAll();
+            t2 = clock();
             EventDispatcher::i().dispatch();
+            t3 = clock();
             driver->beginScene(true, true, video::SColor(0,0,0,0));
+            t4 = clock();
+            printf(" recording App::t4 %ld\n", t4);
             if( tester ) tester();
             else master_presenter_->cycle();
+            t5 = clock();
+            printf(" recording App::t5 %ld\n", t5);
             driver->clearZBuffer();
             trans_->cycle();
-
+            //t6 = clock();
             InputMgr::i().redrawAll();
+            //t7 = clock();
             audio::Sound::i().cycle();
+            //t8 = clock();
             view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
-
+            //t9 = clock();
             driver->endScene();
+            //t10 = clock();
+            int elapsed_time = clock() - profile_time_start;
 
-            int elapsed_time = global_timer_.lock()->get_time() - profile_time_start;
-
-            if( elapsed_time > 35 )
+            if( elapsed_time > 30 && elapsed_time < 500 ) {
                 std::cout << "frame time spike: " << elapsed_time << "\n";
+                printf(" -- App::t2:%ld, t3:%ld, t4:%ld, t5:%ld\n", t2, t3, t4, t5);
+            }
 
-            profile_time_start = global_timer_.lock()->get_time();
+            t0 = clock();
+            profile_time_start = clock();
 
             //FPS for debug
             int fps = driver->getFPS();

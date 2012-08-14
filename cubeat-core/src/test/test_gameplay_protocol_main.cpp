@@ -12,6 +12,7 @@
 #include "presenter/cube/ViewSpriteMaster.hpp"
 
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
 #include "utils/to_s.hpp"

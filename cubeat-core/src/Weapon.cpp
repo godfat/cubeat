@@ -1,6 +1,5 @@
 
 #include "Weapon.hpp"
-#include "EventDispatcher.hpp"
 #include "audio/Sound.hpp"
 #include "view/SFX.hpp"
 #include "view/Scene.hpp" //warning: very bad!!!!

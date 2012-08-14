@@ -5,6 +5,7 @@
 
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Player.hpp"
 #include "view/Scene.hpp"       //warning: is this really good...?
 #include "view/Sprite.hpp"      //warning: is this really good...?

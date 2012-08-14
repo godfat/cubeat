@@ -2,6 +2,7 @@
 #include "model/Cube.hpp"
 #include "model/state/Waiting.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 <%= debug_include %>
 

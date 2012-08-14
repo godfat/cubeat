@@ -2,6 +2,7 @@
 #include "CallbackDelegate.hpp"
 #include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Button.hpp"
 #include "Input.hpp"
 

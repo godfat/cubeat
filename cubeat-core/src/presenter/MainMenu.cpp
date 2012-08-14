@@ -13,6 +13,7 @@
 #include "App.hpp"
 #include "Conf.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "audio/Sound.hpp"
 

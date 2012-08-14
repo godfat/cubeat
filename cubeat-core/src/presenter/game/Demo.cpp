@@ -17,6 +17,7 @@
 #include "presenter/PlayerAbility.hpp"
 
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
 #include "ctrl/AIPlayer.hpp"
@@ -190,6 +191,10 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     using std::tr1::bind;
 
     //start timer here.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(6.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(6.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(6.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(6.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
@@ -521,6 +526,11 @@ void Demo::game_stop()
     map0_->stop_dropping();
     map1_->stop_dropping();
 
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(1.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(1.0);
+
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
     ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
     player0_->stopAllActions();
@@ -768,12 +778,17 @@ bool predicate_column_full_and_has_enough_garbage(pMap const& m0, pMap const& m1
 
 void Demo::cycle()
 {
+    clock_t t0 = 0x0fffffff, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
     if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
+        t0 = clock();
+        printf(" recoding Demo::t0 %ld\n", t0);
         pview1_->cycle();
         pview2_->cycle();
         update_ui();
+        t1 = clock();
         map0_->cycle();
         map1_->cycle();
+        t2 = clock();
 
         // temp: hack, just for test
         if( predicate_column_full_and_has_enough_garbage(map0_, map1_) ) {
@@ -802,6 +817,8 @@ void Demo::cycle()
             }
         }
 
+        t3 = clock();
+
         // temp: hack, just for test
         if( music_state_ == true && music_state_old_ == false ) {
             printf("Demo: true -> music_state\n");
@@ -817,6 +834,8 @@ void Demo::cycle()
             player1_->cycle();
         }
 
+        t4 = clock();
+
 //        // temp: hack, just for test (cut-in)
 //        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
 //            timed_pause(1000);
@@ -827,6 +846,13 @@ void Demo::cycle()
     stage_->cycle();
     scene_->redraw();
     ui_scene_->redraw();
+
+    t5 = clock();
+    printf(" recoding Demo::t5 %ld\n", t5);
+    if( t5 - t0 > 10 ) {
+        //printf(" -- Demo::profiler: %ld %ld %ld %ld %ld\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4);
+        printf(" -- Demo::t0:%ld, t4:%ld, t5:%ld\n", t0, t4, t5);
+    }
 
     // temp: hack, just for test
     music_state_old_ = music_state_;

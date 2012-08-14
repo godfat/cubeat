@@ -6,6 +6,7 @@
 #include "presenter/Map.hpp"
 #include "presenter/cube/ViewStdout.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "IrrDevice.hpp"
 
 #include <cstdio>

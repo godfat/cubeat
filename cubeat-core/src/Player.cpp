@@ -3,6 +3,7 @@
 #include "Weapon.hpp"
 #include "Input.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "view/Sprite.hpp"
 #include "view/SFX.hpp"
 #include "audio/Sound.hpp"

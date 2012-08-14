@@ -4,6 +4,7 @@
 #include "audio/detail/OpenAL.hpp"
 #include "audio/detail/ALmixer.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <utility>
 #include <boost/foreach.hpp>

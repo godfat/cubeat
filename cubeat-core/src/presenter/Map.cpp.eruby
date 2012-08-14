@@ -10,6 +10,7 @@
 #include "Accessors.hpp"
 #include "audio/Sound.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include "all_fwd.hpp"
 

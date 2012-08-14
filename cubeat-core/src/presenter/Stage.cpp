@@ -7,6 +7,7 @@
 #include "audio/Sound.hpp"
 #include "audio/SoundObject.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Conf.hpp"
 
 #include <boost/foreach.hpp>

@@ -6,6 +6,7 @@
 #include "presenter/Map.hpp"
 #include "view/Sprite.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"

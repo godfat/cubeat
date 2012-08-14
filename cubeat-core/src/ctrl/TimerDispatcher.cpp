@@ -1,7 +1,7 @@
 
 #include "IrrDevice.hpp"
 #include "utils/Timer.hpp"
-#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <boost/foreach.hpp>
 #include <boost/tr1/functional.hpp>
@@ -77,6 +77,17 @@ TimerDispatcher& TimerDispatcher::start()
 {
     timer_->start();
     return *this;
+}
+
+TimerDispatcher& TimerDispatcher::set_speed(double const& factor)
+{
+    timer_->setSpeed(factor);
+    return *this;
+}
+
+double TimerDispatcher::get_speed() const
+{
+    timer_->getSpeed();
 }
 
 bool TimerDispatcher::is_stopped() const

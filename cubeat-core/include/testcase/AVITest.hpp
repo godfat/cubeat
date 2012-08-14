@@ -3,6 +3,7 @@
 
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "view/SpriteMovie.hpp"
 
 /*******************************************************************/

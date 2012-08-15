@@ -848,7 +848,7 @@ void Demo::cycle()
     ui_scene_->redraw();
 
     t7 = clock();
-    if( t7 - t0 > 25 ) {
+    if( t7 - t0 > 14 ) {
         //printf(" -- Demo::profiler: %ld %ld %ld %ld %ld\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4);
         printf(" -- Demo: ui1(%ld) maps(%ld) music(%ld) player(%ld) stage(%ld) scene(%ld) ui2(%ld)\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5, t7-t6);
     }

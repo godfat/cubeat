@@ -187,7 +187,7 @@ int App::run(std::tr1::function<void()> tester)
             t10 = clock();
             int elapsed_time = clock() - profile_time_start;
 
-            if( elapsed_time > 30 && elapsed_time < 500 ) {
+            if( elapsed_time > 17 && elapsed_time < 500 ) {
                 std::cout << "frame time spike: " << elapsed_time << "\n";
                 printf(" -- App: event(%ld) maspre(%ld) %ld %ld %ld %ld %ld %ld %ld %ld\n", t3-t2, t5-t4, t1-t0, t2-t1, t4-t3, t6-t5, t7-t6, t8-t7, t9-t8, t10-t9);
             }

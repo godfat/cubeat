@@ -41,11 +41,11 @@ local function action(menu, rundown)
 
   local type_a = rundown[index_].actor_effect
   if type_a then
-    effect.actor[type_a](menu, ch, actor, content, panel)
+    effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
   end
   local type_w = rundown[index_].word_effect
   if type_w then
-    effect.word[type_w](menu, ch, actor, content, panel)
+    effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
   end
   
   index_=index_+1

@@ -174,10 +174,10 @@ state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
         if( cube->is_waiting() )
             return state::pState();
         else if( cube->y() > 0 && cubes_[cube->x()][cube->y()-1]->is_dropping() ) {
-            std::cout << "cube (" << cube->x() << ", " << cube->y() << "): pass through bug.\n";
-            std::cout << "cube states: " << is_below_empty(cube) << ", " << cube->is_broken() << ", " << cube->is_new_garbage() << ", " << cube->is_dropping() << "\n";
+            //std::cout << "cube (" << cube->x() << ", " << cube->y() << "): pass through bug.\n";
+            //std::cout << "cube states: " << is_below_empty(cube) << ", " << cube->is_broken() << ", " << cube->is_new_garbage() << ", " << cube->is_dropping() << "\n";
             pCube cbel = cubes_[cube->x()][cube->y()-1];
-            std::cout << "cbelow stat: " << is_below_empty(cbel) << ", " << cbel->is_broken() << ", " << cbel->is_new_garbage() << ", " << cbel->is_dropping() << "\n";
+            //std::cout << "cbelow stat: " << is_below_empty(cbel) << ", " << cbel->is_broken() << ", " << cbel->is_new_garbage() << ", " << cbel->is_dropping() << "\n";
             //forcefully correction of y position
             double bry = cbel->real_y();
             cube->real_y( bry - 65.0 ); //deliberately 64 + 1

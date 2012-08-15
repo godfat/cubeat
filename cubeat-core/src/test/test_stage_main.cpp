@@ -1,6 +1,7 @@
 
 #include "presenter/Stage.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
 #include "Conf.hpp"

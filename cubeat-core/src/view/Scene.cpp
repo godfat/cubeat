@@ -4,6 +4,7 @@
 #include "view/Sprite.hpp"     //temporary
 #include "Accessors.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
 #include "Weapon.hpp"

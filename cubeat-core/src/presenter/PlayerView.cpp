@@ -4,6 +4,7 @@
 #include "view/AnimatedSprite.hpp"
 #include "view/Menu.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"
 #include "audio/Sound.hpp"

@@ -17,6 +17,7 @@
 #include "EasingEquations.hpp"
 
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include <boost/function.hpp>
 #include <boost/lambda/lambda.hpp>

@@ -4,6 +4,7 @@
 */
 
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "Input.hpp"
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
@@ -305,11 +306,18 @@ void EventDispatcher::cleanup_timer_dispatcher()
 
 void EventDispatcher::dispatch()
 {
+    //profile these...
+    int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
+
     tick_timers();
 
     dispatch_btn();
     dispatch_obj();
     dispatch_timer();
+
+    if( t5 - t1 > 30 ) {
+        printf(" -- spike distributions: %03d %03d %03d %03d\n", t2 - t1, t3 - t2, t4 - t3, t5 - t4);
+    }
 
     cleanup_timer_dispatcher();
 }

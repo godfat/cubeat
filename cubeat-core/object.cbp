@@ -105,6 +105,7 @@
 		<Unit filename="include\audio\detail\ALmixer.hpp" />
 		<Unit filename="include\audio\detail\OpenAL.hpp" />
 		<Unit filename="include\ctrl\AIPlayer.hpp" />
+		<Unit filename="include\ctrl\TimerDispatcher.hpp" />
 		<Unit filename="include\data\BasicViewTypes.hpp" />
 		<Unit filename="include\data\Color.hpp" />
 		<Unit filename="include\data\Cube.hpp" />

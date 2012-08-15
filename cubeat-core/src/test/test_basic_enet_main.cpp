@@ -2,6 +2,7 @@
 #include "test/test_basic_enet_main.hpp"
 #include "presenter/Stage.hpp"
 #include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #include "utils/dictionary.hpp"
 #include "net/Manager.hpp"
 #include "Input.hpp"

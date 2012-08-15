@@ -2,7 +2,6 @@
 #include "IrrDevice.hpp"
 #include "view/Sprite.hpp"
 #include "view/Scene.hpp"
-#include "EventDispatcher.hpp"
 #include "Button.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"

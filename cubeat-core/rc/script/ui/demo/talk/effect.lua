@@ -8,6 +8,25 @@ local config  = require 'rc/script/ui/demo/talk/config'
 local actor = {}
 local word  = {}
 
+
+local function shake(loop, sprite, x, y, move, dur)
+  local tween     = {}
+  local tweenback = {}
+  for i=loop,1,-1 do
+    if i==loop then
+      tweenback[i]= function(self) self:tween("Linear", "Pos2D", ffi.new("value2", x+move, y), ffi.new("value2", x-move, y), dur, 0,
+                      function(self) self:tween("Linear", "Pos2D", ffi.new("value2", x-move, y), ffi.new("value2", x, y), dur/2, 0) end)
+                    end
+    else
+      tweenback[i]= function(self) self:tween("Linear", "Pos2D", ffi.new("value2", x+move, y), ffi.new("value2", x-move, y), dur, 0, tween[i+1]) end
+    end
+    tween[i]    = function(self) self:tween("Linear", "Pos2D", ffi.new("value2", x-move, y), ffi.new("value2", x+move, y), dur, 0, tweenback[i]) end
+  end
+  sprite:tween("Linear", "Pos2D", ffi.new("value2", x-move, y), ffi.new("value2", x+move, y), dur, 0, tweenback[1])
+end
+
+----
+
 actor.show = function(menu, ch, actor, content, panel)
   menu[actor]:set_visible(true)
 end
@@ -48,7 +67,7 @@ actor.shake = function(menu, ch, actor, content, panel)
   local act_x = config.act_x[ch]
   local act_y = config.act_y[ch]
   menu[actor]:set_visible(true)
-  menu[actor]:tween("OElastic", "Pos2D", ffi.new("value2", act_x-20, act_y), ffi.new("value2", act_x, act_y), 100, 5)
+  shake(6, menu[actor], act_x, act_y, 5, 50)
 end
 
 ----
@@ -69,7 +88,7 @@ word.shake = function(menu, ch, actor, content, panel)
   local con_x = config.con_x[ch]
   local con_y = config.con_y[ch]
   menu[content]:set_scale( 1.7 )
-  menu[content]:tween("OElastic", "Pos2D", ffi.new("value2", con_x-20, con_y), ffi.new("value2", con_x, con_y), 100, 5)
+  shake(3, menu[content], con_x, con_y, 3, 100)
 end
 
 

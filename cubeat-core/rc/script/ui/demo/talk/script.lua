@@ -47,7 +47,7 @@ local act1_act1 = {
   { index=2, text="yahoo~~~~", actor_effect="slide_in" },
     
   { index=1, text="ok" },
-  { index=1, text="Let's test\nword scale"},
+  { index=1, text="Let's test\nword size"},
   { index=2, text="HAHAHA", word_effect="size_L" },
   { index=2, text="HAHAHA", word_effect="size_S" },
   { index=2, text="HAHAHA", word_effect="size_M" },
@@ -59,7 +59,7 @@ local act1_act1 = {
   { index=1, text="ok" },
   { index=1, text="Let's test\nshake word" },
   { index=2, text="Noooo!!", word_effect="shake" },
-  { index=2, text="Remember turn\nword back to\nmiddle size", word_effect="size_M" },
+  { index=2, text="Remember\nturn back to\nmiddle size", word_effect="size_M" },
     
   { index=1, text="ok" },
   { index=1, text="Let's test\nfade" },
@@ -77,6 +77,7 @@ local act2_act1 = {
   { index=2, text="HAHAHA", actor_effect="hide", word_effect="shake" },
   { index=1, text="!?" },
   { index=2, text="Show time!!", actor_effect="slide_in", word_effect="size_M" },
+  { index=2, text="Rock!!", actor_effect="shake" },
   { index=2, text="ok" },
   { index=2, text="test end" },
   

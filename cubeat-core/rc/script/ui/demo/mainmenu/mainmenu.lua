@@ -33,6 +33,7 @@ local function init(demo, parent)
   menu.btn_vs_cpu:set_scale(1.5)
   menu.btn_vs_cpu:on_press(function(self) 
     demo:init_vs_cpu("char/char1_new", "char/char2_new", "stage/jungle")
+    switch.slide_out_title()
   end)
   
   menu.btn_vs_ppl = ui.new_text{ parent = parent,
@@ -41,6 +42,7 @@ local function init(demo, parent)
   menu.btn_vs_ppl:set_scale(1.5)
   menu.btn_vs_ppl:on_press(function(self) 
     demo:init_vs_ppl("char/char1_new", "char/char2_new", "stage/jungle")
+    switch.slide_out_title()
   end)
   
   menu.btn_cpudemo = ui.new_text{ parent = parent,
@@ -49,6 +51,7 @@ local function init(demo, parent)
   menu.btn_cpudemo:set_scale(1.5)
   menu.btn_cpudemo:on_press(function(self) 
     demo:init_cpudemo("char/char1_new", "char/char2_new", "stage/jungle")
+    switch.slide_out_title()
   end)
   
   menu.btn_tut = ui.new_text{ parent = parent,

@@ -39,9 +39,13 @@ local function action(menu, rundown)
     menu[content]:change_text(rundown[index_].text)
   end
 
-  local effect_type = rundown[index_].effect
-  if effect_type then
-    effect[effect_type](menu, ch, actor, content, panel)
+  local type_a = rundown[index_].actor_effect
+  if type_a then
+    effect.actor[type_a](menu, ch, actor, content, panel)
+  end
+  local type_w = rundown[index_].word_effect
+  if type_w then
+    effect.word[type_w](menu, ch, actor, content, panel)
   end
   
   index_=index_+1

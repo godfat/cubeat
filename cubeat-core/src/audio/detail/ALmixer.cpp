@@ -16,6 +16,7 @@ bool sound_init()
         fprintf(stderr, "OpenAL (Using ALmixer) initialization failed: %s\n", ALmixer_GetError());
         return false;
     }
+    ALmixer_AllocateChannels(32); //default to 32 channels
     fprintf(stdout, "OpenAL (Using ALmixer) initialized.\n");
     return true;
 }

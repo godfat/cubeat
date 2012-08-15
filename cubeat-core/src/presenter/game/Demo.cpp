@@ -778,10 +778,9 @@ bool predicate_column_full_and_has_enough_garbage(pMap const& m0, pMap const& m1
 
 void Demo::cycle()
 {
-    clock_t t0 = 0x0fffffff, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
+    clock_t t0 = 0x0fffffff, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0;
     if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
         t0 = clock();
-        printf(" recoding Demo::t0 %ld\n", t0);
         pview1_->cycle();
         pview2_->cycle();
         update_ui();
@@ -817,8 +816,6 @@ void Demo::cycle()
             }
         }
 
-        t3 = clock();
-
         // temp: hack, just for test
         if( music_state_ == true && music_state_old_ == false ) {
             printf("Demo: true -> music_state\n");
@@ -828,6 +825,7 @@ void Demo::cycle()
             printf("Demo: false -> music_state\n");
             stage_->playBGM(500);
         }
+        t3 = clock();
 
         if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
             player0_->cycle();
@@ -835,7 +833,6 @@ void Demo::cycle()
         }
 
         t4 = clock();
-
 //        // temp: hack, just for test (cut-in)
 //        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
 //            timed_pause(1000);
@@ -843,15 +840,17 @@ void Demo::cycle()
 //        }
     }
 
+
     stage_->cycle();
+    t5 = clock();
     scene_->redraw();
+    t6 = clock();
     ui_scene_->redraw();
 
-    t5 = clock();
-    printf(" recoding Demo::t5 %ld\n", t5);
-    if( t5 - t0 > 10 ) {
+    t7 = clock();
+    if( t7 - t0 > 25 ) {
         //printf(" -- Demo::profiler: %ld %ld %ld %ld %ld\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4);
-        printf(" -- Demo::t0:%ld, t4:%ld, t5:%ld\n", t0, t4, t5);
+        printf(" -- Demo: ui1(%ld) maps(%ld) music(%ld) player(%ld) stage(%ld) scene(%ld) ui2(%ld)\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5, t7-t6);
     }
 
     // temp: hack, just for test

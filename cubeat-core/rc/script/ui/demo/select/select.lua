@@ -74,6 +74,10 @@ local function init(demo, parent)
     menu[fadekey] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.full_path(1), alpha=0,
                                   x=config.full_x[ch], y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
+    if ch==2 then
+      menu[fullkey]:texture_flipH()
+      menu[fadekey]:texture_flipH()
+    end
   end
   for i=6,1,-1 do--preload texture
     menu.actor_full_1:set_texture(config.full_path(i))

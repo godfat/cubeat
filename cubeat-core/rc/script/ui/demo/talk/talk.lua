@@ -84,6 +84,7 @@ local function init(demo, parent)
                                   size=32, visible=false }
     menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, visible=false }
+    if ch==2 then menu[actor]:texture_flipH() end
   end
   
   menu.clickBlock = ui.new_image{ parent=menu.TalkBackGround._cdata, path='blahblah', x=config.block_x, y=config.block_y,

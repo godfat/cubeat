@@ -9,7 +9,7 @@ local act1_act1 = {
   { index=1, text="This is a\ntest page" },
   { index=1, text="Let's test\ntalking" },
   
-  { index=2, img="char2_new/glad", text="1~" },
+  { index=2, img="char1_new/glad", text="1~" },
   { index=2, text="1~\n2~" },
   { index=2, text="1~\n2~\n3!" },
   

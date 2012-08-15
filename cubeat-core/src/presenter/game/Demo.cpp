@@ -191,10 +191,10 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     using std::tr1::bind;
 
     //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(6.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(6.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(6.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(6.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(3.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(3.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(3.0);
+    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(3.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 

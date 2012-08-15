@@ -127,4 +127,7 @@ return {
   slide_in_page_obj   = slide_in_page_obj,
   load_page           = load_page,
   get_page_obj        = get_page_obj,
+  ----
+  slide_out_title = slide_out_title,
+  slide_in_title  = slide_in_title
 }

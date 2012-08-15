@@ -30,11 +30,13 @@ function slide_out(inplace)
     hide_everything()
   else
     switch.slide_out_page_obj()
+    switch.slide_out_title()
   end
 end
 
 function slide_in()
   switch.slide_in_page_obj()
+  switch.slide_in_title()
 end
 
 function init(demo)

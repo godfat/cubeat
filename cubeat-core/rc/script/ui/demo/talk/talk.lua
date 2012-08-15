@@ -4,12 +4,19 @@ local view    = require 'rc/script/ui/view'
 local ui      = require 'rc/script/ui/ui'
 local config  = require 'rc/script/ui/demo/talk/config'
 local script  = require 'rc/script/ui/demo/talk/script'
+local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
 local index_      = 1
 local first_talk_ = {false, false}
+
+
+local function reset()
+  index_      = 1
+  first_talk_ = {false, false}
+end
 
 
 local function action(menu, rundown)
@@ -31,31 +38,19 @@ local function action(menu, rundown)
   if rundown[index_].text then
     menu[content]:change_text(rundown[index_].text)
   end
-  if rundown[index_].frame then
-    menu[panel]:set_texture(rundown[index_].frame)
-  end
-  if rundown[index_].Eq and rundown[index_].Accessor then
-    local target = rundown[index_].target..tostring(ch)
-    menu[target]:tween( rundown[index_].Eq,
-                        rundown[index_].Accessor,
-                        rundown[index_].s,
-                        rundown[index_].e,
-                        rundown[index_].dur,
-                        rundown[index_].l or 0,
-                        rundown[index_].cb or nil,
-                        rundown[index_].d or 0)
+
+  local effect_type = rundown[index_].effect
+  if effect_type then
+    effect[effect_type](menu, ch, actor, content, panel)
   end
   
   index_=index_+1
   if index_>table.getn(rundown) then
-    index_=1
+    reset()
+    switch.load_page('testmenu', 'in')
   end
 end
 
-local function reset()
-  index_      = 1
-  first_talk_ = {false, false}
-end
 
 local function init(demo, parent)
   local menu = {}
@@ -98,6 +93,7 @@ local function init(demo, parent)
   
   return menu
 end
+
 
 return {
   init = init

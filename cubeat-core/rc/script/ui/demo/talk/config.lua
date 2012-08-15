@@ -13,6 +13,8 @@ local act_h = 742
 local act_x = {0, bg_w-act_w}
 local act_y = {0, 0}
 local act_d = -50
+local out_x = {-act_w, bg_w}
+local out_y = {0, 0}
 
 local conBG_w = 300
 local conBG_h = 150
@@ -42,6 +44,8 @@ return {
   act_x     = act_x,
   act_y     = act_y,
   act_d     = act_d,
+  out_x     = out_x,
+  out_y     = out_y,
   ----
   conBG_w   = conBG_w,
   conBG_h   = conBG_h,

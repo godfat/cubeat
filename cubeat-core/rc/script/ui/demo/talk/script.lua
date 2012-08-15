@@ -14,6 +14,12 @@ local act1_act1 = {
   { index=2, text="1~\n2~\n3!" },
   
   { index=1, text="ok" },
+  { index=1, text="Let's test\nvisible" },
+  
+  { index=2, text="Ha", effect="hide" },
+  { index=2, text="Ha", effect="show" },
+  
+  { index=1, text="ok" },
   { index=1, text="Let's test\nslide" },
   
   { index=2, text="yahoo~~~~", effect="slide_out" },
@@ -24,11 +30,18 @@ local act1_act1 = {
   
   { index=2, text="HAHAHA", effect="word_L" },
   { index=2, text="HAHAHA", effect="word_S" },
+  { index=2, text="HAHAHA", effect="word_M" },
     
   { index=1, text="ok" },
-  { index=1, text="Let's test\nshake" },
+  { index=1, text="Let's test\nshake actor" },
   
-  { index=2, text="shake", effect="shake" },
+  { index=2, text="AHHHH", effect="shake_actor" },
+  
+  { index=1, text="ok" },
+  { index=1, text="Let's test\nshake word" },
+  
+  { index=2, text="Noooo!!", effect="shake_word" },
+  { index=2, text="Turn back\nmiddle size", effect="word_M" },
     
   { index=1, text="ok" },
   { index=1, text="Let's test\nfade" },

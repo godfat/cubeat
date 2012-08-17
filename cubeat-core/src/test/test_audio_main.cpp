@@ -21,7 +21,7 @@ public:
         stage_ = presenter::Stage::create( stage.S("test_stage") );
         //stage_->playBGM();
         //audio::Sound::i().playBGM_AB("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg");
-        audio::Sound::i().playBGM_AB("jungle5/bgm_a.ogg", "jungle5/bgm_b.ogg");
+        audio::Sound::i().playBGM_AB("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg");
 
         playSample_delayed("1/a/1a-1.wav", 2345);
         playSample_delayed("1/a/1a-2.wav", 3632);
@@ -55,7 +55,7 @@ public:
         play_time += 2500;
 
         //seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 400, 987, play_time);
-        seek_and_playBGM_AB_delayed("jungle5/bgm_quick_a.ogg", "jungle5/bgm_quick_b.ogg", 400, 987, play_time);
+        seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 400, 987, play_time);
         play_time += 10000;
 
         //seek_and_playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", 1000, 500, play_time);

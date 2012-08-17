@@ -28,6 +28,10 @@ void Demo_init_cpudemo(Demo* self, char const* c1p, char const* c2p, char const*
     self->init_cpudemo(c1p, c2p, scene_name);
 }
 
+void Demo_init_ai_logging(Demo* self, char const* c1p, char const* c2p, char const* scene_name) { // not shared_ptr!
+    self->init_ai_logging(c1p, c2p, scene_name);
+}
+
 void Demo_quit(Demo* self) { // not shared_ptr!
     self->quit();
 }

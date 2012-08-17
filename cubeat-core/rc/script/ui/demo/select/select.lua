@@ -8,12 +8,18 @@ local switch= require 'rc/script/ui/demo/switch/switch'
 
 --temporary addition
 local demo_game_ = nil
+local data_ = nil
 local function choose_character(self)
   if demo_game_ then
     local ch1 = "char/char"..tostring(config.ch_choose[1]).."_new"
     local ch2 = "char/char"..tostring(config.ch_choose[2]).."_new"
     local sconf = "stage/jungle"..tostring(config.ch_choose[1])
-    demo_game_:init_vs_cpu(ch1, ch2, sconf)
+
+    if data_ and data_.ai_logging == true then
+      demo_game_:init_ai_logging(ch1, ch2, sconf)
+    else
+      demo_game_:init_vs_cpu(ch1, ch2, sconf)
+    end
   end
 end
 
@@ -29,26 +35,27 @@ local function enter_icon(input, icon_no, menu)
   local show = function(self)
     local fullkey = 'actor_full_'..tostring(input)
     local fadekey = 'actor_fade_'..tostring(input)
-  
+
     if icon_no==config.ch_choose[input] then
       return
     end
     if menu[fullkey]:get_pos_x()==config.full_x[input] then
       menu[fadekey]:tween('Linear', 'Alpha', 255, 0, config.fade_time)
     end
-    
+
     menu[fullkey]:set_pos(-config.full_w, config.full_y)
     menu[fullkey]:set_texture(config.full_path(icon_no))
     menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], config.move_end[input], config.move_time)
     config.ch_choose[input] = icon_no
-  end  
+  end
   return show
 end
 
-local function init(demo, parent)
+local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
-  
+  data_ = data
+
   -- create select_actor_page
   menu.select_actor_page = ui.new_image{ parent=parent, path=config.bg_path, visible=true, x= -480, y= -300,
                                          w=config.bg_w, h=config.bg_h }
@@ -63,7 +70,7 @@ local function init(demo, parent)
                             x=config.icon_x[i], y=config.icon_y, w=config.icon_w, h=config.icon_h,
                             depth =config.icon_depth }
   end
-  
+
   -- create actor_full & actor_fade
   for ch=1,2 do
     local fullkey = 'actor_full_'..tostring(ch)
@@ -85,7 +92,7 @@ local function init(demo, parent)
     menu.actor_fade_1:set_texture(config.full_path(i))
     menu.actor_fade_2:set_texture(config.full_path(i))
   end
-  
+
   --for i,v in ipairs(actor_icon) do
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
@@ -95,13 +102,13 @@ local function init(demo, parent)
     menu[k]:on_leave_focus( view.Input2, leave_icon(2, i, menu) )
     menu[k]:on_enter_focus( view.Input2, enter_icon(2, i, menu) )
   end
-  
+
   --load ch_choose texture
   menu.actor_full_1:set_texture(config.full_path(config.ch_choose[1]))
   menu.actor_full_2:set_texture(config.full_path(config.ch_choose[2]))
   menu.actor_fade_1:set_texture(config.full_path(config.ch_choose[1]))
   menu.actor_fade_2:set_texture(config.full_path(config.ch_choose[2]))
-  
+
   return menu
 end
 

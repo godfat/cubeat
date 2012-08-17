@@ -14,11 +14,13 @@ local function init(demo, parent)
   menu.btn_tween:set_scale(1.5)
   menu.btn_select= ui.new_text{ parent=parent, x=0, y=120, size=32, title='select actor' }
   menu.btn_select:set_scale(1.5)
-  menu.btn_talk  = ui.new_text{ parent=parent, x=0, y=180, size=32, title='talk'} 
+  menu.btn_talk  = ui.new_text{ parent=parent, x=0, y=180, size=32, title='talk'}
   menu.btn_talk:set_scale(1.5)
+  menu.btn_aitest= ui.new_text{ parent=parent, x=0, y=240, size=32, title='ai test'}
+  menu.btn_aitest:set_scale(1.5)
   menu.btn_back  = ui.new_text{ parent=parent, x=0, y=300, size=32, title='back to title' }
   menu.btn_back:set_scale(1.5)
-  
+
   menu.btn_score:on_press(function(self)
     switch.load_page('score')
   end)
@@ -31,10 +33,13 @@ local function init(demo, parent)
   menu.btn_talk:on_press(function(self)
     switch.load_page('talk', 'out')
   end)
+  menu.btn_aitest:on_press(function(self)
+    switch.load_page('select', 'out', { ai_logging = true })
+  end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
   end)
-  
+
   return menu
 end
 

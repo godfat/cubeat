@@ -44,8 +44,8 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle"), num_of_cpu_(1),
-     ai_level_(2), some_ui_inited_(false), L_(0)
+    :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle"), game_mode_(1),
+     ai_level_(2), ai_logging_times_(0), some_ui_inited_(false), L_(0)
 {
 }
 
@@ -89,9 +89,9 @@ pDemo Demo::init()
     return shared_from_this();
 }
 
-void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace)
+void Demo::init_(int const& game_mode, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace)
 {
-    num_of_cpu_ = num_of_cpu;
+    game_mode_ = game_mode;
     c1p_ = c1p;
     c2p_ = c2p;
     sconf_ = scene_name;
@@ -124,21 +124,27 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
-    if( num_of_cpu_ == 0 ) {
+    if( game_mode_ == 0 ) {
         player0_ = ctrl::Player::create(input0, 0);
         player1_ = ctrl::Player::create(input1, 1);
     }
-    else if( num_of_cpu_ == 1 ) {
+    else if( game_mode_ == 1 ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
     }
-    else {
+    else if( game_mode_ == 2 || game_mode_ == 3 ) {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
         //std::random_shuffle(ai_temp, ai_temp + 4);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[2]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[2]);
+        if( game_mode_ == 3 ) {
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(3.0);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(3.0);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(3.0);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(3.0);
+        }
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);
@@ -191,10 +197,6 @@ void Demo::init_(int const& num_of_cpu, std::string const& c1p, std::string cons
     using std::tr1::bind;
 
     //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(3.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(3.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(3.0);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(3.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
@@ -223,6 +225,12 @@ void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::stri
 void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
     init_(2, c1p, c2p, scene_name);
+}
+
+void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
+{
+    init_(3, c1p, c2p, scene_name);
+    ai_logging_times_ = 3;
 }
 
 void Demo::ask_for_tutorial()
@@ -310,7 +318,7 @@ void Demo::game_start()
             bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
     }
 
-    if( num_of_cpu_ == 2 ) {
+    if( game_mode_ == 2 || game_mode_ == 3 ) {
         //blocker_->set<Visible>(true);
         pause_note_text_->set<Visible>(true);
     }
@@ -324,9 +332,9 @@ void Demo::game_start()
     map0_->start_dropping();
     map1_->start_dropping();
 
-    if( num_of_cpu_ > 0 )
+    if( game_mode_ > 0 )
         player1_->startThinking();
-    if( num_of_cpu_ > 1 )
+    if( game_mode_ > 1 )
         player0_->startThinking();
 }
 
@@ -550,6 +558,23 @@ void Demo::end(pMap lose_map)
 {
     game_stop();
 
+    // ai_logging special_case:
+    // if I call reinit directly, won't the call-stack explode here?
+    if ( game_mode_ == 3 && ai_logging_times_ > 0 ) {
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            bind(&Demo::reinit, this), shared_from_this(), 100);
+
+        if( lose_map == map0_ ) {
+            std::cout << "Player 1 win.\n";
+        }
+        else {
+            std::cout << "Player 0 win.\n";
+        }
+
+        ai_logging_times_ -= 1;
+        return;
+    }
+
     if( pause_note_text_) pause_note_text_->set<Visible>(false);
     blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 
@@ -561,7 +586,7 @@ void Demo::end(pMap lose_map)
     if( lose_map == map0_ ) {
         lose_t_->set<Pos2D>( pos1 );
         win_t_->set<Pos2D>( pos2 );
-        if( num_of_cpu_ == 1 )
+        if( game_mode_ == 1 )
             audio::Sound::i().playBuffer("3/3c/lose.wav");
         else
             audio::Sound::i().playBuffer("3/3c/win.wav");
@@ -632,7 +657,7 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_(num_of_cpu_, c1p_, c2p_, sconf_, true);
+    init_(game_mode_, c1p_, c2p_, sconf_, true);
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);
@@ -804,7 +829,7 @@ void Demo::cycle()
                         printf("Demo: countdown 6.5 secs to music_state = false\n");
                         timer_music_state_ = pDummy(new int);
                         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 6500);
+                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 7000);
                         //this means you have to be in no-danger situation for 3 seconds to leave emergency music
                     }
                 } else {
@@ -819,7 +844,7 @@ void Demo::cycle()
         // temp: hack, just for test
         if( music_state_ == true && music_state_old_ == false ) {
             printf("Demo: true -> music_state\n");
-            stage_->playFastBGM(400);
+            stage_->playFastBGM(200);
         }
         if( music_state_ == false && music_state_old_ == true ) {
             printf("Demo: false -> music_state\n");

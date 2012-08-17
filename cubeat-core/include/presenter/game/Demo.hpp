@@ -57,6 +57,7 @@ public:
     void init_vs_cpu(std::string const&, std::string const&, std::string const&);
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
+    void init_ai_logging(std::string const&, std::string const&, std::string const&);
     void quit();
 
     void leaving_effect();
@@ -125,7 +126,7 @@ protected:
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
-    int num_of_cpu_, ai_level_;
+    int game_mode_, ai_level_, ai_logging_times_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 

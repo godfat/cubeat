@@ -229,8 +229,21 @@ void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::str
 
 void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
+    ai_logging_times_ = 20;
+
+    utils::map_any    logconf = Conf::i().config_of("tmp/ai_logging");
+    std::string       record_name = c1p.substr(5, c1p_.size()-5) + c2p.substr(5, c2p_.size()-5);
+
+    if( !logconf.exist(record_name) ) {
+        logconf[record_name] = utils::vector_any();
+    }
+    int index = logconf.V(record_name).size();
+    logconf.V(record_name).push_back( utils::map_any() );
+    logconf.V(record_name).M(index)["player0"] = 0;
+    logconf.V(record_name).M(index)["player1"] = 0;
+    Conf::i().save_config(logconf, "tmp/ai_logging");
+
     init_(3, c1p, c2p, scene_name);
-    ai_logging_times_ = 3;
 }
 
 void Demo::ask_for_tutorial()
@@ -561,15 +574,34 @@ void Demo::end(pMap lose_map)
     // ai_logging special_case:
     // if I call reinit directly, won't the call-stack explode here?
     if ( game_mode_ == 3 && ai_logging_times_ > 0 ) {
+
+        std::cout << "?\n";
+        utils::map_any logconf = Conf::i().config_of("tmp/ai_logging");
+        std::string record_name = c1p_.substr(5, c1p_.size()-5) + c2p_.substr(5, c2p_.size()-5);
+        std::cout << "??\n";
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             bind(&Demo::reinit, this), shared_from_this(), 100);
 
+        std::cout << record_name << std::endl;
+        int index = logconf.V(record_name).size()-1; //back
+        std::cout << "???\n";
+        int win_times_0 = logconf.V(record_name).M(index).I("player0");
+        int win_times_1 = logconf.V(record_name).M(index).I("player1");
+        std::cout << "????\n";
         if( lose_map == map0_ ) {
             std::cout << "Player 1 win.\n";
+            win_times_1 += 1;
         }
         else {
             std::cout << "Player 0 win.\n";
+            win_times_0 += 1;
         }
+
+        logconf.V(record_name).M(index)["player0"] = win_times_0;
+        logconf.V(record_name).M(index)["player1"] = win_times_1;
+
+        std::cout << logconf.serialize() << std::endl;
+        Conf::i().save_config(logconf, "tmp/ai_logging");
 
         ai_logging_times_ -= 1;
         return;

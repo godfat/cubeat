@@ -2,6 +2,7 @@
 #include "utils/dictionary.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <sstream>
 #include <iostream>
 
@@ -146,6 +147,88 @@ map_any map_any::construct(std::string const& str)
     return map;
 }
 
+void any_to_literal(std::string& ret, utils::any_type const& p, std::string const& vdel, std::string const& indent)
+{
+    using boost::any_cast;
+    using boost::bad_any_cast;
+    try {
+        int value = any_cast<int>(p);
+        ret += boost::lexical_cast<std::string>(value);
+        ret += vdel;
+    } catch(bad_any_cast&) {
+        try {
+            double value = any_cast<double>(p);
+            ret += boost::lexical_cast<std::string>(value);
+            ret += vdel;
+        } catch(bad_any_cast&) {
+            try {
+                std::string value = any_cast<std::string>(p);
+                ret += "\"";
+                ret += value;
+                ret += "\"";
+                ret += vdel;
+            } catch(bad_any_cast&) {
+                try {
+                    map_any value = any_cast<map_any>(p);
+                    ret += value.serialize(indent);
+                    ret += ",\n";
+                } catch(bad_any_cast&) {
+                    try {
+                        vector_any value = any_cast<vector_any>(p);
+                        ret += value.serialize(indent);
+                        ret += ",\n";
+                    } catch(bad_any_cast&) {
+                        std::cerr << "... bad cast on values.\n";
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::string map_any::serialize(std::string const& indent) const
+{
+    using boost::any_cast;
+    using boost::bad_any_cast;
+    std::string ret;
+    ret += "{\n";
+    BOOST_FOREACH(utils::pair_any const& p, *this) {
+        try {
+            std::string key = any_cast<std::string>(p.first);
+            ret += indent;
+            ret += "  ";
+            ret += key;
+            ret += ": ";
+            any_to_literal(ret, p.second, ",\n", indent+"  "); //ret is passed as alias
+        } catch(bad_any_cast&) {
+            try {
+                int key = any_cast<int>(p.first);
+                ret += indent;
+                ret += "  ";
+                ret += key;
+                ret += ": ";
+                any_to_literal(ret, p.second, ",\n", indent+"  "); //ret is passed as alias
+            }
+            catch(bad_any_cast&) {
+                std::cerr << "map::any bad_cast on keys.\n";
+            }
+        }
+    }
+    ret += indent+"}";
+    return ret;
+}
+
+std::string vector_any::serialize(std::string const& indent) const
+{
+    std::string ret;
+    ret += "[";
+    BOOST_FOREACH(any_type const& p, *this) {
+        any_to_literal(ret, p, ", ", indent+"  ");  //ret is passed as alias
+    }
+    ret += indent+"]";
+    return ret;
+}
+
 vector_any vector_any::construct(std::string const& str)
 {
     vector_any vec;
@@ -178,6 +261,11 @@ vector_any vector_any::construct(std::string const& str)
         }
     }
     return vec;
+}
+
+bool map_any::exist(std::string const& k) const
+{
+    return find(k) != end();
 }
 
 ///////////////////////// any hash and equal overloading /////////////////////

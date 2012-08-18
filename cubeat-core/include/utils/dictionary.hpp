@@ -158,6 +158,8 @@ public:
     inline any_type& back()              { return data_.back(); }
     inline any_type const& back() const  { return data_.back(); }
 
+    std::string serialize(std::string const& indent = "") const;
+
 protected:
     mutable vector_any_ data_; //bad, because there is no any_const_cast() const
 };
@@ -210,6 +212,7 @@ public:
     inline const_iterator find(std::string const& k) const { return dict_.find(k); }
     inline iterator       find(int         const& k) { return dict_.find(k); }
     inline const_iterator find(int         const& k) const { return dict_.find(k); }
+    bool                  exist(std::string const& k) const;
 
     inline void insert(std::string const& k, int         const& v) { dict_.insert(std::make_pair(k,v)); }
     inline void insert(std::string const& k, double      const& v) { dict_.insert(std::make_pair(k,v)); }
@@ -247,6 +250,8 @@ public:
     inline size_t erase(any_type const& k)  { return dict_.erase(k); }
     inline void erase(const_iterator loc)                 { dict_.erase(loc); }
     inline void erase(const_iterator s, const_iterator e) { dict_.erase(s,e); }
+
+    std::string serialize(std::string const& indent = "") const;
 
 protected:
     mutable map_any_ dict_; //bad, because there is no any_const_cast() const

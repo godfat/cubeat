@@ -43,7 +43,7 @@ std::string Conf::read_config_text(std::string const& path) const
     std::string actual_path = path;
     infile.open( actual_path.c_str() );
     if( infile.fail() || infile.eof() ) {  //non-existing file exception
-        std::cout << "No such file: " << actual_path << ", Input setup ignored." << std::endl;
+        std::cout << "No such file: " << actual_path << ", setup ignored." << std::endl;
         return str;              //empty string
     }
 
@@ -59,4 +59,30 @@ std::string Conf::read_config_text(std::string const& path) const
     std::cout << "config: " << actual_path << " loaded." << std::endl;
 
     return str;
+}
+
+void Conf::save_config(utils::map_any const& c, std::string const& name) const
+{
+    std::string fname = name.substr(name.size()-5, 5) == std::string(".zzml") ?
+                        name : name + ".zzml";
+    std::string fullpath = config_path_ + fname;
+
+    //std::fstream outfile;
+    FILE *outfile;
+    //outfile.open( fullpath.c_str(), std::fstream::in | std::fstream::out );
+    outfile = fopen( fullpath.c_str(), "w" );
+    if( !outfile ) {
+        std::cout << "File: " << fullpath << " open failed." << std::endl;
+        return;
+    }
+
+    //outfile << c.serialize();
+    std::string str = c.serialize();
+    std::string stripped = str.substr(2, str.size()-5);
+    std::cout << stripped << std::endl;
+    fprintf(outfile, "%s\n", stripped.c_str());
+    //outfile.close();
+    fclose(outfile);
+
+    std::cout << "config: " << fullpath << " saved." << std::endl;
 }

@@ -47,6 +47,7 @@ public:
 
     utils::map_any config_of(std::string const& name) const;
     std::string read_config_text(std::string const& path) const;
+    void save_config(utils::map_any const& c, std::string const& name) const;
 
     inline int SCREEN_W() const { return screen_width_; }
     inline int SCREEN_H() const { return screen_height_; }

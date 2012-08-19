@@ -95,6 +95,8 @@ protected:
     void ask_for_tutorial();
     void hide_upper_layer_ui();
 
+    bool ai_logging(pMap);
+
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false);
 

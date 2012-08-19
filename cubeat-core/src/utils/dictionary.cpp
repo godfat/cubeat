@@ -147,7 +147,8 @@ map_any map_any::construct(std::string const& str)
     return map;
 }
 
-void any_to_literal(std::string& ret, utils::any_type const& p, std::string const& vdel, std::string const& indent)
+void any_to_literal(std::string& ret, utils::any_type const& p, std::string const& vdel,
+                    std::string const& indent, bool parent_is_map, int index)
 {
     using boost::any_cast;
     using boost::bad_any_cast;
@@ -169,11 +170,17 @@ void any_to_literal(std::string& ret, utils::any_type const& p, std::string cons
                 ret += vdel;
             } catch(bad_any_cast&) {
                 try {
+                    if( index > 0 && !parent_is_map ) {
+                        ret += indent;
+                    }
                     map_any value = any_cast<map_any>(p);
                     ret += value.serialize(indent);
                     ret += ",\n";
                 } catch(bad_any_cast&) {
                     try {
+                        if( index > 0 && !parent_is_map ) {
+                            ret += indent;
+                        }
                         vector_any value = any_cast<vector_any>(p);
                         ret += value.serialize(indent);
                         ret += ",\n";
@@ -191,6 +198,7 @@ std::string map_any::serialize(std::string const& indent) const
     using boost::any_cast;
     using boost::bad_any_cast;
     std::string ret;
+    int index = 0;
     ret += "{\n";
     BOOST_FOREACH(utils::pair_any const& p, *this) {
         try {
@@ -199,7 +207,7 @@ std::string map_any::serialize(std::string const& indent) const
             ret += "  ";
             ret += key;
             ret += ": ";
-            any_to_literal(ret, p.second, ",\n", indent+"  "); //ret is passed as alias
+            any_to_literal(ret, p.second, ",\n", indent+"  ", true, index); //ret is passed as alias
         } catch(bad_any_cast&) {
             try {
                 int key = any_cast<int>(p.first);
@@ -207,12 +215,13 @@ std::string map_any::serialize(std::string const& indent) const
                 ret += "  ";
                 ret += key;
                 ret += ": ";
-                any_to_literal(ret, p.second, ",\n", indent+"  "); //ret is passed as alias
+                any_to_literal(ret, p.second, ",\n", indent+"  ", true, index); //ret is passed as alias
             }
             catch(bad_any_cast&) {
                 std::cerr << "map::any bad_cast on keys.\n";
             }
         }
+        index += 1;
     }
     ret += indent+"}";
     return ret;
@@ -222,8 +231,10 @@ std::string vector_any::serialize(std::string const& indent) const
 {
     std::string ret;
     ret += "[";
+    int index = 0;
     BOOST_FOREACH(any_type const& p, *this) {
-        any_to_literal(ret, p, ", ", indent+"  ");  //ret is passed as alias
+        any_to_literal(ret, p, ", ", indent+"  ", false, index);  //ret is passed as alias
+        index += 1;
     }
     ret += indent+"]";
     return ret;

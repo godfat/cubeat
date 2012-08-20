@@ -5,6 +5,7 @@
 #include "ctrl/TimerDispatcher.hpp"
 #include "utils/Random.hpp"
 #include "utils/dictionary.hpp"
+#include "utils/to_s.hpp"
 #include "audio/Sound.hpp"
 #include "Conf.hpp"
 #include <sstream>
@@ -20,8 +21,9 @@ public:
         utils::map_any stage = Conf::i().config_of("test_stage");
         stage_ = presenter::Stage::create( stage.S("test_stage") );
         //stage_->playBGM();
-        //audio::Sound::i().playBGM_AB("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg");
-        audio::Sound::i().playBGM_AB("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg");
+        int play_time = 0;
+
+        session(4, play_time, 0);
 
         playSample_delayed("1/a/1a-1.wav", 2345);
         playSample_delayed("1/a/1a-2.wav", 3632);
@@ -38,45 +40,21 @@ public:
         playSample_delayed("2/2b_6.wav", 6000);
         playSample_delayed("2/2b_7.wav", 6666);
 
-        playSample_delayed("3/3d/alarm.wav", 7000);
-        playSample_delayed("3/3d/alarm.wav", 8000);
-        playSample_delayed("3/3d/alarm.wav", 9000);
-        playSample_delayed("3/3d/alarm.wav", 10000);
-        playSample_delayed("3/3d/alarm.wav", 11000);
-        playSample_delayed("3/3d/alarm.wav", 12000);
-        playSample_delayed("3/3d/alarm.wav", 13000);
-        playSample_delayed("3/3d/alarm.wav", 14000);
-        playSample_delayed("3/3d/alarm.wav", 15000);
-        playSample_delayed("3/3d/alarm.wav", 16000);
+        playSample_delayed("3/3d/alarm.wav", 17000);
+        playSample_delayed("3/3d/alarm.wav", 18000);
+        playSample_delayed("3/3d/alarm.wav", 19000);
+//        playSample_delayed("3/3d/alarm.wav", 20000);
+//        playSample_delayed("3/3d/alarm.wav", 21000);
+        playSample_delayed("3/3d/alarm.wav", 22000);
+        playSample_delayed("3/3d/alarm.wav", 23000);
+        playSample_delayed("3/3d/alarm.wav", 24000);
+        playSample_delayed("3/3d/alarm.wav", 25000);
 
-        int play_time = 10000;
-//
-        playBGM_delayed("smb_warning.wav", 400, play_time);
-        play_time += 2500;
-
-        //seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 400, 987, play_time);
-        seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 400, 987, play_time);
-        play_time += 10000;
-
-        //seek_and_playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", 1000, 500, play_time);
-        seek_and_playBGM_AB_delayed("jungle5/bgm_a.ogg", "jungle5/bgm_b.ogg", 1000, 500, play_time);
-        play_time += 10000;
-
-//        playBGM_delayed("smb_warning.wav", play_time);
-//        play_time += 2500;
-//
-//        playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", play_time);
-//        //seek_and_playBGM_AB_delayed("jungle5/bgm_quick_a.ogg", "jungle5/bgm_quick_b.ogg", 987, play_time);
-//        play_time += 10000;
-//
-//        seek_and_playBGM_AB_delayed("jungle4/bgm_a.ogg", "jungle4/bgm_b.ogg", 9321, play_time);
-//        //seek_and_playBGM_AB_delayed("jungle5/bgm_a.ogg", "jungle5/bgm_b.ogg", 26000, play_time);
-//        play_time += 30000;
-//
-//        playBGM_delayed("smb_warning.wav", play_time);
-//        play_time += 2500;
-//
-//        seek_and_playBGM_AB_delayed("jungle4/bgm_quick_a.ogg", "jungle4/bgm_quick_b.ogg", 789, play_time);
+        session(1, play_time, 0);
+        session(2, play_time, 0);
+        session(3, play_time, 0);
+        session(5, play_time, 0);
+        session(6, play_time, 0);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             std::tr1::bind(&presenter::Stage::hitGroup, stage_.get(), 1), 3000, -1);
@@ -90,6 +68,28 @@ public:
 
     void cycle(){
         stage_->cycle();
+    }
+
+    void session(int i, int& play_time, int time_b) {
+        using utils::to_s;
+        seek_and_playBGM_AB_delayed("jungle"+to_s(i)+"/bgm_a.ogg", "jungle"+to_s(i)+"/bgm_b.ogg", 1000, 500, play_time);
+        play_time += 20000;
+
+        playSample_delayed("3/3d/alarm.wav", play_time - 3000);
+        playSample_delayed("3/3d/alarm.wav", play_time - 2000);
+        playSample_delayed("3/3d/alarm.wav", play_time - 1000);
+//        playSample_delayed("3/3d/alarm.wav", 20000);
+//        playSample_delayed("3/3d/alarm.wav", 21000);
+        playSample_delayed("3/3d/alarm.wav", play_time + 2000);
+        playSample_delayed("3/3d/alarm.wav", play_time + 3000);
+        playSample_delayed("3/3d/alarm.wav", play_time + 4000);
+        playSample_delayed("3/3d/alarm.wav", play_time + 5000);
+
+        playBGM_delayed("smb_warning.wav", 100, play_time);
+        play_time += 2250;
+
+        seek_and_playBGM_AB_delayed("jungle"+to_s(i)+"/bgm_quick_a.ogg", "jungle"+to_s(i)+"/bgm_quick_b.ogg", 250, time_b, play_time);
+        play_time += 10000;
     }
 
     void playBGM_delayed(std::string const& path, time_t const& fade_t, time_t const& play_time){

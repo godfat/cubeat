@@ -44,7 +44,7 @@ using utils::to_s;
 using namespace std::tr1::placeholders;
 
 Demo::Demo()
-    :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle"), game_mode_(1),
+    :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(1),
      ai_level_(2), ai_logging_times_(0), some_ui_inited_(false), L_(0)
 {
 }
@@ -140,10 +140,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[2]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[2]);
         if( game_mode_ == 3 ) {
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(3.0);
-            ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(3.0);
-            ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(3.0);
-            ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(3.0);
+            double speed = Conf::i().config_of("ai_logging_config").F("speed");
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(speed);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(speed);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(speed);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(speed);
         }
     }
     player0_->push_ally(0).push_enemy(1);
@@ -229,21 +230,37 @@ void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::str
 
 void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    ai_logging_times_ = 20;
+    //ai_logging_times_ = 20;
+    utils::map_any ai_logging_conf_ = Conf::i().config_of("ai_logging_config");
 
-    utils::map_any logconf = Conf::i().config_of("tmp/ai_logging");
-    std::string    record_name = c1p.substr(5, c1p_.size()-5) + c2p.substr(5, c2p_.size()-5);
+    run_next_log();
 
-    if( !logconf.exist(record_name) ) {
-        logconf[record_name] = utils::vector_any();
+    //init_(3, c1p, c2p, scene_name);
+}
+
+void Demo::run_next_log()
+{
+    if( ai_logging_conf_.V("sessions").size() > 0 ) {
+        ai_logging_times_ = ai_logging_conf_.I("times");
+        std::string c1p = ai_logging_conf_.V("sessions").V(0).S(0);
+        std::string c2p = ai_logging_conf_.V("sessions").V(0).S(1);
+        ai_logging_conf_.V("sessions").erase( ai_logging_conf_.V("sessions").begin() ); //pop head
+
+        utils::map_any log = Conf::i().config_of("tmp/ai_log");
+        std::string    record_name = c1p.substr(5, c1p.size()-5) + c2p.substr(5, c2p.size()-5);
+
+        if( !log.exist(record_name) ) {
+            log[record_name] = utils::vector_any();
+        }
+        int index = log.V(record_name).size();
+        log.V(record_name).push_back( utils::map_any() );
+        log.V(record_name).M(index)["player0"] = 0;
+        log.V(record_name).M(index)["player1"] = 0;
+        Conf::i().save_config(log, "tmp/ai_log");
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            bind(&Demo::init_, this, game_mode_, c1p, c2p, sconf_, false), shared_from_this(), 100);
     }
-    int index = logconf.V(record_name).size();
-    logconf.V(record_name).push_back( utils::map_any() );
-    logconf.V(record_name).M(index)["player0"] = 0;
-    logconf.V(record_name).M(index)["player1"] = 0;
-    Conf::i().save_config(logconf, "tmp/ai_logging");
-
-    init_(3, c1p, c2p, scene_name);
 }
 
 void Demo::ask_for_tutorial()
@@ -573,12 +590,12 @@ bool Demo::ai_logging(pMap lose_map)
 
     ai_logging_times_ -= 1;
 
-    utils::map_any logconf = Conf::i().config_of("tmp/ai_logging");
+    utils::map_any log = Conf::i().config_of("tmp/ai_log");
     std::string record_name = c1p_.substr(5, c1p_.size()-5) + c2p_.substr(5, c2p_.size()-5);
 
-    int index = logconf.V(record_name).size()-1; //back
-    int win_times_0 = logconf.V(record_name).M(index).I("player0");
-    int win_times_1 = logconf.V(record_name).M(index).I("player1");
+    int index = log.V(record_name).size()-1; //back
+    int win_times_0 = log.V(record_name).M(index).I("player0");
+    int win_times_1 = log.V(record_name).M(index).I("player1");
     if( lose_map == map0_ ) {
         std::cout << "Player 1 win.\n";
         win_times_1 += 1;
@@ -588,18 +605,24 @@ bool Demo::ai_logging(pMap lose_map)
         win_times_0 += 1;
     }
 
-    logconf.V(record_name).M(index)["player0"] = win_times_0;
-    logconf.V(record_name).M(index)["player1"] = win_times_1;
+    log.V(record_name).M(index)["player0"] = win_times_0;
+    log.V(record_name).M(index)["player1"] = win_times_1;
 
-    std::cout << logconf.serialize() << std::endl;
-    Conf::i().save_config(logconf, "tmp/ai_logging");
+    std::cout << log.serialize() << std::endl;
+    Conf::i().save_config(log, "tmp/ai_log");
 
     if( ai_logging_times_ > 0 ) {
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
             bind(&Demo::reinit, this), shared_from_this(), 100);
         return true;
     } else {
-        return false;
+        if( ai_logging_conf_.V("sessions").size() > 0 ) {
+            run_next_log();
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 

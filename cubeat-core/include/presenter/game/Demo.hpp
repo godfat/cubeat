@@ -96,6 +96,7 @@ protected:
     void hide_upper_layer_ui();
 
     bool ai_logging(pMap);
+    void run_next_log();
 
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false);
@@ -115,6 +116,7 @@ protected:
     utils::map_any gameplay_;
     utils::map_any uiconf_;
     utils::map_any passive_conf0_, passive_conf1_;
+    utils::map_any ai_logging_conf_;
     view::pMenu ui_layout_;
 
     presenter::pPlayerView pview1_;

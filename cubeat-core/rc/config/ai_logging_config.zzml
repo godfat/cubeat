@@ -1,0 +1,8 @@
+#ai logging config
+speed: 3.0,
+times: 1,
+repeat: 2,
+sessions: [
+  ['char/char1_new', 'char/char2_new'],
+  ['char/char1_new', 'char/char3_new']
+]

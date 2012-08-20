@@ -45,7 +45,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(1),
-     ai_level_(2), ai_logging_times_(0), some_ui_inited_(false), L_(0)
+     ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false), L_(0)
 {
 }
 
@@ -231,19 +231,19 @@ void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::str
 void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
     //ai_logging_times_ = 20;
-    utils::map_any ai_logging_conf_ = Conf::i().config_of("ai_logging_config");
-
+    ai_logging_conf_   = Conf::i().config_of("ai_logging_config");
     run_next_log();
-
     //init_(3, c1p, c2p, scene_name);
 }
 
 void Demo::run_next_log()
 {
     if( ai_logging_conf_.V("sessions").size() > 0 ) {
-        ai_logging_times_ = ai_logging_conf_.I("times");
+        ai_logging_times_ = ai_logging_conf_.I("times");       // how many times is a single recording?
+
         std::string c1p = ai_logging_conf_.V("sessions").V(0).S(0);
         std::string c2p = ai_logging_conf_.V("sessions").V(0).S(1);
+        std::string sc  = ai_logging_conf_.V("sessions").V(0).S(2);
         ai_logging_conf_.V("sessions").erase( ai_logging_conf_.V("sessions").begin() ); //pop head
 
         utils::map_any log = Conf::i().config_of("tmp/ai_log");
@@ -259,7 +259,7 @@ void Demo::run_next_log()
         Conf::i().save_config(log, "tmp/ai_log");
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            bind(&Demo::init_, this, game_mode_, c1p, c2p, sconf_, false), shared_from_this(), 100);
+            bind(&Demo::init_, this, 3, c1p, c2p, sc, false), shared_from_this(), 100);
     }
 }
 

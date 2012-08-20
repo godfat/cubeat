@@ -1,8 +1,18 @@
-#ai logging config
+#AI logging config
+
+#Game speed, if too fast then the AI may not acting correctly, and the data will be inaccurate.
+#suggested: (1.0 ~ 3.0)
 speed: 3.0,
+
+#How many games do you want in a single record?
+#Set to 20 then it will using the same characters to play 20 times. 
 times: 1,
-repeat: 2,
+
 sessions: [
-  ['char/char1_new', 'char/char2_new'],
-  ['char/char1_new', 'char/char3_new']
+  ['char/char1_new', 'char/char2_new', 'stage/jungle1'],
+  ['char/char2_new', 'char/char3_new', 'stage/jungle2'],
+  ['char/char3_new', 'char/char4_new', 'stage/jungle3'],
+  ['char/char4_new', 'char/char5_new', 'stage/jungle4'],
+  ['char/char5_new', 'char/char6_new', 'stage/jungle5'],
+  ['char/char6_new', 'char/char3_new', 'stage/jungle6']
 ]

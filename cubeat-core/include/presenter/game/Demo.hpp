@@ -130,7 +130,7 @@ protected:
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
-    int game_mode_, ai_level_, ai_logging_times_;
+    int game_mode_, ai_level_, ai_logging_times_, ai_logging_rounds_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 

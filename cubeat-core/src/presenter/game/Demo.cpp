@@ -906,7 +906,7 @@ void Demo::cycle()
         // temp: hack, just for test
         if( music_state_ == true && music_state_old_ == false ) {
             printf("Demo: true -> music_state\n");
-            stage_->playFastBGM(200);
+            stage_->playFastBGM(250);
         }
         if( music_state_ == false && music_state_old_ == true ) {
             printf("Demo: false -> music_state\n");

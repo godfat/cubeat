@@ -61,6 +61,7 @@ public:
     bool is_hasting()             const;
     int  overheat_downtime()      const;
     int  id()                     const;
+    int  ability_kind()           const;
     std::list<int> const& ally_input_ids()  const;
     std::list<int> const& enemy_input_ids() const;
 

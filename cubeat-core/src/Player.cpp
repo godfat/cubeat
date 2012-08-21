@@ -322,6 +322,7 @@ bool Player::is_hasting()             const { return hasting_; }
 int  Player::overheat_downtime()      const { return overheat_downtime_; }
 int  Player::id()                     const { return id_; }
 int  Player::ability_kind()           const { return ability_kind_; }
+size_t Player::ability_left()         const { return ability_queue_.size(); }
 std::list<int> const& Player::ally_input_ids()  const { return ally_input_ids_;  }
 std::list<int> const& Player::enemy_input_ids() const { return enemy_input_ids_; }
 bool Player::ammo_all_out() const {

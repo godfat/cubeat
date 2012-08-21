@@ -55,6 +55,10 @@ int AIPlayer_ability_kind(AIPlayer* p) { //not shared_ptr!
     return p->ability_kind();
 }
 
+unsigned int AIPlayer_ability_left(AIPlayer* P) { //not shared_ptr!
+    return p->ability_left();
+}
+
 void SimpleMap_print_data_for_debug(pSimpleMap* p) {
     (*p)->print_data_for_debug();
 }

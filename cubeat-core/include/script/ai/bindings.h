@@ -20,6 +20,7 @@ APIEXPORT pSimpleMap* AIPlayer_get_enemy_map(AIPlayer*, unsigned int); //not sha
 APIEXPORT int         AIPlayer_cmdqueue_size(AIPlayer*); //not shared_ptr!
 APIEXPORT double      AIPlayer_get_heat(AIPlayer*);      //not shared_ptr!
 APIEXPORT int         AIPlayer_ability_kind(AIPlayer*);  //not shared_ptr!
+APIEXPORT unsigned int AIPlayer_ability_left(AIPlayer*); //not shared_ptr!
 
 APIEXPORT void SimpleMap_print_data_for_debug(pSimpleMap*);
 APIEXPORT int  SimpleMap_warning_level(pSimpleMap*);

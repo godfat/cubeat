@@ -62,6 +62,7 @@ public:
     int  overheat_downtime()      const;
     int  id()                     const;
     int  ability_kind()           const;
+    size_t ability_left()         const;
     std::list<int> const& ally_input_ids()  const;
     std::list<int> const& enemy_input_ids() const;
 

@@ -149,6 +149,7 @@ void SoundObject::gen_source()
 
 SoundObject& SoundObject::pause()
 {
+    if( !is_playing() ) return *this;
 //    if( !alurePauseSource(source) ) {
     if( ALmixer_PauseChannel(ch_) == -1 ) { // PauseChannel is -1 on error
 //        std::cerr << "OpenAL: Failed to pause source " << this << ": " << alureGetErrorString() << std::endl;
@@ -162,6 +163,7 @@ SoundObject& SoundObject::pause()
 
 SoundObject& SoundObject::stop()
 {
+    if( !is_active() ) return *this;
 //    if( !alureStopSource(source, AL_FALSE) ) {
     if( ALmixer_HaltChannel(ch_) == -1 ) { // HaltChannel is -1 on error
 //        std::cerr << "OpenAL: Failed to stop source " << this << ": " << alureGetErrorString() << std::endl;
@@ -257,24 +259,25 @@ bool SoundObject::is_active() const
 
 bool SoundObject::is_paused() const
 {
-    if( ch_ == -1 ) return false;
+    if( !is_active() ) return false;
     return static_cast<bool>(ALmixer_IsPausedChannel(ch_));
 }
 
 bool SoundObject::is_playing() const
 {
-    if( ch_ == -1 ) return false;
+    if( !is_active() ) return false;
     return static_cast<bool>(ALmixer_IsPlayingChannel(ch_));
 }
 
 double SoundObject::volume() const
 {
-    if( ch_ == -1 ) return 0;
+    if( !is_active() ) return 0;
     return ALmixer_GetVolumeChannel(ch_);
 }
 
 SoundObject& SoundObject::volume(double const& v)
 {
+    if( !is_active() ) return *this;
     if( ALmixer_SetVolumeChannel(ch_, v) == -1 ) { // SetVolumeChannel is -1 on error
         std::cerr << "OpenAL (ALmixer): Failed to adjust volume of " << this << " on channel " << ch_ << ": " << ALmixer_GetError() << std::endl;
         stop();

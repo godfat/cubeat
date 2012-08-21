@@ -22,7 +22,7 @@ using namespace std::tr1::placeholders;
 Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
-     overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false),
+     overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false), ability_kind_(7),
      input_(input), player_hit_event_(0)
 {
 }
@@ -142,8 +142,9 @@ Player& Player::set_config(utils::map_any const& config)
     using presenter::PlayerAbility;
 
     std::cout << "Player " << id_ << " ability kind: " << config.I("ability_kind") << std::endl;
+    ability_kind_ = config.I("ability_kind");
 
-    switch( config.I("ability_kind") ) {
+    switch( ability_kind_ ) {
         case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;
         case 2: ability_queue_.push_back( bind(&PlayerAbility::C2, _1, _2, _3) ); break;
         case 3: ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) ); break;

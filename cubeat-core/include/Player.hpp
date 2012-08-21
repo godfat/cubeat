@@ -94,6 +94,7 @@ protected:
     int       overheat_downtime_;
     bool      overheat_, hasting_;
     bool      lock_heat_; // 2012 note: setup a state to lock heat value.
+    int       ability_kind_;
 
     Input*               input_;
 	Weapon*              current_wep_;

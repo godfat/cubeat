@@ -150,6 +150,8 @@ Player& Player::set_config(utils::map_any const& config)
         case 4: ability_queue_.push_back( bind(&PlayerAbility::C4, _1, _2, _3) ); break;
         case 5: ability_queue_.push_back( bind(&PlayerAbility::C5, _1, _2, _3) ); break;
         case 6: ability_queue_.push_back( bind(&PlayerAbility::C6, _1, _2, _3) ); break;
+        case 7: ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
+        case 8: ability_queue_.push_back( bind(&PlayerAbility::C8, _1, _2, _3) ); break;
         default:
             ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
     }

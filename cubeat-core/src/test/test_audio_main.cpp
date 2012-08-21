@@ -78,8 +78,8 @@ public:
         playSample_delayed("3/3d/alarm.wav", play_time - 3000);
         playSample_delayed("3/3d/alarm.wav", play_time - 2000);
         playSample_delayed("3/3d/alarm.wav", play_time - 1000);
-//        playSample_delayed("3/3d/alarm.wav", 20000);
-//        playSample_delayed("3/3d/alarm.wav", 21000);
+        playSample_delayed("3/3d/alarm.wav", play_time);
+        playSample_delayed("3/3d/alarm.wav", play_time + 1000);
         playSample_delayed("3/3d/alarm.wav", play_time + 2000);
         playSample_delayed("3/3d/alarm.wav", play_time + 3000);
         playSample_delayed("3/3d/alarm.wav", play_time + 4000);

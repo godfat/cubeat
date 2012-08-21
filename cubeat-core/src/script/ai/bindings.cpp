@@ -5,6 +5,8 @@
 #include "ctrl/AIPlayer.hpp"
 #include "utils/Logger.hpp"
 
+#include <cstdio>
+
 using namespace psc;
 using namespace ctrl;
 using namespace model;
@@ -55,7 +57,7 @@ int AIPlayer_ability_kind(AIPlayer* p) { //not shared_ptr!
     return p->ability_kind();
 }
 
-unsigned int AIPlayer_ability_left(AIPlayer* P) { //not shared_ptr!
+unsigned int AIPlayer_ability_left(AIPlayer* p) { //not shared_ptr!
     return p->ability_left();
 }
 

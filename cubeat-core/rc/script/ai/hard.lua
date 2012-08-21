@@ -39,6 +39,7 @@ function ai_entry(self)
   local my_map =    self:get_ally_map(0)
   local enemy_map = self:get_enemy_map(0)
   local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.PSC_AI_NONE}) -- reuse this
+  
   local emergency_level = 0
 
   local attack_threshold = 5

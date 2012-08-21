@@ -45,6 +45,7 @@ public:
 
     //I'd better refactor this afterwards.
     int  invoke_ability();
+    Player& push_ability(int kind = -1); // -1 will just resolve to default
     void eat_item();
 
     Input const* input()          const;

@@ -138,11 +138,18 @@ Player& Player::set_config(utils::map_any const& config)
     heat_for_haste_   = config.F("heat_for_haste");
     heat_for_jama_shoot_ = config.F("heat_for_jama");
 
-    using std::tr1::bind;
-    using presenter::PlayerAbility;
-
     std::cout << "Player " << id_ << " ability kind: " << config.I("ability_kind") << std::endl;
     ability_kind_ = config.I("ability_kind");
+
+    push_ability();
+
+    return *this;
+}
+
+Player& Player::push_ability(int kind)
+{
+    using std::tr1::bind;
+    using presenter::PlayerAbility;
 
     switch( ability_kind_ ) {
         case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;

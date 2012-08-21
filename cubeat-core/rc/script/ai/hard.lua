@@ -6,8 +6,9 @@ local random   = helper.random
 local shuffle  = helper.C_random_shuffle
 local C        = ffi.C
 
--- we don't actually assign this to anything b/c it only setups cdefs and metatype
+-- we don't actually assign this to anything because it only setups cdefs and metatype
 require 'rc/script/ai/ai'
+local should_use_ability = require 'rc/script/ai/ability'
 
 local function setcmd(buf, type, delay, x, y)
   buf.x, buf.y, buf.delay, buf.type = x, y, delay, type
@@ -36,9 +37,11 @@ function ai_entry(self)
   self = ffi.cast("AIPlayer*", self)
 
   --since we only have two map, one for each side, so let the first in ally-list be one's self.
-  local my_map =    self:get_ally_map(0)
+  local my_map    = self:get_ally_map(0)
   local enemy_map = self:get_enemy_map(0)
   local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.PSC_AI_NONE}) -- reuse this
+  local ab_kind   = self:ability_kind()
+  local ab_left   = self:ability_left()
   
   local emergency_level = 0
 
@@ -71,6 +74,11 @@ function ai_entry(self)
     end
   else
     --io.write "No keycube for now.\n"
+    
+    if ab_left > 0 and should_use_ability[ab_kind](self, my_map, enemy_map) then
+      io.write "Ok, should use ability now!"
+    end
+    
     local highcol_threshold = 9
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()

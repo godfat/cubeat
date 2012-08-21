@@ -167,6 +167,8 @@ void AIPlayer::shoot(int x, int y, bool const& self) //we must know ViewSetting 
         handshaking_y *= 4;
     }
 
+    //somehow add using ability button here. FYI, view_setting have abl_btn_x and abl_btn_y
+
     vec2 dest(x*c_size + c_size/2 + view_setting(self)->x_offset() + handshaking_x,
               -y*c_size - c_size/2 + view_setting(self)->y_offset() + handshaking_y);
     input_->cursor().x() = dest.X;

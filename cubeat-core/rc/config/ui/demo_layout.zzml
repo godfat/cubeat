@@ -40,7 +40,7 @@ mapview0: {
   garbage_src_x: 570,
   garbage_src_y: 425,
   garbage_ene_x: 710,
-  ability_btn_x: 50,
+  ability_btn_x: 570,
   ability_btn_y: 360
 },
 
@@ -52,7 +52,7 @@ mapview1: {
   garbage_src_x: 710,
   garbage_src_y: 425,
   garbage_ene_x: 570,
-  ability_btn_x: 1230,
+  ability_btn_x: 710,
   ability_btn_y: 360
 },
 

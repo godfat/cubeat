@@ -85,6 +85,12 @@ TimerDispatcher& TimerDispatcher::set_speed(double const& factor)
     return *this;
 }
 
+TimerDispatcher& TimerDispatcher::set_time(time_t const& t)
+{
+    timer_->setTime(t);
+    return *this;
+}
+
 double TimerDispatcher::get_speed() const
 {
     timer_->getSpeed();

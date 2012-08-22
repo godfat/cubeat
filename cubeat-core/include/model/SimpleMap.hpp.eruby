@@ -59,19 +59,19 @@ public:
         // map doesn't need a pool
         return pointer_type(new SimpleMap(setting))->init();
     }
-    static pointer_type create(data::pMapSetting setting, int garb, int sc, int soa,
+    static pointer_type create(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
         std::tr1::shared_ptr<int> warning_lv) {
-        return pointer_type(new SimpleMap(setting, garb, sc, soa, warning_lv))->init();
+        return pointer_type(new SimpleMap(setting, garb, sc, soa, ld, warning_lv))->init();
     }
 
     SimpleMap(data::pMapSetting setting):
         map_setting_(setting), garbage_left_(0), score_(0),
-        current_sum_of_attack_(0), simp_cubes_(0, 0){}
+        current_sum_of_attack_(0), lock_dropping_(false), simp_cubes_(0, 0){}
 
-    SimpleMap(data::pMapSetting setting, int garb, int sc, int soa,
+    SimpleMap(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
               std::tr1::shared_ptr<int> warning_lv):
         map_setting_(setting), garbage_left_(garb), score_(sc),
-        current_sum_of_attack_(soa), simp_cubes_(0, 0)
+        current_sum_of_attack_(soa), lock_dropping_(ld), simp_cubes_(0, 0)
     {
         if( warning_lv )
             warning_level_ = std::tr1::shared_ptr<int>(new int(*warning_lv));
@@ -100,6 +100,8 @@ public:
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }
+    void lock_dropping(bool const& f) { lock_dropping_ = f; }
+    bool dropping_locked() const { return lock_dropping_; }
     data::pMapSetting const& ms() const{ return map_setting_; }
 
     void print_data_for_debug() const;
@@ -114,6 +116,7 @@ protected:
     data::pMapSetting map_setting_;
     double garbage_left_;
     int score_, current_sum_of_attack_;
+    bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle
     chain_list_type chains_;// someday make it to be std::list
     std::tr1::shared_ptr<int> warning_level_; //warning timer dummy
 

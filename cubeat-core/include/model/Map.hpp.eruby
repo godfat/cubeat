@@ -40,7 +40,7 @@ public:
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0), lock_dropping_(false)
+        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
@@ -91,7 +91,6 @@ public:
 
     std::vector< std::pair<int, int> > count_colors() const;
     std::vector< data::pCube > clone_linear_data() const;
-    void lock_dropping(bool const& f) { lock_dropping_ = f; }
 
     pSimpleMap dump_data() const;
 
@@ -127,9 +126,7 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
-
     bool dropping_creatable_, garbage_dumpable_;
-    bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy
     preview_list_type cubes_preview_;

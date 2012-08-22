@@ -102,7 +102,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
 
     //stop timer for now because the initial loading gonna be some time.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0).stop();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->stop();
     scene_->allowPicking(false);
 
@@ -552,6 +552,8 @@ void Demo::update_ui_by_second(){
     std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
     std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
+
+    std::cout << ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() << std::endl;
 }
 
 void Demo::game_stop()

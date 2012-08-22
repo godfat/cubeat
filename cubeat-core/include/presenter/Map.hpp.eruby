@@ -85,6 +85,7 @@ public:
 
     bool exist(int x, int y) const             { return model()->exist(x, y); }
     bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }
+    bool dropping_locked() const               { return model()->dropping_locked(); }
 
     std::vector< std::pair<int, int> > count_colors() const { return model()->count_colors(); }
     std::vector< data::pCube > clone_linear_data() const    { return model()->clone_linear_data(); }

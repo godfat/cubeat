@@ -716,7 +716,7 @@ pSimpleMap Map::dump_data() const
     //data::pMapSetting cloned_ms = data::MapSetting::create();
 
     pSimpleMap result = SimpleMap::create(
-        cloned_ms, garbage_left_, score_, current_sum_of_attack_, warning_level_);
+        cloned_ms, garbage_left_, score_, current_sum_of_attack_, lock_dropping_, warning_level_);
 
     chain_list_type temp_chains;
 

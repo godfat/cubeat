@@ -4,6 +4,8 @@
 #include "model/AICommand.hpp"
 #include "ctrl/AIPlayer.hpp"
 #include "utils/Logger.hpp"
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <cstdio>
 
@@ -15,6 +17,10 @@ using utils::Logger;
 
 extern "C" {
 #include "script/ai/bindings.h"
+}
+
+int psc_get_game_time() {
+    return ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 }
 
 void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
@@ -90,6 +96,10 @@ void SimpleMap__gc(pSimpleMap* p) {
 
 bool SimpleMap_cube_exist_at(pSimpleMap* p, int x, int y) {
     return ( AIUtils::lookup(*p, x, y) ) ? true : false;
+}
+
+bool SimpleMap_dropping_locked(pSimpleMap* p) {
+    return (*p)->dropping_locked();
 }
 
 pSimpleCube* SimpleMap_get_cube(pSimpleMap* p, int x, int y) {

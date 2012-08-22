@@ -5,8 +5,8 @@ local ui      = require 'rc/script/ui/ui'
 local config  = require 'rc/script/ui/demo/talk/config'
 
 
-local actor = {}
-local word  = {}
+local actor_ = {}
+local word_  = {}
 
 
 local function shake(loop, sprite, x, y, move, dur)
@@ -27,15 +27,15 @@ end
 
 ----
 
-actor.show = function(t)
+actor_.show = function(t)
   t.menu[t.actor]:set_visible(true)
 end
 
-actor.hide = function(t)
+actor_.hide = function(t)
   t.menu[t.actor]:set_visible(false)
 end
 
-actor.slide_in = function(t)
+actor_.slide_in = function(t)
   local act_x = config.act_x[t.ch]
   local act_y = config.act_y[t.ch]
   local out_x = config.out_x[t.ch]
@@ -44,7 +44,7 @@ actor.slide_in = function(t)
   t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", out_x, out_y), ffi.new("value2", act_x, act_y), 200)
 end
 
-actor.slide_out = function(t)
+actor_.slide_out = function(t)
   local act_x = config.act_x[t.ch]
   local act_y = config.act_y[t.ch]
   local out_x = config.out_x[t.ch]
@@ -53,17 +53,17 @@ actor.slide_out = function(t)
   t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", act_x, act_y), ffi.new("value2", out_x, out_y), 200)
 end
 
-actor.fade_in = function(t)
+actor_.fade_in = function(t)
   t.menu[t.actor]:set_visible(true)
   t.menu[t.actor]:tween("Linear", "Alpha", 0, 255, 1000)
 end
 
-actor.fade_out = function(t)
+actor_.fade_out = function(t)
   t.menu[t.actor]:set_visible(true)
   t.menu[t.actor]:tween("Linear", "Alpha", 255, 0, 1000)
 end
 
-actor.shake = function(t)
+actor_.shake = function(t)
   local act_x = config.act_x[t.ch]
   local act_y = config.act_y[t.ch]
   t.menu[t.actor]:set_visible(true)
@@ -72,19 +72,19 @@ end
 
 ----
 
-word.size_L = function(t)
+word_.size_L = function(t)
   t.menu[t.content]:set_scale( 1.7 )
 end
 
-word.size_M = function(t)
+word_.size_M = function(t)
   t.menu[t.content]:set_scale( 1 )
 end
 
-word.size_S = function(t)
+word_.size_S = function(t)
   t.menu[t.content]:set_scale( 0.7 )
 end
 
-word.shake = function(t)
+word_.shake = function(t)
   local con_x = config.con_x[t.ch]
   local con_y = config.con_y[t.ch]
   t.menu[t.content]:set_scale( 1.7 )
@@ -93,6 +93,6 @@ end
 
 
 return {
-  actor = actor,
-  word  = word
+  actor = actor_,
+  word  = word_
 }

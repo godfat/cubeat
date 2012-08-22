@@ -17,27 +17,20 @@ namespace model {
 class AICommand
 {
 public:
-    struct BtnID{enum BID{NONE, TRIG_1, TRIG_2, WEP_1, WEP_2, WEP_3, HASTE};};
+    struct BtnID{enum BID{NONE=0, TRIG_1, TRIG_2, WEP_1, WEP_2, WEP_3, HASTE};};
+    enum Type {NONE=0, SHOOT, SHOOT_OTHER, HASTE, USE_ABILITY};
 
     typedef std::tr1::shared_ptr<AICommand>             pointer_type;
     typedef std::tr1::weak_ptr<AICommand>               wpointer_type;
     typedef std::tr1::shared_ptr< std::pair<int, int> > pPosition;
     typedef std::tr1::shared_ptr< BtnID::BID >          pButton;
 
-    static pointer_type create(int weight, int delay, int priority = 10) {
-        return utils::ObjectPool<AICommand>::create(weight, delay, priority);
+    static pointer_type create(int type) {
+        return utils::ObjectPool<AICommand>::create(type);
     }
 
-    static pointer_type create() {
-        return utils::ObjectPool<AICommand>::create();
-    }
-
-    AICommand():
-        weight_(0), delay_(0), priority_(10), inter_(false), btn_press_(false)
-    {}
-
-    AICommand(int weight, int delay, int priority):
-        weight_(weight), delay_(delay), priority_(priority), inter_(false), btn_press_(false)
+    AICommand(int type):
+        type_(type), weight_(0), delay_(0), btn_press_(false)
     {}
 
     AICommand& move_to(int x = -1, int y = -1);
@@ -60,30 +53,32 @@ public:
     AICommand& release_wep3();
     //shortcuts
     AICommand& normal_shot(int x = -1, int y = -1);
-    AICommand& weapon_shot(int x = -1, int y = -1);
 
     AICommand& weight(int w)   { weight_ = w;   return *this; }
     AICommand& delay(int d)    { delay_  = d;   return *this; }
-    AICommand& priority(int p) { priority_ = p; return *this; }
-    AICommand& inter(bool f)   { inter_ = f;    return *this; }
+    AICommand& type(int t)     { type_   = t;   return *this; }
 
     pPosition pos()      const { return pos_; }
     pButton   btn()      const { return btn_; }
     int       weight()   const { return weight_; }
     int       delay()    const { return delay_; }
-    int       priority() const { return priority_; }
-    bool      inter()    const { return inter_; }
+    int       type()     const { return type_; }
     bool      press_btn()const { return btn_press_; }
 
-private:
+    //deprecate
+    //AICommand& weapon_shot(int x = -1, int y = -1);
+    //AICommand& priority(int p) { priority_ = p; return *this; }
+    //int       priority() const { return priority_; }
 
-    pPosition pos_;
-    pButton   btn_;
+private:
+    int type_;
     int weight_;
     int delay_;
     int priority_;
-    bool inter_;
     bool btn_press_;
+
+    pPosition pos_;
+    pButton   btn_;
 };
 
 typedef AICommand::pointer_type pAICommand;

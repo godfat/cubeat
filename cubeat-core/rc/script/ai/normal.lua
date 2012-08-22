@@ -38,7 +38,7 @@ function ai_entry(self)
   --since we only have two map, one for each side, so let the first in ally-list be one's self.
   local my_map =    self:get_ally_map(0)
   local enemy_map = self:get_enemy_map(0)
-  local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.PSC_AI_NONE}) -- reuse this
+  local cmdbuf    = ffi.new("LuaAICommand", {0, 0, 0, C.AI_NONE}) -- reuse this
   local emergency_level = 0
 
   local attack_threshold = 5
@@ -60,7 +60,7 @@ function ai_entry(self)
      enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
   then
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
-    setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, keycube:x(), keycube:y())
+    setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
     self:push_command(cmdbuf)
     if keycube:is_broken() then
       self:push_command(cmdbuf)
@@ -77,7 +77,7 @@ function ai_entry(self)
     if hsize > 0 and my_map:grounded_cube_count() <= 54 then
       shuffle(highcols, hsize)
       local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
-      setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, rnd_x, rnd_height)
+      setcmd(cmdbuf, C.AI_SHOOT, 0, rnd_x, rnd_height)
       self:push_command(cmdbuf)
       if my_map:get_grounded_cube(rnd_x, rnd_height):is_broken() then
         self:push_command(cmdbuf)
@@ -87,7 +87,7 @@ function ai_entry(self)
     if bsize > 0 and self:cmdqueue_size() < 1 then
       shuffle(brokens, bsize)
       local rnd = random(bsize)
-      setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
+      setcmd(cmdbuf, C.AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
       self:push_command(cmdbuf)
     end
     -- don't do garbages for now.
@@ -95,7 +95,7 @@ function ai_entry(self)
     if self:cmdqueue_size() < 1 then
       if my_map:grounded_cube_count() >= 48 and not my_map:still_chaining() then
         local x, y = pick_a_coord_from(my_map)
-        setcmd(cmdbuf, C.PSC_AI_SHOOT, 0, x, y)
+        setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf)
       else
         local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
@@ -108,12 +108,12 @@ function ai_entry(self)
             local c = enemy_map:get_cube(x, y)
             if c:exist() and not c:is_broken() then
               --io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
-              setcmd(cmdbuf, C.PSC_AI_SHOOT_OTHER, 0, x, y)
+              setcmd(cmdbuf, C.AI_SHOOT_OTHER, 0, x, y)
               self:push_command(cmdbuf)
             end
           end
         elseif self:get_heat() < 0.7 then
-          setcmd(cmdbuf, C.PSC_AI_HASTE, 0, 0, 0)
+          setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
           self:push_command(cmdbuf)
         end
       end

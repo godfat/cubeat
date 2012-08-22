@@ -38,4 +38,6 @@ AICommand& AICommand::release_wep1() { return release(BtnID::WEP_1); }
 AICommand& AICommand::release_wep2() { return release(BtnID::WEP_2); }
 AICommand& AICommand::release_wep3() { return release(BtnID::WEP_3); }
 AICommand& AICommand::normal_shot(int x, int y) { return move_to(x, y).press_trig1(); }
-AICommand& AICommand::weapon_shot(int x, int y) { return move_to(x, y).press_trig2(); }
+
+//deprecate
+//AICommand& AICommand::weapon_shot(int x, int y) { return move_to(x, y).press_trig2(); }

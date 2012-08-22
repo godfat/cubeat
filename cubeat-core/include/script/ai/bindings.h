@@ -8,7 +8,7 @@
 #endif
 
 typedef struct {
-    enum { PSC_AI_NONE = 0, PSC_AI_SHOOT, PSC_AI_SHOOT_OTHER, PSC_AI_HASTE };
+    enum { AI_NONE = 0, AI_SHOOT, AI_SHOOT_OTHER, AI_HASTE, AI_USE_ABILITY };
     int x, y;
     int delay;
     unsigned int type; //enum

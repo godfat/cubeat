@@ -125,22 +125,21 @@ void AIPlayer::stopAllActions()
 
 void AIPlayer::issue_command( model::pAICommand const& cmd )
 {
-    typedef model::AICommand::pPosition pPosition;
-    typedef model::AICommand::pButton   pButton;
-    typedef model::AICommand::BtnID     BtnID;
-    if( pButton btn = cmd->btn() ) {
-        switch( *btn ) {
-            case BtnID::TRIG_1:
-                if( pPosition pos = cmd->pos() ) {
-                    shoot( pos->first, pos->second, !cmd->inter() );
-                }
-                break;
-            case BtnID::TRIG_2:
-                haste( 500 );
-                break;
-            default:
-                break;
-        }
+    using model::AICommand;
+    typedef AICommand::pPosition pPosition;
+    switch( cmd->type() ) {
+        case AICommand::SHOOT:
+        case AICommand::SHOOT_OTHER:
+        case AICommand::USE_ABILITY:
+            if( pPosition pos = cmd->pos() ) {
+                shoot( pos->first, pos->second, cmd->type() );
+            }
+            break;
+        case AICommand::HASTE:
+            haste( 500 );
+            break;
+        default:
+            break;
     }
 }
 
@@ -153,31 +152,55 @@ data::pViewSetting AIPlayer::view_setting(bool const& self) const
     else return data::pViewSetting();
 }
 
-void AIPlayer::shoot(int x, int y, bool const& self) //we must know ViewSetting here.
+void AIPlayer::shoot(int x, int y, int type) //we must know ViewSetting here.
 {
     using namespace accessor;
     using namespace easing;
-    int c_size = view_setting(self)->cube_size();
 
-    int handshaking_x = utils::random(c_size/2) - c_size/4;
-    int handshaking_y = utils::random(c_size/2) - c_size/4;
-
-    if( utils::random(100) < missrate_ ) { //this shot is probably going to miss the target
-        handshaking_x *= 4;
-        handshaking_y *= 4;
+    vec2 dest;
+    switch( type ) {
+        case model::AICommand::SHOOT: {
+            int c_size = view_setting(true)->cube_size();
+            dest.X =  x*c_size + c_size/2 + view_setting(true)->x_offset();
+            dest.Y = -y*c_size - c_size/2 + view_setting(true)->y_offset();
+            break;
+        }
+        case model::AICommand::SHOOT_OTHER: {
+            int c_size = view_setting(false)->cube_size();
+            dest.X =  x*c_size + c_size/2 + view_setting(false)->x_offset();
+            dest.Y = -y*c_size - c_size/2 + view_setting(false)->y_offset();
+            break;
+        }
+        case model::AICommand::USE_ABILITY:
+            dest.X = view_setting(true)->abl_btn_x();
+            dest.Y = view_setting(true)->abl_btn_y();
+            break;
+        default:
+            std::cerr << "AIPlayer::shoot wrong code flow.\n";
+            break;
     }
 
-    //somehow add using ability button here. FYI, view_setting have abl_btn_x and abl_btn_y
+    vec2 curr(input_->cursor().x(), input_->cursor().y());
+    double dist = (dest - curr).getLength() + 32; //add a very least handshaking possibility
 
-    vec2 dest(x*c_size + c_size/2 + view_setting(self)->x_offset() + handshaking_x,
-              -y*c_size - c_size/2 + view_setting(self)->y_offset() + handshaking_y);
+    int handshaking_x = utils::random(static_cast<int>(dist*0.07)) - static_cast<int>(dist*0.035);
+    int handshaking_y = utils::random(static_cast<int>(dist*0.07)) - static_cast<int>(dist*0.035);
+    if( utils::random(100) < missrate_ ) { //this shot is probably going to miss the target
+        handshaking_x *= 5;
+        handshaking_y *= 5;
+    }
+
+    dest.X += handshaking_x;
+    dest.Y += handshaking_y;
+
     input_->cursor().x() = dest.X;
     input_->cursor().y() = dest.Y;
 
     function<void()> cb = bind(&AIPlayer::hold_button, this, ref(trig1_), 1);
 
     int mov_duration = think_interval_ - 100;
-    if ( !self ) mov_duration *= 1.5; //interrupt your opponents should be more costly
+    if ( type == model::AICommand::SHOOT_OTHER )
+        mov_duration *= 1.5; //interrupt your opponents should be more costly
 
     input_->getCursor()->tween<IOExpo, Pos2D>(dest, mov_duration, 0, cb);
 }

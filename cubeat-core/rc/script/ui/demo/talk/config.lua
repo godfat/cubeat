@@ -30,6 +30,23 @@ local block_w = bg_w
 local block_h = bg_h
 local block_a = 0
 local block_d = -100
+----
+----
+local slide_in_time = 200
+local slide_out_time= 200
+local fade_in_time  = 1000
+local fade_out_time = 1000
+
+local word_size_L = 1.7
+local word_size_M = 1
+local word_size_S = 0.7
+
+local actor_shake_loop      = 6
+local actor_shake_distance  = 5
+local actor_shake_time      = 50
+local word_shake_loop       = 3
+local word_shake_distance   = 3
+local word_shake_time       = 100
 
 
 return {
@@ -60,5 +77,22 @@ return {
   block_w   = block_w,
   block_h   = block_h,
   block_a   = block_a,
-  block_d   = block_d
+  block_d   = block_d,
+  ----
+  ----
+  slide_in_time = slide_in_time,
+  slide_out_time= slide_out_time,
+  fade_in_time  = fade_in_time,
+  fade_out_time = fade_out_time,
+  ----
+  word_size_L = word_size_L,
+  word_size_M = word_size_M,
+  word_size_S = word_size_S,
+  ----
+  act_s_loop  = actor_shake_loop,
+  act_s_dis   = actor_shake_distance,
+  act_s_time  = actor_shake_time,
+  word_s_loop = word_shake_loop,
+  word_s_dis  = word_shake_distance,
+  word_s_time = word_shake_time
 }

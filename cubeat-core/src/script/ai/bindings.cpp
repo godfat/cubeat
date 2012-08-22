@@ -19,17 +19,16 @@ extern "C" {
 
 void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
     pAICommand cmd = AICommand::create(c->type);
-    if( c->type == LuaAICommand::AI_SHOOT ) {
-        cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
-    }
-    else if( c->type == LuaAICommand::AI_SHOOT_OTHER ) {
-        cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
-    }
-    else if( c->type == LuaAICommand::AI_HASTE ) {
-        cmd->press_trig2();
-    }
-    else if( c->type == LuaAICommand::AI_USE_ABILITY ) {
-        cmd->delay(c->delay).weight(1);
+    switch( c->type ) {
+        case LuaAICommand::AI_SHOOT:
+        case LuaAICommand::AI_SHOOT_OTHER:
+        case LuaAICommand::AI_USE_ABILITY:
+            cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
+            break;
+        case LuaAICommand::AI_HASTE:
+            cmd->press_trig2();
+            break;
+        default: break;
     }
     p->pushCommand(cmd);
 }

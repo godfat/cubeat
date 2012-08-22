@@ -174,6 +174,7 @@ void AIPlayer::shoot(int x, int y, int type) //we must know ViewSetting here.
         case model::AICommand::USE_ABILITY:
             dest.X = view_setting(true)->abl_btn_x();
             dest.Y = view_setting(true)->abl_btn_y();
+            std::cout << "AIPlayer::shooting ability button at " << dest.X << ", " << dest.Y << "\n";
             break;
         default:
             std::cerr << "AIPlayer::shoot wrong code flow.\n";

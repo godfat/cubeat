@@ -76,7 +76,11 @@ function ai_entry(self)
     --io.write "No keycube for now.\n"
     
     if ab_left > 0 and should_use_ability[ab_kind](self, my_map, enemy_map) then
-      io.write "Ok, should use ability now!"
+      io.write "Lua: AI Using ability!!\n"
+      setcmd(cmdbuf, C.AI_USE_ABILITY, 0, -1, -1)
+      self:push_command(cmdbuf)
+      collectgarbage("collect")
+      return
     end
     
     local highcol_threshold = 9

@@ -93,7 +93,7 @@ TimerDispatcher& TimerDispatcher::set_time(time_t const& t)
 
 double TimerDispatcher::get_speed() const
 {
-    timer_->getSpeed();
+    return timer_->getSpeed();
 }
 
 bool TimerDispatcher::is_stopped() const

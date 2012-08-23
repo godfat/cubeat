@@ -129,7 +129,7 @@ function ai_entry(self)
         self:push_command(cmdbuf)
       else
         local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
-        if interrupt_cube:exist() then
+        if C.psc_get_game_time() > 20000 and interrupt_cube:exist() then
           local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
           local chance = random(3)+1
           local x = dir[chance][1] + interrupt_cube:x()

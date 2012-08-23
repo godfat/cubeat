@@ -40,16 +40,6 @@ public:
         playSample_delayed("2/2b_6.wav", 6000);
         playSample_delayed("2/2b_7.wav", 6666);
 
-        playSample_delayed("3/3d/alarm.wav", 17000);
-        playSample_delayed("3/3d/alarm.wav", 18000);
-        playSample_delayed("3/3d/alarm.wav", 19000);
-//        playSample_delayed("3/3d/alarm.wav", 20000);
-//        playSample_delayed("3/3d/alarm.wav", 21000);
-        playSample_delayed("3/3d/alarm.wav", 22000);
-        playSample_delayed("3/3d/alarm.wav", 23000);
-        playSample_delayed("3/3d/alarm.wav", 24000);
-        playSample_delayed("3/3d/alarm.wav", 25000);
-
         session(1, play_time, 0);
         session(2, play_time, 0);
         session(3, play_time, 0);
@@ -73,7 +63,7 @@ public:
     void session(int i, int& play_time, int time_b) {
         using utils::to_s;
         seek_and_playBGM_AB_delayed("jungle"+to_s(i)+"/bgm_a.ogg", "jungle"+to_s(i)+"/bgm_b.ogg", 1000, 500, play_time);
-        play_time += 20000;
+        play_time += 30000;
 
         playSample_delayed("3/3d/alarm.wav", play_time - 3000);
         playSample_delayed("3/3d/alarm.wav", play_time - 2000);
@@ -85,8 +75,16 @@ public:
         playSample_delayed("3/3d/alarm.wav", play_time + 4000);
         playSample_delayed("3/3d/alarm.wav", play_time + 5000);
 
-        playBGM_delayed("smb_warning.wav", 100, play_time);
-        play_time += 2250;
+        playBGM_delayed("jungle"+to_s(i)+"/emergency.ogg", 100, play_time);
+
+        switch( i ) {
+            case 1: play_time += 1750; break;
+            case 2: play_time += 1900; break;
+            case 3: play_time += 1750; break;
+            case 4: play_time += 2200; break;
+            case 5: play_time += 2500; break;
+            case 6: play_time += 2100; break;
+        }
 
         seek_and_playBGM_AB_delayed("jungle"+to_s(i)+"/bgm_quick_a.ogg", "jungle"+to_s(i)+"/bgm_quick_b.ogg", 250, time_b, play_time);
         play_time += 10000;

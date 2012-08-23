@@ -553,7 +553,7 @@ void Demo::update_ui_by_second(){
     std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
 
-    std::cout << ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() << std::endl;
+    //std::cout << ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() << std::endl;
 }
 
 void Demo::game_stop()

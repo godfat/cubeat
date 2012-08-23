@@ -142,7 +142,7 @@ ability_constants: {
     broken_cube_limit:     15,
 
     #as title (ms)
-    lock_heat_second:      15000
+    lock_heat_second:      10000
 },
 
 item: {

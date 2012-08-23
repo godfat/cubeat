@@ -146,20 +146,27 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     std::random_shuffle(m0_cube_data.begin(), m0_cube_data.end());
 
     int count = 0;
+    int k = 0;
 
     int width = m1->map_setting()->width();
     int height= m1->map_setting()->height();
     for( int y = 0; y < height - 1 && count < magic_transfer_limit_; ++y ) {
         for( int x = 0; x < width && count < magic_transfer_limit_; ++x ) {
             if( !m1->exist(x, y) && !m1->below_is_dropping(x, y) ) {
-                m1->new_cube_at(x, y, m0_cube_data[count]->color_id());
-                m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
+                while( k < m0_cube_data.size() && m0_cube_data[k]->color_id() != -1 ) { ++k; }
+                if( k >= m0_cube_data.size() ) return;
+                m1->new_cube_at(x, y, m0_cube_data[k]->color_id());
+                m0->kill_cube_at( m0_cube_data[k]->x(), m0_cube_data[k]->y() );
                 ++count;
+                ++k;
             }
         }
     }
-    for( ; count < magic_transfer_limit_ ; ++count ) {
-        m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
+    for( ; k < m0_cube_data.size() && count < magic_transfer_limit_ ; ++k ) {
+        if( m0_cube_data[k]->color_id() == -1 ) {
+            m0->kill_cube_at( m0_cube_data[count]->x(), m0_cube_data[count]->y() );
+            ++count;
+        }
     }
 }
 

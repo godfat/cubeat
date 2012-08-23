@@ -26,7 +26,7 @@ local ability_preconditions_ = {
   
   function(self, my_map, enemy_map) -- #3
     local capacity = my_map:width() * (my_map:height()-1)
-    if my_map:garbage_left() > capacity * 0.5 then return true end
+    if my_map:garbage_left() > capacity * 0.45 then return true end
     return false
   end,
   

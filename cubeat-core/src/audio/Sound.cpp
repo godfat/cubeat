@@ -210,7 +210,7 @@ void Sound::exchange(pSoundObject const& before, pSoundObject const& after, time
             before->volume(1);
             before->fade_volume(0, t);
             ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-                std::tr1::bind(&SoundObject::pause, before.get()), t);
+                std::tr1::bind(&SoundObject::pause, before.get()), before, t);
         }
     }
     if( after ) {

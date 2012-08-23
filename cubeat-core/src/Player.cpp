@@ -112,19 +112,16 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
     return *this;
 }
 
-int Player::invoke_ability()
+Player& Player::invoke_ability(view::pSprite const&)
 {
-    int ability_left = ability_queue_.size();
-    if( ability_left > 0 ) {
+    if( ability_queue_.size() > 0 ) {
         presenter::PlayerAbility::Callback ab = ability_queue_.front();
         ability_queue_.pop_front();
-
+        map_list_[id_].lock()->ability_button_event()( ability_left() );
         //NOTE WTF TEMP 2012: let's be lazy for now. It probably will always be only 2 maps anyway.
         ab(shared_from_this(), map_list_[id_], map_list_[enemy_input_ids_.front()] );
-
-        return ability_left;
     }
-    return 0;
+    return *this;
 }
 
 Player& Player::set_config(utils::map_any const& config)
@@ -148,20 +145,26 @@ Player& Player::set_config(utils::map_any const& config)
 
 Player& Player::push_ability(int kind)
 {
-    using std::tr1::bind;
-    using presenter::PlayerAbility;
+    if( ability_queue_.size() < 1 /*some config value*/ ) {
+        using std::tr1::bind;
+        using presenter::PlayerAbility;
 
-    switch( ability_kind_ ) {
-        case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;
-        case 2: ability_queue_.push_back( bind(&PlayerAbility::C2, _1, _2, _3) ); break;
-        case 3: ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) ); break;
-        case 4: ability_queue_.push_back( bind(&PlayerAbility::C4, _1, _2, _3) ); break;
-        case 5: ability_queue_.push_back( bind(&PlayerAbility::C5, _1, _2, _3) ); break;
-        case 6: ability_queue_.push_back( bind(&PlayerAbility::C6, _1, _2, _3) ); break;
-        case 7: ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
-        case 8: ability_queue_.push_back( bind(&PlayerAbility::C8, _1, _2, _3) ); break;
-        default:
-            ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
+        if( kind <= 0 )
+            kind = ability_kind_;
+
+        switch( kind ) {
+            case 1: ability_queue_.push_back( bind(&PlayerAbility::C1, _1, _2, _3) ); break;
+            case 2: ability_queue_.push_back( bind(&PlayerAbility::C2, _1, _2, _3) ); break;
+            case 3: ability_queue_.push_back( bind(&PlayerAbility::C3, _1, _2, _3) ); break;
+            case 4: ability_queue_.push_back( bind(&PlayerAbility::C4, _1, _2, _3) ); break;
+            case 5: ability_queue_.push_back( bind(&PlayerAbility::C5, _1, _2, _3) ); break;
+            case 6: ability_queue_.push_back( bind(&PlayerAbility::C6, _1, _2, _3) ); break;
+            case 7: ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
+            case 8: ability_queue_.push_back( bind(&PlayerAbility::C8, _1, _2, _3) ); break;
+            default:
+                ability_queue_.push_back( bind(&PlayerAbility::C7, _1, _2, _3) ); break;
+        }
+        map_list_[id_].lock()->ability_button_event()( ability_left() );
     }
     return *this;
 }

@@ -168,11 +168,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
     set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
-    map0_ = presenter::Map::create(set0);
+    map0_ = presenter::Map::create(set0, player0_);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
-    map1_ = presenter::Map::create(set1);
+    map1_ = presenter::Map::create(set1, player1_);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 

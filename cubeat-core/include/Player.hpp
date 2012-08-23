@@ -44,7 +44,7 @@ public:
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
 
     //I'd better refactor this afterwards.
-    int  invoke_ability();
+    Player& invoke_ability(view::pSprite const&);
     Player& push_ability(int kind = -1); // -1 will just resolve to default
     void eat_item();
 

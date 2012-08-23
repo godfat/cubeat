@@ -89,6 +89,7 @@ void <% debug_hook 'Cube::next_state' do %>(){
 void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
     state_ = state::Dying::create(self());
+    map()->cubes_cleared_add(1);
     go_dying_event()();
 }
 
@@ -115,6 +116,7 @@ void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
     }
     else{
         state_.reset();
+        map()->cubes_cleared_add(1);
         go_exploding_event()();
     }
 }

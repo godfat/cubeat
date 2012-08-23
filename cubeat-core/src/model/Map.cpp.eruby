@@ -710,6 +710,18 @@ void Map::new_cube_at(int x, int y, int color_id)
     insert_cube(c);
 }
 
+void Map::cubes_cleared_add(int const& num)
+{
+    total_cubes_cleared_ += num;
+    if( owner()->get_player_ability_left() < 1 ) {
+        cubes_cleared_ += num;
+    }
+    if( cubes_cleared_ > 100 /*ms()->replenish_ability_limit()*/ ) {
+        cubes_cleared_ = 0;
+        owner()->push_player_ability();
+    }
+}
+
 pSimpleMap Map::dump_data() const
 {
     data::pMapSetting cloned_ms = map_setting_->clone();

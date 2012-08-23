@@ -2,6 +2,7 @@
 #include "presenter/Cube.hpp"
 #include "presenter/Map.hpp"
 #include "model/Map.hpp"
+#include "Player.hpp"
 
 #include "utils/to_s.hpp"
 #include "utils/Logger.hpp"
@@ -79,6 +80,10 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
         cube->set_view_master( view->create(cube->model()) );
     }
 
+    if( ctrl::pPlayer p = player_.lock() ) {
+        view->setup_ability_button();
+    }
+
     view_master_ = view;
     return *this;
 }
@@ -138,6 +143,8 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
         std::tr1::bind(&cube::ViewMaster::alert_bar_update, view.get(), _1));
     overheat_event(
         std::tr1::bind(&cube::ViewMaster::show_overheat, view.get(), _1));
+    ability_button_event(
+        std::tr1::bind(&cube::ViewMaster::ability_button, view.get(), _1));
 }
 
 void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
@@ -179,6 +186,20 @@ pCube Map::make_garbage(int x, int y){
 pCube <% debug_hook 'Map::make_cube_preview' do %>(int color_id){
 <% end %>
     return make_cube(3, 11, color_id); //temp
+}
+
+size_t Map::get_player_ability_left() const {
+    if( ctrl::pPlayer p = player_.lock() ) {
+        return p->ability_left();
+    }
+    return 0;
+}
+
+Map& Map::push_player_ability() {
+    if( ctrl::pPlayer p = player_.lock() ) {
+        p->push_ability();
+    }
+    return *this;
 }
 
 Map& <% debug_hook 'Map::cycle' do %>(){

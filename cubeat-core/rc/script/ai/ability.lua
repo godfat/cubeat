@@ -20,13 +20,13 @@ local ability_preconditions_ = {
     local ground_cube_num = my_map:grounded_cube_count()
     local garbage_left    = my_map:garbage_left()
     
-    if garbage_left + ground_cube_num >= capacity then return true end 
+    if garbage_left + ground_cube_num >= capacity * 0.9 then return true end 
     return false
   end,
   
   function(self, my_map, enemy_map) -- #3
     local capacity = my_map:width() * (my_map:height()-1)
-    if my_map:garbage_left() > capacity * 0.4 then return true end
+    if my_map:garbage_left() > capacity * 0.2 then return true end
     return false
   end,
   

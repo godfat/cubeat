@@ -231,7 +231,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     // not ms()->dropping_creatable(). it will affect cycle_warning().
     if( lock_dropping_ ) {
         garbage_dumpable_   = false;
-        dropping_creatable_ = false;
+        //dropping_creatable_ = false;
     }
 
     if( garbage_dumpable_ && garbage_left_ >= 1 ) { // garbage_left_ is double here, ignore some epslion.

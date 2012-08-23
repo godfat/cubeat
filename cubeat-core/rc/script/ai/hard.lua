@@ -121,9 +121,7 @@ function ai_entry(self)
     -- don't do garbages for now.
 
     if self:cmdqueue_size() < 1 then
-      if ground_cube_num >= capacity * 0.8 and not my_map:still_chaining() or 
-         my_map:dropping_locked() 
-      then
+      if ground_cube_num >= capacity * 0.8 and not my_map:still_chaining() then
         local x, y = pick_a_coord_from(my_map)
         setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf)

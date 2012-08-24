@@ -2,11 +2,11 @@
 
 #Game speed, if too fast then the AI may not acting correctly, and the data will be inaccurate.
 #suggested: (1.0 ~ 3.0)
-speed: 4.0,
+speed: 3.0,
 
 #How many games do you want in a single record?
 #Set to 20 then it will using the same characters to play 20 times. 
-times: 20,
+times: 1,
 
 sessions: [
   ['char/char1_new', 'char/char2_new', 'stage/jungle1'],

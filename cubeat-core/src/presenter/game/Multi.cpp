@@ -105,13 +105,13 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
 
     // setup map0
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
-    map0_ = presenter::Map::create(set0);
+    map0_ = presenter::Map::create(set0, player0_);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     // setup map1
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
-    map1_ = presenter::Map::create(set1);
+    map1_ = presenter::Map::create(set1, player1_);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 

@@ -1,4 +1,5 @@
 
+local C = require 'ffi'.C
 require 'rc/script/ai/ai'
 
 local ability_preconditions_ = {
@@ -19,13 +20,13 @@ local ability_preconditions_ = {
     local ground_cube_num = my_map:grounded_cube_count()
     local garbage_left    = my_map:garbage_left()
     
-    if garbage_left + ground_cube_num >= capacity then return true end 
+    if garbage_left + ground_cube_num >= capacity * 0.9 then return true end 
     return false
   end,
   
   function(self, my_map, enemy_map) -- #3
     local capacity = my_map:width() * (my_map:height()-1)
-    if my_map:garbage_left() > capacity * 0.5 then return true end
+    if my_map:garbage_left() > capacity * 0.2 then return true end
     return false
   end,
   
@@ -35,7 +36,7 @@ local ability_preconditions_ = {
     local _, broken_num   = my_map:get_brokens()
     local _, garbage_num  = my_map:get_garbages()
     
-    -- we have to add a time constraint here too. this ability probably shouldn't be used before 1 min
+    if C.psc_get_game_time() < 60000 then return false end -- don't use it in the first minute.
     if ground_cube_num > capacity * 0.9 and broken_num+garbage_num < ground_cube_num * 0.4 then return true end
     if ground_cube_num > capacity * 0.6 and broken_num+garbage_num < ground_cube_num * 0.2 then return true end
     return false

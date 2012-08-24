@@ -36,6 +36,9 @@ public:
     virtual void warning_counting(int level){}
     virtual void alert_bar_update(int level){}
     virtual void show_overheat(bool show){}
+    virtual void ability_button(int left){}
+
+    virtual void setup_ability_button(){}
 
 protected:
     ViewMaster(){}

@@ -44,6 +44,7 @@ public:
     TimerDispatcher& start();
     TimerDispatcher& stop();
     TimerDispatcher& set_speed(double const&);
+    TimerDispatcher& set_time(time_t const&);
     bool             is_stopped() const;
     std::time_t      get_time()   const;
     std::string      get_name()   const { return name_; }

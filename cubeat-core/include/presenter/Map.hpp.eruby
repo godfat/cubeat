@@ -15,7 +15,13 @@
 
 <%= debug_include %>
 
-namespace psc{ namespace presenter{
+namespace psc{
+namespace ctrl{
+class Player;
+typedef std::tr1::shared_ptr<Player> pPlayer;
+typedef std::tr1::weak_ptr<Player> wpPlayer;
+}
+namespace presenter{
 
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
@@ -25,14 +31,18 @@ public:
     typedef model::Map::color_map_type color_map_type;
 
 public:
-    static pMap create(data::pMapSetting setting, utils::vector_2d<int> const& cube_colors){
-        return pMap(new Map(setting))->init(cube_colors);
+    static pMap create(data::pMapSetting setting, utils::vector_2d<int> const& cube_colors,
+                       ctrl::wpPlayer p = ctrl::pPlayer()){
+        return pMap(new Map(setting, p))->init(cube_colors);
     }
-    static pMap create(data::pMapSetting setting){ return pMap(new Map(setting))->init(); }
+    static pMap create(data::pMapSetting setting, ctrl::wpPlayer p = ctrl::pPlayer()) {
+        return pMap(new Map(setting, p))->init();
+    }
     static pMap create(){ return create(data::MapSetting::create()); }
 
 public:
-    Map(data::pMapSetting setting): map_setting_(setting){}
+    Map(data::pMapSetting setting, ctrl::wpPlayer const& p)
+        :map_setting_(setting), player_(p){}
     Map& set_view_master(cube::pViewMaster);
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
@@ -82,9 +92,12 @@ public:
     Map& lock_dropping(bool const& f) { model()->lock_dropping(f); return *this; }
     Map& kill_cube_at(int x, int y) { model()->kill_cube_at(x, y); return *this; }
     Map& new_cube_at(int x, int y, int color_id = -1) { model()->new_cube_at(x, y, color_id); return *this; }
+    Map& push_player_ability();
 
     bool exist(int x, int y) const             { return model()->exist(x, y); }
     bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }
+    bool dropping_locked() const               { return model()->dropping_locked(); }
+    size_t get_player_ability_left() const;
 
     std::vector< std::pair<int, int> > count_colors() const { return model()->count_colors(); }
     std::vector< data::pCube > clone_linear_data() const    { return model()->clone_linear_data(); }
@@ -103,6 +116,7 @@ private:
 
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>
+    ctrl::wpPlayer player_;
 <%= reader 'std::list<wpMap>', :garbage_lands %>
 <%= reader 'model::pMap', :model %>
     //view::pMap view_;                       //note: not used for now.
@@ -112,7 +126,7 @@ private:
 
 <%= accessor 'std::tr1::function<void()>', :lose_event %>
 <%= accessor 'std::tr1::function<void(bool)>', :overheat_event %>
-<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event, :alert_bar_update_event, :pop_garbage_event %>
+<%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_counting_event, :alert_bar_update_event, :pop_garbage_event, :ability_button_event %>
 <%= accessor 'std::tr1::function<void(model::wpChain const&)>', :new_chain_event %>
 <%= accessor 'std::tr1::function<void(model::wpChain const&, int)>', :new_garbage_event %>
 

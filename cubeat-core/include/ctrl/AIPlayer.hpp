@@ -62,7 +62,7 @@ protected:
 
     void open_thread_to_think();
     void issue_command(model::pAICommand const&);
-    void shoot(int, int, bool const& self = true);
+    void shoot(int, int, int type = 1);
     void haste(int);
     void hold_button(bool&, int);
     void press_button(bool&);

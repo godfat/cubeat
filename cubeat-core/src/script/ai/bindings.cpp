@@ -4,6 +4,8 @@
 #include "model/AICommand.hpp"
 #include "ctrl/AIPlayer.hpp"
 #include "utils/Logger.hpp"
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <cstdio>
 
@@ -17,16 +19,22 @@ extern "C" {
 #include "script/ai/bindings.h"
 }
 
+int psc_get_game_time() {
+    return ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+}
+
 void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
-    pAICommand cmd = AICommand::create();
-    if( c->type == LuaAICommand::PSC_AI_SHOOT ) {
-        cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
-    }
-    if( c->type == LuaAICommand::PSC_AI_SHOOT_OTHER ) {
-        cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y).inter(true);
-    }
-    else if( c->type == LuaAICommand::PSC_AI_HASTE ) {
-        cmd->press_trig2();
+    pAICommand cmd = AICommand::create(c->type);
+    switch( c->type ) {
+        case LuaAICommand::AI_SHOOT:
+        case LuaAICommand::AI_SHOOT_OTHER:
+        case LuaAICommand::AI_USE_ABILITY:
+            cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
+            break;
+        case LuaAICommand::AI_HASTE:
+            cmd->press_trig2();
+            break;
+        default: break;
     }
     p->pushCommand(cmd);
 }
@@ -88,6 +96,10 @@ void SimpleMap__gc(pSimpleMap* p) {
 
 bool SimpleMap_cube_exist_at(pSimpleMap* p, int x, int y) {
     return ( AIUtils::lookup(*p, x, y) ) ? true : false;
+}
+
+bool SimpleMap_dropping_locked(pSimpleMap* p) {
+    return (*p)->dropping_locked();
 }
 
 pSimpleCube* SimpleMap_get_cube(pSimpleMap* p, int x, int y) {

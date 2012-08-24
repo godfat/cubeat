@@ -37,16 +37,20 @@ ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting settin
 {   //temporary
     view_orig_ = view::Object::create( scene );
     view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
-
-    ability_btn_ = view::Sprite::create( "cubes/garbage1", scene, 100, 100, true );
-    ability_btn_->set<accessor::Pos2D>(vec2( setting->abl_btn_x(), setting->abl_btn_y() ));
-
-    ctrl::Button const* b = &player.lock()->input()->trig1();
-    ability_btn_->onPress(b) = std::tr1::bind(&ViewSpriteMaster::invoke_ability, this, _1);
 }
 
 ViewBase::pointer_type ViewSpriteMaster::create(model::pCube cube) const {
     return ViewSprite::create(cube, view_orig_, map_setting(), view_setting(), player_);
+}
+
+void ViewSpriteMaster::setup_ability_button(){
+    int n = player_.lock()->ability_left();
+    ability_btn_ = view::Sprite::create( "cubes/garbage"+utils::to_s(n), scene_.lock(), 100, 100, true );
+    ability_btn_->set<accessor::Pos2D>(vec2( view_setting()->abl_btn_x(), view_setting()->abl_btn_y() ));
+
+    //setup button to invoke player ability
+    ctrl::Button const* b = &player_.lock()->input()->trig1();
+    ability_btn_->onPress(b) = std::tr1::bind(&ctrl::Player::invoke_ability, player_.lock().get(), _1);
 }
 
 void ViewSpriteMaster::column_full(int at){
@@ -87,7 +91,7 @@ void ViewSpriteMaster::new_chain(model::wpChain const& chain){
     m->getSprite("amounto").set<Pos2D>(vec2(1,39)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
     m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,40)).setPickable(false);
     m->setDepth(-100).set<Pos2D>( vec2(x_offset, y_offset) )
-      .tween<OElastic, Scale>(vec3(0,0,0), vec3(1 + (0.12*combo),1 + (0.12*combo), 1), 1000, 0,
+      .tween<OElastic, Scale>(vec3(0,0,0), vec3(1 + (0.12*combo),1 + (0.12*combo), 1), 1000u, 0,
                               std::tr1::bind(&ViewSpriteMaster::pop_a_chain_text, this, chain) );
 
     chain_texts_[ chain ] = m;
@@ -273,15 +277,10 @@ vec2 ViewSpriteMaster::garbage_endpoint_vec2() const {
     return pos_vec2(map_setting()->width()/2, map_setting()->height()+2); //endpoint is out of bound
 }
 
-void ViewSpriteMaster::invoke_ability(view::pSprite const& sp) {
-    if( ctrl::pPlayer p = player_.lock() ) {
-        if( int left = p->invoke_ability() ) {
-            ability_btn_->setTexture("cubes/garbage" + utils::to_s(left-1) );
-
-            // and other (delayed) visual effects here.
-
-        }
-    }
+void ViewSpriteMaster::ability_button(int left) {
+    using namespace accessor; using namespace easing;
+    ability_btn_->setTexture("cubes/garbage" + utils::to_s(left) );
+    ability_btn_->tween<OElastic, Scale>(vec3(.3,.3,1), vec3(1, 1, 1), 1000u);
 }
 
 vec2 ViewSpriteMaster::pos_vec2(int const& x, int const& y) const{

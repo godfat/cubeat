@@ -8,11 +8,14 @@
 #endif
 
 typedef struct {
-    enum { PSC_AI_NONE = 0, PSC_AI_SHOOT, PSC_AI_SHOOT_OTHER, PSC_AI_HASTE };
+    enum { AI_NONE = 0, AI_SHOOT, AI_SHOOT_OTHER, AI_HASTE, AI_USE_ABILITY };
     int x, y;
     int delay;
     unsigned int type; //enum
 } LuaAICommand;
+
+// Another binding file would be better?
+APIEXPORT int psc_get_game_time();
 
 APIEXPORT void        AIPlayer_push_command(AIPlayer*, LuaAICommand*); //not shared_ptr!
 APIEXPORT pSimpleMap* AIPlayer_get_ally_map(AIPlayer*, unsigned int);  //not shared_ptr!
@@ -31,6 +34,7 @@ APIEXPORT void SimpleMap__gc(pSimpleMap*);
 APIEXPORT bool SimpleMap_cube_exist_at(pSimpleMap*, int, int);
 APIEXPORT int  SimpleMap_grounded_cube_count(pSimpleMap*);
 APIEXPORT bool SimpleMap_still_chaining(pSimpleMap*);
+APIEXPORT bool SimpleMap_dropping_locked(pSimpleMap*);
 
 APIEXPORT pSimpleCube*  SimpleMap_get_cube(pSimpleMap*, int, int);
 APIEXPORT pSimpleCube*  SimpleMap_get_grounded_cube(pSimpleMap*, int, int);

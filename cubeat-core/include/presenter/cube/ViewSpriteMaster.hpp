@@ -75,6 +75,9 @@ public:
     virtual void warning_counting(int warning_level);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
+    virtual void ability_button(int left);
+
+    virtual void setup_ability_button();
 
     virtual void cycle(Map const& map);
 

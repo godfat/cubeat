@@ -6,6 +6,7 @@ local config  = require 'rc/script/ui/demo/talk/config'
 local script  = require 'rc/script/ui/demo/talk/script'
 local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
+local flag    = require 'rc/script/ui/demo/talk/flag'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
@@ -16,10 +17,13 @@ local first_talk_ = {false, false}
 local function reset()
   index_      = 1
   first_talk_ = {false, false}
+  flag.reset_count()
 end
 
 
 local function action(menu, rundown)
+  if index_ ~= flag.get_count()+1 then return end
+  
   local ch = rundown[index_].index
   local actor   = 'actor'..tostring(ch)
   local content = 'content'..tostring(ch)
@@ -32,18 +36,26 @@ local function action(menu, rundown)
     first_talk_[ch]=true
   end
   
+  --actor image
   if rundown[index_].img then
     menu[actor]:set_texture(rundown[index_].img)
   end
+  --text
   if rundown[index_].text then
     menu[content]:change_text(rundown[index_].text)
   end
-
+  --run effect
   local type_a = rundown[index_].actor_effect
+  local type_w = rundown[index_].word_effect
+  if type_a==nil and type_w==nil then
+    flag.add_count()
+  else
+    flag.set_actor_flag(type_a==nil)
+    flag.set_word_flag(type_w==nil)
+  end  
   if type_a then
     effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
   end
-  local type_w = rundown[index_].word_effect
   if type_w then
     effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
   end

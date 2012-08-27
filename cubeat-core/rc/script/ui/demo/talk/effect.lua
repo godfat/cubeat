@@ -1,9 +1,7 @@
 local ffi     = require 'ffi'
 local C       = ffi.C
 local view    = require 'rc/script/ui/view'
-local ui      = require 'rc/script/ui/ui'
 local config  = require 'rc/script/ui/demo/talk/config'
-local flag    = require 'rc/script/ui/demo/talk/flag'
 
 
 local actor_ = {}
@@ -30,12 +28,12 @@ end
 
 actor_.show = function(t)
   t.menu[t.actor]:set_visible(true)
-  flag.actor_is_ready()
+  t.cb()
 end
 
 actor_.hide = function(t)
   t.menu[t.actor]:set_visible(false)
-  flag.actor_is_ready()
+  t.cb()
 end
 
 actor_.slide_in = function(t)
@@ -44,7 +42,8 @@ actor_.slide_in = function(t)
   local out_x = config.out_x[t.ch]
   local out_y = config.out_y[t.ch]
   t.menu[t.actor]:set_visible(true)
-  t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", out_x, out_y), ffi.new("value2", act_x, act_y), config.slide_in_time, 0, flag.actor_cb())
+  t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", out_x, out_y), ffi.new("value2", act_x, act_y),
+                        config.slide_in_time, 0, t.cb)
 end
 
 actor_.slide_out = function(t)
@@ -53,17 +52,18 @@ actor_.slide_out = function(t)
   local out_x = config.out_x[t.ch]
   local out_y = config.out_y[t.ch]
   t.menu[t.actor]:set_visible(true)
-  t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", act_x, act_y), ffi.new("value2", out_x, out_y), config.slide_out_time, 0, flag.actor_cb())
+  t.menu[t.actor]:tween("Linear", "Pos2D", ffi.new("value2", act_x, act_y), ffi.new("value2", out_x, out_y),
+                        config.slide_out_time, 0, t.cb)
 end
 
 actor_.fade_in = function(t)
   t.menu[t.actor]:set_visible(true)
-  t.menu[t.actor]:tween("Linear", "Alpha", 0, 255, config.fade_in_time, 0, flag.actor_cb())
+  t.menu[t.actor]:tween("Linear", "Alpha", 0, 255, config.fade_in_time, 0, t.cb)
 end
 
 actor_.fade_out = function(t)
   t.menu[t.actor]:set_visible(true)
-  t.menu[t.actor]:tween("Linear", "Alpha", 255, 0, config.fade_out_time, 0, flag.actor_cb())
+  t.menu[t.actor]:tween("Linear", "Alpha", 255, 0, config.fade_out_time, 0, t.cb)
 end
 
 actor_.shake = function(t)
@@ -73,24 +73,24 @@ actor_.shake = function(t)
   local dis   = config.act_s_dis
   local dur   = config.act_s_time
   t.menu[t.actor]:set_visible(true)
-  shake(loop, t.menu[t.actor], act_x, act_y, dis, dur, flag.actor_cb())
+  shake(loop, t.menu[t.actor], act_x, act_y, dis, dur, t.cb)
 end
 
 ----
 
 word_.size_L = function(t)
   t.menu[t.content]:set_scale( config.word_size_L )
-  flag.word_is_ready()
+  t.cb()
 end
 
 word_.size_M = function(t)
   t.menu[t.content]:set_scale( config.word_size_M )
-  flag.word_is_ready()
+  t.cb()
 end
 
 word_.size_S = function(t)
   t.menu[t.content]:set_scale( config.word_size_S )
-  flag.word_is_ready()
+  t.cb()
 end
 
 word_.shake = function(t)
@@ -100,7 +100,7 @@ word_.shake = function(t)
   local dis   = config.word_s_dis
   local dur   = config.word_s_time
   t.menu[t.content]:set_scale( config.word_size_L )
-  shake(loop, t.menu[t.content], con_x, con_y, dis, dur, flag.word_cb())
+  shake(loop, t.menu[t.content], con_x, con_y, dis, dur, t.cb)
 end
 
 

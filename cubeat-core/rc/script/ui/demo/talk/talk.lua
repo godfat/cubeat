@@ -12,17 +12,30 @@ local select_config = require 'rc/script/ui/demo/select/config'
 
 local index_      = 1
 local first_talk_ = {false, false}
+local complete_rundown_ = 0
+local actor_flag_ = true
+local word_flag_  = true
+
+
+local function actor_is_ready()
+  actor_flag_ = true
+  if word_flag_==true then complete_rundown_ = complete_rundown_+1 end
+end
+local function word_is_ready()
+  word_flag_ = true
+  if actor_flag_==true then complete_rundown_ = complete_rundown_+1 end
+end
 
 
 local function reset()
   index_      = 1
   first_talk_ = {false, false}
-  flag.reset_count()
+  complete_rundown_ = 0
 end
 
 
 local function action(menu, rundown)
-  if index_ ~= flag.get_count()+1 then return end
+  if index_ ~= complete_rundown_+1 then return end
   
   local ch = rundown[index_].index
   local actor   = 'actor'..tostring(ch)
@@ -48,16 +61,16 @@ local function action(menu, rundown)
   local type_a = rundown[index_].actor_effect
   local type_w = rundown[index_].word_effect
   if type_a==nil and type_w==nil then
-    flag.add_count()
+    complete_rundown_=complete_rundown_+1
   else
-    flag.set_actor_flag(type_a==nil)
-    flag.set_word_flag(type_w==nil)
+    actor_flag_=(type_a==nil)
+    word_flag_ =(type_w==nil)
   end  
   if type_a then
-    effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
+    effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel, cb=actor_is_ready}
   end
   if type_w then
-    effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
+    effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel, cb=word_is_ready}
   end
   
   index_=index_+1

@@ -251,9 +251,12 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
 <% end %>
     // start chainging
 	for(int x=in_x, y=in_y;
-        cubes_[x][y].use_count() != 0 && //if it's alive
+	    x < ms()->width() && y < ms()->height()-1 &&
+        //cubes_[x][y].use_count() != 0 && //if it's alive
+        cubes_[x][y] &&
         cubes_[x][y]->is_waiting() &&    //if it's at waiting state
-		cubes_[x][y]->chain().use_count() == 0 //and if it has a chain property
+		//cubes_[x][y]->chain().use_count() == 0 //and if it has a chain property
+		!cubes_[x][y]->chain()
 		; ++y)
     {
         cubes_[x][y]->chain(chain);

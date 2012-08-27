@@ -127,8 +127,10 @@ bool SimpleMap::is_all_fallen() const {
 void SimpleMap::attach_chain_bottom_up_from(int in_x, int in_y, pChain chain)
 {
 	for(int x=in_x, y=in_y;
-        simp_cubes_[x][y].use_count() != 0 && //if it's alive
-		simp_cubes_[x][y]->chain().use_count() == 0 //and if it has no chain property
+        //simp_cubes_[x][y].use_count() != 0 && //if it's alive
+        simp_cubes_[x][y] &&
+		//simp_cubes_[x][y]->chain().use_count() == 0 //and if it has no chain property
+		simp_cubes_[x][y]->chain()
 		; ++y)
     {
         simp_cubes_[x][y]->chain(chain);

@@ -610,7 +610,6 @@ bool Demo::ai_logging(pMap lose_map)
     log.V(record_name).M(index)["player0"] = win_times_0;
     log.V(record_name).M(index)["player1"] = win_times_1;
 
-    std::cout << log.serialize() << std::endl;
     Conf::i().save_config(log, "tmp/ai_log");
 
     if( ai_logging_times_ > 0 ) {

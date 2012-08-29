@@ -97,9 +97,8 @@ word_.size_S = function(object, cb)
 end
 
 word_.shake = function(object, cb)
-  local ch    = object.ch
-  local con_x = config.con_x[ch]
-  local con_y = config.con_y[ch]
+  local con_x = object.panel:get_pos_x()+config.con_offset_x
+  local con_y = object.panel:get_pos_y()+config.con_offset_y
   local loop  = config.word_s_loop
   local dis   = config.word_s_dis
   local dur   = config.word_s_time

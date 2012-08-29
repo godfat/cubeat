@@ -37,6 +37,12 @@ local act1_act1_ = {
   { index=2, text="1~\n2~\n3!" },
   
   { index=1, text="ok" },
+  { index=1, text="Let's test\nset position" },
+  { index=2, text="300, 0", pos={x=300, y=0} },
+  { index=2, text="700, 300", pos={x=700, y=300} },
+  { index=2, text="450, 400", pos={x=450, y=400} },
+  
+  { index=1, text="ok" },
   { index=1, text="Let's test\nvisible" },
   { index=2, text="Ha", actor_effect="hide" },
   { index=2, text="Ha", actor_effect="show" },

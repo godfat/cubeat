@@ -56,6 +56,11 @@ local function action(menu, rundown)
   if rundown[index_].text then
     menu[content]:change_text(rundown[index_].text)
   end
+  --text pos
+  if rundown[index_].pos then
+    menu[panel]:set_pos(rundown[index_].pos.x, rundown[index_].pos.y)
+    menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x, menu[panel]:get_pos_y()+config.con_offset_y)
+  end
   --run effect
   local type_a = rundown[index_].actor_effect
   local type_w = rundown[index_].word_effect
@@ -109,9 +114,9 @@ local function init(demo, parent)
     menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
     menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
-                                  size=32, visible=false }
+                                  depth=config.con_d, size=32, visible=false }
     menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
-                                  w=config.conBG_w, h=config.conBG_h, visible=false }
+                                  w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
     if ch==2 then menu[actor]:texture_flipH() end
   end
   

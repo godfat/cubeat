@@ -12,7 +12,7 @@ local act_w_  = 425
 local act_h_  = 742
 local act_x_  = {0, bg_w_-act_w_}
 local act_y_  = {0, 0}
-local act_d_  = -50
+local act_d_  = -20
 local out_x_  = {-act_w_, bg_w_}
 local out_y_  = {0, 0}
 
@@ -20,9 +20,13 @@ local conBG_w_  = 300
 local conBG_h_  = 150
 local conBG_x_  = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
 local conBG_y_  = {150, 400}
+local conBG_d_  = -50
 
-local con_x_  = {conBG_x_[1]+30, conBG_x_[2]+30}
-local con_y_  = {conBG_y_[1]+20, conBG_y_[2]+20}
+local con_offset_x_ =30
+local con_offset_y_ =20
+local con_x_        = {conBG_x_[1]+con_offset_x_, conBG_x_[2]+con_offset_x_}
+local con_y_        = {conBG_y_[1]+con_offset_y_, conBG_y_[2]+con_offset_y_}
+local con_d_        = -50
 
 local block_x_  = 0
 local block_y_  = 0
@@ -68,9 +72,13 @@ return {
   conBG_h   = conBG_h_,
   conBG_x   = conBG_x_,
   conBG_y   = conBG_y_,
+  conBG_d   = conBG_d_,
   ----
-  con_x     = con_x_,
-  con_y     = con_y_,
+  con_offset_x  = con_offset_x_,
+  con_offset_y  = con_offset_y_,
+  con_x         = con_x_,
+  con_y         = con_y_,
+  con_d         = con_d_,
   ----
   block_x   = block_x_,
   block_y   = block_y_,

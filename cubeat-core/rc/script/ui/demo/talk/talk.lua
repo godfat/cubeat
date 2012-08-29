@@ -6,7 +6,6 @@ local config  = require 'rc/script/ui/demo/talk/config'
 local script  = require 'rc/script/ui/demo/talk/script'
 local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
-local flag    = require 'rc/script/ui/demo/talk/flag'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
@@ -67,10 +66,10 @@ local function action(menu, rundown)
     word_flag_ =(type_w==nil)
   end  
   if type_a then
-    effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel, cb=actor_is_ready}
+    effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_is_ready)
   end
   if type_w then
-    effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel, cb=word_is_ready}
+    effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_is_ready)
   end
   
   index_=index_+1

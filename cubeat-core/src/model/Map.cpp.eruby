@@ -352,7 +352,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
-                850); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
+                500); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
             i = chains_.erase(i);
         }
         else{

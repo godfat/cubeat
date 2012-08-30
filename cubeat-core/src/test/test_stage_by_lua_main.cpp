@@ -9,9 +9,6 @@
 //ok, is this really cross-platform?
 #include <sys/stat.h>
 
-//for test only
-#include "private/MastEventReceiver.hpp"
-
 #include <sstream>
 
 using namespace psc;
@@ -28,15 +25,11 @@ public:
         last_fs_time_ = fs.st_mtime;
         script::Lua::run_script(L_, Conf::i().script_path("test_stage.lua").c_str());
         script::Lua::call(L_, "init", static_cast<void*>(&scene_));
-        MastEventReceiver::i().init();
     }
 
     void cycle() {
         scene_->redraw();
 
-        // input special case:
-        //MastEventReceiver::i().endEventProcess();
-        //if( MastEventReceiver::i().keyReleased( irr::KEY_KEY_R ) ) {
         stat(Conf::i().script_path("test_stage.lua").c_str(), &fs);
         if( fs.st_mtime > last_fs_time_ ) {
             printf("C: reloading Lua stage...\n");
@@ -45,7 +38,6 @@ public:
             script::Lua::call(L_, "init", static_cast<void*>(&scene_));
             last_fs_time_ = fs.st_mtime;
         }
-        //MastEventReceiver::i().startEventProcess();
     }
 
 private:

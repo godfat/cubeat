@@ -17,6 +17,7 @@
 #include "IrrDevice.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
+#include "private/MastEventReceiver.hpp"
 
 #include <iostream>
 #include <boost/tr1/functional.hpp>
@@ -164,6 +165,8 @@ int App::run(std::tr1::function<void()> tester)
         //        global_timer_.lock()->start();             //comment: temp for double tasking
             //if( update_block() ) continue;
 
+            MastEventReceiver::i().endEventProcess();
+
             t1 = clock();
             InputMgr::i().updateAll();
             t2 = clock();
@@ -191,6 +194,8 @@ int App::run(std::tr1::function<void()> tester)
                 std::cout << "frame time spike: " << elapsed_time << "\n";
                 printf(" -- App: event(%ld) maspre(%ld) %ld %ld %ld %ld %ld %ld %ld %ld\n", t3-t2, t5-t4, t1-t0, t2-t1, t4-t3, t6-t5, t7-t6, t8-t7, t9-t8, t10-t9);
             }
+
+            MastEventReceiver::i().startEventProcess();
 
             t0 = clock();
             profile_time_start = clock();

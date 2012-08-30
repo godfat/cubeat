@@ -51,6 +51,8 @@ void tween_call(pSprite* self, const char* Eq, const char* Accessor, double s, d
             (*self)->tween<ISine, Alpha>(s, e, duration, loop, call, delay);
         else if(strcmp("OSine", Eq)==0)
             (*self)->tween<OSine, Alpha>(s, e, duration, loop, call, delay);
+        else if(strcmp("SineCirc", Eq)==0)
+            (*self)->tween<SineCirc, Alpha>(s, e, duration, loop, call, delay);
     }
     return;
 }

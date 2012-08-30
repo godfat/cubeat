@@ -190,7 +190,7 @@ void InputMgr::updateAll()
     if( poll_manymouse_event_ )
         poll_manymouse_event_();
 
-    MastEventReceiver::i().endEventProcess();
+    //MastEventReceiver::i().endEventProcess();
 
     //toggle keyboard_mouse_input_ on/off
     if( window_focus_now_ ) {
@@ -214,7 +214,7 @@ void InputMgr::updateAll()
     BOOST_FOREACH( Input* it, inputs_ )
         it->update();
 
-    MastEventReceiver::i().startEventProcess();
+    //MastEventReceiver::i().startEventProcess();
 }
 
 void InputMgr::toggleInput(bool const& flag)

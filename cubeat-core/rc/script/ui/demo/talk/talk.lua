@@ -59,7 +59,8 @@ local function action(menu, rundown)
   --text pos
   if rundown[index_].pos then
     menu[panel]:set_pos(rundown[index_].pos.x, rundown[index_].pos.y)
-    menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x, menu[panel]:get_pos_y()+config.con_offset_y)
+    menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x,
+                          menu[panel]:get_pos_y()+config.con_offset_y)
   end
   --run effect
   local type_a = rundown[index_].actor_effect

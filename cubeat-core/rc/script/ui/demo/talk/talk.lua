@@ -6,23 +6,35 @@ local config  = require 'rc/script/ui/demo/talk/config'
 local script  = require 'rc/script/ui/demo/talk/script'
 local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
-local flag    = require 'rc/script/ui/demo/talk/flag'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
 local index_      = 1
 local first_talk_ = {false, false}
+local complete_rundown_ = 0
+local actor_flag_ = true
+local word_flag_  = true
+
+
+local function actor_is_ready()
+  actor_flag_ = true
+  if word_flag_==true then complete_rundown_ = complete_rundown_+1 end
+end
+local function word_is_ready()
+  word_flag_ = true
+  if actor_flag_==true then complete_rundown_ = complete_rundown_+1 end
+end
 
 
 local function reset()
   index_      = 1
   first_talk_ = {false, false}
-  flag.reset_count()
+  complete_rundown_ = 0
 end
 
 
 local function action(menu, rundown)
-  if index_ ~= flag.get_count()+1 then return end
+  if index_ ~= complete_rundown_+1 then return end
   
   local ch = rundown[index_].index
   local actor   = 'actor'..tostring(ch)
@@ -44,20 +56,26 @@ local function action(menu, rundown)
   if rundown[index_].text then
     menu[content]:change_text(rundown[index_].text)
   end
+  --text pos
+  if rundown[index_].pos then
+    menu[panel]:set_pos(rundown[index_].pos.x, rundown[index_].pos.y)
+    menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x,
+                          menu[panel]:get_pos_y()+config.con_offset_y)
+  end
   --run effect
   local type_a = rundown[index_].actor_effect
   local type_w = rundown[index_].word_effect
   if type_a==nil and type_w==nil then
-    flag.add_count()
+    complete_rundown_=complete_rundown_+1
   else
-    flag.set_actor_flag(type_a==nil)
-    flag.set_word_flag(type_w==nil)
+    actor_flag_=(type_a==nil)
+    word_flag_ =(type_w==nil)
   end  
   if type_a then
-    effect.actor[type_a]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
+    effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_is_ready)
   end
   if type_w then
-    effect.word[type_w]{menu=menu, ch=ch, actor=actor, content=content, panel=panel}
+    effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_is_ready)
   end
   
   index_=index_+1
@@ -97,9 +115,9 @@ local function init(demo, parent)
     menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
     menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
-                                  size=32, visible=false }
+                                  depth=config.con_d, size=32, visible=false }
     menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
-                                  w=config.conBG_w, h=config.conBG_h, visible=false }
+                                  w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
     if ch==2 then menu[actor]:texture_flipH() end
   end
   

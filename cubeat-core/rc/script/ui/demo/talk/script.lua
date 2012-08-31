@@ -28,13 +28,19 @@ shake
 
 
 --
-local act1_act1 = {
+local act1_act1_ = {
   { index=1, img="char1_new/glad", text="Hello" },
   { index=1, text="This is a\ntest page" },
   { index=1, text="Let's test\ntalking" },
   { index=2, img="char1_new/glad", text="1~" },
   { index=2, text="1~\n2~" },
   { index=2, text="1~\n2~\n3!" },
+  
+  { index=1, text="ok" },
+  { index=1, text="Let's test\nset position" },
+  { index=2, text="300, 0", pos={x=300, y=0} },
+  { index=2, text="700, 300", pos={x=700, y=300} },
+  { index=2, text="450, 400", pos={x=450, y=400} },
   
   { index=1, text="ok" },
   { index=1, text="Let's test\nvisible" },
@@ -72,7 +78,7 @@ local act1_act1 = {
   { index=1, text="" }
 }
 
-local act2_act1 = {
+local act2_act1_ = {
   { index=1, text="Test talk 2-1" },
   { index=2, text="HAHAHA", actor_effect="hide", word_effect="shake" },
   { index=1, text="!?" },
@@ -85,16 +91,16 @@ local act2_act1 = {
 }
 
 
-local rundown = {
-  r1_1 = act1_act1,
-  r2_1 = act2_act1,
+local rundown_ = {
+  r1_1 = act1_act1_,
+  r2_1 = act2_act1_,
 }
 
 
 local function get_rundown(ch1, ch2)
   local k = 'r'..tostring(ch1)..'_'..tostring(ch2)
   
-  return rundown[k]
+  return rundown_[k]
 end
 
 

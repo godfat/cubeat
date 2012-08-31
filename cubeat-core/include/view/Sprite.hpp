@@ -31,16 +31,16 @@ public:
     typedef std::tr1::shared_ptr< Sprite > pointer_type;
     static pointer_type create(std::string const& name,
                                pObject const& parent,
-                               int const& w = 100,
-                               int const& h = 100,
+                               int const& w = -1,
+                               int const& h = -1,
                                bool const& center = false)
     {
         return utils::ObjectPool< Sprite >::create(name, center)->init(parent, w, h);
     }
 
     static pointer_type create(pObject const& parent,
-                               int const& w = 100,
-                               int const& h = 100,
+                               int const& w = -1,
+                               int const& h = -1,
                                bool const& center = false)
     {
         return utils::ObjectPool< Sprite >::create("unnamed", center)->init(parent, w, h);

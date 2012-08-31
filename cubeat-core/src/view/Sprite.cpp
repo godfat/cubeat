@@ -73,11 +73,16 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     video::IVideoDriver* driver = smgr_->getVideoDriver();
 
-    size_.Width  = w;
-    size_.Height = h;
+    ITexture* tex = driver->getTexture(oss.str().c_str());
+    if( w < 0 || h < 0 ) { //2012: added default case for ease.
+        size_ = tex->getOriginalSize();
+    } else {
+        size_.Width  = w;
+        size_.Height = h;
+    }
 
     SMaterial mat = create_std_material_for_sprite();
-    mat.setTexture(0, driver->getTexture(oss.str().c_str()));
+    mat.setTexture(0, tex);
 
     setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
     body_->grab(); //added so its d'tor order is consistent with view::Object.

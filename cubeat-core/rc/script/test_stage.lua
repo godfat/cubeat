@@ -16,52 +16,82 @@ local layer7_
 local layer8_
 local layer9_
 
+local alpha_step1, alpha_step2
+
+alpha_step1 = function(sp, t, cb)
+  return function() 
+    sp:tween("Linear", "Alpha", 0, 255, t, 0, cb)
+  end
+end
+
+alpha_step2 = function(sp, t, cb, t2)
+  return function() 
+    sp:tween("Linear", "Alpha", 255, 0, t, 0, cb, t2)
+  end
+end
+
+local function three_stage_alpha_tween(sp, total_time, fade_time)
+  local f1, f2
+  f1 = alpha_step1(sp, fade_time, function() f2() end)
+  f2 = alpha_step2(sp, fade_time, function() f1() end, total_time - fade_time * 2)
+  f1()
+  
+  -- how do you finalize FFI callback? a similar mechanism like the button event callbacks are needed
+  
+end
+
 function init(scene)
   scene_ = ffi.cast("pScene*", scene)
   -- layer0_ = view.new_sprite("bg1/99complete", scene_)
   -- layer0_:set_depth(0)
   
   layer1_ = view.new_sprite("bg1/01sky", scene_)       
-  layer1_:set_depth(-10)
+  layer1_:set_depth(-100)
   layer1_:set_pos( 1280 - layer1_:get_size_x(), 0 )
   
   layer2_ = view.new_sprite("bg1/02cloud1", scene_)
-  layer2_:set_depth(-20)
+  layer2_:set_depth(-200)
   layer2_:tween("Linear", "Pos2D", ffi.new("v2", 910, 245), ffi.new("v2", 1020, 245), 20000, -1)
   layer2_:tween("SineCirc", "Alpha", 0, 255, 20000, -1)
   
   layer22_ = view.new_sprite("bg1/02cloud1", scene_)
-  layer22_:set_depth(-20)
+  layer22_:set_depth(-300)
   layer22_:set_alpha(0)
   layer22_:tween("Linear", "Pos2D", ffi.new("v2", 870, 245), ffi.new("v2", 980, 245), 20000, -1, nil, 15000)
   layer22_:tween("SineCirc", "Alpha", 0, 255, 20000, -1, nil, 15000)
   
   layer3_ = view.new_sprite("bg1/03cloud2", scene_)
-  layer3_:set_depth(-30)
+  layer3_:set_depth(-300)
   layer3_:set_pos(425, 300)
+  layer3_:tween("Linear", "Pos2D", ffi.new("v2", 400, 300), ffi.new("v2", 520, 300), 15000, -1)
+  layer3_:tween("SineCirc", "Alpha", 64, 255, 15000, -1)
   
   layer4_ = view.new_sprite("bg1/04cloud3", scene_)
-  layer4_:set_depth(-40)
-  layer4_:set_pos( 1280 - layer4_:get_size_x(), 0 )
+  layer4_:set_depth(-400)
+  local layer4_x = 1280 - layer4_:get_size_x()
+  layer4_:set_pos( layer4_x, 0 )
+  layer4_:tween("Linear", "Pos2D", ffi.new("v2", layer4_x, 0), ffi.new("v2", layer4_x+30, 0), 30000, -1)
   
   layer5_ = view.new_sprite("bg1/05cloud4", scene_)
-  layer5_:set_depth(-50)
+  layer5_:set_depth(-500)
   layer5_:set_pos(325, 0)
+  layer5_:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 30000, -1)
+  three_stage_alpha_tween(layer5_, 30000, 4000)
   
   layer6_ = view.new_sprite("bg1/06cube", scene_)
-  layer6_:set_depth(-60)
+  layer6_:set_depth(-600)
   layer6_:set_pos(500, 107)
   
   layer7_ = view.new_sprite("bg1/07flyingwhale", scene_)
-  layer7_:set_depth(-70)
+  layer7_:set_depth(-700)
   layer7_:set_pos(1078, 199)
   layer7_:tween("SineCirc", "Pos2D", ffi.new("v2", 1070, 199), ffi.new("v2", 1090, 199), 7000, -1)
   
   layer8_ = view.new_sprite("bg1/09building", scene_)
-  layer8_:set_depth(-80)
+  layer8_:set_depth(-800)
   
   layer9_ = view.new_sprite("bg1/08whaleface", scene_)
-  layer9_:set_depth(-90)
+  layer9_:set_depth(-900)
   layer9_:set_pos(180, 0)
 end
 

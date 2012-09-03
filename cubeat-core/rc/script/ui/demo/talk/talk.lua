@@ -12,17 +12,17 @@ local select_config = require 'rc/script/ui/demo/select/config'
 local step_      = 1
 local first_talk_ = {false, false}
 local complete_rundown_ = 0
-local actor_flag_ = true
-local word_flag_  = true
+local actor_effect_end_flag_ = true
+local word_effect_end_flag_  = true
 
 
 local function actor_effect_cb()
-  actor_flag_ = true
-  if word_flag_==true then complete_rundown_ = complete_rundown_+1 end
+  actor_effect_end_flag_ = true
+  if word_effect_end_flag_==true then complete_rundown_ = complete_rundown_+1 end
 end
 local function word_effect_cb()
-  word_flag_ = true
-  if actor_flag_==true then complete_rundown_ = complete_rundown_+1 end
+  word_effect_end_flag_ = true
+  if actor_effect_end_flag_==true then complete_rundown_ = complete_rundown_+1 end
 end
 
 
@@ -68,8 +68,8 @@ local function action(menu, rundown)
   if type_a==nil and type_w==nil then
     complete_rundown_=complete_rundown_+1
   else
-    actor_flag_=(type_a==nil)
-    word_flag_ =(type_w==nil)
+    actor_effect_end_flag_=(type_a==nil)
+    word_effect_end_flag_ =(type_w==nil)
   end  
   if type_a then
     effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)

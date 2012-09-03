@@ -109,13 +109,15 @@ end
 
 
 --
-local function actor_effect(effect, actor, content, panel, ch, cb)
+local function actor_effect(effect_a, actor, content, panel, ch, cb)
+  if effect_a==nil then return end
   local object = {actor=actor, content=content, panel=panel, ch=ch}
-  actor_[effect](object, cb)
+  actor_[effect_a](object, cb)
 end
-local function word_effect(effect, actor, content, panel, ch, cb)
+local function word_effect(effect_w, actor, content, panel, ch, cb)
+  if effect_w==nil then return end
   local object = {actor=actor, content=content, panel=panel, ch=ch}
-  word_[effect](object, cb)
+  word_[effect_w](object, cb)
 end
 
 

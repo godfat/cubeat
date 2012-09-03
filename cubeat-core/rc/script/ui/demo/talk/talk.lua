@@ -16,13 +16,24 @@ local actor_effect_end_flag_ = true
 local word_effect_end_flag_  = true
 
 
+local function add_complete_rundown()
+  complete_rundown_ = complete_rundown_+1
+end
 local function actor_effect_cb()
   actor_effect_end_flag_ = true
-  if word_effect_end_flag_==true then complete_rundown_ = complete_rundown_+1 end
+  if word_effect_end_flag_==true then add_complete_rundown() end
 end
 local function word_effect_cb()
   word_effect_end_flag_ = true
-  if actor_effect_end_flag_==true then complete_rundown_ = complete_rundown_+1 end
+  if actor_effect_end_flag_==true then add_complete_rundown() end
+end
+local function check_effect_status(effect_a, effect_w)
+  if effect_a==nil and effect_w==nil then
+    add_complete_rundown()
+  else
+    actor_effect_end_flag_ = (effect_a==nil)
+    word_effect_end_flag_  = (effect_w==nil)
+  end
 end
 
 
@@ -63,20 +74,11 @@ local function action(menu, rundown)
                           menu[panel]:get_pos_y()+config.con_offset_y)
   end
   --run effect
-  local type_a = rundown[step_].actor_effect
-  local type_w = rundown[step_].word_effect
-  if type_a==nil and type_w==nil then
-    complete_rundown_=complete_rundown_+1
-  else
-    actor_effect_end_flag_=(type_a==nil)
-    word_effect_end_flag_ =(type_w==nil)
-  end  
-  if type_a then
-    effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
-  end
-  if type_w then
-    effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
-  end
+  local effect_a = rundown[step_].effect_a
+  local effect_w = rundown[step_].effect_w
+  check_effect_status(effect_a, effect_w)
+  effect.actor_effect(effect_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
+  effect.word_effect (effect_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
   
   step_=step_+1
   if step_>table.getn(rundown) then

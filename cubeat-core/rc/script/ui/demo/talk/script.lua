@@ -9,7 +9,7 @@ local view = require 'rc/script/ui/view'
 1 = left actor
 2 = right actor
 
-[actor_effect]
+[effect_a]
 show
 hide
 slide_in
@@ -18,7 +18,7 @@ fade_in
 fade_out
 shake
 
-[word_effect]
+[effect_w]
 size_L
 size_M
 size_S
@@ -44,33 +44,33 @@ local act1_act1_ = {
   
   { index=1, text="ok" },
   { index=1, text="Let's test\nvisible" },
-  { index=2, text="Ha", actor_effect="hide" },
-  { index=2, text="Ha", actor_effect="show" },
+  { index=2, text="Ha", effect_a="hide" },
+  { index=2, text="Ha", effect_a="show" },
   
   { index=1, text="ok" },
   { index=1, text="Let's test\nslide" },
-  { index=2, text="yahoo~~~~", actor_effect="slide_out" },
-  { index=2, text="yahoo~~~~", actor_effect="slide_in" },
+  { index=2, text="yahoo~~~~", effect_a="slide_out" },
+  { index=2, text="yahoo~~~~", effect_a="slide_in" },
     
   { index=1, text="ok" },
   { index=1, text="Let's test\nword size"},
-  { index=2, text="HAHAHA", word_effect="size_L" },
-  { index=2, text="HAHAHA", word_effect="size_S" },
-  { index=2, text="HAHAHA", word_effect="size_M" },
+  { index=2, text="HAHAHA", effect_w="size_L" },
+  { index=2, text="HAHAHA", effect_w="size_S" },
+  { index=2, text="HAHAHA", effect_w="size_M" },
     
   { index=1, text="ok" },
   { index=1, text="Let's test\nshake actor" },
-  { index=2, text="Unnnnn", actor_effect="shake" },
+  { index=2, text="Unnnnn", effect_a="shake" },
   
   { index=1, text="ok" },
   { index=1, text="Let's test\nshake word" },
-  { index=2, text="Noooo!!", word_effect="shake" },
-  { index=2, text="Remember\nturn back to\nmiddle size", word_effect="size_M" },
+  { index=2, text="Noooo!!", effect_w="shake" },
+  { index=2, text="Remember\nturn back to\nmiddle size", effect_w="size_M" },
     
   { index=1, text="ok" },
   { index=1, text="Let's test\nfade" },
-  { index=2, text="bye~~~", actor_effect="fade_out" },
-  { index=2, text="hi~~~", actor_effect="fade_in" },
+  { index=2, text="bye~~~", effect_a="fade_out" },
+  { index=2, text="hi~~~", effect_a="fade_in" },
   
   { index=1, text="ok" },
   { index=1, text="test end" },
@@ -80,10 +80,10 @@ local act1_act1_ = {
 
 local act2_act1_ = {
   { index=1, text="Test talk 2-1" },
-  { index=2, text="HAHAHA", actor_effect="hide", word_effect="shake" },
+  { index=2, text="HAHAHA", effect_a="hide", effect_w="shake" },
   { index=1, text="!?" },
-  { index=2, text="Show time!!", actor_effect="slide_in", word_effect="size_M" },
-  { index=2, text="Rock!!", actor_effect="shake" },
+  { index=2, text="Show time!!", effect_a="slide_in", effect_w="size_M" },
+  { index=2, text="Rock!!", effect_a="shake" },
   { index=2, text="ok" },
   { index=2, text="test end" },
   

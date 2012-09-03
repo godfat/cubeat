@@ -9,7 +9,7 @@ local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
-local index_      = 1
+local step_      = 1
 local first_talk_ = {false, false}
 local complete_rundown_ = 0
 local actor_flag_ = true
@@ -27,16 +27,16 @@ end
 
 
 local function reset()
-  index_      = 1
+  step_      = 1
   first_talk_ = {false, false}
   complete_rundown_ = 0
 end
 
 
 local function action(menu, rundown)
-  if index_ ~= complete_rundown_+1 then return end
+  if step_ ~= complete_rundown_+1 then return end
   
-  local ch = rundown[index_].index
+  local ch = rundown[step_].index
   local actor   = 'actor'..tostring(ch)
   local content = 'content'..tostring(ch)
   local panel   = 'panel'..tostring(ch)
@@ -49,22 +49,22 @@ local function action(menu, rundown)
   end
   
   --actor image
-  if rundown[index_].img then
-    menu[actor]:set_texture(rundown[index_].img)
+  if rundown[step_].img then
+    menu[actor]:set_texture(rundown[step_].img)
   end
   --text
-  if rundown[index_].text then
-    menu[content]:change_text(rundown[index_].text)
+  if rundown[step_].text then
+    menu[content]:change_text(rundown[step_].text)
   end
   --text pos
-  if rundown[index_].pos then
-    menu[panel]:set_pos(rundown[index_].pos.x, rundown[index_].pos.y)
+  if rundown[step_].pos then
+    menu[panel]:set_pos(rundown[step_].pos.x, rundown[step_].pos.y)
     menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x,
                           menu[panel]:get_pos_y()+config.con_offset_y)
   end
   --run effect
-  local type_a = rundown[index_].actor_effect
-  local type_w = rundown[index_].word_effect
+  local type_a = rundown[step_].actor_effect
+  local type_w = rundown[step_].word_effect
   if type_a==nil and type_w==nil then
     complete_rundown_=complete_rundown_+1
   else
@@ -78,8 +78,8 @@ local function action(menu, rundown)
     effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_is_ready)
   end
   
-  index_=index_+1
-  if index_>table.getn(rundown) then
+  step_=step_+1
+  if step_>table.getn(rundown) then
     reset()
     switch.load_page('testmenu', 'in')
   end

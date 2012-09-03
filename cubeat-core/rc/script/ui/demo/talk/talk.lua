@@ -47,7 +47,7 @@ end
 local function action(menu, rundown)
   if step_ ~= complete_rundown_+1 then return end
   
-  local ch = rundown[step_].index
+  local ch = rundown[step_].ch
   local actor   = 'actor'..tostring(ch)
   local content = 'content'..tostring(ch)
   local panel   = 'panel'..tostring(ch)

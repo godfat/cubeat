@@ -16,11 +16,11 @@ local actor_flag_ = true
 local word_flag_  = true
 
 
-local function actor_is_ready()
+local function actor_effect_cb()
   actor_flag_ = true
   if word_flag_==true then complete_rundown_ = complete_rundown_+1 end
 end
-local function word_is_ready()
+local function word_effect_cb()
   word_flag_ = true
   if actor_flag_==true then complete_rundown_ = complete_rundown_+1 end
 end
@@ -72,10 +72,10 @@ local function action(menu, rundown)
     word_flag_ =(type_w==nil)
   end  
   if type_a then
-    effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_is_ready)
+    effect.actor_effect(type_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
   end
   if type_w then
-    effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_is_ready)
+    effect.word_effect(type_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
   end
   
   step_=step_+1

@@ -10,7 +10,7 @@ local select_config = require 'rc/script/ui/demo/select/config'
 
 
 local step_      = 1
-local first_talk_ = {false, false}
+local actor_appear_ = {false, false}
 local complete_rundown_ = 0
 local actor_effect_end_flag_ = true
 local word_effect_end_flag_  = true
@@ -39,7 +39,7 @@ end
 
 local function reset()
   step_      = 1
-  first_talk_ = {false, false}
+  actor_appear_ = {false, false}
   complete_rundown_ = 0
 end
 
@@ -52,11 +52,11 @@ local function action(menu, rundown)
   local content = 'content'..tostring(ch)
   local panel   = 'panel'..tostring(ch)
   
-  if first_talk_[ch]==false then
+  if actor_appear_[ch]==false then
     menu[actor]:set_visible(true)
     menu[content]:set_visible(true)
     menu[panel]:set_visible(true)
-    first_talk_[ch]=true
+    actor_appear_[ch]=true
   end
   
   --actor image

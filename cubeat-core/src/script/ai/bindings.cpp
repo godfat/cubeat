@@ -4,8 +4,6 @@
 #include "model/AICommand.hpp"
 #include "ctrl/AIPlayer.hpp"
 #include "utils/Logger.hpp"
-#include "EventDispatcher.hpp"
-#include "ctrl/TimerDispatcher.hpp"
 
 #include <cstdio>
 
@@ -17,10 +15,6 @@ using utils::Logger;
 
 extern "C" {
 #include "script/ai/bindings.h"
-}
-
-int psc_get_game_time() {
-    return ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 }
 
 void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!

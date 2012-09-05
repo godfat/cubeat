@@ -1,19 +1,7 @@
 #ifndef _SHOOTING_CUBES_SCRIPT_UI_BINDINGS_H_
 #define _SHOOTING_CUBES_SCRIPT_UI_BINDINGS_H_
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
-#define APIEXPORT __declspec(dllexport)
-#else
-#define APIEXPORT
-#endif
-
-typedef struct { double x, y; } v2;
-typedef struct { double x, y, z; } v3;
-
-typedef void (*PSC_OBJCALLBACK)(pSprite*);
-typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
-void delegate_for_cb_from_lua(pSprite, PSC_OBJCALLBACK);
-void delegate_for_cb_from_lua_with_parameter(pSprite, PSC_OBJCALLBACK_WITH_PARA, int, int);
+#include "script/basics.h"
 
 APIEXPORT int       Get_SCREEN_W();
 APIEXPORT int       Get_SCREEN_H();

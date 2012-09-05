@@ -1,6 +1,8 @@
 #ifndef _SHOOTING_CUBES_SCRIPT_AI_BINDINGS_
 #define _SHOOTING_CUBES_SCRIPT_AI_BINDINGS_
 
+#include "script/basics.h"
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #define APIEXPORT __declspec(dllexport)
 #else
@@ -13,9 +15,6 @@ typedef struct {
     int delay;
     unsigned int type; //enum
 } LuaAICommand;
-
-// Another binding file would be better?
-APIEXPORT int psc_get_game_time();
 
 APIEXPORT void        AIPlayer_push_command(AIPlayer*, LuaAICommand*); //not shared_ptr!
 APIEXPORT pSimpleMap* AIPlayer_get_ally_map(AIPlayer*, unsigned int);  //not shared_ptr!

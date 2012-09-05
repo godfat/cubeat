@@ -11,29 +11,31 @@ local layer22_
 local layer3_
 local layer4_
 local layer5_
+local layer55_
 local layer6_
 local layer7_
 local layer8_
 local layer9_
 
-local alpha_step1, alpha_step2
+local fade_in, fade_out
 
-alpha_step1 = function(sp, t, cb)
+fade_in = function(sp, t, cb, dt)
   return function() 
-    sp:tween("Linear", "Alpha", 0, 255, t, 0, cb)
+    sp:tween("Linear", "Alpha", 0, 255, t, 0, cb, dt)
   end
 end
 
-alpha_step2 = function(sp, t, cb, t2)
+fade_out = function(sp, t, cb, dt)
   return function() 
-    sp:tween("Linear", "Alpha", 255, 0, t, 0, cb, t2)
+    sp:tween("Linear", "Alpha", 255, 0, t, 0, cb, dt)
   end
 end
 
-local function three_stage_alpha_tween(sp, total_time, fade_time)
+local function three_stage_alpha_tween(sp, total_time, fade_time, delay_time)
+  delay_time = delay_time or 0
   local f1, f2
-  f1 = alpha_step1(sp, fade_time, function() f2() end)
-  f2 = alpha_step2(sp, fade_time, function() f1() end, total_time - fade_time * 2)
+  f1 = fade_in(sp, fade_time,  function() f2() end, delay_time)
+  f2 = fade_out(sp, fade_time, function() f1() end, (total_time - fade_time * 2) + delay_time)
   f1()
   
   -- how do you finalize FFI callback? a similar mechanism like the button event callbacks are needed
@@ -72,11 +74,18 @@ function init(scene)
   layer4_:set_pos( layer4_x, 0 )
   layer4_:tween("Linear", "Pos2D", ffi.new("v2", layer4_x, 0), ffi.new("v2", layer4_x+30, 0), 30000, -1)
   
-  layer5_ = view.new_sprite("bg1/05cloud4", scene_)
-  layer5_:set_depth(-500)
-  layer5_:set_pos(325, 0)
-  layer5_:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 30000, -1)
-  three_stage_alpha_tween(layer5_, 30000, 4000)
+  -- layer5_ = view.new_sprite("bg1/05cloud4", scene_)
+  -- layer5_:set_depth(-500)
+  -- layer5_:set_pos(325, 0)
+  -- layer5_:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 10000, -1)
+  -- three_stage_alpha_tween(layer5_, 10000, 2000)
+  
+  layer55_ = view.new_sprite("bg1/05cloud4", scene_)
+  layer55_:set_depth(-500)
+  layer55_:set_pos(325, 0)
+  layer55_:set_alpha(0)
+  layer55_:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 5000, -1)
+  three_stage_alpha_tween(layer55_, 5000, 1000, 0)
   
   layer6_ = view.new_sprite("bg1/06cube", scene_)
   layer6_:set_depth(-600)
@@ -102,6 +111,7 @@ function cleanup()
   layer3_ = nil
   layer4_ = nil
   layer5_ = nil
+  layer55_ = nil
   layer6_ = nil
   layer7_ = nil
   layer8_ = nil

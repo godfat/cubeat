@@ -8,7 +8,7 @@
 #endif
 typedef void (*PSC_OBJCALLBACK)(pSprite*);
 
-typedef void (*PSC_OBJCALLBACK_WITH_PARA)(pSprite*, int, int);
+typedef void (*PSC_OBJCALLBACK_INT2)(pSprite*, int, int);
 
 APIEXPORT pScene*  TestUI_get_ui_scene(TestUI*);
 
@@ -51,8 +51,8 @@ APIEXPORT void     Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLBA
 APIEXPORT void     Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_up(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void     Sprite_on_down(pSprite* self, Button const*, PSC_OBJCALLBACK);
-APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
-APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+APIEXPORT void     Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_INT2);
+APIEXPORT void     Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_INT2);
 
 APIEXPORT void     Sprite_on_tween_line_pos(pSprite* self, double, double, double, int, PSC_OBJCALLBACK, int);
 APIEXPORT void     Sprite_on_tween_line_rotation(pSprite* self, double, double, double, double, int, PSC_OBJCALLBACK, int);
@@ -92,8 +92,8 @@ APIEXPORT void          SpriteText_on_release(pSpriteText* self, Button const*, 
 APIEXPORT void          SpriteText_on_press(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_up(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void          SpriteText_on_down(pSpriteText* self, Button const*, PSC_OBJCALLBACK);
-APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
-APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+APIEXPORT void          SpriteText_on_enter_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_INT2);
+APIEXPORT void          SpriteText_on_leave_focus(pSpriteText* self, Input const*, PSC_OBJCALLBACK_INT2);
 
 APIEXPORT void          SpriteText_on_tween_line_pos(pSpriteText* self, double, double, double, int, PSC_OBJCALLBACK, int);
 APIEXPORT void          SpriteText_on_tween_line_rotation(pSpriteText* self, double, double, double, double, int, PSC_OBJCALLBACK, int);

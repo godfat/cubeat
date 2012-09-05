@@ -1,6 +1,7 @@
 
 local C = require 'ffi'.C
 require 'rc/script/ai/ai'
+local event = require 'rc/script/event/event'
 
 local ability_preconditions_ = {
   
@@ -36,7 +37,7 @@ local ability_preconditions_ = {
     local _, broken_num   = my_map:get_brokens()
     local _, garbage_num  = my_map:get_garbages()
     
-    if C.psc_get_game_time() < 60000 then return false end -- don't use it in the first minute.
+    if event.get_time_of('game') < 60000 then return false end -- don't use it in the first minute.
     if ground_cube_num > capacity * 0.9 and broken_num+garbage_num < ground_cube_num * 0.4 then return true end
     if ground_cube_num > capacity * 0.6 and broken_num+garbage_num < ground_cube_num * 0.2 then return true end
     return false

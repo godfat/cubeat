@@ -157,7 +157,7 @@ void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK cb) {
     cb(&sp);
 }
 
-void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_WITH_PARA cb, int a, int b) {
+void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_INT2 cb, int a, int b) {
     cb(&sp, a, b);
 }
 
@@ -177,11 +177,11 @@ void Sprite_on_down(pSprite* self, Button const* btn, PSC_OBJCALLBACK func) {
     (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func);
 }
 
-void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+void Sprite_on_enter_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_INT2 func) {
     (*self)->onEnterFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 
-void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+void Sprite_on_leave_focus(pSprite* self, Input const* p, PSC_OBJCALLBACK_INT2 func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 
@@ -333,11 +333,11 @@ void SpriteText_on_down(pSpriteText* self, Button const* btn, PSC_OBJCALLBACK fu
     (*self)->onDown( btn ) = bind(delegate_for_cb_from_lua, _1, func );
 }
 
-void SpriteText_on_enter_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+void SpriteText_on_enter_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_INT2 func) {
     (*self)->onEnterFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 
-void SpriteText_on_leave_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_WITH_PARA func) {
+void SpriteText_on_leave_focus(pSpriteText* self, Input const* p, PSC_OBJCALLBACK_INT2 func) {
     (*self)->onLeaveFocus( p ) = bind(delegate_for_cb_from_lua_with_parameter, _1, func, _2, _3);
 }
 

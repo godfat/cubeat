@@ -11,7 +11,7 @@
 
 // Another binding file would be better?
 APIEXPORT int      Event_get_time_of(char const*);
-APIEXPORT pHandle* Event_on_timer(char const*, PSC_OBJCALLBACK, int time, int loop);
+APIEXPORT pHandle* Event_on_timer(char const*, PSC_CALLBACK, int time, int loop);
 APIEXPORT void     Handle__gc(pHandle*);
 
 #endif //_SHOOTING_CUBES_SCRIPT_EVENT_BINDINGS_

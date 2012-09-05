@@ -1,7 +1,8 @@
 require 'rc/script/strict'
-local ffi  = require 'ffi'
-local C    = ffi.C
-local view = require 'rc/script/ui/view'
+local ffi   = require 'ffi'
+local C     = ffi.C
+local view  = require 'rc/script/ui/view'
+local event = require 'rc/script/event/event'
 
 local scene_
 local layer0_
@@ -102,6 +103,10 @@ function init(scene)
   layer9_ = view.new_sprite("bg1/08whaleface", scene_)
   layer9_:set_depth(-900)
   layer9_:set_pos(180, 0)
+  
+  local handle = event.on_timer("game", function() print 'hi' end, 800, -1)
+  layer9_:on_press(view.Input1_left, function() print 'stop timer'; handle:remove() end) 
+  
 end
 
 function cleanup()

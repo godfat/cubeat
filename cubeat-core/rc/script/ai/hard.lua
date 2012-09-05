@@ -9,6 +9,7 @@ local C        = ffi.C
 -- we don't actually assign this to anything because it only setups cdefs and metatype
 require 'rc/script/ai/ai'
 local should_use_ability = require 'rc/script/ai/ability'
+local event = require 'rc/script/event/event'
 
 local function setcmd(buf, type, delay, x, y)
   buf.x, buf.y, buf.delay, buf.type = x, y, delay, type
@@ -127,7 +128,7 @@ function ai_entry(self)
         self:push_command(cmdbuf)
       else
         local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
-        if C.psc_get_game_time() > 20000 and interrupt_cube:exist() then
+        if event.get_time_of('game') > 20000 and interrupt_cube:exist() then
           local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
           local chance = random(3)+1
           local x = dir[chance][1] + interrupt_cube:x()

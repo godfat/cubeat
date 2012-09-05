@@ -17,12 +17,12 @@ int Event_get_time_of(char const* timer_name) {
     return EventDispatcher::i().get_timer_dispatcher(timer_name)->get_time();
 }
 
-pHandle* Event_on_timer(char const* timer_name, PSC_OBJCALLBACK cb, int dur, int loop) {
+pHandle* Event_on_timer(char const* timer_name, PSC_CALLBACK cb, int dur, int loop) {
     pHandle* h = new pHandle(new int); //dummy for timer collecting
     EventDispatcher::i().get_timer_dispatcher(timer_name)->subscribe(cb, *h, dur, loop);
     return h;
 }
 
 void Handle__gc(pHandle* self) {
-    delete self;
+    (*self).reset(); // for safe delete.
 }

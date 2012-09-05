@@ -3,6 +3,15 @@
 
 #include "script/basics.h"
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#define APIEXPORT __declspec(dllexport)
+#else
+#define APIEXPORT
+#endif
+
+typedef void (*PSC_OBJCALLBACK)(pSprite*);
+typedef void (*PSC_OBJCALLBACK_INT2)(pSprite*, int, int);
+
 APIEXPORT int       Get_SCREEN_W();
 APIEXPORT int       Get_SCREEN_H();
 
@@ -30,8 +39,8 @@ APIEXPORT void      Sprite_on_release(pSprite* self, Button const*, PSC_OBJCALLB
 APIEXPORT void      Sprite_on_press(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_up(pSprite* self, Button const*, PSC_OBJCALLBACK);
 APIEXPORT void      Sprite_on_down(pSprite* self, Button const*, PSC_OBJCALLBACK);
-APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
-APIEXPORT void      Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_WITH_PARA);
+APIEXPORT void      Sprite_on_enter_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_INT2);
+APIEXPORT void      Sprite_on_leave_focus(pSprite* self, Input const*, PSC_OBJCALLBACK_INT2);
 APIEXPORT int       Sprite_get_pos_x(pSprite*);
 APIEXPORT int       Sprite_get_pos_y(pSprite*);
 APIEXPORT int       Sprite_get_size_x(pSprite*);

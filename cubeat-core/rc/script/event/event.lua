@@ -12,6 +12,8 @@ ffi.cdef( io.open( basepath().."rc/script/event/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
+-- we still have to finalize our FFI callbacks here. 
+
 local Mt_Handle = {}
 Mt_Handle.__index = Mt_Handle
 Mt_Handle.__gc    = C.Handle__gc

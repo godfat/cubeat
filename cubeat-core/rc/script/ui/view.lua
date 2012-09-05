@@ -48,6 +48,8 @@ local function tracked_cb_removal(cb_table, obj)
   end
 end
 
+-- we have to finalize our FFI callbacks for animator callbacks, too! 
+
 local __on_press__   = {} -- we use cdata address number as key, it doesn't have to be weak
 local __on_release__ = {}
 local __on_down__    = {}

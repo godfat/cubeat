@@ -20,11 +20,11 @@ extern "C"{
 typedef void (*PSC_OBJCALLBACK)(pSprite*);
 typedef void (*PSC_OBJCALLBACK_INT2)(pSprite*, int, int);
 
-void delegate_for_cb_from_lua(pSprite sp, PSC_OBJCALLBACK func) {
+static void delegate_for_cb_from_lua(pSprite& sp, PSC_OBJCALLBACK func) {
     func(&sp);
 }
 
-void delegate_for_cb_from_lua_with_parameter(pSprite sp, PSC_OBJCALLBACK_INT2 func, int a, int b) {
+static void delegate_for_cb_from_lua_with_parameter(pSprite& sp, PSC_OBJCALLBACK_INT2 func, int a, int b) {
     func(&sp, a, b);
 }
 
@@ -91,7 +91,8 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
 void Sprite_tween(pSprite* self, const char* Eq, const char* Accessor, void* s, void* e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> call = 0;
     if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
+        using std::tr1::ref;
+        call = bind(delegate_for_cb_from_lua, ref(*self), cb);
     }
     tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
 }
@@ -99,7 +100,8 @@ void Sprite_tween(pSprite* self, const char* Eq, const char* Accessor, void* s, 
 void Sprite_tween_1d(pSprite* self, const char* Eq, const char* Accessor, double s, double e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> call = 0;
     if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
+        using std::tr1::ref;
+        call = bind(delegate_for_cb_from_lua, ref(*self), cb);
     }
     tween_call(self, Eq, Accessor, s, e, duration, loop, call, delay);
 }

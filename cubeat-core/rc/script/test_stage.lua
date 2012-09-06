@@ -17,9 +17,9 @@ local layer8_
 local layer9_
 
 local function three_stage_alpha_tween(sp, total_time, fade_time)
-  local delayed_fade = function()
+  local delayed_fade = function(self)
     local delay = total_time - fade_time*2
-    sp:tween("Linear", "Alpha", 255, 0, fade_time, 0, function() sp:remove() end, delay)
+    sp:tween("Linear", "Alpha", 255, 0, fade_time, 0, function(self) self:remove() end, delay)
   end
   sp:tween("Linear", "Alpha", 0, 255, fade_time, 0, delayed_fade)
 end

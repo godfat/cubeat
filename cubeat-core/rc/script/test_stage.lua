@@ -17,9 +17,9 @@ local layer8_
 local layer9_
 
 local function three_stage_alpha_tween(sp, total_time, fade_time)
-  local delayed_fade = function(self)
+  local delayed_fade = function()
     local delay = total_time - fade_time*2
-    sp:tween("Linear", "Alpha", 255, 0, fade_time, 0, function(self) self:remove() end, delay)
+    sp:tween("Linear", "Alpha", 255, 0, fade_time, 0, function() sp:remove() end, delay)
   end
   sp:tween("Linear", "Alpha", 0, 255, fade_time, 0, delayed_fade)
 end
@@ -44,20 +44,26 @@ function init(scene)
   layer3_:tween("Linear", "Pos2D", ffi.new("v2", 400, 300), ffi.new("v2", 520, 300), 1500, -1)
   layer3_:tween("SineCirc", "Alpha", 64, 255, 1500, -1)
   
-  layer4_ = view.new_sprite("bg1/04cloud3", scene_)
-  layer4_:set_depth(-400)
-  local layer4_x = 1280 - layer4_:get_size_x()
-  layer4_:set_pos( layer4_x, 0 )
-  layer4_:tween("Linear", "Pos2D", ffi.new("v2", layer4_x, 0), ffi.new("v2", layer4_x+30, 0), 3000, -1)
-  
-  local produce_cloud4 = function()
-    layer5_ = view.new_sprite("bg1/05cloud4", scene_)
-    layer5_:set_depth(-500)
-    layer5_:set_pos(325, 0)
-    layer5_:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 1000, -1)
-    three_stage_alpha_tween(layer5_, 1000, 200)
+  local produce_cloud3 = function()
+    local local_cloud = view.new_sprite("bg1/04cloud3", scene_)
+    local_cloud:set_depth(-400)
+    local pos_x = 1280 - local_cloud:get_size_x()
+    local_cloud:set_pos( pos_x, 0 )
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", pos_x, 0), ffi.new("v2", pos_x+30, 0), 3000, -1)
+    three_stage_alpha_tween(local_cloud, 3000, 500)
   end
-  local cloud4_timer = event.on_timer("global", produce_cloud4, 1000, -1)
+  produce_cloud3()
+  local cloud3_timer = event.on_timer("global", produce_cloud3, 2500, -1)
+    
+  local produce_cloud4 = function()
+    local local_cloud = view.new_sprite("bg1/05cloud4", scene_)
+    local_cloud:set_depth(-500)
+    local_cloud:set_pos(325, 0)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 315, 0), ffi.new("v2", 345, 0), 1000, -1)
+    three_stage_alpha_tween(local_cloud, 1000, 200)
+  end
+  produce_cloud4()
+  local cloud4_timer = event.on_timer("global", produce_cloud4, 800, -1)
   
   layer6_ = view.new_sprite("bg1/06cube", scene_)
   layer6_:set_depth(-600)

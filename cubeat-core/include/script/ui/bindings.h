@@ -27,10 +27,6 @@ APIEXPORT void      Sprite_set_blue(pSprite*, int);
 APIEXPORT void      Sprite_set_alpha(pSprite*, int);
 APIEXPORT void      Sprite_set_visible(pSprite*, bool);
 APIEXPORT void      Sprite_set_center_aligned(pSprite*, bool);
-APIEXPORT void      Sprite_tween_elastic_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
-APIEXPORT void      Sprite_tween_isine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
-APIEXPORT void      Sprite_tween_osine_pos(pSprite*, v2*, v2*, unsigned int, int, PSC_OBJCALLBACK, int);
-APIEXPORT void      Sprite_tween_linear_alpha(pSprite*, int, int, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween(pSprite*, const char*, const char*, void*, void*, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_tween_1d(pSprite*, const char*, const char*, double, double, unsigned int, int, PSC_OBJCALLBACK, int);
 APIEXPORT void      Sprite_texture_flipH(pSprite*);
@@ -59,10 +55,9 @@ APIEXPORT void      SpriteText_set_blue(pSpriteText*, int);
 APIEXPORT void      SpriteText_set_alpha(pSpriteText*, int);
 APIEXPORT void      SpriteText_set_visible(pSpriteText*, bool);
 APIEXPORT void      SpriteText_set_center_aligned(pSpriteText*, bool);
-APIEXPORT void      SpriteText_tween_linear_alpha(pSpriteText* self, int, int, double, int, PSC_OBJCALLBACK, int);
 
-APIEXPORT pSprite* Sprite_create(char const*, pObject*, int, int, bool);
-APIEXPORT pSpriteText*  SpriteText_create(char const*, pObject*, char const*, int, bool, int, int, int);
+APIEXPORT pSprite*     Sprite_create(char const*, pObject*, int, int, bool);
+APIEXPORT pSpriteText* SpriteText_create(char const*, pObject*, char const*, int, bool, int, int, int);
 
 APIEXPORT Input*    Input_get_input1();
 APIEXPORT Input*    Input_get_input2();

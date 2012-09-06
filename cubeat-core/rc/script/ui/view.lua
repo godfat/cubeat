@@ -3,6 +3,7 @@ local C         = ffi.C
 local helper    = require 'rc/script/helper'
 local basepath  = helper.basepath
 local copy_cdata_mt = helper.copy_cdata_mt
+local cdata_addr= helper.cdata_addr
 
 ffi.cdef[[
 typedef struct pObject pObject;
@@ -20,23 +21,19 @@ ffi.cdef( io.open( basepath().."rc/script/ui/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
-local CallbackT            = ffi.typeof("PSC_OBJCALLBACK")
-local Callback_with_paramT = ffi.typeof("PSC_OBJCALLBACK_INT2")
+local ObjCallbackT      = ffi.typeof("PSC_OBJCALLBACK")
+local ObjCallback_Int2T = ffi.typeof("PSC_OBJCALLBACK_INT2")
 
--- which version is better?
-local cdata_addr = function (cd) return tonumber(ffi.cast('intptr_t', cd)) end
--- local cdata_addr = function (cd) return tostring(cd) end
-
-local function tracked_cb(cb_table, T, obj, btn, func)
+local function tracked_cb(cb_table, T, obj, subkey, func)
   if cb_table[ cdata_addr(obj) ] == nil then
     cb_table[ cdata_addr(obj) ] = {}
   end
-  if cb_table[ cdata_addr(obj) ][btn] == nil then
-    cb_table[ cdata_addr(obj) ][btn] = ffi.cast(T, func)
+  if cb_table[ cdata_addr(obj) ][subkey] == nil then
+    cb_table[ cdata_addr(obj) ][subkey] = ffi.cast(T, func)
   else
-    cb_table[ cdata_addr(obj) ][btn]:set(func)
+    cb_table[ cdata_addr(obj) ][subkey]:set(func)
   end
-  return cb_table[ cdata_addr(obj) ][btn]
+  return cb_table[ cdata_addr(obj) ][subkey]
 end
 
 local function tracked_cb_removal(cb_table, obj)
@@ -48,14 +45,13 @@ local function tracked_cb_removal(cb_table, obj)
   end
 end
 
--- we have to finalize our FFI callbacks for animator callbacks, too! 
-
 local __on_press__   = {} -- we use cdata address number as key, it doesn't have to be weak
 local __on_release__ = {}
 local __on_down__    = {}
 local __on_up__      = {}
 local __on_enter_focus__ = {}
 local __on_leave_focus__ = {}
+local __tween_of__ = {}
 
 local function remove_callbacks(p)
   tracked_cb_removal(__on_press__, p)
@@ -64,14 +60,15 @@ local function remove_callbacks(p)
   tracked_cb_removal(__on_up__, p)
   tracked_cb_removal(__on_enter_focus__, p)
   tracked_cb_removal(__on_leave_focus__, p)
+  tracked_cb_removal(__tween_of__, p)
 end
 
 local function debug_hack()
   local c = 0
-  for k, v in pairs(__on_press__) do
+  for k, v in pairs(__tween_of__) do
     c = c + 1
   end
-  print("total obj count for on_press callback table: ", c)
+  print("total obj count for tweening callback table: ", c)
 end
 
 ----------------------------------------------------------------------------
@@ -100,25 +97,16 @@ Mt_Sprite.set_blue                = C.Sprite_set_blue
 Mt_Sprite.set_alpha               = C.Sprite_set_alpha
 Mt_Sprite.set_visible             = C.Sprite_set_visible
 Mt_Sprite.set_center_aligned      = C.Sprite_set_center_aligned
-Mt_Sprite.tween_elastic_pos       = function(self, s, e, dur, l, cb, d)
-  C.Sprite_tween_elastic_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
-end
-Mt_Sprite.tween_isine_pos         = function(self, s, e, dur, l, cb, d)
-  C.Sprite_tween_isine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
-end
-Mt_Sprite.tween_osine_pos         = function(self, s, e, dur, l, cb, d)
-  C.Sprite_tween_osine_pos(self, s, e, dur, l or 0, cb or nil, d or 0)
-end
-Mt_Sprite.tween_linear_alpha      = function(self, s, e, dur, l, cb, d)
-  C.Sprite_tween_linear_alpha(self, s, e, dur, l or 0, cb or nil, d or 0)
-end
+
 Mt_Sprite.tween                   = function(self, Eq, Accessor, s, e, dur, l, cb, d)
+  cb = cb and tracked_cb(__tween_of__, ObjCallbackT, self, Accessor, cb) or nil
   if type(s)=='number' and type(e)=='number' then
-    C.Sprite_tween_1d(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
+    C.Sprite_tween_1d(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb, d or 0)
   else
-    C.Sprite_tween(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb or nil, d or 0)
+    C.Sprite_tween(ffi.cast("pSprite*", self), Eq, Accessor, s, e, dur, l or 0, cb, d or 0)
   end
 end
+
 Mt_Sprite.texture_flipH           = C.Sprite_texture_flipH
 Mt_Sprite.texture_flipV           = C.Sprite_texture_flipV
 Mt_Sprite.get_pos_x               = C.Sprite_get_pos_x
@@ -129,27 +117,27 @@ Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
 
 Mt_Sprite.on_release              = function(p, b, func)
-  C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, CallbackT, p, b, func))
+  C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, ObjCallbackT, p, b, func))
 end
 
 Mt_Sprite.on_press                = function(p, b, func)
-  C.Sprite_on_press(ffi.cast("pSprite*", p), b, tracked_cb(__on_press__, CallbackT, p, b, func))
+  C.Sprite_on_press(ffi.cast("pSprite*", p), b, tracked_cb(__on_press__, ObjCallbackT, p, b, func))
 end
 
 Mt_Sprite.on_up                   = function(p, b, func)
-  C.Sprite_on_up(ffi.cast("pSprite*", p), b, tracked_cb(__on_up__, CallbackT, p, b, func))
+  C.Sprite_on_up(ffi.cast("pSprite*", p), b, tracked_cb(__on_up__, ObjCallbackT, p, b, func))
 end
 
 Mt_Sprite.on_down                 = function(p, b, func)
-  C.Sprite_on_down(ffi.cast("pSprite*", p), b, tracked_cb(__on_down__, CallbackT, p, b, func))
+  C.Sprite_on_down(ffi.cast("pSprite*", p), b, tracked_cb(__on_down__, ObjCallbackT, p, b, func))
 end
 
 Mt_Sprite.on_enter_focus          = function(p, input, func)
-  C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_enter_focus__, Callback_with_paramT, p, input, func))
+  C.Sprite_on_enter_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_enter_focus__, ObjCallback_Int2T, p, input, func))
 end
 
 Mt_Sprite.on_leave_focus          = function(p, input, func)
-  C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, Callback_with_paramT, p, input, func))
+  C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, ObjCallback_Int2T, p, input, func))
 end
 
 Mt_Sprite.remove                  = function(p)
@@ -174,7 +162,7 @@ Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
-Mt_SpriteText.tween_linear_alpha  = C.SpriteText_tween_linear_alpha
+
 Mt_SpriteText.remove              = function(p)
   remove_callbacks(p)
   p:set_visible(false)
@@ -188,7 +176,7 @@ local Mt_Sprite_Ex     = copy_cdata_mt(Mt_Sprite)
 
 Mt_Sprite_Ex.set_fade = function(self, setting)
   self:set_visible(true)
-  self:tween_linear_alpha(setting.s or 255, setting.e or 0, 500, 0, setting.cb or nil, 0)
+  self:tween("Linear", "Alpha", setting.s or 255, setting.e or 0, 500, 0, setting.cb or nil, 0)
 end
 
 local Mt_SpriteText_Ex = copy_cdata_mt(Mt_SpriteText, Mt_Sprite_Ex)

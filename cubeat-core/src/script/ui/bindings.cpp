@@ -88,38 +88,6 @@ void Sprite_set_center_aligned(pSprite* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
-void Sprite_tween_elastic_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> call = 0;
-    if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
-    }
-    (*self)->tween<OElastic, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
-}
-
-void Sprite_tween_isine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> call = 0;
-    if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
-    }
-    (*self)->tween<ISine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
-}
-
-void Sprite_tween_osine_pos(pSprite* self, v2* s, v2* e, unsigned int dur, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> call = 0;
-    if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
-    }
-    (*self)->tween<OSine, Pos2D>(vec2(s->x, s->y), vec2(e->x, e->y), dur, loop, call, delay);
-}
-
-void Sprite_tween_linear_alpha(pSprite* self, int s, int e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> call = 0;
-    if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
-    }
-    (*self)->tween<Linear, Alpha>(s, e, duration, loop, call, delay);
-}
-
 void Sprite_tween(pSprite* self, const char* Eq, const char* Accessor, void* s, void* e, unsigned int duration, int loop, PSC_OBJCALLBACK cb, int delay) {
     std::tr1::function<void()> call = 0;
     if( cb ) {
@@ -237,14 +205,6 @@ void SpriteText_set_visible(pSpriteText* self, bool visible) {
 
 void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);
-}
-
-void SpriteText_tween_linear_alpha(pSpriteText* self, int s, int e, double duration, int loop, PSC_OBJCALLBACK cb, int delay) {
-    std::tr1::function<void()> call = 0;
-    if( cb ) {
-        call = bind(delegate_for_cb_from_lua, (*self), cb);
-    }
-    (*self)->tween<Linear, Alpha>(s, e, duration, loop, call, delay);
 }
 
 pSprite* Sprite_create(char const* name, pObject* parent, int w, int h, bool center) {

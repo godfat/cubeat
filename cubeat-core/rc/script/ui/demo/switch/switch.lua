@@ -31,7 +31,7 @@ local function init(parent, demo)
   demobuild_:set_rotation(9)
   local s = ffi.new("v2", 1000, 740)
   local e = ffi.new("v2", 1000, 280)
-  demobuild_:tween_elastic_pos(s, e, 2000, 0, nil, 1000) -- delay 1000
+  demobuild_:tween("OElastic", "Pos2D", s, e, 2000, 0, nil, 1000) -- delay 1000
 
   teamname_ = ui.new_image{ parent = parent,
     path='teampsc', x=640, y=690, w=300, h=50, center=true}
@@ -45,33 +45,33 @@ end
 local function slide_out_title()
   local s2 = ffi.new("v2", 640, 150)
   local e2 = ffi.new("v2", 640, -200)
-  title_:tween_isine_pos(s2, e2, 500)
+  title_:tween("ISine", "Pos2D", s2, e2, 500)
 
   local s3 = ffi.new("v2", 1000, 280)
   local e3 = ffi.new("v2", 1000, 780)
-  demobuild_:tween_isine_pos(s3, e3, 750)
+  demobuild_:tween("ISine", "Pos2D", s3, e3, 750)
 
   local s4 = ffi.new("v2", 640, 690)
   local e4 = ffi.new("v2", 640, 780)
-  teamname_:tween_isine_pos(s4, e4, 400)
+  teamname_:tween("ISine", "Pos2D", s4, e4, 400)
 
-  blocker_:tween_linear_alpha(96, 0, 500, 0, nil, 0)
+  blocker_:tween("Linear", "Alpha", 96, 0, 500, 0, nil, 0)
 end
 
 local function slide_in_title()
   local s2 = ffi.new("v2", 640, -200)
   local e2 = ffi.new("v2", 640, 150)
-  title_:tween_osine_pos(s2, e2, 500)
+  title_:tween("OSine", "Pos2D", s2, e2, 500)
 
   local s3 = ffi.new("v2", 1000, 780)
   local e3 = ffi.new("v2", 1000, 280)
-  demobuild_:tween_elastic_pos(s3, e3, 750)
+  demobuild_:tween("OElastic", "Pos2D", s3, e3, 750)
 
   local s4 = ffi.new("v2", 640, 780)
   local e4 = ffi.new("v2", 640, 690)
-  teamname_:tween_osine_pos(s4, e4, 400)
+  teamname_:tween("OSine", "Pos2D", s4, e4, 400)
 
-  blocker_:tween_linear_alpha(0, 96, 500, 0, nil, 0)
+  blocker_:tween("Linear", "Alpha", 0, 96, 500, 0, nil, 0)
 end
 
 ------------------------------------------------------------
@@ -79,13 +79,13 @@ end
 local function slide_out_page_obj()
   local s1 = ffi.new("v2", 480, 300)
   local e1 = ffi.new("v2", 2480, 300)
-  vorig_:tween_osine_pos(s1, e1, 1000)
+  vorig_:tween("OSine", "Pos2D", s1, e1, 1000)
 end
 
 local function slide_in_page_obj()
   local s1 = ffi.new("v2", -1680, 300)
   local e1 = ffi.new("v2", 480, 300)
-  vorig_:tween_isine_pos(s1, e1, 1000)
+  vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
 end
 
 local function hide_page_obj()

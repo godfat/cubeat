@@ -36,10 +36,13 @@ local function C_random_shuffle(array, size)
   end
 end
 
+local cdata_addr = function (cd) return tonumber(ffi.cast('intptr_t', cd)) end
+
 return {
-  copy_cdata_mt = copy_cdata_mt,
-  basepath = basepath,
-  random   = random,
-  C_random_shuffle = C_random_shuffle
+  copy_cdata_mt    = copy_cdata_mt,
+  basepath         = basepath,
+  random           = random,
+  C_random_shuffle = C_random_shuffle,
+  cdata_addr       = cdata_addr
 }
 

@@ -2,6 +2,7 @@ local ffi       = require 'ffi'
 local C         = ffi.C
 local helper    = require 'rc/script/helper'
 local basepath  = helper.basepath
+local cdata_addr= helper.cdata_addr
 
 ffi.cdef[[
 typedef struct pHandle pHandle;
@@ -12,14 +13,36 @@ ffi.cdef( io.open( basepath().."rc/script/event/bindings.ffi", 'r'):read('*a') )
 -- FFI callback hackery
 ----------------------------------------------------------------------------
 
--- we still have to finalize our FFI callbacks here. 
+local __tracked_timer__ = {}
+local CallbackT = ffi.typeof("PSC_CALLBACK")
+
+local function tracked_timer(func, h)
+  if __tracked_timer__[ cdata_addr(h) ] == nil then
+    __tracked_timer__[ cdata_addr(h) ] = ffi.cast(CallbackT, func)
+  else
+    __tracked_timer__[ cdata_addr(h) ]:set(func)
+  end
+  return __tracked_timer__[ cdata_addr(h) ]
+end
+
+local function handle_dtor(h)
+  if __tracked_timer__[ cdata_addr(h) ] ~= nil then
+    __tracked_timer__[ cdata_addr(h) ]:free()
+    __tracked_timer__[ cdata_addr(h) ] = nil
+    C.Handle__gc(h)
+  end
+end
+
+-- Mt_Handle ==================
 
 local Mt_Handle = {}
 Mt_Handle.__index = Mt_Handle
-Mt_Handle.__gc    = C.Handle__gc
-Mt_Handle.remove  = function(self) C.Handle__gc(self); self = nil end -- make it explicit if needed
+Mt_Handle.__gc    = handle_dtor
+Mt_Handle.remove  = handle_dtor -- make it explicit if needed
 
 ffi.metatype("pHandle", Mt_Handle)
+
+--=============================
 
 local event = {}
 
@@ -30,7 +53,10 @@ end
 
 event.on_timer = function(timer_name, callback, dur, loop)
   loop = loop or 0
-  return C.Event_on_timer(timer_name, callback, dur, loop)
+  local handle = C.Handle_create()
+  callback = tracked_timer(callback, handle)
+  C.Event_on_timer(timer_name, callback, handle, dur, loop)
+  return handle
 end
 
 return event

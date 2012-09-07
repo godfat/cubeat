@@ -322,48 +322,6 @@ namespace easing {
         }
     };
 
-    //Added by arch_jslin
-    /**
-     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
-     *                                                               (back to the original point)
-     */
-    template<class T>
-    class SineCircX
-    {
-    public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-            return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().X / 50.0f)) + c/2 + b);
-        }
-    };
-
-    //Added by arch_jslin
-    /**
-     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
-     *                                                               (back to the original point)
-     */
-    template<class T>
-    class SineCircY
-    {
-    public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-           return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Y / 50.0f)) + c/2 + b);
-        }
-    };
-
-    //Added by arch_jslin
-    /**
-     * Easing equation function for a sinusoidal (sin(t)) easing in: going through a sine cycle
-     *                                                               (back to the original point)
-     */
-    template<class T>
-    class SineCircZ
-    {
-    public:
-        static T calculate(float t, T const& b, T const& c, float const& d, irr::scene::ISceneNode* node=0) {
-            return static_cast<T>(-c/2 * sinf(t/d * (irr::core::PI*2) + (node->getPosition().Z / 50.0f)) + c/2 + b);
-        }
-    };
-
     /**
      * Easing equation function for a sinusoidal (sin(t)) easing out: decelerating from zero velocity.
      */

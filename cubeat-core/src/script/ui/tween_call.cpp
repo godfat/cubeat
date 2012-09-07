@@ -54,7 +54,32 @@ void tween_call(pSprite* self, const char* Eq, const char* Accessor, double s, d
         else if(strcmp("SineCirc", Eq)==0)
             (*self)->tween<SineCirc, Alpha>(s, e, duration, loop, call, delay);
     }
-    return;
+    else if(strcmp("PosX", Accessor)==0)
+    {
+        if(strcmp("Linear", Eq)==0)
+            (*self)->tween<Linear, PosX>(s, e, duration, loop, call, delay);
+        else if(strcmp("OElastic", Eq)==0)
+            (*self)->tween<OElastic, PosX>(s, e, duration, loop, call, delay);
+        else if(strcmp("ISine", Eq)==0)
+            (*self)->tween<ISine, PosX>(s, e, duration, loop, call, delay);
+        else if(strcmp("OSine", Eq)==0)
+            (*self)->tween<OSine, PosX>(s, e, duration, loop, call, delay);
+        else if(strcmp("SineCirc", Eq)==0)
+            (*self)->tween<SineCirc, PosX>(s, e, duration, loop, call, delay);
+    }
+    else if(strcmp("PosY", Accessor)==0)
+    {
+        if(strcmp("Linear", Eq)==0)
+            (*self)->tween<Linear, PosY>(s, e, duration, loop, call, delay);
+        else if(strcmp("OElastic", Eq)==0)
+            (*self)->tween<OElastic, PosY>(s, e, duration, loop, call, delay);
+        else if(strcmp("ISine", Eq)==0)
+            (*self)->tween<ISine, PosY>(s, e, duration, loop, call, delay);
+        else if(strcmp("OSine", Eq)==0)
+            (*self)->tween<OSine, PosY>(s, e, duration, loop, call, delay);
+        else if(strcmp("SineCirc", Eq)==0)
+            (*self)->tween<SineCirc, PosY>(s, e, duration, loop, call, delay);
+    }
 }
 
 void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, void* e, unsigned int duration, int loop, std::tr1::function<void()> call, int delay)
@@ -104,6 +129,10 @@ void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, vo
         {
             (*self)->tween<OSine, Rotation>(vec3(start->x, start->y, start->z), vec3(end->x, end->y, end->z), duration, loop, call, delay);
         }
+        else if(strcmp("SineCirc", Eq)==0)
+        {
+            (*self)->tween<SineCirc, Rotation>(vec3(start->x, start->y, start->z), vec3(end->x, end->y, end->z), duration, loop, call, delay);
+        }
     }
     else if(strcmp("Scale", Accessor)==0)
     {
@@ -130,5 +159,4 @@ void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, vo
             (*self)->tween<SineCirc, Scale>(vec3(start->x, start->y, start->z), vec3(end->x, end->y, end->z), duration, loop, call, delay);
         }
     }
-    return;
 }

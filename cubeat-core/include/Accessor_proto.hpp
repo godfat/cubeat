@@ -14,18 +14,22 @@ namespace psc{
 namespace accessor{
 
 // potential conflicting enum:
+//     POSITION <-> {X,Y,Z}    (but X /Y /Z  are not conflicting among themselves)
 //     DIFFUSE  <-> {R,G,B}    (but R /G /B  are not conflicting among themselves)
 //     EMISSIVE <-> {RE,GE,BE} (but RE/GE/BE are not conflicting among themselves)
 //     SCALE    <-> SIZE2D
 
 struct AT{
-    enum ATEnum {POSITION = irr::scene::ESNAT_UNKNOWN+1,
+    enum ATEnum {POSITION = irr::scene::ESNAT_UNKNOWN+1, X, Y, Z,
                  ROTATION, SCALE, DIFFUSE, EMISSIVE, R, G, B, A, RE, GE, BE, AE,
                  FRAME, VISIBLE, ID, SIZE2D, TEXTURE, UNKNOWN};
 
     static bool isMatrixTransformationValue(ATEnum const& eType) {
         switch (eType) {
             case AT::POSITION:
+            case AT::X:
+            case AT::Y:
+            case AT::Z:
             case AT::ROTATION:
             case AT::SCALE:
                 return true;

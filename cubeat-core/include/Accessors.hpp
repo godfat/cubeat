@@ -24,9 +24,32 @@ namespace accessor {
             node->setPosition( pos );
         }
         static void get(irr::scene::ISceneNode const* node, value_type& out) {
-            vec3 pos;
-            Pos3D::get(node, pos);
+            vec3 pos(node->getPosition());
             out = value_type(pos.X, -pos.Y);
+        }
+    };
+
+    struct PosX : Accessor<float, AT::X>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            vec3 pos(node->getPosition());
+            pos.X = val;
+            node->setPosition(pos);
+        }
+        static void get(irr::scene::ISceneNode const* node, value_type& out ) {
+            out = node->getPosition().X;
+        }
+    };
+
+    //I had to assume when you want to access Position Y individually, it will most likely be a 2D use case.
+    //So it's NEGATIVE val instead of val;
+    struct PosY : Accessor<float, AT::Y>{
+        static void set(irr::scene::ISceneNode* node, value_type const& val ) {
+            vec3 pos(node->getPosition());
+            pos.Y = -val;
+            node->setPosition(pos);
+        }
+        static void get(irr::scene::ISceneNode const* node, value_type& out ) {
+            out = node->getPosition().Y;
         }
     };
 

@@ -51,6 +51,11 @@ event.get_time_of = function(timer_name)
   return C.Event_get_time_of(timer_name)
 end
 
+event.clear_timers_of = function(timer_name)
+  timer_name = timer_name or "global"
+  C.Event_clear_timers_of(timer_name)
+end
+
 event.on_timer = function(timer_name, callback, dur, loop)
   loop = loop or 0
   local handle = C.Handle_create()

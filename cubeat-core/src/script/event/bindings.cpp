@@ -21,6 +21,10 @@ void Event_on_timer(char const* timer_name, PSC_CALLBACK cb, pHandle* h, int dur
     EventDispatcher::i().get_timer_dispatcher(timer_name)->subscribe(cb, *h, dur, loop);
 }
 
+void Event_clear_timers_of(char const* timer_name) {
+    EventDispatcher::i().get_timer_dispatcher(timer_name)->clear_timer_event();
+}
+
 pHandle* Handle_create() {
     pHandle* p = new pHandle(new int);
     return p;

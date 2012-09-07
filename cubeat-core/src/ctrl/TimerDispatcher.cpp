@@ -55,15 +55,15 @@ TimerDispatcher& TimerDispatcher::subscribe
 //note: has bug, don't use.
 TimerDispatcher& TimerDispatcher::clear_timer_event()
 {
-//    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t)
-//        timers_to_be_deleted_.push_back(t);
-//
-//    // clean up
-//    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
-//        timers_.erase(t);
-//    }
-//    timers_to_be_deleted_.clear();
-//    timers_.clear();
+    for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t)
+        timers_to_be_deleted_.push_back(t);
+
+    // clean up
+    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
+        timers_.erase(t);
+    }
+    timers_to_be_deleted_.clear();
+    timers_.clear();
     return *this;
 }
 

@@ -10,7 +10,7 @@
 				<Option platforms="Windows;" />
 				<Option output="bin\Release\CuBeat" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\Release\" />
-				<Option type="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-Os" />
@@ -246,10 +246,7 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char1_demo.zzml" />
@@ -302,6 +299,7 @@
 		<Unit filename="rc\config\tmp\puzzle.zzml" />
 		<Unit filename="rc\config\ui\demo_layout.zzml" />
 		<Unit filename="rc\config\ui\in_game_2p_layout.zzml" />
+		<Unit filename="rc\config\ui\puzzle_layout.zzml" />
 		<Unit filename="rc\resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
@@ -475,7 +473,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_stage_by_lua_main.cpp" />
+		<Unit filename="src\test\test_stage_by_lua_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_stage_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

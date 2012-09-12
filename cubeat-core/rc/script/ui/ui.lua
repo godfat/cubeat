@@ -134,19 +134,19 @@ local function new_askbox(object)
   local screen_w  = C.Get_SCREEN_W()
   local screen_h  = C.Get_SCREEN_H()  
   setmetatable(object, Sprite_Based_Mt)
-  object._cdata = view.new_sprite('cubes/cube-b-1', object.parent, screen_w, screen_h, true)
+  object._cdata = view.new_sprite('blocker', object.parent, screen_w, screen_h, true)
   object:set_pos(screen_w/2, screen_h/2)
   object:set_color(0, 0, 0)
   object:set_alpha(100)
   
-  object.panel  = new_image{parent=object._cdata, path='area_rect',
-                            w=object.w or 300, h=object.h or 200, center=true}
+  object.panel  = new_image{parent=object._cdata, path='square',
+                            w=object.w or 600, h=object.h or 300, center=true}
   
-  object.text   = new_text{ parent=object.panel._cdata, title=object.title, size=object.size,
+  object.text   = new_text{ parent=object.panel._cdata, title=object.title, size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.ok     = new_text{ parent=object.panel._cdata, title='ok', size=object.size,
+  object.ok     = new_text{ parent=object.panel._cdata, title='ok', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.cancel = new_text{ parent=object.panel._cdata, title='cancel', size=object.size,
+  object.cancel = new_text{ parent=object.panel._cdata, title='cancel', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
   object.text:set_pos(0, -30)
   object.text:set_depth(-10)

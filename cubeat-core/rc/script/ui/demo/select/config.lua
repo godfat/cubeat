@@ -25,17 +25,17 @@ local icon_x      = { icon_x_base,
                       screen_w-icon_x_base-360-icon_w,
                       screen_w-icon_x_base-180-icon_w,
                       screen_w-icon_x_base-icon_w }
-local icon_y      = screen_h-250
-local icon_depth  = -100
+local icon_y      = screen_h-200
+local icon_depth  = -200
 
 -- actor_full
 local full_path = function(i) return ('char'..tostring(i)..'_new/glad') end
-local full_w    = 480
+local full_w    = 450
 local full_h    = 720
 local full_x    = { 0,
                     screen_w-full_w }
 local full_y    = 0
-local full_depth= -50
+local full_depth= -100
 
 local fade_time = 300
 local move_time = 300

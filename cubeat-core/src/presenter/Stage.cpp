@@ -167,12 +167,7 @@ Stage& Stage::playBGM(time_t const& fade_t)
 
 Stage& Stage::playFastBGM(time_t const& fade_t)
 {
-    audio::Sound::i().playBGM("smb_warning.wav", 200);
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&audio::Sound::playBGM_AB, &audio::Sound::i(), fmusic_path_a_, fmusic_path_b_, fade_t),
-        shared_from_this(),
-        2250);
-
+    audio::Sound::i().playBGM_AB(fmusic_path_a_, fmusic_path_b_, fade_t);
     return *this;
 }
 

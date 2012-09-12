@@ -413,13 +413,14 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //means garbage effects that the opponent has to minus n
     main_enemy->pop_garbage_event()(this_frame_lands);
 
-    if( this_frame_lands > 0 && garbage_left_ < 1 ) { //if garbage is actually less then 1, just pop all garbage animations
-        // ok, but there's a problem with this method:
-        // garbages in the delay_adder ( 1 sec delay, and the first second of flying animation )
-        // will not account for this_frame_lands, but they will get deleted as well...
-        // however the attacking amount seems to be correct.
-        main_enemy->pop_garbage_event()(9999);
-    }
+    // 2012.09 remove player ability for now MEMO WTF
+//    if( this_frame_lands > 0 && garbage_left_ < 1 ) { //if garbage is actually less then 1, just pop all garbage animations
+//        // ok, but there's a problem with this method:
+//        // garbages in the delay_adder ( 1 sec delay, and the first second of flying animation )
+//        // will not account for this_frame_lands, but they will get deleted as well...
+//        // however the attacking amount seems to be correct.
+//        main_enemy->pop_garbage_event()(9999);
+//    }
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){
@@ -719,10 +720,11 @@ void Map::cubes_cleared_add(int const& num)
     if( owner()->get_player_ability_left() < 1 ) {
         cubes_cleared_ += num;
     }
-    if( cubes_cleared_ > 100 /*ms()->replenish_ability_limit()*/ ) {
-        cubes_cleared_ = 0;
-        owner()->push_player_ability();
-    }
+// WTF MEMO 2012.9 failed to adjust for balance
+//    if( cubes_cleared_ > 100 /*ms()->replenish_ability_limit()*/ ) {
+//        cubes_cleared_ = 0;
+//        owner()->push_player_ability();
+//    }
 }
 
 pSimpleMap Map::dump_data() const

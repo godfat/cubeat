@@ -13,13 +13,14 @@ local title_
 local demobuild_
 local teamname_
 local blocker_
+local has_blocker_ = true
 
 ------------------------------------------------------------
 
 local function init(parent, demo)
   game_demo_ = demo
 
-  vorig_ = view.new_sprite("blahblah", parent, 1, 1, true)
+  vorig_ = view.new_sprite("blahblah", parent, 0, 0, true)
   vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
 
@@ -39,10 +40,10 @@ local function init(parent, demo)
   blocker_ = view.new_sprite("blahblah", parent, 1280, 720, false)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
-  blocker_:set_alpha(96)
+  blocker_:set_alpha(128)
 end
 
-local function slide_out_title()
+local function slide_out_title(keep_blocker)
   local s2 = ffi.new("v2", 640, 150)
   local e2 = ffi.new("v2", 640, -200)
   title_:tween("ISine", "Pos2D", s2, e2, 500)
@@ -55,7 +56,10 @@ local function slide_out_title()
   local e4 = ffi.new("v2", 640, 780)
   teamname_:tween("ISine", "Pos2D", s4, e4, 400)
 
-  blocker_:tween("Linear", "Alpha", 96, 0, 500, 0, nil, 0)
+  if not keep_blocker then
+    blocker_:tween("Linear", "Alpha", 128, 0, 500, 0, nil, 0)
+    has_blocker_ = false
+  end
 end
 
 local function slide_in_title()
@@ -70,8 +74,10 @@ local function slide_in_title()
   local s4 = ffi.new("v2", 640, 780)
   local e4 = ffi.new("v2", 640, 690)
   teamname_:tween("OSine", "Pos2D", s4, e4, 400)
-
-  blocker_:tween("Linear", "Alpha", 0, 96, 500, 0, nil, 0)
+  
+  if not has_blocker_ then
+    blocker_:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
+  end
 end
 
 ------------------------------------------------------------
@@ -80,12 +86,16 @@ local function slide_out_page_obj()
   local s1 = ffi.new("v2", 480, 300)
   local e1 = ffi.new("v2", 2480, 300)
   vorig_:tween("OSine", "Pos2D", s1, e1, 1000)
+  blocker_:tween("Linear", "Alpha", 128, 0, 500, 0, nil, 0)
+  has_blocker_ = false
 end
 
 local function slide_in_page_obj()
   local s1 = ffi.new("v2", -1680, 300)
   local e1 = ffi.new("v2", 480, 300)
   vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
+  blocker_:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
+  has_blocker_ = true
 end
 
 local function hide_page_obj()
@@ -110,7 +120,7 @@ local function load_page(name, slide_title, data)
   if slide_title == 'in' then
     slide_in_title()
   elseif slide_title == 'out' then
-    slide_out_title()
+    slide_out_title(true)
   end
 
   to_be_delete_ = page_obj_

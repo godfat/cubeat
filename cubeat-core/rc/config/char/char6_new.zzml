@@ -21,8 +21,8 @@ face: [
 # actions for corresponding state enum { STAND=0, ATTACK=1, HIT=2 }
 state : [
     { anim: 'stand',  face_visible: 0, sound: '' },
-    { anim: 'attack', face_visible: 0, sound: 'char5/attack.wav' },
-    { anim: 'hit'  ,  face_visible: 0, sound: 'char5/hit.wav' }
+    { anim: 'attack', face_visible: 0, sound: 'char1/attack.wav' },
+    { anim: 'hit'  ,  face_visible: 0, sound: 'char1/hit.wav' }
 ],
 
 # face pos from frame0 to frame3

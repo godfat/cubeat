@@ -27,6 +27,9 @@ local function copy_cdata_mt(mt, base_mt)
   return t
 end
 
+-- Upon first requireing this script, set the randomseed
+math.randomseed(os.time())
+
 local function random(n) return math.floor(math.random()*n) end
 
 local function C_random_shuffle(array, size)

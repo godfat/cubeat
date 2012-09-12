@@ -55,12 +55,23 @@ local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
   data_ = data
+  
+  local function leave()
+    switch.load_page('testmenu', 'in')
+    switch.hide_ask_panel()
+  end
+  local function cancel()
+    switch.hide_ask_panel()
+  end
 
   -- create select_actor_page
   menu.select_actor_page = ui.new_image{ parent=parent, path=config.bg_path, visible=true, x= -480, y= -300,
                                          w=config.bg_w, h=config.bg_h }
   menu.select_actor_page:on_press_r(function(self)
-                                      switch.load_page('testmenu', 'in')
+                                      switch.set_ask_panel_title("Leave select page?")
+                                      switch.set_press_ok(leave)
+                                      switch.set_press_cancel(cancel)
+                                      switch.show_ask_panel()
                                     end)
 
   -- create actor_icon

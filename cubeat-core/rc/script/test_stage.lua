@@ -129,109 +129,112 @@ end
 -- end
 
 -- STAGE 4
--- function init(scene)
-  -- scene_ = ffi.cast("pScene*", scene)
-  -- layer0_ = view.new_sprite("bg4/99complete", scene_)
-  
-  -- layer1_ = view.new_sprite("bg4/02man1", scene_)
-  -- layer1_:set_depth(-100)
-  -- layer1_:set_pos(206, 293)
-  
-  -- layer6_ = view.new_sprite("bg4/04man3", scene_)
-  -- layer6_:set_depth(-600)
-  -- layer6_:set_pos(204, 290)
-  
-  -- local eye_sparkle = function()
-    -- local sp = view.new_sprite("bg4/05maneye", scene_)
-    -- sp:set_depth(-700)
-    -- sp:set_pos(239, 332)
-    -- sp:set_alpha(0)
-    -- sp:tween("Linear", "Alpha", 255, 0, 1000, 0, function(self) self:remove() end)
-  -- end
-  -- local sparkle_timer = event.on_timer("global", eye_sparkle, 2000, -1)
-  
-  -- layer8_ = view.new_sprite("bg4/06whale", scene_)
-  -- layer8_:set_depth(-800)
-  -- layer8_:set_pos(739, 0)
-  -- layer8_:tween("SineCirc", "Pos2D", ffi.new("v2", 732, -5), ffi.new("v2", 745, 0), 8000, -1)
-  
-  -- layer9_ = view.new_sprite("radial_bloom", scene_, 1024, 640, true)
-  -- layer9_:set_depth(-900)
-  -- layer9_:set_pos(675, 250)
-  -- layer9_:tween("SineCirc", "Alpha", 128, 0, 7000, -1)
--- end
-
--- STAGE 5
 function init(scene)
   scene_ = ffi.cast("pScene*", scene)
-  layer0_ = view.new_sprite("bg5/99complete", scene_)
+  --layer0_ = view.new_sprite("bg4/99complete", scene_)
+  layer0_ = view.new_sprite("bg4/01bg", scene_)
   
-  local fish_effect = function()
-    local fish  = view.new_sprite("bg5/02fish", scene_)
-    fish:set_center_aligned(true)
-    fish:set_depth(-100)
-    fish:set_pos(290, 500)
-    fish:tween("Linear", "Rotation", ffi.new("v3", 0, 0, 60), ffi.new("v3", 0, 0, -120), 950)
-    fish:tween("Linear", "PosX", 270, 580, 950)
-    fish:tween("SineCirc", "PosY", 640, 480, 950)
-    three_stage_alpha_tween(fish, 1000, 350)
-    
-    local water1 = view.new_sprite("bg5/03fish_water", scene_)
-    water1:set_center_aligned(true)
-    water1:set_depth(-100)
-    water1:set_pos(315, 595)
-    water1:tween("Linear", "Scale", ffi.new("v3", 0.5, 0.5, 1), ffi.new("v3", 1.5, 1, 1), 1000)
-    water1:tween("SineCirc", "Alpha", 0, 255, 1000, 0, function(self) self:remove() end)
-    
-    local water2_root = view.new_sprite("nothing", scene_, 0, 0, true)
-    water2_root:set_depth(-200)
-    water2_root:set_pos(330, 604)
-    --water2_root:tween("OSine", "Scale", ffi.new("v3", 0.8, 0.4, 1), ffi.new("v3", 1, 1.1, 1), 600)
-    
-    local water2 = view.new_sprite("bg5/04fish_water_out", water2_root)
-    water2:set_alpha(0)
-    water2:set_pos(-15, -60)
-    water2:tween("Linear", "Alpha", 255, 0, 500, 0, function(self) self:remove() end, 250)
-    
-    local water3 = view.new_sprite("bg5/05fish_water_in", scene_)
-    water3:set_alpha(0)
-    water3:set_depth(-200)
-    water3:set_pos(532, 584)
-    water3:set_center_aligned(true)
-    water3:tween("Linear", "Alpha", 255, 0, 750, 0, function(self) self:remove() end, 800)
+  layer1_ = view.new_sprite("bg4/02man1", scene_)
+  layer1_:set_depth(-100)
+  layer1_:set_pos(206, 293)
+  
+  layer6_ = view.new_sprite("bg4/04man3", scene_)
+  layer6_:set_depth(-600)
+  layer6_:set_pos(204, 290)
+  
+  local eye_sparkle = function()
+    local sp = view.new_sprite("bg4/05maneye", scene_)
+    sp:set_depth(-700)
+    sp:set_pos(239, 332)
+    sp:set_alpha(0)
+    sp:tween("Linear", "Alpha", 255, 0, 1000, 0, function(self) self:remove() end)
   end
-  local fish_timer = event.on_timer("global", fish_effect, 10000, -1)
+  local sparkle_timer = event.on_timer("global", eye_sparkle, 2000, -1)
   
-  local monster_effect = function()
-    local monster = view.new_sprite("bg5/06monster", scene_)
-    monster:set_depth(-300)
-    monster:set_pos(850, 600)
-    monster:tween("Linear", "Pos2D", ffi.new("v2", 1280, 520), ffi.new("v2", 1050, 500), 3000)
-    local step1 = function()
-      monster:tween("Linear", "Pos2D", ffi.new("v2", 1050, 500), ffi.new("v2", 660, 500), 4000)
-    end
-    local step2 = function()
-      monster:tween("Linear", "Pos2D", ffi.new("v2", 660, 500), ffi.new("v2", 540, 650), 2500)
-    end
-    local h1 = event.on_timer("global", step1, 3000) 
-    local h2 = event.on_timer("global", step2, 7000)
-  end
-  local monster_timer = event.on_timer("global", monster_effect, 10000, -1)
+  layer8_ = view.new_sprite("bg4/06whale", scene_)
+  layer8_:set_depth(-800)
+  layer8_:set_pos(739, 0)
+  layer8_:lazy_fix_alpha_artifact()
+  layer8_:tween("SineCirc", "Pos2D", ffi.new("v2", 739, -5), ffi.new("v2", 745, 0), 8000, -1)
   
-  local layer8_root = view.new_sprite("nothing", scene_, 0, 0)
-  layer8_root:set_depth(-800)
-  layer8_root:set_pos(1148, 198)
-  layer8_root:tween("SineCirc", "Rotation", ffi.new("v3", 0, 0, -6), ffi.new("v3", 0, 0, 6), 4000, -1) 
-  
-  layer8_ = view.new_sprite("bg5/08bag", layer8_root)
-  layer8_:set_pos( -45, -12)
-  
-  layer9_ = view.new_sprite("bg5/09foreground", scene_)
+  layer9_ = view.new_sprite("radial_bloom", scene_, 1024, 640, true)
   layer9_:set_depth(-900)
-  layer9_:set_pos( 0, 720 - layer9_:get_size_y() )
-  
-  local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
+  layer9_:set_pos(675, 250)
+  layer9_:tween("SineCirc", "Alpha", 144, 64, 7000, -1)
 end
+
+-- STAGE 5
+-- function init(scene)
+  -- scene_ = ffi.cast("pScene*", scene)
+  -- --layer0_ = view.new_sprite("bg5/99complete", scene_)
+  -- layer0_ = view.new_sprite("bg5/01bg", scene_)
+  
+  -- local fish_effect = function()
+    -- local fish  = view.new_sprite("bg5/02fish", scene_)
+    -- fish:set_center_aligned(true)
+    -- fish:set_depth(-100)
+    -- fish:set_pos(290, 500)
+    -- fish:tween("Linear", "Rotation", ffi.new("v3", 0, 0, 60), ffi.new("v3", 0, 0, -120), 950)
+    -- fish:tween("Linear", "PosX", 270, 580, 950)
+    -- fish:tween("SineCirc", "PosY", 640, 480, 950)
+    -- three_stage_alpha_tween(fish, 1000, 350)
+    
+    -- local water1 = view.new_sprite("bg5/03fish_water", scene_)
+    -- water1:set_center_aligned(true)
+    -- water1:set_depth(-100)
+    -- water1:set_pos(315, 595)
+    -- water1:tween("Linear", "Scale", ffi.new("v3", 0.5, 0.5, 1), ffi.new("v3", 1.5, 1, 1), 1000)
+    -- water1:tween("SineCirc", "Alpha", 0, 255, 1000, 0, function(self) self:remove() end)
+    
+    -- local water2_root = view.new_sprite("nothing", scene_, 0, 0, true)
+    -- water2_root:set_depth(-200)
+    -- water2_root:set_pos(330, 604)
+    -- --water2_root:tween("OSine", "Scale", ffi.new("v3", 0.8, 0.4, 1), ffi.new("v3", 1, 1.1, 1), 600)
+    
+    -- local water2 = view.new_sprite("bg5/04fish_water_out", water2_root)
+    -- water2:set_alpha(0)
+    -- water2:set_pos(-15, -60)
+    -- water2:tween("Linear", "Alpha", 255, 0, 500, 0, function(self) self:remove() end, 250)
+    
+    -- local water3 = view.new_sprite("bg5/05fish_water_in", scene_)
+    -- water3:set_alpha(0)
+    -- water3:set_depth(-200)
+    -- water3:set_pos(532, 584)
+    -- water3:set_center_aligned(true)
+    -- water3:tween("Linear", "Alpha", 255, 0, 750, 0, function(self) self:remove() end, 800)
+  -- end
+  -- local fish_timer = event.on_timer("global", fish_effect, 10000, -1)
+  
+  -- local monster_effect = function()
+    -- local monster = view.new_sprite("bg5/06monster", scene_)
+    -- monster:set_depth(-300)
+    -- monster:set_pos(850, 600)
+    -- monster:tween("Linear", "Pos2D", ffi.new("v2", 1280, 520), ffi.new("v2", 1050, 500), 3000)
+    -- local step1 = function()
+      -- monster:tween("Linear", "Pos2D", ffi.new("v2", 1050, 500), ffi.new("v2", 660, 500), 4000)
+    -- end
+    -- local step2 = function()
+      -- monster:tween("Linear", "Pos2D", ffi.new("v2", 660, 500), ffi.new("v2", 540, 650), 2500)
+    -- end
+    -- local h1 = event.on_timer("global", step1, 3000) 
+    -- local h2 = event.on_timer("global", step2, 7000)
+  -- end
+  -- local monster_timer = event.on_timer("global", monster_effect, 10000, -1)
+  
+  -- local layer8_root = view.new_sprite("nothing", scene_, 0, 0)
+  -- layer8_root:set_depth(-800)
+  -- layer8_root:set_pos(1148, 198)
+  -- layer8_root:tween("SineCirc", "Rotation", ffi.new("v3", 0, 0, -6), ffi.new("v3", 0, 0, 6), 4000, -1) 
+  
+  -- layer8_ = view.new_sprite("bg5/08bag", layer8_root)
+  -- layer8_:set_pos( -45, -12)
+  
+  -- layer9_ = view.new_sprite("bg5/09foreground", scene_)
+  -- layer9_:set_depth(-900)
+  -- layer9_:set_pos( 0, 720 - layer9_:get_size_y() )
+  
+  -- local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
+-- end
 
 function cleanup()
   layer0_ = nil

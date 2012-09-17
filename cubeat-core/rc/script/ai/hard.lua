@@ -78,16 +78,16 @@ function ai_entry(self)
   else
     --io.write "No keycube for now.\n"
     
-    if ab_left > 0 then
-      if (my_map:warning_level() > 50 and ground_cube_num > capacity * 0.9) or 
-         should_use_ability[ab_kind](self, my_map, enemy_map) then
-        io.write "Lua: AI Using ability!!\n"
-        setcmd(cmdbuf, C.AI_USE_ABILITY, 0, -1, -1)
-        self:push_command(cmdbuf)
-        collectgarbage("collect")
-        return
-      end
-    end
+    -- if ab_left > 0 then
+      -- if (my_map:warning_level() > 50 and ground_cube_num > capacity * 0.9) or 
+         -- should_use_ability[ab_kind](self, my_map, enemy_map) then
+        -- io.write "Lua: AI Using ability!!\n"
+        -- setcmd(cmdbuf, C.AI_USE_ABILITY, 0, -1, -1)
+        -- self:push_command(cmdbuf)
+        -- collectgarbage("collect")
+        -- return
+      -- end
+    -- end
     
     local highcol_threshold = 9
     local highcols, hsize = my_map:get_highcols( highcol_threshold )

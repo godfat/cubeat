@@ -138,7 +138,10 @@ void PlayerView::cycle()
 {
     if( pMap map = map_.lock() ) {
         int my_garbage    = map->garbage_left() + map->sum_of_all_enemy();
-        int enemy_garbage = map->garbage_lands().front().lock()->garbage_left();
+        int enemy_garbage = 0;
+        if( map->garbage_lands().size() > 0 ) {
+            enemy_garbage = map->garbage_lands().front().lock()->garbage_left();
+        }
         int state1p = current_state_;
 
         if( state1p != HIT && last_my_garbage_ > my_garbage ) {

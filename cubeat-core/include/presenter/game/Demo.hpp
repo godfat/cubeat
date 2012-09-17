@@ -54,10 +54,11 @@ public:
     ~Demo();
 
     virtual void cycle();
-    void init_vs_cpu(std::string const&, std::string const&, std::string const&);
+    void init_vs_cpu(std::string const&, std::string const&, std::string const&, int const&);
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
+    void init_puzzle(std::string const&, std::string const&);
     void quit();
 
     void leaving_effect();
@@ -87,10 +88,6 @@ protected:
     void pause(ctrl::Input const*);
     void resume(ctrl::Input const*);
 
-    //temp: has to be refactored
-    void timed_pause(std::time_t const& t);
-    void resume2();
-
     //lua UI integration
     void ask_for_tutorial();
     void hide_upper_layer_ui();
@@ -100,6 +97,10 @@ protected:
 
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false);
+    void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false);
+
+    //temp: hack for puzzle integrated demo
+    void puzzle_started();
 
     //temp: hack for music test
     void music_state(bool);
@@ -124,7 +125,7 @@ protected:
 
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_, desc_text_;
     pDummy timer_ui_, btn_reinit_, btn_pause_;
     std::string c1p_, c2p_, sconf_;
 
@@ -134,10 +135,9 @@ protected:
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 
-    // temp: hack
-    bool ppl1_special_attacked_;
-    void ppl1_special_attacked(bool const& f) { ppl1_special_attacked_ = f; }
-    view::pSprite ppl1_special_img_;
+    // temp: puzzle demo integrated hack
+    int puzzle_level_;
+    bool win_, puzzle_started_, end_;
 
     // temp: hack, just for test
     bool music_state_, music_state_old_;

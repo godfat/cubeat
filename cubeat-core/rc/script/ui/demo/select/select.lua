@@ -15,7 +15,7 @@ local function choose_character(self)
     local ch2 = random(6)+1
     local c1p = "char/char"..tostring(config.ch_choose[1]).."_new"
     local c2p
-    if data_.game_mode ~= 1 then
+    if data_ and data_.game_mode ~= 1 then
       c2p = "char/char"..tostring(config.ch_choose[2]).."_new"
     else
       c2p = "char/char"..tostring(ch2).."_new"
@@ -48,7 +48,7 @@ local function enter_icon(input, icon_no, menu)
 
     menu[fullkey]:set_pos(-config.full_w, config.full_y)
     menu[fullkey]:set_texture(config.full_path(icon_no))
-    if data_.game_mode ~= 1 then
+    if data_ and data_.game_mode ~= 1 then
       menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], config.move_end[input], config.move_time)
     else
       local move_end = ffi.new("value2", config.screen_w/2 - 225, 0)
@@ -68,7 +68,11 @@ local function init(demo, parent, data)
   menu.btn_back:set_scale(1.5)
   menu.btn_back:set_depth(-300)
   menu.btn_back:on_press(function(self)
-    switch.load_page(data_.last_menu or 'mainmenu', 'in', data_)
+    if data_ then
+      switch.load_page(data_.last_menu or 'mainmenu', 'in', data_)
+    else
+      switch.load_page('mainmenu', 'in')
+    end
   end)
   
   menu.up_blocker = ui.new_image{ parent = parent, path='nothing', x=-480, y=-300, w=1280, h=52 }

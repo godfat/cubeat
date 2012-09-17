@@ -206,6 +206,12 @@ Sprite& Sprite::moveTween(int x, int y, int duration, function<void()> cb, int d
     return *this;
 }
 
+Sprite& Sprite::lazyFixAlphaArtifact()
+{
+    set<ScaleWithUV>(vec2(0.995, 0.995));
+    return *this;
+}
+
 /// Maybe this feature should move to another class and use multiple inheritance.
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {

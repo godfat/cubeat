@@ -115,6 +115,7 @@ Mt_Sprite.get_size_x              = C.Sprite_get_size_x
 Mt_Sprite.get_size_y              = C.Sprite_get_size_y
 Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
+Mt_Sprite.lazy_fix_alpha_artifact = C.Sprite_lazy_fix_alpha_artifact
 
 Mt_Sprite.on_release              = function(p, b, func)
   C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, ObjCallbackT, p, b, func))

@@ -162,6 +162,12 @@ int Sprite_get_screen_pos_y(pSprite* self) {
     return (int)((*self)->getScreenPos().Y);
 }
 
+void Sprite_lazy_fix_alpha_artifact(pSprite* self) {
+    (*self)->lazyFixAlphaArtifact();
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+
 void SpriteText_change_text(pSpriteText* self, char const* text) {
     (*self)->changeText(text);
 }

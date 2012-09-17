@@ -69,7 +69,7 @@ pDemo Demo::init()
 
     gameplay_ = Conf::i().config_of("gameplay/multi");
     PlayerAbility::ability_modify( gameplay_.M("ability_constants") );
-    uiconf_   = Conf::i().config_of("ui/demo_layout");
+
     // setup stage & ui & player's view objects:
     stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
@@ -97,9 +97,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     sconf_ = scene_name;
     music_state_ = false;
     music_state_old_ = false;
+    uiconf_ = Conf::i().config_of("ui/demo_layout");
 
-    passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
-    passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
+// WTF MEMO 2012.9 failed to adjust for balance
+//    passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
+//    passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
 
     //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0).stop();
@@ -161,12 +163,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
 
     // update map settings with player passive modification:
-    set0->apply_player_passive_mods( passive_conf0_ );
-    set1->apply_player_passive_mods( passive_conf1_ );
+// WTF MEMO 2012.9 failed to adjust for balance
+//    set0->apply_player_passive_mods( passive_conf0_ );
+//    set1->apply_player_passive_mods( passive_conf1_ );
 
     // some interacting settings have to be resolved first:
-    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
-    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
+// WTF MEMO 2012.9 failed to adjust for balance
+//    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
+//    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
     map0_ = presenter::Map::create(set0, player0_);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
@@ -195,21 +199,75 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
-    using std::tr1::bind;
-
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-//        bind(&Demo::game_start, this), 4000);
+//        std::tr1::bind(&Demo::game_start, this), 4000);
 
     //start music
-
     audio::Sound::i().stopAll(); //stop old
     stage_->playBGM();
 
     //ready_go(4);
+    starting_effect(inplace);
+}
+
+void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace)
+{
+    game_mode_ = -1; // assign this value to Puzzle Demo for now
+    c1p_ = c1p;
+    sconf_ = scene_name;
+    music_state_ = false;
+    music_state_old_ = false;
+    puzzle_level_ = level;
+    uiconf_ = Conf::i().config_of("ui/puzzle_layout");
+
+    //stop timer for now because the initial loading gonna be some time.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0).stop();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->stop();
+    scene_->allowPicking(false);
+
+    //load scene again first
+    if( !inplace ) {
+        stage_->releaseResource();
+        stage_.reset();
+        stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
+    }
+
+    data::pViewSetting s0;
+    s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
+
+    ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
+    ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
+    player0_ = ctrl::Player::create(input, 0);
+    player0_->push_ally(0).player_hit_event(bind(&Demo::puzzle_started, this));
+
+    // setup map0
+    map0_ = utils::MapLoader::generate( puzzle_level_ );
+    map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
+
+    ///NEW: MAKE PLAYER KNOWS ABOUT MAP
+    std::vector< presenter::wpMap > map_list;
+    map_list.push_back(map0_);
+    player0_->setMapList( map_list );
+
+    setup_ui();
+
+    min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
+    win_ = false, puzzle_started_ = false, end_ = false;
+
+    //start timer here.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
+
+    //start music
+    if( !inplace ) {
+        audio::Sound::i().stopAll(); //stop old
+        stage_->playBGM();
+    }
+
     starting_effect(inplace);
 }
 
@@ -218,8 +276,9 @@ void Demo::init_vs_ppl(std::string const& c1p, std::string const& c2p, std::stri
     init_(0, c1p, c2p, scene_name);
 }
 
-void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
+void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::string const& scene_name, int const& ai_level)
 {
+    ai_level_ = ai_level; // TEMP WTF MEMO
     init_(1, c1p, c2p, scene_name);
 }
 
@@ -234,6 +293,11 @@ void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::
     ai_logging_conf_   = Conf::i().config_of("ai_logging_config");
     run_next_log();
     //init_(3, c1p, c2p, scene_name);
+}
+
+void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name)
+{
+    init_for_puzzle_(c1p, scene_name, 2, false);
 }
 
 void Demo::run_next_log()
@@ -281,11 +345,12 @@ void Demo::quit()
 void Demo::leaving_effect()
 {
     heatgauge1_->set<Visible>(false);
-    heatgauge2_->set<Visible>(false);
+    if( game_mode_ > -1 ) heatgauge2_->set<Visible>(false);
     hide_upper_layer_ui();
     scene_->tween<ISine, Pos2D>(vec2( Conf::i().SCREEN_W(), - Conf::i().SCREEN_H()/2 ), 1000u);
     script::Lua::call(L_, "slide_in");
 
+    audio::Sound::i().stopAll();
     audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -295,10 +360,10 @@ void Demo::leaving_effect()
 void Demo::starting_effect(bool const& inplace)
 {
     if( inplace ) {
-        ready_go(4);
+        ready_go(2);
     }
     else {
-        std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 3);
+        std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 1);
         scene_->tween<OSine, Pos2D>(
             vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
             vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
@@ -322,12 +387,13 @@ void Demo::ready_go(int step)
 
         game_start();
     }
-    else if ( step <= 3 ) {
+    else if ( step <= 1 ) {
         audio::Sound::i().playBuffer("count.wav");
-        ready_go_text_->showNumber(step);
-        ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
+        //ready_go_text_->showNumber(step);
+        ready_go_text_->changeText("ready?");
+        ready_go_text_->set<Scale>(vec3(1.25,1.25,1.25));
         ready_go_text_->set<Visible>(true);
-        ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+        ready_go_text_->tween<OElastic, Scale>(vec3(4,4,4), 900u, 0);
     }
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);
@@ -349,18 +415,23 @@ void Demo::game_start()
     }
 
     if( game_mode_ == 2 || game_mode_ == 3 ) {
-        //blocker_->set<Visible>(true);
+        blocker_->set<Visible>(true);
+        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H() + 130));
         pause_note_text_->set<Visible>(true);
+    }
+    if( game_mode_ == -1 ) {
+        desc_text_->set<Visible>(true);
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     scene_->allowPicking(true);
 
     player0_->subscribe_player_specific_interactions();
-    player1_->subscribe_player_specific_interactions();
-
-    map0_->start_dropping();
-    map1_->start_dropping();
+    if( game_mode_ > -1 ) {
+        map0_->start_dropping();
+        player1_->subscribe_player_specific_interactions();
+        map1_->start_dropping();
+    }
 
     if( game_mode_ > 0 )
         player1_->startThinking();
@@ -386,36 +457,41 @@ void Demo::setup_ui()
     //2012.05 attack effect changed. I still need their position but don't show them
     ui_layout_->getSpriteText("gar1p").set<Visible>(false);
     ui_layout_->getSpriteText("gar2p").set<Visible>(false);
-
     vec2 center_pos1( uiconf_.I("character_center_x1"), uiconf_.I("character_center_y") );
-    vec2 center_pos2( uiconf_.I("character_center_x2"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p_, scene_, center_pos1 );
-    pview2_ = presenter::PlayerView::create( c2p_, scene_, center_pos2 );
-    pview2_->flipPosition();
     pview1_->setMap( map0_ );
-    pview2_->setMap( map1_ );
     pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
-    pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
+    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
 
-    utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
-    vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
-    vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
+    if( game_mode_ == -1 ) {    //2011.04.05 make stage number equal to puzzle level.
+        ui_layout_->getSpriteText("stage").changeText( "level" + to_s(puzzle_level_ - 1) ); //first puzzle have 3 chains.
+    }
+
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        vec2 center_pos2( uiconf_.I("character_center_x2"), uiconf_.I("character_center_y") );
+        pview2_ = presenter::PlayerView::create( c2p_, scene_, center_pos2 );
+        pview2_->flipPosition();
+        pview2_->setMap( map1_ );
+        pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
+        heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
+    }
 
 //2012.05 new heatgauge
+//    utils::map_any const& gauge_conf = uiconf_.M("heatgauge");
+//    vec2 gauge1_pos( gauge_conf.I("x_1p"), gauge_conf.I("y") );
+//    vec2 gauge2_pos( gauge_conf.I("x_2p"), gauge_conf.I("y") );
+
 //    heatgauge1_ = view::Sprite::create("heatgauge1", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
 //    heatgauge2_ = view::Sprite::create("heatgauge2", scene_, gauge_conf.I("w"), gauge_conf.I("h"), false);
 //    heatgauge1_->set<Pos2D>( gauge1_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
 //                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
 //    heatgauge2_->set<Pos2D>( gauge2_pos ).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(128)
 //                .set<Rotation>(vec3(0, 0, gauge_conf.I("rotation")));
-    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-    heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
-    heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
 
     ui_layout_->setPickable(false);
-
-    gauge1_flag_ = gauge2_flag_ = false; // ?????
+    gauge1_flag_ = gauge2_flag_ = false; // for heatgauge blinking only??
 
     // other UI related texts here
 
@@ -423,14 +499,16 @@ void Demo::setup_ui()
         //blocker_  = view::Sprite::create("blocker", ui_scene_, Conf::i().SCREEN_W() ,350, true);
         blocker_  = view::Sprite::create("blocker", ui_scene_, Conf::i().SCREEN_W() ,368, true);
         blocker_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) );
-        blocker_->setDepth(-50).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
+        blocker_->setDepth(-10).set<Alpha>(100).set<GradientDiffuse>(0).setPickable(false);
 
         end_text_ = view::SpriteText::create("play again?", ui_scene_, "kimberley", 30, true);
         end_text_->setPickable(false);
         end_text2_= view::SpriteText::create("\nyes: left click\nleave: right click", ui_scene_, "kimberley", 30, true);
         end_text2_->setPickable(false);
         win_t_    = view::Sprite::create("win", ui_scene_, 384, 192, true);
+        win_t_->setDepth(-450).setPickable(false);
         lose_t_   = view::Sprite::create("lose", ui_scene_, 384, 192, true);
+        lose_t_->setDepth(-450).setPickable(false);
 
         pause_text_ = view::SpriteText::create("back to menu?", ui_scene_, "kimberley", 30, true);
         pause_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
@@ -453,15 +531,12 @@ void Demo::setup_ui()
         pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
         pause_note_text_->setDepth(-100).setPickable(false);
 
+        desc_text_ = view::SpriteText::create("practice:\n\nclear all cubes\nin one shot", ui_scene_, "kimberley", 30, true);
+        desc_text_->set<Pos2D>( vec2(1065, 170) );
+        desc_text_->setDepth(-20).setPickable(false);
+
         some_ui_inited_ = true;
     }
-
-    // temp: hack for cutin effect
-    ppl1_special_img_ = view::Sprite::create(c1p_.substr(5, 9)+"/cutin", ui_scene_, 425, 368, true);
-    ppl1_special_img_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2) ).setDepth(-100).setPickable(false);
-    ppl1_special_img_->set<Visible>(false);
-    ppl1_special_img_->textureFlipH();
-
     hide_upper_layer_ui();
 }
 
@@ -479,6 +554,7 @@ void Demo::hide_upper_layer_ui()
         win_t_->set<Visible>(false);
         lose_t_->set<Visible>(false);
         pause_t_->set<Visible>(false);
+        desc_text_->set<Visible>(false);
     }
 }
 
@@ -507,43 +583,48 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
 }
 
 void Demo::update_ui(){
-    int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
-    int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
-// 2012.05 substituted by attack effect
-//    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
-//    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
-    ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
-
-    //2011.03.25 weapon temporarily removed
-
-    //ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
-    //ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
-    //ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
-    //ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
-    //ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
-    //ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
-
-    //for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
-    //    if( i == player0_->wepid() )
-    //        ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-    //    else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
-    //
-    //    if( i == player1_->wepid() )
-    //        ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
-    //    else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
-    //}
-
-    if( pview1_->getState() == presenter::PlayerView::HIT &&
-        last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
-    if( pview2_->getState() == presenter::PlayerView::HIT &&
-        last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
-
     update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
-    update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
 
-    last_garbage_1p_ = new_garbage_1p_;
-    last_garbage_2p_ = new_garbage_2p_;
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+
+        int new_garbage_1p_ = map0_->garbage_left() + map1_->current_sum_of_attack();
+        int new_garbage_2p_ = map1_->garbage_left() + map0_->current_sum_of_attack();
+    // 2012.05 substituted by attack effect
+    //    ui_layout_->getSpriteText("gar1p").showNumber(new_garbage_1p_, 0);
+    //    ui_layout_->getSpriteText("gar2p").showNumber(new_garbage_2p_, 0);
+
+        ui_layout_->getSpriteText("scr2p").showNumber(map1_->score(), 5);
+
+        //2011.03.25 weapon temporarily removed
+
+        //ui_layout_->getSpriteText("wep1p1").showNumber(player0_->weapon(0)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep1p2").showNumber(player0_->weapon(1)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep1p3").showNumber(player0_->weapon(2)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p1").showNumber(player1_->weapon(0)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p2").showNumber(player1_->weapon(1)->ammo(), 2);
+        //ui_layout_->getSpriteText("wep2p3").showNumber(player1_->weapon(2)->ammo(), 2);
+
+        //for( int i = 0; i <= 2; ++i ) { //note: not flexible, only for test.
+        //    if( i == player0_->wepid() )
+        //        ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+        //    else ui_layout_->getSpriteText("wep1p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+        //
+        //    if( i == player1_->wepid() )
+        //        ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(2,2,2));
+        //    else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
+        //}
+
+        if( pview1_->getState() == presenter::PlayerView::HIT &&
+            last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
+        if( pview2_->getState() == presenter::PlayerView::HIT &&
+            last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
+
+        update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
+
+        last_garbage_1p_ = new_garbage_1p_;
+        last_garbage_2p_ = new_garbage_2p_;
+    }
 }
 
 void Demo::update_ui_by_second(){
@@ -562,27 +643,37 @@ void Demo::game_stop()
     btn_pause_.reset();
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
-    audio::Sound::i().stopAll();
+
     map0_->stop_dropping();
-    map1_->stop_dropping();
+    player0_->stopAllActions();
+    ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
+
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+
+        audio::Sound::i().stopAll(); // don't stop music when puzzle
+
+        map1_->stop_dropping();
+        player1_->stopAllActions();
+        ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
+    }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(1.0);
-
-    ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
-    ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-    player0_->stopAllActions();
-    player1_->stopAllActions();
 }
 
 void Demo::cleanup()
 {
     map0_.reset();
-    map1_.reset();
     player0_.reset();
-    player1_.reset();
+    pview1_.reset();
+
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        map1_.reset();
+        player1_.reset();
+        pview2_.reset();
+    }
 }
 
 bool Demo::ai_logging(pMap lose_map)
@@ -631,6 +722,7 @@ bool Demo::ai_logging(pMap lose_map)
 void Demo::end(pMap lose_map)
 {
     game_stop();
+    end_ = true;
 
     // ai_logging special_case:
     // if I call reinit directly, won't the call-stack explode here?
@@ -638,40 +730,78 @@ void Demo::end(pMap lose_map)
         return;
     }
 
-    if( pause_note_text_) pause_note_text_->set<Visible>(false);
-    blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
+    // WTF BBQ!!!!!!!!!!!!!!!!!!!
+    if( game_mode_ > -1 ) {
+        if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
+        blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
+        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
 
-    win_t_->set<Visible>(true);
-    lose_t_->set<Visible>(true);
+        win_t_->set<Visible>(true);
+        lose_t_->set<Visible>(true);
 
-    vec2 pos1 = vec2(Conf::i().SCREEN_W() /4,   Conf::i().SCREEN_H() /2);
-    vec2 pos2 = vec2(Conf::i().SCREEN_W() /4*3, Conf::i().SCREEN_H() /2);
-    if( lose_map == map0_ ) {
-        lose_t_->set<Pos2D>( pos1 );
-        win_t_->set<Pos2D>( pos2 );
-        if( game_mode_ == 1 )
-            audio::Sound::i().playBuffer("3/3c/lose.wav");
-        else
+        vec2 pos1 = vec2(Conf::i().SCREEN_W() /4,   Conf::i().SCREEN_H() /2);
+        vec2 pos2 = vec2(Conf::i().SCREEN_W() /4*3, Conf::i().SCREEN_H() /2);
+        if( lose_map == map0_ ) {
+            lose_t_->set<Pos2D>( pos1 );
+            win_t_->set<Pos2D>( pos2 );
+            if( game_mode_ == 1 )
+                audio::Sound::i().playBuffer("3/3c/lose.wav");
+            else
+                audio::Sound::i().playBuffer("3/3c/win.wav");
+        }
+        else {
+            lose_t_->set<Pos2D>( pos2 );
+            win_t_->set<Pos2D>( pos1 );
             audio::Sound::i().playBuffer("3/3c/win.wav");
-    }
-    else {
-        lose_t_->set<Pos2D>( pos2 );
-        win_t_->set<Pos2D>( pos1 );
-        audio::Sound::i().playBuffer("3/3c/win.wav");
-    }
-    vec3 v0(0,0,0), v1(1,1,1);
-    win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
-    lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+        }
+        vec3 v0(0,0,0), v1(1,1,1);
+        win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+        lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-    end_text_->set<Visible>(true);
-    end_text2_->set<Visible>(true);
-    end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
-    end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
-    end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-    end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text_->set<Visible>(true);
+        end_text_->changeText( "play again?" );
+        end_text2_->set<Visible>(true);
+        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
+        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::setup_end_button, this), 1000);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Demo::setup_end_button, this), 1000);
+    }
+    else {     // WTF BBQ!!!!!!!!!!!!!!!!!!!
+        blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
+        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
+        audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );
+
+        if( win_ ) {
+            win_t_->set<Visible>(true);
+            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
+            win_t_->set<Pos2D>( pos );
+            vec3 v0(0,0,0), v1(1,1,1);
+            win_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+        }
+        else {
+            lose_t_->set<Visible>(true);
+            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
+            lose_t_->set<Pos2D>( pos );
+            vec3 v0(0,0,0), v1(1,1,1);
+            lose_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+        }
+
+        end_text_->set<Visible>(true);
+        end_text_->changeText( win_ ? "to next level?" : "try again at same level?" );
+        end_text2_->set<Visible>(true);
+        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 50) );
+        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 100) );
+        end_text_-> set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text2_->set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        using std::tr1::bind;
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Demo::setup_end_button, this), 1000);
+    }
 }
 
 void Demo::setup_end_button()
@@ -679,7 +809,17 @@ void Demo::setup_end_button()
     std::tr1::function<void(int, int)> clicka = bind(&Demo::reinit, this);
     std::tr1::function<void(int, int)> clickb = bind(&Demo::end_sequence1, this);
     btn_reinit_ = pDummy(new int);
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                clickb, btn_reinit_, &input->trig2(), ctrl::BTN_PRESS);
+        }
+    }
+    else {
+        ctrl::Input const* input = ctrl::InputMgr::i().getInputByIndex(0);
         ctrl::EventDispatcher::i().subscribe_btn_event(
             clicka, btn_reinit_, &input->trig1(), ctrl::BTN_PRESS);
         ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -720,7 +860,14 @@ void Demo::reinit()
     audio::Sound::i().playBuffer("4/4b.wav");
     btn_reinit_.reset();
 
-    init_(game_mode_, c1p_, c2p_, sconf_, true);
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        init_(game_mode_, c1p_, c2p_, sconf_, true);
+    } else {
+        int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_;
+        if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
+        else if( new_puzzle_lv < 2 ) new_puzzle_lv = 2;
+        init_for_puzzle_( c1p_, sconf_, new_puzzle_lv, true );
+    }
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        bind(&App::launchDemo, &App::i()), 500);
@@ -733,12 +880,13 @@ void Demo::pause(ctrl::Input const* controller)
 {
     if( btn_pause_ ) return; //it's already paused, don't do anything if this is called again.
 
-    if( pause_note_text_) pause_note_text_->set<Visible>(false);
+    if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
 
     pause_text_->set<Visible>(true);
     pause_text2_->set<Visible>(true);
     pause_t_->set<Visible>(true);
     blocker_->set<Alpha>(100).set<Visible>(true);
+    blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
     audio::Sound::i().pauseAll(true);
@@ -749,13 +897,15 @@ void Demo::pause(ctrl::Input const* controller)
 
     btn_pause_ = pDummy(new int);
 
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
+        }
     }
 
     ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -781,72 +931,30 @@ void Demo::resume(ctrl::Input const* controller)
 
     btn_pause_.reset(); //reset button event subscribed by this handle.
 
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+    if( game_mode_ > -1 ) { // puzzle demo WTF temp
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+            input->player()->subscribe_player_specific_interactions();
+        }
+    }
+    else {
+        ctrl::Input const* input = ctrl::InputMgr::i().getInputByIndex(0);
         ctrl::EventDispatcher::i().subscribe_btn_event(
             bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
-        input->player()->subscribe_player_specific_interactions();
+        input->player()->subscribe_player_specific_interactions(false);
     }
-}
-
-void Demo::timed_pause(std::time_t const& t)
-{
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
-    audio::Sound::i().pauseAll(true);
-    btn_pause_ = pDummy(new int);
-    scene_->allowPicking(false);
-
-    //these probably should not belong here
-    blocker_->set<Alpha>(100).set<Visible>(true);
-    ppl1_special_img_->set<Visible>(true);
-
-    data::AnimatorParam<OSine, Pos2D>  mov1;
-    data::AnimatorParam<Linear, Pos2D> mov2;
-    data::AnimatorParam<ISine, Pos2D>  mov3;
-
-    mov1.start( vec2(-300, Conf::i().SCREEN_H() / 2) ).end( vec2( 300, Conf::i().SCREEN_H() / 2) ).duration(200);
-    mov2.start( vec2( 300, Conf::i().SCREEN_H() / 2) ).end( vec2( 900, Conf::i().SCREEN_H() / 2) ).duration(550);
-    mov3.start( vec2( 900, Conf::i().SCREEN_H() / 2) ).end( vec2(1600, Conf::i().SCREEN_H() / 2) ).duration(200);
-
-    ppl1_special_img_->queue(mov1).queue(mov2).tween(mov3);
-    //---
-
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
-    }
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-        bind(&Demo::resume2, this), shared_from_this(), t);
-}
-
-void Demo::resume2()
-{
-    if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
-
-    blocker_->set<Visible>(false);
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
-    audio::Sound::i().pauseAll(false);
-    scene_->allowPicking(true);
-
-    btn_pause_.reset(); //reset button event subscribed by this handle.
-
-    BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
-        ctrl::EventDispatcher::i().subscribe_btn_event(
-            bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
-        input->player()->subscribe_player_specific_interactions();
-    }
-
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::ppl1_special_attacked, this, false), shared_from_this(), 1000);
 }
 
 void Demo::music_state(bool f) {
     music_state_ = f;
+}
+
+void Demo::puzzle_started() //This is a callback for obj_event, so you cannot clear obj_event inside this.
+{
+    puzzle_started_ = true;
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&ctrl::EventDispatcher::clear_obj_event, &ctrl::EventDispatcher::i(), scene_), 1);
 }
 
 //temp: hack
@@ -870,64 +978,76 @@ void Demo::cycle()
     if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
         t0 = clock();
         pview1_->cycle();
-        pview2_->cycle();
+        if( game_mode_ > -1 ) pview2_->cycle();
         update_ui();
         t1 = clock();
         map0_->cycle();
-        map1_->cycle();
+        if( game_mode_ > -1 ) map1_->cycle();
         t2 = clock();
 
         // temp: hack, just for test
-        if( predicate_column_full_and_has_enough_garbage(map0_, map1_) ) {
-            if( timer_music_state_ ) {
-                printf("Demo: nope.. we are very dangerous again.\n");
-                timer_music_state_.reset();
+        if( game_mode_ > -1 ) {
+            if( predicate_column_full_and_has_enough_garbage(map0_, map1_) ) {
+                if( timer_music_state_ ) {
+                    printf("Demo: nope.. we are very dangerous again.\n");
+                    timer_music_state_.reset();
+                }
+                music_state(true);
             }
-            music_state(true);
-        }
-        else {
-            if( music_state_ ) {
-                if( map0_->warning_level() + map1_->warning_level() == 0 ) {
-                    if( !timer_music_state_ ) {
-                        printf("Demo: countdown 6.5 secs to music_state = false\n");
-                        timer_music_state_ = pDummy(new int);
-                        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                            std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 7000);
-                        //this means you have to be in no-danger situation for 3 seconds to leave emergency music
-                    }
-                } else {
-                    if( timer_music_state_ ) {
-                        printf("Demo: nope.. it's still pretty dangerous.\n");
-                        timer_music_state_.reset();
+            else {
+                if( music_state_ ) {
+                    if( map0_->warning_level() + map1_->warning_level() == 0 ) {
+                        if( !timer_music_state_ ) {
+                            printf("Demo: countdown 6.5 secs to music_state = false\n");
+                            timer_music_state_ = pDummy(new int);
+                            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                                std::tr1::bind(&Demo::music_state, this, false), timer_music_state_, 7000);
+                            //this means you have to be in no-danger situation for 3 seconds to leave emergency music
+                        }
+                    } else {
+                        if( timer_music_state_ ) {
+                            printf("Demo: nope.. it's still pretty dangerous.\n");
+                            timer_music_state_.reset();
+                        }
                     }
                 }
             }
-        }
 
-        // temp: hack, just for test
-        if( music_state_ == true && music_state_old_ == false ) {
-            printf("Demo: true -> music_state\n");
-            stage_->playFastBGM(250);
-        }
-        if( music_state_ == false && music_state_old_ == true ) {
-            printf("Demo: false -> music_state\n");
-            stage_->playBGM(500);
+            // temp: hack, just for test
+            if( music_state_ == true && music_state_old_ == false ) {
+                printf("Demo: true -> music_state\n");
+                stage_->playFastBGM(200);
+            }
+            if( music_state_ == false && music_state_old_ == true ) {
+                printf("Demo: false -> music_state\n");
+                stage_->playBGM(500);
+            }
         }
         t3 = clock();
 
         if( !btn_reinit_ && !btn_pause_ ) { //2011.04.09 quick fix: if these indicator is alive, stop AI's possible inputs
             player0_->cycle();
-            player1_->cycle();
+            if( game_mode_ > -1 ) player1_->cycle();
+        }
+
+        if( game_mode_ == -1 ) {
+            //note: bad way........ but have no time.
+            if( !end_ ) {
+                if( puzzle_started_ ) {
+                    if( map0_->all_empty() ) {
+                        win_ = true;
+                        end(map0_);
+                    }
+                    else if( map0_->all_waiting() ) {
+                        win_ = false;
+                        end(map0_);
+                    }
+                }
+            }
         }
 
         t4 = clock();
-//        // temp: hack, just for test (cut-in)
-//        if( !ppl1_special_attacked_ && map1_->garbage_left() > 15 ) {
-//            timed_pause(1000);
-//            ppl1_special_attacked_ = true;
-//        }
     }
-
 
     stage_->cycle();
     t5 = clock();

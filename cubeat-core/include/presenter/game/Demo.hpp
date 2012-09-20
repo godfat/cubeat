@@ -32,10 +32,10 @@ typedef std::tr1::shared_ptr<Menu> pMenu;
 
 namespace presenter {
 
-class Stage;
+class Stage2;
 class Map;
 class PlayerView;
-typedef std::tr1::shared_ptr<Stage> pStage;
+typedef std::tr1::shared_ptr<Stage2> pStage2;
 typedef std::tr1::shared_ptr<Map> pMap;
 typedef std::tr1::shared_ptr<PlayerView> pPlayerView;
 
@@ -108,7 +108,7 @@ private:
 protected:
     view::pScene scene_;
     view::pScene ui_scene_;
-    presenter::pStage stage_;
+    presenter::pStage2 stage_;
     presenter::pMap map0_;
     presenter::pMap map1_;
     ctrl::pPlayer player0_;

@@ -10,7 +10,7 @@
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
 
-#include "presenter/Stage.hpp"
+#include "presenter/Stage2.hpp"
 #include "presenter/PlayerView.hpp"
 #include "presenter/Map.hpp"
 #include "presenter/cube/ViewSpriteMaster.hpp"
@@ -71,7 +71,7 @@ pDemo Demo::init()
     PlayerAbility::ability_modify( gameplay_.M("ability_constants") );
 
     // setup stage & ui & player's view objects:
-    stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
+    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     L_ = luaL_newstate();
     luaL_openlibs(L_);
@@ -113,7 +113,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         stage_->releaseResource();
         stage_.reset();
     }
-    stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
+    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     data::pViewSetting s0, s1;
 
@@ -233,7 +233,7 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
     if( !inplace ) {
         stage_->releaseResource();
         stage_.reset();
-        stage_ = presenter::Stage::create( sconf_.size() ? sconf_ : "stage/jungle" );
+        stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
     }
 
     data::pViewSetting s0;
@@ -615,10 +615,11 @@ void Demo::update_ui(){
         //    else ui_layout_->getSpriteText("wep2p"+to_s(i+1)).set<Scale>(vec3(1,1,1));
         //}
 
-        if( pview1_->getState() == presenter::PlayerView::HIT &&
-            last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
-        if( pview2_->getState() == presenter::PlayerView::HIT &&
-            last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
+// 2012 remove: no interaction to the background scene
+//        if( pview1_->getState() == presenter::PlayerView::HIT &&
+//            last_garbage_1p_ > new_garbage_1p_ ) stage_->hitGroup(1);
+//        if( pview2_->getState() == presenter::PlayerView::HIT &&
+//            last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
         update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
 

@@ -212,6 +212,13 @@ Sprite& Sprite::lazyFixAlphaArtifact()
     return *this;
 }
 
+Sprite& Sprite::removeTexture()
+{
+    IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+    driver->removeTexture( body_->getMaterial(0).getTexture(0) );
+    return *this;
+}
+
 /// Maybe this feature should move to another class and use multiple inheritance.
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {

@@ -116,6 +116,7 @@ Mt_Sprite.get_size_y              = C.Sprite_get_size_y
 Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
 Mt_Sprite.lazy_fix_alpha_artifact = C.Sprite_lazy_fix_alpha_artifact
+Mt_Sprite.remove_texture          = C.Sprite_remove_texture
 
 Mt_Sprite.on_release              = function(p, b, func)
   C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, ObjCallbackT, p, b, func))
@@ -141,9 +142,10 @@ Mt_Sprite.on_leave_focus          = function(p, input, func)
   C.Sprite_on_leave_focus(ffi.cast("pSprite*", p), input, tracked_cb(__on_leave_focus__, ObjCallback_Int2T, p, input, func))
 end
 
-Mt_Sprite.remove                  = function(p)
+Mt_Sprite.remove                  = function(p, texture_release)
   remove_callbacks(p)
   p:set_visible(false)
+  if texture_release then p:remove_texture() end
 end
 
 ffi.metatype("pSprite", Mt_Sprite)

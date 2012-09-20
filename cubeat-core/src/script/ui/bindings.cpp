@@ -166,6 +166,10 @@ void Sprite_lazy_fix_alpha_artifact(pSprite* self) {
     (*self)->lazyFixAlphaArtifact();
 }
 
+void Sprite_remove_texture(pSprite* self) {
+    (*self)->removeTexture();
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 
 void SpriteText_change_text(pSpriteText* self, char const* text) {

@@ -62,6 +62,9 @@ public:
     virtual Sprite& textureFlipV();
     virtual Sprite& lazyFixAlphaArtifact();
 
+    //normally you don't want to do this.
+    virtual Sprite& removeTexture();
+
     virtual bool const& isCenterAligned() const { return center_; }
 
     //Maybe this feature should move to another class and use multiple inheritance.

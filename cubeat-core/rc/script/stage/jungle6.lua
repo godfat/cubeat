@@ -13,7 +13,15 @@ local need_release_ = false
 
 function init(scene)
   scene_ = ffi.cast("pScene*", scene)
-  local l0 = new_layer{ name = "bg6/99complete", parent = scene_ } 
+  --local l0 = new_layer{ name = "bg6/99complete", parent = scene_ } 
+  local l1 = new_layer{ name = "bg6/01bg", parent = scene_ } 
+  
+  local l2 = new_layer{ name = "bg6/02blade", parent = scene_, center = true }
+  l2:set_pos(127, 489)
+  l2:tween("Linear", "Rotation", ffi.new("v3",0,0,0), ffi.new("v3",0,0,360), 500, -1)
+  
+  local l3 = new_layer{ name = "bg6/03tablefront", parent = scene_ }
+  l3:set_pos(0, 464)
   
   local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
 end

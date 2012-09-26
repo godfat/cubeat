@@ -6,6 +6,9 @@
 #include "script/lua_utility.hpp"
 #include "Conf.hpp"
 
+//ok, is this really cross-platform?
+#include <sys/stat.h>
+
 using namespace irr;
 using namespace video;
 using namespace scene;
@@ -13,7 +16,7 @@ using namespace scene;
 using namespace psc;
 using namespace presenter;
 
-Stage2::Stage2() : need_release_(false)
+Stage2::Stage2() : need_release_(false), last_fs_time_(0)
 {
     audio::Sound::i().stopAll();
 }
@@ -36,6 +39,8 @@ Stage2& Stage2::releaseResource()
 
 pStage2 Stage2::init( std::string const& path )
 {
+    lua_path_ = path+".lua";
+
     conf_ = Conf::i().config_of(path);
     printf("C: 1\n");
     scene_ = view::Scene::create( conf_.S("name") );
@@ -43,7 +48,12 @@ pStage2 Stage2::init( std::string const& path )
     printf("C: 2\n");
     L_ = luaL_newstate();
     luaL_openlibs(L_);
-    script::Lua::run_script(L_, Conf::i().script_path(path+".lua").c_str() );
+
+    // check for file time
+    stat(Conf::i().script_path(lua_path_).c_str(), &fs);
+    last_fs_time_ = fs.st_mtime;
+
+    script::Lua::run_script(L_, Conf::i().script_path(lua_path_).c_str() );
     printf("C: 3\n");
     script::Lua::call(L_, "init", static_cast<void*>(&scene_));
     printf("C: 4\n");
@@ -71,5 +81,14 @@ void Stage2::cycle()
 {
     //script::Lua::call(L_, "cycle");
     scene_->redraw();
+
+    stat(Conf::i().script_path(lua_path_).c_str(), &fs);
+    if( fs.st_mtime > last_fs_time_ ) {
+        printf("C: reloading Lua stage...\n");
+        script::Lua::call(L_, "cleanup");
+        script::Lua::run_script(L_, Conf::i().script_path(lua_path_).c_str());
+        script::Lua::call(L_, "init", static_cast<void*>(&scene_));
+        last_fs_time_ = fs.st_mtime;
+    }
 }
 

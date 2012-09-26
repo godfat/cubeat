@@ -51,9 +51,11 @@ protected:
     bool need_release_;
     view::pScene scene_;
     utils::map_any conf_;
-    std::string music_path_a_, music_path_b_, fmusic_path_a_, fmusic_path_b_;
+    std::string lua_path_, music_path_a_, music_path_b_, fmusic_path_a_, fmusic_path_b_;
 
     lua_State* L_;
+    struct stat fs;
+    int last_fs_time_;
 };
 
 typedef Stage2::pointer_type pStage2;

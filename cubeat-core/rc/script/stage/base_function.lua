@@ -15,6 +15,7 @@ end
 
 local function new_layer(o)
   local index = #layers+1
+  if not o.parent then error(o.name.." has no parent!") end 
   layers[index] = view.new_sprite(o.name, o.parent, o.width, o.height, o.center)
   layers[index]:set_depth( o.layer and (-100*o.layer) or (-100*index) )
   return layers[index]

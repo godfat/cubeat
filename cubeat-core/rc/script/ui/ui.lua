@@ -34,6 +34,16 @@ local function set_on_down_callback(sprite, func, input)
   if input==2 or input==nil then sprite:on_down( Input2_left, func ) end
 end
 
+local function set_on_leave_focus_callback(sprite, func, input)
+  if input==1 or input==nil then sprite:on_leave_focus( Input1, func ) end
+  if input==2 or input==nil then sprite:on_leave_focus( Input2, func ) end
+end
+
+local function set_on_enter_focus_callback(sprite, func, input)
+  if input==1 or input==nil then sprite:on_enter_focus( Input1, func ) end
+  if input==2 or input==nil then sprite:on_enter_focus( Input2, func ) end
+end
+
 local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
   local focus_f = function(self) self:set_texture(focus_pic) end
   local leave_f = function(self) self:set_texture(leave_pic) end
@@ -62,6 +72,7 @@ local function set_focus_leave_color(obj, focus_color, leave_color, input)
   end
 end
 
+
 ----------------------------------------------------------------------------
 -- Metatable supplementals
 ----------------------------------------------------------------------------
@@ -88,6 +99,22 @@ view.Mt_SpriteText_Ex.on_down = function(self, func, input)
   set_on_down_callback(self._cdata, func, input)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
   set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, input)
+end
+
+view.Mt_Sprite_Ex.on_leave_focus = function(self, func, input)
+  set_on_leave_focus_callback(self._cdata, func, input)
+end
+
+view.Mt_Sprite_Ex.on_enter_focus = function(self, func, input)
+  set_on_enter_focus_callback(self._cdata, func, input)
+end
+
+view.Mt_SpriteText_Ex.on_leave_focus = function(self, func, input)
+  set_on_leave_focus_callback(self._cdata, func, input)
+end
+
+view.Mt_SpriteText_Ex.on_enter_focus = function(self, func, input)
+  set_on_enter_focus_callback(self._cdata, func, input)
 end
 
 local Sprite_Based_Mt     = {__index = view.Mt_Sprite_Ex}

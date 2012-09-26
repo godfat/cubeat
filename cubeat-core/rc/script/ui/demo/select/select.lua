@@ -140,13 +140,12 @@ local function init(demo, parent, data)
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
     menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
-    --menu[k]._cdata:on_press( view.Input1_left, choose_character ) 
-    menu[k]:on_leave_focus( view.Input1, leave_icon(1, i, menu) )
-    menu[k]:on_enter_focus( view.Input1, enter_icon(1, i, menu) )
+    menu[k]:on_leave_focus( leave_icon(1, i, menu), 1 )
+    menu[k]:on_enter_focus( enter_icon(1, i, menu), 1 )
     
     if data_ and data_.game_mode ~= 1 then 
-      menu[k]:on_leave_focus( view.Input2, leave_icon(2, i, menu) )
-      menu[k]:on_enter_focus( view.Input2, enter_icon(2, i, menu) )
+      menu[k]:on_leave_focus( leave_icon(2, i, menu), 2 )
+      menu[k]:on_enter_focus( enter_icon(2, i, menu), 2 )
     end
   end
 

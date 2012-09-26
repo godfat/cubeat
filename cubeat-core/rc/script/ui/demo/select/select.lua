@@ -139,8 +139,8 @@ local function init(demo, parent, data)
   --for i,v in ipairs(actor_icon) do
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
-    --menu[k]:on_press( choose_character )
-    menu[k]._cdata:on_press( view.Input1_left, choose_character ) -- only allow player 1 to "check" for now.
+    menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
+    --menu[k]._cdata:on_press( view.Input1_left, choose_character ) 
     menu[k]:on_leave_focus( view.Input1, leave_icon(1, i, menu) )
     menu[k]:on_enter_focus( view.Input1, enter_icon(1, i, menu) )
     

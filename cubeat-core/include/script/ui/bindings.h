@@ -43,6 +43,8 @@ APIEXPORT int       Sprite_get_size_x(pSprite*);
 APIEXPORT int       Sprite_get_size_y(pSprite*);
 APIEXPORT int       Sprite_get_screen_pos_x(pSprite*);
 APIEXPORT int       Sprite_get_screen_pos_y(pSprite*);
+APIEXPORT void      Sprite_lazy_fix_alpha_artifact(pSprite*);
+APIEXPORT void      Sprite_remove_texture(pSprite*);
 
 APIEXPORT void      SpriteText_change_text(pSpriteText*, char const*);
 APIEXPORT void      SpriteText_set_pos(pSpriteText*, double, double);

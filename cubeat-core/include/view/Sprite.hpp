@@ -60,6 +60,10 @@ public:
     virtual Sprite& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
     virtual Sprite& textureFlipH();
     virtual Sprite& textureFlipV();
+    virtual Sprite& lazyFixAlphaArtifact();
+
+    //normally you don't want to do this.
+    virtual Sprite& removeTexture();
 
     virtual bool const& isCenterAligned() const { return center_; }
 

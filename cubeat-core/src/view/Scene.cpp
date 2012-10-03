@@ -158,6 +158,7 @@ Scene& Scene::redraw()
 
     smgr_->drawAll();
     smgr_->setActiveCamera(camera_);
+    // 2012 WTF note: should I make rt_plane_ or rt_camera_ invisible here? so no picking hindering?
     return *this;
 }
 

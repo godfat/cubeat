@@ -322,8 +322,7 @@ void Demo::run_next_log()
         log.V(record_name).M(index)["player1"] = 0;
         Conf::i().save_config(log, "tmp/ai_log");
 
-        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            bind(&Demo::init_, this, 3, c1p, c2p, sc, false), shared_from_this(), 100);
+        init_(3, c1p, c2p, sc, false);
     }
 }
 
@@ -1049,7 +1048,6 @@ void Demo::cycle()
 
         t4 = clock();
     }
-
     stage_->cycle();
     t5 = clock();
     scene_->redraw();

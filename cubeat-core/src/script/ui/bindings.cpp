@@ -50,6 +50,10 @@ void Sprite_set_rotation(pSprite* self, double deg) {
     (*self)->set<Rotation>(vec3(0, 0, deg));
 }
 
+void Sprite_set_scale(pSprite* self, double x, double y) {
+    (*self)->set<Scale>(vec3(x, y, 1));
+}
+
 void Sprite_set_size(pSprite* self, double w, double h) {
     (*self)->set<Size2D>(vec2(w, h));
 }
@@ -59,9 +63,13 @@ void Sprite_set_depth(pSprite* self, double depth) {
 }
 
 void Sprite_set_color(pSprite* self, int r, int g, int b) {
-    (*self)->set<Red>(r);
-    (*self)->set<Green>(g);
-    (*self)->set<Blue>(b);
+    (*self)->set<ColorDiffuseVec3>(vec3(r, g, b));
+}
+
+void Sprite_set_emissive(pSprite* self, int r, int g, int b) {
+    (*self)->set<RedE>(r);
+    (*self)->set<GreenE>(g);
+    (*self)->set<BlueE>(b);
 }
 
 void Sprite_set_red(pSprite* self, int r) {
@@ -168,6 +176,10 @@ void Sprite_lazy_fix_alpha_artifact(pSprite* self) {
 
 void Sprite_remove_texture(pSprite* self) {
     (*self)->removeTexture();
+}
+
+void Sprite_set_blending(pSprite* self, char const* mt_name) {
+    (*self)->setBlending(mt_name);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

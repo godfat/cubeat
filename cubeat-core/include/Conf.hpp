@@ -16,6 +16,7 @@ private:
     std::string working_path_;
     std::string config_path_;
     std::string script_path_;
+    std::string shader_path_;
     std::string version_string_;
 
     int screen_width_;
@@ -44,6 +45,7 @@ public:
     }
     inline std::string const& WORKING_PATH() const { return working_path_; }
     inline std::string script_path(std::string const& path) const { return script_path_ + path; }
+    inline std::string shader_path(std::string const& path) const { return shader_path_ + path; }
 
     utils::map_any config_of(std::string const& name) const;
     std::string read_config_text(std::string const& path) const;

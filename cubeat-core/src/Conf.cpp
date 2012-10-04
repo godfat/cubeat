@@ -24,6 +24,7 @@ void Conf::init(std::string const& working_path)
 
     config_path_           = expand("rc/config/");
     script_path_           = expand("rc/script/");
+    shader_path_           = expand("rc/shader/");
     screen_width_          = config_.I("screenwidth");
     screen_height_         = config_.I("screenheight");
     framerate_             = config_.I("framerate");

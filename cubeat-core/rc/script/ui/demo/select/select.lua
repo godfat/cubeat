@@ -38,6 +38,8 @@ local function ready_to_start(menu)
             end
             
             if ready==true then
+              menu.start:set_visible(true)
+              --[[
               switch.set_ask_panel_title("GAME START")
               switch.show_ask_panel()
               switch.set_press_ok(choose_character, 1)
@@ -47,6 +49,7 @@ local function ready_to_start(menu)
                                         if menu['ready_2'] then menu['ready_2']:set_visible(false) end
                                         switch.hide_ask_panel()
                                        end, 1 )
+              --]]
             end
           end
 end
@@ -60,6 +63,17 @@ local function select_effect(menu, ch)
             selectlock_[ch] = true
             if menu[key] then menu[key]:set_visible(true) end
             menu['actor_full_'..tostring(ch)]:tween('Linear', 'Scale', scale_s, scale_e, 100, 0, ready_to_start(menu), 0)
+          end
+end
+
+local function cancel_select(menu, ch, i)
+  local key = 'ready_'..tostring(ch)
+  return  function(self)
+            if selectlock_[ch]==false then return end
+            if config.ch_choose[ch] ~= i then return end
+            selectlock_[ch] = false
+            if menu[key] then menu[key]:set_visible(false) end
+            menu.start:set_visible(false)
           end
 end
 
@@ -148,6 +162,7 @@ local function init(demo, parent, data)
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
     local readykey= 'ready_'..tostring(ch)
+    local cancel  = 'cancel_'..tostring(ch)
     local actor_x
     if data_ and data_.game_mode == 1 then 
       actor_x = (config.screen_w/2) - (config.full_w/2)
@@ -186,7 +201,11 @@ local function init(demo, parent, data)
     local k = 'actor_icon_'..tostring(i)
     --menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
     menu[k]:on_press( select_effect(menu, 1), 1 )
-    if num_actor==2 then menu[k]:on_press( select_effect(menu, 2), 2 ) end
+    menu[k]:on_press_r( cancel_select(menu, 1, i), 1 )
+    if num_actor==2 then
+      menu[k]:on_press( select_effect(menu, 2), 2 )
+      menu[k]:on_press_r( cancel_select(menu, 2, i), 2 )
+    end
     menu[k]:on_leave_focus( leave_icon(1, i, menu), 1 )
     menu[k]:on_enter_focus( enter_icon(1, i, menu), 1 )
     
@@ -195,6 +214,11 @@ local function init(demo, parent, data)
       menu[k]:on_enter_focus( enter_icon(2, i, menu), 2 )
     end
   end
+  
+  --create game start button
+  menu.start = ui.new_text{ parent=menu.select_actor_page._cdata, x=config.screen_w/2, y=config.icon_y-50,
+                            depth=config.ready_depth, size=64, title='START', center=true, visible=false}
+  menu.start:on_press(choose_character)
 
   --load ch_choose texture
   menu.actor_full_1:set_texture(config.full_path(config.ch_choose[1]))

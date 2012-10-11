@@ -26,7 +26,7 @@ using namespace std::tr1::placeholders;
 using std::tr1::static_pointer_cast;
 using std::tr1::dynamic_pointer_cast;
 
-Scene::Scene()
+Scene::Scene() : rt_camera_(0), rt_plane_(0), rt_(0)
 {
     smgr_ = IrrDevice::i().d()->getSceneManager()->createNewSceneManager( false );
 }
@@ -103,6 +103,31 @@ Scene& Scene::setTo3DView(float FoV)
     return *this;
 }
 
+Scene& Scene::enablePostProc()
+{
+    video::IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+
+    rt_ = driver->addRenderTargetTexture(core::dimension2du(Conf::i().SCREEN_W(), Conf::i().SCREEN_H()), "RTT1");
+
+    rt_camera_ = smgr_->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,10));
+    rt_camera_->setIsDebugObject(true);
+    core::matrix4 ortho;
+    ortho.buildProjectionMatrixOrthoLH( Conf::i().SCREEN_W(), Conf::i().SCREEN_H(), 0, 10000);
+    rt_camera_->setProjectionMatrix( ortho, true );
+
+    rt_plane_ = smgr_->addBillboardSceneNode(rt_camera_, core::dimension2df(Conf::i().SCREEN_W(), Conf::i().SCREEN_H()), core::vector3df(0,0,10));
+    rt_plane_->setMaterialFlag(video::EMF_LIGHTING, false);
+    rt_plane_->setMaterialTexture(0, rt_);
+    rt_plane_->setVisible(false);
+
+    return *this;
+}
+
+video::ITexture* Scene::getPostProcTexture() const
+{
+    return rt_;
+}
+
 Scene& Scene::allowPicking(bool f)
 {
     allow_picking_ = f;
@@ -117,8 +142,23 @@ Scene& Scene::activate()
 
 Scene& Scene::redraw()
 {
+    video::IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     IrrDevice::i().d()->getTimer()->setTime(timer_->get_time());
+
+    if( rt_ ) { // Post Processing Enabled
+        driver->setRenderTarget(rt_, true, true, video::SColor(0,0,0,255));
+        body_->setVisible(true);
+        rt_plane_->setVisible(false);
+        smgr_->drawAll();
+        driver->setRenderTarget(0, true, true, 0);
+        body_->setVisible(false);
+        rt_plane_->setVisible(true);
+        smgr_->setActiveCamera(rt_camera_);
+    }
+
     smgr_->drawAll();
+    smgr_->setActiveCamera(camera_);
+    // 2012 WTF note: should I make rt_plane_ or rt_camera_ invisible here? so no picking hindering?
     return *this;
 }
 

@@ -39,8 +39,10 @@ public:
     virtual Scene& redraw();
     virtual Scene& deactivate();
     virtual Scene& allowPicking(bool);
+    virtual Scene& enablePostProc();
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
+    virtual irr::video::ITexture* getPostProcTexture() const;
 
     std::list<wpObject> const& pick(vec2 const&);
     std::list<wpObject> const& pick(vec2 const&,
@@ -65,8 +67,11 @@ protected:
 protected:
     typedef std::pair<irr::scene::ISceneNode* const, wpObject> Node2ViewPair;
     bool allow_picking_;
+    irr::scene::ILightSceneNode*  light_;
     irr::scene::ICameraSceneNode* camera_;
-    irr::scene::ILightSceneNode* light_;
+    irr::scene::ICameraSceneNode* rt_camera_;
+    irr::scene::ISceneNode*       rt_plane_;
+    irr::video::ITexture*         rt_;
     std::map<irr::scene::ISceneNode*, wpObject> node2view_;
     std::list<wpObject> picked_temporary_;   //this list will be wiped every time you call "pick"
                                              //so there must be a copy in the outside world

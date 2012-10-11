@@ -179,7 +179,7 @@ local function init(demo, parent, data)
                                   depth=config.full_depth }
     menu[readykey]= ui.new_text{ parent=menu.select_actor_page._cdata, x=actor_x+(config.full_w/2), y=config.ready_y,
                                  depth=config.ready_depth, size=config.ready_size, title='READY', center=true, visible=false }
-    menu[readykey]:set_color(0,255,255)
+    menu[readykey]:set_color(255,255,0)
     
     if ch==2 then
       menu[fullkey]:texture_flipH()

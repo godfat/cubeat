@@ -42,6 +42,11 @@ local move_time = 300
 local move_start= { ffi.new("value2", -full_w,   full_y), ffi.new("value2", screen_w,  full_y) }
 local move_end  = { ffi.new("value2", full_x[1], full_y), ffi.new("value2", full_x[2], full_y) }
 
+-- ready_image
+local ready_y     = full_y + 300
+local ready_depth = -150
+local ready_size  = 64
+
 return {
   ch_choose = ch_choose,
   --
@@ -69,5 +74,9 @@ return {
   fade_time = fade_time,
   move_time = move_time,
   move_start= move_start,
-  move_end  = move_end
+  move_end  = move_end,
+  --
+  ready_y     = ready_y,
+  ready_depth = ready_depth,
+  ready_size  = ready_size
 }

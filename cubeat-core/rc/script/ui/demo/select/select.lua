@@ -10,8 +10,10 @@ local random= require 'rc/script/helper'.random
 --temporary addition
 local demo_game_ = nil
 local data_ = nil
+local selectlock_ = {false, false}
 local function choose_character(self)
   if demo_game_ then
+    switch.hide_ask_panel()
     local ch2 = random(6)+1
     local c1p = "char/char"..tostring(config.ch_choose[1]).."_new"
     local c2p
@@ -26,9 +28,45 @@ local function choose_character(self)
   end
 end
 
+local function ready_to_start(menu)
+  return  function(self)
+            local ready = false
+            if data_ and data_.game_mode ~= 1 then
+              ready = ( selectlock_[1]==true and selectlock_[2]==true )
+            else
+              ready = ( selectlock_[1]==true )
+            end
+            
+            if ready==true then
+              switch.set_ask_panel_title("GAME START")
+              switch.show_ask_panel()
+              switch.set_press_ok(choose_character)
+              switch.set_press_cancel( function(self)
+                                        selectlock_ = {false, false}
+                                        if menu['ready_1'] then menu['ready_1']:set_visible(false) end
+                                        if menu['ready_2'] then menu['ready_2']:set_visible(false) end
+                                        switch.hide_ask_panel()
+                                       end )
+            end
+          end
+end
+
+local function select_effect(menu, ch)
+  local scale_s = ffi.new("value3", 1.1, 1.1, 0)
+  local scale_e = ffi.new("value3", 1,   1,   0)
+  local key = 'ready_'..tostring(ch)
+  return  function(self)
+            if selectlock_[ch]==true then return end
+            selectlock_[ch] = true
+            if menu[key] then menu[key]:set_visible(true) end
+            menu['actor_full_'..tostring(ch)]:tween('Linear', 'Scale', scale_s, scale_e, 100, 0, ready_to_start(menu), 0)
+          end
+end
+
   -- add enter_focus & leave_focus event to actor_icon
 local function leave_icon(input, icon_no, menu)
   return  function(self)
+            if selectlock_[input]==true then return end
             local fadekey = 'actor_fade_'..tostring(input)
             menu[fadekey]:set_texture(config.full_path(icon_no))
           end
@@ -36,6 +74,7 @@ end
 
 local function enter_icon(input, icon_no, menu)
   local show = function(self)
+    if selectlock_[input]==true then return end
     local fullkey = 'actor_full_'..tostring(input)
     local fadekey = 'actor_fade_'..tostring(input)
 
@@ -63,6 +102,7 @@ local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
   data_ = data
+  selectlock_ = {false, false}
   
   menu.btn_back = ui.new_text{ parent = parent, x=-470, y=-310, size=32, title='<= go back'}
   menu.btn_back:set_scale(1.5)
@@ -92,7 +132,7 @@ local function init(demo, parent, data)
   -- create select_actor_page
   menu.select_actor_page = ui.new_image{ parent=parent, path='nothing', visible=true, x= -480, y= -300,
                                          w=0, h=0 }
-
+                                         
   -- create actor_icon
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
@@ -101,12 +141,13 @@ local function init(demo, parent, data)
                             depth =config.icon_depth }
   end
 
-  -- create actor_full & actor_fade
+  -- create actor_full & actor_fade & ready_text
   local num_actor = 1
   if data_ and data_.game_mode ~= 1 then num_actor = 2 end
   for ch=1, num_actor do
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
+    local readykey= 'ready_'..tostring(ch)
     local actor_x
     if data_ and data_.game_mode == 1 then 
       actor_x = (config.screen_w/2) - (config.full_w/2)
@@ -121,6 +162,10 @@ local function init(demo, parent, data)
                                   x= actor_x, 
                                   y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
+    menu[readykey]= ui.new_text{ parent=menu.select_actor_page._cdata, x=actor_x+(config.full_w/2), y=config.ready_y,
+                                 depth=config.ready_depth, size=config.ready_size, title='READY', center=true, visible=false }
+    menu[readykey]:set_color(0,255,255)
+    
     if ch==2 then
       menu[fullkey]:texture_flipH()
       menu[fadekey]:texture_flipH()
@@ -139,7 +184,9 @@ local function init(demo, parent, data)
   --for i,v in ipairs(actor_icon) do
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
-    menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
+    --menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
+    menu[k]:on_press( select_effect(menu, 1), 1 )
+    if num_actor==2 then menu[k]:on_press( select_effect(menu, 2), 2 ) end
     menu[k]:on_leave_focus( leave_icon(1, i, menu), 1 )
     menu[k]:on_enter_focus( enter_icon(1, i, menu), 1 )
     

@@ -194,11 +194,11 @@ local function new_askbox(object)
   object.set_title        = function(self, title)
                               object.text:change_text(title)
                             end
-  object.on_press_ok      = function(self, func, input)
-                              object.ok:on_press(func, input)
+  object.on_press_ok      = function(self, func)
+                              object.ok:on_press(func)
                             end
-  object.on_press_cancel  = function(self, func, input)
-                              object.cancel:on_press(func, input)
+  object.on_press_cancel  = function(self, func)
+                              object.cancel:on_press(func)
                             end
   
   --init setting

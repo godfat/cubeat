@@ -39,17 +39,6 @@ local function ready_to_start(menu)
             
             if ready==true then
               menu.start:set_visible(true)
-              --[[
-              switch.set_ask_panel_title("GAME START")
-              switch.show_ask_panel()
-              switch.set_press_ok(choose_character, 1)
-              switch.set_press_cancel( function(self)
-                                        selectlock_ = {false, false}
-                                        if menu['ready_1'] then menu['ready_1']:set_visible(false) end
-                                        if menu['ready_2'] then menu['ready_2']:set_visible(false) end
-                                        switch.hide_ask_panel()
-                                       end, 1 )
-              --]]
             end
           end
 end

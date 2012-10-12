@@ -204,8 +204,8 @@ local function init(demo, parent, data)
   end
   
   --create game start button
-  menu.start = ui.new_text{ parent=menu.select_actor_page._cdata, x=config.screen_w/2, y=config.icon_y-50,
-                            depth=config.ready_depth, size=64, title='START', center=true, visible=false}
+  menu.start = ui.new_text{ parent=menu.select_actor_page._cdata, x=config.start_x, y=config.start_y,
+                            depth=config.start_depth, size=config.start_size, title='START', center=true, visible=false}
   menu.start:on_press(choose_character)
 
   --load ch_choose texture

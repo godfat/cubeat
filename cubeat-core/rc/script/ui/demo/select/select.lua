@@ -151,7 +151,6 @@ local function init(demo, parent, data)
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
     local readykey= 'ready_'..tostring(ch)
-    local cancel  = 'cancel_'..tostring(ch)
     local actor_x
     if data_ and data_.game_mode == 1 then 
       actor_x = (config.screen_w/2) - (config.full_w/2)

@@ -44,6 +44,10 @@ namespace game {
 class Demo : public Object, public std::tr1::enable_shared_from_this<Demo>
 {
     typedef std::tr1::shared_ptr<int> pDummy;
+
+    // added prelimenary enums for game_mode_, but actually I really need to be able to distinguish "how many player and how many AI"
+    enum { GM_PUZZLE = -1, GM_PVP = 0, GM_PVC, GM_CVC, GM_LOG, GM_TUT1 };
+
 public:
     typedef std::tr1::shared_ptr<Demo> pointer_type;
     static pointer_type create() {

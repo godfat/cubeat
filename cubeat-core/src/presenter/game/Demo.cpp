@@ -376,6 +376,10 @@ void Demo::ready_go(int step)
 {
     if ( step < 0 ) {
         ready_go_text_->tween<Linear, Alpha>(0, 500u);
+
+        blocker_->set<Visible>(false);
+        blocker_->set<Alpha>(100);
+
         return;
     }
     else if ( step == 0 ) {
@@ -383,6 +387,8 @@ void Demo::ready_go(int step)
         ready_go_text_->changeText("go!");
         ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
         ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+
+        blocker_->tween<Linear, Alpha>(100, 0, 1000u);
 
         game_start();
     }
@@ -393,6 +399,8 @@ void Demo::ready_go(int step)
         ready_go_text_->set<Scale>(vec3(1.25,1.25,1.25));
         ready_go_text_->set<Visible>(true);
         ready_go_text_->tween<OElastic, Scale>(vec3(4,4,4), 900u, 0);
+
+        blocker_->set<Visible>(true);
     }
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);
@@ -523,7 +531,7 @@ void Demo::setup_ui()
 
         ready_go_text_ = view::SpriteText::create("3", ui_scene_, "kimberley", 30, true);
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
-        ready_go_text_->setPickable(false);
+        ready_go_text_->setDepth(-450).setPickable(false);
 
         pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "kimberley", 30, true);
         pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() - 30 ) );
@@ -542,7 +550,6 @@ void Demo::setup_ui()
 void Demo::hide_upper_layer_ui()
 {
     if( some_ui_inited_ ) {
-        blocker_->set<Visible>(false);
         blocker_->set<Visible>(false);
         end_text_->set<Visible>(false);
         end_text2_->set<Visible>(false);

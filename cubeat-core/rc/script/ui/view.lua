@@ -88,9 +88,11 @@ Mt_Sprite.__index                 = Mt_Sprite
 Mt_Sprite.set_texture             = C.Sprite_set_texture
 Mt_Sprite.set_pos                 = C.Sprite_set_pos
 Mt_Sprite.set_rotation            = C.Sprite_set_rotation
+Mt_Sprite.set_scale               = C.Sprite_set_scale
 Mt_Sprite.set_size                = C.Sprite_set_size
 Mt_Sprite.set_depth               = C.Sprite_set_depth
 Mt_Sprite.set_color               = C.Sprite_set_color
+Mt_Sprite.set_emissive            = C.Sprite_set_emissive
 Mt_Sprite.set_red                 = C.Sprite_set_red
 Mt_Sprite.set_green               = C.Sprite_set_green
 Mt_Sprite.set_blue                = C.Sprite_set_blue
@@ -117,6 +119,7 @@ Mt_Sprite.get_screen_pos_x        = C.Sprite_get_screen_pos_x
 Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
 Mt_Sprite.lazy_fix_alpha_artifact = C.Sprite_lazy_fix_alpha_artifact
 Mt_Sprite.remove_texture          = C.Sprite_remove_texture
+Mt_Sprite.set_blending            = C.Sprite_set_blending
 
 Mt_Sprite.on_release              = function(p, b, func)
   C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, ObjCallbackT, p, b, func))

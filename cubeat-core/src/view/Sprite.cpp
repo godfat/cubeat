@@ -219,6 +219,20 @@ Sprite& Sprite::removeTexture()
     return *this;
 }
 
+Sprite& Sprite::setBlending(std::string const& mt_name)
+{
+    int mat_type = IrrDevice::i().getMaterialTypeEx(mt_name);
+    if( mat_type > EMT_TRANSPARENT_MODULATE ) { // at least make sure it's not the basic material type
+        body_->getMaterial(0).MaterialType = static_cast<E_MATERIAL_TYPE>(mat_type);
+        body_->setMaterialTexture(1, scene()->getPostProcTexture());
+    }
+    else {
+        body_->getMaterial(0).MaterialType = EMT_TRANSPARENT_MODULATE;
+        body_->setMaterialTexture(1, 0);
+    }
+    return *this;
+}
+
 /// Maybe this feature should move to another class and use multiple inheritance.
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {

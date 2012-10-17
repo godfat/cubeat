@@ -12,7 +12,6 @@
 				<Option object_output="obj\Release\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O1" />
@@ -219,6 +218,7 @@
 		<Unit filename="include\view\Sprite.hpp" />
 		<Unit filename="include\view\SpriteMovie.hpp" />
 		<Unit filename="include\view\SpriteText.hpp" />
+		<Unit filename="include\view\detail\AdditionalMaterials.hpp" />
 		<Unit filename="include\view\detail\CirclingAnimator.hpp" />
 		<Unit filename="include\view\detail\CustomAnimator.hpp" />
 		<Unit filename="include\view\detail\SpeedFuncAnimator.hpp" />
@@ -248,10 +248,7 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char1_demo.zzml" />
@@ -479,7 +476,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_stage_by_lua_main.cpp" />
+		<Unit filename="src\test\test_stage_by_lua_main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_stage_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -117,6 +117,8 @@ Scene& Scene::enablePostProc()
 
     rt_plane_ = smgr_->addBillboardSceneNode(rt_camera_, core::dimension2df(Conf::i().SCREEN_W(), Conf::i().SCREEN_H()), core::vector3df(0,0,10));
     rt_plane_->setMaterialFlag(video::EMF_LIGHTING, false);
+    rt_plane_->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+    rt_plane_->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
     rt_plane_->setMaterialTexture(0, rt_);
     rt_plane_->setVisible(false);
 
@@ -150,7 +152,7 @@ Scene& Scene::redraw()
         body_->setVisible(true);
         rt_plane_->setVisible(false);
         smgr_->drawAll();
-        driver->setRenderTarget(0, true, true, 0);
+        driver->setRenderTarget(0);
         body_->setVisible(false);
         rt_plane_->setVisible(true);
         smgr_->setActiveCamera(rt_camera_);

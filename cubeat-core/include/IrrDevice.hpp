@@ -15,10 +15,13 @@
 */
 
 #include <irrlicht.h>
+#include <string>
 
 class IrrDevice
 {
 public:
+    struct MatEnumEx {enum{ SCREEN = 0, HARD_LIGHT, VIVID_LIGHT };};
+
     static IrrDevice& i() {
         static IrrDevice singleton;
         return singleton;
@@ -27,6 +30,8 @@ public:
     irr::IrrlichtDevice* d() { return device_; }
 
     bool init( bool test );
+    int  getMaterialTypeBaseCount() const;
+    int  getMaterialTypeEx(std::string const& mt_name) const;
     bool run() { return device_->run(); }
 
     ~IrrDevice() {
@@ -40,6 +45,8 @@ private:
 
     irr::IrrlichtDevice* device_;
     static bool inited_;
+
+    static int ADDITIONAL_MATERIAL_BASE_;
 };
 
 #endif

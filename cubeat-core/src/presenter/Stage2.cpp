@@ -45,6 +45,9 @@ pStage2 Stage2::init( std::string const& path )
     printf("C: 1\n");
     scene_ = view::Scene::create( conf_.S("name") );
     scene_->setTo2DView();
+    if( path == "stage/jungle6" ) { // WTF: hard code for now
+        scene_->enablePostProc();
+    }
     printf("C: 2\n");
     L_ = luaL_newstate();
     luaL_openlibs(L_);

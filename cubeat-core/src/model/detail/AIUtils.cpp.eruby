@@ -144,12 +144,17 @@ int AIUtils::simulate_fire_at(int x, int y, pSimpleMap cloned_map)
     cloned_map->cycle();
     cloned_map->cycle(); //NOTE: why twice ???? possibly we update_chains first then cycle_cubes.
     //cloned_map->print_data_for_debug();
+    bool did_trigger_chain = false;
     while( cloned_map->chains_.size() ) {
         cloned_map->cycle();
+        did_trigger_chain = true;
     }
     //if there is chain going on, we will continue to cycle
     //if there is not, then end of game.
-    return cloned_map->current_sum_of_attack_;
+    return cloned_map->current_sum_of_attack_ + (did_trigger_chain?1:0);
+    //did_trigger_chain flag is really artifical, because if we decide the most basic match won't produce attack
+    //then the program cannot tell by current_sum_of_attack_ if there's actually a possible match,
+    //since the attack sum will stay the same.
 }
 
 int AIUtils::get_base_attack(pSimpleMap cloned_map)

@@ -89,8 +89,8 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
 }
 
 void Map::speedup(){
-    if( map_setting()->sink_speed() < 400.0 ) {
-        map_setting()->sink_speed( map_setting()->sink_speed() + 10.0 );
+    if( map_setting()->sink_speed() < map_setting()->sink_speed_limit() ) {
+        map_setting()->sink_speed( map_setting()->sink_speed() + map_setting()->sink_speed_add() );
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
     }

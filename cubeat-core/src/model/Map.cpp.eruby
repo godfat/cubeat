@@ -714,6 +714,15 @@ void Map::new_cube_at(int x, int y, int color_id)
     insert_cube(c);
 }
 
+void Map::purge_all()
+{
+    for( int x = 0; x < ms()->width(); ++x ) {
+        for( int y = 0; y < ms()->height() - 1; ++y ) {
+            kill_cube_at(x, y);
+        }
+    }
+}
+
 void Map::cubes_cleared_add(int const& num)
 {
     total_cubes_cleared_ += num;

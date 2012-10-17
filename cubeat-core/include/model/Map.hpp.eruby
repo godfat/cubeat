@@ -86,6 +86,7 @@ public:
     void apply_func_at(int x, int y, std::tr1::function<void(model::pCube&, int, int)> f);
     void kill_cube_at(int x, int y);
     void new_cube_at(int x, int y, int color_id);
+    void purge_all();
     void cubes_cleared_add(int const& n); //called from model::Cube only.
 
     bool exist(int x, int y) const;

@@ -126,7 +126,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
-    if( game_mode_ == GM_PVP ) {
+    if( game_mode_ == GM_PVP || game_mode_ == GM_TUT1 ) {
         player0_ = ctrl::Player::create(input0, 0);
         player1_ = ctrl::Player::create(input1, 1);
     }
@@ -156,11 +156,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     player0_->set_config( !passive_conf0_.empty() ? passive_conf0_.M("weapon") : gameplay_.M("player1").M("weapon") );
     player1_->set_config( !passive_conf1_.empty() ? passive_conf1_.M("weapon") : gameplay_.M("player2").M("weapon") );
 
-    // setup map0
+    // setup map settings
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
-
-    // setup map1
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
+
+    if( game_mode_ == GM_TUT1 ) {
+        set0->sink_speed(120.0);
+        set1->starting_line(0);
+    }
 
     // update map settings with player passive modification:
 // WTF MEMO 2012.9 failed to adjust for balance
@@ -200,8 +203,23 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
     //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
+
+    if( game_mode_ == GM_TUT1 ) { // TUTORIAL related timer setup
+        garbage_timer(map0_, 20000, 6);
+        garbage_timer(map0_, 28000, 6);
+        garbage_timer(map0_, 36000, 6);
+        garbage_timer(map0_, 48000, 12);
+        garbage_timer(map0_, 60000, 12);
+        garbage_timer(map0_, 72000, 12);
+        garbage_timer(map0_, 90000, 18);
+
+        //clear player 2's map periodically
+        tutorial_map1_purge_timer_ = pDummy(new int);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Map::purge_all, map1_.get()), tutorial_map1_purge_timer_, 10000, -1);
+    }
 
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        std::tr1::bind(&Demo::game_start, this), 4000);
@@ -212,6 +230,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     //ready_go(4);
     starting_effect(inplace);
+}
+
+void Demo::garbage_timer(pMap m, std::time_t time, int amount) {
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Map::push_garbage, m.get(), amount), shared_from_this(), time);
 }
 
 void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace)
@@ -273,18 +296,18 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
 
 void Demo::init_vs_ppl(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    init_(0, c1p, c2p, scene_name);
+    init_(GM_PVP, c1p, c2p, scene_name);
 }
 
 void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::string const& scene_name, int const& ai_level)
 {
     ai_level_ = ai_level; // TEMP WTF MEMO
-    init_(1, c1p, c2p, scene_name);
+    init_(GM_PVC, c1p, c2p, scene_name);
 }
 
 void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
 {
-    init_(2, c1p, c2p, scene_name);
+    init_(GM_CVC, c1p, c2p, scene_name);
 }
 
 void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
@@ -298,6 +321,11 @@ void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::
 void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name)
 {
     init_for_puzzle_(c1p, scene_name, 2, false);
+}
+
+void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
+{
+    init_(GM_TUT1, c1p, c2p, scene_name);
 }
 
 void Demo::run_next_log()
@@ -437,7 +465,11 @@ void Demo::game_start()
     if( game_mode_ != GM_PUZZLE ) {
         map0_->start_dropping();
         player1_->subscribe_player_specific_interactions();
-        map1_->start_dropping();
+        if( game_mode_ != GM_TUT1 ) {
+            map1_->start_dropping();
+        } else {
+            map1_->map_setting()->garbage_dumpable(true); // only garbages are generated for map1_ in tutorials.
+        }
     }
 
     if( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG )
@@ -662,6 +694,10 @@ void Demo::game_stop()
         map1_->stop_dropping();
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
+
+        if( game_mode_ == GM_TUT1 ) {
+            tutorial_map1_purge_timer_.reset();
+        }
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);

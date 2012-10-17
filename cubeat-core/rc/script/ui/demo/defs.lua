@@ -22,11 +22,13 @@ Mt_Demo.init_vs_cpu  = C.Demo_init_vs_cpu
 Mt_Demo.init_cpudemo = C.Demo_init_cpudemo
 Mt_Demo.init_ai_logging = C.Demo_init_ai_logging
 Mt_Demo.init_puzzle  = C.Demo_init_puzzle
-Mt_Demo.init_mode    = function(self, mode, c1p, c2p, sconf, ai_level) 
-  if mode == 0 then self:init_vs_ppl(c1p, c2p, sconf) 
+Mt_Demo.init_tutorial = C.Demo_init_tutorial
+Mt_Demo.init_mode    = function(self, mode, c1p, c2p, sconf, ai_level)
+  if mode == 0 then self:init_vs_ppl(c1p, c2p, sconf)
   elseif mode == 1 then self:init_vs_cpu(c1p, c2p, sconf, ai_level)
   elseif mode == 2 then self:init_cpudemo(c1p, c2p, sconf)
   elseif mode == 3 then self:init_ai_logging(c1p, c2p, sconf)
+  elseif mode == 4 then self:init_tutorial(c1p, c2p, sconf)
   end
 end
 Mt_Demo.quit         = C.Demo_quit

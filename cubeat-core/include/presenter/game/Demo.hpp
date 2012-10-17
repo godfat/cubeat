@@ -63,6 +63,7 @@ public:
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
     void init_puzzle(std::string const&, std::string const&);
+    void init_tutorial(std::string const&, std::string const&, std::string const&);
     void quit();
 
     void leaving_effect();
@@ -109,6 +110,9 @@ private:
     //temp: hack for music test
     void music_state(bool);
 
+    //temp: helper for push_garbage periodically when in tutorial or challenge
+    void garbage_timer(pMap, std::time_t, int amount);
+
 protected:
     view::pScene scene_;
     view::pScene ui_scene_;
@@ -146,6 +150,7 @@ protected:
     // temp: hack, just for test
     bool music_state_, music_state_old_;
     pDummy timer_music_state_;
+    pDummy tutorial_map1_purge_timer_;
 
     lua_State* L_;
 };

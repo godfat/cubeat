@@ -53,11 +53,11 @@ function init(demo)
   switch.init(scene_, demo_)
   
   --preload all ui
-  switch.load_page('tutorial' )
-  switch.load_page('score'    )
-  switch.load_page('tweentest')
+  --switch.load_page('tutorial' )
+  --switch.load_page('score'    )
+  --switch.load_page('tweentest')
   switch.load_page('select'   )
-  switch.load_page('testmenu' )
+  --switch.load_page('testmenu' )
   switch.load_page('mainmenu' )
 end
 
@@ -111,11 +111,11 @@ function tutorial_update(state, data)
     ask_panel_.cube4:tween("Linear", "Pos2D", ffi.new("v2", 550, 30), ffi.new("v2", 550, 60), 1000, -1)
     ask_panel_.cube5:set_pos(598, 60)
     ask_panel_.cube6:set_pos(646, 60)
-    ask_panel_.cube7:set_pos(550, 125)
-    ask_panel_.cube8:set_pos(598, 125)
-    ask_panel_.cube9:set_pos(646, 125)
-    ask_panel_.cube0:set_pos(694, 125)
-    ask_panel_.cube0:tween("Linear", "Pos2D", ffi.new("v2", 694, 95), ffi.new("v2", 694, 125), 1000, -1)
+    ask_panel_.cube7:set_pos(550, 130)
+    ask_panel_.cube8:set_pos(598, 130)
+    ask_panel_.cube9:set_pos(646, 130)
+    ask_panel_.cube0:set_pos(694, 130)
+    ask_panel_.cube9:tween("Linear", "Pos2D", ffi.new("v2", 646, 105), ffi.new("v2", 646, 130), 1000, -1)
   end
   
   print("Lua: ".."tutorial state "..tostring(state))

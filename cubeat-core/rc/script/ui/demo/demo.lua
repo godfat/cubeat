@@ -69,6 +69,7 @@ function tutorial_update(state, data)
     ask_panel_ = ui.new_askbox{ parent = scene_, title='<test>', center=true, visible=false }
     ask_panel_._cdata:set_size(1024, 576)
     ask_panel_._cdata:set_alpha(192)
+    ask_panel_.text:set_scale(1.0)
     ask_panel_.panel:set_texture('nothing')
     ask_panel_.panel:set_alpha(0)
     ask_panel_.ok:set_scale(1.5)

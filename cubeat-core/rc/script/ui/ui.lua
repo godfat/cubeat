@@ -172,22 +172,27 @@ local function new_askbox(object)
   object._cdata = view.new_sprite('blocker', object.parent, screen_w, screen_h, true)
   object:set_pos(screen_w/2, screen_h/2)
   object:set_color(0, 0, 0)
-  object:set_alpha(100)
+  object:set_alpha(0)
   
-  object.panel  = new_image{parent=object._cdata, path='square',
+  object.panel  = new_image{parent=object._cdata, path='nothing',
                             w=object.w or 600, h=object.h or 300, center=true}
+  object.panel:set_color(0, 0, 0)
+  object.panel:set_alpha(160)
   
   object.text   = new_text{ parent=object.panel._cdata, title=object.title, size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.ok     = new_text{ parent=object.panel._cdata, title='ok', size=object.size or 30,
+  object.ok     = new_text{ parent=object.panel._cdata, title='OK', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.cancel = new_text{ parent=object.panel._cdata, title='cancel', size=object.size or 30,
+  object.cancel = new_text{ parent=object.panel._cdata, title='Cancel', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.text:set_pos(0, -30)
+  object.text:set_scale(1.5)
+  object.text:set_pos(0, -45)
   object.text:set_depth(-10)
-  object.ok:set_pos(-60, 30)
+  object.ok:set_scale(1.5)
+  object.ok:set_pos(-75, 50)
   object.ok:set_depth(-10)
-  object.cancel:set_pos(60, 30)
+  object.cancel:set_scale(1.5)
+  object.cancel:set_pos(75, 50)
   object.cancel:set_depth(-10)
   
   -- functions

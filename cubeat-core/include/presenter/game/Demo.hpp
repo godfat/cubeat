@@ -65,7 +65,7 @@ public:
     void init_puzzle(std::string const&, std::string const&);
     void init_tutorial(std::string const&, std::string const&, std::string const&);
     void reinit();
-    void end_sequence1();
+    void endgame(int);
     void quit();
 
     void leaving_effect();
@@ -89,6 +89,7 @@ protected:
     void setup_ui();
 
     void setup_end_button();
+    void end_sequence1();
     void pause_quit();
 
     //temp: for pausing
@@ -96,7 +97,6 @@ protected:
     void resume(ctrl::Input const*);
 
     //lua UI integration
-    void ask_for_tutorial();
     void hide_upper_layer_ui();
 
     bool ai_logging(pMap);

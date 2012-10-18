@@ -44,8 +44,8 @@ void Demo_reinit(Demo* self) { // not shared_ptr!
     self->reinit();
 }
 
-void Demo_endgame(Demo* self) { // not shared_ptr!
-    self->end_sequence1();
+void Demo_endgame(Demo* self, int map_num) { // not shared_ptr!
+    self->endgame(map_num);
 }
 
 void Demo_eventual_pause(Demo* self) { // not shared_ptr!

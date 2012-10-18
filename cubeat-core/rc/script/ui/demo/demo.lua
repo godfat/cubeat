@@ -79,7 +79,7 @@ function tutorial_update(state, data)
     
     ask_panel_.text2 = ui.new_text { 
       parent = ask_panel_._cdata, 
-      title  = "Shoot [left button] these:                              Match these:\n\n          colored cubes\n\n          colored cubes with chain\n\n          garbages (won't match)\n\nHaste: [right button]                                         Pause: [middle button]",
+      title  = "Shoot [left button] these:                              Match these:\n\n          colored cubes\n\n          colored cubes with chain\n\n          garbages (won't match)\n\nSpeed-Up: [right button]                                Pause: [middle button]",
     }
     ask_panel_.text2:set_depth(-50)
     ask_panel_.text2:set_pos(-460, -240)
@@ -128,6 +128,9 @@ function tutorial_update(state, data)
     ask_panel_.text:set_pos(0, 90)
     ask_panel_:set_visible(true)
     ask_panel_.text2:set_visible(true)
+    ask_panel_.cube1:set_visible(true) -- ?????? why not affected by parent?
+    ask_panel_.cube2:set_visible(true) -- ?????? why not affected by parent?
+    ask_panel_.cube3:set_visible(true) -- ?????? why not affected by parent?
     ask_panel_.cube4:set_visible(true) -- ?????? why not affected by parent?
     ask_panel_.cube5:set_visible(true) -- ?????? why not affected by parent?
     ask_panel_.cube6:set_visible(true) -- ?????? why not affected by parent?
@@ -144,6 +147,9 @@ function tutorial_update(state, data)
       ask_panel_:set_visible(false)
       ask_panel_.text:set_pos(0, -30)
       ask_panel_.text2:set_visible(false)
+      ask_panel_.cube1:set_visible(false) -- ?????? why not affected by parent?
+      ask_panel_.cube2:set_visible(false) -- ?????? why not affected by parent?
+      ask_panel_.cube3:set_visible(false) -- ?????? why not affected by parent?
       ask_panel_.cube4:set_visible(false) -- ?????? why not affected by parent?
       ask_panel_.cube5:set_visible(false) -- ?????? why not affected by parent?
       ask_panel_.cube6:set_visible(false) -- ?????? why not affected by parent?
@@ -157,23 +163,16 @@ function tutorial_update(state, data)
   
   elseif state == 1 then
     ask_panel_._cdata:set_size(800, 480)
-    ask_panel_:set_title("You only made "..data.." matches.\nTry not to think too much.")
+    ask_panel_:set_title("You only made "..data.." matches.\nTry a different strategy next time.")
     ask_panel_:set_visible(true)
     
-    ask_panel_.ok:change_text('retry')
-    ask_panel_.ok:set_pos(-75, 60)
-    ask_panel_.cancel:change_text('leave')
-    ask_panel_.cancel:set_visible(true)
+    ask_panel_.ok:change_text('OK')
+    ask_panel_.ok:set_pos(0, 75)
     
     ask_panel_:on_press_ok(function(self)
       ask_panel_:set_visible(false)
       demo_:eventual_resume()
-      demo_:reinit()
-    end, 1)
-    ask_panel_:on_press_cancel(function(self)
-      ask_panel_:set_visible(false)
-      demo_:eventual_resume()
-      demo_:endgame()
+      demo_:endgame(0)
     end, 1)
     demo_:eventual_pause()
   
@@ -186,20 +185,13 @@ function tutorial_update(state, data)
     ask_panel_._cdata:set_size(800, 480)
     ask_panel_:set_visible(true)
   
-    ask_panel_.ok:change_text('retry')
-    ask_panel_.ok:set_pos(-75, 60)
-    ask_panel_.cancel:change_text('leave')
-    ask_panel_.cancel:set_visible(true)
-    
+    ask_panel_.ok:change_text('OK')
+    ask_panel_.ok:set_pos(0, 60)
+
     ask_panel_:on_press_ok(function(self)
       ask_panel_:set_visible(false)
       demo_:eventual_resume()
-      demo_:reinit()
-    end, 1)
-    ask_panel_:on_press_cancel(function(self)
-      ask_panel_:set_visible(false)
-      demo_:eventual_resume()
-      demo_:endgame()
+      demo_:endgame(1)
     end, 1)
     demo_:eventual_pause()
     

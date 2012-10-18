@@ -177,7 +177,7 @@ local function new_askbox(object)
   object.panel  = new_image{parent=object._cdata, path='nothing',
                             w=object.w or 600, h=object.h or 300, center=true}
   object.panel:set_color(0, 0, 0)
-  object.panel:set_alpha(160)
+  object.panel:set_alpha(192)
   
   object.text   = new_text{ parent=object.panel._cdata, title=object.title, size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }

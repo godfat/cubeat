@@ -376,9 +376,12 @@ void Demo::run_next_log()
     }
 }
 
-void Demo::ask_for_tutorial()
+void Demo::endgame(int map_num)
 {
-    //call Lua
+    if( map_num == 0 )
+       end(map0_);
+    else if( map_num == 1 )
+       end(map1_);
 }
 
 view::pScene Demo::get_ui_scene()

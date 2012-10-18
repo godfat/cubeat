@@ -3,6 +3,7 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
+local basepath = require 'rc/script/helper'.basepath
 
 
 local function init(demo, parent)
@@ -42,6 +43,9 @@ local function init(demo, parent)
   menu.btn_tut1:on_press(function(self)
     demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1') -- test
     switch.slide_out_title()
+    local filemark = io.open(basepath().."rc/config/tmp/tutored", "w") 
+    filemark:write("1") -- just write something
+    filemark:close()
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

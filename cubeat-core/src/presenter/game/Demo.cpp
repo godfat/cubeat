@@ -206,17 +206,25 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
-    if( game_mode_ == GM_TUT1 ) { // TUTORIAL related timer setup
-        garbage_timer(map0_, 20000, 6);
-        garbage_timer(map0_, 28000, 6);
-        garbage_timer(map0_, 36000, 6);
-        garbage_timer(map0_, 48000, 12);
-        garbage_timer(map0_, 60000, 12);
-        garbage_timer(map0_, 72000, 12);
-        garbage_timer(map0_, 90000, 18);
+    if( game_mode_ == GM_TUT1 )
+    { // TUTORIAL related timer setup
+        tutorial_map1_purge_timer_ = pDummy(new int); // use this timer for all tutorial events?
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Demo::tutorial_interaction, this, 1), tutorial_map1_purge_timer_, 22500);
+
+        garbage_timer(map0_, 23000, 6);
+        garbage_timer(map0_, 29000, 6);
+        garbage_timer(map0_, 35000, 6);
+        garbage_timer(map0_, 45000, 12);
+        garbage_timer(map0_, 55000, 12);
+        garbage_timer(map0_, 65000, 12);
+        garbage_timer(map0_, 80000, 18);
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Demo::tutorial_interaction, this, 2), tutorial_map1_purge_timer_, 92500);
 
         //clear player 2's map periodically
-        tutorial_map1_purge_timer_ = pDummy(new int);
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Map::purge_all, map1_.get()), tutorial_map1_purge_timer_, 10000, -1);
     }
@@ -234,7 +242,21 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
 void Demo::garbage_timer(pMap m, std::time_t time, int amount) {
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Map::push_garbage, m.get(), amount), shared_from_this(), time);
+        bind(&Map::push_garbage, m.get(), amount), tutorial_map1_purge_timer_, time);
+}
+
+void Demo::tutorial_interaction(int state)
+{
+    if( L_ ) {
+        // skip if we fulfilled this condition
+        int data = 0;
+        if( state == 1 && map0_->match_count() >= 9 ) return;
+
+        if( state == 1 ) data = map0_->match_count();
+        if( state == 2 ) data = map0_->score();
+
+        script::Lua::call(L_, "tutorial_update", state, data);
+    }
 }
 
 void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace)
@@ -394,7 +416,12 @@ void Demo::starting_effect(bool const& inplace)
         scene_->tween<OSine, Pos2D>(
             vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
             vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
-            1000u, 0, cb);
+            950u, 0, cb);
+
+        if( game_mode_ == GM_TUT1 ) { // very hacky to add this here
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                bind(&Demo::tutorial_interaction, this, 0), shared_from_this(), 900);
+        }
     }
     script::Lua::call(L_, "slide_out", inplace);
 }
@@ -430,7 +457,7 @@ void Demo::ready_go(int step)
 
         blocker_->set<Visible>(true);
     }
-    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);
 }
 
@@ -787,7 +814,7 @@ void Demo::end(pMap lose_map)
         if( lose_map == map0_ ) {
             lose_t_->set<Pos2D>( pos1 );
             win_t_->set<Pos2D>( pos2 );
-            if( game_mode_ == GM_PVC )
+            if( game_mode_ == GM_PVC || game_mode_ == GM_TUT1 )
                 audio::Sound::i().playBuffer("3/3c/lose.wav");
             else
                 audio::Sound::i().playBuffer("3/3c/win.wav");
@@ -959,6 +986,31 @@ void Demo::pause(ctrl::Input const* controller)
         clickb, btn_pause_, &controller->pause(), ctrl::BTN_PRESS);
 }
 
+void Demo::eventual_pause()
+{
+    if( btn_pause_ ) return; //it's already paused, don't do anything if this is called again.
+
+    if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    audio::Sound::i().pauseAll(true);
+    scene_->allowPicking(false);
+
+    // you should not be able to overlapping pause state, so we still use this as indicator
+    btn_pause_ = pDummy(new int);
+
+    if( game_mode_ != GM_PUZZLE ) { // puzzle demo WTF temp
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->trig1(), ctrl::BTN_PRESS); //assign null
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->trig2(), ctrl::BTN_PRESS); //assign null
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                do_nothing, shared_from_this(), &input->pause(), ctrl::BTN_PRESS); //assign null
+        }
+    }
+}
+
 void Demo::resume(ctrl::Input const* controller)
 {
     if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
@@ -967,6 +1019,31 @@ void Demo::resume(ctrl::Input const* controller)
     pause_text2_->set<Visible>(false);
     pause_t_->set<Visible>(false);
     blocker_->set<Visible>(false);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    audio::Sound::i().pauseAll(false);
+    scene_->allowPicking(true);
+
+    btn_pause_.reset(); //reset button event subscribed by this handle.
+
+    if( game_mode_ != GM_PUZZLE ) { // puzzle demo WTF temp
+        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
+            ctrl::EventDispatcher::i().subscribe_btn_event(
+                bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+            input->player()->subscribe_player_specific_interactions();
+        }
+    }
+    else {
+        ctrl::Input const* input = ctrl::InputMgr::i().getInputByIndex(0);
+        ctrl::EventDispatcher::i().subscribe_btn_event(
+            bind(&Demo::pause, this, input), shared_from_this(), &input->pause(), ctrl::BTN_PRESS);
+        input->player()->subscribe_player_specific_interactions(false);
+    }
+}
+
+void Demo::eventual_resume()
+{
+    if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     audio::Sound::i().pauseAll(false);

@@ -64,10 +64,14 @@ public:
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
     void init_puzzle(std::string const&, std::string const&);
     void init_tutorial(std::string const&, std::string const&, std::string const&);
+    void reinit();
+    void end_sequence1();
     void quit();
 
     void leaving_effect();
     void starting_effect(bool const&);
+    void eventual_pause();
+    void eventual_resume();
 
     view::pScene get_ui_scene();
 
@@ -75,7 +79,6 @@ protected:
     pointer_type init();
     void cleanup();
     void end(pMap p);
-    void reinit();
     void game_start();
     void game_stop();
 
@@ -86,7 +89,6 @@ protected:
     void setup_ui();
 
     void setup_end_button();
-    void end_sequence1();
     void pause_quit();
 
     //temp: for pausing
@@ -112,6 +114,7 @@ private:
 
     //temp: helper for push_garbage periodically when in tutorial or challenge
     void garbage_timer(pMap, std::time_t, int amount);
+    void tutorial_interaction(int);
 
 protected:
     view::pScene scene_;

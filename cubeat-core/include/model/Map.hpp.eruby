@@ -41,7 +41,7 @@ public:
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
-        cubes_cleared_(0), total_cubes_cleared_(0)
+        cubes_cleared_(0), total_cubes_cleared_(0), match_counter_(0)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
@@ -72,6 +72,7 @@ public:
     int  garbage_count() const;
     int  grounded_cube_count() const;
     int  column_full_num() const;
+    int  match_count() const;
     bool all_empty() const;
     bool all_waiting() const;
 
@@ -130,6 +131,7 @@ private:
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
     int cubes_cleared_, total_cubes_cleared_;
+    int match_counter_;
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy

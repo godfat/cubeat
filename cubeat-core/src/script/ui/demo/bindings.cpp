@@ -40,6 +40,22 @@ void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const
     self->init_tutorial(c1p, c2p, scene_name);
 }
 
+void Demo_reinit(Demo* self) { // not shared_ptr!
+    self->reinit();
+}
+
+void Demo_endgame(Demo* self) { // not shared_ptr!
+    self->end_sequence1();
+}
+
+void Demo_eventual_pause(Demo* self) { // not shared_ptr!
+    self->eventual_pause();
+}
+
+void Demo_eventual_resume(Demo* self) { // not shared_ptr!
+    self->eventual_resume();
+}
+
 void Demo_quit(Demo* self) { // not shared_ptr!
     self->quit();
 }

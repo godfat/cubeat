@@ -23,6 +23,10 @@ Mt_Demo.init_cpudemo = C.Demo_init_cpudemo
 Mt_Demo.init_ai_logging = C.Demo_init_ai_logging
 Mt_Demo.init_puzzle  = C.Demo_init_puzzle
 Mt_Demo.init_tutorial = C.Demo_init_tutorial
+Mt_Demo.reinit       = C.Demo_reinit
+Mt_Demo.endgame      = C.Demo_endgame
+Mt_Demo.eventual_pause = C.Demo_eventual_pause
+Mt_Demo.eventual_resume = C.Demo_eventual_resume
 Mt_Demo.init_mode    = function(self, mode, c1p, c2p, sconf, ai_level)
   if mode == 0 then self:init_vs_ppl(c1p, c2p, sconf)
   elseif mode == 1 then self:init_vs_cpu(c1p, c2p, sconf, ai_level)

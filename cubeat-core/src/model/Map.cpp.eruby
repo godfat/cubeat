@@ -335,6 +335,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
+            match_counter_ += 1;
             score_ += (*i)->score_step(); // 2012 note: damage_factor should not affect score
             (*i)->step_one();
         }
@@ -658,6 +659,10 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
     }
     std::sort(ret.begin(), ret.end(), sort_by_second_gte);
     return ret;
+}
+
+int Map::match_count() const {
+    return match_counter_;
 }
 
 bool Map::exist(int x, int y) const

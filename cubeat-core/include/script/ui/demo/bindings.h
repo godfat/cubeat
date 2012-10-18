@@ -14,6 +14,10 @@ APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_puzzle(Demo*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*); // not shared_ptr!
+APIEXPORT void    Demo_eventual_pause(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_eventual_resume(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_reinit(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_endgame(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_quit(Demo*); // not shared_ptr!
 
 #endif // _SHOOTING_CUBES_SCRIPT_UI_DEMO_BINDINGS_H_

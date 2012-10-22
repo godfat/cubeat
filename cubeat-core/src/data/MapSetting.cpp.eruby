@@ -17,6 +17,8 @@ MapSetting::MapSetting(utils::map_any const& conf):
     warning_gap_( conf.I("warning_gap") ),
     drop_normal_chance_( conf.I("drop_normal_chance") ),
     sink_speed_( conf.F("sink_speed") ),
+    sink_speed_add_( conf.F("sink_speed_add") ),
+    sink_speed_limit_( conf.F("sink_speed_limit") ),
     drop_speed_( conf.F("drop_speed") ),
     damage_factor_( conf.F("damage_factor") ),
     negate_damage_factor_( conf.F("negate_damage_factor") ),
@@ -40,6 +42,8 @@ MapSetting::pointer_type MapSetting::clone() const {
            .cube_dropping_duration(cube_dropping_duration_)
            .warning_check_delay(warning_check_delay_)
            .sink_speed(sink_speed_)
+           .sink_speed_add(sink_speed_add_)
+           .sink_speed_limit(sink_speed_limit_)
            .drop_speed(drop_speed_)
            .damage_factor(damage_factor_)
            .width(width_)

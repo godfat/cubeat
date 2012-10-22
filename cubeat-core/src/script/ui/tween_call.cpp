@@ -80,6 +80,11 @@ void tween_call(pSprite* self, const char* Eq, const char* Accessor, double s, d
         else if(strcmp("SineCirc", Eq)==0)
             (*self)->tween<SineCirc, PosY>(s, e, duration, loop, call, delay);
     }
+    else if(strcmp("GradientEmissive", Accessor)==0)
+    {
+        if(strcmp("SineCirc", Eq)==0)
+            (*self)->tween<SineCirc, GradientEmissive>(s, e, duration, loop, call, delay);
+    }
 }
 
 void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, void* e, unsigned int duration, int loop, std::tr1::function<void()> call, int delay)

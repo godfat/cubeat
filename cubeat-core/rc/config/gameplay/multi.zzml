@@ -9,7 +9,7 @@ player1: {
     chain_amounts: 3,
 
     #How many lines does the player have when game starts: (suggestion: 0 ~ 9)
-    starting_line: 3,
+    starting_line: 4,
 
     #How long does the chain property of the cubes hold
     #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
@@ -26,6 +26,10 @@ player1: {
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
     sink_speed: 65.0,
+
+    #add every 5 seconds.
+    sink_speed_add: 10.0,
+    sink_speed_limit: 400.0,
 
     #How fast does the ALREADY DROPPED cubes drop from one block to another
     #This speed is constant during the game, and is used for HASTE as well.
@@ -83,10 +87,12 @@ player1: {
 player2: {
     color_amounts: 4,
     chain_amounts: 3,
-    starting_line: 3,
+    starting_line: 4,
     chaining_duration: 600,
     cube_dying_duration: 500,
     sink_speed: 65.0,
+    sink_speed_add: 10.0,
+    sink_speed_limit: 400.0,
     drop_speed: 450.0,
     cube_dropping_duration: 600,
     use_broken_as_garbage: 1,

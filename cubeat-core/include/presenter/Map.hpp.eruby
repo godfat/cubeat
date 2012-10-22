@@ -75,6 +75,7 @@ public:
     int  grounded_cube_count() const { return model()->grounded_cube_count(); }
     int  column_full_num() const { return model()->column_full_num(); }
     int  warning_level() const { return model()->warning_level(); }
+    int  match_count() const { return model()->match_count(); }
     bool all_empty() const { return model()->all_empty(); }
     bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;
@@ -85,6 +86,10 @@ public:
                 data::pViewSetting();
     }
 
+    Map& push_garbage(double amounts){
+        model()->push_garbage(amounts);
+        return *this;
+    }
     Map& set_garbage_amount(int const& n) { model()->set_garbage_amount(n); return *this; }
     Map& foreach(std::tr1::function<void(model::pCube&, int, int)> f)   { model()->foreach(f); return *this; }
     Map& for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f) { model()->for_row(r, f); return *this; }
@@ -92,6 +97,7 @@ public:
     Map& lock_dropping(bool const& f) { model()->lock_dropping(f); return *this; }
     Map& kill_cube_at(int x, int y) { model()->kill_cube_at(x, y); return *this; }
     Map& new_cube_at(int x, int y, int color_id = -1) { model()->new_cube_at(x, y, color_id); return *this; }
+    Map& purge_all() { model()->purge_all(); return *this; }
     Map& push_player_ability();
 
     bool exist(int x, int y) const             { return model()->exist(x, y); }
@@ -107,10 +113,6 @@ private:
     pMap init(utils::vector_2d<int> const&);
     /*static*/ void bind_cube_event(pCube);
     /*static*/ void bind_view_event(cube::pViewMaster);
-    Map& push_garbage(double amounts){
-        model()->push_garbage(amounts);
-        return *this;
-    }
 
     void speedup();
 

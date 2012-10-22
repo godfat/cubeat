@@ -35,10 +35,15 @@ public:
         int new_step_amount = chain_step_.back();
         if( new_step_amount < 3 ) return;
         int stepnum = chain_step_.size();
-        if( stepnum == 1 )
-            power_factor_ += (new_step_amount - 2);
+        if( stepnum == 1 ) {
+            // power_factor_ += (new_step_amount - 2);
+            if( new_step_amount > 3 ) {
+                power_factor_ += (new_step_amount - 1);
+            }
+        }
         else
-            power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
+            power_factor_ += (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
+            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
             //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;
             //power_factor_ += (new_step_amount - 2)*(stepnum);
             //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);

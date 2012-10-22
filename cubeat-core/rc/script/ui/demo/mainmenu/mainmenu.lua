@@ -4,8 +4,24 @@ local view   = require 'rc/script/ui/view'
 local ui     = require 'rc/script/ui/ui'
 local switch = require 'rc/script/ui/demo/switch/switch'
 local random = require 'rc/script/helper'.random
+local basepath = require 'rc/script/helper'.basepath
 require 'rc/script/ui/demo/defs'
 
+local function check_tutorial(ask)
+  local filemark = io.open(basepath().."rc/config/tmp/tutored", "r")
+  if filemark then
+    io.write 'Lua: tutorial mark found.\n'
+    filemark:close()
+    return true
+  else
+    io.write 'Lua: tutorial mark NOT found.\n'
+    ask:set_visible(true)
+    filemark = io.open(basepath().."rc/config/tmp/tutored", "w") 
+    filemark:write("1") -- just write something
+    filemark:close()
+    return false
+  end
+end
 
 local function load_tutorials(parent, menu)
   for i = 1, 7 do
@@ -27,6 +43,19 @@ local function init(demo, parent)
   local menu = {}
   
   --load_tutorials(demo:get_ui_scene(), menu)
+  local ask_tutorial = ui.new_askbox { parent = demo:get_ui_scene(), title='Trying the tutorial first\n is HIGHLY recommended.', depth=-100 }
+  ask_tutorial:set_visible(false)
+  ask_tutorial.ok:change_text("Okay")
+  ask_tutorial.cancel:change_text("Bah")
+  
+  ask_tutorial:on_press_ok(function(self)
+    ask_tutorial:set_visible(false)
+    demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1') -- test
+    switch.slide_out_title()
+  end, 1)
+  ask_tutorial:on_press_cancel(function(self)
+    ask_tutorial:set_visible(false)
+  end, 1)
   
   menu.btn_vs_cpu  = ui.new_text{ parent = parent, title='player vs cpu', x=0, y=0, size=32 }
   menu.btn_vs_cpu:set_scale(1.5)
@@ -44,10 +73,12 @@ local function init(demo, parent)
   menu.btn_test:set_scale(1.5)
   
   menu.btn_vs_cpu:on_press(function(self)
+    if not check_tutorial(ask_tutorial) then return end
     switch.load_page('difficulty', nil, { game_mode = 1 })
   end)
   
   menu.btn_vs_ppl:on_press(function(self)
+    if not check_tutorial(ask_tutorial) then return end
     switch.load_page('select', 'out', { game_mode = 0 })
   end)
   
@@ -63,6 +94,7 @@ local function init(demo, parent)
   end)
   
   menu.btn_prac:on_press(function(self)
+    if not check_tutorial(ask_tutorial) then return end
     demo:init_puzzle('char/char1_new', 'stage/jungle1')
     switch.slide_out_title()
   end)  

@@ -200,7 +200,7 @@ void ViewSprite::hit(int /*dmg*/, int hp){
 
 void ViewSprite::get_chain(){
     if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
-        body_->tween<easing::SineCirc, accessor::GradientEmissive>(100, 500u, -1);
+        body_->tween<easing::SineCirc, accessor::GradientEmissive>(128, 500u, -1);
     }
 }
 

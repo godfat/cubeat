@@ -335,6 +335,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
+            match_counter_ += 1;
             score_ += (*i)->score_step(); // 2012 note: damage_factor should not affect score
             (*i)->step_one();
         }
@@ -660,6 +661,10 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
     return ret;
 }
 
+int Map::match_count() const {
+    return match_counter_;
+}
+
 bool Map::exist(int x, int y) const
 {
     return !!cubes_[x][y];
@@ -712,6 +717,15 @@ void Map::new_cube_at(int x, int y, int color_id)
     }
     //c->go_sinking();
     insert_cube(c);
+}
+
+void Map::purge_all()
+{
+    for( int x = 0; x < ms()->width(); ++x ) {
+        for( int y = 0; y < ms()->height() - 1; ++y ) {
+            kill_cube_at(x, y);
+        }
+    }
 }
 
 void Map::cubes_cleared_add(int const& num)

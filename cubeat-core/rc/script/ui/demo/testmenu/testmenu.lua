@@ -3,6 +3,7 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
+local basepath = require 'rc/script/helper'.basepath
 
 
 local function init(demo, parent)
@@ -18,7 +19,9 @@ local function init(demo, parent)
   menu.btn_talk:set_scale(1.5)
   menu.btn_aitest= ui.new_text{ parent=parent, x=0, y=240, size=32, title='ai test'}
   menu.btn_aitest:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=parent, x=0, y=300, size=32, title='back to title' }
+  menu.btn_tut1  = ui.new_text{ parent=parent, x=0, y=300, size=32, title='tutorial test'}
+  menu.btn_tut1:set_scale(1.5)
+  menu.btn_back  = ui.new_text{ parent=parent, x=0, y=360, size=32, title='back to title' }
   menu.btn_back:set_scale(1.5)
 
   menu.btn_score:on_press(function(self)
@@ -36,6 +39,13 @@ local function init(demo, parent)
   menu.btn_aitest:on_press(function(self)
     demo:init_ai_logging('char/char1_new', 'char/char2_new', 'stage/jungle1') -- actually these parameters are not important
     switch.slide_out_title()
+  end)
+  menu.btn_tut1:on_press(function(self)
+    demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1') -- test
+    switch.slide_out_title()
+    local filemark = io.open(basepath().."rc/config/tmp/tutored", "w") 
+    filemark:write("1") -- just write something
+    filemark:close()
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

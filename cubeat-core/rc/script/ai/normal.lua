@@ -24,7 +24,7 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
-local ATTACK_PWR     = 6
+local ATTACK_PWR     = 7
 local DELAY          = 0  --ms -- currently not very useful. it should be useful.
 
 --these are intended for C to call from.

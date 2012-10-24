@@ -266,16 +266,19 @@ local function new_askbox(object)
   object.cancel:set_scale(1.5)
   object.cancel:set_pos(75, 50)
   object.cancel:set_depth(-10)
+  object.cancel:on_press(function(self) object:set_visible(false) end)
   
   -- functions
   object.set_title        = function(self, title)
                               object.text:change_text(title)
                             end
   object.on_press_ok      = function(self, func)
-                              object.ok:on_press(func)
+                              local cb = function(self) func(self) object:set_visible(false) end
+                              object.ok:on_press(cb)
                             end
   object.on_press_cancel  = function(self, func)
-                              object.cancel:on_press(func)
+                              local cb = function(self) func(self) object:set_visible(false) end
+                              object.cancel:on_press(cb)
                             end
   
   --init setting

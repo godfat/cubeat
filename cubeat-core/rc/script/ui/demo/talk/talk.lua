@@ -8,6 +8,7 @@ local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 
 
+local ask_panel_ = nil
 local step_      = 1
 local actor_appear_ = {false, false}
 local complete_rundown_ = 0
@@ -114,10 +115,6 @@ local function init(demo, parent)
   local function leave()
     reset()
     switch.load_page('testmenu', 'in')
-    switch.hide_ask_panel()
-  end
-  local function cancel()
-    switch.hide_ask_panel()
   end
   
   menu.TalkBackGround = ui.new_image{ parent=parent, path=config.bg_path, x=config.bg_x, y=config.bg_y,
@@ -140,12 +137,16 @@ local function init(demo, parent)
   menu.clickBlock = ui.new_image{ parent=menu.TalkBackGround._cdata, path='blahblah', x=config.block_x, y=config.block_y,
                                   w=config.block_w, h=config.block_h, alpha=config.block_a, depth=config.block_d }
   menu.clickBlock:on_press(play)
-  menu.clickBlock:on_press_r(function(self)
-                              switch.set_ask_panel_title('Leave talk page?')
-                              switch.set_press_ok(leave)
-                              switch.set_press_cancel(cancel)
-                              switch.show_ask_panel()
-                             end)
+  menu.clickBlock:on_press_r(
+                              function(self)
+                                ask_panel_ = ui.new_askbox{ parent = menu.TalkBackGround._cdata,
+                                                            title = "LEAVE?",
+                                                            depth = -500,
+                                                            visible=false }
+                                ask_panel_:on_press_ok(leave)
+                                ask_panel_:set_visible(true)
+                              end
+                            )
   
   return menu
 end

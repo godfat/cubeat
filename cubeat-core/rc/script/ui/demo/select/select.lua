@@ -6,6 +6,12 @@ local config= require 'rc/script/ui/demo/select/config'
 local switch= require 'rc/script/ui/demo/switch/switch'
 local random= require 'rc/script/helper'.random
 
+local Input1      = C.Input_get_input1()
+local Input2      = C.Input_get_input2()
+local Input1_left = C.Input_get_trig1(C.Input_get_input1())
+local Input2_left = C.Input_get_trig1(C.Input_get_input2())
+local Input1_right= C.Input_get_trig2(C.Input_get_input1())
+local Input2_right= C.Input_get_trig2(C.Input_get_input2())
 
 --temporary addition
 local demo_game_ = nil
@@ -188,18 +194,18 @@ local function init(demo, parent, data)
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
     --menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
-    menu[k]:on_press( select_effect(menu, 1), 1 )
-    menu[k]:on_press_r( cancel_select(menu, 1, i), 1 )
+    menu[k]:on_press( select_effect(menu, 1), Input1_left )
+    menu[k]:on_press_r( cancel_select(menu, 1, i), Input1_right )
     if num_actor==2 then
-      menu[k]:on_press( select_effect(menu, 2), 2 )
-      menu[k]:on_press_r( cancel_select(menu, 2, i), 2 )
+      menu[k]:on_press( select_effect(menu, 2), Input2_left )
+      menu[k]:on_press_r( cancel_select(menu, 2, i), Input2_right )
     end
-    menu[k]:on_leave_focus( leave_icon(1, i, menu), 1 )
-    menu[k]:on_enter_focus( enter_icon(1, i, menu), 1 )
+    menu[k]:on_leave_focus( leave_icon(1, i, menu), Input1 )
+    menu[k]:on_enter_focus( enter_icon(1, i, menu), Input1 )
     
     if data_ and data_.game_mode ~= 1 then 
-      menu[k]:on_leave_focus( leave_icon(2, i, menu), 2 )
-      menu[k]:on_enter_focus( enter_icon(2, i, menu), 2 )
+      menu[k]:on_leave_focus( leave_icon(2, i, menu), Input2 )
+      menu[k]:on_enter_focus( enter_icon(2, i, menu), Input2 )
     end
   end
   

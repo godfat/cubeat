@@ -19,7 +19,6 @@ local data_ = nil
 local selectlock_ = {false, false}
 local function choose_character(self)
   if demo_game_ then
-    switch.hide_ask_panel()
     local ch2 = random(6)+1
     local c1p = "char/char"..tostring(config.ch_choose[1]).."_new"
     local c2p

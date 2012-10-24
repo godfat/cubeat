@@ -47,6 +47,12 @@ local ready_y     = full_y + 300
 local ready_depth = -150
 local ready_size  = 64
 
+-- start button
+local start_x     = screen_w/2
+local start_y     = icon_y-50
+local start_depth = ready_depth
+local start_size  = 64
+
 return {
   ch_choose = ch_choose,
   --
@@ -78,5 +84,10 @@ return {
   --
   ready_y     = ready_y,
   ready_depth = ready_depth,
-  ready_size  = ready_size
+  ready_size  = ready_size,
+  --
+  start_x     = start_x,
+  start_y     = start_y,
+  start_depth = start_depth,
+  start_size  = start_size
 }

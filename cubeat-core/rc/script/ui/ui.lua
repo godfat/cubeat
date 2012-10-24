@@ -20,34 +20,75 @@ local Input1_right= C.Input_get_trig2(C.Input_get_input1())
 local Input2_right= C.Input_get_trig2(C.Input_get_input2())
 
 local function set_on_press_callback(sprite, func, input)
-  if input==1 or input==nil then sprite:on_press( Input1_left, func ) end
-  if input==2 or input==nil then sprite:on_press( Input2_left, func ) end
+  if input == nil then
+    sprite:on_press( Input1_left, func )
+    sprite:on_press( Input2_left, func )
+  else
+    sprite:on_press( input, func )
+  end
+  --if input==1 or input==nil then sprite:on_press( Input1_left, func ) end
+  --if input==2 or input==nil then sprite:on_press( Input2_left, func ) end
 end
 
 local function set_on_press_callback_r(sprite, func, input)
-  if input==1 or input==nil then sprite:on_press( Input1_right, func ) end
-  if input==2 or input==nil then sprite:on_press( Input2_right, func ) end
+  if input == nil then
+    sprite:on_press( Input1_right, func )
+    sprite:on_press( Input2_right, func )
+  else
+    sprite:on_press( input, func )
+  end
+  --if input==1 or input==nil then sprite:on_press( Input1_right, func ) end
+  --if input==2 or input==nil then sprite:on_press( Input2_right, func ) end
 end
 
 local function set_on_down_callback(sprite, func, input)
-  if input==1 or input==nil then sprite:on_down( Input1_left, func ) end
-  if input==2 or input==nil then sprite:on_down( Input2_left, func ) end
+  if input == nil then
+    sprite:on_down( Input1_left, func )
+    sprite:on_down( Input2_left, func )
+  else
+    sprite:on_down( input, func )
+  end
+  --if input==1 or input==nil then sprite:on_down( Input1_left, func ) end
+  --if input==2 or input==nil then sprite:on_down( Input2_left, func ) end
 end
 
 local function set_on_leave_focus_callback(sprite, func, input)
-  if input==1 or input==nil then sprite:on_leave_focus( Input1, func ) end
-  if input==2 or input==nil then sprite:on_leave_focus( Input2, func ) end
+  if input == nil then
+    sprite:on_leave_focus( Input1, func )
+    sprite:on_leave_focus( Input2, func )
+  else
+    sprite:on_leave_focus( input, func )
+  end
+  --if input==1 or input==nil then sprite:on_leave_focus( Input1, func ) end
+  --if input==2 or input==nil then sprite:on_leave_focus( Input2, func ) end
 end
 
 local function set_on_enter_focus_callback(sprite, func, input)
-  if input==1 or input==nil then sprite:on_enter_focus( Input1, func ) end
-  if input==2 or input==nil then sprite:on_enter_focus( Input2, func ) end
+  if input == nil then
+    sprite:on_enter_focus( Input1, func )
+    sprite:on_enter_focus( Input2, func )
+  else
+    sprite:on_enter_focus( input, func )
+  end
+  --if input==1 or input==nil then sprite:on_enter_focus( Input1, func ) end
+  --if input==2 or input==nil then sprite:on_enter_focus( Input2, func ) end
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
   local focus_f = function(self) self:set_texture(focus_pic) end
   local leave_f = function(self) self:set_texture(leave_pic) end
 
+  if input == nil then
+    obj:on_enter_focus(Input1, focus_f)
+    obj:on_leave_focus(Input1, leave_f)
+    obj:on_enter_focus(Input2, focus_f)
+    obj:on_leave_focus(Input2, leave_f)
+  else
+    obj:on_enter_focus(input, focus_f)
+    obj:on_leave_focus(input, leave_f)
+  end
+  
+  --[[
   if input==1 or input==nil then
     obj:on_enter_focus(Input1, focus_f)
     obj:on_leave_focus(Input1, leave_f)
@@ -56,12 +97,24 @@ local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
     obj:on_enter_focus(Input2, focus_f)
     obj:on_leave_focus(Input2, leave_f)
   end
+  --]]
 end
 
 local function set_focus_leave_color(obj, focus_color, leave_color, input)
   local focus_f = function(self) ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
   local leave_f = function(self) ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
 
+  if input == nil then
+    obj:on_enter_focus(Input1, focus_f)
+    obj:on_leave_focus(Input1, leave_f)
+    obj:on_enter_focus(Input2, focus_f)
+    obj:on_leave_focus(Input2, leave_f)
+  else
+    obj:on_enter_focus(input, focus_f)
+    obj:on_leave_focus(input, leave_f)
+  end
+  
+  --[[
   if input==1 or input==nil then
     obj:on_enter_focus(Input1, focus_f)
     obj:on_leave_focus(Input1, leave_f)
@@ -70,6 +123,7 @@ local function set_focus_leave_color(obj, focus_color, leave_color, input)
     obj:on_enter_focus(Input2, focus_f)
     obj:on_leave_focus(Input2, leave_f)
   end
+  --]]
 end
 
 
@@ -84,7 +138,16 @@ end
 view.Mt_SpriteText_Ex.on_press = function(self, func, input)
   set_on_press_callback(self._cdata, func, input)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
-  set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, input)
+  
+  if input==Input1_left or input==Input1_right then
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, Input1)
+  elseif input==Input2_left or input==Input2_right then
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, Input2)
+  else
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color)
+  end
+  
+  --set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, input)
 end
 
 view.Mt_Sprite_Ex.on_press_r = function(self, func, input)
@@ -98,7 +161,16 @@ end
 view.Mt_SpriteText_Ex.on_down = function(self, func, input)
   set_on_down_callback(self._cdata, func, input)
   local leave_color = {r = self.r or 255, g = self.g or 255, b = self.b or 255}
-  set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, input)
+  
+  if input==Input1_left or input==Input1_right then
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, Input1)
+  elseif input==Input2_left or input==Input2_right then
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, Input2)
+  else
+    set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color)
+  end
+  
+  --set_focus_leave_color(self._cdata, self.focus_color or {r=0, g=255, b=255}, leave_color, input)
 end
 
 view.Mt_Sprite_Ex.on_leave_focus = function(self, func, input)
@@ -199,11 +271,11 @@ local function new_askbox(object)
   object.set_title        = function(self, title)
                               object.text:change_text(title)
                             end
-  object.on_press_ok      = function(self, func, input)
-                              object.ok:on_press(func, input)
+  object.on_press_ok      = function(self, func)
+                              object.ok:on_press(func)
                             end
-  object.on_press_cancel  = function(self, func, input)
-                              object.cancel:on_press(func, input)
+  object.on_press_cancel  = function(self, func)
+                              object.cancel:on_press(func)
                             end
   
   --init setting
@@ -407,10 +479,10 @@ local function new_scrollbar(object)
                                             update_button_position(Input2)
                                             if func then func(self) end
                                           end
-                      object.button:on_down( down_input1, 1 )
-                      object.button:on_down( down_input2, 2 )
-                      object.line:on_down( down_input1, 1 )
-                      object.line:on_down( down_input2, 2 )
+                      object.button:on_down( down_input1, Input1_left )
+                      object.button:on_down( down_input2, Input2_left )
+                      object.line:on_down( down_input1, Input1_left )
+                      object.line:on_down( down_input2, Input2_left )
                     end
   object.remove_cb= function(self)
                       object.text:remove()
@@ -420,7 +492,7 @@ local function new_scrollbar(object)
   
   -- init setting
   object.on_down(nil)
-  set_focus_leave_pic(object.button, 'cubes/cube-b-1', 'cubes/cube1.bak')
+  set_focus_leave_pic(object.button._cdata, 'cubes/cube-b-1', 'cubes/cube1.bak')
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible or true)

@@ -3,7 +3,6 @@ local C       = ffi.C
 local view    = require 'rc/script/ui/view'
 local ui      = require 'rc/script/ui/ui'
 local config  = require 'rc/script/ui/demo/talk/config'
-local script  = require 'rc/script/ui/demo/talk/script'
 local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
@@ -14,6 +13,16 @@ local actor_appear_ = {false, false}
 local complete_rundown_ = 0
 local actor_effect_end_flag_ = true
 local word_effect_end_flag_  = true
+
+
+local function get_script( lang )
+  local script
+  if lang == 'EN'   then script = require 'rc/script/ui/demo/talk/script_EN' end
+  if lang == 'TW'   then script = require 'rc/script/ui/demo/talk/script_TW' end
+  
+  if script == nil then script = require 'rc/script/ui/demo/talk/script_EN' end --default EN
+  return script
+end
 
 
 local function add_complete_rundown()
@@ -96,6 +105,7 @@ local function init(demo, parent)
   ch_choose[2] = select_config.ch_choose[2]
   
   local function play()
+    local script  = get_script(config.lang)
     local rundown = script.get_rundown(ch_choose[1], ch_choose[2])
     if rundown ~= nil then
       action(menu, rundown)

@@ -6,6 +6,12 @@ local config= require 'rc/script/ui/demo/select/config'
 local switch= require 'rc/script/ui/demo/switch/switch'
 local random= require 'rc/script/helper'.random
 
+local Input1      = C.Input_get_input1()
+local Input2      = C.Input_get_input2()
+local Input1_left = C.Input_get_trig1(C.Input_get_input1())
+local Input2_left = C.Input_get_trig1(C.Input_get_input2())
+local Input1_right= C.Input_get_trig2(C.Input_get_input1())
+local Input2_right= C.Input_get_trig2(C.Input_get_input2())
 
 --temporary addition
 local demo_game_ = nil
@@ -38,15 +44,7 @@ local function ready_to_start(menu)
             end
             
             if ready==true then
-              switch.set_ask_panel_title("GAME START")
-              switch.show_ask_panel()
-              switch.set_press_ok(choose_character, 1)
-              switch.set_press_cancel( function(self)
-                                        selectlock_ = {false, false}
-                                        if menu['ready_1'] then menu['ready_1']:set_visible(false) end
-                                        if menu['ready_2'] then menu['ready_2']:set_visible(false) end
-                                        switch.hide_ask_panel()
-                                       end, 1 )
+              menu.start:set_visible(true)
             end
           end
 end
@@ -60,6 +58,17 @@ local function select_effect(menu, ch)
             selectlock_[ch] = true
             if menu[key] then menu[key]:set_visible(true) end
             menu['actor_full_'..tostring(ch)]:tween('Linear', 'Scale', scale_s, scale_e, 100, 0, ready_to_start(menu), 0)
+          end
+end
+
+local function cancel_select(menu, ch, i)
+  local key = 'ready_'..tostring(ch)
+  return  function(self)
+            if selectlock_[ch]==false then return end
+            if config.ch_choose[ch] ~= i then return end
+            selectlock_[ch] = false
+            if menu[key] then menu[key]:set_visible(false) end
+            menu.start:set_visible(false)
           end
 end
 
@@ -164,7 +173,7 @@ local function init(demo, parent, data)
                                   depth=config.full_depth }
     menu[readykey]= ui.new_text{ parent=menu.select_actor_page._cdata, x=actor_x+(config.full_w/2), y=config.ready_y,
                                  depth=config.ready_depth, size=config.ready_size, title='READY', center=true, visible=false }
-    menu[readykey]:set_color(0,255,255)
+    menu[readykey]:set_color(255,255,0)
     
     if ch==2 then
       menu[fullkey]:texture_flipH()
@@ -185,16 +194,25 @@ local function init(demo, parent, data)
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
     --menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
-    menu[k]:on_press( select_effect(menu, 1), 1 )
-    if num_actor==2 then menu[k]:on_press( select_effect(menu, 2), 2 ) end
-    menu[k]:on_leave_focus( leave_icon(1, i, menu), 1 )
-    menu[k]:on_enter_focus( enter_icon(1, i, menu), 1 )
+    menu[k]:on_press( select_effect(menu, 1), Input1_left )
+    menu[k]:on_press_r( cancel_select(menu, 1, i), Input1_right )
+    if num_actor==2 then
+      menu[k]:on_press( select_effect(menu, 2), Input2_left )
+      menu[k]:on_press_r( cancel_select(menu, 2, i), Input2_right )
+    end
+    menu[k]:on_leave_focus( leave_icon(1, i, menu), Input1 )
+    menu[k]:on_enter_focus( enter_icon(1, i, menu), Input1 )
     
     if data_ and data_.game_mode ~= 1 then 
-      menu[k]:on_leave_focus( leave_icon(2, i, menu), 2 )
-      menu[k]:on_enter_focus( enter_icon(2, i, menu), 2 )
+      menu[k]:on_leave_focus( leave_icon(2, i, menu), Input2 )
+      menu[k]:on_enter_focus( enter_icon(2, i, menu), Input2 )
     end
   end
+  
+  --create game start button
+  menu.start = ui.new_text{ parent=menu.select_actor_page._cdata, x=config.start_x, y=config.start_y,
+                            depth=config.start_depth, size=config.start_size, title='START', center=true, visible=false}
+  menu.start:on_press(choose_character)
 
   --load ch_choose texture
   menu.actor_full_1:set_texture(config.full_path(config.ch_choose[1]))

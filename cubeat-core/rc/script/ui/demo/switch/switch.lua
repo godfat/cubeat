@@ -52,12 +52,12 @@ local function set_ask_panel_title(title)
   ask_panel_:set_title(title)
 end
 
-local function set_press_ok(func, input)
-  ask_panel_:on_press_ok(func, input)
+local function set_press_ok(func)
+  ask_panel_:on_press_ok(func)
 end
 
-local function set_press_cancel(func, input)
-  ask_panel_:on_press_cancel(func, input)
+local function set_press_cancel(func)
+  ask_panel_:on_press_cancel(func)
 end
 
 local function show_ask_panel()

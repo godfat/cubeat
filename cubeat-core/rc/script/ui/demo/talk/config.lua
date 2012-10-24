@@ -2,6 +2,8 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
+local lang_     = 'EN'
+
 local bg_path_  = 'stage_preview/jungle'
 local bg_x_     = -480
 local bg_y_     = -300
@@ -54,6 +56,8 @@ local word_shake_time_      = 100
 
 
 return {
+  lang      = lang_,
+  ----
   bg_path   = bg_path_,
   bg_x      = bg_x_,
   bg_y      = bg_y_,

@@ -89,18 +89,21 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
 
     clearText();
     text_ = new_text;
-    std::wstring wtext(new_text.length(),L' ');
-    std::copy(new_text.begin(), new_text.end(), wtext.begin());
-    //so hard to convert between wchar and char ....
+    core::ustring utf8s(reinterpret_cast<const uchar8_t*>(new_text.c_str()));
+    // 2012 new scheme, now we just use the ustring from irr::core,
+    // however, a char const* will make it think it's arbitrary byte stream and it will try to
+    // identify it using BOM, which is undesirable (we don't use BOM in anyway)
+    // so, the reinterpret_cast from char const* to unsigned char const* is necessary.
 
-    dimension2d<u32> size_int = ttfont_->getDimension(wtext.c_str());
+    dimension2d<u32> size_int = ttfont_->getDimension(utf8s);
+
     size_.Width = size_int.Width;
     size_.Height= size_int.Height;
 
     SColor textcolor = body_->getMaterial(0).DiffuseColor;
     textcolor.setAlpha(255); //do not forget! SpriteText's alpha is ZERO! (because that's just a big white plane in 3D)
     array<ISceneNode*> irrArray =
-        ttfont_->addTextSceneNode(wtext.c_str(), smgr_, body_, textcolor, center_);
+        ttfont_->addTextSceneNode(utf8s, smgr_, body_, textcolor, center_);
 
     for( unsigned int i = 0; i < irrArray.size(); ++i)
         letter_node_.push_back( irrArray[i] );  //irr::core::array and std::vector inconsistency... only way.. *sigh*

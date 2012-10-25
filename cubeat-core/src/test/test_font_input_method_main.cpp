@@ -242,6 +242,18 @@ int main()
     lstLang->addItem(L"MS-Gothic(Japanese)");
     lstLang->setSelected(0);
 
+    const char* p2 = "我要測試中文"; //this source code is utf-8
+    do {
+        printf("%x ", *p2);
+    } while( *(++p2) );
+    printf("\n");
+
+    wchar_t* p = zhtwHello;
+    do {
+        printf("%x ", *p);
+    } while( *(++p) );
+    printf("\n");
+
     int lastFPS = -1;
 
     while(Device->run())

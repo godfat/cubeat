@@ -1,4 +1,4 @@
-﻿local ffi   = require 'ffi'
+local ffi   = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
@@ -29,18 +29,18 @@ shake
 
 --
 local act1_act1_ = {
-  { ch=1, img="char1_new/glad", text="TW" },
-  { ch=1, text="This is TW\nversion" },
+  { ch=1, img="char1_new/glad", text="中文" },
+  { ch=1, text="這是中文測試" },
   { ch=1, text="END" },
-
+  
   { ch=1, text="" }
 }
 
 local act2_act1_ = {
-  { ch=1, img="char1_new/glad", text="TW" },
-  { ch=1, text="This is TW\nversion" },
+  { ch=1, img="char1_new/glad", text="中文" },
+  { ch=1, text="這是中文測試" },
   { ch=1, text="END" },
-
+  
   { ch=1, text="" }
 }
 

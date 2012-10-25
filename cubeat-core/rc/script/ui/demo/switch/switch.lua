@@ -13,7 +13,7 @@ local title_
 local demobuild_
 local teamname_
 local blocker_
-local ask_panel_
+--local ask_panel_
 local has_blocker_ = true
 
 ------------------------------------------------------------
@@ -43,11 +43,11 @@ local function init(parent, demo)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(128)
   
-  ask_panel_  = ui.new_askbox{ parent = parent, depth = -500, visible=false }
+  --ask_panel_  = ui.new_askbox{ parent = parent, depth = -500, visible=false }
 end
 
 ------------------------------------------------------------
-
+--[[
 local function set_ask_panel_title(title)
   ask_panel_:set_title(title)
 end
@@ -67,7 +67,7 @@ end
 local function hide_ask_panel()
   ask_panel_:set_visible(false)
 end
-
+--]]
 ------------------------------------------------------------
 
 local function slide_out_title(keep_blocker)
@@ -164,11 +164,13 @@ end
 return {
   init  = init,
   ----
+  --[[
   set_ask_panel_title = set_ask_panel_title,
   set_press_ok        = set_press_ok,
   set_press_cancel    = set_press_cancel,
   show_ask_panel      = show_ask_panel,
   hide_ask_panel      = hide_ask_panel,
+  --]]
   ----
   slide_out_page_obj  = slide_out_page_obj,
   slide_in_page_obj   = slide_in_page_obj,

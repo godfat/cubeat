@@ -25,6 +25,15 @@ local function get_script( lang )
   return script
 end
 
+local function get_font( lang )
+  local font
+  if lang == 'EN'   then font = 'kimberley' end
+  if lang == 'TW'   then font = 'msjhbd' end
+  
+  if font == nil then font = 'kimberley' end
+  return font
+end
+
 
 local function add_complete_rundown()
   complete_rundown_ = complete_rundown_+1
@@ -128,7 +137,7 @@ local function init(demo, parent)
     menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
     menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
-                                  depth=config.con_d, size=32, visible=false }
+                                  depth=config.con_d, size=32, visible=false, font=get_font(config.lang) }
     menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
     if ch==2 then menu[actor]:texture_flipH() end

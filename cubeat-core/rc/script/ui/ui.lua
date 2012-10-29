@@ -219,7 +219,7 @@ local function new_text(object)
   
   -- create
   setmetatable(object, SpriteText_Based_Mt)
-  object._cdata = view.new_sprite_text( object.title or 'new', object.parent, "kimberley", object.size or 24,
+  object._cdata = view.new_sprite_text( object.title or 'new', object.parent, object.font or "kimberley", object.size or 24,
                                         object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
   -- init setting

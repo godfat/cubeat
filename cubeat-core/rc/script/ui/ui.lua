@@ -257,7 +257,6 @@ local function new_askbox(object)
                             r=object.r, g=object.g, b=object.b, center=true }
   object.cancel = new_text{ parent=object._cdata, title='Cancel', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.text:set_scale(1.5)
   object.text:set_pos(0, -45)
   object.text:set_depth(-20)
   object.ok:set_scale(1.5)
@@ -266,7 +265,20 @@ local function new_askbox(object)
   object.cancel:set_scale(1.5)
   object.cancel:set_pos(75, 50)
   object.cancel:set_depth(-20)
-  object.cancel:on_press(function(self) object:set_visible(false) end)
+  
+  object.ok:    on_press( function(self)
+                            if object.cb and object.cb[1] then object.cb[1](self) end
+                            object:set_visible(false)
+                          end )
+  object.cancel:on_press( function(self)
+                            if object.cb and object.cb[2] then object.cb[2](self) end
+                            object:set_visible(false)
+                          end )
+  
+  if object.cb and table.getn(object.cb)==1 then
+    object.ok:set_pos(0, 50)
+    object.cancel:set_visible(false)
+  end
   
   -- functions
   object.set_title        = function(self, title)
@@ -281,7 +293,8 @@ local function new_askbox(object)
                               object.cancel:on_press(cb)
                             end
   
-  --init setting
+  -- init setting
+  object.text:set_scale(object.scale or 1)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible==nil or object.visible)
   

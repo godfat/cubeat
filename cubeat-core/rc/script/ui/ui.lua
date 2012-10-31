@@ -504,6 +504,101 @@ local function new_scrollbar(object)
   return object
 end
 
+----------------------------------------------------------------------------
+-- TutorialInfo
+----------------------------------------------------------------------------
+local function new_tutorialinfo(object)
+  if object.parent == nil then error('parent is nil') end
+
+  -- create
+  local screen_w  = C.Get_SCREEN_W()
+  local screen_h  = C.Get_SCREEN_H()
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('blocker', object.parent, screen_w, screen_h, true)
+  object:set_pos(screen_w/2, screen_h/2)
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  
+  object.panel  = new_image{parent=object._cdata, path='nothing', w=1024, h=576, center=true}
+  object.panel:set_color(0, 0, 0)
+  object.panel:set_alpha(192)
+  
+  local guide_x=-460
+  local guide_y=-240
+  object.guide  = new_text{ parent=object._cdata, size=24, r=object.r, g=object.g, b=object.b,
+                            title = "Shoot [left button] these:                              Match these:\n\n          colored cubes\n\n          colored cubes with chain\n\n          garbages (won't match)\n\nSpeed-Up: [right button]                                Pause: [middle button]" }
+  object.text   = new_text{ parent=object._cdata, size=object.size or 30,
+                            r=object.r, g=object.g, b=object.b, center=true,
+                            title="Tutorial is 90 seconds long.\nTry to make 8 or more matches in the first 20 seconds." }
+  object.ok     = new_text{ parent=object._cdata, title='OK', size=object.size or 30,
+                            r=object.r, g=object.g, b=object.b, center=true }
+  object.guide:set_pos(guide_x, guide_y)
+  object.guide:set_depth(-50)
+  object.text:set_pos(0, 90)
+  object.text:set_depth(-50)
+  object.ok:set_scale(1.5)
+  object.ok:set_pos(0, 200)
+  object.ok:set_depth(-50)
+  object.ok:on_press(function(self) object:set_visible(false) end)
+  
+  object.cube1 = new_image { parent = object._cdata, path = 'cubes/cube1', w=48, h=48 }
+  object.cube1:set_color(255, 0, 0)
+  object.cube1:set_pos(10+guide_x, 45+guide_y)
+  object.cube2 = new_image { parent = object._cdata, path = 'cubes/cube2', w=48, h=48 }
+  object.cube2:set_color(255, 0, 0)
+  object.cube2:tween("SineCirc", "GradientEmissive", 0, 144, 500, -1)
+  object.cube2:set_pos(10+guide_x, 95+guide_y)
+  object.cube3 = new_image { parent = object._cdata, path = 'cubes/cube3', w=48, h=48 }
+  object.cube3:set_pos(10+guide_x, 145+guide_y)
+  
+  object.cube4 = new_image { parent = object._cdata, path = 'cubes/cube1', w=48, h=48 }
+  object.cube5 = new_image { parent = object._cdata, path = 'cubes/cube2', w=48, h=48 }
+  object.cube6 = new_image { parent = object._cdata, path = 'cubes/cube3', w=48, h=48 }
+  object.cube7 = new_image { parent = object._cdata, path = 'cubes/cube1', w=48, h=48 }
+  object.cube8 = new_image { parent = object._cdata, path = 'cubes/cube2', w=48, h=48 }
+  object.cube9 = new_image { parent = object._cdata, path = 'cubes/cube3', w=48, h=48 }
+  object.cube0 = new_image { parent = object._cdata, path = 'cubes/cube4', w=48, h=48 }
+  object.cube4:set_color(0, 255, 0)
+  object.cube5:set_color(0, 255, 0)
+  object.cube6:set_color(0, 255, 0)
+  object.cube7:set_color(0, 0, 255)
+  object.cube8:set_color(0, 0, 255)
+  object.cube9:set_color(0, 0, 255)
+  object.cube0:set_color(0, 0, 255)
+  object.cube4:set_pos(550+guide_x, 60+guide_y)
+  object.cube4:tween("Linear", "Pos2D", ffi.new("v2", 550+guide_x, 30+guide_y), ffi.new("v2", 550+guide_x, 60+guide_y), 1000, -1)
+  object.cube5:set_pos(598+guide_x, 60+guide_y)
+  object.cube6:set_pos(646+guide_x, 60+guide_y)
+  object.cube7:set_pos(550+guide_x, 130+guide_y)
+  object.cube8:set_pos(598+guide_x, 130+guide_y)
+  object.cube9:set_pos(646+guide_x, 130+guide_y)
+  object.cube0:set_pos(694+guide_x, 130+guide_y)
+  object.cube9:tween("Linear", "Pos2D", ffi.new("v2", 646+guide_x, 105+guide_y), ffi.new("v2", 646+guide_x, 130+guide_y), 1000, -1)
+  
+  object.cube1:set_depth(-50)
+  object.cube2:set_depth(-50)
+  object.cube3:set_depth(-50)
+  object.cube4:set_depth(-50)
+  object.cube5:set_depth(-50)
+  object.cube6:set_depth(-50)
+  object.cube7:set_depth(-50)
+  object.cube8:set_depth(-50)
+  object.cube9:set_depth(-50)
+  object.cube0:set_depth(-50)
+  
+  -- functions
+  object.on_press_ok      = function(self, func)
+                              local cb = function(self) func(self) object:set_visible(false) end
+                              object.ok:on_press(cb)
+                            end
+  
+  -- init setting
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible==nil or object.visible)
+  
+  return object
+end
+
 
 
 ----------------------------------------------------------------------------
@@ -517,5 +612,6 @@ new_askbox      = new_askbox,
 new_list        = new_list,
 new_ratio       = new_ratio,
 new_selectbox   = new_selectbox,
-new_scrollbar   = new_scrollbar
+new_scrollbar   = new_scrollbar,
+new_tutorialinfo= new_tutorialinfo
 }

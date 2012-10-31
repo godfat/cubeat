@@ -258,13 +258,13 @@ local function new_askbox(object)
   object.cancel = new_text{ parent=object._cdata, title='Cancel', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
   object.text:set_pos(0, -45)
-  object.text:set_depth(-20)
+  object.text:set_depth(-50)
   object.ok:set_scale(1.5)
   object.ok:set_pos(-75, 50)
-  object.ok:set_depth(-20)
+  object.ok:set_depth(-50)
   object.cancel:set_scale(1.5)
   object.cancel:set_pos(75, 50)
-  object.cancel:set_depth(-20)
+  object.cancel:set_depth(-50)
   
   object.ok:    on_press( function(self)
                             if object.cb and object.cb[1] then object.cb[1](self) end

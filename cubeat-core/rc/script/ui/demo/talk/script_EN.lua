@@ -4,6 +4,18 @@ local view = require 'rc/script/ui/view'
 
 
 --[[
+[pos]
+change text & panel position
+example=> pos={x=700, y=300}
+
+[board]
+change panel texture
+example=> board="area_rect"
+
+[board_flip]
+"H"  = flip panel Horizon
+"V"  = flip panel Vertical
+"HV" = flip panel Horizon+Vertical
 
 [ch]
 1 = left actor
@@ -71,6 +83,23 @@ local act1_act1_ = {
   { ch=1, text="Let's test\nfade" },
   { ch=2, text="bye~~~", effect_a="fade_out" },
   { ch=2, text="hi~~~", effect_a="fade_in" },
+  
+  { ch=1, text="ok" },
+  { ch=1, text="Let's test\nchange board" },
+  { ch=2, text="Cubeat Style!!", board="cubeat_800x200" },
+  --{ ch=2, text="Origin Style!!", board="area_rect" },
+  
+  { ch=1, text="ok" },
+  { ch=1, text="Let's text\nboard_flipH" },
+  { ch=2, text="Fliiiiiiiip!!", board_flip="H" },
+  
+  { ch=1, text="ok" },
+  { ch=1, text="Let's text\nboard_flipV" },
+  { ch=2, text="Fliiiiiiiip!!", board_flip="V" },
+  
+  { ch=1, text="ok" },
+  { ch=1, text="Let's text\nboard_flipHV" },
+  { ch=2, text="Fliiiiiiiip!!", board_flip="HV" },
   
   { ch=1, text="ok" },
   { ch=1, text="test end" },

@@ -82,6 +82,16 @@ local function action(menu, rundown)
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
   end
+  --board
+  if rundown[step_].board then
+    menu[panel]:set_texture(rundown[step_].board)
+  end
+  --board_flip
+  if rundown[step_].board_flip then
+    if rundown[step_].board_flip=="H" then menu[panel]:texture_flipH() end
+    if rundown[step_].board_flip=="V" then menu[panel]:texture_flipV() end
+    if rundown[step_].board_flip=="HV" then menu[panel]:texture_flipH() menu[panel]:texture_flipV() end
+  end
   --text
   if rundown[step_].text then
     menu[content]:change_text(rundown[step_].text)

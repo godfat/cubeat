@@ -35,27 +35,6 @@ local function get_font( lang )
 end
 
 
-local function add_complete_rundown()
-  complete_rundown_ = complete_rundown_+1
-end
-local function actor_effect_cb()
-  actor_effect_end_flag_ = true
-  if word_effect_end_flag_==true then add_complete_rundown() end
-end
-local function word_effect_cb()
-  word_effect_end_flag_ = true
-  if actor_effect_end_flag_==true then add_complete_rundown() end
-end
-local function check_effect_status(effect_a, effect_w)
-  if effect_a==nil and effect_w==nil then
-    add_complete_rundown()
-  else
-    actor_effect_end_flag_ = (effect_a==nil)
-    word_effect_end_flag_  = (effect_w==nil)
-  end
-end
-
-
 local function reset()
   step_      = 1
   actor_appear_ = {false, false}
@@ -70,6 +49,37 @@ local function action(menu, rundown)
   local actor   = 'actor'..tostring(ch)
   local content = 'content'..tostring(ch)
   local panel   = 'panel'..tostring(ch)
+  local light   = 'light'..tostring(ch)
+  
+  local function add_complete_rundown()
+    complete_rundown_ = complete_rundown_+1
+    menu[light]:set_visible(true)
+    local x = menu[panel]:get_pos_x()+config.light_offset_x
+    local y = menu[panel]:get_pos_y()+config.light_offset_y
+    menu[light]:tween("Linear", "Pos2D",
+                      ffi.new("v2", x, y-10),
+                      ffi.new("v2", x, y),
+                      config.light_time, -1)
+  end
+  local function actor_effect_cb()
+    actor_effect_end_flag_ = true
+    if word_effect_end_flag_==true then add_complete_rundown() end
+  end
+  local function word_effect_cb()
+    word_effect_end_flag_ = true
+    if actor_effect_end_flag_==true then add_complete_rundown() end
+  end
+  local function check_effect_status(effect_a, effect_w)
+    if effect_a==nil and effect_w==nil then
+      add_complete_rundown()
+    else
+      actor_effect_end_flag_ = (effect_a==nil)
+      word_effect_end_flag_  = (effect_w==nil)
+    end
+  end
+
+  menu.light1:set_visible(false)
+  menu.light2:set_visible(false)
   
   if actor_appear_[ch]==false then
     menu[actor]:set_visible(true)
@@ -144,12 +154,15 @@ local function init(demo, parent)
     local actor   = 'actor'..tostring(ch)
     local content = 'content'..tostring(ch)
     local panel   = 'panel'..tostring(ch)
+    local light   = 'light'..tostring(ch)
     menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
     menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
                                   depth=config.con_d, size=32, visible=false, font=get_font(config.lang) }
-    menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path='area_rect', x=config.conBG_x[ch], y=config.conBG_y[ch],
+    menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.conBG_path, x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
+    menu[light]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.light_path, x=config.light_x[ch], y=config.light_y[ch],
+                                  w=config.light_w, h=config.light_h, depth=config.light_d, visible=false }
     if ch==2 then menu[actor]:texture_flipH() end
   end
   

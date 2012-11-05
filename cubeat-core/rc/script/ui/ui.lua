@@ -26,8 +26,6 @@ local function set_on_press_callback(sprite, func, input)
   else
     sprite:on_press( input, func )
   end
-  --if input==1 or input==nil then sprite:on_press( Input1_left, func ) end
-  --if input==2 or input==nil then sprite:on_press( Input2_left, func ) end
 end
 
 local function set_on_press_callback_r(sprite, func, input)
@@ -37,8 +35,6 @@ local function set_on_press_callback_r(sprite, func, input)
   else
     sprite:on_press( input, func )
   end
-  --if input==1 or input==nil then sprite:on_press( Input1_right, func ) end
-  --if input==2 or input==nil then sprite:on_press( Input2_right, func ) end
 end
 
 local function set_on_down_callback(sprite, func, input)
@@ -48,8 +44,6 @@ local function set_on_down_callback(sprite, func, input)
   else
     sprite:on_down( input, func )
   end
-  --if input==1 or input==nil then sprite:on_down( Input1_left, func ) end
-  --if input==2 or input==nil then sprite:on_down( Input2_left, func ) end
 end
 
 local function set_on_leave_focus_callback(sprite, func, input)
@@ -59,8 +53,6 @@ local function set_on_leave_focus_callback(sprite, func, input)
   else
     sprite:on_leave_focus( input, func )
   end
-  --if input==1 or input==nil then sprite:on_leave_focus( Input1, func ) end
-  --if input==2 or input==nil then sprite:on_leave_focus( Input2, func ) end
 end
 
 local function set_on_enter_focus_callback(sprite, func, input)
@@ -70,8 +62,6 @@ local function set_on_enter_focus_callback(sprite, func, input)
   else
     sprite:on_enter_focus( input, func )
   end
-  --if input==1 or input==nil then sprite:on_enter_focus( Input1, func ) end
-  --if input==2 or input==nil then sprite:on_enter_focus( Input2, func ) end
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
@@ -87,17 +77,6 @@ local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
     obj:on_enter_focus(input, focus_f)
     obj:on_leave_focus(input, leave_f)
   end
-  
-  --[[
-  if input==1 or input==nil then
-    obj:on_enter_focus(Input1, focus_f)
-    obj:on_leave_focus(Input1, leave_f)
-  end
-  if input==2 or input==nil then
-    obj:on_enter_focus(Input2, focus_f)
-    obj:on_leave_focus(Input2, leave_f)
-  end
-  --]]
 end
 
 local function set_focus_leave_color(obj, focus_color, leave_color, input)
@@ -113,17 +92,6 @@ local function set_focus_leave_color(obj, focus_color, leave_color, input)
     obj:on_enter_focus(input, focus_f)
     obj:on_leave_focus(input, leave_f)
   end
-  
-  --[[
-  if input==1 or input==nil then
-    obj:on_enter_focus(Input1, focus_f)
-    obj:on_leave_focus(Input1, leave_f)
-  end
-  if input==2 or input==nil then
-    obj:on_enter_focus(Input2, focus_f)
-    obj:on_leave_focus(Input2, leave_f)
-  end
-  --]]
 end
 
 
@@ -219,7 +187,7 @@ local function new_text(object)
   
   -- create
   setmetatable(object, SpriteText_Based_Mt)
-  object._cdata = view.new_sprite_text( object.title or 'new', object.parent, "kimberley", object.size or 24,
+  object._cdata = view.new_sprite_text( object.title or 'new', object.parent, object.font or "kimberley", object.size or 24,
                                         object.center or false, object.r or 255, object.g or 255, object.b or 255)
 
   -- init setting
@@ -257,16 +225,28 @@ local function new_askbox(object)
                             r=object.r, g=object.g, b=object.b, center=true }
   object.cancel = new_text{ parent=object._cdata, title='Cancel', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
-  object.text:set_scale(1.5)
   object.text:set_pos(0, -45)
-  object.text:set_depth(-20)
+  object.text:set_depth(-50)
   object.ok:set_scale(1.5)
   object.ok:set_pos(-75, 50)
-  object.ok:set_depth(-20)
+  object.ok:set_depth(-50)
   object.cancel:set_scale(1.5)
   object.cancel:set_pos(75, 50)
-  object.cancel:set_depth(-20)
-  object.cancel:on_press(function(self) object:set_visible(false) end)
+  object.cancel:set_depth(-50)
+  
+  object.ok:    on_press( function(self)
+                            if object.cb and object.cb[1] then object.cb[1](self) end
+                            object:set_visible(false)
+                          end )
+  object.cancel:on_press( function(self)
+                            if object.cb and object.cb[2] then object.cb[2](self) end
+                            object:set_visible(false)
+                          end )
+  
+  if object.cb and table.getn(object.cb)==1 then
+    object.ok:set_pos(0, 50)
+    object.cancel:set_visible(false)
+  end
   
   -- functions
   object.set_title        = function(self, title)
@@ -281,7 +261,8 @@ local function new_askbox(object)
                               object.cancel:on_press(cb)
                             end
   
-  --init setting
+  -- init setting
+  object.text:set_scale(object.scale or 1)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible==nil or object.visible)
   

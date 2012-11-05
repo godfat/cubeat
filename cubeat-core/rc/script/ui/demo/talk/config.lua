@@ -18,17 +18,28 @@ local act_d_  = -20
 local out_x_  = {-act_w_, bg_w_}
 local out_y_  = {0, 0}
 
-local conBG_w_  = 300
-local conBG_h_  = 150
-local conBG_x_  = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
-local conBG_y_  = {150, 400}
-local conBG_d_  = -50
+local conBG_path_ = 'area_rect'
+local conBG_w_    = 300
+local conBG_h_    = 150
+local conBG_x_    = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
+local conBG_y_    = {150, 400}
+local conBG_d_    = -50
 
 local con_offset_x_ =30
 local con_offset_y_ =20
 local con_x_        = {conBG_x_[1]+con_offset_x_, conBG_x_[2]+con_offset_x_}
 local con_y_        = {conBG_y_[1]+con_offset_y_, conBG_y_[2]+con_offset_y_}
 local con_d_        = -50
+
+local light_path_     = 'cubes/cube-r-1'
+local light_time_     = 1000
+local light_offset_x_ = 260
+local light_offset_y_ = 110
+local light_x_  = {conBG_x_[1]+light_offset_x_, conBG_x_[2]+light_offset_x_}
+local light_y_  = {conBG_y_[1]+light_offset_y_, conBG_y_[2]+light_offset_y_}
+local light_w_  = 20
+local light_h_  = 20
+local light_d_  = -60
 
 local block_x_  = 0
 local block_y_  = 0
@@ -72,6 +83,7 @@ return {
   out_x     = out_x_,
   out_y     = out_y_,
   ----
+  conBG_path= conBG_path_,
   conBG_w   = conBG_w_,
   conBG_h   = conBG_h_,
   conBG_x   = conBG_x_,
@@ -83,6 +95,16 @@ return {
   con_x         = con_x_,
   con_y         = con_y_,
   con_d         = con_d_,
+  ----
+  light_path      = light_path_,
+  light_time      = light_time_,
+  light_offset_x  = light_offset_x_,
+  light_offset_y  = light_offset_y_,
+  light_x         = light_x_,
+  light_y         = light_y_,
+  light_w         = light_w_,
+  light_h         = light_h_,
+  light_d         = light_d_,
   ----
   block_x   = block_x_,
   block_y   = block_y_,

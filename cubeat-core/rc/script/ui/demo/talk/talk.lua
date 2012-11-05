@@ -61,13 +61,18 @@ local function action(menu, rundown)
                       ffi.new("v2", x, y),
                       config.light_time, -1)
   end
+  local function flag_check()
+    if (actor_effect_end_flag_==true and word_effect_end_flag_==true) then
+      add_complete_rundown()
+    end
+  end
   local function actor_effect_cb()
     actor_effect_end_flag_ = true
-    if word_effect_end_flag_==true then add_complete_rundown() end
+    flag_check()
   end
   local function word_effect_cb()
     word_effect_end_flag_ = true
-    if actor_effect_end_flag_==true then add_complete_rundown() end
+    flag_check()
   end
   local function check_effect_status(effect_a, effect_w)
     if effect_a==nil and effect_w==nil then

@@ -64,17 +64,30 @@ local actor_shake_time_     = 50
 local word_shake_loop_      = 3
 local word_shake_distance_  = 3
 local word_shake_time_      = 100
+----
+----
+local cube_path_  = 'cubes/cube-r-1'
+local cube_x1_    = -100
+local cube_y1_    = -50
+local cube_x2_    = 100
+local cube_y2_    = 150
+local cube_x3_    = 200
+local cube_y3_    = -150
+local cube_w_     = 60
+local cube_h_     = 60
+local cube_time_  = 200
+
 
 
 return {
   lang      = lang_,
-  ----
+
   bg_path   = bg_path_,
   bg_x      = bg_x_,
   bg_y      = bg_y_,
   bg_w      = bg_w_,
   bg_h      = bg_h_,
-  ----
+
   act_w     = act_w_,
   act_h     = act_h_,
   act_x     = act_x_,
@@ -82,20 +95,20 @@ return {
   act_d     = act_d_,
   out_x     = out_x_,
   out_y     = out_y_,
-  ----
+
   conBG_path= conBG_path_,
   conBG_w   = conBG_w_,
   conBG_h   = conBG_h_,
   conBG_x   = conBG_x_,
   conBG_y   = conBG_y_,
   conBG_d   = conBG_d_,
-  ----
+
   con_offset_x  = con_offset_x_,
   con_offset_y  = con_offset_y_,
   con_x         = con_x_,
   con_y         = con_y_,
   con_d         = con_d_,
-  ----
+
   light_path      = light_path_,
   light_time      = light_time_,
   light_offset_x  = light_offset_x_,
@@ -105,7 +118,7 @@ return {
   light_w         = light_w_,
   light_h         = light_h_,
   light_d         = light_d_,
-  ----
+
   block_x   = block_x_,
   block_y   = block_y_,
   block_w   = block_w_,
@@ -118,15 +131,27 @@ return {
   slide_out_time= slide_out_time_,
   fade_in_time  = fade_in_time_,
   fade_out_time = fade_out_time_,
-  ----
+
   word_size_L = word_size_L_,
   word_size_M = word_size_M_,
   word_size_S = word_size_S_,
-  ----
+
   act_s_loop  = actor_shake_loop_,
   act_s_dis   = actor_shake_distance_,
   act_s_time  = actor_shake_time_,
   word_s_loop = word_shake_loop_,
   word_s_dis  = word_shake_distance_,
-  word_s_time = word_shake_time_
+  word_s_time = word_shake_time_,
+  ----
+  ----
+  cube_path = cube_path_,
+  cube_x1   = cube_x1_,
+  cube_y1   = cube_y1_,
+  cube_x2   = cube_x2_,
+  cube_y2   = cube_y2_,
+  cube_x3   = cube_x3_,
+  cube_y3   = cube_y3_,
+  cube_w    = cube_w_,
+  cube_h    = cube_h_,
+  cube_time = cube_time_
 }

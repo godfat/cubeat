@@ -26,5 +26,5 @@ int main()
     std::tr1::shared_ptr<ViewTest1> viewtest(new ViewTest1);
     viewtest->init();
 
-    return psc::App::i().init().run(std::tr1::bind(&ViewTest1::cycle, viewtest));
+    return psc::App::i().run(std::tr1::bind(&ViewTest1::cycle, viewtest));
 }

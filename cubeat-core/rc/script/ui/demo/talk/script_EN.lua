@@ -36,6 +36,9 @@ size_M
 size_S
 shake
 
+[special]
+cube: x1,y1,x2,y2,x3,y3,path,w,h,dur
+
 --]]
 
 
@@ -43,6 +46,8 @@ shake
 local act1_act1_ = {
   { ch=1, img="char1_new/glad", text="Hello" },
   { ch=1, text="This is a\ntest page" },
+  { ch=1, text="Let's test\ncube", special={id="cube", x1=-100, y1=50, x2=100, y2=150, x3=200, y3=-150, path='cubes/cube-r-1', w=60, h=60, dur=200} },
+  { ch=1, text="Oh!" },
   { ch=1, text="Let's test\ntalking" },
   { ch=2, img="char1_new/glad", text="1~" },
   { ch=2, text="1~\n2~" },

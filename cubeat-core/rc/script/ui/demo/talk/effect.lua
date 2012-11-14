@@ -2,10 +2,12 @@ local ffi     = require 'ffi'
 local C       = ffi.C
 local view    = require 'rc/script/ui/view'
 local config  = require 'rc/script/ui/demo/talk/config'
+local ui      = require 'rc/script/ui/ui'
 
 
-local actor_ = {}
-local word_  = {}
+local actor_  = {}
+local word_   = {}
+local special_= {}
 
 
 local function shake(loop, sprite, x, y, dis, dur, cb)
@@ -106,6 +108,36 @@ word_.shake = function(object, cb)
   shake(loop, object.content, con_x, con_y, dis, dur, cb)
 end
 
+----
+
+special_.cube = function(object, cb, special)
+  local ch    = object.ch
+  local act_x = config.act_x[ch]
+  local act_y = config.act_y[ch]
+  local dis   = config.act_s_dis
+  local dur   = config.act_s_time
+
+  local cube = ui.new_image{ parent=object.actor._cdata, path=special.path or config.cube_path,
+                             x=special.x1 or config.cube_x1, y=special.y1 or config.cube_y1,
+                             w=special.w or config.cube_w, h=special.h or config.cube_h }
+  
+  local function hit_end(self)
+    cube:set_visible(false)
+    cb()
+  end
+  local function hit_shake(self)
+    shake(2, object.actor, act_x, act_y, dis, dur)
+    cube:tween( "Linear", "Pos2D",
+                ffi.new("v2", special.x2 or config.cube_x2, special.y2 or config.cube_y2),
+                ffi.new("v2", special.x3 or config.cube_x3, special.y3 or config.cube_y3),
+                special.dur or config.cube_time, 0, hit_end )
+  end
+  cube:tween( "Linear", "Pos2D",
+              ffi.new("v2", special.x1 or config.cube_x1, special.y1 or config.cube_y1),
+              ffi.new("v2", special.x2 or config.cube_x2, special.y2 or config.cube_y2),
+              special.dur or config.cube_time, 0, hit_shake)
+end
+
 
 
 --
@@ -119,9 +151,15 @@ local function word_effect(effect_w, actor, content, panel, ch, cb)
   local object = {actor=actor, content=content, panel=panel, ch=ch}
   word_[effect_w](object, cb)
 end
+local function special_effect(special_id, actor, content, panel, ch, cb, special)
+  if special_id==nil then return end
+  local object = {actor=actor, content=content, panel=panel, ch=ch}
+  special_[special_id](object, cb, special)
+end
 
 
 return {
   actor_effect  = actor_effect,
-  word_effect   = word_effect
+  word_effect   = word_effect,
+  special_effect= special_effect
 }

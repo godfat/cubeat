@@ -12,8 +12,9 @@ local ask_panel_ = nil
 local step_      = 1
 local actor_appear_ = {false, false}
 local complete_rundown_ = 0
-local actor_effect_end_flag_ = true
-local word_effect_end_flag_  = true
+local actor_effect_end_flag_  = true
+local word_effect_end_flag_   = true
+local special_effect_end_flag_= true
 
 
 local function get_script( lang )
@@ -62,7 +63,7 @@ local function action(menu, rundown)
                       config.light_time, -1)
   end
   local function flag_check()
-    if (actor_effect_end_flag_==true and word_effect_end_flag_==true) then
+    if (actor_effect_end_flag_==true and word_effect_end_flag_==true and special_effect_end_flag_==true) then
       add_complete_rundown()
     end
   end
@@ -74,12 +75,17 @@ local function action(menu, rundown)
     word_effect_end_flag_ = true
     flag_check()
   end
-  local function check_effect_status(effect_a, effect_w)
-    if effect_a==nil and effect_w==nil then
+  local function special_effect_cb()
+    special_effect_end_flag_ = true
+    flag_check()
+  end
+  local function check_effect_status(effect_a, effect_w, special)
+    if effect_a==nil and effect_w==nil and special==nil then
       add_complete_rundown()
     else
-      actor_effect_end_flag_ = (effect_a==nil)
-      word_effect_end_flag_  = (effect_w==nil)
+      actor_effect_end_flag_  = (effect_a ==nil)
+      word_effect_end_flag_   = (effect_w ==nil)
+      special_effect_end_flag_= (special==nil)
     end
   end
 
@@ -118,11 +124,15 @@ local function action(menu, rundown)
                           menu[panel]:get_pos_y()+config.con_offset_y)
   end
   --run effect
-  local effect_a = rundown[step_].effect_a
-  local effect_w = rundown[step_].effect_w
-  check_effect_status(effect_a, effect_w)
-  effect.actor_effect(effect_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
-  effect.word_effect (effect_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
+  local effect_a  = rundown[step_].effect_a
+  local effect_w  = rundown[step_].effect_w
+  local special = rundown[step_].special
+  check_effect_status(effect_a, effect_w, special)
+  effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
+  effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
+  if special then
+    effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, special_effect_cb, special)
+  end
   
   step_=step_+1
   if step_>table.getn(rundown) then

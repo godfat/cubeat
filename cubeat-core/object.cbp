@@ -28,6 +28,7 @@
 					<Add directory="C:\libs\cpp\openal-soft\include" />
 					<Add directory="C:\libs\cpp\alure\include" />
 					<Add directory="C:\libs\cpp\almixer_isolated\include" />
+					<Add directory="C:\libs\cpp\ggpo\include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -248,7 +249,10 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp" />
+		<Unit filename="main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="rc\config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char1_demo.zzml" />
@@ -452,6 +456,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src\test\test_ggpo.cpp" />
 		<Unit filename="src\test\test_irr_device_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

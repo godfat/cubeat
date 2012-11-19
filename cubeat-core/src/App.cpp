@@ -144,6 +144,11 @@ App& App::quit()
     return *this;
 }
 
+time_t realtime()
+{
+    return IrrDevice::i().d()->getTimer()->getRealTime();
+}
+
 int App::run(std::tr1::function<void()> tester)
 {
     using namespace irr;
@@ -155,8 +160,7 @@ int App::run(std::tr1::function<void()> tester)
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
     int lastFPS = -1;
-    int profile_time_start = 0;
-    clock_t t0 = clock(), t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+    time_t t0 = realtime(), t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 
     while( IrrDevice::i().run() && !quit_ ) {
         //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
@@ -167,38 +171,29 @@ int App::run(std::tr1::function<void()> tester)
 
             MastEventReceiver::i().endEventProcess();
 
-            t1 = clock();
+            t1 = realtime();
             InputMgr::i().updateAll();
-            t2 = clock();
+            t2 = realtime();
             EventDispatcher::i().dispatch();
-            t3 = clock();
+            t3 = realtime();
             driver->beginScene(true, true, video::SColor(0,0,0,0));
-            t4 = clock();
+            t4 = realtime();
             if( tester ) tester();
             else master_presenter_->cycle();
-            t5 = clock();
+            t5 = realtime();
             driver->clearZBuffer();
             trans_->cycle();
-            t6 = clock();
+            t6 = realtime();
             InputMgr::i().redrawAll();
-            t7 = clock();
+            t7 = realtime();
             audio::Sound::i().cycle();
-            t8 = clock();
+            t8 = realtime();
             view::SFX::i().cleanup(); //newly added, clean up effects pool every cycle.
-            t9 = clock();
+            t9 = realtime();
             driver->endScene();
-            t10 = clock();
-            int elapsed_time = clock() - profile_time_start;
-
-            if( elapsed_time > 17 && elapsed_time < 500 ) {
-                std::cout << "frame time spike: " << elapsed_time << "\n";
-                printf(" -- App: event(%ld) maspre(%ld) %ld %ld %ld %ld %ld %ld %ld %ld\n", t3-t2, t5-t4, t1-t0, t2-t1, t4-t3, t6-t5, t7-t6, t8-t7, t9-t8, t10-t9);
-            }
+            t10 = realtime();
 
             MastEventReceiver::i().startEventProcess();
-
-            t0 = clock();
-            profile_time_start = clock();
 
             //FPS for debug
             int fps = driver->getFPS();
@@ -212,6 +207,21 @@ int App::run(std::tr1::function<void()> tester)
                 master_presenter_ = temp_presenter_;
                 temp_presenter_.reset();
             }
+
+            time_t elapsed_time = realtime() - t0;
+
+            if( elapsed_time > 17 && elapsed_time < 500 ) {
+                std::cout << "frame time spike: " << elapsed_time << "\n";
+                printf(" -- App: event(%ld) maspre(%ld) %ld %ld %ld %ld %ld %ld %ld %ld\n", t3-t2, t5-t4, t1-t0, t2-t1, t4-t3, t6-t5, t7-t6, t8-t7, t9-t8, t10-t9);
+            }
+            if( elapsed_time < 16 ) { // temp: locked at 60 fps if possible
+                #if defined(WIN32) || defined(_WIN32)
+                Sleep(16 - elapsed_time);
+                #else
+                usleep((16 - elapsed_time) * 1000);
+                #endif
+            }
+            t0 = realtime();
         //}                                                      //comment: temp for double tasking
         //else                                                   //comment: temp for double tasking
             //if( !timer_->isStopped() ) //comment: temp for double tasking

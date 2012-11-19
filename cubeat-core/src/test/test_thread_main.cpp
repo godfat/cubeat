@@ -62,5 +62,5 @@ int main(){
     psc::Conf::i().init("");
     psc::App::i().init();
     TestThread tester;
-    return psc::App::i().init().run(std::tr1::bind(&TestThread::cycle, &tester));
+    return psc::App::i().run(std::tr1::bind(&TestThread::cycle, &tester));
 }

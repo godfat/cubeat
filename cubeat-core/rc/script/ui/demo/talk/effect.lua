@@ -9,6 +9,9 @@ local actor_  = {}
 local word_   = {}
 local special_= {}
 
+local image_tb  = {}
+local text_tb   = {}
+
 
 local function shake(loop, sprite, x, y, dis, dur, cb)
   local tween     = {}
@@ -138,6 +141,49 @@ special_.cube = function(object, cb, special)
               special.dur or config.cube_time, 0, hit_shake)
 end
 
+special_.add_image = function(object, cb, special)
+  if special.name then
+    image_tb[special.name]  = ui.new_image{ parent=object.actor._cdata, path=special.path,
+                                            x=special.x or 0, y=special.y or 0,
+                                            w=special.w or 64, h=special.h or 64 }
+  end
+  
+  cb()
+end
+
+special_.hide_image = function(object, cb, special)
+  if special.name then
+    image_tb[special.name]:set_visible(false)
+  else
+    for k,v in pairs(image_tb) do
+      v:set_visible(false)
+    end
+  end
+  
+  cb()
+end
+
+special_.add_text = function(object, cb, special)
+  if special.name then
+    text_tb[special.name] = ui.new_text{parent=object.actor._cdata, title=special.name,
+                                        x=special.x or 0, y=special.y or 0,
+                                        r=special.r or 0, g=special.g or 0, b=special.b or 0}
+  end
+  
+  cb()
+end
+
+special_.hide_text = function(object, cb, special)
+  if special.name then
+    text_tb[special.name]:set_visible(false)
+  else
+    for k,v in pairs(text_tb) do
+      v:set_visible(false)
+    end
+  end
+  
+  cb()
+end
 
 
 --

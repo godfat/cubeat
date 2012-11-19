@@ -7,6 +7,10 @@
 #include <boost/tr1/random.hpp>
 #endif
 #include <ctime>
+#include <vector>
+#include <deque>
+#include <cstdio>
+
 namespace psc{ namespace utils{
 
 class Random{
@@ -15,7 +19,7 @@ public:
 
 public:
     int random(int max){
-        if( max == 0) return 0;
+        if( max < 0 ) return 0;
         dice_.distribution() = std::tr1::uniform_int<>(0, max-1);
         return dice_();
     }
@@ -28,8 +32,78 @@ inline int random(int max){
     return Random::i().random(max);
 }
 
+// reversible / redo-able random
+class Random2{
+public:
+    static Random2& i(){ static Random2 rnd; return rnd; }
+    int random(int max) {
+        if( max < 0 ) return 0;
+        if( frame_counter_ == old_frame_counter_ + 1 ) { // correct frame
+            pdice_->distribution() = std::tr1::uniform_int<>(0, max-1);
+            int result = (*pdice_)();
+            cached_numbers_.back().push_back( result );
+            return result;
+        }
+        else if( frame_counter_ <= old_frame_counter_ ) { // rollbacked
+            int frame_of_rb = old_frame_counter_ - frame_counter_ + 1;
+            if( frame_of_rb <= static_cast<int>(cached_numbers_.size()) ) {
+                std::vector<int>& curr_frame_numbers = cached_numbers_[ cached_numbers_.size() - frame_of_rb ];
+                int result = curr_frame_numbers[ temporary_number_counter_for_rollback_ ];
+                ++temporary_number_counter_for_rollback_;
+                return result;
+            }
+            else {
+                printf("Reversible Random: number cache underflow.\n");
+                return -1;
+            }
+        }
+        else { // should be impossible.
+            printf("Reversible Random: impossible flow.\n");
+            return -1;
+        }
+    }
+    void set_frame(int const& frame){
+        frame_counter_ = frame;
+        if( frame_counter_ == old_frame_counter_ + 1 ) {     // with correct new frame
+            cached_numbers_.push_back( std::vector<int>() ); // we add a new collection of cached numbers
+        }
+        temporary_number_counter_for_rollback_ = 0;
+    }
+    void end_frame(){
+        old_frame_counter_ = frame_counter_;
+        if( cached_numbers_.size() > 60 ) {
+            // cache 60 frames of random numbers for now, I am not sure. ( 1 seconds )
+            cached_numbers_.pop_front(); // clear the first one of the cache.
+        }
+    }
+    void init(int const& seed){
+        if( pdice_ ) {
+            delete pdice_;
+        }
+        pdice_ = new std::tr1::variate_generator<std::tr1::mt19937, std::tr1::uniform_int<> >(
+            std::tr1::mt19937(seed), std::tr1::uniform_int<>());
+    }
+    ~Random2() {
+        if( pdice_ ) delete pdice_;
+    }
+
+private:
+    Random2():pdice_(0), frame_counter_(0), old_frame_counter_(0),
+              temporary_number_counter_for_rollback_(0) {}
+    // You really have to re-init everytime you want to re-use Random2
+
+    std::tr1::variate_generator<std::tr1::mt19937, std::tr1::uniform_int<> >* pdice_;
+    std::deque< std::vector<int> > cached_numbers_;
+    int frame_counter_, old_frame_counter_, temporary_number_counter_for_rollback_;
+};
+
+// reversible / redo-able random
+inline int r_random(int max){
+    return Random2::i().random(max);
+}
+
 inline int distributed_random(std::vector<double> const& d){
-    double roll = static_cast<double>( utils::random(1000) ) / 10.0; // 0 ~ 99.9
+    double roll = static_cast<double>( utils::r_random(1000) ) / 10.0; // 0 ~ 99.9
     for( size_t i = 0; i < d.size() - 1; ++i ) {
         if( roll >= d[i] ) {
             roll -= d[i];

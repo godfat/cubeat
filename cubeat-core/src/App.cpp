@@ -216,12 +216,16 @@ int App::run(std::tr1::function<void()> tester)
             }
             if( elapsed_time < 16 ) { // temp: locked at 60 fps if possible
                 #if defined(WIN32) || defined(_WIN32)
-                Sleep(16 - elapsed_time);
+                //Sleep(15 - elapsed_time);
+                Sleep(1);
                 #else
-                usleep((16 - elapsed_time) * 1000);
+                //usleep((15 - elapsed_time) * 1000);
+                usleep(1000);
                 #endif
+                while( realtime() - t0 < 16 );
             }
             t0 = realtime();
+            //printf("t0: %ld\n", t0);
         //}                                                      //comment: temp for double tasking
         //else                                                   //comment: temp for double tasking
             //if( !timer_->isStopped() ) //comment: temp for double tasking

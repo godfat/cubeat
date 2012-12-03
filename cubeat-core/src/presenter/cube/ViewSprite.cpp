@@ -47,7 +47,8 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     data::Color col = data::Color::from_id(c->data()->color_id());
     col.offset();
     body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
-    shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
+    //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
+    shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
 }
 
 void ViewSprite::drop_a_block(){
@@ -177,7 +178,8 @@ void ViewSprite::restore(int color_id){
     col.offset();
     body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
-    shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
+    //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
+    shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
 }
 
 void ViewSprite::be_garbage(){

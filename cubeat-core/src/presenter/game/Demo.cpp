@@ -45,7 +45,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(GM_PVC),
-     ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false), L_(0)
+     ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), frame_(1), some_ui_inited_(false), L_(0)
 {
 }
 
@@ -91,6 +91,10 @@ pDemo Demo::init()
 
 void Demo::init_(int const& game_mode, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace)
 {
+    frame_ = 1;
+    utils::Random2::i().init(12345); // addition for using rollbackable random
+    utils::Random2::i().set_frame(frame_);
+
     game_mode_ = game_mode;
     c1p_ = c1p;
     c2p_ = c2p;
@@ -1170,6 +1174,10 @@ void Demo::cycle()
         }
 
         t4 = clock();
+
+        utils::Random2::i().end_frame();
+        ++frame_; // while in-game, we count the in-game frame numbers.
+        utils::Random2::i().set_frame(frame_);
     }
     stage_->cycle();
     t5 = clock();

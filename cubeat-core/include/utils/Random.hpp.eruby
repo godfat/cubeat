@@ -82,6 +82,9 @@ public:
         }
         pdice_ = new std::tr1::variate_generator<std::tr1::mt19937, std::tr1::uniform_int<> >(
             std::tr1::mt19937(seed), std::tr1::uniform_int<>());
+        frame_counter_ = 0;
+        old_frame_counter_ = 0;
+        temporary_number_counter_for_rollback_ = 0;
     }
     ~Random2() {
         if( pdice_ ) delete pdice_;

@@ -1,7 +1,20 @@
 <% header_guard do %>
 
-#include <boost/pool/object_pool.hpp>
+// Note: By the usage of this, we actually stucked with boost's implementation.
+#include <boost/smart_ptr/make_shared.hpp>
+
+// For thread-safe pool
 #include <boost/thread/mutex.hpp>
+
+// For backup frame window implemented with std::deque
+#include <deque>
+
+// Note: we are using our own implementation of boost.pool, in a sense,
+//       so don't make the include path fool you. changed to utils.pool.
+//       However, for convenience of porting, the namespace in the file remained boost::.
+#include "utils/pool/object_pool.hpp"
+#include "utils/pool/singleton_pool.hpp"
+#include "utils/pool/pool_alloc.hpp"
 
 #define LOKI_CLASS_LEVEL_THREADING
 #include <loki/Singleton.h>
@@ -103,6 +116,133 @@ private:
     };
 };
 
-}} // end of namespace
+
+/// ******** Add some metadata information for restorable pool here ******** ///
+
+// 2012.12 arch.jslin WTF NOTE:
+//   Ok, This is very important note, just to remind myself of possible unresolve/unchecked situations.
+//
+//     1. Is it possible that my restorable object contains properties that SHOULD NOT be rollbacked?
+//        Or easily neglected while it's really important that it be rollbacked(backup-ed) as well?
+//
+//     2. One very important fact is that objects in the backup memory blocks can't be manipulated in anyway,
+//        EVEN THE DESTRUCTORS. So when those memory blocks drops (because of backup limit reached or whatever reasons)
+//        Those destructors are not going to be invoked. This make sense in simple cases, since those
+//        objects in the backup memory blocks are just "ghosts" and they should not interact with any other things.
+//        But we'll see about that.
+//
+//     I'm pretty sure that in simple working cases there will be no resources leaks,
+//     But I expect serious problem will happen IF situation 1 and situation 2 got mixed up.
+//
+
+const size_t MAX_SIZE_OF_BACKUP = 10;
+
+template<typename T>
+class ObjectPoolRestorable
+{
+    typedef boost::detail::sp_counted_impl_pda<T*, boost::detail::sp_ms_deleter<T> , boost::fast_pool_allocator<T> > FUCK_IT;
+    typedef boost::singleton_pool<T, sizeof(FUCK_IT)> this_pool;
+    typedef typename T::pointer_type element_type;
+
+public:
+
+    typedef typename this_pool::pool_type pool_type;
+
+    static void backup(int frame_number) {
+        backups_.push_back( pool_type() );      // make sure the place holder (tmp pool) is destructed right away
+        this_pool::clone_to( backups_.back() ); // So that it won't call destructor when tmp pool is out of scope.
+        tracked_frame_number_ = frame_number;
+
+        // dump things larger than the backup window:
+        if( backups_.size() > MAX_SIZE_OF_BACKUP ) {
+            //printf("Backup window full.. popping \n");
+            backups_.pop_front();
+        }
+        //printf("tracked_frame_number_ = %d, backup_size = %d\n", tracked_frame_number_, backups_.size());
+    }
+
+    static void restore(int frame_number) {
+        int num_of_frames_to_rollback = tracked_frame_number_ - frame_number + 1;
+        for( ; num_of_frames_to_rollback > 0 ; --num_of_frames_to_rollback ) {
+            if( num_of_frames_to_rollback == 1 ) {
+                pool_type & backup = backups_.back();
+                this_pool::restore(backup);
+            }
+            backups_.pop_back();
+        }
+    }
+
+    static element_type create(){
+        return boost::allocate_shared<T>(boost::fast_pool_allocator<T>());
+    }
+
+<% for_template_parameters_within(1..5, []){ |args_list| %>
+    template <%= template_parameters args_list %>
+    static element_type create(<%= forward_parameters args_list %>){
+        return boost::allocate_shared<T>(boost::fast_pool_allocator<T>(), <%= arguments args_list %>);
+    }
+<% } %>
+
+private:
+    static std::deque<pool_type> backups_;
+    static int tracked_frame_number_;
+};
+
+template<typename T>
+std::deque<typename ObjectPoolRestorable<T>::pool_type> ObjectPoolRestorable<T>::backups_;
+
+template<typename T>
+int ObjectPoolRestorable<T>::tracked_frame_number_ = 0;
+
+namespace details {
+
+template<typename CharOrSPtr>
+class SpecializedPool {
+    typedef boost::singleton_pool<CharOrSPtr, sizeof(CharOrSPtr)> this_pool;
+    typedef typename this_pool::pool_type pool_type;
+
+public:
+    static void backup(int frame_number) {
+        backups_.push_back( pool_type() );      // make sure the place holder (tmp pool) is destructed right away
+        this_pool::clone_to( backups_.back() ); // So that it won't call destructor when tmp pool is out of scope.
+        tracked_frame_number_ = frame_number;
+
+        // dump things larger than the backup window:
+        if( backups_.size() > MAX_SIZE_OF_BACKUP ) {
+            //printf("Backup window full.. popping (specialized_pool)\n");
+            backups_.pop_front();
+        }
+        //printf("tracked_frame_number_ = %d, backup_size = %d (specialized pool)\n", tracked_frame_number_, backups_.size());
+    }
+
+    static void restore(int frame_number) {
+        int num_of_frames_to_rollback = tracked_frame_number_ - frame_number + 1;
+        for( ; num_of_frames_to_rollback > 0 ; --num_of_frames_to_rollback ) {
+            if( num_of_frames_to_rollback == 1 ) {
+                pool_type & backup = backups_.back();
+                this_pool::restore(backup);
+            }
+            backups_.pop_back();
+        }
+    }
+
+private:
+    static std::deque<pool_type> backups_;
+    static int tracked_frame_number_;
+};
+
+template<typename CharOrSPtr>
+std::deque<typename SpecializedPool<CharOrSPtr>::pool_type> SpecializedPool<CharOrSPtr>::backups_;
+
+template<typename CharOrSPtr>
+int SpecializedPool<CharOrSPtr>::tracked_frame_number_ = 0;
+
+} // details
+
+void pools_backup(int frame_number);
+void pools_restore(int frame_number);
+
+}
+} // end of namespace
 
 <% end %>

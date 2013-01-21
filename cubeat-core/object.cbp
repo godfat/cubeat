@@ -40,8 +40,11 @@
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
 					<Add library="C:\libs\cpp\almixer_isolated\lib\libalmixer.dll.a" />
+					<Add library="C:\libs\cpp\ggpo\lib\ggponet.lib" />
+					<Add library="ws2_32" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
 					<Add directory="C:\lang\luarocks\2.0" />
+					<Add directory="C:\libs\cpp\ggpo\lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug">
@@ -65,6 +68,7 @@
 					<Add directory="C:\libs\cpp\openal-soft\include" />
 					<Add directory="C:\libs\cpp\alure\include" />
 					<Add directory="C:\libs\cpp\almixer_isolated\include" />
+					<Add directory="C:\libs\cpp\ggpo\include" />
 				</Compiler>
 				<Linker>
 					<Add library="Irrlicht" />
@@ -75,8 +79,11 @@
 					<Add library="C:\libs\cpp\openal-soft\lib\OpenAL32.lib" />
 					<Add library="C:\libs\cpp\alure\lib\ALURE32.lib" />
 					<Add library="C:\libs\cpp\almixer_isolated\lib\libalmixer.dll.a" />
+					<Add library="C:\libs\cpp\ggpo\lib\ggponet.lib" />
+					<Add library="ws2_32" />
 					<Add directory="C:\local_gitrepo\Irrlicht\lib\Win32-gcc" />
 					<Add directory="C:\lang\luarocks\2.0" />
+					<Add directory="C:\libs\cpp\ggpo\lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -203,6 +210,14 @@
 		<Unit filename="include\utils\dictionary.hpp" />
 		<Unit filename="include\utils\math.hpp" />
 		<Unit filename="include\utils\math.hpp.eruby" />
+		<Unit filename="include\utils\pool\detail\guard.hpp" />
+		<Unit filename="include\utils\pool\detail\mutex.hpp" />
+		<Unit filename="include\utils\pool\object_pool.hpp" />
+		<Unit filename="include\utils\pool\pool.hpp" />
+		<Unit filename="include\utils\pool\pool_alloc.hpp" />
+		<Unit filename="include\utils\pool\poolfwd.hpp" />
+		<Unit filename="include\utils\pool\simple_segregated_storage.hpp" />
+		<Unit filename="include\utils\pool\singleton_pool.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp.eruby" />
 		<Unit filename="include\view\All.hpp" />
@@ -250,7 +265,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.cpp">
-			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="rc\config.zzml" />
@@ -502,6 +516,7 @@
 		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
 		<Unit filename="src\utils\Logger.cpp" />
+		<Unit filename="src\utils\ObjectPool.cpp" />
 		<Unit filename="src\utils\Timer.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />

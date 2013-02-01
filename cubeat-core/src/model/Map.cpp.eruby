@@ -96,8 +96,14 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
         if( !c->is_garbage() && !c->is_broken() ) garbage_dumpable_ = false;
     }
     if( c->cycle_and_die(now_t_, last_t_) ) {
+        using std::tr1::bind;
+        //printf("Before cube dies: %d\n", cubes_[x][y].use_count());
         cubes_[x][y].reset();
-        owner_.lock()->release(c);
+        //owner_.lock()->release(c);
+        wpCube wc(c);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+            bind(&presenter::Map::release, owner_.lock().get(), wc), owner_, 1000);
+        //WTF NOTE: This 1000ms should be the MAXIMUM_ROLLBACK_TIME
     }
 }
 

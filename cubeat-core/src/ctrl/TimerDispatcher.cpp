@@ -18,10 +18,18 @@ using namespace std::tr1::placeholders;
 using namespace psc;
 using namespace ctrl;
 
-TimerDispatcher::TimerDispatcher(std::string const& name)
+TimerDispatcher::TimerDispatcher(std::string const& name, bool const& restorable)
     :name_(name)
 {
-    printf("TimerDispatcher created: %s\n", name_.c_str());
+    printf("TimerDispatcher created: %s, restorable = %d\n", name_.c_str(), restorable);
+    if( restorable ) {
+        subscribe_cb_ = bind(&TimerDispatcher::_subscribe_restorable_, this, _1, _2, _3, _4);
+        dispatch_cb_  = bind(&TimerDispatcher::_dispatch_restorable_, this);
+    }
+    else {
+        subscribe_cb_ = bind(&TimerDispatcher::_subscribe_, this, _1, _2, _3, _4);
+        dispatch_cb_  = bind(&TimerDispatcher::_dispatch_, this);
+    }
 }
 
 TimerDispatcher::~TimerDispatcher()
@@ -37,20 +45,35 @@ pTimerDispatcher TimerDispatcher::init()
     return self_.lock();
 }
 
-TimerDispatcher& TimerDispatcher::subscribe
-    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int loop)
+void TimerDispatcher::_subscribe_
+    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int const& loop)
 {
     int const zero = 0;
     newly_created_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
+}
+
+void TimerDispatcher::_subscribe_restorable_
+    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int const& loop)
+{
+    int const zero = 0;
+    newly_created_restorable_timers_.push_back( tie( cb, duration, zero, loop, obj ) );
+}
+
+TimerDispatcher& TimerDispatcher::subscribe
+    (TimerCallback const& cb, wpvoid const& obj, int const& duration, int const& loop)
+{
+    subscribe_cb_(cb, obj, duration, loop);
     return *this;
 }
 
 TimerDispatcher& TimerDispatcher::subscribe
-    (TimerCallback const& cb, int const& duration, int loop)
+    (TimerCallback const& cb, int const& duration, int const& loop)
 {
     return subscribe(cb, shared_from_this(), duration, loop);
 }
 
+//Ok, since the following note says it has bug don't use, and it really is not used anywhere for now
+//I am going to leave _clear_timer_event_restorable_ unimplemented.
 
 //note: has bug, don't use.
 TimerDispatcher& TimerDispatcher::clear_timer_event()
@@ -113,7 +136,7 @@ void TimerDispatcher::tick()
 
 /// This is the Main Loop of Timer
 
-void TimerDispatcher::dispatch()
+void TimerDispatcher::_dispatch_()
 {
     cleanup_timer_and_init_newly_created_timer();
 
@@ -146,6 +169,32 @@ void TimerDispatcher::dispatch()
     }
 }
 
+void TimerDispatcher::_dispatch_restorable_()
+{
+    // It's just the same as the non-restorable counterpart just without all the commented lines.
+    cleanup_timer_and_init_newly_created_timer_restorable();
+
+    std::time_t now = timer_->getTime();
+    for(RestorableTimerList::iterator t = restorable_timers_.begin(), tend = restorable_timers_.end(); t != tend; ++t) {
+        if( get<TE::CALLEE>(*t).lock() ) {
+            if( now - get<TE::LASTTIME>(*t) >= get<TE::DURATION>(*t) ) {
+                get<TE::TIMER_CB>(*t)();
+                get<TE::LASTTIME>(*t) = now;
+                int& looptimes = get<TE::LOOP>(*t);
+                if( looptimes == 0 ) {
+                    restorable_timers_to_be_deleted_.push_back(t);
+                } else if( looptimes > 0 ) looptimes -= 1;
+            }
+        }
+        else restorable_timers_to_be_deleted_.push_back(t);
+    }
+}
+
+void TimerDispatcher::dispatch()
+{
+    dispatch_cb_();
+}
+
 /// Cleanup methods of Timer
 
 void TimerDispatcher::cleanup_timer_and_init_newly_created_timer()
@@ -166,4 +215,24 @@ void TimerDispatcher::cleanup_timer_and_init_newly_created_timer()
                    newly_created_timers_.begin(),
                    newly_created_timers_.end());
     newly_created_timers_.clear();
+}
+
+void TimerDispatcher::cleanup_timer_and_init_newly_created_timer_restorable()
+{
+    // clean up
+    BOOST_FOREACH(RestorableTimerList::iterator t, restorable_timers_to_be_deleted_) {
+        restorable_timers_.erase(t);
+    }
+    restorable_timers_to_be_deleted_.clear();
+
+    // init newly created
+    std::time_t init_time = timer_->getTime();
+    BOOST_FOREACH(Timer& timer, newly_created_restorable_timers_){
+        get<TE::LASTTIME>(timer) = init_time;
+    }
+
+    restorable_timers_.insert(restorable_timers_.end(),
+                              newly_created_restorable_timers_.begin(),
+                              newly_created_restorable_timers_.end());
+    newly_created_restorable_timers_.clear();
 }

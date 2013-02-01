@@ -58,7 +58,7 @@ public:
 //    Map& cycle_fast();
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }
-    void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
+    void release(model::wpCube const& cube);
 
     color_map_type color_map() const{ return model_->color_map(); }
     Map& throw_garbage(double amounts){
@@ -99,6 +99,7 @@ public:
     Map& new_cube_at(int x, int y, int color_id = -1) { model()->new_cube_at(x, y, color_id); return *this; }
     Map& purge_all() { model()->purge_all(); return *this; }
     Map& push_player_ability();
+    Map& cleanup_dead_cubes(); //WTF NOTE: only caused by network rollback
 
     bool exist(int x, int y) const             { return model()->exist(x, y); }
     bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }

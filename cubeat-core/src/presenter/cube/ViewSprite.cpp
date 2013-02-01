@@ -152,6 +152,7 @@ void ViewSprite::go_dying(){
 void ViewSprite::go_exploding(){
     body_->clearAllTween();
     body_->setPickable(false);
+    body_->set<accessor::Visible>(false);
     if( cube_.lock()->is_garbage() )
         body_->setTexture( "cubes/garbage0" );
 

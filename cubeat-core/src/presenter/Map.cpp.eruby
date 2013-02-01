@@ -203,6 +203,33 @@ Map& Map::push_player_ability() {
     return *this;
 }
 
+void Map::release(model::wpCube const& cube) {
+    if( cube.use_count() == 1 )
+        cubes_.erase(cube);
+    // WTF NOTE: This is very tricky! you have to make sure the cube's use_count() is 1,
+    //           Because we might have legitmately revived it during the rollback!
+}
+
+Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
+    printf("pMap::cleanup_dead_cubes: ");
+    for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ;) {
+        if ( it->first.use_count() == 1 ) {
+            // I have to use this instead of unique(), because it.first is wpCube,
+            // after lock(), IT WILL NOT BE UNIQUE OF COURSE YOU FUCKING IDIOT.
+            printf("%ld ", it->first.use_count());
+            container_type::iterator temp = it;
+            ++temp;
+            cubes_.erase(it);
+            it = temp;
+            // And this is a rather complex erase: return the iterator to erase BEFORE advance it.
+        } else {
+            printf("%ld ", it->first.use_count());
+            ++it;
+        }
+    }
+    return *this;
+}
+
 Map& <% debug_hook 'Map::cycle' do %>(){
 <% end %>
 //    model()->cycle_slow();

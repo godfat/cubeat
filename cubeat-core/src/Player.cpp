@@ -390,7 +390,8 @@ void Player::normal_weapon_fx() {
 //note: need fix
 void Player::eat_item()
 {
-    int percent = utils::random(100);
+    //int percent = utils::random(100);
+    int percent = utils::r_random(100);
     if( percent < 45 ) {
         weplist_[0]->ammo( weplist_[0]->ammo()+10 );
     }

@@ -7,6 +7,7 @@
 #include "view/SpriteText.hpp"
 #include "data/Color.hpp"
 #include "utils/to_s.hpp"
+#include "utils/Random.hpp"
 
 #include "EasingEquations.hpp"
 #include "Accessors.hpp"

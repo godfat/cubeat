@@ -1,5 +1,6 @@
 
 #include "data/Color.hpp"
+#include "utils/Random.hpp"
 #include "Conf.hpp"
 
 using namespace psc;
@@ -35,4 +36,17 @@ Color& Color::offset()
             b( b() + offt.V("yellow").I(2) ); break;
     }
     return *this;
+}
+
+Color Color::from_id(int const& i, int const& limit) {
+    int rgb;
+    switch(i) {
+        case  0: return from_id( utils::random(limit)+1 ); break;
+        default: rgb = id2rgb[i];
+    }
+    return Color(rgb);
+}
+
+Color Color::random_rgb_color() {
+    return Color(utils::random(white+1));
 }

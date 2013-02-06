@@ -5,7 +5,6 @@
 
 #ifndef _SHOOTING_CUBE_COLOR_HPP_
 #define _SHOOTING_CUBE_COLOR_HPP_
-#include "utils/Random.hpp"
 #include <algorithm> // for find
 #include <iterator> // for distance
 
@@ -16,21 +15,12 @@ class Color{
     static int const id2rgb[];
 
 public:
-    static Color from_id(int i, int limit = 6){
-        int rgb;
-        switch(i){
-            case  0: return from_id(random_id(limit)); break;
-            default: rgb = id2rgb[i];
-        }
-        return Color(rgb);
-    }
+    static Color from_id(int const& i, int const& limit = 6);
 
     static int for_id(Color const& color){
         return std::distance(id2rgb, std::find(id2rgb+1, id2rgb+8, color.rgb()));
     }
-    static Color random_rgb_color(){
-        return Color(utils::random(white+1));
-    }
+    static Color random_rgb_color();
 
     static int const MAX;
 
@@ -52,11 +42,6 @@ public:
     Color& b(int new_b){ rgb_ &= red_green; rgb_ |= new_b; return *this; }
 
     Color& offset();
-
-private:
-    static int random_id(int limit){
-        return utils::random(limit)+1;
-    }
 
 private:
     int rgb_;

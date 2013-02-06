@@ -105,6 +105,16 @@ inline int r_random(int max){
     return Random2::i().random(max);
 }
 
+// complement to std::random_shuffle that using redo-able random
+template<typename RandomAccessIterator_>
+inline void r_random_shuffle(RandomAccessIterator_ first, RandomAccessIterator_ last) {
+    if( first != last ) {
+        for( RandomAccessIterator_ it = first + 1; it != last; ++it ) {
+            std::iter_swap(it, first + utils::r_random(it - first + 1));
+        }
+    }
+}
+
 inline int distributed_random(std::vector<double> const& d){
     double roll = static_cast<double>( utils::r_random(1000) ) / 10.0; // 0 ~ 99.9
     for( size_t i = 0; i < d.size() - 1; ++i ) {

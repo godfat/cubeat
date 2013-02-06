@@ -7,6 +7,7 @@
 #include "model/state/Dropping.hpp"
 #include "model/state/Dying.hpp"
 #include "model/state/Sinking.hpp"
+#include "utils/Random.hpp"
 
 #include "all_fwd.hpp"
 

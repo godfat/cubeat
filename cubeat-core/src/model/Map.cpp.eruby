@@ -142,7 +142,8 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
     cube->garbage_fly_event()();
 
     //add restoration here for passive ability
-    if( utils::random(100) < ms()->drop_normal_chance() ) {
+    //if( utils::random(100) < ms()->drop_normal_chance() ) {
+    if( utils::r_random(100) < ms()->drop_normal_chance() ) {
         cube->restore(1); // ok?
     }
 
@@ -392,9 +393,11 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     }
     //so here you have a upside-down view of where to drop the garbages.
 
-    // shuffle all the vectors
+    // shuffle all the rows that is not the width of the map
+    // because if the row.size() == width(), then there's no need to randomize things, just fill them with cubes.
     for( unsigned int i = 0; i < row_empty.size(); ++i ) {
-        std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+        //std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+        utils::r_random_shuffle(row_empty[i].begin(), row_empty[i].end());
     }
 
     // drop them according to the empty column
@@ -465,7 +468,8 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
     std::vector<int> preview_set; // color set
     preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
 
-    if( utils::random(2) ) // need two?
+    //if( utils::random(2) ) // need two?
+    if( utils::r_random(2) ) // need two?
         preview_set.push_back(preview_set.front());
 
     while( preview_set.size() != width ){
@@ -474,7 +478,8 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
             preview_set.push_back(color);
         }
         else{
-            if( utils::random(2) ){
+            //if( utils::random(2) ){
+            if( utils::r_random(2) ){
                 preview_set.push_back(color);
                 preview_set.push_back(color);
             }

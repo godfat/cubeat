@@ -21,6 +21,10 @@ class EventDispatcher;
 
 class TimerDispatcher : public std::tr1::enable_shared_from_this<TimerDispatcher>
 {
+public:
+    typedef std::tr1::shared_ptr<TimerDispatcher> pointer_type;
+    typedef std::tr1::weak_ptr<TimerDispatcher>   wpointer_type;
+
     typedef std::tr1::shared_ptr<void>                                     pvoid;
     typedef std::tr1::weak_ptr<void>                                       wpvoid;
 
@@ -33,9 +37,7 @@ class TimerDispatcher : public std::tr1::enable_shared_from_this<TimerDispatcher
     typedef std::list<Timer, boost::fast_pool_allocator<Timer> >           RestorableTimerList;
     typedef std::list<RestorableTimerList::iterator, boost::fast_pool_allocator<RestorableTimerList::iterator> > RestorableTimerRemoval;
 
-public:
-    typedef std::tr1::shared_ptr<TimerDispatcher> pointer_type;
-    typedef std::tr1::weak_ptr<TimerDispatcher>   wpointer_type;
+    ///
 
     static pointer_type create(std::string const& name, bool const& restorable = false) {
         return pointer_type(new TimerDispatcher(name, restorable))->init();

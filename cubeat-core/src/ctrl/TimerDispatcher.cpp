@@ -181,6 +181,7 @@ void TimerDispatcher::_dispatch_restorable_()
                 get<TE::TIMER_CB>(*t)();
                 get<TE::LASTTIME>(*t) = now;
                 int& looptimes = get<TE::LOOP>(*t);
+                printf("Timer DEBUG: %d\n", looptimes);
                 if( looptimes == 0 ) {
                     restorable_timers_to_be_deleted_.push_back(t);
                 } else if( looptimes > 0 ) looptimes -= 1;

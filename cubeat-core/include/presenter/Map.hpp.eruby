@@ -115,8 +115,6 @@ private:
     /*static*/ void bind_cube_event(pCube);
     /*static*/ void bind_view_event(cube::pViewMaster);
 
-    void speedup();
-
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>
     ctrl::wpPlayer player_;

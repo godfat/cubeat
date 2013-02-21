@@ -4,8 +4,9 @@
 #include "all_fwd.hpp"
 
 #include "data/MapSetting.hpp"
-#include "utils/vector_2d.hpp"
 #include "model/SimpleMap.hpp"
+#include "utils/vector_2d.hpp"
+#include "utils/ObjectPool.hpp"
 
 #include <boost/tr1/functional.hpp>
 #include <set>
@@ -26,21 +27,24 @@ class Map : public SimpleMap
 public:
     typedef pMap pointer_type;
     typedef pCube                        cube_type;
-    typedef utils::vector_2d<pCube> container_type;
+    typedef utils::vector_2d<pCube, boost::pool_allocator<pCube> > container_type;
+    //typedef utils::vector_2d<pCube> container_type;
     typedef utils::vector_2d<int>   color_map_type;
     typedef std::set<pCube>         cube_list_type;
-    typedef std::list<pChain>      chain_list_type;
-    typedef std::vector<pCube>   preview_list_type;
+    typedef std::list<pChain, boost::fast_pool_allocator<pChain> > chain_list_type;
+    typedef std::vector<pCube, boost::pool_allocator<pCube> > preview_list_type;
+    //typedef std::vector<pCube>   preview_list_type;
 
 public:
     static pointer_type create(presenter::wpMap owner, data::pMapSetting setting){
-        // map doesn't need a pool
-        return pointer_type(new Map(owner, setting))->init();
+        // map doesn't need a pool, but for rolling-back convenience let's use it.
+        return utils::ObjectPoolRestorable<Map>::create(owner, setting)->init();
+        // return pointer_type(new Map(owner, setting))->init();
     }
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
+        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0), sink_speed_(60.0),
         cubes_cleared_(0), total_cubes_cleared_(0), match_counter_(0)
     {}
     Map& init_cubes();
@@ -123,6 +127,8 @@ private:
 private:
     pointer_type init();
 
+    void speedup(); // Timer speedup helper (removed from presenter::Map)
+
 private:
     presenter::wpMap  owner_; // should be weak_ptr
     wpMap             self_;
@@ -130,6 +136,7 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
+    double sink_speed_; // This is directly model related, should be in model scope.
     int cubes_cleared_, total_cubes_cleared_;
     int match_counter_;
     bool dropping_creatable_, garbage_dumpable_;

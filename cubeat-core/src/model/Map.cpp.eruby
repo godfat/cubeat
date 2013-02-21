@@ -29,7 +29,8 @@ using namespace model;
 <% debug_hook 'Map::~Map' do %>() {<%end%>}
 
 pMap <% debug_hook 'Map::init' do %>() { <%end%>
-    cubes_.resize(map_setting_->width(), map_setting_->height());
+    cubes_.resize(ms()->width(), ms()->height());
+    sink_speed_    = ms()->sink_speed();
     self_          = std::tr1::static_pointer_cast<Map>( shared_from_this() );
     //warning_level_ = std::tr1::shared_ptr<int>(new int(0));
     return self();
@@ -73,11 +74,23 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
     //This point should be the end of the last init step, so start timing now:
     last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
+    //Timer to call speed up
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Map::speedup, this), self(), 3000);
+
 //demo branch: don't use this yet
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
 
     return *this;
+}
+
+void Map::speedup(){
+    if( sink_speed_ < ms()->sink_speed_limit() ) {
+        sink_speed_ += ms()->sink_speed_add();
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            std::tr1::bind(&Map::speedup, this), self(), 5000);
+    }
 }
 
 void <% debug_hook 'Map::cycle_cubes' do %>(){
@@ -641,7 +654,7 @@ double Map::get_sink_speed() const {
     if( owner()->hasting_cond()() ) //hasting_cond is a delegated function
         return ms()->drop_speed();
     else
-        return ms()->sink_speed();
+        return sink_speed_; // sink speed is variable, let's move that out of MapSetting.
 }
 
 void Map::set_garbage_amount(int const& n) {
@@ -756,7 +769,7 @@ void Map::cubes_cleared_add(int const& num)
 
 pSimpleMap Map::dump_data() const
 {
-    data::pMapSetting cloned_ms = map_setting_->clone();
+    data::pMapSetting cloned_ms = ms()->clone();
     //data::pMapSetting cloned_ms = data::MapSetting::create();
 
     pSimpleMap result = SimpleMap::create(

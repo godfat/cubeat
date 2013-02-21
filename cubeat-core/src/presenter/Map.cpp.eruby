@@ -88,24 +88,11 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
     return *this;
 }
 
-void Map::speedup(){
-    if( map_setting()->sink_speed() < map_setting()->sink_speed_limit() ) {
-        map_setting()->sink_speed( map_setting()->sink_speed() + map_setting()->sink_speed_add() );
-        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
-    }
-}
-
 pMap <% debug_hook 'Map::init' do %>(){
 <% end %>
     pMap self = shared_from_this();
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(); // beware! this need refer model_!
-
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;
 }
@@ -115,11 +102,6 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     pMap self = shared_from_this();
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(data); // beware! this need refer model_!
-
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
 
     return self;
 }

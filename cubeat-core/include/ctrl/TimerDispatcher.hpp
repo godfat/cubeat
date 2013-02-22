@@ -116,8 +116,10 @@ public:
 
     typedef std::list<TimerDispatcher::Timer,
                       boost::fast_pool_allocator<TimerDispatcher::Timer> >  TimerList;
-    typedef std::list<TimerList::iterator,
-                      boost::fast_pool_allocator<TimerList::iterator> >     TimerRemoval;
+//    typedef std::list<TimerList::iterator,
+//                      boost::fast_pool_allocator<TimerList::iterator> >     TimerRemoval;
+    typedef std::list<TimerList::iterator>                                  TimerRemoval;
+    // Removal doesn't have to be rolled-back, it happens right after every dispatch
 
     static pointer_type create(std::string const& name) {
         return pointer_type(new TimerDispatcherRestorable(name))->init();

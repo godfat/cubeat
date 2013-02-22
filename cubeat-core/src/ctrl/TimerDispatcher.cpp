@@ -197,6 +197,11 @@ void TimerDispatcherNormal::dispatch()
         }
         else timers_to_be_deleted_.push_back(t);
     }
+    // clean up
+    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
+        timers_.erase(t);
+    }
+    timers_to_be_deleted_.clear();
 }
 
 void TimerDispatcherRestorable::dispatch()
@@ -218,18 +223,18 @@ void TimerDispatcherRestorable::dispatch()
         }
         else timers_to_be_deleted_.push_back(t);
     }
-}
-
-/// Cleanup methods of Timer
-
-void TimerDispatcherNormal::cleanup_timer_and_init_newly_created_timer()
-{
     // clean up
     BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
         timers_.erase(t);
     }
     timers_to_be_deleted_.clear();
 
+}
+
+/// Cleanup methods of Timer
+
+void TimerDispatcherNormal::cleanup_timer_and_init_newly_created_timer()
+{
     // init newly created
     std::time_t init_time = timer_->getTime();
     BOOST_FOREACH(Timer& timer, newly_created_timers_){
@@ -244,12 +249,6 @@ void TimerDispatcherNormal::cleanup_timer_and_init_newly_created_timer()
 
 void TimerDispatcherRestorable::cleanup_timer_and_init_newly_created_timer()
 {
-    // clean up
-    BOOST_FOREACH(TimerList::iterator t, timers_to_be_deleted_) {
-        timers_.erase(t);
-    }
-    timers_to_be_deleted_.clear();
-
     // init newly created
     std::time_t init_time = timer_->getTime();
     BOOST_FOREACH(Timer& timer, newly_created_timers_){

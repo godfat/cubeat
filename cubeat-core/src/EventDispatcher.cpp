@@ -33,7 +33,7 @@ EventDispatcher::pvoid EventDispatcher::self_ = pvoid();
 
 EventDispatcher::EventDispatcher()
 {
-    global_timer_ = TimerDispatcher::create("global");
+    global_timer_ = TimerDispatcherNormal::create("global");
     add_timer_dispatcher(global_timer_);
     std::cout << "EventDispatcher constructed..." << std::endl;
 }

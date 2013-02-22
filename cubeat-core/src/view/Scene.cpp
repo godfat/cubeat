@@ -53,7 +53,13 @@ void Scene::init(std::string const& name)
     std::cout << "scene: " << name << " created." << std::endl;
 
     //get timer dispatcher for SetTime and it's own time.
-    timer_ = ctrl::TimerDispatcher::create(name);
+
+    // WTF MEMO: hardcoded "game" timer for now.
+    if( name == "game" ) {
+        timer_ = ctrl::TimerDispatcherRestorable::create(name);
+    } else {
+        timer_ = ctrl::TimerDispatcherNormal::create(name);
+    }
     ctrl::EventDispatcher::i().add_timer_dispatcher(timer_);
 
     scene_ = std::tr1::static_pointer_cast<Scene>(shared_from_this());

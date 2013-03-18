@@ -253,6 +253,9 @@ class pool_allocator
        std::cout << "Allocating " << n << " * " << sizeof(T) << " bytes...\n"
           "Total allocated is now " << debug_info<true>::allocated << std::endl;
 #endif
+      static int TOTAL_ALLOCATED = 0;
+      TOTAL_ALLOCATED += n * sizeof(T);
+      printf("Allocating %d * %d bytes, total: %d\n", n ,sizeof(T), TOTAL_ALLOCATED);
       const pointer ret = static_cast<pointer>(
           singleton_pool<OriginalType/*pool_allocator_tag*/, sizeof(T), UserAllocator, Mutex,
               NextSize, MaxSize>::ordered_malloc(n) );

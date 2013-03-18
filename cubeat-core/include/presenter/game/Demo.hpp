@@ -57,6 +57,7 @@ public:
     Demo();
     ~Demo();
 
+    virtual void precondition(){}
     virtual void cycle();
     void init_vs_cpu(std::string const&, std::string const&, std::string const&, int const&);
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);

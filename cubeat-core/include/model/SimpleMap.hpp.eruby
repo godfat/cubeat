@@ -9,6 +9,7 @@
 #include "data/MapSetting.hpp"
 #include "utils/vector_2d.hpp"
 
+#include "utils/pool/pool_alloc.hpp"
 #include <boost/tr1/functional.hpp>
 #include <boost/tr1/memory.hpp>
 #include <set>
@@ -52,8 +53,10 @@ public:
     typedef utils::vector_2d<pSimpleCube> container_type;
     typedef utils::vector_2d<int>         color_map_type;
     typedef std::set<pSimpleCube>         cube_list_type;
-    typedef std::list<pChain>            chain_list_type;
     typedef std::vector<pSimpleCube>   preview_list_type;
+
+    typedef std::list<pChain, boost::fast_pool_allocator<pChain> > chain_list_type;
+    //typedef std::list<pChain> chain_list_type;
 
     static pointer_type create(data::pMapSetting setting) {
         // map doesn't need a pool

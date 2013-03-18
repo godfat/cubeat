@@ -25,7 +25,7 @@ public:
         return app;
     }
 
-    int run(std::tr1::function<void()> = 0);
+    int run(std::tr1::function<void()> = 0, std::tr1::function<void()> = 0);
 
     App& init();
 

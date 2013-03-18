@@ -10,7 +10,8 @@ namespace psc{ namespace data{
 struct Cube{
     typedef std::tr1::shared_ptr<Cube> pointer_type;
     static pointer_type create(int x, int y, int color_id){
-        return utils::ObjectPool<Cube>::create(x, y, color_id);
+        return utils::ObjectPoolRestorable<Cube>::create(x, y, color_id);
+        //return utils::ObjectPool<Cube>::create(x, y, color_id);
     }
     Cube(int x, int y, int color_id):
         x_(x), y_(y), color_id_(color_id), real_y_(y*64) {} //NOTE 2012.2.15: is 64 a good idea?

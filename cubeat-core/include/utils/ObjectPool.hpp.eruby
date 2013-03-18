@@ -149,27 +149,59 @@ public:
     typedef typename this_pool::pool_type pool_type;
 
     static void backup(int frame_number) {
+//        printf("\n FUCK BEFORE push_back a invalid pool_type() to backups_. (FULL LIST)\n");
+//        for( typename std::deque<pool_type>::iterator it = backups_.begin(), end = backups_.end(); it != end; ++it ) {
+//            it->show_debug();
+//        }
         backups_.push_back( pool_type() );      // make sure the place holder (tmp pool) is destructed right away
+//        printf("\n FUCK AFTER push_back a invalid pool_type() to backups_. (FULL LIST)\n");
+//        for( typename std::deque<pool_type>::iterator it = backups_.begin(), end = backups_.end(); it != end; ++it ) {
+//            it->show_debug();
+//        }
+//        printf("\n == before backup, the original underlying pool: ==\n");
+//        this_pool::show_debug();
+//        printf(" FUCK DEBUG backups_.size(): %d\n", backups_.size() );
         this_pool::clone_to( backups_.back() ); // So that it won't call destructor when tmp pool is out of scope.
+//        printf("\n == after backup, the copied pool (FULL LIST): ==\n");
+//        for( typename std::deque<pool_type>::iterator it = backups_.begin(), end = backups_.end(); it != end; ++it ) {
+//            it->show_debug();
+//        }
         tracked_frame_number_ = frame_number;
 
         // dump things larger than the backup window:
         if( backups_.size() > MAX_SIZE_OF_BACKUP ) {
-            //printf("Backup window full.. popping \n");
+//            printf("Backup window full.. popping \n");
             backups_.pop_front();
         }
-        //printf("tracked_frame_number_ = %d, backup_size = %d\n", tracked_frame_number_, backups_.size());
+//        printf("tracked_frame_number_ = %d, backup_size = %d\n", tracked_frame_number_, backups_.size());
     }
 
     static void restore(int frame_number) {
-        int num_of_frames_to_rollback = tracked_frame_number_ - frame_number + 1;
+        int num_of_frames_to_rollback = tracked_frame_number_ - frame_number;
+        // we are rolling-back to "frame_number", but of course we don't want to pop it!
+        // it is the last finished state with the correct inputs, so it is part of the solid history!
+//        printf("\n == pool restoring: tracked_frame_number = %d, num_of_frames_to_roll = %d\n", tracked_frame_number_, num_of_frames_to_rollback);
+
+//        backups_.erase( (backups_.rbegin() - num_of_frames_to_rollback).base(), backups_.end() );
+
+//      I really have no idea why using iterater range to erase won't compile.
+//      The error seemed to have nothing to do with the iterators.
+//        printf("  now popping mis-calcualted frame states....\n");
         for( ; num_of_frames_to_rollback > 0 ; --num_of_frames_to_rollback ) {
-            if( num_of_frames_to_rollback == 1 ) {
-                pool_type & backup = backups_.back();
-                this_pool::restore(backup);
-            }
+//            backups_.back().show_debug();
             backups_.pop_back();
         }
+//        printf("the restoration source (backup pool): \n");
+        pool_type & backup = backups_.back();
+//        backup.show_debug();
+//        printf("the restored destination (the new original): \n");
+        this_pool::restore( backup );
+//        this_pool::show_debug();
+//        printf("\n == FUCK after RESTORE, check the backup list (FULL LIST): ==\n");
+//        for( typename std::deque<pool_type>::iterator it = backups_.begin(), end = backups_.end(); it != end; ++it ) {
+//            it->show_debug();
+//        }
+//        printf("\n");
     }
 
     static element_type create(){
@@ -193,51 +225,6 @@ std::deque<typename ObjectPoolRestorable<T>::pool_type> ObjectPoolRestorable<T>:
 
 template<typename T>
 int ObjectPoolRestorable<T>::tracked_frame_number_ = 0;
-
-namespace details {
-
-template<typename CharOrSPtr>
-class SpecializedPool {
-    typedef boost::singleton_pool<CharOrSPtr, sizeof(CharOrSPtr)> this_pool;
-    typedef typename this_pool::pool_type pool_type;
-
-public:
-    static void backup(int frame_number) {
-        backups_.push_back( pool_type() );      // make sure the place holder (tmp pool) is destructed right away
-        this_pool::clone_to( backups_.back() ); // So that it won't call destructor when tmp pool is out of scope.
-        tracked_frame_number_ = frame_number;
-
-        // dump things larger than the backup window:
-        if( backups_.size() > MAX_SIZE_OF_BACKUP ) {
-            //printf("Backup window full.. popping (specialized_pool)\n");
-            backups_.pop_front();
-        }
-        //printf("tracked_frame_number_ = %d, backup_size = %d (specialized pool)\n", tracked_frame_number_, backups_.size());
-    }
-
-    static void restore(int frame_number) {
-        int num_of_frames_to_rollback = tracked_frame_number_ - frame_number + 1;
-        for( ; num_of_frames_to_rollback > 0 ; --num_of_frames_to_rollback ) {
-            if( num_of_frames_to_rollback == 1 ) {
-                pool_type & backup = backups_.back();
-                this_pool::restore(backup);
-            }
-            backups_.pop_back();
-        }
-    }
-
-private:
-    static std::deque<pool_type> backups_;
-    static int tracked_frame_number_;
-};
-
-template<typename CharOrSPtr>
-std::deque<typename SpecializedPool<CharOrSPtr>::pool_type> SpecializedPool<CharOrSPtr>::backups_;
-
-template<typename CharOrSPtr>
-int SpecializedPool<CharOrSPtr>::tracked_frame_number_ = 0;
-
-} // details
 
 void pools_backup(int frame_number);
 void pools_restore(int frame_number);

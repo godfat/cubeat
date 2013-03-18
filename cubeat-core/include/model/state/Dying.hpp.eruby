@@ -16,7 +16,8 @@ public:
 
 public:
     static pState create(wpCube owner){
-        return utils::ObjectPool<Dying>::create(owner)->init();
+        return utils::ObjectPoolRestorable<Dying>::create(owner)->init();
+        //return utils::ObjectPool<Dying>::create(owner)->init();
     }
 
 public:

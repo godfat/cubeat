@@ -575,9 +575,9 @@ class pool: protected simple_segregated_storage < typename UserAllocator::size_t
     // added by arch.jslin 2012.11
     void clone_to(pool<UserAllocator> & clone) const {
         //printf("Pool (%d) cloning...\n", requested_size);
-//        if( this->first == 0 ) {
-//            printf("pool's free list is currently empty.\n");
-//        }
+        if( this->first == 0 ) {
+            printf("pool (%d) 's free list is currently empty.\n", requested_size);
+        }
         clone.first         = this->first;
         clone.next_size     = next_size;
         clone.start_size    = start_size;
@@ -634,11 +634,24 @@ class pool: protected simple_segregated_storage < typename UserAllocator::size_t
         } while( iter.valid() );
     }
 
+    void show_debug() const {
+        printf("underlying pool debug: \n");
+        if( this->first != 0 ) {
+            printf("  this->first: %x\n", this->first);
+            printf("  list begin: %x\n", list.begin());
+            printf("  list begin id: %d\n", list.id());
+            printf("  podptr_count: %d\n", podptr_count_);
+        }
+        else {
+            printf("  this pool is empty or not initialized (invalid).\n");
+        }
+    }
+
     // added by arch.jslin 2012.11
     void restore(pool<UserAllocator>& backup) {
-//        if( backup.first == 0 ) {
-//            printf("backup's free list is currently empty.\n");
-//        }
+        if( backup.first == 0 ) {
+            printf("backup (%d)'s free list is currently empty.\n", requested_size);
+        }
         this->first   = backup.first;
         next_size     = backup.next_size;
         podptr_count_ = backup.podptr_count_;

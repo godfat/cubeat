@@ -31,8 +31,9 @@ public:
     }
 
     Multi();
-    ~Multi();
+    virtual ~Multi();
 
+    virtual void precondition(){}
     virtual void cycle();
 
 protected:

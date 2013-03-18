@@ -225,6 +225,10 @@ public:
         get_pool().restore(backup);
     }
 
+    static void show_debug() {
+        get_pool().show_debug();
+    }
+
 private:
    typedef boost::aligned_storage<sizeof(pool_type), boost::alignment_of<pool_type>::value> storage_type;
    static storage_type storage;

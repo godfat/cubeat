@@ -20,6 +20,7 @@ public:
 
     Object();
 
+    virtual void precondition();
     virtual void cycle();
     virtual ~Object();
 

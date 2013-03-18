@@ -66,11 +66,16 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
             if(cube_colors[x][y] == 0)
                 continue;
             else {
+                printf("in model::Map::init_cubes, creating/inserting cubes.\n");
                 insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
             }
 
-    fill_preview_queue(); // added
+    //TestGGPO Debug:
+    cubes_[0][2]->go_sinking();
 
+    if( ms()->dropping_creatable() ) {
+        fill_preview_queue(); // added
+    }
     //This point should be the end of the last init step, so start timing now:
     last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
 
@@ -81,6 +86,8 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
 //demo branch: don't use this yet
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
+
+    printf("model::Map::init() ended.\n");
 
     return *this;
 }
@@ -263,6 +270,27 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
         cycle_creation();
     }
 
+    // Debug:
+    printf("Map %x Debug: \n", this);
+    for( int y = 3; y >= 0; --y ) {
+        for( int x = 0; x < 6; ++x ) {
+            if ( !cubes_[x][y] ) {
+                printf(" 0");
+            } else {
+                printf("%2d", cubes_[x][y]->color_id());
+            }
+        }
+        printf("\n");
+    }
+    if( cubes_[0][1] ) {
+        printf("Keycube real_y position: %lf\n", cubes_[0][1]->real_y());
+    }
+    else if( cubes_[0][0] ) {
+        printf("Keycube real_y position: %lf, state: %c\n", cubes_[0][0]->real_y(), cubes_[0][0]->is_sinking() ? 's' :
+                                                                                    cubes_[0][0]->is_waiting() ? 'w' :
+                                                                                    cubes_[0][0]->is_dying() ? 'd' : 'n');
+    }
+
     return *this;
 }
 
@@ -353,8 +381,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
-            o->new_chain_event()(*i);
-            o->new_garbage_event()(*i, amount);
+//            o->new_chain_event()(*i);
+//            o->new_garbage_event()(*i, amount);
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             match_counter_ += 1;
@@ -381,6 +409,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
         else{
             ++i;
         }
+    }
+
+    if( !chains_.empty() ) {
+        printf("Map %d is still chaining after last update_chain, size: %d\n", this, chains_.size());
     }
 }
 

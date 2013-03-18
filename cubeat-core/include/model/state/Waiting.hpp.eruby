@@ -14,7 +14,11 @@ public:
     typedef pWaiting pointer_type;
 
 public:
-    static pState create(wpCube owner){ return utils::ObjectPool<Waiting>::create(owner)->init(); }
+    static pState create(wpCube owner) {
+        return utils::ObjectPoolRestorable<Waiting>::create(owner)->init();
+        //return utils::ObjectPool<Waiting>::create(owner)->init();
+    }
+
 public:
     Waiting(wpCube owner): State(owner), checked_(false){}
 

@@ -34,6 +34,7 @@ public:
     Puzzle();
     virtual ~Puzzle();
 
+    virtual void precondition(){}
     virtual void cycle();
 
     //add by maxwell

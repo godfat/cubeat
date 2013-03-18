@@ -26,7 +26,8 @@ public:
 
 public:
     static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
+        return utils::ObjectPoolRestorable<Cube>::create(map, x, y, color_id)->init();
+        //return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
         SimpleCube(x, y, color_id), map_(map)

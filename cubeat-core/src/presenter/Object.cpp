@@ -22,6 +22,10 @@ void Object::init()
 {
 }
 
+void Object::precondition()
+{
+}
+
 void Object::cycle()
 {
 }

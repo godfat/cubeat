@@ -12,72 +12,41 @@ class Chain{
 public:
     typedef std::tr1::shared_ptr<Chain> pointer_type;
     typedef std::tr1::weak_ptr<Chain> wpointer_type;
-    static pointer_type create(){ return utils::ObjectPool<Chain>::create(); }
-    static pointer_type create(pointer_type const& that){ return utils::ObjectPool<Chain>::create(that); }
+    static pointer_type create() {
+        return utils::ObjectPoolRestorable<Chain>::create();
+        //return utils::ObjectPool<Chain>::create();
+    }
+    static pointer_type create(pointer_type const& that) {
+        return utils::ObjectPoolRestorable<Chain>::create(that);
+        //return utils::ObjectPool<Chain>::create(that);
+    }
 
 public:
-    int last_step_amounts() const{ return chain_step_.back(); }
-
-    void add_last_step_amounts(int num){
-        chain_step_.back() += num;
-        // always add onto the rear element
-        // map will be responsible to notify Chain to push new elements to Chains.
-    }
-
-    void step_one(){
-        chain_step_.push_back(0);
-    }
-
-    int power_factor() const{ return power_factor_; }
-
-    void update_power_factor() {
-        last_power_factor_ = power_factor_;
-        int new_step_amount = chain_step_.back();
-        if( new_step_amount < 3 ) return;
-        int stepnum = chain_step_.size();
-        if( stepnum == 1 ) {
-            // power_factor_ += (new_step_amount - 2);
-            if( new_step_amount > 3 ) {
-                power_factor_ += (new_step_amount - 1);
-            }
-        }
-        else
-            power_factor_ += (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;
-            //power_factor_ += (new_step_amount - 2)*(stepnum);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);
-            //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
-    }
+    int last_step_amounts() const;
+    void add_last_step_amounts(int num);
+    void step_one();
+    int power_factor() const;
+    void update_power_factor();
 
     // this returns the score fragment made by the last combo
-    int score_step() const{
-        return attack_of_current_step() * 50;
-    }
+    int score_step() const;
+    int step() const;
 
-    int step() const{
-        return chain_step_.size();
-    }
+    void set_last_step_position(int x, int y);
+    int last_step_x() const;
+    int last_step_y() const;
+    int attack_of_current_step() const;
 
-    void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
-    int last_step_x() const { return last_step_x_; }
-    int last_step_y() const { return last_step_y_; }
-    int attack_of_current_step() const {
-        return power_factor_ - last_power_factor_;
-    }
-
-    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
-
-    Chain(pointer_type const& that):
-        chain_step_(that->chain_step_),
-        last_step_x_(that->last_step_x_),
-        last_step_y_(that->last_step_y_),
-        power_factor_(that->power_factor_),
-        last_power_factor_(that->last_power_factor_)
-    {}
+    Chain();
+    Chain(pointer_type const& that);
+    ~Chain();
 
 private:
+    /// WTF NOTE TO SELF: This will be a problem when rolling back.
+    //  unless the container is stationary or fixed during the life time of this object, (which is rarely likely)
+    //  we can't have a persistent, not-rollbackable std container inside a rollbackable object.
     std::vector<int> chain_step_;
+
     int last_step_x_, last_step_y_;
     int power_factor_, last_power_factor_;
     // int damage_factor_;

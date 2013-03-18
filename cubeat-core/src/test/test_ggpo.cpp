@@ -59,22 +59,16 @@ static time_t realtime()
 
 class TestGGPO{
 public:
-    TestGGPO(): frame_(0), rollbacked_(false), test_data1_with_timer_(0), test_data2_with_timer_(1.0), ggpo_(0) {
+    TestGGPO(): temp_corrected_frame_(125), frame_(0), real_new_frame_(0), rollbacked_(false), ggpo_(0) {
         scene_ = view::Scene::create("game");
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+
         scene_->setTo2DView();
         utils::Random2::i().init(12345);
-        my_timer_ = ctrl::TimerDispatcher::create("test_ggpo", true);
-        ctrl::EventDispatcher::i().add_timer_dispatcher(my_timer_);
-
-        using std::tr1::bind;
-        using std::tr1::ref;
-        my_timer_->subscribe(bind(&TestGGPO::test_data1, this), 20, 10);
-        my_timer_->subscribe(bind(&TestGGPO::test_data2, this, ref(test_data2_with_timer_)), 20, 10);
+        utils::Random2::i().set_frame(0);
 
         ggpo_setup();
-
-
-        utils::Random2::i().set_frame(1);
 
         data::pViewSetting s0, s1;
 
@@ -89,40 +83,53 @@ public:
         ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
         ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
         player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1, "ai/normal.lua");
-        player0_->push_ally(0).push_enemy(1);
-        player1_->push_ally(1).push_enemy(0);
+//        player1_ = ctrl::AIPlayer::create(input1, 1, "ai/normal.lua");
+//        player0_->push_ally(0).push_enemy(1);
+//        player1_->push_ally(1).push_enemy(0);
 
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
-        map0_ = presenter::Map::create(set0, player0_);
+
+        // Debug: use a very basic setup to determine rollback problem:
+        set0->dropping_creatable(false);
+        utils::vector_2d<int> test_data(6, 11);
+        test_data[0][0] = 0;
+        test_data[1][0] = 1;
+        test_data[2][0] = 1;
+        test_data[1][1] = 2;
+        test_data[2][1] = 2;
+        test_data[0][2] = 1;
+
+        //map0_ = presenter::Map::create(set0, player0_);
+        map0_ = presenter::Map::create(set0, test_data, player0_);
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1
-        data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
-        map1_ = presenter::Map::create(set1, player1_);
-        map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
+//        data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
+//        map1_ = presenter::Map::create(set1, player1_);
+//        map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
         // setup garbage land
-        map0_->push_garbage_land(map1_);
-        map1_->push_garbage_land(map0_);
+//        map0_->push_garbage_land(map1_);
+//        map1_->push_garbage_land(map0_);
 
         ///NEW: MAKE PLAYER KNOWS ABOUT MAP
         std::vector< presenter::wpMap > map_list;
         map_list.push_back(map0_);
-        map_list.push_back(map1_);
+//        map_list.push_back(map1_);
         player0_->setMapList( map_list );
-        player1_->setMapList( map_list );
-    }
+//        player1_->setMapList( map_list );
 
-    void test_data1() {
-        ++test_data1_with_timer_;
-        printf("Test Data1: %d\n", test_data1_with_timer_);
-    }
+        // MAYBE: we have to dispatch here because we have to make sure there are timers to rollback
+        //        if we have to rollback to right after the init state (where we have already setup
+        //        newly created timers, but not yet started to poll inputs just yet.
+        ctrl::EventDispatcher::i().dispatch();
 
-    void test_data2(double& a) {
-        a *= 2;
-        printf("Test Data2: %lf (%lf)\n", a, test_data2_with_timer_);
+        // backup right after the initialization!
+        utils::Random2::i().end_frame();
+        utils::pools_backup(0);
+
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     }
 
     ~TestGGPO() {
@@ -174,9 +181,46 @@ public:
         printf("GGPO: connecting...\n");
     }
 
+    void precondition() {
+        ++frame_;
+        if( frame_ > real_new_frame_ ) {
+            real_new_frame_ = frame_;
+        }
+
+        if( frame_ == 8 + temp_corrected_frame_ ) {
+            //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+            printf("rollbacked! From %d to %d\n", frame_, temp_corrected_frame_);
+
+            /// UPDATE NOTE:
+            /// All un-synchronized part of TimerDispatcher when I was inspecting with system("pause") seemed resolved.
+            /// And always remember the metadata of std containers, such as begin()/end()/size() etc
+            /// reside in the enveloping class "physically".
+
+            /// Current solution note: timers_ and newly_created_timers_ have to be Restorable
+            /// (since newly_created_timers_ goes across frames), but frame_counter_ & game-time related
+            /// variables should be kept from Restorable with a barrier, because those are "INPUT" data,
+            /// not game states. Review this if in doubt => game_state[f+1] = update(game_state[f], input{key, time, random})
+
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->remove_all_newly_created_timers();
+
+            utils::pools_restore(temp_corrected_frame_);
+
+            // Put this here?
+            map0_->cleanup_dead_cubes();
+//            map1_->cleanup_dead_cubes();
+
+            //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+            frame_ = temp_corrected_frame_+1;
+            ++temp_corrected_frame_;
+        }
+
+        // can't be sure EventDispatcher won't use Random2... so that's it.
+        utils::Random2::i().set_frame(frame_);
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_frame(frame_);
+    }
+
     void update_state(int f) {
         printf("Frame: %d\n", f);
-        utils::Random2::i().set_frame(f);
 
         std::vector<double> chances;
         chances.push_back(40);
@@ -189,7 +233,41 @@ public:
                                    utils::distributed_random(chances),
                                    utils::r_random(25));
 
+        map0_->cycle();
+//        map1_->cycle();
+        player0_->cycle();
+//        player1_->cycle();
+
+        // YOU SHOULD NOT CALL THIS DURING ROLLBACK
+        // Have to find a condition here for testing randoms during a rollback...
+        if( f == real_new_frame_ ) { // If .. this is true, then it should be a whole new frame and not in rollback
+            utils::Random2::i().end_frame();
+        }
+
+        // Have to set it here for the next cycle, I guess...
         utils::pools_backup(f);
+    }
+
+    // note to self: It is imperative to understand random number generator (RNG) and TIME (or DELTA TIME)
+    // as an "INPUT", which means, if we say we find inconsistency at frame N's input, and thus we have to
+    // rollback to frame M, because we find that frame M is the last frame with consistent inputs from both sides,
+    // we should only rollback the RNG to frame M+1, so that the finished-and-recoreded state of frame M
+    // (based on the calculations from the last correct input), combined with the newly found corrected input
+    // of frame M+1, will produce the correct outcome state M+1, and so on.
+
+    // A VERY STUPID ASSERTION ERROR:
+    // The premises of this rollback method, is that you CAN'T, and you WON'T rollback to the same point
+    // in the past TWICE or MORE. The history of time is ever-progressing, so every backup is only useful
+    // ONCE. My object pool adoption made this assertion in the very beginning, once a restoration
+    // is made then the memory blocks of the backup is immediately freed.
+
+    // But stupidly I test it with a code that constantly rolling-back to frame 3,
+    // Of course that will never work...
+
+    void cycle(){
+        update_state( frame_ );
+
+        scene_->redraw();
     }
 
     void cleanup() { //might not be used in test
@@ -199,34 +277,6 @@ public:
 #endif
     }
 
-    void cycle(){
-        ++frame_;
-        if( frame_ == 3 ) {
-            printf("rollbacked!!\n");
-            utils::pools_restore(1);
-            for( int i = 1; i < 3; ++i ) {
-                update_state(i);
-            }
-        }
-        if( frame_ == 5 ) {
-            printf("rollbacked!! twice\n");
-            utils::pools_restore(2);
-            for( int i = 2; i < 5; ++i ) {
-                update_state(i);
-            }
-        }
-        update_state( frame_ );
-
-        scene_->redraw();
-
-        map0_->cycle();
-        map1_->cycle();
-        player0_->cycle();
-        player1_->cycle();
-
-        utils::Random2::i().end_frame();
-    }
-
 private:
     utils::map_any gameplay_;
     view::pScene  scene_;
@@ -234,12 +284,10 @@ private:
     pMap map0_, map1_;
     ctrl::pPlayer player0_, player1_;
 
-    int frame_;
-    bool rollbacked_;
-    int    test_data1_with_timer_;
-    double test_data2_with_timer_;
+    int temp_corrected_frame_;
 
-    ctrl::pTimerDispatcher my_timer_;
+    int frame_, real_new_frame_;
+    bool rollbacked_;
 
     //networking and ggpo related
     GGPOSession* ggpo_;
@@ -257,5 +305,6 @@ int main(){
     psc::Conf::i().init("");
     psc::App::i().init();
     TestGGPO tester;
-    return psc::App::i().run(std::tr1::bind(&TestGGPO::cycle, &tester));
+    return psc::App::i().run(std::tr1::bind(&TestGGPO::cycle, &tester),
+                             std::tr1::bind(&TestGGPO::precondition, &tester));
 }

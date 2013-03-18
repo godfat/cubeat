@@ -1,17 +1,18 @@
 
 <% header_guard do %>
 
+#include <cstdio>
 #include <boost/multi_array.hpp>
 namespace psc{ namespace utils{
 
-template <typename T>
-class vector_2d: public boost::multi_array<T, 2>{
+template <typename T, typename Allocator = std::allocator<T> >
+class vector_2d: public boost::multi_array<T, 2, Allocator>{
 public:
-    typedef boost::multi_array<T, 2> super_type;
+    typedef boost::multi_array<T, 2, Allocator> super_type;
     typedef typename super_type::size_type size_type;
 public:
     vector_2d(int width, int height):
-        boost::multi_array<T, 2>(boost::extents[width][height]){}
+        boost::multi_array<T, 2, Allocator>(boost::extents[width][height]){}
     void resize(int w, int h){ super_type::resize(boost::extents[w][h]); }
     size_type width() const{ return this->shape()[0]; }
     size_type height() const{ return this->shape()[1]; }
@@ -21,18 +22,18 @@ public:
     T* flatten_end(){ return this->data() + this->num_elements(); }
 };
 
-template <typename T, typename Fun>
-vector_2d<T>& for_each(vector_2d<T>& vector, Fun fun){
-    for(typename vector_2d<T>::size_type y=0; y != vector.height(); ++y)
-        for(typename vector_2d<T>::size_type x=0; x != vector.width(); ++x)
+template <typename T, typename Alloc, typename Fun>
+vector_2d<T, Alloc>& for_each(vector_2d<T, Alloc>& vector, Fun fun){
+    for(typename vector_2d<T, Alloc>::size_type y=0; y != vector.height(); ++y)
+        for(typename vector_2d<T, Alloc>::size_type x=0; x != vector.width(); ++x)
             fun(vector[x][y], x, y);
     return vector;
 }
 
-template <typename T, typename Fun>
-vector_2d<T>& for_each_ignore_null(vector_2d<T>& vector, Fun fun){
-    for(typename vector_2d<T>::size_type y=0; y != vector.height(); ++y)
-        for(typename vector_2d<T>::size_type x=0; x != vector.width(); ++x)
+template <typename T, typename Alloc, typename Fun>
+vector_2d<T, Alloc>& for_each_ignore_null(vector_2d<T, Alloc>& vector, Fun fun){
+    for(typename vector_2d<T, Alloc>::size_type y=0; y != vector.height(); ++y)
+        for(typename vector_2d<T, Alloc>::size_type x=0; x != vector.width(); ++x)
             if(vector[x][y])
                 fun(vector[x][y], x, y);
     return vector;

@@ -16,7 +16,8 @@ public:
 
 public:
     static pState create(std::tr1::weak_ptr<Cube> owner){
-        return utils::ObjectPool<Dropping>::create(owner)->init();
+        return utils::ObjectPoolRestorable<Dropping>::create(owner)->init();
+        //return utils::ObjectPool<Dropping>::create(owner)->init();
     }
 
 public:

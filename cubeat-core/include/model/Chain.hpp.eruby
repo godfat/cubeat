@@ -42,10 +42,10 @@ public:
     ~Chain();
 
 private:
-    /// WTF NOTE TO SELF: This will be a problem when rolling back.
-    //  unless the container is stationary or fixed during the life time of this object, (which is rarely likely)
-    //  we can't have a persistent, not-rollbackable std container inside a rollbackable object.
-    std::vector<int> chain_step_;
+    // Note: chain_step_ removed by 2 integers. the chain history is not used in any way anyway.
+    //       The only potential usage by now is probably just for debug logs.
+    //std::vector<int> chain_step_;
+    int last_step_amounts_, step_num_;
 
     int last_step_x_, last_step_y_;
     int power_factor_, last_power_factor_;

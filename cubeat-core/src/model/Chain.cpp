@@ -52,12 +52,16 @@ void Chain::update_power_factor() {
     //int stepnum = chain_step_.size();
     //if( stepnum == 1 ) {
     if( step_num_ == 1 ) {
-        // power_factor_ += (new_step_amount - 2);
         //if( new_step_amount > 3 ) { power_factor_ += (new_step_amount - 1); }
         if( last_step_amounts_ > 3 ) { power_factor_ += (last_step_amounts_ - 1); }
+
+        // old formula:
+        // power_factor_ += (new_step_amount - 2);
     }
     else
         power_factor_ += (last_step_amounts_ - 1)*(step_num_)/2 + (step_num_-1);
+
+        // old formula:
         //power_factor_ += (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
         //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
         //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;

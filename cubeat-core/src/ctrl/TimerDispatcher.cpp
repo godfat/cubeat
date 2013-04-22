@@ -246,9 +246,13 @@ void TimerDispatcherRestorable::dispatch()
         else timers_to_be_deleted.push_back(t);
     }
 
+    printf(" Blah: Before erase inactive timers (Restorable) \n");
+
     BOOST_FOREACH(RestorableTimerList::iterator t, timers_to_be_deleted) {
         timers_.erase(t);
     }
+
+    printf(" Blah: End of Dispatch.\n");
 }
 
 /// Cleanup methods of Timer

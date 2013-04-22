@@ -141,8 +141,8 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                             hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
                       get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
-                   drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
-                   sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
+//                   drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
+//                   sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
                      update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).
                    approach_pos_event( std::tr1::bind( &Cube::approach_pos, cube.get() ) ).
                     garbage_fly_event( std::tr1::bind( &Cube::garbage_fly, cube.get() ) );
@@ -195,13 +195,34 @@ void Map::release(model::wpCube const& cube) {
 Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
     printf("pMap::cleanup_dead_cubes: ");
     for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ;) {
-        if ( it->first.use_count() == 1 ) {
-            // I have to use this instead of unique(), because it.first is wpCube,
+        if ( it->first.use_count() == 1 && !it->first.lock()->is_scheduled_for_deletion() ) {
+            // I have to use this instead of unique(), because it.first is model::wpCube,
             // after lock(), IT WILL NOT BE UNIQUE OF COURSE YOU FUCKING IDIOT.
             printf("%ld ", it->first.use_count());
             container_type::iterator temp = it;
             ++temp;
             cubes_.erase(it);
+            printf("\n\n");
+            printf("Who dares to die here? color: %d, x: %d, y: %d\n", it->first.lock()->color_id(),
+                                                                       it->first.lock()->x(),
+                                                                       it->first.lock()->y());
+
+            /// note2: Why? the three blue cubes getting cleaned up at this point? (at restoration points)
+            /// currently the test case is a reducing only scenario, so it should not have been model-invalidating rollbacks
+            /// hence no dangling objects to clean up when we hit
+
+            printf("\n\n");
+
+            /// note3:
+            /// Cannot pause here. TimerDispatcher will get messed up for delay_suber_and_throw_garbage callback function corrupted.
+            /// Even stop and start the timer like what I did in App doesn't work.
+            /// Cause of crash currently unknown, I can't figure out why this will make that callback corrupted.
+
+            /// note4:
+            /// I am still pausing here for now. Because when there's model-invalidating rollbacks,
+            /// I want to know.
+            system("pause");
+
             it = temp;
             // And this is a rather complex erase: return the iterator to erase BEFORE advance it.
         } else {
@@ -209,6 +230,7 @@ Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
             ++it;
         }
     }
+    printf("\n");
     return *this;
 }
 

@@ -84,24 +84,28 @@ public:
         ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
         player0_ = ctrl::Player::create(input0, 0);
 //        player1_ = ctrl::AIPlayer::create(input1, 1, "ai/normal.lua");
+
+        /// WTF
+        player0_->push_ally(0);
+
 //        player0_->push_ally(0).push_enemy(1);
 //        player1_->push_ally(1).push_enemy(0);
 
         // setup map0
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
 
-        // Debug: use a very basic setup to determine rollback problem:
-        set0->dropping_creatable(false);
-        utils::vector_2d<int> test_data(6, 11);
-        test_data[0][0] = 0;
-        test_data[1][0] = 1;
-        test_data[2][0] = 1;
-        test_data[1][1] = 2;
-        test_data[2][1] = 2;
-        test_data[0][2] = 1;
+        /// Debug: use a very basic setup to determine rollback problem:
+//        set0->dropping_creatable(false);
+//        utils::vector_2d<int> test_data(6, 11);
+//        test_data[0][0] = 0;
+//        test_data[1][0] = 1;
+//        test_data[2][0] = 1;
+//        test_data[1][1] = 2;
+//        test_data[2][1] = 2;
+//        test_data[0][2] = 1;
+//        map0_ = presenter::Map::create(set0, test_data, player0_);
 
-        //map0_ = presenter::Map::create(set0, player0_);
-        map0_ = presenter::Map::create(set0, test_data, player0_);
+        map0_ = presenter::Map::create(set0, player0_);
         map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
         // setup map1
@@ -206,6 +210,7 @@ public:
             utils::pools_restore(temp_corrected_frame_);
 
             // Put this here?
+            /// NOTE: Can't put this here? causing crash when new TimerCallbacks get pushed into..
             map0_->cleanup_dead_cubes();
 //            map1_->cleanup_dead_cubes();
 

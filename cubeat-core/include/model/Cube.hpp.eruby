@@ -30,7 +30,7 @@ public:
         //return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
-        SimpleCube(x, y, color_id), map_(map)
+        SimpleCube(x, y, color_id), map_(map), delayed_deletion_(false)
     {}
     <% debug_hook '~Cube' do %>(){ <% end %> }
 
@@ -107,6 +107,13 @@ public:
     bool arrived_at_logical_y();
     void adjust_real_y();
 
+    // 2013.4 addition:
+    // Only used during model::Map::cycle_a_cube routine.
+    // Don't put this in Cube::cycle_and_die because it doesn't have the "context" there.
+    // Only model::Map knows all context and conditions.
+    void schedule_for_delayed_deletion();
+    bool is_scheduled_for_deletion() const;
+
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>
@@ -125,6 +132,7 @@ private:
 private:
 //  accessor :'data::pCube', :data /////// erb markers deleted by arch.jslin
     wpMap map_;
+    bool delayed_deletion_;
     state::pState state_;
     wpCube self_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event %>

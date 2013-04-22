@@ -70,8 +70,11 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
                 insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
             }
 
-    //TestGGPO Debug:
-    cubes_[0][2]->go_sinking();
+    /// NOTE: TestGGPO Debug:
+    //cubes_[0][2]->go_sinking();
+
+    /// NOTE: preview cubes rolling back still causing crashes.
+    ms()->dropping_creatable(false);
 
     if( ms()->dropping_creatable() ) {
         fill_preview_queue(); // added
@@ -120,6 +123,8 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
     if( c->cycle_and_die(now_t_, last_t_) ) {
         using std::tr1::bind;
         //printf("Before cube dies: %d\n", cubes_[x][y].use_count());
+        /// NOTE: flag this cube so it won't be cleared by presenter::Map::cleanup_dead_cubes().
+        cubes_[x][y]->schedule_for_delayed_deletion();
         cubes_[x][y].reset();
         //owner_.lock()->release(c);
         wpCube wc(c);
@@ -381,8 +386,11 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
+
+/// For these two lines, see App.cpp comment about problem TWO.
 //            o->new_chain_event()(*i);
 //            o->new_garbage_event()(*i, amount);
+
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             match_counter_ += 1;

@@ -24,6 +24,14 @@ bool <% debug_hook 'Cube::cycle_and_die' do %>(time_t const& now_t, time_t const
     return is_dead();
 }
 
+void Cube::schedule_for_delayed_deletion() {
+    delayed_deletion_ = true;
+}
+
+bool Cube::is_scheduled_for_deletion() const {
+    return delayed_deletion_;
+}
+
 Cube& <% debug_hook 'Cube::be_garbage' do %>(){
 <% end %>
     is_garbage_ = true;

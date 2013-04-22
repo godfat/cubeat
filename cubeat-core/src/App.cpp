@@ -188,12 +188,12 @@ int App::run(std::tr1::function<void()> tester, std::tr1::function<void()> preco
 
             //TestGGPO Debug: OK I am not sure what is wrong here but even if I can only put pause here without
             //                disrupting time flow, at least we must have the rollback process happen BEFORE EventDispatcher
-//            if( !ctrl::EventDispatcher::i().get_timer_dispatcher("game")->is_stopped() ) {
-//                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
-//            }
+            if( !ctrl::EventDispatcher::i().get_timer_dispatcher("game")->is_stopped() ) {
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+            }
             printf("Game Time: %d\n", ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time());
 //            if( frame % 100 == 0 ) system("pause"); // Debug: this counter is independent of TestGGPO::frame_ ..... bad
-//            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
             /// If I don't pause and let the game run its pace it will crash around Waiting::check_chain_now
             /// no idea why
 
@@ -207,19 +207,14 @@ int App::run(std::tr1::function<void()> tester, std::tr1::function<void()> preco
 
             /// TWO
 
-            /// Doesn't matter if I stop/start or don't stop/start, the game will crash at a frame during rollback, not a new frame,
-            /// and it should've been only 1 timer orignally to the "game" timer that frame,
-            /// but a second time it rollback to that frame there was 2 timers. and then crash.
-            /// WHICH SHOULD NEVER HAPPEN! It's alternate history!!!
-
-            ///  -- note, those timers are: delayed_adder and delayed_suber_and_throw_garbage.
-            ///  -- this concerns me because the discrepency above means that some shared_ptr's use_count may not be reliable.
-            ///     because the 500ms timer at that point only happens when the particular chain's use_count is 1
-            ///     (means no other cubes shares the chain, so that chain is good to go, remove and then throw the garbage)
-
-            /// So when are going to deal with model::Map and model::Chain now,
-            /// and don't forget the problem caused by model::wpCube and model::wpChain used in presenter/view(ViewSpriteMaster)
+            /// Don't forget the problem caused by model::wpCube and model::wpChain used in presenter/view(ViewSpriteMaster)
             /// read my note.
+
+            /// THREE
+
+            /// (1) dead cubes don't seem to really die.
+            /// (2) rollback causing strange model::Map layout...? Not really sure. Experiment.
+            /// (3) preview cubes rolling back still causing crashes.
 
             t3 = realtime();
             driver->beginScene(true, true, video::SColor(0,0,0,0));

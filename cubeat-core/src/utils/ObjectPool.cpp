@@ -71,22 +71,27 @@ int SpecializedPool<CharOrSPtr, EleSize>::tracked_frame_number_ = 0;
 
 void pools_backup(int frame_number)
 {
-    printf("data::Cube: "); ObjectPoolRestorable<data::Cube>::backup(frame_number);
-    printf("model::Cube: "); ObjectPoolRestorable<model::Cube>::backup(frame_number);
-    printf("model::Map: "); ObjectPoolRestorable<model::Map>::backup(frame_number);
-    printf("model::Chain: "); ObjectPoolRestorable<model::Chain>::backup(frame_number);
-    printf("state::Waiting: "); ObjectPoolRestorable<model::state::Waiting>::backup(frame_number);
-    printf("state::Dropping: "); ObjectPoolRestorable<model::state::Dropping>::backup(frame_number);
-    printf("state::Sinking: "); ObjectPoolRestorable<model::state::Sinking>::backup(frame_number);
-    printf("state::Dying: "); ObjectPoolRestorable<model::state::Dying>::backup(frame_number);
+    ObjectPoolRestorable<data::Cube>::backup(frame_number);
+    ObjectPoolRestorable<model::Cube>::backup(frame_number);
+    ObjectPoolRestorable<model::Map>::backup(frame_number);
+    ObjectPoolRestorable<model::Chain>::backup(frame_number);
+    ObjectPoolRestorable<model::state::Waiting>::backup(frame_number);
+    ObjectPoolRestorable<model::state::Dropping>::backup(frame_number);
+    ObjectPoolRestorable<model::state::Sinking>::backup(frame_number);
+    ObjectPoolRestorable<model::state::Dying>::backup(frame_number);
 //
     // used for basic_string => pooled string, or other possible uses
 //    details::SpecializedPool<char>::backup(frame_number);
 
     // used for shared_ptrs stored in STL containers
-    printf("model::pCube: "); details::SpecializedPool<model::pCube>::backup(frame_number);
-    printf("model::pChain: "); details::SpecializedPool<model::pChain, sizeof(model::pChain)+(sizeof(void*)*2)>::backup(frame_number);
-    printf("Timer: "); details::SpecializedPool<ctrl::TimerDispatcher::Timer, sizeof(ctrl::TimerDispatcher::Timer)+(sizeof(void*)*2)>::backup(frame_number);
+    details::SpecializedPool<model::pCube>::backup(frame_number);
+    details::SpecializedPool<model::pChain, sizeof(model::pChain)+(sizeof(void*)*2)>::backup(frame_number);
+    details::SpecializedPool<ctrl::TimerDispatcher::Timer, sizeof(ctrl::TimerDispatcher::Timer)+(sizeof(void*)*2)>::backup(frame_number);
+
+    // 2013.3.18
+    // It's improbable to rollback the std containers inside this class without rolling-back
+    // this class itself. Key metadata reside in this class (such as where iterator begin/end point to.)
+    ObjectPoolRestorable<ctrl::TimerDispatcherRestorable>::backup(frame_number);
 }
 
 void pools_restore(int frame_number)
@@ -107,6 +112,11 @@ void pools_restore(int frame_number)
     details::SpecializedPool<model::pCube>::restore(frame_number);
     details::SpecializedPool<model::pChain, sizeof(model::pChain)+(sizeof(void*)*2)>::restore(frame_number);
     details::SpecializedPool<ctrl::TimerDispatcher::Timer, sizeof(ctrl::TimerDispatcher::Timer)+(sizeof(void*)*2)>::restore(frame_number);
+
+    // 2013.3.18
+    // It's improbable to rollback the std containers inside this class without rolling-back
+    // this class itself. Key metadata reside in this class (such as where iterator begin/end point to.)
+    ObjectPoolRestorable<ctrl::TimerDispatcherRestorable>::restore(frame_number);
 }
 
 } // utils

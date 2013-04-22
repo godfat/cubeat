@@ -194,8 +194,6 @@ int App::run(std::tr1::function<void()> tester, std::tr1::function<void()> preco
             printf("Game Time: %d\n", ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time());
 //            if( frame % 100 == 0 ) system("pause"); // Debug: this counter is independent of TestGGPO::frame_ ..... bad
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
-            /// If I don't pause and let the game run its pace it will crash around Waiting::check_chain_now
-            /// no idea why
 
             /// OK, now the new problems to the table:
 

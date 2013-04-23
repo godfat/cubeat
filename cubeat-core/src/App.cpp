@@ -210,9 +210,13 @@ int App::run(std::tr1::function<void()> tester, std::tr1::function<void()> preco
 
             /// THREE
 
-            /// (1) dead cubes don't seem to really die.
-            /// (2) rollback causing strange model::Map layout...? Not really sure. Experiment.
-            /// (3) preview cubes rolling back still causing crashes.
+            /// preview cubes rolling back still causing crashes.
+
+            /// FOUR
+
+            /// NO FUCK MAN, I haven't implemented input into rollback mechanics, of course it will be strange.
+            /// -- That said, The OTHER problem is how do I revert the looking of cubes.
+            /// -- Did I really not thought of this? Strange. Checking notes...(Probably see TWO)
 
             t3 = realtime();
             driver->beginScene(true, true, video::SColor(0,0,0,0));

@@ -97,7 +97,7 @@ public:
         /// Debug: use a very basic setup to determine rollback problem:
 //        set0->dropping_creatable(false);
 //        utils::vector_2d<int> test_data(6, 11);
-//        test_data[0][0] = 0;
+//        test_data[0][0] = 3;
 //        test_data[1][0] = 1;
 //        test_data[2][0] = 1;
 //        test_data[1][1] = 2;

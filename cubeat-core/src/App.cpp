@@ -211,6 +211,7 @@ int App::run(std::tr1::function<void()> tester, std::tr1::function<void()> preco
             /// THREE
 
             /// preview cubes rolling back still causing crashes.
+            /// -- definitely related to cubes_preview_ related usage in model::Map;
 
             /// FOUR
 

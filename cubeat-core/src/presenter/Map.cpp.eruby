@@ -194,8 +194,26 @@ void Map::release(model::wpCube const& cube) {
 
 Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
     printf("pMap::cleanup_dead_cubes: ");
+
+    container_type::iterator test_begin = cubes_.begin(), test_end = cubes_.end();
+    std::cout << "Start: " << (&*test_begin) << "\n";
+    std::cout << "  End: " << (&*test_end) << "\n";
+
+    /// WTF NOTE:
+    /// The current problem is that the underlying layout of cubes_, is not consistent
+    /// with the cubes_ iterator pointers, on the "end()" part, after rollback.
+    /// So rollback itself doesn't seem to cause any trouble, but the terminal condition
+    /// of this following loop will not meet (it != end) when it actually hit end.
+
+    /// I am still figuring out what caused this. It seems improbable because I am pretty sure
+    /// the memory rollback copy/paste itself doesn't have problems. However there must be
+    /// some loose ends....(literally)
+
     for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ;) {
-        if ( it->first.use_count() == 1 && !it->first.lock()->is_scheduled_for_deletion() ) {
+
+        std::cout << "it: " << (&*it) << " ";
+
+        if ( it->first.use_count() == 1 && !it->first.lock()->is_not_dangling() ) {
             // I have to use this instead of unique(), because it.first is model::wpCube,
             // after lock(), IT WILL NOT BE UNIQUE OF COURSE YOU FUCKING IDIOT.
             printf("%ld ", it->first.use_count());
@@ -226,11 +244,12 @@ Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
             it = temp;
             // And this is a rather complex erase: return the iterator to erase BEFORE advance it.
         } else {
-            printf("%ld ", it->first.use_count());
+            printf("%x %ld ", &*it, it->first.use_count());
+            printf("(%d, %d)\n", it->first.lock()->x(), it->first.lock()->y());
             ++it;
         }
     }
-    printf("\n");
+    printf("end of cleanup\n");
     return *this;
 }
 

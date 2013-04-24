@@ -28,7 +28,7 @@ void Cube::schedule_for_delayed_deletion() {
     delayed_deletion_ = true;
 }
 
-bool Cube::is_scheduled_for_deletion() const {
+bool Cube::is_not_dangling() const {
     return delayed_deletion_;
 }
 

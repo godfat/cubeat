@@ -112,7 +112,7 @@ public:
     // Don't put this in Cube::cycle_and_die because it doesn't have the "context" there.
     // Only model::Map knows all context and conditions.
     void schedule_for_delayed_deletion();
-    bool is_scheduled_for_deletion() const;
+    bool is_not_dangling() const;
 
 private:
     pCube <% debug_hook 'init' do %>(){

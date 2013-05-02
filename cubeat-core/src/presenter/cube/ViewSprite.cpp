@@ -50,16 +50,16 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
 }
-
-void ViewSprite::drop_a_block(){
-    body_->tween<easing::Linear, accessor::Pos2D>(
-        pos_vec2(), map_setting()->cube_dropping_duration());
-}
-
-void ViewSprite::sink_a_block(){
-    body_->tween<easing::Linear, accessor::Pos2D>(
-        pos_vec2(), map_setting()->cube_sinking_duration());
-}
+//
+//void ViewSprite::drop_a_block(){
+//    body_->tween<easing::Linear, accessor::Pos2D>(
+//        pos_vec2(), map_setting()->cube_dropping_duration());
+//}
+//
+//void ViewSprite::sink_a_block(){
+//    body_->tween<easing::Linear, accessor::Pos2D>(
+//        pos_vec2(), map_setting()->cube_sinking_duration());
+//}
 
 //    void ViewSprite::drop_a_block_with_callback(callback_type callback){
 ////        body_->tween<easing::Linear, accessor::Pos2D>(
@@ -144,7 +144,13 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
 void ViewSprite::go_dying(){
     unsigned int duration = map_setting()->cube_dying_duration();
     body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
-    body_->tween<easing::Linear, accessor::Alpha>(0, duration);
+
+    // This is as it should be:
+    // body_->tween<easing::Linear, accessor::Alpha>(0, duration);
+
+    // But I am testing the effect of rolling-back, so:
+    body_->tween<easing::Linear, accessor::Alpha>(96, duration);
+
     body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
     body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
 }
@@ -152,7 +158,13 @@ void ViewSprite::go_dying(){
 void ViewSprite::go_exploding(){
     body_->clearAllTween();
     body_->setPickable(false);
-    body_->set<accessor::Visible>(false);
+
+    // This is as it should be:
+    // body_->set<accessor::Visible>(false);
+
+    // But I am testing the effect of rolling-back, so:
+    body_->set<accessor::Alpha>(96);
+
     if( cube_.lock()->is_garbage() )
         body_->setTexture( "cubes/garbage0" );
 

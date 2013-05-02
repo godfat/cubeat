@@ -66,8 +66,8 @@ public:
     ViewSprite(model::pCube c, view::pObject orig,
         data::pMapSetting ms, data::pViewSetting s, ctrl::wpPlayer p);
 
-    virtual void drop_a_block();
-    virtual void sink_a_block();
+//    virtual void drop_a_block();
+//    virtual void sink_a_block();
 //    virtual void drop_a_block_with_callback(callback_type callback);
 //    virtual void sink_a_block_with_callback(callback_type callback);
 

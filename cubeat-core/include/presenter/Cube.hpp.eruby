@@ -37,27 +37,27 @@ public:
 public:
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
     <% debug_hook '~Cube' do %>(){<%end%>}
-
-    void <% debug_hook 'drop_a_block' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->drop_a_block(); }
-        if(view_master_)
-            view_master_->drop_a_block_with_callback(
-                std::tr1::bind(&model::Cube::next_state, model().get()) );
-        else
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
-                ms()->cube_dropping_duration());
-    }
-    void <% debug_hook 'sink_a_block' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->sink_a_block(); }
-        if(view_master_)
-            view_master_->sink_a_block_with_callback(
-                std::tr1::bind(&model::Cube::next_state, model().get()) );
-        else
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
-                ms()->cube_sinking_duration());
-    }
+//
+//    void <% debug_hook 'drop_a_block' do %>(){ <% end %>
+//        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->drop_a_block(); }
+//        if(view_master_)
+//            view_master_->drop_a_block_with_callback(
+//                std::tr1::bind(&model::Cube::next_state, model().get()) );
+//        else
+//            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
+//                ms()->cube_dropping_duration());
+//    }
+//    void <% debug_hook 'sink_a_block' do %>(){ <% end %>
+//        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->sink_a_block(); }
+//        if(view_master_)
+//            view_master_->sink_a_block_with_callback(
+//                std::tr1::bind(&model::Cube::next_state, model().get()) );
+//        else
+//            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//                std::tr1::bind(&model::Cube::next_state, model().get()), shared_from_this(),
+//                ms()->cube_sinking_duration());
+//    }
     void update_pos(){
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->update_pos(); }
         if(view_master_) view_master_->update_pos();

@@ -124,9 +124,16 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
         cubes_[x][y]->schedule_for_delayed_deletion();
         cubes_[x][y].reset();
         //owner_.lock()->release(c);
-        wpCube wc(c);
+
+        /// WTF NOTE: delayed removal of presenter::Cube.
+//        wpCube wc(c);
+//        ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+//            bind(&presenter::Map::release, owner_.lock().get(), wc), owner_, 1000);
+
+        /// WTF2 NOTE: and now we pass presenter::wpCube as key.
         ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-            bind(&presenter::Map::release, owner_.lock().get(), wc), owner_, 1000);
+            bind(&presenter::Map::release, owner_.lock().get(), c->owner_weak()), owner_, 1000);
+
         //WTF NOTE: This 1000ms should be the MAXIMUM_ROLLBACK_TIME
     }
 }
@@ -506,7 +513,7 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 
     presenter::pMap owner = owner_.lock();
     BOOST_FOREACH(int x, not_empty){
-        owner->release(cubes_preview_[x]);
+        owner->release(cubes_preview_[x]->owner_weak());
     }
 
     fill_preview_queue();

@@ -32,10 +32,10 @@ public:
 
 public:
     pointer_type static create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPool<this_type>::create(map, x, y, color_id);
+        return utils::ObjectPool<this_type>::create(map)->init(x, y, color_id);
     }
 public:
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0);
+    Cube(wpMap map);
     <% debug_hook '~Cube' do %>(){<%end%>}
 //
 //    void <% debug_hook 'drop_a_block' do %>(){ <% end %>
@@ -115,6 +115,7 @@ public:
 
 private:
     data::cpMapSetting ms() const;
+    pointer_type init(int x = 0, int y = 0, int color_id = 0);
 
 private:
     wpMap map_;

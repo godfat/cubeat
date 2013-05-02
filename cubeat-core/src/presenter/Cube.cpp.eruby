@@ -12,9 +12,13 @@ int <% debug_hook 'Cube::x' do %>() const{ <%end%> return model()->x(); }
 int <% debug_hook 'Cube::y' do %>() const{ <%end%> return model()->y(); }
 int <% debug_hook 'Cube::color_id' do %>() const{ <%end%> return model()->color_id(); }
 
-<% debug_hook 'Cube::Cube' do %>(wpMap map, int x, int y, int color_id):
-    map_(map),
-    model_(model::Cube::create(map.lock()->model(), x, y, color_id))
+<% debug_hook 'Cube::Cube' do %>(wpMap map):
+    map_(map)
 {<%end%>}
+
+pCube Cube::init(int x, int y, int color_id) {
+    model_ = model::Cube::create(map_.lock()->model(), shared_from_this(), x, y, color_id);
+    return shared_from_this();
+}
 
 data::cpMapSetting Cube::ms() const{ return map_.lock()->map_setting(); }

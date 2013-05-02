@@ -58,10 +58,16 @@ Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
     bind_view_event(view);
 
     // every existing cube should setup it also
-    typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
-    BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
-        pCube cube = cube_pair.second;
-        cube->push_view_slave( view->create(cube->model()) );
+
+    /// WTF NOTE: change data structure to list
+//    typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
+//    BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
+//        pCube cube = cube_pair.second;
+//        cube->push_view_slave( view->create(cube->model()) );
+//    }
+
+    BOOST_FOREACH(pCube& c, cubes_) {
+        c->push_view_slave( view->create(c->model()) );
     }
 
     view_slaves_.push_back(view);
@@ -74,11 +80,18 @@ Map& <% debug_hook 'Map::set_view_master' do %>(cube::pViewMaster view){
     bind_view_event(view);
 
     // every existing cube should setup it also
-    typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
-    BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
-        pCube cube = cube_pair.second;
-        cube->set_view_master( view->create(cube->model()) );
+
+    /// WTF NOTE: change data structure to list
+//    typedef std::pair<model::wpCube, pCube> cube_pair_type; // macro workaround
+//    BOOST_FOREACH(cube_pair_type cube_pair, cubes_){
+//        pCube cube = cube_pair.second;
+//        cube->set_view_master( view->create(cube->model()) );
+//    }
+
+    BOOST_FOREACH(pCube& c, cubes_) {
+        c->set_view_master( view->create(c->model()) );
     }
+
 // WTF MEMO 2012.9 failed to adjust for balance
 //    if( ctrl::pPlayer p = player_.lock() ) {
 //        view->setup_ability_button();
@@ -156,7 +169,11 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
         cube->push_view_slave( view->create(cube->model()) );
     }
     if(view_master_) cube->set_view_master( view_master_->create(cube->model()) );
-    cubes_.insert(std::make_pair(cube->model(), cube));
+
+    /// WTF NOTE: data structure changed to list
+    // cubes_.insert(std::make_pair(cube->model(), cube));
+    cubes_.push_back(cube);
+
     return cube;
 }
 
@@ -185,11 +202,20 @@ Map& Map::push_player_ability() {
     return *this;
 }
 
-void Map::release(model::wpCube const& cube) {
-    if( cube.use_count() == 1 )
-        cubes_.erase(cube);
-    // WTF NOTE: This is very tricky! you have to make sure the cube's use_count() is 1,
-    //           Because we might have legitmately revived it during the rollback!
+//void Map::release(model::wpCube const& cube) {
+//    if( cube.use_count() == 1 )
+//        cubes_.erase(cube);
+//    // WTF NOTE: This is very tricky! you have to make sure the cube's use_count() is 1,
+//    //           Because we might have legitmately revived it during the rollback!
+//}
+
+/// WTF NOTE: Alternative using cubes_ as list structure.
+void Map::release(wpCube const& cube) {
+    // the parameter here doesn't use shared_ptr because when the shared_ptr gets passed around,
+    // use_count() is not reliable at all.
+    if( cube.use_count() == 1 ) {
+        cubes_.remove(cube.lock()); // this should be unique remove because cubes_ only has unique elements.
+    }
 }
 
 Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
@@ -203,17 +229,19 @@ Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
     /// -- everytime it rollbacks after a new cube creation cycle, it will crash.
 
     for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ;) {
-        if ( it->first.use_count() == 1 && !it->first.lock()->is_not_dangling() ) {
+        //if ( it->first.use_count() == 1 && !it->first.lock()->is_not_dangling() ) {
+        if( (*it)->model().use_count() == 1 && !( (*it)->model()->is_not_dangling() ) ) {
             // I have to use this instead of unique(), because it.first is model::wpCube,
             // after lock(), IT WILL NOT BE UNIQUE OF COURSE YOU FUCKING IDIOT.
-            printf("%ld ", it->first.use_count());
+            //printf("%ld ", it->first.use_count());
+            printf("%ld ", (*it)->model().use_count());
             container_type::iterator temp = it;
             ++temp;
             cubes_.erase(it);
             printf("\n\n");
-            printf("Who dares to die here? color: %d, x: %d, y: %d\n", it->first.lock()->color_id(),
-                                                                       it->first.lock()->x(),
-                                                                       it->first.lock()->y());
+            printf("Who dares to die here? color: %d, x: %d, y: %d\n", (*it)->model()->color_id(), //it->first.lock()->color_id(),
+                                                                       (*it)->model()->x(),        //it->first.lock()->x(),
+                                                                       (*it)->model()->y());       //it->first.lock()->y());
             printf("\n\n");
 
             /// note3:
@@ -230,8 +258,8 @@ Map& Map::cleanup_dead_cubes() { // WTF NOTE: Only caused by networking rollback
             // And this is a rather complex erase: return the iterator to erase BEFORE advance it.
         } else {
             container_type::iterator temp = it;
-            printf("%x > next %x %ld ", &*it, &*(++temp), it->first.use_count());
-            printf("(%d, %d)\n", it->first.lock()->x(), it->first.lock()->y());
+            printf("%x > next %x %ld ", &*it, &*(++temp), (*it)->model().use_count());  //it->first.use_count());
+            printf("(%d, %d)\n", (*it)->model()->x(), (*it)->model()->y());             //it->first.lock()->y());
             ++it;
         }
     }
@@ -251,8 +279,8 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 
     for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ; ++it) {
         container_type::iterator temp = it;
-        printf("%x > next %x %ld ", &*it, &*(++temp), it->first.use_count());
-        printf("(%d, %d)\n", it->first.lock()->x(), it->first.lock()->y());
+        printf("%x > next %x %ld ", &*it, &*(++temp), (*it)->model().use_count()); //it->first.use_count());
+        printf("(%d, %d)\n", (*it)->model()->x(), (*it)->model()->y());            //it->first.lock()->x(), it->first.lock()->y());
     }
 
     printf("\n");

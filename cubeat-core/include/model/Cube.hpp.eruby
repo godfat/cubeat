@@ -14,7 +14,14 @@
 
 <%= debug_include %>
 
-namespace psc{ namespace model{
+namespace psc{
+
+namespace presenter{
+class Cube;
+typedef std::tr1::weak_ptr<Cube> wpCube;
+}
+
+namespace model{
 
 class Cube: public SimpleCube{
     friend class state::State; // for state_ = ? used by switch_state
@@ -25,12 +32,12 @@ public:
     typedef pCube pointer_type;
 
 public:
-    static pCube create(wpMap map, int x = 0, int y = 0, int color_id = 0){
-        return utils::ObjectPoolRestorable<Cube>::create(map, x, y, color_id)->init();
+    static pCube create(wpMap map, presenter::wpCube owner, int x = 0, int y = 0, int color_id = 0){
+        return utils::ObjectPoolRestorable<Cube>::create(map, owner, x, y, color_id)->init();
         //return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
-    Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
-        SimpleCube(x, y, color_id), map_(map), delayed_deletion_(false)
+    Cube(wpMap map, presenter::wpCube owner, int x = 0, int y = 0, int color_id = 0):
+        SimpleCube(x, y, color_id), map_(map), delayed_deletion_(false), owner_(owner)
     {}
     <% debug_hook '~Cube' do %>(){ <% end %> }
 
@@ -114,6 +121,8 @@ public:
     void schedule_for_delayed_deletion();
     bool is_not_dangling() const;
 
+    presenter::wpCube owner_weak() const { return owner_; }
+
 private:
     pCube <% debug_hook 'init' do %>(){
 <% end %>
@@ -133,6 +142,7 @@ private:
 //  accessor :'data::pCube', :data /////// erb markers deleted by arch.jslin
     wpMap map_;
     bool delayed_deletion_;
+    presenter::wpCube owner_;
     state::pState state_;
     wpCube self_;
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event %>

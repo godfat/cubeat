@@ -26,7 +26,8 @@ namespace presenter{
 class Map: public std::tr1::enable_shared_from_this<Map>{
 public:
     typedef pMap pointer_type;
-    typedef std::map<model::wpCube, pCube> container_type;
+    //typedef std::map<model::wpCube, pCube> container_type;
+    typedef std::list<pCube> container_type;
 
     typedef model::Map::color_map_type color_map_type;
 
@@ -58,7 +59,8 @@ public:
 //    Map& cycle_fast();
     <% debug_hook '~Map' do %>(){<%end%>}
     // model::Map::container_type const& cubes() const{ return model_.cubes(); }
-    void release(model::wpCube const& cube);
+    //void release(model::wpCube const& cube);
+    void release(wpCube const& cube);
 
     color_map_type color_map() const{ return model_->color_map(); }
     Map& throw_garbage(double amounts){

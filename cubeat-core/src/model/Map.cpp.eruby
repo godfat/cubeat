@@ -73,9 +73,6 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
     /// NOTE: TestGGPO Debug:
     //cubes_[0][2]->go_sinking();
 
-    /// NOTE: preview cubes rolling back still causing crashes.
-    ms()->dropping_creatable(false);
-
     if( ms()->dropping_creatable() ) {
         fill_preview_queue(); // added
     }
@@ -517,6 +514,10 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
 
 void <% debug_hook 'Map::fill_preview_queue' do %>(){
 <% end %>
+
+    /// WTF DEBUG:
+    printf("model::Map::fill_preview_queue: \n");
+
     cubes_preview_.clear();
     int unsigned width = ms()->width();
     std::vector<double> const& rez_chances = ms()->rez_chances();

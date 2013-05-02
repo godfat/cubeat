@@ -244,6 +244,19 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 //    model()->cycle_slow();
 //    model()->cycle_fast();
     model()->cycle();
+
+    /// WTF DEBUG
+
+    printf("\n");
+
+    for( container_type::iterator it = cubes_.begin(), end = cubes_.end(); it != end ; ++it) {
+        container_type::iterator temp = it;
+        printf("%x > next %x %ld ", &*it, &*(++temp), it->first.use_count());
+        printf("(%d, %d)\n", it->first.lock()->x(), it->first.lock()->y());
+    }
+
+    printf("\n");
+
     BOOST_FOREACH(cube::pViewMaster& view, view_slaves_){
         view->cycle(*this);
     }

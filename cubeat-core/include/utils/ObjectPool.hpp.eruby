@@ -226,6 +226,17 @@ std::deque<typename ObjectPoolRestorable<T>::pool_type> ObjectPoolRestorable<T>:
 template<typename T>
 int ObjectPoolRestorable<T>::tracked_frame_number_ = 0;
 
+template<typename T>
+size_t magical_sizeof(T const& something) {
+    return sizeof(something);
+}
+
+template <class F, class G>
+void assign(F& f, G g)
+{
+    f.assign(g, boost::fast_pool_allocator<G>());    // how do I know sizeof(G) outside of this function? (Because rollback need it)
+}
+
 void pools_backup(int frame_number);
 void pools_restore(int frame_number);
 

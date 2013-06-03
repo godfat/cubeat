@@ -69,6 +69,28 @@ int SpecializedPool<CharOrSPtr, EleSize>::tracked_frame_number_ = 0;
 
 // And some unified restore // backup implementation here.
 
+typedef std::tr1::shared_ptr<int> pDummy;
+typedef boost::detail::sp_counted_impl_pda<int*, boost::detail::sp_ms_deleter<int> , boost::fast_pool_allocator<int> >
+    pdummy_with_control_block;
+
+// Basically, we have many kinds of type / sizeof combinations
+// 1. shared_ptr<T>s instantiated with ObjectPoolRestorable. shared_ptr<T>'s control block is put side by side with the actual object.
+// 2. bulk-memory style containers (like vectors or arrays) that needs to be rollbacked. elements doesn't contain additional metadata.
+// 3. list style containers (like, yeah, list) that needs to be rollbacked. every node contain additional metadata.
+// 4. object that can be instantiated with an allocator, which is not shared_ptr related. like std::functions.
+
+template <typename T>
+void ordinary_backup(T f, int frame_number)
+{
+    details::SpecializedPool<T, sizeof(T)>::backup(frame_number);
+}
+
+template <typename T>
+void ordinary_restore(T f, int frame_number)
+{
+    details::SpecializedPool<T, sizeof(T)>::restore(frame_number);
+}
+
 void pools_backup(int frame_number)
 {
     ObjectPoolRestorable<data::Cube>::backup(frame_number);
@@ -83,10 +105,18 @@ void pools_backup(int frame_number)
     // used for basic_string => pooled string, or other possible uses
 //    details::SpecializedPool<char>::backup(frame_number);
 
-    // used for shared_ptrs stored in STL containers
+    // used for shared_ptrs stored in bulk memory STL containers (like vector, or boost::multi_array)
     details::SpecializedPool<model::pCube>::backup(frame_number);
+
+    // used for shared_ptrs stored in chained-nodes STL containers (like list)
     details::SpecializedPool<model::pChain, sizeof(model::pChain)+(sizeof(void*)*2)>::backup(frame_number);
     details::SpecializedPool<ctrl::TimerDispatcher::Timer, sizeof(ctrl::TimerDispatcher::Timer)+(sizeof(void*)*2)>::backup(frame_number);
+
+    // used for pDummy / timer handles or nullable int values / shared_ptr<int>s
+    details::SpecializedPool<pDummy, sizeof(pdummy_with_control_block)>::backup(frame_number);
+
+    // Now we need a whole dedicated section for bounded stateful functions.
+    ordinary_backup(bind(std::tr1::function<void(int)>(), 0), frame_number);
 
     // 2013.3.18
     // It's improbable to rollback the std containers inside this class without rolling-back
@@ -108,10 +138,18 @@ void pools_restore(int frame_number)
     // used for basic_string => pooled string, or other possible uses
 //    details::SpecializedPool<char>::restore(frame_number);
 
-    // used for shared_ptrs stored in STL containers
+    // used for shared_ptrs stored in bulk memory STL containers (like vector, or boost::multi_array)
     details::SpecializedPool<model::pCube>::restore(frame_number);
+
+    // used for shared_ptrs stored in chained-nodes STL containers (like list)
     details::SpecializedPool<model::pChain, sizeof(model::pChain)+(sizeof(void*)*2)>::restore(frame_number);
     details::SpecializedPool<ctrl::TimerDispatcher::Timer, sizeof(ctrl::TimerDispatcher::Timer)+(sizeof(void*)*2)>::restore(frame_number);
+
+    // used for pDummy / timer handles or nullable int values / shared_ptr<int>s
+    details::SpecializedPool<pDummy, sizeof(pdummy_with_control_block)>::restore(frame_number);
+
+    // Now we need a whole dedicated section for bounded stateful functions.
+    ordinary_restore(bind(std::tr1::function<void(int)>(), 0), frame_number);
 
     // 2013.3.18
     // It's improbable to rollback the std containers inside this class without rolling-back

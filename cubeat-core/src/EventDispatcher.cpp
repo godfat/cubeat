@@ -292,6 +292,7 @@ void EventDispatcher::dispatch_timer()
             timer_expired_.push_back( tdp.first );
             continue;
         }
+        printf("\nEventDispatcher Dispatching Timer: %s\n", td->get_name().c_str());
         td->dispatch();
     }
 }

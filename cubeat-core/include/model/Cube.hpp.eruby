@@ -39,7 +39,7 @@ public:
     Cube(wpMap map, presenter::wpCube owner, int x = 0, int y = 0, int color_id = 0):
         SimpleCube(x, y, color_id), map_(map), delayed_deletion_(false), owner_(owner)
     {}
-    <% debug_hook '~Cube' do %>(){ <% end %> }
+    ~Cube();
 
     int x() const{ return data()->x(); }
     int y() const{ return data()->y(); }

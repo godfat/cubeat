@@ -18,6 +18,10 @@ using namespace model;
 using namespace state;
 using std::tr1::dynamic_pointer_cast;
 
+Cube::~Cube() {
+    printf(" model::Cube originally at (%d, %d) is destructing...\n", x(), y());
+}
+
 bool <% debug_hook 'Cube::cycle_and_die' do %>(time_t const& now_t, time_t const& last_t){
 <% end %>
     if(state_) state_->cycle(now_t, last_t);

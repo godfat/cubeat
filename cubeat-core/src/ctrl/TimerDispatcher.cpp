@@ -200,6 +200,12 @@ void TimerDispatcherNormal::dispatch()
 
     std::time_t now = timer_->getTime();
     for(TimerList::iterator t = timers_.begin(), tend = timers_.end(); t != tend; ++t) {
+
+                //extreme debug:
+        printf(" duration: %ld, lasttime: %ld, loop: %d\n", get<TimerDispatcher::DURATION>(*t),
+                                                            get<TimerDispatcher::LASTTIME>(*t),
+                                                            get<TimerDispatcher::LOOP>(*t) );
+
         if( get<TimerDispatcher::CALLEE>(*t).lock() ) {
             if( now - get<TimerDispatcher::LASTTIME>(*t) >= get<TimerDispatcher::DURATION>(*t) ) {
                 get<TimerDispatcher::TIMER_CB>(*t)();

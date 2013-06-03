@@ -36,7 +36,7 @@ public:
     }
 public:
     Cube(wpMap map);
-    <% debug_hook '~Cube' do %>(){<%end%>}
+    ~Cube();
 //
 //    void <% debug_hook 'drop_a_block' do %>(){ <% end %>
 //        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->drop_a_block(); }

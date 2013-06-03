@@ -22,3 +22,7 @@ pCube Cube::init(int x, int y, int color_id) {
 }
 
 data::cpMapSetting Cube::ms() const{ return map_.lock()->map_setting(); }
+
+Cube::~Cube() {
+    printf(" presenter::Cube %x is destructing.\n", this);
+}

@@ -55,7 +55,7 @@ class Map;
 
 namespace cube {
 
-class ViewSpriteMaster: public ViewMaster{
+class ViewSpriteMaster: public ViewMaster, public std::tr1::enable_shared_from_this<ViewSpriteMaster> {
 public:
     typedef std::tr1::shared_ptr<ViewSpriteMaster> pointer_type;
 
@@ -89,6 +89,7 @@ private:
 
 private:
     virtual void derived_init();
+    void update_garbage(int);
     void create_warning_strips();
     void create_overheat_overlay();
     void show_warning_at(int x, bool visible);

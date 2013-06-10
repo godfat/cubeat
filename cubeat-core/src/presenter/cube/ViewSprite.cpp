@@ -103,13 +103,72 @@ void ViewSprite::approach_pos(){
     body_->set<accessor::Pos2D>( pos2 );
 }
 
+void garbage_fly_end(model::Cube* raw_cp, irr::scene::IParticleSystemSceneNode* ps)
+{
+    ps->setEmitter(0);
+    raw_cp->new_garbage(false);
+}
+
 void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garbage
-    std::tr1::function<void()> cb = std::tr1::bind(&model::Cube::new_garbage, cube_.lock().get(), false);
+
+    using namespace irr;
+    using namespace scene;
+
+    IParticleSystemSceneNode* ps = body_->scene()->addParticleNodeTo(body_, false);
+    ps->setIsDebugObject(true); // So it can't be picked.
+
+    vec2 origpos = view_orig_.lock()->get<accessor::Pos2D>();
+    vec2 pos( view_setting()->atf_x() - origpos.X, view_setting()->atf_y() - origpos.Y );
+    vec2 flying_vector = (pos_vec2() - pos);
+    int flying_distance = flying_vector.getLength();
+    core::vector2df normal = flying_vector.normalize();
+
+    IParticleEmitter* em = ps->createBoxEmitter(
+        core::aabbox3d<f32>(0, 0, 0, 0.1, 0.1, 0.1), // emitter size
+        core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
+        flying_distance/2, flying_distance/2,    // emit rate
+        video::SColor(0,255,255,255),       // darkest color
+        video::SColor(0,255,255,255),       // brightest color
+        200, 200, 0,                         // min and max age, angle
+        core::dimension2df(40.f,40.f),         // min size
+        core::dimension2df(40.f,40.f));        // max size
+
+//    IParticleEmitter* em = ps->createCylinderEmitter(
+//        core::vector3df(0.0f, 0.0f, 0.0f), 0.1f,  // center, radius
+//        core::vector3df(normal.X, -normal.Y, 0.0f), flying_distance/2, // normal, length
+//        false,                               // outline only?
+//        core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
+//        flying_distance, flying_distance,    // emit rate
+//        video::SColor(0,255,255,255),       // darkest color
+//        video::SColor(0,255,255,255),       // brightest color
+//        200, 200, 0,                         // min and max age, angle
+//        core::dimension2df(40.f,40.f),         // min size
+//        core::dimension2df(40.f,40.f)         // max size
+//    );
+//
+    ps->setEmitter(em); // this grabs the emitter
+    em->drop(); // so we can drop it here without deleting it
+
+    IParticleAffector* paf = ps->createFadeOutParticleAffector();
+
+    ps->addAffector(paf); // same goes for the affector
+    paf->drop();
+
+    ps->setPosition(core::vector3df(0,0,0));
+    ps->setMaterialFlag(video::EMF_LIGHTING, true);
+    ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+    ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
+    ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+
+    // Setup particle node above, animation below
+
+    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), ps);
     int factor = utils::random(4)-1;
-    int dur = map_setting()->cube_dropping_duration();
+    unsigned int dur = map_setting()->cube_dropping_duration();
     if (factor <= 0) { factor -= 1; } //make sure no one is zero
     vec3 rot(0, 0, 360 * factor);
     body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
+    body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
     switch( utils::random(6) ) {
         case 0:
             body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), dur, 0, cb);

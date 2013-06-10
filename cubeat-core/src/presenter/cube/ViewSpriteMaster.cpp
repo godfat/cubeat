@@ -22,6 +22,8 @@
 #include "Player.hpp"
 #include "Input.hpp"
 #include "audio/Sound.hpp"
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -98,6 +100,10 @@ void ViewSpriteMaster::new_chain(model::wpChain const& chain){
     audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
 }
 
+void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
+    ps->setEmitter(0);
+}
+
 void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
     int modelx = chain.lock()->last_step_x(), modely = chain.lock()->last_step_y();
 
@@ -107,50 +113,87 @@ void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
     view::pScene s = scene_.lock();
     int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
 
+    /// Remove the reference to Waypoint & Spline Animators.. If needed this functionality in the future,
+    /// Will write new Quadratic Curve Animators.
+
     //2012.05 changed from throwing to off-screen, now throwing to over-head
     vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
 
     for( int i = 0; i < num; ++i ) {
-        view::pSprite g = view::Sprite::create("cubes/cube"+to_s(utils::random(4)+1), s, 64, 64, true);
+
+        using namespace irr; using namespace scene;
+
+        view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
+        g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
         vec2 midp = (pos + endp)/2;
         midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
-        std::vector<vec2> wp; wp.push_back(pos); wp.push_back(midp); wp.push_back(endp);
-        //std::vector<float> tension(3, .7f); //dont use tension yet, SplineAnimator has bug.
+
+        IParticleSystemSceneNode* ps = s->addParticleNodeTo(g, false);
+        ps->setIsDebugObject(true); // So it can't be picked.
+
+        int flying_distance = (endp - pos).getLength();
+
+        IParticleEmitter* em = ps->createPointEmitter(
+            core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
+            flying_distance/3, flying_distance/3,    // emit rate
+            video::SColor(0,255,255,255),       // darkest color
+            video::SColor(0,255,255,255),       // brightest color
+            200, 200, 0,                         // min and max age, angle
+            core::dimension2df(40.f,40.f),         // min size
+            core::dimension2df(40.f,40.f));        // max size
+
+        ps->setEmitter(em); // this grabs the emitter
+        em->drop(); // so we can drop it here without deleting it
+
+        IParticleAffector* paf = ps->createFadeOutParticleAffector();
+
+        ps->addAffector(paf); // same goes for the affector
+        paf->drop();
+
+        ps->setPosition(core::vector3df(0,0,0));
+        ps->setMaterialFlag(video::EMF_LIGHTING, true);
+        ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
+        ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+
+        attack_cubes_.push_back(g);
+
+        // Setup nodes above, setup animation below:
+
         data::AnimatorParam<Linear, Rotation> rota;
         data::AnimatorParam<IQuad, Alpha> alpha;
         data::AnimatorParam<Linear, Scale> scale;
 
-        //data::WaypointParam<ICirc, Pos2D> way;
         data::AnimatorParam<ISine, Pos2D> way1;
         data::AnimatorParam<Linear, Pos2D> way2;
 
-        data::CirclingParam<Linear, Pos3D> circle;
-
         rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
         alpha.start(0).end(255).duration(700);
-        double sc = (utils::random(20)/100.0) + .6;
+        double sc = (utils::random(20)/100.0) + .8;
         scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
-        //way.waypoints(wp).tensions(tension).duration(700+utils::random(300)); //dont use tension yet
-        //way.waypoints(wp).duration(700+utils::random(300)); //buggy
 
-        way1.start(pos).end(midp).duration(500+utils::random(150));
-        way2.start(midp).end(endp).duration(100+utils::random(100));
+        /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
+        /// Some of its end callbacks won't fire. It has to be less than 700...
+        /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
+        int total_dur = 670;
+        int first_seg = 400 + utils::random(100);
+        int second_seg = total_dur - first_seg;
 
-        int rad = utils::random(30)+20;
-        int arc = utils::random(180);
-        circle.center(vec3(endp.X,-endp.Y,0)).
-                      start(vec2(rad, arc)).
-                      end(vec2(rad, arc+360)).
-                      rotation(vec3(utils::random(180)-90,0,0)).
-                      duration(1666+utils::random(666)).
-                      loop(-1);
-
-        attack_cubes_.push_back(g);
-        //way.cb(bind(&view::Object::set<Visible>, g, false)); //hold copy of shared ptr so its alive.
+        std::tr1::function<void()> remove_trail_emitter =
+            std::tr1::bind( &remove_emitter_of, ps );
+        way1.start(pos).end(midp).duration( first_seg );
+        way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
 
         g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota).tween(alpha).tween(scale);
-        g->queue(way1).queue(way2).tween(circle);
+        //g->queue(way1).queue(way2).tween(circle);
+        g->queue(way1).tween(way2);
     }
+
+    // I should set the duration using config or script somehow,
+    // Let's just take note that the "new_garbage" effect is supposed to cost 700ms.
+    // This will probably cause more trouble when we consider rolling-back ...
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&ViewSpriteMaster::update_garbage, this, num), shared_from_this(), 700);
 }
 
 void ViewSpriteMaster::pop_garbage(int amount) {
@@ -159,6 +202,17 @@ void ViewSpriteMaster::pop_garbage(int amount) {
     }
     for( int i = 0; i < amount; ++i )
         attack_cubes_.pop_front();
+
+    update_garbage(amount);
+}
+
+// This is a private function that will be called to alter the representation of
+// garbage count (might be animation or new visual effects etc)
+// new_garbage and pop_garbage call to this function.
+void ViewSpriteMaster::update_garbage(int amount) {
+
+    using namespace accessor; using namespace easing; using std::tr1::bind;
+
 }
 
 void ViewSpriteMaster::warning_counting(int warning_level){

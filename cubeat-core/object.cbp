@@ -249,11 +249,9 @@
 		<Unit filename="lib\manymouse\x11_xinput2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Unit filename="rc\config.zzml" />
+		<Unit filename="rc\config\ai_logging_config.zzml" />
 		<Unit filename="rc\config\char\char1.zzml" />
 		<Unit filename="rc\config\char\char1_demo.zzml" />
 		<Unit filename="rc\config\char\char1_new.zzml" />
@@ -456,7 +454,9 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="src\test\test_ggpo.cpp" />
+		<Unit filename="src\test\test_ggpo.cpp">
+			<Option link="0" />
+		</Unit>
 		<Unit filename="src\test\test_irr_device_main.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -44,90 +44,269 @@ cube: x1,y1,x2,y2,x3,y3,path,w,h,dur
 
 --
 local act1_act1_ = {
-  { ch=1, img="char1_new/glad", text="Hello" },
-  { ch=1, text="This is a\ntest page" },
-  { ch=1, text="Let's test\ncube", special={id="cube", x1=-100, y1=50, x2=100, y2=150, x3=200, y3=-150, path='cubes/cube-r-1', w=60, h=60, dur=200} },
-  { ch=1, text="Oh!" },
-  { ch=1, text="Let's test\ntalking" },
-  { ch=2, img="char1_new/glad", text="1~" },
-  { ch=2, text="1~\n2~" },
-  { ch=2, text="1~\n2~\n3!" },
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
   
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nset position" },
-  { ch=2, text="300, 0", pos={x=300, y=0} },
-  { ch=2, text="700, 300", pos={x=700, y=300} },
-  { ch=2, text="450, 400", pos={x=450, y=400} },
+  { ch=1, text="" }
+}
+local act1_act2_ = {
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
   
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nvisible" },
-  { ch=2, text="Ha", effect_a="hide" },
-  { ch=2, text="Ha", effect_a="show" },
+  { ch=1, text="" }
+}
+local act1_act3_ = {
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
   
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nslide" },
-  { ch=2, text="yahoo~~~~", effect_a="slide_out" },
-  { ch=2, text="yahoo~~~~", effect_a="slide_in" },
-    
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nword size"},
-  { ch=2, text="HAHAHA", effect_w="size_L" },
-  { ch=2, text="HAHAHA", effect_w="size_S" },
-  { ch=2, text="HAHAHA", effect_w="size_M" },
-    
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nshake actor" },
-  { ch=2, text="Unnnnn", effect_a="shake" },
+  { ch=1, text="" }
+}
+local act1_act4_ = {
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
   
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nshake word" },
-  { ch=2, text="Noooo!!", effect_w="shake" },
-  { ch=2, text="Remember\nturn back to\nmiddle size", effect_w="size_M" },
-    
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nfade" },
-  { ch=2, text="bye~~~", effect_a="fade_out" },
-  { ch=2, text="hi~~~", effect_a="fade_in" },
+  { ch=1, text="" }
+}
+local act1_act5_ = {
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
   
-  { ch=1, text="ok" },
-  { ch=1, text="Let's test\nchange board" },
-  { ch=2, text="Cubeat Style!!", board="cubeat_800x200" },
-  --{ ch=2, text="Origin Style!!", board="area_rect" },
-  
-  { ch=1, text="ok" },
-  { ch=1, text="Let's text\nboard_flipH" },
-  { ch=2, text="Fliiiiiiiip!!", board_flip="H" },
-  
-  { ch=1, text="ok" },
-  { ch=1, text="Let's text\nboard_flipV" },
-  { ch=2, text="Fliiiiiiiip!!", board_flip="V" },
-  
-  { ch=1, text="ok" },
-  { ch=1, text="Let's text\nboard_flipHV" },
-  { ch=2, text="Fliiiiiiiip!!", board_flip="HV" },
-  
-  { ch=1, text="ok" },
-  { ch=1, text="test end" },
+  { ch=1, text="" }
+}
+local act1_act6_ = {
+  { ch=1, img="char1_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
   
   { ch=1, text="" }
 }
 
 local act2_act1_ = {
-  { ch=1, text="Test talk 2-1" },
-  { ch=2, text="HAHAHA", effect_a="hide", effect_w="shake" },
-  { ch=1, text="!?" },
-  { ch=2, text="Show time!!", effect_a="slide_in", effect_w="size_M" },
-  { ch=2, text="Rock!!", effect_a="shake" },
-  { ch=2, text="ok" },
-  { ch=2, text="test end" },
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act2_act2_ = {
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act2_act3_ = {
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act2_act4_ = {
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act2_act5_ = {
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act2_act6_ = {
+  { ch=1, img="char2_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
   
   { ch=1, text="" }
 }
 
+local act3_act1_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act3_act2_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act3_act3_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act3_act4_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act3_act5_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act3_act6_ = {
+  { ch=1, img="char3_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+
+local act4_act1_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act4_act2_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act4_act3_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act4_act4_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act4_act5_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act4_act6_ = {
+  { ch=1, img="char4_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+
+local act5_act1_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act5_act2_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act5_act3_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act5_act4_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act5_act5_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act5_act6_ = {
+  { ch=1, img="char5_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+
+local act6_act1_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char1_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act6_act2_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char2_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act6_act3_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char3_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act6_act4_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char4_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act6_act5_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char5_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
+local act6_act6_ = {
+  { ch=1, img="char6_new/glad", text="Let's go" },
+  { ch=2, img="char6_new/glad", text="Go!" },
+  
+  { ch=1, text="" }
+}
 
 local rundown_ = {
   r1_1 = act1_act1_,
+  r1_2 = act1_act2_,
+  r1_3 = act1_act3_,
+  r1_4 = act1_act4_,
+  r1_5 = act1_act5_,
+  r1_6 = act1_act6_,
+  
   r2_1 = act2_act1_,
+  r2_2 = act2_act2_,
+  r2_3 = act2_act3_,
+  r2_4 = act2_act4_,
+  r2_5 = act2_act5_,
+  r2_6 = act2_act6_,
+  
+  r3_1 = act3_act1_,
+  r3_2 = act3_act2_,
+  r3_3 = act3_act3_,
+  r3_4 = act3_act4_,
+  r3_5 = act3_act5_,
+  r3_6 = act3_act6_,
+  
+  r4_1 = act4_act1_,
+  r4_2 = act4_act2_,
+  r4_3 = act4_act3_,
+  r4_4 = act4_act4_,
+  r4_5 = act4_act5_,
+  r4_6 = act4_act6_,
+  
+  r5_1 = act5_act1_,
+  r5_2 = act5_act2_,
+  r5_3 = act5_act3_,
+  r5_4 = act5_act4_,
+  r5_5 = act5_act5_,
+  r5_6 = act5_act6_,
+  
+  r6_1 = act6_act1_,
+  r6_2 = act6_act2_,
+  r6_3 = act6_act3_,
+  r6_4 = act6_act4_,
+  r6_5 = act6_act5_,
+  r6_6 = act6_act6_,
 }
 
 

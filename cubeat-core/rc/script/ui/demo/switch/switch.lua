@@ -13,6 +13,8 @@ local title_
 local demobuild_
 local teamname_
 local blocker_
+local transfer_
+local transfer_title_
 --local ask_panel_
 local has_blocker_ = true
 
@@ -43,6 +45,12 @@ local function init(parent, demo)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(128)
   
+  transfer_ = ui.new_image{ parent=parent, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
+  transfer_:set_red(0)
+  transfer_:set_blue(0)
+  transfer_:set_green(0)
+  transfer_title_ = ui.new_image{ parent=transfer_._cdata, path='title', x=0, y=0, w=512, h=512, center=true }
+  
   --ask_panel_  = ui.new_askbox{ parent = parent, depth = -500, visible=false }
 end
 
@@ -68,6 +76,20 @@ local function hide_ask_panel()
   ask_panel_:set_visible(false)
 end
 --]]
+------------------------------------------------------------
+
+local function slide_out_transfer()
+  local s1 = ffi.new("v2", 640,  360)
+  local e1 = ffi.new("v2", 640, -480)
+  transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, nil, 1000)
+end
+
+local function slide_in_transfer(cb)
+  local s1 = ffi.new("v2", 640, -480)
+  local e1 = ffi.new("v2", 640,  360)
+  transfer_:tween("OElastic", "Pos2D", s1, e1, 2000, 0, cb, 0)
+end
+
 ------------------------------------------------------------
 
 local function slide_out_title(keep_blocker)
@@ -172,6 +194,8 @@ return {
   hide_ask_panel      = hide_ask_panel,
   --]]
   ----
+  slide_out_transfer  = slide_out_transfer,
+  slide_in_transfer   = slide_in_transfer,
   slide_out_page_obj  = slide_out_page_obj,
   slide_in_page_obj   = slide_in_page_obj,
   load_page           = load_page,

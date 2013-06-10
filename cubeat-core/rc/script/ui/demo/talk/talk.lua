@@ -6,8 +6,11 @@ local config  = require 'rc/script/ui/demo/talk/config'
 local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
+local random= require 'rc/script/helper'.random
 
 
+local demo_game_ = nil
+local data_ = nil
 local ask_panel_ = nil
 local step_      = 1
 local actor_appear_ = {false, false}
@@ -16,6 +19,20 @@ local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
 local special_effect_end_flag_= true
 
+
+local function game_start(self)
+  if demo_game_ then
+    local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+    local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+    
+    if data_ then
+      local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+      demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
+    else
+      switch.load_page('mainmenu', 'in')
+    end
+  end
+end
 
 local function get_script( lang )
   local script
@@ -99,6 +116,10 @@ local function action(menu, rundown)
     actor_appear_[ch]=true
   end
   
+  --background
+  if rundown[step_].background then
+    menu.TalkBackGround:set_texture(rundown[step_].background)
+  end
   --actor image
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
@@ -116,6 +137,9 @@ local function action(menu, rundown)
   --text
   if rundown[step_].text then
     menu[content]:change_text(rundown[step_].text)
+    local s = 50
+    local e = 255
+    menu[content]:tween('Linear', 'Alpha', s, e, 200, 0, nil, 0)
   end
   --text pos
   if rundown[step_].pos then
@@ -135,15 +159,20 @@ local function action(menu, rundown)
   end
   
   step_=step_+1
+  
+  --Talk End
   if step_>table.getn(rundown) then
     reset()
-    switch.load_page('testmenu', 'in')
+    --switch.load_page('testmenu', 'in')
+    game_start()
   end
 end
 
 
-local function init(demo, parent)
+local function init(demo, parent, data)
   local menu = {}
+  demo_game_ = demo
+  data_ = data
   
   local ch_choose = {}
   ch_choose[1] = select_config.ch_choose[1]
@@ -154,14 +183,17 @@ local function init(demo, parent)
     local rundown = script.get_rundown(ch_choose[1], ch_choose[2])
     if rundown ~= nil then
       action(menu, rundown)
+    else
+      reset()
+      game_start()
     end
   end
   local function leave()
     reset()
-    switch.load_page('testmenu', 'in')
+    switch.load_page('mainmenu', 'in')
   end
-  
-  menu.TalkBackGround = ui.new_image{ parent=parent, path=config.bg_path, x=config.bg_x, y=config.bg_y,
+  local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
+  menu.TalkBackGround = ui.new_image{ parent=parent, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,
                                       w=config.bg_w, h=config.bg_h }
   
   for ch=1,2 do

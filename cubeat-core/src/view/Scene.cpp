@@ -130,6 +130,12 @@ video::ITexture* Scene::getPostProcTexture() const
     return rt_;
 }
 
+scene::IParticleSystemSceneNode* Scene::addParticleNodeTo(view::pObject const& obj, bool const& use_default) const
+{
+    IParticleSystemSceneNode* ps = smgr_->addParticleSystemSceneNode(use_default, obj ? obj->body() : body_);
+    return ps;
+}
+
 Scene& Scene::allowPicking(bool f)
 {
     allow_picking_ = f;

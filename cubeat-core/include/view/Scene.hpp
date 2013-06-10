@@ -43,6 +43,8 @@ public:
     virtual irr::scene::ICameraSceneNode* camera() const;
     virtual irr::scene::ISceneCollisionManager* getCollisionMgr() const;
     virtual irr::video::ITexture* getPostProcTexture() const;
+    virtual irr::scene::IParticleSystemSceneNode* addParticleNodeTo(view::pObject const& obj = view::pObject(),
+                                                                    bool const& use_default = true) const;
 
     std::list<wpObject> const& pick(vec2 const&);
     std::list<wpObject> const& pick(vec2 const&,

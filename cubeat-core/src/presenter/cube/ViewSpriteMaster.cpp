@@ -35,7 +35,8 @@ using namespace std::tr1::placeholders;
 
 ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
     ctrl::wpPlayer const& player): ViewMaster(setting),
-    scene_(scene), player_(player)
+    scene_(scene), player_(player),
+    i_have_to_keep_track_of_garbage_count_visually_here_(0)
 {   //temporary
     view_orig_ = view::Object::create( scene );
     view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
@@ -104,14 +105,13 @@ void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
     ps->setEmitter(0);
 }
 
-void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
-    int modelx = chain.lock()->last_step_x(), modely = chain.lock()->last_step_y();
+void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
 
-    using namespace accessor; using namespace easing; using std::tr1::bind;
-    using utils::to_s;
+    using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
+
     vec2 pos = pos_vec2(modelx, modely);
     view::pScene s = scene_.lock();
-    int num = n>20?20:n; //limit the animated garbage up to 20 ...in case of too many
+    int num = new_count>20?20:new_count; //limit the animated garbage up to 20 ...in case of too many
 
     /// Remove the reference to Waypoint & Spline Animators.. If needed this functionality in the future,
     /// Will write new Quadratic Curve Animators.
@@ -124,7 +124,7 @@ void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
         using namespace irr; using namespace scene;
 
         view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
-        g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+        //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
         vec2 midp = (pos + endp)/2;
         midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
 
@@ -156,6 +156,9 @@ void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
         ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
         ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 
+        /// Don't use the glowing ball effect for now:
+        g->set<Alpha>(0);
+
         attack_cubes_.push_back(g);
 
         // Setup nodes above, setup animation below:
@@ -184,7 +187,7 @@ void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
         way1.start(pos).end(midp).duration( first_seg );
         way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
 
-        g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota).tween(alpha).tween(scale);
+        g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota)./*tween(alpha).*/tween(scale);
         //g->queue(way1).queue(way2).tween(circle);
         g->queue(way1).tween(way2);
     }
@@ -193,26 +196,37 @@ void ViewSpriteMaster::new_garbage(model::wpChain const& chain, int n){
     // Let's just take note that the "new_garbage" effect is supposed to cost 700ms.
     // This will probably cause more trouble when we consider rolling-back ...
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ViewSpriteMaster::update_garbage, this, num), shared_from_this(), 700);
+        bind(&ViewSpriteMaster::update_garbage, this, new_count), shared_from_this(), 700);
 }
 
-void ViewSpriteMaster::pop_garbage(int amount) {
-    if( static_cast<unsigned int>(amount) >= attack_cubes_.size() ) {
-        amount = attack_cubes_.size();
-    }
-    for( int i = 0; i < amount; ++i )
-        attack_cubes_.pop_front();
+void ViewSpriteMaster::pop_garbage(int this_frame_lands) {
 
-    update_garbage(amount);
+    update_garbage( - this_frame_lands ); // update first so the number is not affected by the attack_cubes' number,
+                                          // attack_cubes should be retired though. in the future.
+
+    if( static_cast<unsigned int>(this_frame_lands) >= attack_cubes_.size() ) {
+        this_frame_lands = attack_cubes_.size();
+    }
+    for( int i = 0; i < this_frame_lands; ++i )
+        attack_cubes_.pop_front();
 }
 
 // This is a private function that will be called to alter the representation of
 // garbage count (might be animation or new visual effects etc)
 // new_garbage and pop_garbage call to this function.
-void ViewSpriteMaster::update_garbage(int amount) {
+void ViewSpriteMaster::update_garbage(int delta) {
 
-    using namespace accessor; using namespace easing; using std::tr1::bind;
+    using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
 
+    i_have_to_keep_track_of_garbage_count_visually_here_ += delta;
+
+    if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 60 ) {
+        garbage_text_->changeText(utils::to_s(i_have_to_keep_track_of_garbage_count_visually_here_));
+    } else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 99 ) {
+        garbage_text_->changeText("??");
+    } else {
+        garbage_text_->changeText("!!!");
+    }
 }
 
 void ViewSpriteMaster::warning_counting(int warning_level){
@@ -308,6 +322,11 @@ void ViewSpriteMaster::derived_init(){
 
     create_overheat_overlay();
     create_warning_strips();
+
+    garbage_text_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
+    vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
+    garbage_text_->set<Pos2D>( rally_point );
+    garbage_text_->set<Scale>( vec3(1.5, 1.5, 1) );
 }
 
 void ViewSpriteMaster::show_warning_at(int x, bool visible){

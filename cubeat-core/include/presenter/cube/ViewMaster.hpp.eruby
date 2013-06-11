@@ -31,8 +31,8 @@ public:
     virtual void column_full(int at){}
     virtual void column_not_full(int at){}
     virtual void new_chain(model::wpChain const& chain){}
-    virtual void new_garbage(model::wpChain const& chain, int tmp_amounts){}
-    virtual void pop_garbage(int tmp_amounts){}
+    virtual void new_garbage(int modelx, int modely, int new_count){}
+    virtual void pop_garbage(int this_frame_lands){}
     virtual void warning_counting(int level){}
     virtual void alert_bar_update(int level){}
     virtual void show_overheat(bool show){}

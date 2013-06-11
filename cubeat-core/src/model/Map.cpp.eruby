@@ -330,9 +330,9 @@ void <% debug_hook 'Map::update_chains' do %>(){
             int amount = (*i)->attack_of_current_step(); // it is just superficial effects, so don't use damage_factor here.
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1000);
+                bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 700); // The new garbage effect is only about 700 ms.
             o->new_chain_event()(*i);
-            o->new_garbage_event()(*i, amount);
+            o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
             // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
             // damage_factor adjustment (1.00 ~ 2.00)
             match_counter_ += 1;
@@ -353,7 +353,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
-                500); // do we still need 1000 here? see ViewMaster::new_garbage, there's a correspondence in duration.
+                700);
             i = chains_.erase(i);
         }
         else{
@@ -412,7 +412,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     }
     //2012.05 self garbage_left_ minus n,
     //means garbage effects that the opponent has to minus n
-    main_enemy->pop_garbage_event()(this_frame_lands);
+    main_enemy->pop_garbage_event()( this_frame_lands);
 
     // 2012.09 remove player ability for now MEMO WTF
 //    if( this_frame_lands > 0 && garbage_left_ < 1 ) { //if garbage is actually less then 1, just pop all garbage animations

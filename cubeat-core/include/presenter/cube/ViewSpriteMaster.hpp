@@ -70,8 +70,8 @@ public:
     virtual void column_full(int at);
     virtual void column_not_full(int at);
     virtual void new_chain(model::wpChain const& chain);
-    virtual void new_garbage(model::wpChain const& chain, int n);
-    virtual void pop_garbage(int amount);
+    virtual void new_garbage(int modelx, int modely, int new_count);
+    virtual void pop_garbage(int this_frame_lands);
     virtual void warning_counting(int warning_level);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
@@ -108,12 +108,15 @@ private:
     view::pSprite ability_btn_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
+    view::pSpriteText garbage_text_;
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
+
+    int i_have_to_keep_track_of_garbage_count_visually_here_;
 };
 
 } //cube

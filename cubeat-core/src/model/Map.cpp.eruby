@@ -221,6 +221,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     else {
         warning_level_.reset();
         alarm_sound_.reset();
+        animate_alert_bar_.reset();
     }
 
     update_chains();
@@ -533,17 +534,25 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     column_full_num_ = column_full_num();
     int warning_gap  = ms()->warning_gap();
 
+    if( !chains_.empty() ) {
+        animate_alert_bar_.reset();
+        owner()->alert_bar_freeze_event()(true);
+    } else if ( chains_.empty() && !animate_alert_bar_ ) {
+        owner()->alert_bar_freeze_event()(false);
+    }
+
     if( !column_full_num_ ) {
-        if( warning_level_ && *warning_level_ == 0 )
+        if( warning_level_ && *warning_level_ == 0 ) {
             warning_level_.reset();
+        }
         alarm_sound_.reset();
+        animate_alert_bar_.reset();
     }
     //else if( column_full_num_ && !warning_level_ ) {
     else {
         if( !warning_level_ ) {
             warning_level_ = std::tr1::shared_ptr<int>(new int(0));
 
-            owner()->warning_counting_event()(0); //added for call warning as soon as column full
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&Map::inc_warning, this, ref(*warning_level_)), warning_level_, warning_gap / 20, -1);
 
@@ -556,8 +565,16 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
         if( !alarm_sound_ ) {
             alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
 
+            owner()->warning_sound_event()(0); //added for call warning as soon as column full, and, if no sound already.
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(owner()->warning_counting_event(), ref(*warning_level_)), alarm_sound_, warning_gap, -1);
+                bind(owner()->warning_sound_event(), ref(*warning_level_)), alarm_sound_, warning_gap, -1);
+        }
+        if( !animate_alert_bar_ && chains_.empty() ) {
+            animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
+
+            owner()->alert_bar_animate_event()(0); //added for animating as soon as column full, and, if not animated already.
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                bind(owner()->alert_bar_animate_event(), ref(*warning_level_)), animate_alert_bar_, warning_gap, -1);
         }
     }
 

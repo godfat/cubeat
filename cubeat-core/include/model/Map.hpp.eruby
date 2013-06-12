@@ -134,7 +134,7 @@ private:
     int match_counter_;
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;
-    std::tr1::shared_ptr<int> alarm_sound_; //alarming dummy
+    std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
     preview_list_type cubes_preview_;
 };
 

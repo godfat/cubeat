@@ -107,7 +107,7 @@ private:
     ctrl::wpPlayer player_;
     view::pSprite overheat_;
     view::pSprite overheat_bg_;
-    view::pSprite ability_btn_;
+    view::pSprite ability_btn_, alert_bar_cover_top_, alert_bar_cover_bottom_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
     view::pSpriteText garbage_text_, garbage_text_outline_;

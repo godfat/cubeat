@@ -294,12 +294,18 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
     using namespace accessor;
+    alert_bar_top_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+    alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
     if( freezed ) {
-        alert_bar_top_->set<ColorDiffuseVec3>(vec3(0, 255, 255));
-        alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(0, 255, 255));
+        alert_bar_top_->clearTween(AT::DIFFUSE);
+        alert_bar_bottom_->clearTween(AT::DIFFUSE);
+        alert_bar_cover_top_->set<Visible>(true);
+        alert_bar_cover_bottom_->set<Visible>(true);
     } else {
-        alert_bar_top_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
-        alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        alert_bar_top_->clearTween(AT::DIFFUSE);
+        alert_bar_bottom_->clearTween(AT::DIFFUSE);
+        alert_bar_cover_top_->set<Visible>(false);
+        alert_bar_cover_bottom_->set<Visible>(false);
     }
 }
 
@@ -310,11 +316,18 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_bar_top_->set< ScaleWithUV >( vec2(1, 1) );
         alert_bar_bottom_->set< Visible >( false );
         alert_bar_bottom_->set< ScaleWithUV >( vec2(1, 1) );
+        alert_bar_cover_top_->set< Visible >( false );
+        alert_bar_cover_top_->set< Scale >( vec3(0, 1, 1) );
+        alert_bar_cover_bottom_->set< Visible >( false );
+        alert_bar_cover_bottom_->set< Scale >( vec3(0, 1, 1) );
     } else {
         alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
         alert_bar_top_->set< Visible >( true );
         alert_bar_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
         alert_bar_bottom_->set< Visible >( true );
+        // The visibility of cover bar is decided by freeze function.
+        alert_bar_cover_top_->set< Scale >( vec3((warning_level)/100.0, 1, 1) );
+        alert_bar_cover_bottom_->set< Scale >( vec3((warning_level)/100.0, 1, 1) );
     }
 }
 
@@ -381,12 +394,18 @@ void ViewSpriteMaster::derived_init(){
     alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
     alert_bar_top_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
                    .set<Visible>(false).setPickable(false);
+    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
+    alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
+                         .set<Alpha>(128).set<Visible>(false).setPickable(false);
 
     pos2 = pos; pos2.Y = 706;
 
     alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
     alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
                       .set<Visible>(false).setPickable(false);
+    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
+    alert_bar_cover_bottom_->setDepth(-70).set<Pos2D>( pos2 ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
+                            .set<Alpha>(128).set<Visible>(false).setPickable(false);
 
     create_overheat_overlay();
     create_warning_strips();

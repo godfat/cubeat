@@ -534,19 +534,13 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     column_full_num_ = column_full_num();
     int warning_gap  = ms()->warning_gap();
 
-    if( !chains_.empty() ) {
-        animate_alert_bar_.reset();
-        owner()->alert_bar_freeze_event()(true);
-    } else if ( chains_.empty() && !animate_alert_bar_ ) {
-        owner()->alert_bar_freeze_event()(false);
-    }
-
     if( !column_full_num_ ) {
         if( warning_level_ && *warning_level_ == 0 ) {
             warning_level_.reset();
         }
         alarm_sound_.reset();
         animate_alert_bar_.reset();
+        owner()->alert_bar_freeze_event()(false);
     }
     //else if( column_full_num_ && !warning_level_ ) {
     else {
@@ -561,7 +555,15 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->alert_bar_update_event(), ref(*warning_level_)), warning_level_, 50u, -1);
+        } else {
+            if( !chains_.empty() ) {
+                animate_alert_bar_.reset();
+                owner()->alert_bar_freeze_event()(true);
+            } else {
+                owner()->alert_bar_freeze_event()(false);
+            }
         }
+
         if( !alarm_sound_ ) {
             alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
 
@@ -569,6 +571,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->warning_sound_event(), ref(*warning_level_)), alarm_sound_, warning_gap, -1);
         }
+
         if( !animate_alert_bar_ && chains_.empty() ) {
             animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
 

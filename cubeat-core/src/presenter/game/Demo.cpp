@@ -443,8 +443,8 @@ void Demo::ready_go(int step)
     else if ( step == 0 ) {
         audio::Sound::i().playBuffer("go.wav");
         ready_go_text_->changeText("go!");
-        ready_go_text_->set<Scale>(vec3(1.5,1.5,1.5));
-        ready_go_text_->tween<OElastic, Scale>(vec3(5,5,5), 900u, 0);
+        ready_go_text_->set<Scale>(vec3(1,1,1));
+        ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
         blocker_->tween<Linear, Alpha>(100, 0, 1000u);
 
@@ -454,9 +454,9 @@ void Demo::ready_go(int step)
         audio::Sound::i().playBuffer("count.wav");
         //ready_go_text_->showNumber(step);
         ready_go_text_->changeText("ready?");
-        ready_go_text_->set<Scale>(vec3(1.25,1.25,1.25));
+        ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
         ready_go_text_->set<Visible>(true);
-        ready_go_text_->tween<OElastic, Scale>(vec3(4,4,4), 900u, 0);
+        ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
 
         blocker_->set<Visible>(true);
     }
@@ -591,7 +591,7 @@ void Demo::setup_ui()
         pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
         pause_t_->setDepth(-450).setPickable(false);
 
-        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "kimberley", 30, true);
+        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "kimberley", 72, true);
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
         ready_go_text_->setDepth(-450).setPickable(false);
 

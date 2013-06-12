@@ -72,7 +72,9 @@ public:
     virtual void new_chain(model::wpChain const& chain);
     virtual void new_garbage(int modelx, int modely, int new_count);
     virtual void pop_garbage(int this_frame_lands);
-    virtual void warning_counting(int warning_level);
+    virtual void warning_sound(int warning_level);
+    virtual void alert_bar_animate(int warning_level);
+    virtual void alert_bar_freeze(bool freezed);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
     virtual void ability_button(int left);

@@ -229,14 +229,28 @@ void ViewSpriteMaster::update_garbage(int delta) {
     }
 }
 
-void ViewSpriteMaster::warning_counting(int warning_level){
-    using std::tr1::bind; using namespace accessor; using namespace easing;
-
+void ViewSpriteMaster::warning_sound(int warning_level){
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
+}
+
+void ViewSpriteMaster::alert_bar_animate(int warning_level){
+    using namespace accessor; using namespace easing;
+
     alert_bar_top_->playAnime("moving", 1000);
     alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
     alert_bar_bottom_->playAnime("moving", 1000);
     alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
+}
+
+void ViewSpriteMaster::alert_bar_freeze(bool freezed){
+    using namespace accessor;
+    if( freezed ) {
+        alert_bar_top_->set<ColorDiffuseVec3>(vec3(0, 255, 255));
+        alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(0, 255, 255));
+    } else {
+        alert_bar_top_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+    }
 }
 
 void ViewSpriteMaster::alert_bar_update(int warning_level){
@@ -270,12 +284,16 @@ void ViewSpriteMaster::create_warning_strips(){
         view::pSprite temp = view::Sprite::create("warning", scene, 64, 64*h, true);
         vec2 pos;
         if( h % 2 == 0 )
-            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
-        else pos = pos_vec2(i, h/2);
+//            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
+//        else pos = pos_vec2(i, h/2);
+            pos = (pos_vec2( 4000 , h/2) + pos_vec2( 4000 , h/2-1)) / 2;
+        else pos = pos_vec2( 4000 , h/2);
         temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,0,0)).set<Alpha>(96).set<Visible>(false);
+        temp->set<ColorDiffuseVec3>(vec3(255,64,64)).set<Alpha>(90).set<Visible>(/*false*/true);
         temp->tween<SineCirc, Alpha>(0, 1000u, -1);
         warning_strip_.push_back( temp );
+
+        /// For the WTF code here, see show_warning_at function for why.
     }
 }
 
@@ -331,7 +349,15 @@ void ViewSpriteMaster::derived_init(){
 
 void ViewSpriteMaster::show_warning_at(int x, bool visible){
     if( !map_setting()->dropping_creatable() ) visible = false;
-    warning_strip_[x]->set<accessor::Visible>(visible);
+    //warning_strip_[x]->set<accessor::Visible>(visible);
+    // Invisible item will not be animated by Irrlicht. Damn it.. there should've been a switch to choose.
+    if( visible ) {
+        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
+        warning_strip_[x]->set<accessor::Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+    } else {
+        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
+        warning_strip_[x]->set<accessor::Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
+    }
 }
 
 void ViewSpriteMaster::pop_a_chain_text(model::wpChain const& key) {

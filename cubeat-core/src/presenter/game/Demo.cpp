@@ -531,7 +531,7 @@ void Demo::setup_ui()
     pview1_->setMap( map0_ );
     pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
     heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
+    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
 
     if( game_mode_ == GM_PUZZLE ) {    //2011.04.05 make stage number equal to puzzle level.
         ui_layout_->getSpriteText("stage").changeText( "level" + to_s(puzzle_level_ - 1) ); //first puzzle have 3 chains.
@@ -544,7 +544,7 @@ void Demo::setup_ui()
         pview2_->setMap( map1_ );
         pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
         heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(192);
+        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
     }
 
 //2012.05 new heatgauge
@@ -639,10 +639,10 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
             gauge->set<Green>(255);
             gauge->set<Red>( player->heat()*2*255 );
         }
-//        else {
-//            gauge->set<Green>( 255 - (player->heat()-0.5)*2*255 );
-//            gauge->set<Red>(255);
-//        }
+        else {
+            gauge->set<Green>( 255 - (player->heat()-0.5)*255 );
+            gauge->set<Red>(255);
+        }
     }
     else if( !out_flag ) {
         out_flag = true;

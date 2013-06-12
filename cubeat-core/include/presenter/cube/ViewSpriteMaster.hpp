@@ -110,7 +110,7 @@ private:
     view::pSprite ability_btn_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
-    view::pSpriteText garbage_text_;
+    view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;

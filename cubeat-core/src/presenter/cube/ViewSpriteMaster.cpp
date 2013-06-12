@@ -220,12 +220,52 @@ void ViewSpriteMaster::update_garbage(int delta) {
 
     i_have_to_keep_track_of_garbage_count_visually_here_ += delta;
 
+    vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
+
     if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 60 ) {
-        garbage_text_->changeText(utils::to_s(i_have_to_keep_track_of_garbage_count_visually_here_));
+        std::string num_str = utils::to_s(i_have_to_keep_track_of_garbage_count_visually_here_);
+        garbage_text_->changeText( num_str );
+        garbage_text_outline_->changeText( num_str );
+
+        // No matter what, when applying new effects on it, reset all motions and things.
+        garbage_text_->set<Pos2D>( rally_point );
+        garbage_text_->clearAllTween();
+        garbage_text_outline_->clearAllTween();
+
+        // Changes color and add other effects:
+        if( i_have_to_keep_track_of_garbage_count_visually_here_ < 20 ) {
+            garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+            garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 40 ) {
+            garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
+            vec2 offset(utils::random(15) + 15, utils::random(15) + 15);
+            garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+            garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
+        } else {
+            garbage_text_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
+            vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
+            garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+            garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
+        }
     } else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 99 ) {
         garbage_text_->changeText("??");
+        garbage_text_outline_->changeText("??");
+
+        vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
+        garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+
+        garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 500u, -1);
+        garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
     } else {
         garbage_text_->changeText("!!!");
+        garbage_text_outline_->changeText("!!!");
+    }
+
+    if( delta > 0 ) {
+        garbage_text_outline_->tween<Linear, Scale>(vec3(1.5, 1.5, 1), vec3(2.5, 2.5, 1), 500u);
+        garbage_text_outline_->tween<Linear, Alpha>(255, 0, 500u);
+    } else {
+        garbage_text_outline_->set<Alpha>(0);
     }
 }
 
@@ -345,6 +385,11 @@ void ViewSpriteMaster::derived_init(){
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
     garbage_text_->set<Pos2D>( rally_point );
     garbage_text_->set<Scale>( vec3(1.5, 1.5, 1) );
+
+    garbage_text_outline_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
+    garbage_text_outline_->set<Pos2D>( rally_point );
+    garbage_text_outline_->set<Scale>( vec3(1.5, 1.5, 1) );
+    garbage_text_outline_->set<Alpha>(0);
 }
 
 void ViewSpriteMaster::show_warning_at(int x, bool visible){

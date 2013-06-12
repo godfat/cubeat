@@ -238,21 +238,31 @@ void ViewSpriteMaster::update_garbage(int delta) {
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
         } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 40 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
-            vec2 offset(utils::random(15) + 15, utils::random(15) + 15);
-            garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+
+            if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
+                vec2 offset(utils::random(15) + 15, utils::random(15) + 15);
+                garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+            }
+
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
         } else {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
-            vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
-            garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+
+            if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
+                vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
+                garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+            }
+
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
         }
     } else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 99 ) {
         garbage_text_->changeText("??");
         garbage_text_outline_->changeText("??");
 
-        vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
-        garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+        if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
+            vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
+            garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
+        }
 
         garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 500u, -1);
         garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
@@ -261,7 +271,7 @@ void ViewSpriteMaster::update_garbage(int delta) {
         garbage_text_outline_->changeText("!!!");
     }
 
-    if( delta > 0 ) {
+    if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
         garbage_text_outline_->tween<Linear, Scale>(vec3(1.5, 1.5, 1), vec3(2.5, 2.5, 1), 500u);
         garbage_text_outline_->tween<Linear, Alpha>(255, 0, 500u);
     } else {

@@ -109,14 +109,12 @@ void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps, view::pObject
 {
     ps->setEmitter(0);
     vec2 pos = sp->get<accessor::Pos2D>();
-    printf("I am shadow: (%f, %f)\n", pos.X, pos.Y);
 }
 
 void garbage_fly_end(model::Cube* raw_cp, view::pSprite sp)
 {
     raw_cp->new_garbage(false);
     vec2 pos = sp->get<accessor::Pos2D>();
-    printf("I am light: (%f, %f)\n", pos.X, pos.Y);
 }
 
 void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garbage

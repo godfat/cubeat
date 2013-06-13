@@ -68,12 +68,18 @@ public:
                 cube_sinking_duration(m.I("cube_sinking_duration")).
                 cube_dropping_duration(m.I("cube_dropping_duration")).
                 sink_speed(m.F("sink_speed")).
+                sink_speed_add(m.F("sink_speed_add")).
+                sink_speed_limit(m.F("sink_speed_limit")).
                 drop_speed(m.F("drop_speed")).
+                warning_gap(m.I("warning_gap")).
                 damage_factor(m.F("damage_factor")).
+                negate_damage_factor(m.F("negate_damage_factor")).
+                drop_normal_chance(m.I("drop_normal_chance")).
                 width(m.I("width")).
                 height(m.I("height")).
                 dropping_creatable(m.I("dropping_creatable") == 1 ? true : false).
-                garbage_dumpable(m.I("garbage_dumpable") == 1 ? true : false);
+                garbage_dumpable(m.I("garbage_dumpable") == 1 ? true : false).
+                use_broken_as_garbage(m.I("use_broken_as_garbage") == 1 ? true : false);
 
         return result;
     }

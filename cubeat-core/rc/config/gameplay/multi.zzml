@@ -1,5 +1,6 @@
 
 #This file is for adjusting some basic settings in the Multiplayer games.
+speed: 1.0,
 
 player1: {
     #How many cube colors do we have: (suggestion: 3 ~ 6)

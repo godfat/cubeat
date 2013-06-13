@@ -48,7 +48,11 @@ public:
         effects_holder_.push_front(o);
         std::tr1::function<void()> cleanup = bind(&SFX::clear_obj, this, effects_holder_.begin());
 
-        p.cb( std::tr1::bind(&fuckyou::compose, end_cb, cleanup) );
+        if( p.cb() ) {
+            p.cb( std::tr1::bind(&fuckyou::compose, end_cb, cleanup) );
+        } else {
+            p.cb(cleanup);
+        }
         o->tween(p);
     }
 

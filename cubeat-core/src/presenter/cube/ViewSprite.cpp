@@ -110,17 +110,19 @@ static void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps)
     ps->setEmitter(0);
 }
 
-static void garbage_fly_end(model::Cube* raw_cp)
+static void garbage_fly_end(model::Cube* raw_cp, view::pSprite sp)
 {
     raw_cp->new_garbage(false);
+    sp->setDepth(0);
 }
 
 template<template <class> class Eq>
-static void animating_helper(view::pSprite sp, view::pObject o, vec2 dest, unsigned int dur, std::tr1::function<void()> cb, std::tr1::function<void()> cb2)
+static void animating_helper(view::pSprite sp, view::pObject o, vec2 dest, vec2 dest2, unsigned int dur, std::tr1::function<void()> cb, std::tr1::function<void()> cb2)
 {
     sp->tween<Eq, accessor::Pos2D>(dest, dur, 0, cb);
     data::AnimatorParam<Eq, accessor::Pos2D> move;
-    move.end(dest).duration(dur).cb(cb2);
+    o->tween<easing::Linear, accessor::Alpha>(255, 255, dur - 100, 0, cb2); // This is pure dummy animation, I just need a non-EventDispatcher related timer to fire up stop_emitting_trail
+    move.end(dest).duration(dur);
     view::SFX::i().custom_effect_holder(o, move);
 }
 
@@ -153,7 +155,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 //        core::dimension2df(40.f,40.f));        // max size
 
     IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
-        core::vector3df(0.0f, 0.0f, 0.0f),  // center
+        core::vector3df(0.0f, 0.0f, 0.0f),  // center -- more depth, so no z-fighting
         core::vector3df(-normal.X, normal.Y, 0.0f), flying_distance/20, // normal, length
         core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
         flying_distance/4, flying_distance/4,    // emit rate
@@ -182,7 +184,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 
     unsigned int dur = map_setting()->cube_dropping_duration();
 
-    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get());
+    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), body_);
     std::tr1::function<void()> cb2 = std::tr1::bind(&stop_emitting_trail, ps);
 
     int factor = utils::random(4)-1;
@@ -191,28 +193,31 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     vec3 rot(0, 0, 360 * factor);
     body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
     body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
+    body_->setDepth(-20);
+
+    vec2 effect_dest = pos_vec2() - (normal * 20.0f);
 
     switch( utils::random(6) ) {
         case 0:
-            animating_helper<easing::IOQuad>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOQuad>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         case 1:
-            animating_helper<easing::IOCubic>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOCubic>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         case 2:
-            animating_helper<easing::IOQuart>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOQuart>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         case 3:
-            animating_helper<easing::IOQuint>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOQuint>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         case 4:
-            animating_helper<easing::IOCirc>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOCirc>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         case 5:
-            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
         default:
-            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), effect_dest, dur, cb, cb2);
             break;
     }
 }

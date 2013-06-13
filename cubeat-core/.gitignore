@@ -4,6 +4,7 @@ bundle
 # game option
 option
 rc/config/option
+rc/config/tmp
 
 # generated executable
 bin

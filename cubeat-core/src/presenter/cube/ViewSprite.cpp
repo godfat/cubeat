@@ -105,16 +105,14 @@ void ViewSprite::approach_pos(){
     body_->set<accessor::Pos2D>( pos2 );
 }
 
-void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps, view::pObject sp)
+void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps)
 {
     ps->setEmitter(0);
-    vec2 pos = sp->get<accessor::Pos2D>();
 }
 
-void garbage_fly_end(model::Cube* raw_cp, view::pSprite sp)
+void garbage_fly_end(model::Cube* raw_cp)
 {
     raw_cp->new_garbage(false);
-    vec2 pos = sp->get<accessor::Pos2D>();
 }
 
 void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garbage
@@ -175,8 +173,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 
     unsigned int dur = map_setting()->cube_dropping_duration();
 
-    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), body_);
-    std::tr1::function<void()> cb2 = std::tr1::bind(&stop_emitting_trail, ps, effect_body);
+    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get());
+    std::tr1::function<void()> cb2 = std::tr1::bind(&stop_emitting_trail, ps);
 
     int factor = utils::random(4)-1;
     if (factor <= 0) { factor -= 1; } //make sure no one is zero

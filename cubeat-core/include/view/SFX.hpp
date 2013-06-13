@@ -11,9 +11,15 @@
 
 #include "all_fwd.hpp"
 #include "data/BasicViewTypes.hpp"
+#include "data/TAnimatorParam.hpp"
+#include "view/Object.hpp"
 #include <list>
 
 namespace psc { namespace view {
+
+namespace fuckyou {
+void compose(std::tr1::function<void()> f, std::tr1::function<void()> g);
+}
 
 class SFX
 {
@@ -33,6 +39,19 @@ public:
     void weapon_vfx2(view::pScene&, vec2 const&);
     void weapon_vfx3(view::pScene&, vec2 const&);
     void cube_explode(view::pSprite);
+
+    template <template <class> class Eq, class Accessor>
+    void custom_effect_holder(view::pObject o, data::AnimatorParam<Eq, Accessor> p)
+    {
+        std::tr1::function<void()> end_cb  = p.cb();
+
+        effects_holder_.push_front(o);
+        std::tr1::function<void()> cleanup = bind(&SFX::clear_obj, this, effects_holder_.begin());
+
+        p.cb( std::tr1::bind(&fuckyou::compose, end_cb, cleanup) );
+        o->tween(p);
+    }
+
     void init_textures(view::pScene&);
     void cleanup();
 

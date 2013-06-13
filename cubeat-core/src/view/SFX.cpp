@@ -124,3 +124,11 @@ void SFX::cube_explode(pSprite sp)
     effects_holder_.push_front(sp);
     sp->tween<Linear, GradientEmissive>(255, 300u, 0, bind(&SFX::clear_obj, this, effects_holder_.begin()));
 }
+
+namespace psc { namespace view {
+namespace fuckyou {
+    void compose(std::tr1::function<void()> f, std::tr1::function<void()> g)
+    {
+        f(); g();
+    }
+}}}

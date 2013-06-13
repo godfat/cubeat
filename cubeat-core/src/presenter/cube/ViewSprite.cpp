@@ -105,14 +105,23 @@ void ViewSprite::approach_pos(){
     body_->set<accessor::Pos2D>( pos2 );
 }
 
-void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps)
+static void stop_emitting_trail(irr::scene::IParticleSystemSceneNode* ps)
 {
     ps->setEmitter(0);
 }
 
-void garbage_fly_end(model::Cube* raw_cp)
+static void garbage_fly_end(model::Cube* raw_cp)
 {
     raw_cp->new_garbage(false);
+}
+
+template<template <class> class Eq>
+static void animating_helper(view::pSprite sp, view::pObject o, vec2 dest, unsigned int dur, std::tr1::function<void()> cb, std::tr1::function<void()> cb2)
+{
+    sp->tween<Eq, accessor::Pos2D>(dest, dur, 0, cb);
+    data::AnimatorParam<Eq, accessor::Pos2D> move;
+    move.end(dest).duration(dur).cb(cb2);
+    view::SFX::i().custom_effect_holder(o, move);
 }
 
 void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garbage
@@ -184,49 +193,27 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
 
     switch( utils::random(6) ) {
-        case 0: {
-            body_->tween<easing::IOQuad, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOQuad, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        case 1: {
-            body_->tween<easing::IOCubic, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOCubic, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        case 2: {
-            body_->tween<easing::IOQuart, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOQuart, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        case 3: {
-            body_->tween<easing::IOExpo, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOExpo, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        case 4: {
-            body_->tween<easing::IOCirc, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOCirc, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        case 5: {
-            body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOSine, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
-            break; }
-        default: {
-            body_->tween<easing::IOSine, accessor::Pos2D>(pos_vec2(), dur, 0, cb);
-            data::AnimatorParam<easing::IOSine, accessor::Pos2D> move;
-            move.end(pos_vec2()).duration(dur).cb(cb2);
-            view::SFX::i().custom_effect_holder(effect_body, move);
+        case 0:
+            animating_helper<easing::IOQuad>(body_, effect_body, pos_vec2(), dur, cb, cb2);
             break;
-        }
+        case 1:
+            animating_helper<easing::IOCubic>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
+        case 2:
+            animating_helper<easing::IOQuart>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
+        case 3:
+            animating_helper<easing::IOQuint>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
+        case 4:
+            animating_helper<easing::IOCirc>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
+        case 5:
+            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
+        default:
+            animating_helper<easing::IOSine>(body_, effect_body, pos_vec2(), dur, cb, cb2);
+            break;
     }
 }
 

@@ -290,6 +290,7 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
     alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
     alert_bar_bottom_->playAnime("moving", 1000);
     alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
+    printf("Animation given.\n");
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
@@ -302,8 +303,6 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed){
         alert_bar_cover_top_->set<Visible>(true);
         alert_bar_cover_bottom_->set<Visible>(true);
     } else {
-        alert_bar_top_->clearTween(AT::DIFFUSE);
-        alert_bar_bottom_->clearTween(AT::DIFFUSE);
         alert_bar_cover_top_->set<Visible>(false);
         alert_bar_cover_bottom_->set<Visible>(false);
     }

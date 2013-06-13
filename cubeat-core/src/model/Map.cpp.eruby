@@ -538,11 +538,10 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
         if( warning_level_ && *warning_level_ == 0 ) {
             warning_level_.reset();
         }
-        alarm_sound_.reset();
-        animate_alert_bar_.reset();
+        if( alarm_sound_ ) alarm_sound_.reset();
+        if( animate_alert_bar_ ) animate_alert_bar_.reset();
         owner()->alert_bar_freeze_event()(false);
     }
-    //else if( column_full_num_ && !warning_level_ ) {
     else {
         if( !warning_level_ ) {
             warning_level_ = std::tr1::shared_ptr<int>(new int(0));
@@ -560,7 +559,14 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
                 animate_alert_bar_.reset();
                 owner()->alert_bar_freeze_event()(true);
             } else {
-                owner()->alert_bar_freeze_event()(false);
+                if( !animate_alert_bar_ ) {
+                    owner()->alert_bar_freeze_event()(false);
+
+                    animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
+                    owner()->alert_bar_animate_event()(0); //added for animating as soon as column full, and, if not animated already.
+                    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                        bind(owner()->alert_bar_animate_event(), ref(*warning_level_)), animate_alert_bar_, warning_gap, -1);
+                }
             }
         }
 
@@ -570,14 +576,6 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             owner()->warning_sound_event()(0); //added for call warning as soon as column full, and, if no sound already.
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->warning_sound_event(), ref(*warning_level_)), alarm_sound_, warning_gap, -1);
-        }
-
-        if( !animate_alert_bar_ && chains_.empty() ) {
-            animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
-
-            owner()->alert_bar_animate_event()(0); //added for animating as soon as column full, and, if not animated already.
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(owner()->alert_bar_animate_event(), ref(*warning_level_)), animate_alert_bar_, warning_gap, -1);
         }
     }
 

@@ -254,7 +254,8 @@ void ViewSprite::be_broken(){
     body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
     body_->set<accessor::GradientDiffuse>( 255 );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
-    shot_event(&model::Cube::restore, &model::Cube::go_exploding);
+    //shot_event(&model::Cube::restore, &model::Cube::go_exploding);
+    shot_event(&model::Cube::restore, &model::Cube::restore);
     //audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
 }
 

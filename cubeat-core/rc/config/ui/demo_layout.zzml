@@ -37,8 +37,8 @@ mapview0: {
    xoff:  95,
    yoff: 682,
   csize:  64,
-  garbage_src_x: 550,
-  garbage_src_y: 405,
+  garbage_src_x: 565,
+  garbage_src_y: 385,
   garbage_ene_x: 710,
   ability_btn_x: 570,
   ability_btn_y: 360
@@ -49,8 +49,8 @@ mapview1: {
    xoff: 802,
    yoff: 682,
   csize:  64,
-  garbage_src_x: 730,
-  garbage_src_y: 405,
+  garbage_src_x: 715,
+  garbage_src_y: 385,
   garbage_ene_x: 570,
   ability_btn_x: 710,
   ability_btn_y: 360

@@ -58,13 +58,22 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
 <% end %>
     presenter::pMap owner = owner_.lock();
     int width = cube_colors.width(), height = cube_colors.height();
-    for(int y=0; y<height; ++y)
-        for(int x=0; x<width; ++x)
-            if(cube_colors[x][y] == 0)
+    for(int y=0; y<height; ++y) {
+        for(int x=0; x<width; ++x) {
+            int color_id = cube_colors[x][y];
+            if( color_id == 0 ) {
                 continue;
-            else {
-                insert_cube( owner->make_cube(x, y, cube_colors[x][y])->model() );
+            } else {
+                pCube c = owner->make_cube(x, y, color_id)->model();
+                insert_cube( c );
+                if( color_id == 8 ) {
+                    // hack to init broken cubes
+                    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
+                        std::tr1::bind(&Cube::be_broken, c.get(), 0), shared_from_this(), 500u);
+                }
             }
+        }
+    }
 
     fill_preview_queue(); // added
 

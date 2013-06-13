@@ -100,6 +100,10 @@ public:
     Map& purge_all() { model()->purge_all(); return *this; }
     Map& push_player_ability();
 
+    // Only used for hacking
+    void score(int in) { model()->score(in); }
+    void current_sum_of_attack(int in) { model()->current_sum_of_attack(in); }
+
     bool exist(int x, int y) const             { return model()->exist(x, y); }
     bool below_is_dropping(int x, int y) const { return model()->below_is_dropping(x, y); }
     bool dropping_locked() const               { return model()->dropping_locked(); }

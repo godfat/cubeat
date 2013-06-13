@@ -182,12 +182,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 //    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
-    map0_ = presenter::Map::create(set0, player0_);
+    //map0_ = presenter::Map::create(set0, player0_);
     //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
+    map0_ = utils::MapLoader::load( gameplay_.S("shortcut") );
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
-    map1_ = presenter::Map::create(set1, player1_);
+    //map1_ = presenter::Map::create(set1, player1_);
     //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
+    map1_ = utils::MapLoader::load( gameplay_.S("shortcut2") );
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
     // setup garbage land
@@ -208,6 +210,20 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     setup_ui();
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
+
+    /// Demo hacking for presentation purpose:
+    map0_->score( gameplay_.I("score1") );
+    map0_->set_garbage_amount(gameplay_.I("attack2"));
+    map0_->new_garbage_event()(0, 0, gameplay_.I("attack1"));
+    map1_->score( gameplay_.I("score2") );
+    map1_->set_garbage_amount(gameplay_.I("attack1"));
+    map1_->new_garbage_event()(0, 0, gameplay_.I("attack2"));
+    int faketime = gameplay_.I("time");
+    min_ = faketime / 60; sec_ = faketime % 60;
+    std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
+    std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
+    ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
+    /// ////////////////////////////
 
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?

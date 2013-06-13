@@ -233,10 +233,10 @@ void ViewSpriteMaster::update_garbage(int delta) {
         garbage_text_outline_->clearAllTween();
 
         // Changes color and add other effects:
-        if( i_have_to_keep_track_of_garbage_count_visually_here_ < 20 ) {
+        if( i_have_to_keep_track_of_garbage_count_visually_here_ < 1 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
-        } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 40 ) {
+        } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 2 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
 
             if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
@@ -246,14 +246,19 @@ void ViewSpriteMaster::update_garbage(int delta) {
 
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
         } else {
-            garbage_text_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
+            //garbage_text_->set<ColorDiffuseVec3>(vec3(255, 32, 0));
 
             if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
                 vec2 offset(utils::random(25) + 25, utils::random(25) + 25);
                 garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
             }
 
-            garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
+            // The middle ranged red will not be noticed if the background is middle-ranged gray, so just glow here.
+            /// WTF NOTE: There is a bug if you call to this tween continuously, it will be freezed in the "starting color" somehow.
+            /// I think it is SpriteText related bug.
+            garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
+            garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 32, 0), vec3(255, 255, 255), 1000u, -1);
+            //garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
         }
     } else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 99 ) {
         garbage_text_->changeText("??");
@@ -264,7 +269,7 @@ void ViewSpriteMaster::update_garbage(int delta) {
             garbage_text_->tween<OElastic, Pos2D>(rally_point - offset, rally_point, 333u);
         }
 
-        garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 500u, -1);
+        garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 0), 500u, -1);
         garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
     } else {
         garbage_text_->changeText("!!!");
@@ -272,7 +277,7 @@ void ViewSpriteMaster::update_garbage(int delta) {
     }
 
     if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
-        garbage_text_outline_->tween<Linear, Scale>(vec3(1.5, 1.5, 1), vec3(2.5, 2.5, 1), 500u);
+        garbage_text_outline_->tween<Linear, Scale>(vec3(1.3, 1.3, 1), vec3(2.2, 2.2, 1), 500u);
         garbage_text_outline_->tween<Linear, Alpha>(255, 0, 500u);
     } else {
         garbage_text_outline_->set<Alpha>(0);
@@ -397,7 +402,7 @@ void ViewSpriteMaster::derived_init(){
     alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
                          .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 
-    pos2 = pos; pos2.Y = 706;
+    pos2 = pos; pos2.Y = 704;
 
     alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
     alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
@@ -412,11 +417,11 @@ void ViewSpriteMaster::derived_init(){
     garbage_text_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
     garbage_text_->set<Pos2D>( rally_point );
-    garbage_text_->set<Scale>( vec3(1.5, 1.5, 1) );
+    garbage_text_->set<Scale>( vec3(1.3, 1.3, 1) );
 
     garbage_text_outline_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
     garbage_text_outline_->set<Pos2D>( rally_point );
-    garbage_text_outline_->set<Scale>( vec3(1.5, 1.5, 1) );
+    garbage_text_outline_->set<Scale>( vec3(1.3, 1.3, 1) );
     garbage_text_outline_->set<Alpha>(0);
 }
 

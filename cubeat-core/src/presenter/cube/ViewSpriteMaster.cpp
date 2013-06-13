@@ -395,7 +395,7 @@ void ViewSpriteMaster::derived_init(){
                    .set<Visible>(false).setPickable(false);
     alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
     alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                         .set<Alpha>(128).set<Visible>(false).setPickable(false);
+                         .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 
     pos2 = pos; pos2.Y = 706;
 
@@ -404,7 +404,7 @@ void ViewSpriteMaster::derived_init(){
                       .set<Visible>(false).setPickable(false);
     alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
     alert_bar_cover_bottom_->setDepth(-70).set<Pos2D>( pos2 ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                            .set<Alpha>(128).set<Visible>(false).setPickable(false);
+                            .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 
     create_overheat_overlay();
     create_warning_strips();

@@ -233,10 +233,10 @@ void ViewSpriteMaster::update_garbage(int delta) {
         garbage_text_outline_->clearAllTween();
 
         // Changes color and add other effects:
-        if( i_have_to_keep_track_of_garbage_count_visually_here_ < 1 ) {
+        if( i_have_to_keep_track_of_garbage_count_visually_here_ < 20 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
-        } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 2 ) {
+        } else if ( i_have_to_keep_track_of_garbage_count_visually_here_ < 40 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
 
             if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
@@ -258,7 +258,7 @@ void ViewSpriteMaster::update_garbage(int delta) {
             /// I think it is SpriteText related bug.
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 0));
             garbage_text_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 32, 0), vec3(255, 255, 255), 1000u, -1);
-            //garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
+            garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 128, 64));
         }
     } else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 99 ) {
         garbage_text_->changeText("??");

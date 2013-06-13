@@ -165,6 +165,8 @@ s32 LinearParticleEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& out
 
 		for(u32 i=0; i<amount; ++i)
 		{
+		    p.pos = Center;
+
 			// Random length
 			const f32 length = (i / (f32)amount) * Length; //fmodf( (f32)os::Randomizer::rand(), Length * 1000.0f ) * 0.001f;
 

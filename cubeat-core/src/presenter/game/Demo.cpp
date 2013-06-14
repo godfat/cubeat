@@ -182,14 +182,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 //    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
-    //map0_ = presenter::Map::create(set0, player0_);
-    //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
-    map0_ = utils::MapLoader::load( gameplay_.S("shortcut") );
-    map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
+    /// WTF Wait, what does player do in creating Maps? using MapLoader didn't seem to break anything.
+    if( gameplay_.exist("shortcut") ) map0_ = utils::MapLoader::load( gameplay_.S("shortcut") );
+    else map0_ = presenter::Map::create(set0, player0_);
 
-    //map1_ = presenter::Map::create(set1, player1_);
-    //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
-    map1_ = utils::MapLoader::load( gameplay_.S("shortcut2") );
+    if( gameplay_.exist("shortcut2") ) map1_ = utils::MapLoader::load( gameplay_.S("shortcut2") );
+    else map1_ = presenter::Map::create(set1, player1_);
+
+    map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
     // setup garbage land
@@ -854,14 +854,15 @@ void Demo::end(pMap lose_map)
         win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
         lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-        end_text_->set<Visible>(true);
-        end_text_->changeText( "play again?" );
-        end_text2_->set<Visible>(true);
-        end_text2_->changeText( "\nyes: left click\nleave: right click" );
-        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
-        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
-        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+/// WTF NOTE Doing trailer, don't show these words...
+//        end_text_->set<Visible>(true);
+//        end_text_->changeText( "play again?" );
+//        end_text2_->set<Visible>(true);
+//        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+//        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
+//        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+//        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+//        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Demo::setup_end_button, this), 1000);

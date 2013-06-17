@@ -1,6 +1,16 @@
 
 #This file is for adjusting some basic settings in the Multiplayer games.
+
+# demo shortcuts
+dont_show_ready: 1,
 speed: 1.0,
+shortcut: 'demo0',
+shortcut2: 'demo1',
+time: 71,
+score1: 1500,
+score2: 1250,
+attack1: 12,
+attack2: 10,
 
 player1: {
     #How many cube colors do we have: (suggestion: 3 ~ 6)
@@ -26,7 +36,7 @@ player1: {
     #This only affect newly created cubes, and determines
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
-    sink_speed: 65.0,
+    sink_speed: 100.0,
 
     #add every 5 seconds.
     sink_speed_add: 10.0,

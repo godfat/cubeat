@@ -100,6 +100,11 @@ public:
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }
+
+    // Only used for hacking
+    void score(int in) { score_ = in; }
+    void current_sum_of_attack(int in) { current_sum_of_attack_ = in; }
+
     void lock_dropping(bool const& f) { lock_dropping_ = f; }
     bool dropping_locked() const { return lock_dropping_; }
     data::pMapSetting const& ms() const{ return map_setting_; }

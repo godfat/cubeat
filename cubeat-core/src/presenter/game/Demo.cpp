@@ -182,12 +182,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 //    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
-    map0_ = presenter::Map::create(set0, player0_);
-    //map0_ = utils::MapLoader::load(0); //temp: this is for exciting demo.
-    map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
+    /// WTF Wait, what does player do in creating Maps? using MapLoader didn't seem to break anything.
+    if( gameplay_.exist("shortcut") ) map0_ = utils::MapLoader::load( gameplay_.S("shortcut") );
+    else map0_ = presenter::Map::create(set0, player0_);
 
-    map1_ = presenter::Map::create(set1, player1_);
-    //map1_ = utils::MapLoader::load(1); //temp: this is for exciting demo.
+    if( gameplay_.exist("shortcut2") ) map1_ = utils::MapLoader::load( gameplay_.S("shortcut2") );
+    else map1_ = presenter::Map::create(set1, player1_);
+
+    map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
     map1_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s1, player1_) );
 
     // setup garbage land
@@ -208,6 +210,20 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     setup_ui();
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
+
+    /// Demo hacking for presentation purpose:
+    map0_->score( gameplay_.I("score1") );
+    map0_->set_garbage_amount(gameplay_.I("attack2"));
+    map0_->new_garbage_event()(0, 0, gameplay_.I("attack1"));
+    map1_->score( gameplay_.I("score2") );
+    map1_->set_garbage_amount(gameplay_.I("attack1"));
+    map1_->new_garbage_event()(0, 0, gameplay_.I("attack2"));
+    int faketime = gameplay_.I("time");
+    min_ = faketime / 60; sec_ = faketime % 60;
+    std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
+    std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
+    ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
+    /// ////////////////////////////
 
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
@@ -241,6 +257,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     //start music
     audio::Sound::i().stopAll(); //stop old
+
     stage_->playBGM();
 
     //ready_go(4);
@@ -440,32 +457,44 @@ void Demo::starting_effect(bool const& inplace)
 void Demo::ready_go(int step)
 {
     if ( step < 0 ) {
-        ready_go_text_->tween<Linear, Alpha>(0, 500u);
 
-        blocker_->set<Visible>(false);
-        blocker_->set<Alpha>(100);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+
+            ready_go_text_->tween<Linear, Alpha>(0, 500u);
+
+            blocker_->set<Visible>(false);
+            blocker_->set<Alpha>(100);
+        }
 
         return;
     }
     else if ( step == 0 ) {
-        audio::Sound::i().playBuffer("go.wav");
-        ready_go_text_->changeText("go!");
-        ready_go_text_->set<Scale>(vec3(1,1,1));
-        ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
-        blocker_->tween<Linear, Alpha>(100, 0, 1000u);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+            audio::Sound::i().playBuffer("go.wav");
+            ready_go_text_->changeText("go!");
+            ready_go_text_->set<Scale>(vec3(1,1,1));
+            ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
+
+            blocker_->tween<Linear, Alpha>(100, 0, 1000u);
+        }
 
         game_start();
     }
     else if ( step <= 1 ) {
         audio::Sound::i().playBuffer("count.wav");
         //ready_go_text_->showNumber(step);
-        ready_go_text_->changeText("ready?");
-        ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
-        ready_go_text_->set<Visible>(true);
-        ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
 
-        blocker_->set<Visible>(true);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+            ready_go_text_->changeText("ready?");
+            ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
+            ready_go_text_->set<Visible>(true);
+            ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
+            blocker_->set<Visible>(true);
+        }
     }
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);
@@ -838,14 +867,15 @@ void Demo::end(pMap lose_map)
         win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
         lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-        end_text_->set<Visible>(true);
-        end_text_->changeText( "play again?" );
-        end_text2_->set<Visible>(true);
-        end_text2_->changeText( "\nyes: left click\nleave: right click" );
-        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
-        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
-        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+/// WTF NOTE Doing trailer, don't show these words...
+//        end_text_->set<Visible>(true);
+//        end_text_->changeText( "play again?" );
+//        end_text2_->set<Visible>(true);
+//        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+//        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
+//        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+//        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+//        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Demo::setup_end_button, this), 1000);

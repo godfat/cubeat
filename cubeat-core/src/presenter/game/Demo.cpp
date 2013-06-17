@@ -257,6 +257,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     //start music
     audio::Sound::i().stopAll(); //stop old
+
     stage_->playBGM();
 
     //ready_go(4);
@@ -456,32 +457,44 @@ void Demo::starting_effect(bool const& inplace)
 void Demo::ready_go(int step)
 {
     if ( step < 0 ) {
-        ready_go_text_->tween<Linear, Alpha>(0, 500u);
 
-        blocker_->set<Visible>(false);
-        blocker_->set<Alpha>(100);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+
+            ready_go_text_->tween<Linear, Alpha>(0, 500u);
+
+            blocker_->set<Visible>(false);
+            blocker_->set<Alpha>(100);
+        }
 
         return;
     }
     else if ( step == 0 ) {
-        audio::Sound::i().playBuffer("go.wav");
-        ready_go_text_->changeText("go!");
-        ready_go_text_->set<Scale>(vec3(1,1,1));
-        ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
-        blocker_->tween<Linear, Alpha>(100, 0, 1000u);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+            audio::Sound::i().playBuffer("go.wav");
+            ready_go_text_->changeText("go!");
+            ready_go_text_->set<Scale>(vec3(1,1,1));
+            ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
+
+            blocker_->tween<Linear, Alpha>(100, 0, 1000u);
+        }
 
         game_start();
     }
     else if ( step <= 1 ) {
         audio::Sound::i().playBuffer("count.wav");
         //ready_go_text_->showNumber(step);
-        ready_go_text_->changeText("ready?");
-        ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
-        ready_go_text_->set<Visible>(true);
-        ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
 
-        blocker_->set<Visible>(true);
+        /// WTF Hack for demo
+        if( !gameplay_.exist("dont_show_ready") ) {
+            ready_go_text_->changeText("ready?");
+            ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
+            ready_go_text_->set<Visible>(true);
+            ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
+            blocker_->set<Visible>(true);
+        }
     }
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::ready_go, this, step-1), shared_from_this(), 1000);

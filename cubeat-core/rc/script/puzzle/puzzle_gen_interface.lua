@@ -33,13 +33,18 @@ cube_dying_duration:200,
 cube_sinking_duration:500,
 cube_dropping_duration:300,
 sink_speed:80.0,
+sink_speed_add:10.0,
+sink_speed_limit:400.0,
 drop_speed:450.0,
+warning_gap:1000,
 damage_factor:1.0,
+negate_damage_factor:1.0,
 width:6,
 height:11,
+drop_normal_chance:0,
 dropping_creatable:0,
 garbage_dumpable:0,
-cube_colors:
+use_broken_as_garbage:1,
 ]])
   local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug)
   file:write("[\n")

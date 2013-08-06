@@ -867,15 +867,14 @@ void Demo::end(pMap lose_map)
         win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
         lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
 
-/// WTF NOTE Doing trailer, don't show these words...
-//        end_text_->set<Visible>(true);
-//        end_text_->changeText( "play again?" );
-//        end_text2_->set<Visible>(true);
-//        end_text2_->changeText( "\nyes: left click\nleave: right click" );
-//        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
-//        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
-//        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-//        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text_->set<Visible>(true);
+        end_text_->changeText( "play again?" );
+        end_text2_->set<Visible>(true);
+        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 50) );
+        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 100) );
+        end_text_-> set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text2_->set<Alpha>(0).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Demo::setup_end_button, this), 1000);

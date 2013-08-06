@@ -2,7 +2,7 @@
 #This file is for adjusting some basic settings in the Multiplayer games.
 
 # demo shortcuts
-dont_show_ready: 1,
+#dont_show_ready: 1,
 speed: 1.0,
 shortcut: 'demo0',
 shortcut2: 'demo1',

@@ -75,7 +75,7 @@ pDemo Demo::init()
 
     L_ = luaL_newstate();
     luaL_openlibs(L_);
-    script::Lua::run_script(L_, Conf::i().script_path("ui/demo/demo.lua").c_str());
+    script::Lua::run_script(L_, Conf::i().script_path("demo/demo.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
     script::Lua::call(L_, "mainmenu");
 

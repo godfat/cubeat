@@ -7,7 +7,7 @@ using namespace presenter;
 using namespace game;
 
 extern "C" {
-#include "script/ui/demo/bindings.h"
+#include "script/demo/bindings.h"
 }
 
 pScene* Demo_get_ui_scene(Demo* self) { // not shared_ptr!

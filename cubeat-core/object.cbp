@@ -176,11 +176,11 @@
 		<Unit filename="include\private\MouseState.hpp" />
 		<Unit filename="include\script\ai\bindings.h" />
 		<Unit filename="include\script\basics.h" />
+		<Unit filename="include\script\demo\bindings.h" />
 		<Unit filename="include\script\event\bindings.h" />
 		<Unit filename="include\script\lua_utility.hpp" />
 		<Unit filename="include\script\net\bindings.h" />
 		<Unit filename="include\script\ui\bindings.h" />
-		<Unit filename="include\script\ui\demo\bindings.h" />
 		<Unit filename="include\script\ui\puzzle\bindings.h" />
 		<Unit filename="include\script\ui\test\bindings.h" />
 		<Unit filename="include\script\ui\tween_call.h" />
@@ -419,11 +419,11 @@
 		<Unit filename="src\private\AVIVideo.cpp" />
 		<Unit filename="src\private\MastEventReceiver.cpp" />
 		<Unit filename="src\script\ai\bindings.cpp" />
+		<Unit filename="src\script\demo\bindings.cpp" />
 		<Unit filename="src\script\event\bindings.cpp" />
 		<Unit filename="src\script\lua_utility.cpp" />
 		<Unit filename="src\script\net\bindings.cpp" />
 		<Unit filename="src\script\ui\bindings.cpp" />
-		<Unit filename="src\script\ui\demo\bindings.cpp" />
 		<Unit filename="src\script\ui\puzzle\bindings.cpp" />
 		<Unit filename="src\script\ui\test\bindings.cpp">
 			<Option compile="0" />

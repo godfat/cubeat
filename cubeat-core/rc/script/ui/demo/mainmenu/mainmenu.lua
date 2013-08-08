@@ -5,7 +5,7 @@ local ui     = require 'rc/script/ui/ui'
 local switch = require 'rc/script/ui/demo/switch/switch'
 local random = require 'rc/script/helper'.random
 local basepath = require 'rc/script/helper'.basepath
-require 'rc/script/ui/demo/defs'
+require 'rc/script/demo/defs'
 
 local function check_tutorial(ask)
   local filemark = io.open(basepath().."rc/config/tmp/tutored", "r")

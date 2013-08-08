@@ -3,7 +3,7 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
-require 'rc/script/ui/demo/defs'
+require 'rc/script/demo/defs'
 require 'rc/script/strict'
 
 ----------------------------------------------------------------------------

@@ -8,7 +8,7 @@ require 'rc/script/ui/view'
 ffi.cdef[[
 typedef struct Demo Demo;
 ]]
-ffi.cdef( io.open( basepath().."rc/script/ui/demo/bindings.ffi", 'r'):read('*a') )
+ffi.cdef( io.open( basepath().."rc/script/demo/bindings.ffi", 'r'):read('*a') )
 
 ----------------------------------------------------------------------------
 -- "Class" definitions

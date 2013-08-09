@@ -3,6 +3,7 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
+local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
 
@@ -64,7 +65,13 @@ end
 
 function init_override()
   demo_:init_map_starting_line(0, 5);
-  demo_:set_map_garbage_amount(0, 20);
+  --demo_:set_map_garbage_amount(0, 20);
+  
+  event.on_timer("challenge", function() 
+    --print(demo_:get_map_score(1)) 
+    --print(demo_:get_map_highest_chain(1))
+    --print(demo_:get_map_cubes_cleared_data(1)[1])
+    end, 1000, -1 )
 end
 
 function tutorial_update(state, data)

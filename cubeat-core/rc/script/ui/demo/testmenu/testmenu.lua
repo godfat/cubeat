@@ -11,8 +11,8 @@ local function init(demo, parent)
 
   menu.btn_score = ui.new_text{ parent=parent, x=0, y=0, size=32, title='score' }
   menu.btn_score:set_scale(1.5)
-  menu.btn_tween = ui.new_text{ parent=parent, x=0, y=60, size=32, title='tween test' }
-  menu.btn_tween:set_scale(1.5)
+  menu.btn_challenge = ui.new_text{ parent=parent, x=0, y=60, size=32, title='challenge' }
+  menu.btn_challenge:set_scale(1.5)
   menu.btn_select= ui.new_text{ parent=parent, x=0, y=120, size=32, title='select actor' }
   menu.btn_select:set_scale(1.5)
   menu.btn_talk  = ui.new_text{ parent=parent, x=0, y=180, size=32, title='talk'}
@@ -27,8 +27,9 @@ local function init(demo, parent)
   menu.btn_score:on_press(function(self)
     switch.load_page('score')
   end)
-  menu.btn_tween:on_press(function(self)
-    switch.load_page('tweentest')
+  menu.btn_challenge:on_press(function(self)
+    --switch.load_page('tweentest')
+    switch.load_page('challengemenu')
   end)
   menu.btn_select:on_press(function(self)
     switch.load_page('select', 'out', { game_mode = 1, level = 0, last_menu = 'testmenu' })

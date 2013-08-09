@@ -11,6 +11,8 @@
 
 namespace psc{ namespace data{
 
+int const COLOR_MAX = 9;
+
 class Color{
     // index 0 is dummy..
     static int const id2rgb[];
@@ -31,8 +33,6 @@ public:
     static Color random_rgb_color(){
         return Color(utils::random(white+1));
     }
-
-    static int const MAX;
 
 public:
     Color(): rgb_(0){}

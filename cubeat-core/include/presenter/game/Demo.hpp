@@ -63,7 +63,7 @@ public:
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
     void init_puzzle(std::string const&, std::string const&);
-    void init_tutorial(std::string const&, std::string const&, std::string const&);
+    void init_tutorial(std::string const&, std::string const&, std::string const&, bool const&, int const&);
     void init_map_starting_line(int const& map_id, int const& n);
     void set_map_garbage_amount(int const& map_id, int const& n);
     int  get_time() const;
@@ -111,7 +111,7 @@ protected:
     void run_next_log();
 
 private:
-    void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false);
+    void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false, int const& submode = 0);
     void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false);
 
     //temp: hack for puzzle integrated demo

@@ -13,7 +13,7 @@ APIEXPORT void    Demo_init_vs_cpu(Demo*, char const*, char const*, char const*,
 APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_puzzle(Demo*, char const*, char const*); // not shared_ptr!
-APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*); // not shared_ptr!
+APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*, bool, int); // not shared_ptr!
 APIEXPORT void    Demo_init_map_starting_line(Demo*, int map_id, int n);
 APIEXPORT void    Demo_set_map_garbage_amount(Demo*, int map_id, int n);
 

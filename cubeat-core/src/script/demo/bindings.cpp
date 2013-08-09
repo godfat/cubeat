@@ -36,8 +36,8 @@ void Demo_init_puzzle(Demo* self, char const* c1p, char const* scene_name) { // 
     self->init_puzzle(c1p, scene_name);
 }
 
-void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const* scene_name) { // not shared_ptr!
-    self->init_tutorial(c1p, c2p, scene_name);
+void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const* scene_name, bool in_place, int submode) { // not shared_ptr!
+    self->init_tutorial(c1p, c2p, scene_name, in_place, submode);
 }
 
 void Demo_init_map_starting_line(Demo* self, int map_id, int n) {

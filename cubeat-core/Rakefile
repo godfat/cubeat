@@ -45,6 +45,13 @@ task :prepare => [:preprocess,
                   :reprocess_CMakeLists]
 
 task :reprocess_CMakeLists do
+
+  sh 'luajit generate_ffi.lua ai/bindings'
+  sh 'luajit generate_ffi.lua net/bindings'
+  sh 'luajit generate_ffi.lua ui/bindings'
+  sh 'luajit generate_ffi.lua event/bindings'
+  sh 'luajit generate_ffi.lua demo/bindings'
+
   File.delete 'CMakeLists.txt'
   sh 'rake CMakeLists.txt'
 end
@@ -74,10 +81,6 @@ end
 
 file "#{B}/CuBeat.app/Contents/Resources" do
   sh "mkdir -p #{B}/CuBeat.app/Contents/Resources"
-  sh 'luajit generate_ffi.lua ai/bindings'
-  sh 'luajit generate_ffi.lua net/bindings'
-  sh 'luajit generate_ffi.lua ui/bindings'
-  sh 'luajit generate_ffi.lua ui/demo/bindings'
   sh "cp -r rc #{B}/CuBeat.app/Contents/Resources/"
 end
 
@@ -128,7 +131,6 @@ file "#{B}/#{linux_lib}" => ['bin/libcubeat.so'] do
 end
 
 file "#{B}/rc" do
-  sh 'luajit generate_ffi.lua ai/bindings'
   sh "cp -r rc #{B}/rc"
 end
 

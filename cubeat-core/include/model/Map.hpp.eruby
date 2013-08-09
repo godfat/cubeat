@@ -4,6 +4,7 @@
 #include "all_fwd.hpp"
 
 #include "data/MapSetting.hpp"
+#include "data/Color.hpp"
 #include "utils/vector_2d.hpp"
 #include "model/SimpleMap.hpp"
 
@@ -41,7 +42,8 @@ public:
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
-        cubes_cleared_(0), total_cubes_cleared_(0), match_counter_(0)
+        cubes_cleared_(), total_cubes_cleared_(0), match_counter_(0),
+        highest_chain_(0)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
@@ -73,6 +75,8 @@ public:
     int  grounded_cube_count() const;
     int  column_full_num() const;
     int  match_count() const;
+    int  highest_chain() const;
+    int const* cubes_cleared_data() const;
     bool all_empty() const;
     bool all_waiting() const;
 
@@ -88,7 +92,7 @@ public:
     void kill_cube_at(int x, int y);
     void new_cube_at(int x, int y, int color_id);
     void purge_all();
-    void cubes_cleared_add(int const& n); //called from model::Cube only.
+    void cubes_cleared_add(int const& n, int const& id); //called from model::Cube only.
 
     bool exist(int x, int y) const;
     bool below_is_dropping(int x, int y) const;
@@ -130,8 +134,9 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
-    int cubes_cleared_, total_cubes_cleared_;
+    int cubes_cleared_[data::COLOR_MAX], total_cubes_cleared_;
     int match_counter_;
+    int highest_chain_;
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy

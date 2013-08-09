@@ -364,6 +364,12 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
                 700);
+
+            //log highest chain
+            if( (*i)->step() > highest_chain_ ) {
+                highest_chain_ = (*i)->step();
+            }
+
             i = chains_.erase(i);
         }
         else{
@@ -673,7 +679,7 @@ bool sort_by_second_gte(std::pair<int, int> const& a, std::pair<int, int> const&
 
 std::vector< std::pair<int, int> > Map::count_colors() const{
     std::vector< std::pair<int, int> > ret;
-    for( int i = 0; i < data::Color::MAX; ++i ) {
+    for( int i = 0; i < data::COLOR_MAX; ++i ) {
         ret.push_back( std::make_pair(i, 0) );
     }
     for( int x = 0; x < ms()->width(); ++x ) {
@@ -690,6 +696,14 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
 
 int Map::match_count() const {
     return match_counter_;
+}
+
+int Map::highest_chain() const {
+    return highest_chain_;
+}
+
+int const* Map::cubes_cleared_data() const {
+    return cubes_cleared_;
 }
 
 bool Map::exist(int x, int y) const
@@ -755,13 +769,14 @@ void Map::purge_all()
     }
 }
 
-void Map::cubes_cleared_add(int const& num)
+void Map::cubes_cleared_add(int const& num, int const& id)
 {
     total_cubes_cleared_ += num;
-    if( owner()->get_player_ability_left() < 1 ) {
-        cubes_cleared_ += num;
-    }
+    cubes_cleared_[id] += num;
 // WTF MEMO 2012.9 failed to adjust for balance
+//    if( owner()->get_player_ability_left() < 1 ) {
+//        cubes_cleared_ += num;
+//    }
 //    if( cubes_cleared_ > 100 /*ms()->replenish_ability_limit()*/ ) {
 //        cubes_cleared_ = 0;
 //        owner()->push_player_ability();

@@ -29,11 +29,6 @@ local function game_start(self)
     if data_ then
       local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
-      
-      -- test
-      event.on_timer("global", function() demo_game_:eventual_pause() end, 5000 )
-      event.on_timer("global", function() demo_game_:eventual_resume() end, 8000 )
-      
     else
       switch.load_page('mainmenu', 'in')
     end

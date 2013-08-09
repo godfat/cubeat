@@ -374,6 +374,40 @@ void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::st
     init_(GM_TUT1, c1p, c2p, scene_name);
 }
 
+int  Demo::get_time() const {
+    return min_*60 + sec_;
+}
+
+int  Demo::get_map_score(int const& map_id) const {
+    return map_id == 2 ?
+        map1_->score() :
+        map0_->score();
+}
+
+int  Demo::get_map_highest_chain(int const& map_id) const {
+    return map_id == 2 ?
+        map1_->highest_chain() :
+        map0_->highest_chain();
+}
+
+int  Demo::get_map_garbage_left(int const& map_id) const {
+    return map_id == 2 ?
+        map1_->garbage_left() :
+        map0_->garbage_left();
+}
+
+int  Demo::get_map_warning_level(int const& map_id) const {
+    return map_id == 2 ?
+        map1_->warning_level() :
+        map0_->warning_level();
+}
+
+int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {
+    return map_id == 2 ?
+        map1_->cubes_cleared_data() :
+        map0_->cubes_cleared_data();
+}
+
 void Demo::run_next_log()
 {
     if( ai_logging_conf_.V("sessions").size() > 0 ) {

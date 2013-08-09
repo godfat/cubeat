@@ -64,6 +64,12 @@ public:
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
     void init_puzzle(std::string const&, std::string const&);
     void init_tutorial(std::string const&, std::string const&, std::string const&);
+    int  get_time() const;
+    int  get_map_score(int const& map_id) const;
+    int  get_map_highest_chain(int const& map_id) const;
+    int  get_map_garbage_left(int const& map_id) const;
+    int  get_map_warning_level(int const& map_id) const;
+    int const* get_map_cubes_cleared_data(int const& map_id) const;
     void reinit();
     void endgame(int);
     void quit();

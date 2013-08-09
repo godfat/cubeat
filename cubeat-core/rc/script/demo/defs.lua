@@ -16,17 +16,23 @@ ffi.cdef( io.open( basepath().."rc/script/demo/bindings.ffi", 'r'):read('*a') )
 
 -- Demo
 local Mt_Demo = {}
-Mt_Demo.__index      = Mt_Demo
-Mt_Demo.init_vs_ppl  = C.Demo_init_vs_ppl
-Mt_Demo.init_vs_cpu  = C.Demo_init_vs_cpu
-Mt_Demo.init_cpudemo = C.Demo_init_cpudemo
-Mt_Demo.init_ai_logging = C.Demo_init_ai_logging
-Mt_Demo.init_puzzle  = C.Demo_init_puzzle
-Mt_Demo.init_tutorial = C.Demo_init_tutorial
-Mt_Demo.reinit       = C.Demo_reinit
-Mt_Demo.endgame      = C.Demo_endgame
-Mt_Demo.eventual_pause = C.Demo_eventual_pause
-Mt_Demo.eventual_resume = C.Demo_eventual_resume
+Mt_Demo.__index                = Mt_Demo
+Mt_Demo.init_vs_ppl            = C.Demo_init_vs_ppl
+Mt_Demo.init_vs_cpu            = C.Demo_init_vs_cpu
+Mt_Demo.init_cpudemo           = C.Demo_init_cpudemo
+Mt_Demo.init_ai_logging        = C.Demo_init_ai_logging
+Mt_Demo.init_puzzle            = C.Demo_init_puzzle
+Mt_Demo.init_tutorial          = C.Demo_init_tutorial
+Mt_Demo.get_time               = C.Demo_get_time
+Mt_Demo.get_map_score          = C.Demo_get_map_score
+Mt_Demo.get_map_highest_chain  = C.Demo_get_map_highest_chain
+Mt_Demo.get_map_garbage_left   = C.Demo_get_map_garbage_left
+Mt_Demo.get_map_warning_level  = C.Demo_get_map_warning_level
+Mt_Demo.get_map_cubes_cleared_data = C.Demo_get_map_cubes_cleared_data
+Mt_Demo.reinit                 = C.Demo_reinit
+Mt_Demo.endgame                = C.Demo_endgame
+Mt_Demo.eventual_pause         = C.Demo_eventual_pause
+Mt_Demo.eventual_resume        = C.Demo_eventual_resume
 Mt_Demo.init_mode    = function(self, mode, c1p, c2p, sconf, ai_level)
   if mode == 0 then self:init_vs_ppl(c1p, c2p, sconf)
   elseif mode == 1 then self:init_vs_cpu(c1p, c2p, sconf, ai_level)

@@ -40,6 +40,30 @@ void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const
     self->init_tutorial(c1p, c2p, scene_name);
 }
 
+int Demo_get_time(Demo* self) { // not shared_ptr!
+    return self->get_time();
+}
+
+int Demo_get_map_score(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_score(map_id);
+}
+
+int Demo_get_map_highest_chain(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_highest_chain(map_id);
+}
+
+int Demo_get_map_garbage_left(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_garbage_left(map_id);
+}
+
+int Demo_get_map_warning_level(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_warning_level(map_id);
+}
+
+int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_cubes_cleared_data(map_id);
+}
+
 void Demo_reinit(Demo* self) { // not shared_ptr!
     self->reinit();
 }

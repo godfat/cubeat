@@ -14,6 +14,8 @@ APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_puzzle(Demo*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*); // not shared_ptr!
+APIEXPORT void    Demo_init_map_starting_line(Demo*, int map_id, int n);
+APIEXPORT void    Demo_set_map_garbage_amount(Demo*, int map_id, int n);
 
 APIEXPORT int     Demo_get_time(Demo*); // not shared_ptr!
 APIEXPORT int     Demo_get_map_score(Demo*, int map_id); // not shared_ptr!

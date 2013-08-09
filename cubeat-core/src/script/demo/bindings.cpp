@@ -40,6 +40,14 @@ void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const
     self->init_tutorial(c1p, c2p, scene_name);
 }
 
+void Demo_init_map_starting_line(Demo* self, int map_id, int n) {
+    self->init_map_starting_line(map_id, n);
+}
+
+void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) {
+    self->set_map_garbage_amount(map_id, n);
+}
+
 int Demo_get_time(Demo* self) { // not shared_ptr!
     return self->get_time();
 }

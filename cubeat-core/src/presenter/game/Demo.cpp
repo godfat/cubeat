@@ -225,35 +225,17 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
     /// ////////////////////////////
 
-    //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
-    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
-
     if( game_mode_ == GM_TUT1 )
-    { // TUTORIAL related timer setup
-        tutorial_map1_purge_timer_ = pDummy(new int); // use this timer for all tutorial events?
-
-        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Demo::tutorial_interaction, this, 1), tutorial_map1_purge_timer_, 22500);
-
-        garbage_timer(map0_, 23000, 6);
-        garbage_timer(map0_, 29000, 6);
-        garbage_timer(map0_, 35000, 6);
-        garbage_timer(map0_, 45000, 12);
-        garbage_timer(map0_, 55000, 12);
-        garbage_timer(map0_, 65000, 12);
-        garbage_timer(map0_, 80000, 18);
-
-        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Demo::tutorial_interaction, this, 2), tutorial_map1_purge_timer_, 92500);
-
-        //clear player 2's map periodically
-        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Map::purge_all, map1_.get()), tutorial_map1_purge_timer_, 10000, -1);
+    {
+        script::Lua::call(L_, "init_override");
     }
 
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        std::tr1::bind(&Demo::game_start, this), 4000);
+
+    //start timer here.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
+    ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
     //start music
     audio::Sound::i().stopAll(); //stop old
@@ -374,6 +356,28 @@ void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::st
     init_(GM_TUT1, c1p, c2p, scene_name);
 }
 
+void Demo::init_map_starting_line(int const& map_id, int const& n) {
+    if( map_id == 1 ) {
+        map1_->purge_all();
+        map1_->map_setting()->starting_line(n);
+        map1_->init_cubes();
+    } else {
+        map0_->purge_all();
+        map0_->map_setting()->starting_line(n);
+        map0_->init_cubes();
+    }
+}
+
+void Demo::set_map_garbage_amount(int const& map_id, int const& n) {
+    if( map_id == 1 ) {
+        map1_->set_garbage_amount(n);
+        map0_->new_garbage_event()(0, 0, n);
+    } else {
+        map0_->set_garbage_amount(n);
+        map1_->new_garbage_event()(0, 0, n);
+    }
+}
+
 int  Demo::get_time() const {
     return min_*60 + sec_;
 }
@@ -478,11 +482,6 @@ void Demo::starting_effect(bool const& inplace)
             vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
             vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
             950u, 0, cb);
-
-        if( game_mode_ == GM_TUT1 ) { // very hacky to add this here
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Demo::tutorial_interaction, this, 0), shared_from_this(), 900);
-        }
     }
     script::Lua::call(L_, "slide_out", inplace);
 }

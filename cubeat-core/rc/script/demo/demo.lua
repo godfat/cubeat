@@ -62,6 +62,11 @@ end
 -----------------------------------------
 -- This really should just be a temporary solution, a separated menu page should be better
 
+function init_override()
+  demo_:init_map_starting_line(0, 5);
+  demo_:set_map_garbage_amount(0, 20);
+end
+
 function tutorial_update(state, data)
   
   print("Lua: ".."tutorial state "..tostring(state))

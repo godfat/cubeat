@@ -62,7 +62,9 @@ end
 -----------------------------------------
 -- This really should just be a temporary solution, a separated menu page should be better
 
-function init_override()
+function init_override(in_place, submode)
+  print("Inplace: "..tostring(in_place))
+  print("Submode: "..submode)
   demo_:init_map_starting_line(0, 5);
   demo_:set_map_garbage_amount(0, 20);
 end

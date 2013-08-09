@@ -89,7 +89,7 @@ pDemo Demo::init()
     return shared_from_this();
 }
 
-void Demo::init_(int const& game_mode, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace)
+void Demo::init_(int const& game_mode, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace, int const& submode)
 {
     game_mode_ = game_mode;
     c1p_ = c1p;
@@ -227,7 +227,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     if( game_mode_ == GM_TUT1 )
     {
-        script::Lua::call(L_, "init_override");
+        script::Lua::call(L_, "init_override", inplace, submode);
     }
 
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
@@ -351,9 +351,9 @@ void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name)
     init_for_puzzle_(c1p, scene_name, 2, false);
 }
 
-void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
+void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& in_place, int const& submode)
 {
-    init_(GM_TUT1, c1p, c2p, scene_name);
+    init_(GM_TUT1, c1p, c2p, scene_name, in_place, submode);
 }
 
 void Demo::init_map_starting_line(int const& map_id, int const& n) {

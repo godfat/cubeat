@@ -41,7 +41,7 @@ local function init(demo, parent)
     switch.slide_out_title()
   end)
   menu.btn_tut1:on_press(function(self)
-    demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1') -- test
+    demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1', false, 1) -- test
     switch.slide_out_title()
     local filemark = io.open(basepath().."rc/config/tmp/tutored", "w") 
     filemark:write("1") -- just write something

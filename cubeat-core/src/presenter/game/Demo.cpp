@@ -133,11 +133,8 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
-    if( game_mode_ == GM_PVP || game_mode_ == GM_TUT1 ) {
-        player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::Player::create(input1, 1);
-    }
-    else if( game_mode_ == GM_PVC ) {
+
+    if( game_mode_ == GM_PVC ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
@@ -155,6 +152,9 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
             ctrl::EventDispatcher::i().get_timer_dispatcher("input")->set_speed(speed);
             ctrl::EventDispatcher::i().get_timer_dispatcher("global")->set_speed(speed);
         }
+    } else { // Make PVP a default
+        player0_ = ctrl::Player::create(input0, 0);
+        player1_ = ctrl::Player::create(input1, 1);
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);
@@ -166,11 +166,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     // setup map settings
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
-
-    if( game_mode_ == GM_TUT1 ) {
-        set0->sink_speed(120.0);
-        set1->starting_line(0);
-    }
 
     // update map settings with player passive modification:
 // WTF MEMO 2012.9 failed to adjust for balance
@@ -244,11 +239,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     //ready_go(4);
     starting_effect(inplace);
-}
-
-void Demo::garbage_timer(pMap m, std::time_t time, int amount) {
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Map::push_garbage, m.get(), amount), tutorial_map1_purge_timer_, time);
 }
 
 void Demo::tutorial_interaction(int state)
@@ -564,11 +554,7 @@ void Demo::game_start()
     if( game_mode_ != GM_PUZZLE ) {
         map0_->start_dropping();
         player1_->subscribe_player_specific_interactions();
-        if( game_mode_ != GM_TUT1 ) {
-            map1_->start_dropping();
-        } else {
-            map1_->map_setting()->garbage_dumpable(true); // only garbages are generated for map1_ in tutorials.
-        }
+        map1_->start_dropping();
     }
 
     if( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG )
@@ -793,11 +779,7 @@ void Demo::game_stop()
         map1_->stop_dropping();
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-
-        if( game_mode_ == GM_TUT1 ) {
-            tutorial_map1_purge_timer_.reset();
-        }
-    }
+   }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
@@ -886,7 +868,7 @@ void Demo::end(pMap lose_map)
         if( lose_map == map0_ ) {
             lose_t_->set<Pos2D>( pos1 );
             win_t_->set<Pos2D>( pos2 );
-            if( game_mode_ == GM_PVC || game_mode_ == GM_TUT1 )
+            if( game_mode_ == GM_PVC )
                 audio::Sound::i().playBuffer("3/3c/lose.wav");
             else
                 audio::Sound::i().playBuffer("3/3c/win.wav");

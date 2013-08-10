@@ -120,8 +120,6 @@ private:
     //temp: hack for music test
     void music_state(bool);
 
-    //temp: helper for push_garbage periodically when in tutorial or challenge
-    void garbage_timer(pMap, std::time_t, int amount);
     void tutorial_interaction(int);
 
 protected:
@@ -161,7 +159,6 @@ protected:
     // temp: hack, just for test
     bool music_state_, music_state_old_;
     pDummy timer_music_state_;
-    pDummy tutorial_map1_purge_timer_;
 
     lua_State* L_;
 };

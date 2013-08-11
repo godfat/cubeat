@@ -65,8 +65,10 @@ end
 function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
-  demo_:init_map_starting_line(0, 5);
-  demo_:set_map_garbage_amount(0, 20);
+  if submode == 1 then
+    demo_:init_map_starting_line(0, 5);
+    demo_:set_map_garbage_amount(0, 20);
+  end
 end
 
 function tutorial_update(state, data)

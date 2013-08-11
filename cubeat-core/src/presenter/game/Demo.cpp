@@ -220,11 +220,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
     /// ////////////////////////////
 
-    if( game_mode_ == GM_TUT1 )
-    {
-        script::Lua::call(L_, "init_override", inplace, submode);
-    }
-
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
 //        std::tr1::bind(&Demo::game_start, this), 4000);
 
@@ -255,7 +250,7 @@ void Demo::tutorial_interaction(int state)
     }
 }
 
-void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace)
+void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace, int const& submode)
 {
     game_mode_ = GM_PUZZLE; // assign this value to Puzzle Demo for now
     c1p_ = c1p;
@@ -283,10 +278,16 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input = ctrl::InputMgr::i().getInputByIndex(0);
     player0_ = ctrl::Player::create(input, 0);
-    player0_->push_ally(0).player_hit_event(bind(&Demo::puzzle_started, this));
+    player0_->push_ally(0);
 
-    // setup map0
-    map0_ = utils::MapLoader::generate( puzzle_level_ );
+    if( submode == 1 ) { /// WTF TEMP, need to designate submode enumerations.
+        data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
+        map0_ = presenter::Map::create(set0, player0_);
+    } else {
+        // setup map
+        map0_ = utils::MapLoader::generate( puzzle_level_ );
+        player0_->player_hit_event(bind(&Demo::puzzle_started, this));
+    }
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
     ///NEW: MAKE PLAYER KNOWS ABOUT MAP
@@ -299,6 +300,8 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
     win_ = false, puzzle_started_ = false, end_ = false;
 
+    script::Lua::call(L_, "init_override", inplace, submode);
+
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
@@ -308,6 +311,10 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
         audio::Sound::i().stopAll(); //stop old
         stage_->playBGM();
     }
+
+/// WTF MEMO HERE:
+///     After removing and trying to merge GM_TUT1, 2P button event bindings will crash the game.
+///     The likely cause is in starting_effect() call.
 
     starting_effect(inplace);
 }
@@ -343,11 +350,12 @@ void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name)
 
 void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& in_place, int const& submode)
 {
-    init_(GM_TUT1, c1p, c2p, scene_name, in_place, submode);
+    //init_(GM_TUT1, c1p, c2p, scene_name, in_place, submode);
+    init_for_puzzle_(c1p, scene_name, 2, in_place, submode);
 }
 
 void Demo::init_map_starting_line(int const& map_id, int const& n) {
-    if( map_id == 1 ) {
+    if( map_id == 1 && map1_ ) {
         map1_->purge_all();
         map1_->map_setting()->starting_line(n);
         map1_->init_cubes();
@@ -358,13 +366,17 @@ void Demo::init_map_starting_line(int const& map_id, int const& n) {
     }
 }
 
+/// WTF MEMO Here... Another problem. Without map1, I can't call this method at all.
+/// Likely cause is the animation events... event though I've null-checked map1_,
+/// inside of set_garbage_amount() method, there are other problems....
 void Demo::set_map_garbage_amount(int const& map_id, int const& n) {
-    if( map_id == 1 ) {
+    if( map_id == 1 && map1_ ) {
         map1_->set_garbage_amount(n);
         map0_->new_garbage_event()(0, 0, n);
     } else {
         map0_->set_garbage_amount(n);
-        map1_->new_garbage_event()(0, 0, n);
+        if( map1_ )
+            map1_->new_garbage_event()(0, 0, n);
     }
 }
 
@@ -551,8 +563,8 @@ void Demo::game_start()
     scene_->allowPicking(true);
 
     player0_->subscribe_player_specific_interactions();
-    if( game_mode_ != GM_PUZZLE ) {
-        map0_->start_dropping();
+    if( game_mode_ != GM_PUZZLE ) {  /// This is a big problem... PUZZLE mode's hardcoded setup process
+        map0_->start_dropping();     /// Can't be used with others very well.
         player1_->subscribe_player_specific_interactions();
         map1_->start_dropping();
     }
@@ -1148,6 +1160,11 @@ bool predicate_column_full_and_has_enough_garbage(pMap const& m0, pMap const& m1
 
 void Demo::cycle()
 {
+
+    /// NEXT BIG PROBLEM:
+    /// GM_PUZZLE is flooded here......... how to fix?
+
+
     clock_t t0 = 0x0fffffff, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0;
     if( player0_ ) { //it's just some condition that the game is initialized, because we firstly initialized player0_
         t0 = clock();

@@ -112,7 +112,7 @@ protected:
 
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false, int const& submode = 0);
-    void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false);
+    void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false, int const& submode = 0);
 
     //temp: hack for puzzle integrated demo
     void puzzle_started();

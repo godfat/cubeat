@@ -409,7 +409,6 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
     // drop them according to the empty column
     presenter::pMap owner = owner_.lock();
-    presenter::pMap main_enemy = owner->garbage_lands().front().lock();
     int this_frame_lands = 0;
     for( unsigned int j = 0; j < row_empty.size(); ++j ) {
         //CORRECTED: actually, we don't want to do it upside-down.
@@ -428,7 +427,10 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     }
     //2012.05 self garbage_left_ minus n,
     //means garbage effects that the opponent has to minus n
-    main_enemy->pop_garbage_event()( this_frame_lands);
+
+    if( presenter::pMap main_enemy = owner->garbage_lands().front().lock() ) {
+        main_enemy->pop_garbage_event()( this_frame_lands);
+    }
 
     // 2012.09 remove player ability for now MEMO WTF
 //    if( this_frame_lands > 0 && garbage_left_ < 1 ) { //if garbage is actually less then 1, just pop all garbage animations

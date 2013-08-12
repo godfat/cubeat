@@ -87,10 +87,6 @@ local function init(demo, parent)
     local ch1 = random(6)+1
     local ch2 = random(6)+1
     demo:init_cpudemo("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1)
-    event.on_timer("global", function() 
-      print(demo:get_map_score(1)) 
-      print(demo:get_map_highest_chain(1))
-      print(demo:get_map_cubes_cleared_data(1)[1]) end, 3000, -1 )
     switch.slide_out_title()
   end)
     

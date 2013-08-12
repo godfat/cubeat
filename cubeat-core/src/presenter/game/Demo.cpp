@@ -45,7 +45,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(GM_PVC),
-     ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false), L_(0)
+     submode_(0), ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false), L_(0)
 {
 }
 
@@ -77,7 +77,6 @@ pDemo Demo::init()
     luaL_openlibs(L_);
     script::Lua::run_script(L_, Conf::i().script_path("demo/demo.lua").c_str());
     script::Lua::call(L_, "init", static_cast<void*>(this));
-    script::Lua::call(L_, "mainmenu");
 
     /*** Ok, we handover the control to script from here on. ***/
 
@@ -237,26 +236,27 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     //ready_go(4);
     starting_effect(inplace);
 }
-
-void Demo::tutorial_interaction(int state)
-{
-    if( L_ ) {
-        // skip if we fulfilled this condition
-        int data = 0;
-        if( state == 1 && map0_->match_count() >= 9 ) return;
-
-        if( state == 1 ) data = map0_->match_count();
-        if( state == 2 ) data = map0_->score();
-
-        script::Lua::call(L_, "tutorial_update", state, data);
-    }
-}
+//
+//void Demo::tutorial_interaction(int state)
+//{
+//    if( L_ ) {
+//        // skip if we fulfilled this condition
+//        int data = 0;
+//        if( state == 1 && map0_->match_count() >= 9 ) return;
+//
+//        if( state == 1 ) data = map0_->match_count();
+//        if( state == 2 ) data = map0_->score();
+//
+//        script::Lua::call(L_, "tutorial_update", state, data);
+//    }
+//}
 
 void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace, int const& submode)
 {
     btn_reinit_.reset();
 
     game_mode_ = GM_PUZZLE; // assign this value to Puzzle Demo for now
+    submode_   = submode;
     c1p_ = c1p;
     sconf_ = scene_name;
     music_state_ = false;
@@ -284,13 +284,12 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
     player0_ = ctrl::Player::create(input, 0);
     player0_->push_ally(0);
 
-    if( submode == 1 ) { /// WTF TEMP, need to designate submode enumerations.
+    // setup map
+    if( submode_ == 0 ) {
+        map0_ = utils::MapLoader::generate( puzzle_level_ );
+    } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
         map0_ = presenter::Map::create(set0, player0_);
-    } else {
-        // setup map
-        map0_ = utils::MapLoader::generate( puzzle_level_ );
-        player0_->player_hit_event(bind(&Demo::puzzle_started, this));
     }
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 
@@ -302,9 +301,10 @@ void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_nam
     setup_ui();
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
-    win_ = false, puzzle_started_ = false, end_ = false;
 
-    script::Lua::call(L_, "init_override", inplace, submode);
+    puzzle_started_ = false, end_ = false;
+
+    script::Lua::call(L_, "init_override", inplace, submode_);
 
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
@@ -347,9 +347,9 @@ void Demo::init_ai_logging(std::string const& c1p, std::string const& c2p, std::
     //init_(3, c1p, c2p, scene_name);
 }
 
-void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name)
+void Demo::init_puzzle(std::string const& c1p, std::string const& scene_name, int const& level, bool const& in_place)
 {
-    init_for_puzzle_(c1p, scene_name, 2, false);
+    init_for_puzzle_(c1p, scene_name, level, in_place);
 }
 
 void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& in_place, int const& submode)
@@ -384,6 +384,10 @@ void Demo::set_map_garbage_amount(int const& map_id, int const& n) {
     }
 }
 
+void Demo::set_only_one_shot_for_puzzle() {
+    player0_->player_hit_event(bind(&Demo::remove_all_game_scene_obj_event, this));
+}
+
 int  Demo::get_time() const {
     return min_*60 + sec_;
 }
@@ -416,6 +420,22 @@ int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {
     return map_id == 1 ?
         map1_->cubes_cleared_data() :
         map0_->cubes_cleared_data();
+}
+
+bool Demo::is_map_all_waiting(int const& map_id) const {
+    return map_id == 1 ?
+        map1_->all_waiting() :
+        map0_->all_waiting();
+}
+
+bool Demo::is_map_empty(int const& map_id) const {
+    return map_id == 1 ?
+        map1_->all_empty() :
+        map0_->all_empty();
+}
+
+bool Demo::is_puzzle_started() const {
+    return puzzle_started_;
 }
 
 void Demo::run_next_log()
@@ -911,36 +931,37 @@ void Demo::end(pMap lose_map)
             bind(&Demo::setup_end_button, this), 1000);
     }
     else {     // WTF BBQ!!!!!!!!!!!!!!!!!!!
-        blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
-        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
-        audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );
-
-        if( win_ ) {
-            win_t_->set<Visible>(true);
-            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
-            win_t_->set<Pos2D>( pos );
-            vec3 v0(0,0,0), v1(1,1,1);
-            win_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
-        }
-        else {
-            lose_t_->set<Visible>(true);
-            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
-            lose_t_->set<Pos2D>( pos );
-            vec3 v0(0,0,0), v1(1,1,1);
-            lose_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
-        }
-
-        end_text_->set<Visible>(true);
-        end_text_->changeText( win_ ? "to next level?" : "try again at same level?" );
-        end_text2_->set<Visible>(true);
-        end_text2_->changeText( "\nyes: left click\nleave: right click" );
-        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 50) );
-        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 100) );
-        end_text_-> set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-        end_text2_->set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-        using std::tr1::bind;
-        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Demo::setup_end_button, this), 1000);
+        script::Lua::call(L_, "ending", submode_);
+//        blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
+//        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
+//        audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );
+//
+//        if( win_ ) {
+//            win_t_->set<Visible>(true);
+//            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
+//            win_t_->set<Pos2D>( pos );
+//            vec3 v0(0,0,0), v1(1,1,1);
+//            win_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+//        }
+//        else {
+//            lose_t_->set<Visible>(true);
+//            vec2 pos = vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 - 50);
+//            lose_t_->set<Pos2D>( pos );
+//            vec3 v0(0,0,0), v1(1,1,1);
+//            lose_t_->setDepth(-750).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+//        }
+//
+//        end_text_->set<Visible>(true);
+//        end_text_->changeText( win_ ? "to next level?" : "try again at same level?" );
+//        end_text2_->set<Visible>(true);
+//        end_text2_->changeText( "\nyes: left click\nleave: right click" );
+//        end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 50) );
+//        end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() / 2, Conf::i().SCREEN_H() / 2 + 100) );
+//        end_text_-> set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+//        end_text2_->set<Alpha>(0).setDepth(-750).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+//        using std::tr1::bind;
+//        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//            bind(&Demo::setup_end_button, this), 1000);
     }
 }
 
@@ -977,7 +998,7 @@ void Demo::end_sequence1()
     //App::i().launchMainMenu();
     std::cout << "game_demo end completed." << std::endl;
 
-    script::Lua::call(L_, "mainmenu");
+    script::Lua::call(L_, "cleanup", submode_);
     leaving_effect();
 }
 
@@ -1002,10 +1023,11 @@ void Demo::reinit()
     if( game_mode_ != GM_PUZZLE ) { // puzzle demo WTF temp
         init_(game_mode_, c1p_, c2p_, sconf_, true);
     } else {
-        int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_;
-        if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
-        else if( new_puzzle_lv < 2 ) new_puzzle_lv = 2;
-        init_for_puzzle_( c1p_, sconf_, new_puzzle_lv, true );
+/// WTF MEMO: puzzle_level_ assignment should be more high level than this, assign it when lua calls init_for_something().
+//        int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_;
+//        if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
+//        else if( new_puzzle_lv < 2 ) new_puzzle_lv = 2;
+//        init_for_puzzle_( c1p_, sconf_, new_puzzle_lv, true );
     }
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
@@ -1139,7 +1161,7 @@ void Demo::music_state(bool f) {
     music_state_ = f;
 }
 
-void Demo::puzzle_started() //This is a callback for obj_event, so you cannot clear obj_event inside this.
+void Demo::remove_all_game_scene_obj_event() //This is a callback for obj_event, so you cannot clear obj_event inside this.
 {
     puzzle_started_ = true;
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -1224,20 +1246,21 @@ void Demo::cycle()
             if( game_mode_ != GM_PUZZLE ) player1_->cycle();
         }
 
-        if( game_mode_ == GM_PUZZLE ) {
-            //note: bad way........ but have no time.
-            if( !end_ ) {
-                if( puzzle_started_ ) {
-                    if( map0_->all_empty() ) {
-                        win_ = true;
-                        end(map0_);
-                    }
-                    else if( map0_->all_waiting() ) {
-                        win_ = false;
-                        end(map0_);
-                    }
-                }
-            }
+        if( game_mode_ == GM_PUZZLE && !end_ ) {
+            script::Lua::call(L_, "check_ending_condition_by_frame", submode_);
+//            //note: bad way........ but have no time.
+//            if( !end_ ) {
+//                if( puzzle_started_ ) {
+//                    if( map0_->all_empty() ) {
+//                        win_ = true;
+//                        end(map0_);
+//                    }
+//                    else if( map0_->all_waiting() ) {
+//                        win_ = false;
+//                        end(map0_);
+//                    }
+//                }
+//            }
         }
 
         t4 = clock();

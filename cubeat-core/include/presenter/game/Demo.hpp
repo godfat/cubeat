@@ -62,16 +62,20 @@ public:
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
-    void init_puzzle(std::string const&, std::string const&);
+    void init_puzzle(std::string const&, std::string const&, int const&, bool const&);
     void init_tutorial(std::string const&, std::string const&, std::string const&, bool const&, int const&);
     void init_map_starting_line(int const& map_id, int const& n);
     void set_map_garbage_amount(int const& map_id, int const& n);
+    void set_only_one_shot_for_puzzle();
     int  get_time() const;
     int  get_map_score(int const& map_id) const;
     int  get_map_highest_chain(int const& map_id) const;
     int  get_map_garbage_left(int const& map_id) const;
     int  get_map_warning_level(int const& map_id) const;
     int const* get_map_cubes_cleared_data(int const& map_id) const;
+    bool is_map_all_waiting(int const& map_id) const;
+    bool is_map_empty(int const& map_id) const;
+    bool is_puzzle_started() const;
     void reinit();
     void endgame(int);
     void quit();
@@ -80,6 +84,7 @@ public:
     void starting_effect(bool const&);
     void eventual_pause();
     void eventual_resume();
+    void end_sequence1();
 
     view::pScene get_ui_scene();
 
@@ -97,7 +102,6 @@ protected:
     void setup_ui();
 
     void setup_end_button();
-    void end_sequence1();
     void pause_quit();
 
     //temp: for pausing
@@ -115,12 +119,12 @@ private:
     void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false, int const& submode = 0);
 
     //temp: hack for puzzle integrated demo
-    void puzzle_started();
+    void remove_all_game_scene_obj_event();
 
     //temp: hack for music test
     void music_state(bool);
-
-    void tutorial_interaction(int);
+//
+//    void tutorial_interaction(int);
 
 protected:
     view::pScene scene_;
@@ -148,13 +152,13 @@ protected:
 
     int min_, sec_;
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
-    int game_mode_, ai_level_, ai_logging_times_, ai_logging_rounds_;
+    int game_mode_, submode_, ai_level_, ai_logging_times_, ai_logging_rounds_;
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 
     // temp: puzzle demo integrated hack
     int puzzle_level_;
-    bool win_, puzzle_started_, end_;
+    bool end_, puzzle_started_;
 
     // temp: hack, just for test
     bool music_state_, music_state_old_;

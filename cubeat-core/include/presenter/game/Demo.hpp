@@ -121,8 +121,6 @@ private:
 
     //temp: hack for music test
     void music_state(bool);
-//
-//    void tutorial_interaction(int);
 
 protected:
     view::pScene scene_;

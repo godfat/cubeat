@@ -236,20 +236,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     //ready_go(4);
     starting_effect(inplace);
 }
-//
-//void Demo::tutorial_interaction(int state)
-//{
-//    if( L_ ) {
-//        // skip if we fulfilled this condition
-//        int data = 0;
-//        if( state == 1 && map0_->match_count() >= 9 ) return;
-//
-//        if( state == 1 ) data = map0_->match_count();
-//        if( state == 2 ) data = map0_->score();
-//
-//        script::Lua::call(L_, "tutorial_update", state, data);
-//    }
-//}
 
 void Demo::init_single(int const& submode, int const& level, std::string const& c1p, std::string const& scene_name, bool const& inplace)
 {
@@ -1008,13 +994,6 @@ void Demo::reinit()
 
     if( game_mode_ != GM_SINGLE ) { // puzzle demo WTF temp
         init_(game_mode_, c1p_, c2p_, sconf_, true);
-    } else {
-/// WTF NOTE: puzzle_level_ => mode_level_
-/// WTF MEMO: puzzle_level_ assignment should be more high level than this, assign it when lua calls init_for_something().
-//        int new_puzzle_lv = win_ ? puzzle_level_+1 : puzzle_level_;
-//        if( new_puzzle_lv > 19 ) new_puzzle_lv = 19;
-//        else if( new_puzzle_lv < 2 ) new_puzzle_lv = 2;
-//        init_for_puzzle_( c1p_, sconf_, new_puzzle_lv, true );
     }
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
@@ -1235,19 +1214,6 @@ void Demo::cycle()
 
         if( game_mode_ == GM_SINGLE && !end_ ) {
             script::Lua::call(L_, "check_ending_condition_by_frame", submode_);
-//            //note: bad way........ but have no time.
-//            if( !end_ ) {
-//                if( puzzle_started_ ) {
-//                    if( map0_->all_empty() ) {
-//                        win_ = true;
-//                        end(map0_);
-//                    }
-//                    else if( map0_->all_waiting() ) {
-//                        win_ = false;
-//                        end(map0_);
-//                    }
-//                }
-//            }
         }
 
         t4 = clock();

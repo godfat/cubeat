@@ -118,7 +118,8 @@ function ending(submode)
     menu_.ask_end:on_press_ok(function(self)
       menu_.ask_end:set_visible(false)
       if win_ then 
-        puzzle_level_ = puzzle_level_ + 1 
+        if puzzle_level_ < 19 then puzzle_level_ = puzzle_level_ + 1 end
+        if puzzle_level_ < 2 then puzzle_level_ = 2 end
       end
       -- init SinglePlayer, in Submode 0, and Level is decided by puzzle_level_ variable
       -- the last true means "in_place" is true, there won't be slide-in/out effects.

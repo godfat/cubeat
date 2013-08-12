@@ -133,7 +133,8 @@ function ending(submode)
 end
 
 -- occurs right after game ends (no reinit, go back to menu)
--- Will be reached if you call leave_and_cleanup() in Lua
+-- Will be reached if you call leave_and_cleanup() in Lua, 
+-- it will also be called if you PAUSE & QUIT. 
 function cleanup(submode)
   puzzle_level_ = 2
 end

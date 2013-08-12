@@ -96,7 +96,7 @@ local function init(demo, parent)
   
   menu.btn_prac:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
-    demo:init_puzzle('char/char1_new', 'stage/jungle1')
+    demo:init_puzzle('char/char1_new', 'stage/jungle1', 2, false)
     switch.slide_out_title()
   end)  
   

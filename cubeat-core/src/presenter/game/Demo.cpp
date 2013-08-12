@@ -91,6 +91,8 @@ pDemo Demo::init()
 
 void Demo::init_(int const& game_mode, std::string const& c1p, std::string const& c2p, std::string const& scene_name, bool const& inplace, int const& submode)
 {
+    btn_reinit_.reset();
+
     game_mode_ = game_mode;
     c1p_ = c1p;
     c2p_ = c2p;
@@ -252,6 +254,8 @@ void Demo::tutorial_interaction(int state)
 
 void Demo::init_for_puzzle_(std::string const& c1p, std::string const& scene_name, int const& level, bool const& inplace, int const& submode)
 {
+    btn_reinit_.reset();
+
     game_mode_ = GM_PUZZLE; // assign this value to Puzzle Demo for now
     c1p_ = c1p;
     sconf_ = scene_name;
@@ -994,7 +998,6 @@ void Demo::reinit()
 {
     using std::tr1::bind;
     audio::Sound::i().playBuffer("4/4b.wav");
-    btn_reinit_.reset();
 
     if( game_mode_ != GM_PUZZLE ) { // puzzle demo WTF temp
         init_(game_mode_, c1p_, c2p_, sconf_, true);

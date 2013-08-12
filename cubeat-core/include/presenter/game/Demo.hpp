@@ -46,7 +46,7 @@ class Demo : public Object, public std::tr1::enable_shared_from_this<Demo>
     typedef std::tr1::shared_ptr<int> pDummy;
 
     // added prelimenary enums for game_mode_, but actually I really need to be able to distinguish "how many player and how many AI"
-    enum { GM_PUZZLE = -1, GM_PVP = 0, GM_PVC, GM_CVC, GM_LOG, GM_TUT1 };
+    enum { GM_SINGLE = -1, GM_PVP = 0, GM_PVC, GM_CVC, GM_LOG };
 
 public:
     typedef std::tr1::shared_ptr<Demo> pointer_type;
@@ -62,8 +62,7 @@ public:
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
-    void init_puzzle(std::string const&, std::string const&, int const&, bool const&);
-    void init_tutorial(std::string const&, std::string const&, std::string const&, bool const&, int const&);
+    void init_single(int const&, int const&, std::string const&, std::string const&, bool const& inplace = false);
     void init_map_starting_line(int const& map_id, int const& n);
     void set_map_garbage_amount(int const& map_id, int const& n);
     void set_only_one_shot_for_puzzle();
@@ -116,7 +115,6 @@ protected:
 
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false, int const& submode = 0);
-    void init_for_puzzle_(std::string const&, std::string const&, int const&, bool const& inplace = false, int const& submode = 0);
 
     //temp: hack for puzzle integrated demo
     void remove_all_game_scene_obj_event();
@@ -156,8 +154,7 @@ protected:
     bool some_ui_inited_;
     bool gauge1_flag_, gauge2_flag_;
 
-    // temp: puzzle demo integrated hack
-    int puzzle_level_;
+    int mode_level_;
     bool end_, puzzle_started_;
 
     // temp: hack, just for test

@@ -120,7 +120,9 @@ function ending(submode)
       if win_ then 
         puzzle_level_ = puzzle_level_ + 1 
       end
-      demo_:init_puzzle('char/char1_new', 'stage/jungle1', puzzle_level_, true) 
+      -- init SinglePlayer, in Submode 0, and Level is decided by puzzle_level_ variable
+      -- the last true means "in_place" is true, there won't be slide-in/out effects.
+      demo_:init_single(0, puzzle_level_, 'char/char1_new', 'stage/jungle1', true) 
     end, 1)
     
     menu_.ask_end:on_press_cancel(function(self)

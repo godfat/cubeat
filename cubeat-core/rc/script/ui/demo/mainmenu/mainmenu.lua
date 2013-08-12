@@ -96,7 +96,9 @@ local function init(demo, parent)
   
   menu.btn_prac:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
-    demo:init_puzzle('char/char1_new', 'stage/jungle1', 2, false)
+    -- init SinglePlayer, in Submode 0, and Level is 2 by default
+    -- the last false means "in_place" is false, there will be slide-in/out effects.
+    demo:init_single(0, 2, 'char/char1_new', 'stage/jungle1', false)
     switch.slide_out_title()
   end)  
   

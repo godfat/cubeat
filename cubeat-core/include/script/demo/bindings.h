@@ -12,8 +12,7 @@ APIEXPORT void    Demo_init_vs_ppl(Demo*, char const*, char const*, char const*)
 APIEXPORT void    Demo_init_vs_cpu(Demo*, char const*, char const*, char const*, int); // not shared_ptr!
 APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
-APIEXPORT void    Demo_init_puzzle(Demo*, char const*, char const*, int, bool); // not shared_ptr!
-APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*, bool, int); // not shared_ptr!
+APIEXPORT void    Demo_init_single(Demo*, int, int, char const*, char const*, bool); // not shared_ptr!
 APIEXPORT void    Demo_init_map_starting_line(Demo*, int map_id, int n); // not shared_ptr!
 APIEXPORT void    Demo_set_map_garbage_amount(Demo*, int map_id, int n); // not shared_ptr!
 APIEXPORT void    Demo_set_only_one_shot_for_puzzle(Demo*); // not shared_ptr!

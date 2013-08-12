@@ -131,6 +131,22 @@ function ending(submode)
     end, 1)
     
     menu_.ask_end:set_visible(true)
+  
+  else
+    menu_.ask_end:set_title('END')
+    menu_.ask_end.ok:change_text('Retry')
+    menu_.ask_end.cancel:change_text('Quit')
+    
+    menu_.ask_end:on_press_ok(function(self)
+      menu_.ask_end:set_visible(false)
+      demo_:init_single(1, 1, 'char/char1_new', 'stage/jungle1', true)
+    end, 1)
+    
+    menu_.ask_end:on_press_cancel(function(self)
+      menu_.ask_end:set_visible(false)
+      demo_:leave_and_cleanup()
+    end, 1)
+    menu_.ask_end:set_visible(true)
   end
 end
 

@@ -290,6 +290,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
         map0_ = presenter::Map::create(set0, player0_);
+        map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
     }
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
 

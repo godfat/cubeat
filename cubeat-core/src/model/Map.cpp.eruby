@@ -428,7 +428,8 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //2012.05 self garbage_left_ minus n,
     //means garbage effects that the opponent has to minus n
 
-    if( presenter::pMap main_enemy = owner->garbage_lands().front().lock() ) {
+    if( owner->garbage_lands().size() ) {
+        presenter::pMap main_enemy = owner->garbage_lands().front().lock();
         main_enemy->pop_garbage_event()( this_frame_lands);
     }
 

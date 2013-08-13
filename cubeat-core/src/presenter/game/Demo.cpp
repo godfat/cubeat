@@ -563,7 +563,8 @@ void Demo::game_start()
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
         map0_->start_dropping();
     }
-    if( game_mode_ != GM_SINGLE ) {
+    else if( game_mode_ != GM_SINGLE ) {
+        map0_->start_dropping();
         player1_->subscribe_player_specific_interactions();
         map1_->start_dropping();
     }

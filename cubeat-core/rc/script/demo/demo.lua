@@ -6,6 +6,7 @@ local switch= require 'rc/script/ui/demo/switch/switch'
 local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
+local challenge = require 'rc/script/ui/demo/challengemenu/challenge'
 
 ----------------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ function slide_in()
   switch.load_page('mainmenu', 'in')
   switch.slide_in_page_obj()
   
-  if ask_panel_ then ask_panel_:set_visible(false) end
+  --if ask_panel_ then ask_panel_:set_visible(false) end
 end
 
 function init(demo)
@@ -66,14 +67,10 @@ end
 function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
-  demo_:init_map_starting_line(0, 5);
+  --demo_:init_map_starting_line(0, 5);
   --demo_:set_map_garbage_amount(0, 20);
   
-  event.on_timer("challenge", function() 
-    --print(demo_:get_map_score(1)) 
-    --print(demo_:get_map_highest_chain(1))
-    --print(demo_:get_map_cubes_cleared_data(1)[1])
-    end, 1000, -1 )
+  challenge.setup(demo_, in_place, submode)
 end
 
 function tutorial_update(state, data)

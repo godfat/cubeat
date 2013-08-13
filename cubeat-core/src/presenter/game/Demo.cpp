@@ -279,6 +279,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
         map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
     }
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
+    map0_->stop_dropping(); //make them stop dropping from the very beginning.
 
     ///NEW: MAKE PLAYER KNOWS ABOUT MAP
     std::vector< presenter::wpMap > map_list;
@@ -559,8 +560,10 @@ void Demo::game_start()
     scene_->allowPicking(true);
 
     player0_->subscribe_player_specific_interactions();
-    if( game_mode_ != GM_SINGLE ) {  /// This is a big problem... PUZZLE mode's hardcoded setup process
-        map0_->start_dropping();     /// Can't be used with others very well.
+    if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
+        map0_->start_dropping();
+    }
+    if( game_mode_ != GM_SINGLE ) {
         player1_->subscribe_player_specific_interactions();
         map1_->start_dropping();
     }

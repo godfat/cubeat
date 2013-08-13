@@ -87,10 +87,6 @@ local function init(demo, parent)
     local ch1 = random(6)+1
     local ch2 = random(6)+1
     demo:init_cpudemo("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1)
-    event.on_timer("global", function() 
-      print(demo:get_map_score(1)) 
-      print(demo:get_map_highest_chain(1))
-      print(demo:get_map_cubes_cleared_data(1)[1]) end, 3000, -1 )
     switch.slide_out_title()
   end)
     
@@ -100,7 +96,9 @@ local function init(demo, parent)
   
   menu.btn_prac:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
-    demo:init_puzzle('char/char1_new', 'stage/jungle1')
+    -- init SinglePlayer, in Submode 0, and Level is 2 by default
+    -- the last false means "in_place" is false, there will be slide-in/out effects.
+    demo:init_single(0, 2, 'char/char1_new', 'stage/jungle1', false)
     switch.slide_out_title()
   end)  
   

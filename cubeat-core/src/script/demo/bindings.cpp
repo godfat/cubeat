@@ -32,19 +32,19 @@ void Demo_init_ai_logging(Demo* self, char const* c1p, char const* c2p, char con
     self->init_ai_logging(c1p, c2p, scene_name);
 }
 
-void Demo_init_puzzle(Demo* self, char const* c1p, char const* scene_name) { // not shared_ptr!
-    self->init_puzzle(c1p, scene_name);
+void Demo_init_single(Demo* self, int submode, int level, char const* c1p, char const* scene_name, bool in_place) { // not shared_ptr!
+    self->init_single(submode, level, c1p, scene_name, in_place);
 }
 
-void Demo_init_tutorial(Demo* self, char const* c1p, char const* c2p, char const* scene_name, bool in_place, int submode) { // not shared_ptr!
-    self->init_tutorial(c1p, c2p, scene_name, in_place, submode);
-}
-
-void Demo_init_map_starting_line(Demo* self, int map_id, int n) {
+void Demo_init_map_starting_line(Demo* self, int map_id, int n) { // not shared_ptr!
     self->init_map_starting_line(map_id, n);
 }
 
-void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) {
+void Demo_set_only_one_shot_for_puzzle(Demo* self) { // not shared_ptr!
+    self->set_only_one_shot_for_puzzle();
+}
+
+void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) { // not shared_ptr!
     self->set_map_garbage_amount(map_id, n);
 }
 
@@ -72,6 +72,18 @@ int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shar
     return self->get_map_cubes_cleared_data(map_id);
 }
 
+bool Demo_is_map_all_waiting(Demo* self, int map_id) { // not shared_ptr!
+    return self->is_map_all_waiting(map_id);
+}
+
+bool Demo_is_map_empty(Demo* self, int map_id) { // not shared_ptr!
+    return self->is_map_empty(map_id);
+}
+
+bool Demo_is_puzzle_started(Demo* self) { // not shared_ptr!
+    return self->is_puzzle_started();
+}
+
 void Demo_reinit(Demo* self) { // not shared_ptr!
     self->reinit();
 }
@@ -86,6 +98,10 @@ void Demo_eventual_pause(Demo* self) { // not shared_ptr!
 
 void Demo_eventual_resume(Demo* self) { // not shared_ptr!
     self->eventual_resume();
+}
+
+void Demo_leave_and_cleanup(Demo* self) { // not shared_ptr!
+    self->end_sequence1();
 }
 
 void Demo_quit(Demo* self) { // not shared_ptr!

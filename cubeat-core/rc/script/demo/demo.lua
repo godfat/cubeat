@@ -83,8 +83,8 @@ function init_override(in_place, submode)
     -- Currently don't do anything else than this when initializing PUZZLE.
     -- C++ handles generating PUZZLE map when initialization
   elseif submode == 1 then
-    demo_:init_map_starting_line(0, 5);
-    demo_:set_map_garbage_amount(0, 20);
+    demo_:init_map_starting_line(0, 5)
+    demo_:set_map_garbage_amount(0, 20)
   end
 end
 

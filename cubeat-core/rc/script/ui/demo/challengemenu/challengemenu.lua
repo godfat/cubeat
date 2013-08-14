@@ -3,9 +3,6 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
-local event  = require 'rc/script/event/event'
-local random = require 'rc/script/helper'.random
-local basepath = require 'rc/script/helper'.basepath
 local parameter= require 'rc/script/ui/demo/challengemenu/parameter'
 
 local function init(demo, parent)
@@ -23,16 +20,18 @@ local function init(demo, parent)
   menu.btn_back:set_scale(1.5)
   
   menu.btn_mode_1:on_press(function(self)
-  end)
-  menu.btn_mode_2:on_press(function(self)
-    local ch1 = random(6)+1
-    local ch2 = random(6)+1
-    demo:init_tutorial("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1, false, parameter.HighestChain)
+    demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
     switch.slide_out_title()
   end)
+  menu.btn_mode_2:on_press(function(self)
+    switch.load_page('challengesubmenu', nil, parameter.HighestChain)
+  end)
   menu.btn_mode_3:on_press(function(self)
+    switch.load_page('challengesubmenu', nil, parameter.WarningCondition)
   end)
   menu.btn_mode_4:on_press(function(self)
+    demo:init_single(parameter.TimeLimit, 1, 'char/char1_new', 'stage/jungle1', false)
+    switch.slide_out_title()
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('testmenu')

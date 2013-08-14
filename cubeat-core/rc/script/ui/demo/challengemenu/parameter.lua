@@ -2,9 +2,29 @@ return {
   player1 = 0,
   player2 = 1,
   --
-  OneShotClear      = 1,
-  HighestChain      = 2,
-  WarningCondition  = 3,
-  TimeLimit         = 4
+  OneShotClear      = 0,
+  HighestChain      = 1,
+  WarningCondition  = 2,
+  TimeLimit         = 3,
+  --
+  Highest_3Chain      = 10,
+  Highest_4Chain      = 11,
+  Highest_5Chain      = 12,
+  Highest_3Chain_1Min = 13,
+  Highest_4Chain_2Min = 14,
+  Highest_5Chain_3Min = 15,
+  --
+  WarningCondition_10 = 20,
+  WarningCondition_20 = 21,
+  WarningCondition_30 = 22,
+  WarningCondition_40 = 23,
+  WarningCondition_50 = 24,
+  --
+  TimeLimit_30Cube_1Min           = 30,
+  TimeLimit_70Cube_2Min           = 31,
+  TimeLimit_20CubeR_1Min          = 32,
+  TimeLimit_50CubeR_2Min          = 33,
+  TimeLimit_15CubeR_15CubeB_1Min  = 34,
+  TimeLimit_30CubeR_30CubeB_2Min  = 35
 }
 

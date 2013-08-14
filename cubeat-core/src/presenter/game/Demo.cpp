@@ -980,6 +980,10 @@ void Demo::end_sequence1()
 
 void Demo::pause_quit()
 {
+    // Pause & Quit should be the equivalent of game_stop() & end(),
+    // there are some stats to cleanup...
+    end_ = true;
+
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     //audio::Sound::i().pauseAll(false);
     btn_pause_.reset(); //reset button event subscribed by this handle.

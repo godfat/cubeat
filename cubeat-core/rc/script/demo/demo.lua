@@ -3,15 +3,17 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
+local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
+local challenge = require 'rc/script/ui/demo/challengemenu/challenge'
 
 ----------------------------------------------------------------------------
 
 local demo_
 local scene_
 
-local win_ = false -- win state for SinglePlayer modes.
+--local win_ = false -- win state for SinglePlayer modes.
 local puzzle_level_ = 2 
 
 local menu_ = {}
@@ -76,34 +78,39 @@ function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
   
-  win_ = false -- re-initialize certain states
+  challenge.set_win(false)  -- re-initialize certain states
   
   if submode == 0 then -- Puzzle Mode
     demo_:set_only_one_shot_for_puzzle()
     -- Currently don't do anything else than this when initializing PUZZLE.
     -- C++ handles generating PUZZLE map when initialization
-  elseif submode == 1 then
-    demo_:init_map_starting_line(0, 5)
-    demo_:set_map_garbage_amount(0, 20)
+  else
+    --demo_:init_map_starting_line(0, 5);
+    --demo_:set_map_garbage_amount(0, 20);
+    challenge.init_override(demo_, in_place, submode)
+    print('init override submode: ' .. tostring(submode))
   end
 end
 
 -- occurs each frame, after map and player states update,
 -- but it WILL NOT BE CALLED after endgame(map_id) is called.
 function check_ending_condition_by_frame(submode)
+  --print('-------------------- check_ending_condition_by_frame -----------------------')
   if submode == 0 then
     if demo_:is_puzzle_started() then 
       if demo_:is_map_empty(0) then
-        win_ = true
+        challenge.set_win(true)
         demo_:endgame(0) 
         -- NOTE: 
         -- In the merged "SinglePlayer" game modes, what you passed into endgame() is not relevent.
         -- You have to track win/lose state in Lua.
       elseif demo_:is_map_all_waiting(0) then
-        win_ = false
+        challenge.set_win(false)
         demo_:endgame(0)
       end
     end
+  else
+    challenge.check_ending_condition_by_frame(demo_, submode)
   end
 end
 
@@ -111,13 +118,13 @@ end
 -- mainly used for setting up ending UI
 function ending(submode)
   if submode == 0 then
-    menu_.ask_end:set_title( win_ and 'WIN' or 'LOSE' )
-    menu_.ask_end.ok:change_text( win_ and 'Next Level' or 'Retry' )
+    menu_.ask_end:set_title( challenge.get_win() and 'WIN' or 'LOSE' )
+    menu_.ask_end.ok:change_text( challenge.get_win() and 'Next Level' or 'Retry' )
     menu_.ask_end.cancel:change_text('Quit')
     
     menu_.ask_end:on_press_ok(function(self)
       menu_.ask_end:set_visible(false)
-      if win_ then 
+      if challenge.get_win() then 
         if puzzle_level_ < 19 then puzzle_level_ = puzzle_level_ + 1 end
         if puzzle_level_ < 2 then puzzle_level_ = 2 end
       end
@@ -134,13 +141,14 @@ function ending(submode)
     menu_.ask_end:set_visible(true)
   
   else
-    menu_.ask_end:set_title('END')
+    menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
     menu_.ask_end.ok:change_text('Retry')
     menu_.ask_end.cancel:change_text('Quit')
     
     menu_.ask_end:on_press_ok(function(self)
       menu_.ask_end:set_visible(false)
-      demo_:init_single(1, 1, 'char/char1_new', 'stage/jungle1', true)
+      demo_:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
+      print('reinit submode: ' .. tostring(submode))
     end, 1)
     
     menu_.ask_end:on_press_cancel(function(self)
@@ -155,8 +163,15 @@ end
 -- Will be reached if you call leave_and_cleanup() in Lua, 
 -- it will also be called if you PAUSE & QUIT. 
 function cleanup(submode)
+  print('-------- cleanup --------')
   puzzle_level_ = 2
 end
+
+--[[
+function mainmenu()
+  show_everything()
+end
+--]]
 
 -- This really should just be a temporary solution, a separated menu page should be better
 -- DEPRECATED

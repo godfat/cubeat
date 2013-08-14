@@ -366,8 +366,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 700);
 
             //log highest chain
-            if( (*i)->step() > highest_chain_ ) {
-                highest_chain_ = (*i)->step();
+            //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
+            //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
+            if( (*i)->step() - 1 > highest_chain_ ) {
+                highest_chain_ = (*i)->step() - 1;
             }
 
             i = chains_.erase(i);

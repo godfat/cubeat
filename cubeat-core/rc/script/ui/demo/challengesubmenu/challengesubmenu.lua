@@ -56,30 +56,30 @@ local function init(demo, parent, submode)
   if submode == parameter.WarningCondition then
     menu.panel = ui.new_image{ parent = parent, path='area_rect', x=0, y=0, w=300, h=350 }
     menu.panel:set_depth(-150)
-    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='garbage10' }
-    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='garbage20' }
-    menu.btn3 = ui.new_text{ parent=parent, x=80, y=120, size=32, depth=-200, title='garbage30' }
-    menu.btn4 = ui.new_text{ parent=parent, x=80, y=160, size=32, depth=-200, title='garbage40' }
-    menu.btn5 = ui.new_text{ parent=parent, x=80, y=200, size=32, depth=-200, title='garbage50' }
+    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='garbage20' }
+    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='garbage40' }
+    menu.btn3 = ui.new_text{ parent=parent, x=80, y=120, size=32, depth=-200, title='garbage60' }
+    menu.btn4 = ui.new_text{ parent=parent, x=80, y=160, size=32, depth=-200, title='garbage80' }
+    menu.btn5 = ui.new_text{ parent=parent, x=80, y=200, size=32, depth=-200, title='garbage100' }
     menu.back = ui.new_text{ parent=parent, x=80, y=280, size=32, depth=-200, title='back' }
     menu.btn1:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_10, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn2:on_press(function(self)
       demo:init_single(parameter.WarningCondition_20, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
-    menu.btn3:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_30, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn4:on_press(function(self)
+    menu.btn2:on_press(function(self)
       demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
+    menu.btn3:on_press(function(self)
+      demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
+      switch.slide_out_title()
+    end)
+    menu.btn4:on_press(function(self)
+      demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
+      switch.slide_out_title()
+    end)
     menu.btn5:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_50, 1, 'char/char1_new', 'stage/jungle1', false)
+      demo:init_single(parameter.WarningCondition_100, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
     menu.back:on_press(function(self)

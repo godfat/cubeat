@@ -20,8 +20,10 @@ local function init(demo, parent)
   menu.btn_back:set_scale(1.5)
   
   menu.btn_mode_1:on_press(function(self)
+    --[[
     demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
     switch.slide_out_title()
+    --]]
   end)
   menu.btn_mode_2:on_press(function(self)
     switch.load_page('challengesubmenu', nil, parameter.HighestChain)
@@ -30,8 +32,10 @@ local function init(demo, parent)
     switch.load_page('challengesubmenu', nil, parameter.WarningCondition)
   end)
   menu.btn_mode_4:on_press(function(self)
+  --[[
     demo:init_single(parameter.TimeLimit, 1, 'char/char1_new', 'stage/jungle1', false)
     switch.slide_out_title()
+    --]]
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('testmenu')

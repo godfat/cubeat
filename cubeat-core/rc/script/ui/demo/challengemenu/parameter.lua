@@ -14,11 +14,11 @@ return {
   Highest_4Chain_2Min = 14,
   Highest_5Chain_3Min = 15,
   --
-  WarningCondition_10 = 20,
-  WarningCondition_20 = 21,
-  WarningCondition_30 = 22,
-  WarningCondition_40 = 23,
-  WarningCondition_50 = 24,
+  WarningCondition_20 = 20,
+  WarningCondition_40 = 21,
+  WarningCondition_60 = 22,
+  WarningCondition_80 = 23,
+  WarningCondition_100 = 24,
   --
   TimeLimit_30Cube_1Min           = 30,
   TimeLimit_70Cube_2Min           = 31,

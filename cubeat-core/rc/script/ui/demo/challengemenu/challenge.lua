@@ -34,34 +34,34 @@ local function init_override(demo, in_place, submode)
     --print(demo:get_map_cubes_cleared_data(1)[1])
   end
   
-  -- WarningCondition_10
-  if submode == parameter.WarningCondition_10 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 10)
-  end
-  
   -- WarningCondition_20
   if submode == parameter.WarningCondition_20 then
     demo:init_map_starting_line(0, 10)
     demo:set_map_garbage_amount(0, 20)
   end
   
-  -- WarningCondition_30
-  if submode == parameter.WarningCondition_30 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 30)
-  end
-  
   -- WarningCondition_40
   if submode == parameter.WarningCondition_40 then
-    --demo:init_map_starting_line(0, 10)
+    demo:init_map_starting_line(0, 10)
     demo:set_map_garbage_amount(0, 40)
   end
   
-  -- WarningCondition_50
-  if submode == parameter.WarningCondition_50 then
+  -- WarningCondition_60
+  if submode == parameter.WarningCondition_60 then
     demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 50)
+    demo:set_map_garbage_amount(0, 60)
+  end
+  
+  -- WarningCondition_80
+  if submode == parameter.WarningCondition_80 then
+    demo:init_map_starting_line(0, 10)
+    demo:set_map_garbage_amount(0, 80)
+  end
+  
+  -- WarningCondition_100
+  if submode == parameter.WarningCondition_100 then
+    demo:init_map_starting_line(0, 10)
+    demo:set_map_garbage_amount(0, 100)
   end
 end
 
@@ -73,66 +73,58 @@ local check_condition = {}
 -- HighestChain
 check_condition[parameter.Highest_3Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if highest_chain>3 or highest_chain==3 then
+  if highest_chain>=3 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_4Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if highest_chain>4 or highest_chain==4 then
+  if highest_chain>=4 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_5Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if highest_chain>5 or highest_chain==5 then
+  if highest_chain>=5 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_3Chain_1Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if cur_time<60 and (highest_chain>3 or highest_chain==3) then
+  if cur_time<60 and highest_chain>=3 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
-  elseif cur_time>60 or cur_time==60 then
+  elseif cur_time>=60 then
     endgame(demo, false)
   end
 end
 check_condition[parameter.Highest_4Chain_2Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if cur_time<120 and (highest_chain>4 or highest_chain==4) then
+  if cur_time<120 and highest_chain>=4 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
-  elseif cur_time>120 or cur_time==120 then
+  elseif cur_time>=120 then
     endgame(demo, false)
   end
 end
 check_condition[parameter.Highest_5Chain_3Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
-  if cur_time<180 and (highest_chain>5 or highest_chain==5) then
+  if cur_time<180 and highest_chain>=5 then
+    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
-  elseif cur_time>180 or cur_time==180 then
+  elseif cur_time>=180 then
     endgame(demo, false)
   end
 end
 ----------------------------------
 --WarningCondition
-check_condition[parameter.WarningCondition_10] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
-  end
-end
 check_condition[parameter.WarningCondition_20] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
-  end
-end
-check_condition[parameter.WarningCondition_30] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(0)
   local warning_level = demo:get_map_warning_level(0)
   if garbage_left==0 and warning_level==0 then
@@ -142,13 +134,25 @@ end
 check_condition[parameter.WarningCondition_40] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(0)
   local warning_level = demo:get_map_warning_level(0)
-  --print('------ garbage_left: ' .. tostring(garbage_left) .. ' warning_level: ' .. tostring(warning_level) .. ' ------')
   if garbage_left==0 and warning_level==0 then
-    print('-------------- garbage_40 end game --------------')
     endgame(demo, true)
   end
 end
-check_condition[parameter.WarningCondition_50] = function(demo)
+check_condition[parameter.WarningCondition_60] = function(demo)
+  local garbage_left  = demo:get_map_garbage_left(0)
+  local warning_level = demo:get_map_warning_level(0)
+  if garbage_left==0 and warning_level==0 then
+    endgame(demo, true)
+  end
+end
+check_condition[parameter.WarningCondition_80] = function(demo)
+  local garbage_left  = demo:get_map_garbage_left(0)
+  local warning_level = demo:get_map_warning_level(0)
+  if garbage_left==0 and warning_level==0 then
+    endgame(demo, true)
+  end
+end
+check_condition[parameter.WarningCondition_100] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(0)
   local warning_level = demo:get_map_warning_level(0)
   if garbage_left==0 and warning_level==0 then

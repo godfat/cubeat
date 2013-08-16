@@ -7,6 +7,7 @@ local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
 local challenge = require 'rc/script/ui/demo/challengemenu/challenge'
+local jit = require 'jit'
 
 ----------------------------------------------------------------------------
 
@@ -85,10 +86,7 @@ function init_override(in_place, submode)
     -- Currently don't do anything else than this when initializing PUZZLE.
     -- C++ handles generating PUZZLE map when initialization
   else
-    --demo_:init_map_starting_line(0, 5);
-    --demo_:set_map_garbage_amount(0, 20);
     challenge.init_override(demo_, in_place, submode)
-    print('init override submode: ' .. tostring(submode))
   end
 end
 
@@ -97,7 +95,7 @@ end
 function check_ending_condition_by_frame(submode)
   --print('-------------------- check_ending_condition_by_frame -----------------------')
   if submode == 0 then
-    if demo_:is_puzzle_started() then 
+    if demo_:is_puzzle_started() then
       if demo_:is_map_empty(0) then
         challenge.set_win(true)
         demo_:endgame(0) 
@@ -118,8 +116,8 @@ end
 -- mainly used for setting up ending UI
 function ending(submode)
   if submode == 0 then
-    menu_.ask_end:set_title( challenge.get_win() and 'WIN' or 'LOSE' )
-    menu_.ask_end.ok:change_text( challenge.get_win() and 'Next Level' or 'Retry' )
+    menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
+    menu_.ask_end.ok:change_text( challenge.get_win() and 'Next' or 'Retry' )
     menu_.ask_end.cancel:change_text('Quit')
     
     menu_.ask_end:on_press_ok(function(self)

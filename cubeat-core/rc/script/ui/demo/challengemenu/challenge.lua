@@ -74,21 +74,18 @@ local check_condition = {}
 check_condition[parameter.Highest_3Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=3 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_4Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=4 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_5Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=5 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   end
 end
@@ -96,7 +93,6 @@ check_condition[parameter.Highest_3Chain_1Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time<60 and highest_chain>=3 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   elseif cur_time>=60 then
     endgame(demo, false)
@@ -106,7 +102,6 @@ check_condition[parameter.Highest_4Chain_2Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time<120 and highest_chain>=4 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   elseif cur_time>=120 then
     endgame(demo, false)
@@ -116,7 +111,6 @@ check_condition[parameter.Highest_5Chain_3Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time<180 and highest_chain>=5 then
-    print('------- highest chain: ' .. tostring(highest_chain) .. ' -----------')
     endgame(demo, true)
   elseif cur_time>=180 then
     endgame(demo, false)
@@ -157,6 +151,72 @@ check_condition[parameter.WarningCondition_100] = function(demo)
   local warning_level = demo:get_map_warning_level(0)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
+  end
+end
+----------------------------------
+--TimeLimit
+check_condition[parameter.TimeLimit_30Cube_1Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
+  local cube_g    = demo:get_map_cubes_cleared_data(0)[2]
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_y    = demo:get_map_cubes_cleared_data(0)[4]
+  local cube = cube_b + cube_g + cube_r + cube_y
+  if cur_time<60 and cube>=30 then
+    endgame(demo, true)
+  elseif cur_time>=60 then
+    endgame(demo, false)
+  end
+end
+check_condition[parameter.TimeLimit_70Cube_2Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
+  local cube_g    = demo:get_map_cubes_cleared_data(0)[2]
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_y    = demo:get_map_cubes_cleared_data(0)[4]
+  local cube = cube_b + cube_g + cube_r + cube_y
+  if cur_time<120 and cube>=70 then
+    endgame(demo, true)
+  elseif cur_time>=120 then
+    endgame(demo, false)
+  end
+end
+check_condition[parameter.TimeLimit_20CubeR_1Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  if cur_time<60 and cube_r>=20 then
+    endgame(demo, true)
+  elseif cur_time>=60 then
+    endgame(demo, false)
+  end
+end
+check_condition[parameter.TimeLimit_50CubeR_2Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  if cur_time<120 and cube_r>=50 then
+    endgame(demo, true)
+  elseif cur_time>=120 then
+    endgame(demo, false)
+  end
+end
+check_condition[parameter.TimeLimit_15CubeR_15CubeB_1Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  if cur_time<60 and cube_b>=15 and cube_r>=15 then
+    endgame(demo, true)
+  elseif cur_time>=60 then
+    endgame(demo, false)
+  end
+end
+check_condition[parameter.TimeLimit_30CubeR_30CubeB_2Min] = function(demo)
+  local cur_time  = demo:get_time()
+  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
+  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  if cur_time<120 and cube_b>=30 and cube_r>=30 then
+    endgame(demo, true)
+  elseif cur_time>=120 then
+    endgame(demo, false)
   end
 end
 

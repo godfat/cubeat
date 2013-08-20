@@ -48,6 +48,18 @@ void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) { // not shared_
     self->set_map_garbage_amount(map_id, n);
 }
 
+void Demo_set_stage_name(Demo* self, char const* str) { // not shared_ptr!
+    self->set_stage_name(str);
+}
+
+void Demo_set_countdown(Demo* self, bool flag) { // not shared_ptr!
+    self->set_countdown(flag);
+}
+
+void Demo_set_time(Demo* self, int time) { // not shared_ptr!
+    self->set_time(time);
+}
+
 int Demo_get_time(Demo* self) { // not shared_ptr!
     return self->get_time();
 }

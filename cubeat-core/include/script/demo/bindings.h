@@ -16,6 +16,9 @@ APIEXPORT void    Demo_init_single(Demo*, int, int, char const*, char const*, bo
 APIEXPORT void    Demo_init_map_starting_line(Demo*, int map_id, int n); // not shared_ptr!
 APIEXPORT void    Demo_set_map_garbage_amount(Demo*, int map_id, int n); // not shared_ptr!
 APIEXPORT void    Demo_set_only_one_shot_for_puzzle(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_set_stage_name(Demo*, char const*); // not shared_ptr!
+APIEXPORT void    Demo_set_countdown(Demo*, bool); // not shared_ptr!
+APIEXPORT void    Demo_set_time(Demo*, int); // not shared_ptr!
 
 APIEXPORT int     Demo_get_time(Demo*); // not shared_ptr!
 APIEXPORT int     Demo_get_map_score(Demo*, int map_id); // not shared_ptr!

@@ -45,7 +45,8 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(GM_PVC),
-     submode_(0), ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false), L_(0)
+     submode_(0), ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false),
+     is_countdown_(false), L_(0)
 {
 }
 
@@ -361,6 +362,20 @@ void Demo::set_only_one_shot_for_puzzle() {
     player0_->player_hit_event(bind(&Demo::remove_all_game_scene_obj_event, this));
 }
 
+void Demo::set_stage_name(std::string const& str) {
+    ui_layout_->getSpriteText("stage").changeText(str);
+}
+
+void Demo::set_countdown(bool const& flag) {
+    is_countdown_ = flag;
+}
+
+void Demo::set_time(int const& time) {
+    min_ = time / 60;
+    sec_ = time % 60;
+    update_ui_time();
+}
+
 int  Demo::get_time() const {
     return min_*60 + sec_;
 }
@@ -540,7 +555,7 @@ void Demo::game_start()
 
     using std::tr1::bind;
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::update_ui_by_second, this), timer_ui_, 1000, -1);
+        bind(&Demo::counting_by_second, this), timer_ui_, 1000, -1);
 
     BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
         ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -720,6 +735,7 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
 void Demo::update_ui(){
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
+    update_ui_time();
 
     if( game_mode_ != GM_SINGLE ) { // puzzle demo WTF temp
 
@@ -763,14 +779,20 @@ void Demo::update_ui(){
     }
 }
 
-void Demo::update_ui_by_second(){
-    ++sec_;
-    if( sec_ > 59 ) ++min_, sec_ = 0;
+void Demo::counting_by_second(){
+    if( is_countdown_ ) {
+        --sec_;
+        if( sec_ < 0 ) --min_, sec_ = 59;
+    } else {
+        ++sec_;
+        if( sec_ > 59 ) ++min_, sec_ = 0;
+    }
+}
+
+void Demo::update_ui_time() {
     std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
     std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
-
-    //std::cout << ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() << std::endl;
 }
 
 void Demo::game_stop()

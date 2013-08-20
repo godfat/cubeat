@@ -66,6 +66,9 @@ public:
     void init_map_starting_line(int const& map_id, int const& n);
     void set_map_garbage_amount(int const& map_id, int const& n);
     void set_only_one_shot_for_puzzle();
+    void set_stage_name(std::string const&);
+    void set_countdown(bool const&);
+    void set_time(int const&);
     int  get_time() const;
     int  get_map_score(int const& map_id) const;
     int  get_map_highest_chain(int const& map_id) const;
@@ -95,9 +98,10 @@ protected:
     void game_stop();
 
     void ready_go(int);
-    void update_ui_by_second();
+    void counting_by_second();
     void update_ui();
     void update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out_flag);
+    void update_ui_time();
     void setup_ui();
 
     void setup_end_button();
@@ -150,6 +154,7 @@ protected:
     int last_garbage_1p_, last_garbage_2p_; //used for temporary state comparison
     int game_mode_, submode_, ai_level_, ai_logging_times_, ai_logging_rounds_;
     bool some_ui_inited_;
+    bool is_countdown_;
     bool gauge1_flag_, gauge2_flag_;
 
     int mode_level_;

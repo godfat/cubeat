@@ -6,6 +6,7 @@ return {
   HighestChain      = 1,
   WarningCondition  = 2,
   TimeLimit         = 3,
+  UnLimited         = 4,
   --
   Highest_3Chain      = 10,
   Highest_4Chain      = 11,
@@ -25,6 +26,6 @@ return {
   TimeLimit_20CubeR_1Min          = 32,
   TimeLimit_50CubeR_2Min          = 33,
   TimeLimit_15CubeR_15CubeB_1Min  = 34,
-  TimeLimit_30CubeR_30CubeB_2Min  = 35
+  TimeLimit_30CubeR_30CubeB_2Min  = 35,
 }
 

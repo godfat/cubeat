@@ -1,7 +1,10 @@
 local event     = require 'rc/script/event/event'
 local parameter = require 'rc/script/ui/demo/challengemenu/parameter'
+local file      = require 'rc/script/ui/file'
 
-local win_ = false  -- win state for SinglePlayer modes.
+local win_              = false  -- win state for SinglePlayer modes.
+local puzzle_level_     = 2
+local level_unlimited_  = false
 
 ------------------------------------------------------
 --
@@ -12,6 +15,46 @@ end
 
 local function get_win()
   return win_
+end
+
+local function add_puzzle_level(v)
+  puzzle_level_ = puzzle_level_ + v
+end
+
+local function set_puzzle_level(lv)
+  puzzle_level_ = lv
+end
+
+local function get_puzzle_level()
+  return puzzle_level_
+end
+
+local function set_level_unlimited(b)
+  level_unlimited_ = b
+end
+
+local function get_level_unlimited()
+  return level_unlimited_
+end
+
+------------------------------------------------------
+-- Save challenge mode score record
+------------------------------------------------------
+local function save_challenge_record(demo, mode)
+  local challenge_record = file.load_data('challenge_record')
+  if challenge_record then
+    local cur_record  = demo:get_time()
+    local best_record = challenge_record[mode]
+    if (best_record==nil) or (best_record and best_record>cur_record) then
+      challenge_record[mode] = cur_record
+      file.save_data('challenge_record', challenge_record)
+    end
+  elseif challenge_record==nil then
+    challenge_record = {}
+    local record = demo:get_time()
+    challenge_record[mode] = record
+    file.save_data('challenge_record', challenge_record)
+  end
 end
 
 ------------------------------------------------------
@@ -232,8 +275,13 @@ end
 
 --
 return {
-  set_win = set_win,
-  get_win = get_win,
+  set_win             = set_win,
+  get_win             = get_win,
+  add_puzzle_level    = add_puzzle_level,
+  set_puzzle_level    = set_puzzle_level,
+  get_puzzle_level    = get_puzzle_level,
+  set_level_unlimited = set_level_unlimited,
+  get_level_unlimited = get_level_unlimited,
   --
   init_override                   = init_override,
   check_ending_condition_by_frame = check_ending_condition_by_frame,

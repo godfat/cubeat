@@ -2,6 +2,11 @@ return {
   player1 = 0,
   player2 = 1,
   --
+  cube_b  = 1,
+  cube_g  = 2,
+  cube_r  = 3,
+  cube_y  = 4,
+  --
   OneShotClear      = 0,
   HighestChain      = 1,
   WarningCondition  = 2,

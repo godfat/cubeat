@@ -62,7 +62,7 @@ end
 ------------------------------------------------------
 local function endgame(demo, win)
   set_win(win)
-  demo:endgame(0)
+  demo:endgame(parameter.player1)
   print('---------- endgame, win: ' .. tostring(win) .. ' ----------')
 end
 
@@ -103,32 +103,32 @@ local function init_override(demo, in_place, submode)
   
   -- WarningCondition_20
   if submode == parameter.WarningCondition_20 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 20)
+    demo:init_map_starting_line(parameter.player1, 10)
+    demo:set_map_garbage_amount(parameter.player1, 20)
   end
   
   -- WarningCondition_40
   if submode == parameter.WarningCondition_40 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 40)
+    demo:init_map_starting_line(parameter.player1, 10)
+    demo:set_map_garbage_amount(parameter.player1, 40)
   end
   
   -- WarningCondition_60
   if submode == parameter.WarningCondition_60 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 60)
+    demo:init_map_starting_line(parameter.player1, 10)
+    demo:set_map_garbage_amount(parameter.player1, 60)
   end
   
   -- WarningCondition_80
   if submode == parameter.WarningCondition_80 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 80)
+    demo:init_map_starting_line(parameter.player1, 10)
+    demo:set_map_garbage_amount(parameter.player1, 80)
   end
   
   -- WarningCondition_100
   if submode == parameter.WarningCondition_100 then
-    demo:init_map_starting_line(0, 10)
-    demo:set_map_garbage_amount(0, 100)
+    demo:init_map_starting_line(parameter.player1, 10)
+    demo:set_map_garbage_amount(parameter.player1, 100)
   end
 end
 
@@ -186,36 +186,36 @@ end
 ----------------------------------
 --WarningCondition
 check_condition[parameter.WarningCondition_20] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
+  local garbage_left  = demo:get_map_garbage_left(parameter.player1)
+  local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
   end
 end
 check_condition[parameter.WarningCondition_40] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
+  local garbage_left  = demo:get_map_garbage_left(parameter.player1)
+  local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
   end
 end
 check_condition[parameter.WarningCondition_60] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
+  local garbage_left  = demo:get_map_garbage_left(parameter.player1)
+  local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
   end
 end
 check_condition[parameter.WarningCondition_80] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
+  local garbage_left  = demo:get_map_garbage_left(parameter.player1)
+  local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
   end
 end
 check_condition[parameter.WarningCondition_100] = function(demo)
-  local garbage_left  = demo:get_map_garbage_left(0)
-  local warning_level = demo:get_map_warning_level(0)
+  local garbage_left  = demo:get_map_garbage_left(parameter.player1)
+  local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
     endgame(demo, true)
   end
@@ -224,11 +224,15 @@ end
 --TimeLimit
 check_condition[parameter.TimeLimit_30Cube_1Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
-  local cube_g    = demo:get_map_cubes_cleared_data(0)[2]
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
-  local cube_y    = demo:get_map_cubes_cleared_data(0)[4]
+  local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
+  local cube_g    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_g]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  local cube_y    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_y]
   local cube = cube_b + cube_g + cube_r + cube_y
+  print('-------------- cube_b: ' .. tostring(cube_b))
+  print('-------------- cube_g: ' .. tostring(cube_g))
+  print('-------------- cube_r: ' .. tostring(cube_r))
+  print('-------------- cube_y: ' .. tostring(cube_y))
   if cur_time>0 and cube>=30 then
     endgame(demo, true)
   elseif cur_time<=0 then
@@ -237,10 +241,10 @@ check_condition[parameter.TimeLimit_30Cube_1Min] = function(demo)
 end
 check_condition[parameter.TimeLimit_70Cube_2Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
-  local cube_g    = demo:get_map_cubes_cleared_data(0)[2]
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
-  local cube_y    = demo:get_map_cubes_cleared_data(0)[4]
+  local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
+  local cube_g    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_g]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  local cube_y    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_y]
   local cube = cube_b + cube_g + cube_r + cube_y
   if cur_time>0 and cube>=70 then
     endgame(demo, true)
@@ -250,7 +254,7 @@ check_condition[parameter.TimeLimit_70Cube_2Min] = function(demo)
 end
 check_condition[parameter.TimeLimit_20CubeR_1Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   if cur_time>0 and cube_r>=20 then
     endgame(demo, true)
   elseif cur_time<=0 then
@@ -259,7 +263,7 @@ check_condition[parameter.TimeLimit_20CubeR_1Min] = function(demo)
 end
 check_condition[parameter.TimeLimit_50CubeR_2Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   if cur_time>0 and cube_r>=50 then
     endgame(demo, true)
   elseif cur_time<=0 then
@@ -268,8 +272,8 @@ check_condition[parameter.TimeLimit_50CubeR_2Min] = function(demo)
 end
 check_condition[parameter.TimeLimit_15CubeR_15CubeB_1Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   if cur_time>0 and cube_b>=15 and cube_r>=15 then
     endgame(demo, true)
   elseif cur_time<=0 then
@@ -278,8 +282,8 @@ check_condition[parameter.TimeLimit_15CubeR_15CubeB_1Min] = function(demo)
 end
 check_condition[parameter.TimeLimit_30CubeR_30CubeB_2Min] = function(demo)
   local cur_time  = demo:get_time()
-  local cube_b    = demo:get_map_cubes_cleared_data(0)[1]
-  local cube_r    = demo:get_map_cubes_cleared_data(0)[3]
+  local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
+  local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   if cur_time>0 and cube_b>=30 and cube_r>=30 then
     endgame(demo, true)
   elseif cur_time<=0 then

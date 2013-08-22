@@ -122,7 +122,7 @@ function ending(submode)
     
     menu_.ask_end:on_press_ok(function(self)
       menu_.ask_end:set_visible(false)
-      if challenge.get_win() then 
+      if challenge.get_win() then
         if challenge.get_puzzle_level() < 19 then challenge.add_puzzle_level(1) end
         if challenge.get_puzzle_level() < 2 then challenge.set_puzzle_level(2) end
       end
@@ -164,6 +164,7 @@ function cleanup(submode)
   print('-------- cleanup --------')
   challenge.set_puzzle_level(2)
   challenge.set_level_unlimited(false)
+  demo_:set_countdown(false)
 end
 
 --[[

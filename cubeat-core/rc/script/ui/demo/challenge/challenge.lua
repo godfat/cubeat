@@ -348,6 +348,8 @@ end
 -- Ending
 ------------------------------------------------------
 local function ending(demo, submode)
+  recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
+  
   if submode==parameter.OneShotClear then
   else
     local challenge_record = file.load_data('challenge_record')

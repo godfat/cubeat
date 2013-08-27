@@ -139,6 +139,8 @@ function ending(submode)
     
     menu_.ask_end:set_visible(true)
     --]]
+    recordboard.set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
+    
     recordboard.on_press_next(function(self)
       recordboard.hide()
       if challenge.get_win() then

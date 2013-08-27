@@ -177,16 +177,7 @@ function ending(submode)
     end, 1)
     menu_.ask_end:set_visible(true)
     --]]
-    recordboard.on_press_retry(function(self)
-      recordboard.set_visible(false)
-      demo_:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
-    end)
-    recordboard.on_press_quit(function(self)
-      recordboard.set_visible(false) 
-      demo_:leave_and_cleanup()
-    end)
-    
-    recordboard.set_visible(true)
+    challenge.ending(demo_, submode)
   end
 end
 

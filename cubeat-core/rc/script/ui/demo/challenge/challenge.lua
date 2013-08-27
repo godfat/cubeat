@@ -1,6 +1,7 @@
-local parameter = require 'rc/script/ui/demo/challenge/parameter'
-local file      = require 'rc/script/ui/file'
-local scoreblock= require 'rc/script/ui/demo/challenge/scoreblock'
+local parameter   = require 'rc/script/ui/demo/challenge/parameter'
+local file        = require 'rc/script/ui/file'
+local scoreblock  = require 'rc/script/ui/demo/challenge/scoreblock'
+local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
@@ -344,6 +345,30 @@ local function check_ending_condition_by_frame(demo, submode)
 end
 
 ------------------------------------------------------
+-- Ending
+------------------------------------------------------
+local function ending(demo, submode)
+  if submode==parameter.OneShotClear then
+  else
+    local challenge_record = file.load_data('challenge_record')
+    if challenge_record then
+      local record = challenge_record[tostring(submode)]
+      recordboard.set_time_record( tostring(record) )
+    end
+    recordboard.on_press_retry(function(self)
+      recordboard.set_visible(false)
+      demo:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_quit(function(self)
+      recordboard.set_visible(false) 
+      demo:leave_and_cleanup()
+    end)
+    
+    recordboard.set_visible(true)
+  end
+end
+
+------------------------------------------------------
 -- Cleanup
 ------------------------------------------------------
 local function cleanup()
@@ -365,5 +390,6 @@ return {
   --
   init_override                   = init_override,
   check_ending_condition_by_frame = check_ending_condition_by_frame,
+  ending                          = ending,
   cleanup                         = cleanup,
 }

@@ -41,6 +41,14 @@ local function create_record_board(scene)
   set_visible(false)
 end
 
+local function set_time_record(s)
+  time_record_:change_text(s)
+end
+
+local function set_retry_record(s)
+  retry_record_:change_text(s)
+end
+
 local function on_press_next(f)
   btn_next_:on_press(f)
 end
@@ -56,6 +64,9 @@ end
 return {
   set_visible         = set_visible,
   create_record_board = create_record_board,
+  --
+  set_time_record     = set_time_record,
+  set_retry_record    = set_retry_record,
   --
   on_press_next       = on_press_next,
   on_press_retry      = on_press_retry,

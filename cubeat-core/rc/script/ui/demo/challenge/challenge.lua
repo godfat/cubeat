@@ -44,22 +44,51 @@ local function remove_score_block()
 end
 
 
+-- Get current used time
+local function get_cur_time(demo, submode)
+  -- Submode that limit time is 1 min
+  if submode==parameter.Highest_3Chain_1Min
+  or submode==parameter.TimeLimit_30Cube_1Min
+  or submode==parameter.TimeLimit_20CubeR_1Min
+  or submode==parameter.TimeLimit_15CubeR_15CubeB_1Min then
+    local t = 60 - demo:get_time()
+    return t
+  -- Submode that limit time is 2 min
+  elseif submode==parameter.Highest_4Chain_2Min
+  or submode==parameter.TimeLimit_70Cube_2Min
+  or submode==parameter.TimeLimit_50CubeR_2Min
+  or submode==parameter.TimeLimit_30CubeR_30CubeB_2Min then
+    local t = 120 - demo:get_time()
+    return t
+  -- Submode that limit time is 3 min
+  elseif submode==parameter.Highest_5Chain_3Min then
+    local t = 180 - demo:get_time()
+    return t
+  -- no limit time
+  else
+    return demo:get_time()
+  end
+end
+
 ------------------------------------------------------
 -- Save challenge mode score record
 ------------------------------------------------------
-local function save_challenge_record(demo, mode)
+local function save_challenge_record(demo, submode)
   local challenge_record = file.load_data('challenge_record')
-  if challenge_record then
-    local cur_record  = demo:get_time()
-    local best_record = challenge_record[mode]
-    if (best_record==nil) or (best_record and best_record>cur_record) then
-      challenge_record[mode] = cur_record
+  if challenge_record then -- find record file    
+  
+    -- if this submode not have record or get new best record, save it.
+    local cur_record  = get_cur_time(demo, submode)
+    local best_record = challenge_record[tostring(submode)]
+    if (best_record==nil) or (cur_record<best_record) then
+      challenge_record[tostring(submode)] = cur_record
       file.save_data('challenge_record', challenge_record)
     end
-  elseif challenge_record==nil then
+    
+  elseif challenge_record==nil then -- not have record file, create one & save it.
     challenge_record = {}
     local record = demo:get_time()
-    challenge_record[mode] = record
+    challenge_record[tostring(submode)] = record
     file.save_data('challenge_record', challenge_record)
   end
 end
@@ -166,21 +195,21 @@ local check_condition = {}
 check_condition[parameter.Highest_3Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=3 then
-    save_challenge_record(demo, tostring(parameter.Highest_3Chain))
+    save_challenge_record(demo, parameter.Highest_3Chain)
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_4Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=4 then
-    save_challenge_record(demo, tostring(parameter.Highest_4Chain))
+    save_challenge_record(demo, parameter.Highest_4Chain)
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_5Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=5 then
-    save_challenge_record(demo, tostring(parameter.Highest_5Chain))
+    save_challenge_record(demo, parameter.Highest_5Chain)
     endgame(demo, true)
   end
 end
@@ -188,7 +217,7 @@ check_condition[parameter.Highest_3Chain_1Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=3 then
-    save_challenge_record(demo, tostring(parameter.Highest_3Chain_1Min))
+    save_challenge_record(demo, parameter.Highest_3Chain_1Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -198,7 +227,7 @@ check_condition[parameter.Highest_4Chain_2Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=4 then
-    save_challenge_record(demo, tostring(parameter.Highest_4Chain_2Min))
+    save_challenge_record(demo, parameter.Highest_4Chain_2Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -208,7 +237,7 @@ check_condition[parameter.Highest_5Chain_3Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=5 then
-    save_challenge_record(demo, tostring(parameter.Highest_5Chain_3Min))
+    save_challenge_record(demo, parameter.Highest_5Chain_3Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -220,7 +249,7 @@ check_condition[parameter.WarningCondition_20] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
-    save_challenge_record(demo, tostring(parameter.WarningCondition_20))
+    save_challenge_record(demo, parameter.WarningCondition_20)
     endgame(demo, true)
   end
 end
@@ -228,7 +257,7 @@ check_condition[parameter.WarningCondition_40] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
-    save_challenge_record(demo, tostring(parameter.WarningCondition_40))
+    save_challenge_record(demo, parameter.WarningCondition_40)
     endgame(demo, true)
   end
 end
@@ -236,7 +265,7 @@ check_condition[parameter.WarningCondition_60] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
-    save_challenge_record(demo, tostring(parameter.WarningCondition_60))
+    save_challenge_record(demo, parameter.WarningCondition_60)
     endgame(demo, true)
   end
 end
@@ -244,7 +273,7 @@ check_condition[parameter.WarningCondition_80] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
-    save_challenge_record(demo, tostring(parameter.WarningCondition_80))
+    save_challenge_record(demo, parameter.WarningCondition_80)
     endgame(demo, true)
   end
 end
@@ -252,7 +281,7 @@ check_condition[parameter.WarningCondition_100] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
-    save_challenge_record(demo, tostring(parameter.WarningCondition_100))
+    save_challenge_record(demo, parameter.WarningCondition_100)
     endgame(demo, true)
   end
 end
@@ -267,7 +296,7 @@ check_condition[parameter.TimeLimit_30Cube_1Min] = function(demo)
   local cube = cube_b + cube_g + cube_r + cube_y
   scoreblock.set_score(cube)
   if cur_time>0 and cube>=30 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_30Cube_1Min))
+    save_challenge_record(demo, parameter.TimeLimit_30Cube_1Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -282,7 +311,7 @@ check_condition[parameter.TimeLimit_70Cube_2Min] = function(demo)
   local cube = cube_b + cube_g + cube_r + cube_y
   scoreblock.set_score(cube)
   if cur_time>0 and cube>=70 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_70Cube_2Min))
+    save_challenge_record(demo, parameter.TimeLimit_70Cube_2Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -293,7 +322,7 @@ check_condition[parameter.TimeLimit_20CubeR_1Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   scoreblock.set_score(cube_r)
   if cur_time>0 and cube_r>=20 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_20CubeR_1Min))
+    save_challenge_record(demo, parameter.TimeLimit_20CubeR_1Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -304,7 +333,7 @@ check_condition[parameter.TimeLimit_50CubeR_2Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   scoreblock.set_score(cube_r)
   if cur_time>0 and cube_r>=50 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_50CubeR_2Min))
+    save_challenge_record(demo, parameter.TimeLimit_50CubeR_2Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -316,7 +345,7 @@ check_condition[parameter.TimeLimit_15CubeR_15CubeB_1Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   scoreblock.set_score_double(cube_r, cube_b)
   if cur_time>0 and cube_b>=15 and cube_r>=15 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_15CubeR_15CubeB_1Min))
+    save_challenge_record(demo, parameter.TimeLimit_15CubeR_15CubeB_1Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -328,7 +357,7 @@ check_condition[parameter.TimeLimit_30CubeR_30CubeB_2Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   scoreblock.set_score_double(cube_r, cube_b)
   if cur_time>0 and cube_b>=30 and cube_r>=30 then
-    save_challenge_record(demo, tostring(parameter.TimeLimit_30CubeR_30CubeB_2Min))
+    save_challenge_record(demo, parameter.TimeLimit_30CubeR_30CubeB_2Min)
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -354,9 +383,12 @@ local function ending(demo, submode)
   else
     local challenge_record = file.load_data('challenge_record')
     if challenge_record then
-      local record = challenge_record[tostring(submode)]
-      recordboard.set_time_record( tostring(record) )
+      local cur_time  = get_cur_time(demo, submode)
+      local best_time = challenge_record[tostring(submode)]
+      recordboard.set_cur_time( tostring(cur_time) .. ' sec' )
+      recordboard.set_best_time( tostring(best_time) .. ' sec' )
     end
+    
     recordboard.on_press_retry(function(self)
       recordboard.hide()
       demo:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)

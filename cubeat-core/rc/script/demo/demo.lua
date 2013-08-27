@@ -6,8 +6,9 @@ local switch= require 'rc/script/ui/demo/switch/switch'
 local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
-local challenge = require 'rc/script/ui/demo/challengemenu/challenge'
+local challenge = require 'rc/script/ui/demo/challenge/challenge'
 local jit = require 'jit'
+local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 
 ----------------------------------------------------------------------------
 
@@ -58,17 +59,16 @@ function init(demo)
   
   switch.init(scene_, demo_)
   
-  --preload all ui
-  --switch.load_page('tutorial' )
-  --switch.load_page('score'    )
-  --switch.load_page('tweentest')
+  --preload ui
   switch.load_page('select'   )
-  --switch.load_page('testmenu' )
   switch.load_page('mainmenu' )
   
   -- test for temporary menu in Puzzle mode end
+  --[[
   menu_.ask_end = ui.new_askbox { parent = demo_:get_ui_scene(), title = 'TITLE', depth=-100 }
   menu_.ask_end:set_visible(false)
+  --]]
+  recordboard.create_record_board(scene_)
 end
 
 --- Other must-implemented events for main game on Lua-side: ---
@@ -86,7 +86,7 @@ function init_override(in_place, submode)
     -- Currently don't do anything else than this when initializing PUZZLE.
     -- C++ handles generating PUZZLE map when initialization
   else
-    challenge.init_override(demo_, in_place, submode)
+    challenge.init_override(demo_, in_place, submode, scene_)
   end
 end
 
@@ -116,6 +116,7 @@ end
 -- mainly used for setting up ending UI
 function ending(submode)
   if submode == 0 then
+    --[[
     menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
     menu_.ask_end.ok:change_text( challenge.get_win() and 'Next' or 'Retry' )
     menu_.ask_end.cancel:change_text('Quit')
@@ -137,8 +138,29 @@ function ending(submode)
     end, 1)
     
     menu_.ask_end:set_visible(true)
-  
+    --]]
+    recordboard.on_press_next(function(self)
+      recordboard.set_visible(false)
+      if challenge.get_win() then
+        if challenge.get_puzzle_level() < 19 then challenge.add_puzzle_level(1) end
+        if challenge.get_puzzle_level() < 2 then challenge.set_puzzle_level(2) end
+      end
+      -- init SinglePlayer, in Submode 0, and Level is decided by challenge.get_puzzle_level() variable
+      -- the last true means "in_place" is true, there won't be slide-in/out effects.
+      demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_retry(function(self)
+      recordboard.set_visible(false)
+      demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_quit(function(self)
+      recordboard.set_visible(false) 
+      demo_:leave_and_cleanup()
+    end)
+    
+    recordboard.set_visible(true)
   else
+    --[[
     menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
     menu_.ask_end.ok:change_text('Retry')
     menu_.ask_end.cancel:change_text('Quit')
@@ -154,6 +176,17 @@ function ending(submode)
       demo_:leave_and_cleanup()
     end, 1)
     menu_.ask_end:set_visible(true)
+    --]]
+    recordboard.on_press_retry(function(self)
+      recordboard.set_visible(false)
+      demo_:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_quit(function(self)
+      recordboard.set_visible(false) 
+      demo_:leave_and_cleanup()
+    end)
+    
+    recordboard.set_visible(true)
   end
 end
 
@@ -162,16 +195,10 @@ end
 -- it will also be called if you PAUSE & QUIT. 
 function cleanup(submode)
   print('-------- cleanup --------')
-  challenge.set_puzzle_level(2)
-  challenge.set_level_unlimited(false)
+  challenge.cleanup()
   demo_:set_countdown(false)
 end
 
---[[
-function mainmenu()
-  show_everything()
-end
---]]
 
 -- This really should just be a temporary solution, a separated menu page should be better
 -- DEPRECATED

@@ -1,41 +1,47 @@
-local event     = require 'rc/script/event/event'
-local parameter = require 'rc/script/ui/demo/challengemenu/parameter'
+local parameter = require 'rc/script/ui/demo/challenge/parameter'
 local file      = require 'rc/script/ui/file'
+local scoreblock= require 'rc/script/ui/demo/challenge/scoreblock'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
 local level_unlimited_  = false
 
+
 ------------------------------------------------------
 --
 ------------------------------------------------------
+-- win_
 local function set_win(win)
   win_ = win
 end
-
 local function get_win()
   return win_
 end
 
+-- puzzle_level_
 local function add_puzzle_level(v)
   puzzle_level_ = puzzle_level_ + v
 end
-
 local function set_puzzle_level(lv)
   puzzle_level_ = lv
 end
-
 local function get_puzzle_level()
   return puzzle_level_
 end
 
+-- level_unlimited_
 local function set_level_unlimited(b)
   level_unlimited_ = b
 end
-
 local function get_level_unlimited()
   return level_unlimited_
 end
+
+-- remove score block
+local function remove_score_block()
+  scoreblock.remove_score_block()
+end
+
 
 ------------------------------------------------------
 -- Save challenge mode score record
@@ -69,7 +75,7 @@ end
 ------------------------------------------------------
 --
 ------------------------------------------------------
-local function init_override(demo, in_place, submode)
+local function init_override(demo, in_place, submode, scene)
   -- OneShotClear
   if submode == parameter.OneShotClear then
     --print(demo:get_map_score(1)) 
@@ -77,7 +83,7 @@ local function init_override(demo, in_place, submode)
     --print(demo:get_map_cubes_cleared_data(1)[1])
   end
 
-  -- Set countdown 60 second
+  -- Set time countdown 60 second
   if submode == parameter.Highest_3Chain_1Min
   or submode == parameter.TimeLimit_30Cube_1Min
   or submode == parameter.TimeLimit_20CubeR_1Min
@@ -86,7 +92,7 @@ local function init_override(demo, in_place, submode)
     demo:set_countdown(true)
   end
   
-  -- Set countdown 120 second
+  -- Set time countdown 120 second
   if submode == parameter.Highest_4Chain_2Min
   or submode == parameter.TimeLimit_70Cube_2Min
   or submode == parameter.TimeLimit_50CubeR_2Min
@@ -95,7 +101,7 @@ local function init_override(demo, in_place, submode)
     demo:set_countdown(true)  
   end
   
-  -- Set countdown 180 second
+  -- Set time countdown 180 second
   if submode == parameter.Highest_5Chain_3Min then
     demo:set_time(180)
     demo:set_countdown(true)
@@ -130,6 +136,24 @@ local function init_override(demo, in_place, submode)
     demo:init_map_starting_line(parameter.player1, 10)
     demo:set_map_garbage_amount(parameter.player1, 100)
   end
+  
+  -- Create 1 score block
+  if submode == parameter.TimeLimit_30Cube_1Min 
+  or submode == parameter.TimeLimit_70Cube_2Min
+  or submode == parameter.TimeLimit_20CubeR_1Min
+  or submode == parameter.TimeLimit_50CubeR_2Min then
+    if in_place==false then scoreblock.create_score_block(scene)
+    else set_score(0) -- init score
+    end
+  end
+  
+  -- Create 2 score block (Red & Blue)
+  if submode == parameter.TimeLimit_15CubeR_15CubeB_1Min
+  or submode == parameter.TimeLimit_30CubeR_30CubeB_2Min then
+    if in_place==false then scoreblock.create_score_block_double(scene)
+    else set_double_score(0, 0) -- init score
+    end
+  end
 end
 
 ------------------------------------------------------
@@ -141,18 +165,21 @@ local check_condition = {}
 check_condition[parameter.Highest_3Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=3 then
+    save_challenge_record(demo, tostring(parameter.Highest_3Chain))
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_4Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=4 then
+    save_challenge_record(demo, tostring(parameter.Highest_4Chain))
     endgame(demo, true)
   end
 end
 check_condition[parameter.Highest_5Chain] = function(demo)
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if highest_chain>=5 then
+    save_challenge_record(demo, tostring(parameter.Highest_5Chain))
     endgame(demo, true)
   end
 end
@@ -160,6 +187,7 @@ check_condition[parameter.Highest_3Chain_1Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=3 then
+    save_challenge_record(demo, tostring(parameter.Highest_3Chain_1Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -169,6 +197,7 @@ check_condition[parameter.Highest_4Chain_2Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=4 then
+    save_challenge_record(demo, tostring(parameter.Highest_4Chain_2Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -178,6 +207,7 @@ check_condition[parameter.Highest_5Chain_3Min] = function(demo)
   local cur_time = demo:get_time()
   local highest_chain = demo:get_map_highest_chain(parameter.player1)
   if cur_time>0 and highest_chain>=5 then
+    save_challenge_record(demo, tostring(parameter.Highest_5Chain_3Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -189,6 +219,7 @@ check_condition[parameter.WarningCondition_20] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
+    save_challenge_record(demo, tostring(parameter.WarningCondition_20))
     endgame(demo, true)
   end
 end
@@ -196,6 +227,7 @@ check_condition[parameter.WarningCondition_40] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
+    save_challenge_record(demo, tostring(parameter.WarningCondition_40))
     endgame(demo, true)
   end
 end
@@ -203,6 +235,7 @@ check_condition[parameter.WarningCondition_60] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
+    save_challenge_record(demo, tostring(parameter.WarningCondition_60))
     endgame(demo, true)
   end
 end
@@ -210,6 +243,7 @@ check_condition[parameter.WarningCondition_80] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
+    save_challenge_record(demo, tostring(parameter.WarningCondition_80))
     endgame(demo, true)
   end
 end
@@ -217,6 +251,7 @@ check_condition[parameter.WarningCondition_100] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
   if garbage_left==0 and warning_level==0 then
+    save_challenge_record(demo, tostring(parameter.WarningCondition_100))
     endgame(demo, true)
   end
 end
@@ -229,11 +264,9 @@ check_condition[parameter.TimeLimit_30Cube_1Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   local cube_y    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_y]
   local cube = cube_b + cube_g + cube_r + cube_y
-  print('-------------- cube_b: ' .. tostring(cube_b))
-  print('-------------- cube_g: ' .. tostring(cube_g))
-  print('-------------- cube_r: ' .. tostring(cube_r))
-  print('-------------- cube_y: ' .. tostring(cube_y))
+  scoreblock.set_score(cube)
   if cur_time>0 and cube>=30 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_30Cube_1Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -246,7 +279,9 @@ check_condition[parameter.TimeLimit_70Cube_2Min] = function(demo)
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
   local cube_y    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_y]
   local cube = cube_b + cube_g + cube_r + cube_y
+  scoreblock.set_score(cube)
   if cur_time>0 and cube>=70 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_70Cube_2Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -255,7 +290,9 @@ end
 check_condition[parameter.TimeLimit_20CubeR_1Min] = function(demo)
   local cur_time  = demo:get_time()
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  scoreblock.set_score(cube_r)
   if cur_time>0 and cube_r>=20 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_20CubeR_1Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -264,7 +301,9 @@ end
 check_condition[parameter.TimeLimit_50CubeR_2Min] = function(demo)
   local cur_time  = demo:get_time()
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  scoreblock.set_score(cube_r)
   if cur_time>0 and cube_r>=50 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_50CubeR_2Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -274,7 +313,9 @@ check_condition[parameter.TimeLimit_15CubeR_15CubeB_1Min] = function(demo)
   local cur_time  = demo:get_time()
   local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  scoreblock.set_score_double(cube_r, cube_b)
   if cur_time>0 and cube_b>=15 and cube_r>=15 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_15CubeR_15CubeB_1Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -284,7 +325,9 @@ check_condition[parameter.TimeLimit_30CubeR_30CubeB_2Min] = function(demo)
   local cur_time  = demo:get_time()
   local cube_b    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_b]
   local cube_r    = demo:get_map_cubes_cleared_data(parameter.player1)[parameter.cube_r]
+  scoreblock.set_score_double(cube_r, cube_b)
   if cur_time>0 and cube_b>=30 and cube_r>=30 then
+    save_challenge_record(demo, tostring(parameter.TimeLimit_30CubeR_30CubeB_2Min))
     endgame(demo, true)
   elseif cur_time<=0 then
     endgame(demo, false)
@@ -300,6 +343,15 @@ local function check_ending_condition_by_frame(demo, submode)
   end
 end
 
+------------------------------------------------------
+-- Cleanup
+------------------------------------------------------
+local function cleanup()
+  set_puzzle_level(2)
+  set_level_unlimited(false)
+  scoreblock.remove_score_block()
+end
+
 
 --
 return {
@@ -313,4 +365,5 @@ return {
   --
   init_override                   = init_override,
   check_ending_condition_by_frame = check_ending_condition_by_frame,
+  cleanup                         = cleanup,
 }

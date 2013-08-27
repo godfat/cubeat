@@ -140,7 +140,7 @@ function ending(submode)
     menu_.ask_end:set_visible(true)
     --]]
     recordboard.on_press_next(function(self)
-      recordboard.set_visible(false)
+      recordboard.hide()
       if challenge.get_win() then
         if challenge.get_puzzle_level() < 19 then challenge.add_puzzle_level(1) end
         if challenge.get_puzzle_level() < 2 then challenge.set_puzzle_level(2) end
@@ -150,15 +150,15 @@ function ending(submode)
       demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
     end)
     recordboard.on_press_retry(function(self)
-      recordboard.set_visible(false)
+      recordboard.hide()
       demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
     end)
     recordboard.on_press_quit(function(self)
-      recordboard.set_visible(false) 
+      recordboard.hide() 
       demo_:leave_and_cleanup()
     end)
     
-    recordboard.set_visible(true)
+    recordboard.show(submode)
   else
     --[[
     menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )

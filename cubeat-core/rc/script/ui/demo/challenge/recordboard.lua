@@ -2,6 +2,7 @@ local ffi    = require 'ffi'
 local C      = ffi.C
 local view   = require 'rc/script/ui/view'
 local ui     = require 'rc/script/ui/ui'
+local parameter = require 'rc/script/ui/demo/challenge/parameter'
 
 local board_
 local time_title_
@@ -15,15 +16,29 @@ local btn_quit_
 local screen_w_ = C.Get_SCREEN_W()
 local screen_h_ = C.Get_SCREEN_H()
 
-local function set_visible(v)
-  board_:set_visible(v)
-  time_title_:set_visible(v)
-  time_record_:set_visible(v)
-  retry_title_:set_visible(v)
-  retry_record_:set_visible(v)
-  btn_next_:set_visible(v)
-  btn_retry_:set_visible(v)
-  btn_quit_:set_visible(v)
+local function show(submode)
+  board_:set_visible(true)
+  time_title_:set_visible(true)
+  time_record_:set_visible(true)
+  btn_retry_:set_visible(true)
+  btn_quit_:set_visible(true)
+  
+  if submode==parameter.OneShotClear then
+    retry_title_:set_visible(true)
+    retry_record_:set_visible(true)
+    btn_next_:set_visible(true)
+  end
+end
+
+local function hide()
+  board_:set_visible(false)
+  time_title_:set_visible(false)
+  time_record_:set_visible(false)
+  retry_title_:set_visible(false)
+  retry_record_:set_visible(false)
+  btn_next_:set_visible(false)
+  btn_retry_:set_visible(false)
+  btn_quit_:set_visible(false)
 end
 
 local function create_record_board(scene)
@@ -38,7 +53,7 @@ local function create_record_board(scene)
   btn_retry_    = ui.new_text { parent=scene, x=center_x    , y=center_y+80 , size=32, title='Retry'  , depth=-110, center=true }
   btn_quit_     = ui.new_text { parent=scene, x=center_x+120, y=center_y+80 , size=32, title='Quit'   , depth=-110, center=true }
   board_:set_color(0,0,0)
-  set_visible(false)
+  hide()
 end
 
 local function set_time_record(s)
@@ -62,7 +77,8 @@ local function on_press_quit(f)
 end
 
 return {
-  set_visible         = set_visible,
+  show  = show,
+  hide  = hide,
   create_record_board = create_record_board,
   --
   set_time_record     = set_time_record,

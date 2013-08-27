@@ -356,15 +356,15 @@ local function ending(demo, submode)
       recordboard.set_time_record( tostring(record) )
     end
     recordboard.on_press_retry(function(self)
-      recordboard.set_visible(false)
+      recordboard.hide()
       demo:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
     end)
     recordboard.on_press_quit(function(self)
-      recordboard.set_visible(false) 
+      recordboard.hide(false) 
       demo:leave_and_cleanup()
     end)
     
-    recordboard.set_visible(true)
+    recordboard.show(submode)
   end
 end
 

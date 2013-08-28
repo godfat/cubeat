@@ -64,10 +64,6 @@ function init(demo)
   switch.load_page('mainmenu' )
   
   -- test for temporary menu in Puzzle mode end
-  --[[
-  menu_.ask_end = ui.new_askbox { parent = demo_:get_ui_scene(), title = 'TITLE', depth=-100 }
-  menu_.ask_end:set_visible(false)
-  --]]
   recordboard.create_record_board(scene_)
 end
 
@@ -79,115 +75,28 @@ function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
   
-  challenge.set_win(false)  -- re-initialize certain states
-  
-  if submode == 0 then -- Puzzle Mode
-    demo_:set_only_one_shot_for_puzzle()
-    -- Currently don't do anything else than this when initializing PUZZLE.
-    -- C++ handles generating PUZZLE map when initialization
-  else
-    challenge.init_override(demo_, in_place, submode, scene_)
-  end
+  challenge.init_override(demo_, in_place, submode, scene_)
 end
 
 -- occurs each frame, after map and player states update,
 -- but it WILL NOT BE CALLED after endgame(map_id) is called.
 function check_ending_condition_by_frame(submode)
-  --print('-------------------- check_ending_condition_by_frame -----------------------')
-  if submode == 0 then
-    if demo_:is_puzzle_started() then
-      if demo_:is_map_empty(0) then
-        challenge.set_win(true)
-        demo_:endgame(0) 
-        -- NOTE: 
-        -- In the merged "SinglePlayer" game modes, what you passed into endgame() is not relevent.
-        -- You have to track win/lose state in Lua.
-      elseif demo_:is_map_all_waiting(0) then
-        challenge.set_win(false)
-        demo_:endgame(0)
-      end
-    end
-  else
-    challenge.check_ending_condition_by_frame(demo_, submode)
-  end
+  --print('---- single mode: check_ending_condition_by_frame ----')
+  challenge.check_ending_condition_by_frame(demo_, submode)
 end
 
 -- occurs when win/lose reached. Will be reached if you call endgame(map_id) in Lua
 -- mainly used for setting up ending UI
 function ending(submode)
-  if submode == 0 then
-    --[[
-    menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
-    menu_.ask_end.ok:change_text( challenge.get_win() and 'Next' or 'Retry' )
-    menu_.ask_end.cancel:change_text('Quit')
-    
-    menu_.ask_end:on_press_ok(function(self)
-      menu_.ask_end:set_visible(false)
-      if challenge.get_win() then
-        if challenge.get_puzzle_level() < 19 then challenge.add_puzzle_level(1) end
-        if challenge.get_puzzle_level() < 2 then challenge.set_puzzle_level(2) end
-      end
-      -- init SinglePlayer, in Submode 0, and Level is decided by challenge.get_puzzle_level() variable
-      -- the last true means "in_place" is true, there won't be slide-in/out effects.
-      demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
-    end, 1)
-    
-    menu_.ask_end:on_press_cancel(function(self)
-      menu_.ask_end:set_visible(false) 
-      demo_:leave_and_cleanup()
-    end, 1)
-    
-    menu_.ask_end:set_visible(true)
-    --]]
-    recordboard.set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
-    
-    recordboard.on_press_next(function(self)
-      recordboard.hide()
-      if challenge.get_win() then
-        if challenge.get_puzzle_level() < 19 then challenge.add_puzzle_level(1) end
-        if challenge.get_puzzle_level() < 2 then challenge.set_puzzle_level(2) end
-      end
-      -- init SinglePlayer, in Submode 0, and Level is decided by challenge.get_puzzle_level() variable
-      -- the last true means "in_place" is true, there won't be slide-in/out effects.
-      demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
-    end)
-    recordboard.on_press_retry(function(self)
-      recordboard.hide()
-      demo_:init_single(0, challenge.get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
-    end)
-    recordboard.on_press_quit(function(self)
-      recordboard.hide() 
-      demo_:leave_and_cleanup()
-    end)
-    
-    recordboard.show(submode)
-  else
-    --[[
-    menu_.ask_end:set_title( challenge.get_win() and 'SUCCESS' or 'FAIL' )
-    menu_.ask_end.ok:change_text('Retry')
-    menu_.ask_end.cancel:change_text('Quit')
-    
-    menu_.ask_end:on_press_ok(function(self)
-      menu_.ask_end:set_visible(false)
-      demo_:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
-      print('reinit submode: ' .. tostring(submode))
-    end, 1)
-    
-    menu_.ask_end:on_press_cancel(function(self)
-      menu_.ask_end:set_visible(false)
-      demo_:leave_and_cleanup()
-    end, 1)
-    menu_.ask_end:set_visible(true)
-    --]]
-    challenge.ending(demo_, submode)
-  end
+  print('---- single mode: ending ----')
+  challenge.ending(demo_, submode)
 end
 
 -- occurs right after game ends (no reinit, go back to menu)
 -- Will be reached if you call leave_and_cleanup() in Lua, 
 -- it will also be called if you PAUSE & QUIT. 
 function cleanup(submode)
-  print('-------- cleanup --------')
+  print('---- single mode: cleanup ----')
   challenge.cleanup()
   demo_:set_countdown(false)
 end

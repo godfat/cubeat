@@ -7,18 +7,6 @@ local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
 local level_unlimited_  = false
 
-
-------------------------------------------------------
---
-------------------------------------------------------
--- win_
-local function set_win(win)
-  win_ = win
-end
-local function get_win()
-  return win_
-end
-
 -- puzzle_level_
 local function add_puzzle_level(v)
   puzzle_level_ = puzzle_level_ + v
@@ -38,12 +26,8 @@ local function get_level_unlimited()
   return level_unlimited_
 end
 
--- remove score block
-local function remove_score_block()
-  scoreblock.remove_score_block()
-end
 
-
+------------------------------------------------------
 -- Get current used time
 local function get_cur_time(demo, submode)
   -- Submode that limit time is 1 min
@@ -72,7 +56,6 @@ end
 
 ------------------------------------------------------
 -- Save challenge mode score record
-------------------------------------------------------
 local function save_challenge_record(demo, submode)
 
   local cur_record = get_cur_time(demo, submode) -- current record
@@ -95,23 +78,31 @@ local function save_challenge_record(demo, submode)
 end
 
 ------------------------------------------------------
---
-------------------------------------------------------
+-- Set win_ variable & end single mode game
 local function endgame(demo, win)
-  set_win(win)
+  print('---- endgame, win: ' .. tostring(win) .. ' ----')
+  
+  -- NOTE: 
+  -- In the merged "SinglePlayer" game modes, what you passed into endgame() is not relevent.
+  -- You have to track win/lose state in Lua.
+  win_ = win
   demo:endgame(parameter.player1)
-  print('---------- endgame, win: ' .. tostring(win) .. ' ----------')
 end
 
+
+
 ------------------------------------------------------
---
+-- Init Override
 ------------------------------------------------------
 local function init_override(demo, in_place, submode, scene)
+
+  win_ = false  -- re-initialize certain states
+
   -- OneShotClear
   if submode == parameter.OneShotClear then
-    --print(demo:get_map_score(1)) 
-    --print(demo:get_map_highest_chain(1))
-    --print(demo:get_map_cubes_cleared_data(1)[1])
+    demo:set_only_one_shot_for_puzzle()
+    -- Currently don't do anything else than this when initializing PUZZLE.
+    -- C++ handles generating PUZZLE map when initialization
   end
 
   -- Set time countdown 60 second
@@ -174,7 +165,7 @@ local function init_override(demo, in_place, submode, scene)
   or submode == parameter.TimeLimit_20CubeR_1Min
   or submode == parameter.TimeLimit_50CubeR_2Min then
     if in_place==false then scoreblock.create_score_block(scene)
-    else set_score(0) -- init score
+    else scoreblock.set_score(0) -- init score
     end
   end
   
@@ -182,7 +173,7 @@ local function init_override(demo, in_place, submode, scene)
   if submode == parameter.TimeLimit_15CubeR_15CubeB_1Min
   or submode == parameter.TimeLimit_30CubeR_30CubeB_2Min then
     if in_place==false then scoreblock.create_score_block_double(scene)
-    else set_double_score(0, 0) -- init score
+    else scoreblock.set_score_double(0, 0) -- init score
     end
   end
 end
@@ -191,6 +182,17 @@ end
 -- All Check Condition Function
 ------------------------------------------------------
 local check_condition = {}
+----------------------------------
+-- OneShotClear
+check_condition[parameter.OneShotClear] = function(demo)
+  if demo:is_puzzle_started() then
+    if demo:is_map_empty(parameter.player1) then
+      endgame(demo, true)
+    elseif demo:is_map_all_waiting(parameter.player1) then
+      endgame(demo, false)
+    end
+  end
+end
 ----------------------------------
 -- HighestChain
 check_condition[parameter.Highest_3Chain] = function(demo)
@@ -381,6 +383,26 @@ local function ending(demo, submode)
   recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
   
   if submode==parameter.OneShotClear then
+    recordboard.on_press_next(function(self)
+      recordboard.hide()
+      if win_ then
+        if get_puzzle_level() < 19 then add_puzzle_level(1) end
+        if get_puzzle_level() < 2  then set_puzzle_level(2) end
+      end
+      -- init SinglePlayer, in Submode 0, and Level is decided by puzzle_level_ variable
+      -- the last true means "in_place" is true, there won't be slide-in/out effects.
+      demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_retry(function(self)
+      recordboard.hide()
+      demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+    end)
+    recordboard.on_press_quit(function(self)
+      recordboard.hide() 
+      demo:leave_and_cleanup()
+    end)
+    
+    recordboard.show(submode)
   else
     local challenge_record = file.load_data('challenge_record')
     if challenge_record then
@@ -415,8 +437,6 @@ end
 
 --
 return {
-  set_win             = set_win,
-  get_win             = get_win,
   add_puzzle_level    = add_puzzle_level,
   set_puzzle_level    = set_puzzle_level,
   get_puzzle_level    = get_puzzle_level,

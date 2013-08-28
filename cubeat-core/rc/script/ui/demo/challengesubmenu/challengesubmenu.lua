@@ -54,7 +54,7 @@ local function init(demo, parent, submode)
     menu.btn7:on_press(function(self)
       demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
       challenge.set_puzzle_level(2)
-      challenge.set_level_unlimited(true) -- unlimited level mode
+      challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       switch.slide_out_title()
     end)
     menu.back:on_press(function(self)

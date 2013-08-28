@@ -74,11 +74,13 @@ end
 -- Save challenge mode score record
 ------------------------------------------------------
 local function save_challenge_record(demo, submode)
+
+  local cur_record = get_cur_time(demo, submode) -- current record
+  
   local challenge_record = file.load_data('challenge_record')
   if challenge_record then -- find record file    
   
     -- if this submode not have record or get new best record, save it.
-    local cur_record  = get_cur_time(demo, submode)
     local best_record = challenge_record[tostring(submode)]
     if (best_record==nil) or (cur_record<best_record) then
       challenge_record[tostring(submode)] = cur_record
@@ -87,8 +89,7 @@ local function save_challenge_record(demo, submode)
     
   elseif challenge_record==nil then -- not have record file, create one & save it.
     challenge_record = {}
-    local record = demo:get_time()
-    challenge_record[tostring(submode)] = record
+    challenge_record[tostring(submode)] = cur_record
     file.save_data('challenge_record', challenge_record)
   end
 end

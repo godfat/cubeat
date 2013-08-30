@@ -9,6 +9,10 @@
 #include "all_fwd.hpp"
 #include <boost/tr1/functional.hpp>
 
+#ifdef _SHOOTING_CUBES_ANDROID_
+struct android_app;
+#endif
+
 namespace psc {
 
 namespace ctrl {
@@ -27,7 +31,11 @@ public:
 
     int run(std::tr1::function<void()> = 0);
 
+    #ifdef _SHOOTING_CUBES_ANDROID_
+    App& init(android_app* app);
+    #else
     App& init();
+    #endif
 
     App& setLoading(int const& cent);
     App& launchOpening();

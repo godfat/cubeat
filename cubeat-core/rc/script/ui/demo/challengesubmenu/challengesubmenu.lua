@@ -62,46 +62,6 @@ local function init(demo, parent, submode)
     end)
   end
   
-  -- HighestChain
-  if submode == parameter.HighestChain then
-    menu.panel = ui.new_image{ parent = parent, path='area_rect', x=0, y=0, w=300, h=350 }
-    menu.panel:set_depth(-150)
-    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='3chain' }
-    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='4chain' }
-    menu.btn3 = ui.new_text{ parent=parent, x=80, y=120, size=32, depth=-200, title='5chain' }
-    menu.btn4 = ui.new_text{ parent=parent, x=80, y=160, size=32, depth=-200, title='3chain_1min' }
-    menu.btn5 = ui.new_text{ parent=parent, x=80, y=200, size=32, depth=-200, title='4chain_2min' }
-    menu.btn6 = ui.new_text{ parent=parent, x=80, y=240, size=32, depth=-200, title='5chain_3min' }
-    menu.back = ui.new_text{ parent=parent, x=80, y=280, size=32, depth=-200, title='back' }
-    menu.btn1:on_press(function(self)
-      demo:init_single(parameter.Highest_3Chain, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn2:on_press(function(self)
-      demo:init_single(parameter.Highest_4Chain, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn3:on_press(function(self)
-      demo:init_single(parameter.Highest_5Chain, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn4:on_press(function(self)
-      demo:init_single(parameter.Highest_3Chain_1Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn5:on_press(function(self)
-      demo:init_single(parameter.Highest_4Chain_2Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn6:on_press(function(self)
-      demo:init_single(parameter.Highest_5Chain_3Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.back:on_press(function(self)
-      switch.load_page('challengemenu')
-    end)
-  end
-  
   -- WarningCondition
   if submode == parameter.WarningCondition then
     menu.panel = ui.new_image{ parent = parent, path='area_rect', x=0, y=0, w=300, h=350 }
@@ -137,39 +97,19 @@ local function init(demo, parent, submode)
     end)
   end
   
-  -- TimeLimit
-  if submode == parameter.TimeLimit then
+  -- UnLimited
+  if submode == parameter.UnLimited then
     menu.panel = ui.new_image{ parent = parent, path='area_rect', x=0, y=0, w=300, h=350 }
     menu.panel:set_depth(-150)
-    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='30Cube_1Min' }
-    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='70Cube_2Min' }
-    menu.btn3 = ui.new_text{ parent=parent, x=80, y=120, size=32, depth=-200, title='20CubeR_1Min' }
-    menu.btn4 = ui.new_text{ parent=parent, x=80, y=160, size=32, depth=-200, title='50CubeR_2Min' }
-    menu.btn5 = ui.new_text{ parent=parent, x=80, y=200, size=32, depth=-200, title='15CubeR_15CubeB_1Min' }
-    menu.btn6 = ui.new_text{ parent=parent, x=80, y=240, size=32, depth=-200, title='30CubeR_30CubeB_2Min' }
+    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='normal' }
+    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='countdown' }
     menu.back = ui.new_text{ parent=parent, x=80, y=280, size=32, depth=-200, title='back' }
     menu.btn1:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_30Cube_1Min, 1, 'char/char1_new', 'stage/jungle1', false)
+      demo:init_single(parameter.UnLimited_Normal, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
     menu.btn2:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_70Cube_2Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn3:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_20CubeR_1Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn4:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_50CubeR_2Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn5:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_15CubeR_15CubeB_1Min, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn6:on_press(function(self)
-      demo:init_single(parameter.TimeLimit_30CubeR_30CubeB_2Min, 1, 'char/char1_new', 'stage/jungle1', false)
+      demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
     menu.back:on_press(function(self)

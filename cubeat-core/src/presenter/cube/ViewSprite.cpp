@@ -11,6 +11,7 @@
 #include "data/ViewSetting.hpp"
 #include "data/Color.hpp"
 
+#include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 #include "utils/to_s.hpp"
 
@@ -46,9 +47,11 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
 
     body_->set<accessor::Pos2D>(pos_vec2());
     body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+
     data::Color col = data::Color::from_id(c->data()->color_id());
     col.offset();
     body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
 }
@@ -156,9 +159,13 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 
     IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
         core::vector3df(0.0f, 0.0f, 0.0f),  // center -- more depth, so no z-fighting
-        core::vector3df(-normal.X, normal.Y, 0.0f), flying_distance/20, // normal, length
+        core::vector3df(-normal.X, normal.Y, 0.0f), flying_distance/10, // normal, length
         core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-        flying_distance/4, flying_distance/4,    // emit rate
+#if !defined(_SHOOTING_CUBES_ANDROID_)
+        flying_distance/3, flying_distance/3,    // emit rate
+#else
+        flying_distance/3, flying_distance/3,    // emit rate
+#endif
         video::SColor(0,255,255,255),       // darkest color
         video::SColor(0,255,255,255),       // brightest color
         200, 200, 0,                         // min and max age, angle
@@ -169,7 +176,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     ps->setEmitter(em); // this grabs the emitter
     em->drop(); // so we can drop it here without deleting it
 
-    IParticleAffector* paf = ps->createFadeOutParticleAffector();
+    IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 500);
 
     ps->addAffector(paf); // same goes for the affector
     paf->drop();
@@ -178,7 +185,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     ps->setMaterialFlag(video::EMF_LIGHTING, true);
     ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
     ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
-    ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+    ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
     // Setup particle node above, animation below
 

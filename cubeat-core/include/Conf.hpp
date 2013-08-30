@@ -32,7 +32,11 @@ public:
     }
     //note: call this with null string to specify path relative to executable no matter what,
     //      or call this with a absolute path to your working path.
+    #if defined(_SHOOTING_CUBES_ANDROID_)
+    void init(std::string const& working_path, std::string const& android_internal_path);
+    #else
     void init(std::string const& working_path);
+    #endif
 
     //note: none of these will work if you didn't call init with the correct path.
     //this will return a path prefixed with your initial working path

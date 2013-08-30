@@ -1,6 +1,7 @@
 
 #include "Conf.hpp"
 #include "IrrDevice.hpp"
+#include "utils/Logger.hpp"
 #include <utility>
 #include <iostream>
 #include <fstream>
@@ -13,17 +14,25 @@ Conf::Conf()
     :version_string_("CuBeat 0.5.2 alpha")
 {}
 
+#if defined(_SHOOTING_CUBES_ANDROID_)
+void Conf::init(std::string const& working_path, std::string const& android_internal_path)
+#else
 void Conf::init(std::string const& working_path)
+#endif
 {
     if( !working_path.empty() ) {
         working_path_ = working_path[working_path.size()-1] == '/' ?
                         working_path : working_path + "/"; //This must be done ahead of everything
     }
-
+#if defined(_SHOOTING_CUBES_ANDROID_)
+    config_ = utils::map_any::construct( read_config_text( android_internal_path + "/rc/config.zzml") );
+    config_path_           = android_internal_path + "/rc/config/";
+    script_path_           = android_internal_path + "/rc/script/";
+#else
     config_ = utils::map_any::construct( read_config_text( working_path_ + "rc/config.zzml") );
-
     config_path_           = expand("rc/config/");
     script_path_           = expand("rc/script/");
+#endif
     shader_path_           = expand("rc/shader/");
     screen_width_          = config_.I("screenwidth");
     screen_height_         = config_.I("screenheight");

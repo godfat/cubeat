@@ -6,9 +6,6 @@
 #include "script/lua_utility.hpp"
 #include "Conf.hpp"
 
-//ok, is this really cross-platform?
-#include <sys/stat.h>
-
 using namespace irr;
 using namespace video;
 using namespace scene;

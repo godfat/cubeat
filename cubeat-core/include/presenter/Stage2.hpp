@@ -7,6 +7,9 @@
 #include <string>
 #include <boost/tr1/memory.hpp>
 
+//ok, is this really cross-platform?
+#include <sys/stat.h>
+
 struct lua_State;
 
 namespace psc {

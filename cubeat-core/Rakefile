@@ -18,6 +18,7 @@ Project.name = 'cubeat'
 require 'rake/clean'
 require 'fileutils'
 CLEAN.include '*.o'
+CLEAN.exclude '*.bak'
 task :clobber => :clean do
   sh 'make clean' rescue nil
   File.delete 'Makefile' rescue nil
@@ -45,6 +46,13 @@ task :prepare => [:preprocess,
                   :reprocess_CMakeLists]
 
 task :reprocess_CMakeLists do
+
+  sh 'luajit generate_ffi.lua ai/bindings'
+  sh 'luajit generate_ffi.lua net/bindings'
+  sh 'luajit generate_ffi.lua ui/bindings'
+  sh 'luajit generate_ffi.lua event/bindings'
+  sh 'luajit generate_ffi.lua demo/bindings'
+
   File.delete 'CMakeLists.txt'
   sh 'rake CMakeLists.txt'
 end

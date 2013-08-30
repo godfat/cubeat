@@ -260,6 +260,12 @@ local function new_askbox(object)
                               local cb = function(self) func(self) object:set_visible(false) end
                               object.cancel:on_press(cb)
                             end
+  object.remove_cb        = function(self)
+                              object.panel:remove()
+                              object.text:remove()
+                              object.ok:remove()
+                              object.cancel:remove()
+                            end
   
   -- init setting
   object.text:set_scale(object.scale or 1)

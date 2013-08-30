@@ -70,7 +70,7 @@ local function save_retry_record(demo, submode)
       end
     else -- not have record file, create one & save it.
       challenge_record = {}
-      challenge_record[k] = puzzle_retry_
+      challenge_record[k] = tostring(puzzle_retry_)
       file.save_data('challenge_record', challenge_record)
     end
   end
@@ -89,13 +89,12 @@ local function save_score_record(demo, submode)
     -- if this submode not have score record or get new best score, save it.
     local best_score = challenge_record[k]
     if (best_score==nil) or (cur_score>best_score) then
-      challenge_record[k] = cur_score
+      challenge_record[k] = tostring(cur_score)
       file.save_data('challenge_record', challenge_record)
     end
-    
   else -- not have record file, create one & save it.
     challenge_record = {}
-    challenge_record[k] = cur_score
+    challenge_record[k] = tostring(cur_score)
     file.save_data('challenge_record', challenge_record)
   end
 end
@@ -279,7 +278,7 @@ local function ending(demo, submode)
     local k = 'score_' .. tostring(submode)
     local challenge_record = file.load_data('challenge_record')
     if challenge_record then
-      local cur_score  = demo:get_map_score(parameter.player1)
+      local cur_score  = tostring( demo:get_map_score(parameter.player1) )
       local best_score = challenge_record[k]
       recordboard.set_score(cur_score, best_score)
     else

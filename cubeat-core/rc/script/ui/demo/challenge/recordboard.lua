@@ -79,8 +79,8 @@ local function set_title(s)
 end
 
 local function set_score(cur_score, best_score)
-  cur_score_:change_text(tostring(cur_score))
-  best_score_:change_text(tostring(best_score))
+  cur_score_:change_text(cur_score)
+  best_score_:change_text(best_score)
 end
 
 local function set_retry(s)

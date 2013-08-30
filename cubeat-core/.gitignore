@@ -28,6 +28,16 @@ install_manifest.txt
 # luajit ffi needed cdefs from c headers
 *.ffi
 
+# android related
+*.zip
+*.properties
+android/bin
+android/gen
+android/obj
+android/libs
+android/assets
+android/proguard-project.txt
+
 # generated source codes
 include/all_fwd.hpp
 include/ctrl/Ai.hpp

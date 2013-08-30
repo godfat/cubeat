@@ -43,10 +43,18 @@ App::~App()
 
 //2012.05 apparently, if we want to initialized some App related callbacks to
 //presenters or others, it'll have to do outside of App's c'tor!
+#ifdef _SHOOTING_CUBES_ANDROID_
+App& App::init(android_app* app)
+#else
 App& App::init()
+#endif
 {
     std::cout << "App started initializing. (not constructor)" << std::endl;
+    #ifdef _SHOOTING_CUBES_ANDROID_
+    if( !IrrDevice::i().init(true, app) ) {
+    #else
     if( !IrrDevice::i().init(true) ) {
+    #endif
         std::cout << "Graphic engine initialization failed. Halting..." << std::endl;
         return *this;
     }
@@ -181,7 +189,6 @@ int App::run(std::tr1::function<void()> tester)
             if( tester ) tester();
             else master_presenter_->cycle();
             t5 = realtime();
-            driver->clearZBuffer();
             trans_->cycle();
             t6 = realtime();
             InputMgr::i().redrawAll();
@@ -220,9 +227,9 @@ int App::run(std::tr1::function<void()> tester)
                 Sleep(1);
                 #else
                 //usleep((15 - elapsed_time) * 1000);
-                usleep(1000);
+                usleep(1);
                 #endif
-                while( realtime() - t0 < 16 );
+                while( realtime() - t0 <= 16 );
             }
             t0 = realtime();
             //printf("t0: %ld\n", t0);

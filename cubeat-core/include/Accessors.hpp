@@ -239,7 +239,7 @@ namespace accessor {
             get(node, ori);
             irr::scene::IMeshManipulator* mani =
                 IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
-            mani->scaleMesh( static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(),
+            mani->scale( static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh(),
                 vec3(val.X / ori.X, val.Y / ori.Y, 1) );
         }
         static void get(irr::scene::ISceneNode* node, value_type& out) {
@@ -260,7 +260,7 @@ namespace accessor {
             irr::scene::IMeshManipulator* mani =
                 IrrDevice::i().d()->getSceneManager()->getMeshManipulator();
             irr::scene::IMesh* mesh = static_cast<irr::scene::IMeshSceneNode*>(node)->getMesh();
-            mani->scaleMesh( mesh, vec3(val.X / ori.X, val.Y / ori.Y, 1) );
+            mani->scale( mesh, vec3(val.X / ori.X, val.Y / ori.Y, 1) );
 
             irr::video::S3DVertex* ptr = static_cast<irr::video::S3DVertex*>(
                 mesh->getMeshBuffer(0)->getVertices());

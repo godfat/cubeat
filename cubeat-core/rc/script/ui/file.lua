@@ -13,16 +13,19 @@ local function check_data(data)
     error('error -- the data is nil') end
 end
 
-local function load_data(filename)
+local function load_data(filename, m)
+  print('load_data')
   check_filename(filename)
+  
+  local mode = m or "r"
   
   local offset
   local data
-  local file = io.open(basepath().."rc/config/"..filename, "r")
+  local file = io.open(basepath().."rc/config/"..filename, mode)
   if file == nil then
     print('Could not open this file: '..filename)
   else
-    offset, data = msgpack.unpack( file:read() )
+    offset, data = msgpack.unpack( file:read("*all") )
     if data=="invalid argument" then data=nil end
     file:close()
   end
@@ -30,16 +33,18 @@ local function load_data(filename)
   return data
 end
 
-local function save_data(filename, data)
+local function save_data(filename, data, m)
   check_filename(filename)
   check_data(data)
   
+  local mode = m or "w"
+  
   local s = msgpack.pack(data)
-  local file = io.open(basepath().."rc/config/"..filename, "w")
+  local file = io.open(basepath().."rc/config/"..filename, mode)
   if file==nil then
     io.output(basepath().."rc/config/"..filename)
     io.close()
-    file = io.open(basepath().."rc/config/"..filename, "w")
+    file = io.open(basepath().."rc/config/"..filename, mode)
   end
   file:write(s)
   file:close()

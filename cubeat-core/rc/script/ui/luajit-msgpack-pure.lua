@@ -1,13 +1,37 @@
+--[[
+Copyright (C) 2011-2013 by Pierre Chapuis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+--]]
+
 local ffi = require "ffi"
 local bit = require "bit"
 local math = require "math"
 
+local IS_LUAFFI = not rawget(_G,"jit")
+
 -- standard cdefs
 
 ffi.cdef[[
-  void free(void *ptr);
-  void *realloc(void *ptr, size_t size);
-  void *malloc(size_t size);
+void free(void *ptr);
+void *realloc(void *ptr, size_t size);
+void *malloc(size_t size);
 ]]
 
 -- cache bitops
@@ -16,6 +40,9 @@ local bor,band,bxor,rshift = bit.bor,bit.band,bit.bxor,bit.rshift
 -- shared ffi data
 local t_buf = ffi.new("unsigned char[8]")
 local t_buf2 = ffi.new("unsigned char[8]")
+
+-- VLA ctype constructor
+local uchar_vla = ffi.typeof("unsigned char[?]")
 
 -- endianness
 
@@ -56,10 +83,16 @@ local sbuffer_append_str = function(self,buf,len)
   self.size = self.size + len
 end
 
+local sbuffer_append_byte = function(self,b)
+  sbuffer_realloc(self,1)
+  self.data[self.size] = b
+  self.size = self.size + 1
+end
+
 local sbuffer_append_tbl = function(self,t)
   local len = #t
   sbuffer_realloc(self,len)
-  local p = self.data + self.size -1
+  local p = self.data + self.size - 1
   for i=1,len do p[i] = t[i] end
   self.size = self.size + len
 end
@@ -71,10 +104,24 @@ if LITTLE_ENDIAN then
     for i=x-8,0,-8 do t[#t+1] = band(rshift(n,i),0xff) end
     sbuffer_append_tbl(self,t)
   end
+  sbuffer_append_int64 = function(self,n,h)
+    local t = {h}
+    local q,r = math.floor(n/2^32),n%(2^32)
+    for i=24,0,-8 do t[#t+1] = band(rshift(q,i),0xff) end
+    for i=24,0,-8 do t[#t+1] = band(rshift(r,i),0xff) end
+    sbuffer_append_tbl(self,t)
+  end
 else
   sbuffer_append_intx = function(self,n,x,h)
     local t = {h}
     for i=0,x-8,8 do t[#t+1] = band(rshift(n,i),0xff) end
+    sbuffer_append_tbl(self,t)
+  end
+  sbuffer_append_int64 = function(self,n,h)
+    local t = {h}
+    local q,r = math.floor(n/2^32),n%(2^32)
+    for i=0,24,8 do t[#t+1] = band(rshift(r,i),0xff) end
+    for i=0,24,8 do t[#t+1] = band(rshift(q,i),0xff) end
     sbuffer_append_tbl(self,t)
   end
 end
@@ -88,64 +135,104 @@ packers.dynamic = function(data)
 end
 
 packers["nil"] = function(data)
-  sbuffer_append_tbl(buffer,{0xc0})
+  sbuffer_append_byte(buffer,0xc0)
 end
 
 packers.boolean = function(data)
   if data then -- pack true
-    sbuffer_append_tbl(buffer,{0xc3})
+    sbuffer_append_byte(buffer,0xc3)
   else -- pack false
-    sbuffer_append_tbl(buffer,{0xc2})
+    sbuffer_append_byte(buffer,0xc2)
   end
 end
+
+local set_fp_type = function(t)
+  local ptype,typebyte,_posinf,_neginf,_nan
+  if t == "double" then
+    typebyte,ptype = 0xcb,ffi.typeof("double *")
+    _posinf = {typebyte,0x7f,0xf0,0x00,0x00,0x00,0x00,0x00,0x00}
+    _neginf = {typebyte,0xff,0xf0,0x00,0x00,0x00,0x00,0x00,0x00}
+    _nan = {typebyte,0xff,0xf8,0x00,0x00,0x00,0x00,0x00,0x00}
+  elseif t == "float" then
+    typebyte,ptype = 0xca,ffi.typeof("float *")
+    _posinf = {typebyte,0x7f,0x80,0x00,0x00}
+    _neginf = {typebyte,0xff,0x80,0x00,0x00}
+    _nan = {typebyte,0xff,0x88,0x00,0x00}
+  else return nil end
+  local len = ffi.sizeof(t)
+  if LITTLE_ENDIAN then
+    packers.fpnum = function(n)
+      ffi.cast(ptype,t_buf2)[0] = n
+      rcopy(t_buf,t_buf2,len)
+      sbuffer_append_byte(buffer,typebyte)
+      sbuffer_append_str(buffer,t_buf,len)
+    end
+  else
+    packers.fpnum = function(n)
+      ffi.cast(ptype,t_buf)[0] = n
+      sbuffer_append_byte(buffer,typebyte)
+      sbuffer_append_str(buffer,t_buf,len)
+    end
+  end
+  packers.posinf = function()
+    sbuffer_append_tbl(buffer,_posinf)
+  end
+  packers.neginf = function()
+    sbuffer_append_tbl(buffer,_neginf)
+  end
+  packers.nan = function()
+    sbuffer_append_tbl(buffer,_nan)
+  end
+  return true
+end
+
+set_fp_type("double") -- default
 
 packers.number = function(n)
   if math.floor(n) == n then -- integer
     if n >= 0 then -- positive integer
       if n < 128 then -- positive fixnum
-        sbuffer_append_tbl(buffer,{n})
+        sbuffer_append_byte(buffer,n)
       elseif n < 256 then -- uint8
         sbuffer_append_tbl(buffer,{0xcc,n})
-      elseif n < 65536 then -- uint16
+      elseif n < 2^16 then -- uint16
         sbuffer_append_intx(buffer,n,16,0xcd)
-      elseif n < 4294967296 then -- uint32
+      elseif n < 2^32 then -- uint32
         sbuffer_append_intx(buffer,n,32,0xce)
+      elseif n == math.huge then -- +inf
+        packers.posinf()
       else -- uint64
-        sbuffer_append_intx(buffer,n,64,0xcf)
+        sbuffer_append_int64(buffer,n,0xcf)
       end
     else -- negative integer
       if n >= -32 then -- negative fixnum
-        sbuffer_append_tbl(buffer,{bor(0xe0,n)})
+        sbuffer_append_byte(buffer,bor(0xe0,n))
       elseif n >= -128 then -- int8
         sbuffer_append_tbl(buffer,{0xd0,n})
-      elseif n >= -32768 then -- int16
+      elseif n >= -2^15 then -- int16
         sbuffer_append_intx(buffer,n,16,0xd1)
-      elseif n >= -2147483648 then -- int32
+      elseif n >= -2^31 then -- int32
         sbuffer_append_intx(buffer,n,32,0xd2)
+      elseif n == -math.huge then -- -inf
+        packers.neginf()
       else -- int64
-        sbuffer_append_intx(buffer,n,64,0xd3)
+        sbuffer_append_int64(buffer,n,0xd3)
       end
     end
+  elseif n ~= n then -- nan
+    packers.nan()
   else -- floating point
-    -- TODO poss. to use floats instead
-    if LITTLE_ENDIAN then
-      ffi.cast("double *",t_buf2)[0] = n
-      rcopy(t_buf,t_buf2,8)
-    else
-      ffi.cast("double *",t_buf)[0] = n
-    end
-    sbuffer_append_tbl(buffer,{0xcb})
-    sbuffer_append_str(buffer,t_buf,8)
+    packers.fpnum(n)
   end
 end
 
 packers.string = function(data)
   local n = #data
   if n < 32 then
-    sbuffer_append_tbl(buffer,{bor(0xa0,n)})
-  elseif n < 65536 then
+    sbuffer_append_byte(buffer,bor(0xa0,n))
+  elseif n < 2^16 then
     sbuffer_append_intx(buffer,n,16,0xda)
-  elseif n < 4294967296 then
+  elseif n < 2^32 then
     sbuffer_append_intx(buffer,n,32,0xdb)
   else
     error("overflow")
@@ -158,47 +245,86 @@ packers["function"] = function(data)
 end
 
 packers.userdata = function(data)
-  error("unimplemented")
+  if IS_LUAFFI then
+    return packers.cdata(data)
+  else
+    error("unimplemented")
+  end
 end
 
 packers.thread = function(data)
   error("unimplemented")
 end
 
-packers.table = function(data)
+packers.array = function(data,ndata)
+  ndata = ndata or #data
+  if ndata < 16 then
+    sbuffer_append_byte(buffer,bor(0x90,ndata))
+  elseif ndata < 2^16 then
+    sbuffer_append_intx(buffer,ndata,16,0xdc)
+  elseif ndata < 2^32 then
+    sbuffer_append_intx(buffer,ndata,32,0xdd)
+  else
+    error("overflow")
+  end
+  for i=1,ndata do packers[type(data[i])](data[i]) end
+end
+
+packers.map = function(data,ndata)
+  if not ndata then
+    ndata = 0
+    for _ in pairs(data) do ndata = ndata+1 end
+  end
+  if ndata < 16 then
+    sbuffer_append_byte(buffer,bor(0x80,ndata))
+  elseif ndata < 2^16 then
+    sbuffer_append_intx(buffer,ndata,16,0xde)
+  elseif ndata < 2^32 then
+    sbuffer_append_intx(buffer,ndata,32,0xdf)
+  else
+    error("overflow")
+  end
+  for k,v in pairs(data) do
+    packers[type(k)](k)
+    packers[type(v)](v)
+  end
+end
+
+local set_table_classifier = function(f)
+  packers.table = function(data)
+    local obj_type,ndata = f(data)
+    packers[obj_type](data,ndata)
+  end
+end
+
+local default_table_classifier = function(data)
   local is_map,ndata,nmax = false,0,0
   for k,_ in pairs(data) do
-    if type(k) == "number" then
+    if (type(k) == "number") and (k > 0) then
       if k > nmax then nmax = k end
     else is_map = true end
     ndata = ndata+1
   end
-  if is_map then -- pack as map
-    if ndata < 16 then
-      sbuffer_append_tbl(buffer,{bor(0x80,ndata)})
-    elseif ndata < 65536 then
-      sbuffer_append_intx(buffer,ndata,16,0xde)
-    elseif ndata < 4294967296 then
-      sbuffer_append_intx(buffer,ndata,32,0xdf)
-    else
-      error("overflow")
-    end
-    for k,v in pairs(data) do
-      packers[type(k)](k)
-      packers[type(v)](v)
-    end
-  else -- pack as array
-    if nmax < 16 then
-      sbuffer_append_tbl(buffer,{bor(0x90,nmax)})
-    elseif nmax < 65536 then
-      sbuffer_append_intx(buffer,nmax,16,0xdc)
-    elseif nmax < 4294967296 then
-      sbuffer_append_intx(buffer,nmax,32,0xdd)
-    else
-      error("overflow")
-    end
-    for i=1,nmax do packers[type(data[i])](data[i]) end
+  if (nmax ~= ndata) then -- there are holes
+    is_map = true
+  end -- else nmax == ndata == #data
+  return (is_map and "map" or "array"),ndata
+end
+
+set_table_classifier(default_table_classifier)
+
+packers.cdata = function(data) -- msgpack-js
+  local n = ffi.sizeof(data)
+  if not n then
+    error("cannot pack cdata of unknown size")
+  elseif n < 2^16 then
+    sbuffer_append_intx(buffer,n,16,0xd8)
+  elseif n < 2^32 then
+    sbuffer_append_intx(buffer,n,32,0xd9)
+  else
+    error("overflow")
   end
+  sbuffer_append_str(buffer,data,n)
 end
 
 -- types decoding
@@ -207,6 +333,7 @@ local types_map = {
     [0xc0] = "nil",
     [0xc2] = "false",
     [0xc3] = "true",
+    [0xc4] = "nil", -- msgpack-js
     [0xca] = "float",
     [0xcb] = "double",
     [0xcc] = "uint8",
@@ -217,6 +344,8 @@ local types_map = {
     [0xd1] = "int16",
     [0xd2] = "int32",
     [0xd3] = "int64",
+    [0xd8] = "buf16", -- msgpack-js
+    [0xd9] = "buf32", -- msgpack-js
     [0xda] = "raw16",
     [0xdb] = "raw32",
     [0xdc] = "array16",
@@ -341,6 +470,20 @@ unpackers.fixraw = function(buf,offset)
   return offset+n+1,ffi.string(buf.data+offset+1,n)
 end
 
+unpackers.buf16 = function(buf,offset)
+  local n = unpack_number(buf,offset,"uint16_t *",2)
+  local r = uchar_vla(n)
+  ffi.copy(r,buf.data+offset+3,n)
+  return offset+n+3,r
+end
+
+unpackers.buf32 = function(buf,offset)
+  local n = unpack_number(buf,offset,"uint32_t *",4)
+  local r = uchar_vla(n)
+  ffi.copy(r,buf.data+offset+5,n)
+  return offset+n+5,r
+end
+
 unpackers.raw16 = function(buf,offset)
   local n = unpack_number(buf,offset,"uint16_t *",2)
   return offset+n+3,ffi.string(buf.data+offset+3,n)
@@ -399,4 +542,8 @@ end
 return {
   pack = ljp_pack,
   unpack = ljp_unpack,
+  set_fp_type = set_fp_type,
+  set_table_classifier = set_table_classifier,
+  packers = packers,
+  unpackers = unpackers,
 }

@@ -66,10 +66,10 @@ local function set_score(t, cur_score, scene)
   local center_y = screen_h_/2
   
   -- set current score
-  your_score_:change_text(cur_score)
+  your_score_:change_text(tostring(cur_score))
   
   -- sort socre record
-  local sortFunc = function(a, b) return tonumber(b) < tonumber(a) end
+  local sortFunc = function(a, b) return b < a end
   table.sort(t, sortFunc)
   
   -- set score record

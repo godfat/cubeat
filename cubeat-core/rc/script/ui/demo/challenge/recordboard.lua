@@ -32,8 +32,8 @@ local function show(submode, win)
     cur_retry_:set_visible(true)
   end
   
-  -- when UnLimited_Normal or UnLimited_Countdown mode -> show score record.
-  if submode==parameter.UnLimited_Normal or submode==parameter.UnLimited_Countdown then
+  -- when ?? -> show score record.
+  if nil then
     cur_score_title_:set_visible(true)
     cur_score_:set_visible(true)
     best_score_title_:set_visible(true)
@@ -79,12 +79,12 @@ local function set_title(s)
 end
 
 local function set_score(cur_score, best_score)
-  cur_score_:change_text(cur_score)
-  best_score_:change_text(best_score)
+  cur_score_:change_text(tostring(cur_score))
+  best_score_:change_text(tostring(best_score))
 end
 
 local function set_retry(s)
-  cur_retry_:change_text(s)
+  cur_retry_:change_text(tostring(s))
 end
 
 local function on_press_next(f)

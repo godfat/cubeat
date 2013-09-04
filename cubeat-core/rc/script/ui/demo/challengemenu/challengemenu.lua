@@ -30,7 +30,9 @@ local function init(demo, parent)
     switch.load_page('challengesubmenu', nil, parameter.UnLimited)
   end)
   menu.btn_mode_4:on_press(function(self)
-    local challenge_record = file.load_data('challenge_record')
+    print('-----------------a')
+    local challenge_record = file.load_data('challenge_record', "rb")
+    print('-----------------b')
     if challenge_record then
       for k, v in pairs(challenge_record) do
         if type(v)=='table' then

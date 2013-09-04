@@ -75,7 +75,7 @@ function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
   
-  challenge.init_override(demo_, in_place, submode, scene_)
+  challenge.init_override(demo_, in_place, submode)
 end
 
 -- occurs each frame, after map and player states update,

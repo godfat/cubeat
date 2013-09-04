@@ -1,6 +1,7 @@
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local file        = require 'rc/script/ui/file'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
+local scorelist   = require 'rc/script/ui/demo/challenge/scorelist'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
@@ -86,15 +87,15 @@ local function save_score_record(demo, submode)
   local challenge_record = file.load_data('challenge_record')
   if challenge_record then -- find record file
   
-    -- if this submode not have score record or get new best score, save it.
-    local best_score = challenge_record[k]
-    if (best_score==nil) or (cur_score>best_score) then
-      challenge_record[k] = tostring(cur_score)
-      file.save_data('challenge_record', challenge_record)
-    end
+    -- insert cur_score to table
+    if challenge_record[k]==nil then challenge_record[k] = {} end
+    table.insert( challenge_record[k], tostring(cur_score) )
+    file.save_data('challenge_record', challenge_record)
+    
   else -- not have record file, create one & save it.
     challenge_record = {}
-    challenge_record[k] = tostring(cur_score)
+    challenge_record[k] = {}
+    table.insert( challenge_record[k], tostring(cur_score) )
     file.save_data('challenge_record', challenge_record)
   end
 end
@@ -116,7 +117,7 @@ end
 ------------------------------------------------------
 -- Init Override
 ------------------------------------------------------
-local function init_override(demo, in_place, submode, scene)
+local function init_override(demo, in_place, submode)
 
   win_ = false  -- re-initialize certain states
 
@@ -159,12 +160,18 @@ local function init_override(demo, in_place, submode, scene)
   
   -- UnLimited_Normal
   if submode == parameter.UnLimited_Normal then
+    if in_place==false then
+      scorelist.create_score_list(demo:get_ui_scene())
+    end
   end
   
   -- UnLimited_Countdown
   if submode == parameter.UnLimited_Countdown then
     demo:set_time(120)
     demo:set_countdown(true)
+    if in_place==false then
+      scorelist.create_score_list(demo:get_ui_scene())
+    end
   end
 end
 
@@ -244,10 +251,11 @@ end
 -- Ending
 ------------------------------------------------------
 local function ending(demo, submode)
-  recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
+
   save_mode_clear_flag(demo, submode)
   
   if submode==parameter.OneShotClear then
+    recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
     save_retry_record(demo, submode)
     local k = 'retry_' .. tostring(get_puzzle_level())
     local challenge_record = file.load_data('challenge_record')
@@ -272,40 +280,45 @@ local function ending(demo, submode)
       puzzle_retry_ = puzzle_retry_ + 1
       demo:init_single(submode, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
     end)
+    recordboard.on_press_quit(function(self)
+      recordboard.hide() 
+      demo:leave_and_cleanup()
+    end)
+    recordboard.show(submode, win_)
     
   elseif submode==parameter.UnLimited_Normal or submode==parameter.UnLimited_Countdown then
     save_score_record(demo, submode)
     local k = 'score_' .. tostring(submode)
     local challenge_record = file.load_data('challenge_record')
-    if challenge_record then
+    if challenge_record and challenge_record[k] then
       local cur_score  = tostring( demo:get_map_score(parameter.player1) )
-      local best_score = challenge_record[k]
-      recordboard.set_score(cur_score, best_score)
-    else
-      recordboard.set_score(0, 0)
+      scorelist.set_score(challenge_record[k], cur_score, demo:get_ui_scene())
     end
     -- set button on_press function
-    recordboard.on_press_retry(function(self)
-      recordboard.hide()
+    scorelist.on_press_retry(function(self)
+      scorelist.set_visible(false)
       demo:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
     end)
+    scorelist.on_press_quit(function(self)
+      scorelist.set_visible(false)
+      demo:leave_and_cleanup()
+    end)
+    scorelist.set_visible(true)
     
   else
+    recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
     -- set button on_press function
     recordboard.on_press_retry(function(self)
       recordboard.hide()
       demo:init_single(submode, 1, 'char/char1_new', 'stage/jungle1', true)
     end)
+    recordboard.on_press_quit(function(self)
+      recordboard.hide() 
+      demo:leave_and_cleanup()
+    end)
+    recordboard.show(submode, win_)
 
   end
-  
-  -- set quit btn function
-  recordboard.on_press_quit(function(self)
-    recordboard.hide() 
-    demo:leave_and_cleanup()
-  end)
-  
-  recordboard.show(submode, win_)
 end
 
 ------------------------------------------------------
@@ -315,6 +328,7 @@ local function cleanup()
   set_puzzle_level(2)
   set_level_unlimited(false)
   puzzle_retry_ = 0
+  scorelist.remove_score_list()
 end
 
 

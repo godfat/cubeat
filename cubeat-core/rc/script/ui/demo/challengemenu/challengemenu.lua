@@ -33,7 +33,13 @@ local function init(demo, parent)
     local challenge_record = file.load_data('challenge_record')
     if challenge_record then
       for k, v in pairs(challenge_record) do
-        print( tostring(k) .. ' ----------------- ' .. tostring(v) )
+        if type(v)=='table' then
+          for _, s in pairs(v) do
+            print( tostring(k) .. ' ----------------- ' .. tostring(s) )
+          end
+        else
+          print( tostring(k) .. ' ----------------- ' .. tostring(v) )
+        end
       end
     end
   end)

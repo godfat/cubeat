@@ -11,52 +11,36 @@ local function init(demo, parent, submode)
   
   -- OneShotClear
   if submode == parameter.OneShotClear then
-    menu.panel = ui.new_image{ parent = parent, path='area_rect', x=0, y=0, w=300, h=350 }
+    local stage_num = 18  -- how many puzzle stage, use for create btn and puzzle_level in init_single function.
+    
+    menu.panel = ui.new_image{ parent = parent, path='blahblah', x=-320, y=-200, w=1000, h=500, alpha=128 }
     menu.panel:set_depth(-150)
-    menu.btn1 = ui.new_text{ parent=parent, x=80, y= 40, size=32, depth=-200, title='3chain' }
-    menu.btn2 = ui.new_text{ parent=parent, x=80, y= 80, size=32, depth=-200, title='4chain' }
-    menu.btn3 = ui.new_text{ parent=parent, x=80, y=120, size=32, depth=-200, title='5chain' }
-    menu.btn4 = ui.new_text{ parent=parent, x=80, y=160, size=32, depth=-200, title='6Chain' }
-    menu.btn5 = ui.new_text{ parent=parent, x=80, y=200, size=32, depth=-200, title='7chain' }
-    menu.btn6 = ui.new_text{ parent=parent, x=80, y=240, size=32, depth=-200, title='8Chain' }
-    menu.btn7 = ui.new_text{ parent=parent, x=80, y=280, size=32, depth=-200, title='Unlimited' }
-    menu.back = ui.new_text{ parent=parent, x=80, y=320, size=32, depth=-200, title='back' }
-    menu.btn1:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 3, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(3)
-      switch.slide_out_title()
-    end)
-    menu.btn2:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 4, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(4)
-      switch.slide_out_title()
-    end)
-    menu.btn3:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 5, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(5)
-      switch.slide_out_title()
-    end)
-    menu.btn4:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 6, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(6)
-      switch.slide_out_title()
-    end)
-    menu.btn5:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 7, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(7)
-      switch.slide_out_title()
-    end)
-    menu.btn6:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 8, 'char/char1_new', 'stage/jungle1', false)
-      challenge.set_puzzle_level(8)
-      switch.slide_out_title()
-    end)
-    menu.btn7:on_press(function(self)
+    menu.panel:set_color(0,0,0)
+    
+    -- create button
+    for i=1, stage_num do
+      local k = 'stage' .. tostring(i)
+      local mx = 150 * math.ceil(i/10)
+      local my = 40 * math.mod(i-1, 10)
+      print(mx, my)
+      menu[k] = ui.new_text{ parent=parent, x=-450+mx, y=-200+my, size=32, depth=-200, title=k }
+      menu[k]:on_press(function(self)
+        local level = i+1
+        demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false)
+        challenge.set_puzzle_level(level)
+        switch.slide_out_title()
+      end)
+    end
+    
+    menu['unlimited'] = ui.new_text{ parent=parent, x=450, y=-200, size=32, depth=-200, title='unlimited' }
+    menu['unlimited']:on_press(function(self)
       demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
       challenge.set_puzzle_level(2)
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       switch.slide_out_title()
     end)
+    
+    menu.back = ui.new_text{ parent=parent, x=120, y=240, size=32, depth=-200, title='back' }
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
     end)

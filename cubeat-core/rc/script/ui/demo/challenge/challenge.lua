@@ -1,5 +1,6 @@
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local file        = require 'rc/script/ui/file'
+local record      = require 'rc/script/ui/demo/challenge/record'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local scorelist   = require 'rc/script/ui/demo/challenge/scorelist'
 
@@ -27,78 +28,6 @@ local function get_level_unlimited()
   return level_unlimited_
 end
 
-
-
-------------------------------------------------------
--- Save mode clear flag
-local function save_mode_clear_flag(demo, submode)
-  local k
-  if submode==parameter.OneShotClear then
-    k = 'clear_0_' .. tostring(get_puzzle_level())
-  else
-    k = 'clear_' .. tostring(submode)
-  end
-  
-  local challenge_record = file.load_data('challenge_record', "rb")
-
-  -- only when win_==true we should save clear flag.
-  if win_ then
-    if challenge_record then -- find record file
-      challenge_record[k] = true
-      file.save_data('challenge_record', challenge_record, "wb")
-    else -- not have record file, create one & save it.
-      challenge_record = {}
-      challenge_record[k] = true
-      file.save_data('challenge_record', challenge_record, "wb")
-    end
-  end
-end
-
-------------------------------------------------------
--- Save play num record
-local function save_retry_record(demo, submode)
-  local k = 'retry_' .. tostring(get_puzzle_level())
-  
-  local challenge_record = file.load_data('challenge_record', "rb")
-  
-  -- only when win_==true we should save retry record
-  if win_ then
-    if challenge_record then -- find record file
-      -- only if there is not have retry record, we should save it.
-      if challenge_record[k]==nil then
-        challenge_record[k] = puzzle_retry_
-        file.save_data('challenge_record', challenge_record, "wb")
-      end
-    else -- not have record file, create one & save it.
-      challenge_record = {}
-      challenge_record[k] = puzzle_retry_
-      file.save_data('challenge_record', challenge_record, "wb")
-    end
-  end
-end
-
-------------------------------------------------------
--- Save challenge mode score record
-local function save_score_record(demo, submode)
-
-  local k = 'score_' .. tostring(submode)
-  local cur_score = demo:get_map_score(parameter.player1) -- current score
-  
-  local challenge_record = file.load_data('challenge_record', "rb")
-  if challenge_record then -- find record file
-  
-    -- insert cur_score to table
-    if challenge_record[k]==nil then challenge_record[k] = {} end
-    table.insert( challenge_record[k], cur_score )
-    file.save_data('challenge_record', challenge_record, "wb")
-    
-  else -- not have record file, create one & save it.
-    challenge_record = {}
-    challenge_record[k] = {}
-    table.insert( challenge_record[k], cur_score )
-    file.save_data('challenge_record', challenge_record, "wb")
-  end
-end
 
 ------------------------------------------------------
 -- Set win_ variable & end single mode game
@@ -251,12 +180,16 @@ end
 -- Ending
 ------------------------------------------------------
 local function ending(demo, submode)
-
-  save_mode_clear_flag(demo, submode)
+  -- save mode clear flag
+  local data = { win=win_, submode=submode, puzzle_level=get_puzzle_level() }
+  record.save(demo, parameter.clear, data)
   
   if submode==parameter.OneShotClear then
+    -- save retry num
+    local data = { win=win_, submode=submode, puzzle_level=get_puzzle_level(), retry=puzzle_retry_ }
+    record.save(demo, parameter.retry, data)
+    -- set record board
     recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
-    save_retry_record(demo, submode)
     local k = 'retry_' .. tostring(get_puzzle_level())
     local challenge_record = file.load_data('challenge_record', "rb")
     if challenge_record then
@@ -287,7 +220,10 @@ local function ending(demo, submode)
     recordboard.show(submode, win_)
     
   elseif submode==parameter.UnLimited_Normal or submode==parameter.UnLimited_Countdown then
-    save_score_record(demo, submode)
+    -- save score
+    local data = { win=win_, submode=submode, puzzle_level=get_puzzle_level(), score=demo:get_map_score(parameter.player1) }
+    record.save(demo, parameter.score, data)
+    -- set score list
     local k = 'score_' .. tostring(submode)
     local challenge_record = file.load_data('challenge_record', "rb")
     if challenge_record and challenge_record[k] then

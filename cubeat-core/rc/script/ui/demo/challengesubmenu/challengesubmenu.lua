@@ -25,12 +25,16 @@ local function init(demo, parent, submode)
       local my = 40 * math.mod(i-1, 10)
       print(mx, my)
       menu[k] = ui.new_text{ parent=parent, x=-450+mx, y=-200+my, size=32, depth=-200, title=k }
-      menu[k]:on_press(function(self)
-        local level = i+1
-        demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false)
-        challenge.set_puzzle_level(level)
-        switch.slide_out_title()
-      end)
+      if i==1 or record.load(parameter.clear, {submode=submode, puzzle_level=i}) then
+        menu[k]:on_press(function(self)
+          local level = i+1
+          demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false)
+          challenge.set_puzzle_level(level)
+          switch.slide_out_title()
+        end)
+      else
+        menu[k]:set_color(128,128,128)
+      end
     end
     
     menu['unlimited'] = ui.new_text{ parent=parent, x=450, y=-200, size=32, depth=-200, title='unlimited' }
@@ -61,22 +65,38 @@ local function init(demo, parent, submode)
       demo:init_single(parameter.WarningCondition_20, 1, 'char/char1_new', 'stage/jungle1', false)
       switch.slide_out_title()
     end)
-    menu.btn2:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn3:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn4:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
-    menu.btn5:on_press(function(self)
-      demo:init_single(parameter.WarningCondition_100, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
-    end)
+    if record.load(parameter.clear, {submode=parameter.WarningCondition_20}) then
+      menu.btn2:on_press(function(self)
+        demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
+        switch.slide_out_title()
+      end)
+    else
+      menu.btn2:set_color(128,128,128)
+    end
+    if record.load(parameter.clear, {submode=parameter.WarningCondition_40}) then
+      menu.btn3:on_press(function(self)
+        demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
+        switch.slide_out_title()
+      end)
+    else
+      menu.btn3:set_color(128,128,128)
+    end
+    if record.load(parameter.clear, {submode=parameter.WarningCondition_60}) then
+      menu.btn4:on_press(function(self)
+        demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
+        switch.slide_out_title()
+      end)
+    else
+      menu.btn4:set_color(128,128,128)
+    end
+    if record.load(parameter.clear, {submode=parameter.WarningCondition_80}) then
+      menu.btn5:on_press(function(self)
+        demo:init_single(parameter.WarningCondition_100, 1, 'char/char1_new', 'stage/jungle1', false)
+        switch.slide_out_title()
+      end)
+    else
+      menu.btn5:set_color(128,128,128)
+    end
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
     end)

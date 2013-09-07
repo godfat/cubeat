@@ -95,6 +95,37 @@ local function save(demo, save_type, data)
   end
 end
 
+------------------------------------------------------
+local function load(load_type, data)
+  local challenge_record = file.load_data('challenge_record', "rb")
+  if challenge_record==nil then return nil end
+  
+  if load_type==parameter.clear then
+    if data.submode==nil then return nil end
+    local k
+    if data.submode==parameter.OneShotClear then
+      if data.puzzle_level==nil then return nil end
+      k = 'clear_0_' .. tostring(data.puzzle_level)
+    else
+      k = 'clear_' .. tostring(data.submode)
+    end
+    return challenge_record[k]
+  end
+  
+  if load_type==parameter.retry then
+    if data.puzzle_level==nil then return nil end
+    local k = 'retry_' .. tostring(data.puzzle_level)
+    return challenge_record[k]
+  end
+  
+  if load_type==parameter.score then
+    if data.submode==nil then return nil end
+    local k = 'score_' .. tostring(data.submode)
+    return challenge_record[k]
+  end
+end
+
 return {
-  save = save
+  save = save,
+  load = load,
 }

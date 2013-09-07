@@ -190,12 +190,8 @@ local function ending(demo, submode)
     record.save(demo, parameter.retry, data)
     -- set record board
     recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
-    local k = 'retry_' .. tostring(get_puzzle_level())
-    local challenge_record = file.load_data('challenge_record', "rb")
-    if challenge_record then
-      local retry = challenge_record[k]
-      if win_ and retry then recordboard.set_retry(retry) end
-    end
+    local record_retry = record.load(parameter.retry, {puzzle_level=get_puzzle_level()})
+    if win_ and record_retry then recordboard.set_retry(record_retry) end
     -- set button on_press function
     recordboard.on_press_next(function(self)
       recordboard.hide()
@@ -224,11 +220,10 @@ local function ending(demo, submode)
     local data = { win=win_, submode=submode, puzzle_level=get_puzzle_level(), score=demo:get_map_score(parameter.player1) }
     record.save(demo, parameter.score, data)
     -- set score list
-    local k = 'score_' .. tostring(submode)
-    local challenge_record = file.load_data('challenge_record', "rb")
-    if challenge_record and challenge_record[k] then
+    local record_score = record.load(parameter.score, {submode=submode})
+    if record_score then
       local cur_score  = tostring( demo:get_map_score(parameter.player1) )
-      scorelist.set_score(challenge_record[k], cur_score, demo:get_ui_scene())
+      scorelist.set_score(record_score, cur_score, demo:get_ui_scene())
     end
     -- set button on_press function
     scorelist.on_press_retry(function(self)

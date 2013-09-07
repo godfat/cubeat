@@ -3,8 +3,9 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
-local parameter= require 'rc/script/ui/demo/challenge/parameter'
 local challenge= require 'rc/script/ui/demo/challenge/challenge'
+local record   = require 'rc/script/ui/demo/challenge/record'
+local parameter= require 'rc/script/ui/demo/challenge/parameter'
 
 local function init(demo, parent, submode)
   local menu = {}

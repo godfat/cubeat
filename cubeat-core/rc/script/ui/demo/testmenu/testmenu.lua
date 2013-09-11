@@ -21,6 +21,8 @@ local function init(demo, parent)
   menu.btn_aitest:set_scale(1.5)
   menu.btn_tut1  = ui.new_text{ parent=parent, x=0, y=300, size=32, title='tutorial test'}
   menu.btn_tut1:set_scale(1.5)
+  menu.btn_story  = ui.new_text{ parent=parent, x=320, y=0, size=32, title='story mode' }
+  menu.btn_story:set_scale(1.5)
   menu.btn_back  = ui.new_text{ parent=parent, x=0, y=360, size=32, title='back to title' }
   menu.btn_back:set_scale(1.5)
 
@@ -47,6 +49,9 @@ local function init(demo, parent)
     local filemark = io.open(basepath().."rc/config/tmp/tutored", "w") 
     filemark:write("1") -- just write something
     filemark:close()
+  end)
+  menu.btn_story:on_press(function(self)
+    switch.load_page('select', 'out', { game_mode=1, level=0 })
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

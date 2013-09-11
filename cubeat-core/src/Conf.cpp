@@ -15,7 +15,7 @@ Conf::Conf()
 {}
 
 #if defined(_SHOOTING_CUBES_ANDROID_)
-void Conf::init(std::string const& working_path, std::string const& android_internal_path)
+void Conf::init(std::string const& working_path, std::string const& android_internal_path, std::string const& android_ext_path)
 #else
 void Conf::init(std::string const& working_path)
 #endif
@@ -28,6 +28,7 @@ void Conf::init(std::string const& working_path)
     config_ = utils::map_any::construct( read_config_text( android_internal_path + "/rc/config.zzml") );
     config_path_           = android_internal_path + "/rc/config/";
     script_path_           = android_internal_path + "/rc/script/";
+    android_ext_path_      = android_ext_path + "/";
 #else
     config_ = utils::map_any::construct( read_config_text( working_path_ + "rc/config.zzml") );
     config_path_           = expand("rc/config/");

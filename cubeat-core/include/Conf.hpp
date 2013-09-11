@@ -19,6 +19,10 @@ private:
     std::string shader_path_;
     std::string version_string_;
 
+    #if defined(_SHOOTING_CUBES_ANDROID_)
+    std::string android_ext_path_;
+    #endif
+
     int screen_width_;
     int screen_height_;
     int framerate_;
@@ -33,7 +37,8 @@ public:
     //note: call this with null string to specify path relative to executable no matter what,
     //      or call this with a absolute path to your working path.
     #if defined(_SHOOTING_CUBES_ANDROID_)
-    void init(std::string const& working_path, std::string const& android_internal_path);
+    void init(std::string const& working_path, std::string const& android_internal_path, std::string const& android_ext_path);
+    inline std::string const& android_ext_path() const { return android_ext_path_; }
     #else
     void init(std::string const& working_path);
     #endif

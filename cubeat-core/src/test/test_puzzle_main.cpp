@@ -1,4 +1,6 @@
 
+#include "audio/Sound.hpp"
+#include "data/ViewSetting.hpp"
 #include "Conf.hpp"
 #include "view/Scene.hpp"
 #include "presenter/Stage.hpp"
@@ -7,6 +9,7 @@
 #include "presenter/cube/ViewSpriteMaster.hpp"
 #include "presenter/game/Puzzle.hpp"
 
+#include "Input.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
 #include "Player.hpp"
@@ -62,10 +65,10 @@ public:
     void cycle() { //shadow Puzzle::cycle directly;
         pview1_->cycle();
         update_ui();
+        map0_->cycle();
+        map1_->cycle();
         stage_->cycle();
         scene_->redraw();
-        map0_->redraw().cycle();
-        map1_->redraw().cycle();
 
         //note: bad way........ but have no time.
         if( !end_ ) {
@@ -110,7 +113,7 @@ protected:
         // setup map0
         int generate_level = puzzle_conf_.I("generate_level");
         if( generate_level >= 3 && generate_level <= 20 ) {
-            map0_ = utils::MapLoader::generate(generate_level);
+            map0_ = utils::MapLoader::generate(generate_level, puzzle_conf_.I("color_num"));
         } else {
             map0_ = utils::MapLoader::load( puzzle_conf_.S("puzzle_file") );
         }

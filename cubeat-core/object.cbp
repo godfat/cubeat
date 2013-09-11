@@ -20,6 +20,7 @@
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
 					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
+					<Add option="-D_SHOOTING_CUBES_ENABLE_SOUND_" />
 					<Add option="-DNDEBUG" />
 					<Add directory="include" />
 					<Add directory="lib" />
@@ -57,6 +58,7 @@
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
 					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
+					<Add option="-D_SHOOTING_CUBES_ENABLE_SOUND_" />
 					<Add option="-DNDEBUG" />
 					<Add directory="include" />
 					<Add directory="lib" />

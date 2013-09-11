@@ -18,6 +18,7 @@ LOCAL_CFLAGS := -D_SHOOTING_CUBES_ANDROID_ \
                 -DUSE_FILE32API \
                 -DBOOST_DISABLE_ASSERTS \
                 -DALMIXER_COMPILE_WITHOUT_SDL \
+                -D_SHOOTING_CUBES_ENABLE_SOUND_ \
                 -pipe -fstrict-aliasing -fno-fast-math
 
 # -fno-exceptions -fno-rtti can't be used with boost
@@ -42,7 +43,6 @@ LOCAL_C_INCLUDES += $(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.6/libs/armeabi-v
 LOCAL_SRC_FILES := \
   lib/Singleton.cpp \
   src/audio/detail/ALmixer.cpp \
-  src/audio/detail/OpenAL.cpp \
   src/audio/Sound.cpp \
   src/audio/SoundObject.cpp \
   src/ctrl/AIPlayer.cpp \
@@ -118,8 +118,8 @@ LOCAL_SRC_FILES := \
 LOCAL_LDLIBS := -Lc:/local_gitrepo/irrlicht-svn/lib/Android -lEGL -llog -lGLESv1_CM -lz -lGLESv2 -landroid -lIrrlicht
 LOCAL_LDLIBS += $(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/4.6/libs/armeabi-v7a/libgnustl_static.a
 
-LOCAL_STATIC_LIBRARIES := android_native_app_glue boost-thread
-LOCAL_SHARED_LIBRARIES := luajit2
+LOCAL_STATIC_LIBRARIES := android_native_app_glue boost-thread openal
+LOCAL_SHARED_LIBRARIES := luajit2 almixer
 LOCAL_WHOLE_STATIC_LIBRARIES := freetype
 
 include $(BUILD_SHARED_LIBRARY)
@@ -127,4 +127,6 @@ include $(BUILD_SHARED_LIBRARY)
 $(call import-module,android/native_app_glue)
 $(call import-module,boost-thread)
 $(call import-module,luajit2)
+$(call import-module,openal)
+$(call import-module,almixer)
 $(call import-module,freetype)

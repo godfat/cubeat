@@ -24,7 +24,7 @@ void Demo_init_vs_cpu(Demo* self, char const* c1p, char const* c2p, char const* 
     self->init_vs_cpu(c1p, c2p, scene_name, ai_level);
 }
 
-void Demo_story(Demo* self, char const* c1p, char const* c2p, char const* scene_name, int ai_level) { // not shared_ptr!
+void Demo_init_story(Demo* self, char const* c1p, char const* c2p, char const* scene_name, int ai_level) { // not shared_ptr!
     self->init_vs_cpu(c1p, c2p, scene_name, ai_level);
 }
 

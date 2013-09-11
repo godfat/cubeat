@@ -22,7 +22,7 @@ local conBG_path_ = 'dialogue_bubble_1'
 local conBG_w_    = 512
 local conBG_h_    = 224
 local conBG_x_    = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
-local conBG_y_    = {70, 300}
+local conBG_y_    = {300, 300}
 local conBG_d_    = -40
 
 local con_offset_x_ =45

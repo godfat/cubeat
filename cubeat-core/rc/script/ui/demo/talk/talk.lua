@@ -14,7 +14,7 @@ local demo_game_ = nil
 local data_ = nil
 local ask_panel_ = nil
 local step_      = 1
-local actor_appear_ = {false, false}
+--local actor_appear_ = {false, false}
 local complete_rundown_ = 0
 local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
@@ -56,7 +56,7 @@ end
 
 local function reset()
   step_      = 1
-  actor_appear_ = {false, false}
+  --actor_appear_ = {false, false}
   complete_rundown_ = 0
 end
 
@@ -110,12 +110,23 @@ local function action(menu, rundown)
   menu.light1:set_visible(false)
   menu.light2:set_visible(false)
   
+  --[[
   if actor_appear_[ch]==false then
     menu[actor]:set_visible(true)
     menu[content]:set_visible(true)
     menu[panel]:set_visible(true)
     actor_appear_[ch]=true
   end
+  --]]
+  
+  -- just show one character
+  local hide_ch = (ch==1 and 2) or 1
+  menu['actor'..tostring(hide_ch)]:set_visible(false)
+  menu['content'..tostring(hide_ch)]:set_visible(false)
+  menu['panel'..tostring(hide_ch)]:set_visible(false)
+  menu[actor]:set_visible(true)
+  menu[content]:set_visible(true)
+  menu[panel]:set_visible(true)
   
   --background
   if rundown[step_].background then

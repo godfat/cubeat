@@ -7,59 +7,59 @@
 using namespace psc;
 using namespace audio;
 
-int const SoundStream::NUM_BUFS = 3;
-
-SoundStream::SoundStream(std::string const& path, int const& chunk_length)
-    :name_(Conf::i().expand(path))
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    ,ALstream_(0)
-    #endif
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    buffer_ = new ALuint[NUM_BUFS];
-    ALstream_ = alureCreateStreamFromFile(name_.c_str(), chunk_length, NUM_BUFS, buffer_);
-    if(!ALstream_) {
-        std::cerr << "OpenAL: Could not load" << name_ << ": " << alureGetErrorString() << std::endl;
-        //even if the playing stream is not found, it should be tolerable. (just skip it.)
-    }
-    #endif
-}
-
-SoundStream::~SoundStream()
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    std::cout << "SoundStream " << name_ << " killed." << std::endl;
-    if(ALstream_)
-        alureDestroyStream(ALstream_, NUM_BUFS, buffer_);
-    delete [] buffer_;
-    #endif
-}
-
-/// ----------- SoundBuffer below ---------- ///
-
-SoundBuffer::SoundBuffer(std::string const& path)
-    :name_(Conf::i().expand(path))
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    ,ALbuffer_(0)
-    #endif
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    ALbuffer_ = alureCreateBufferFromFile(name_.c_str());
-    if(!ALbuffer_) {
-        std::cerr << "OpenAL: Could not load" << name_ << ": " << alureGetErrorString() << std::endl;
-        //even if the buffer is cannot be created, it should be tolerable. (just skip it.)
-    }
-    #endif
-}
-
-SoundBuffer::~SoundBuffer()
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    std::cout << "SoundBuffer " << name_ << " killed." << std::endl;
-    if(ALbuffer_)
-        alDeleteBuffers(1, &ALbuffer_);
-    #endif
-}
+//int const SoundStream::NUM_BUFS = 3;
+//
+//SoundStream::SoundStream(std::string const& path, int const& chunk_length)
+//    :name_(Conf::i().expand(path))
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    ,ALstream_(0)
+//    #endif
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    buffer_ = new ALuint[NUM_BUFS];
+//    ALstream_ = alureCreateStreamFromFile(name_.c_str(), chunk_length, NUM_BUFS, buffer_);
+//    if(!ALstream_) {
+//        std::cerr << "OpenAL: Could not load" << name_ << ": " << alureGetErrorString() << std::endl;
+//        //even if the playing stream is not found, it should be tolerable. (just skip it.)
+//    }
+//    #endif
+//}
+//
+//SoundStream::~SoundStream()
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    std::cout << "SoundStream " << name_ << " killed." << std::endl;
+//    if(ALstream_)
+//        alureDestroyStream(ALstream_, NUM_BUFS, buffer_);
+//    delete [] buffer_;
+//    #endif
+//}
+//
+///// ----------- SoundBuffer below ---------- ///
+//
+//SoundBuffer::SoundBuffer(std::string const& path)
+//    :name_(Conf::i().expand(path))
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    ,ALbuffer_(0)
+//    #endif
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    ALbuffer_ = alureCreateBufferFromFile(name_.c_str());
+//    if(!ALbuffer_) {
+//        std::cerr << "OpenAL: Could not load" << name_ << ": " << alureGetErrorString() << std::endl;
+//        //even if the buffer is cannot be created, it should be tolerable. (just skip it.)
+//    }
+//    #endif
+//}
+//
+//SoundBuffer::~SoundBuffer()
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    std::cout << "SoundBuffer " << name_ << " killed." << std::endl;
+//    if(ALbuffer_)
+//        alDeleteBuffers(1, &ALbuffer_);
+//    #endif
+//}
 
 /// ----------- SoundSample below ---------- ///
 
@@ -104,38 +104,38 @@ SoundSample::~SoundSample()
 
 /// ----------- SoundObject below ---------- ///
 
-SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    gen_source();
-    if( pSoundStream s = stream.lock() ) {
-        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
-        alureRewindStream(s->ALstream_);
-        if( !alurePlaySourceStream(source, s->ALstream_, SoundStream::NUM_BUFS, loop?-1:0, NULL, NULL) ) {
-            std::cerr << "OpenAL: Failed to play stream " << s->name_ << ": " << alureGetErrorString() << std::endl;
-            stop();
-            //even if the stream cannot be played, it should be tolerable. (just skip it.)
-        }
-    }
-    #endif
-}
+//SoundObject::SoundObject(wpSoundStream const& stream, bool const& loop)
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    gen_source();
+//    if( pSoundStream s = stream.lock() ) {
+//        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
+//        alureRewindStream(s->ALstream_);
+//        if( !alurePlaySourceStream(source, s->ALstream_, SoundStream::NUM_BUFS, loop?-1:0, NULL, NULL) ) {
+//            std::cerr << "OpenAL: Failed to play stream " << s->name_ << ": " << alureGetErrorString() << std::endl;
+//            stop();
+//            //even if the stream cannot be played, it should be tolerable. (just skip it.)
+//        }
+//    }
+//    #endif
+//}
 
-SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
-{
-    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
-    gen_source();
-    if( pSoundBuffer s = buffer.lock() ) {
-        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
-        alSourcei(source, AL_BUFFER, s->ALbuffer_);
-        alSourcei(source, AL_LOOPING, loop?AL_TRUE:AL_FALSE);
-        if( !alurePlaySource(source, NULL, NULL) ) {
-            std::cerr << "OpenAL: Failed to play buffer " << s->name_ << ": " << alureGetErrorString() << std::endl;
-            stop();
-            //even if the stream cannot be played, it should be tolerable. (just skip it.)
-        }
-    }
-    #endif
-}
+//SoundObject::SoundObject(wpSoundBuffer const& buffer, bool const& loop)
+//{
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    gen_source();
+//    if( pSoundBuffer s = buffer.lock() ) {
+//        //std::cerr << "OpenAL: Trying to play " << s->name_ << std::endl;
+//        alSourcei(source, AL_BUFFER, s->ALbuffer_);
+//        alSourcei(source, AL_LOOPING, loop?AL_TRUE:AL_FALSE);
+//        if( !alurePlaySource(source, NULL, NULL) ) {
+//            std::cerr << "OpenAL: Failed to play buffer " << s->name_ << ": " << alureGetErrorString() << std::endl;
+//            stop();
+//            //even if the stream cannot be played, it should be tolerable. (just skip it.)
+//        }
+//    }
+//    #endif
+//}
 
 SoundObject::SoundObject(wpSoundSample const& sample)
     :

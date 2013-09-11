@@ -1,7 +1,7 @@
 
 #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
 
-#include "audio/detail/OpenAL.hpp"
+#include "audio/detail/ALmixer.hpp"
 #include <cstdio>
 
 #include <ALmixer.h>

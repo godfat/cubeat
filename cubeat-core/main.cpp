@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     chdir(app->activity->internalDataPath);
     LOGI("cwd: %s", buf);
     unpack_data(app);
-    psc::Conf::i().init("", app->activity->internalDataPath);
+    psc::Conf::i().init("", app->activity->internalDataPath, app->activity->externalDataPath);
     psc::App::i().init(app).launchOpening2().run();
     IrrDevice::i().~IrrDevice(); // manually destruct here, as IrrEx17 example?
 #else

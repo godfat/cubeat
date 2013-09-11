@@ -10,6 +10,7 @@
 APIEXPORT pScene* Demo_get_ui_scene(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_init_vs_ppl(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_vs_cpu(Demo*, char const*, char const*, char const*, int); // not shared_ptr!
+APIEXPORT void    Demo_init_story(Demo*, char const*, char const*, char const*, int); // not shared_ptr!
 APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_single(Demo*, int, int, char const*, char const*, bool); // not shared_ptr!

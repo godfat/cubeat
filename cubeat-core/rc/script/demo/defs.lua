@@ -19,6 +19,7 @@ local Mt_Demo = {}
 Mt_Demo.__index                = Mt_Demo
 Mt_Demo.init_vs_ppl            = C.Demo_init_vs_ppl
 Mt_Demo.init_vs_cpu            = C.Demo_init_vs_cpu
+Mt_Demo.init_story             = C.Demo_init_story
 Mt_Demo.init_cpudemo           = C.Demo_init_cpudemo
 Mt_Demo.init_ai_logging        = C.Demo_init_ai_logging
 Mt_Demo.init_single            = C.Demo_init_single

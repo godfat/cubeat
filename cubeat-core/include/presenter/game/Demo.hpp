@@ -59,6 +59,7 @@ public:
 
     virtual void cycle();
     void init_vs_cpu(std::string const&, std::string const&, std::string const&, int const&);
+    void init_story(std::string const&, std::string const&, std::string const&, int const&);
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);

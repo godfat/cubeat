@@ -94,6 +94,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     btn_reinit_.reset();
 
     game_mode_ = game_mode;
+    submode_ = submode;
     c1p_ = c1p;
     c2p_ = c2p;
     sconf_ = scene_name;
@@ -317,6 +318,12 @@ void Demo::init_vs_cpu(std::string const& c1p, std::string const& c2p, std::stri
 {
     ai_level_ = ai_level; // TEMP WTF MEMO
     init_(GM_PVC, c1p, c2p, scene_name);
+}
+
+void Demo::init_story(std::string const& c1p, std::string const& c2p, std::string const& scene_name, int const& ai_level)
+{
+    ai_level_ = ai_level; // WTF TEMP MEMO AGAIN
+    init_(GM_PVC, c1p, c2p, scene_name, false, 1);
 }
 
 void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
@@ -890,6 +897,10 @@ void Demo::end(pMap lose_map)
 
     // WTF BBQ!!!!!!!!!!!!!!!!!!!
     if( game_mode_ != GM_SINGLE ) {
+        if( game_mode_ == GM_PVC && submode_ == 1 ) { // GM_PVC && submode_ == 1 means STORY_MODE
+           script::Lua::call(L_, "ending", submode_);
+           return;
+        }
         if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
         blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
         blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));

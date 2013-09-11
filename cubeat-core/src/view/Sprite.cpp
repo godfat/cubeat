@@ -122,12 +122,12 @@ void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
 {
     IMeshManipulator* mani = smgr_->getMeshManipulator();
     out_mesh = mani->createMeshCopy( sprite_plane_ptr_ );
-    mani->scaleMesh( out_mesh, vector3df(size.Width, size.Height, 1) );
+    mani->scale( out_mesh, vector3df(size.Width, size.Height, 1) );
 
     if( center ) {
         matrix4 mat;
         mat.setTranslation( vector3df(-size.Width/2, size.Height/2, 0) );
-        mani->transformMesh( out_mesh, mat );
+        mani->transform( out_mesh, mat );
     }
 
     out_node = smgr_->addMeshSceneNode( out_mesh, parent->body(), -1, vector3df(0,0,0) );
@@ -188,7 +188,7 @@ Sprite& Sprite::setCenterAligned(bool const& center)
     else
         mat.setTranslation( vector3df(+size_.Width/2, -size_.Height/2, 0) );
     IMeshManipulator* mani = smgr_->getMeshManipulator();
-    mani->transformMesh( thismesh_, mat );
+    mani->transform( thismesh_, mat );
     return *this;
 }
 

@@ -7,4 +7,3 @@ if arg[2] == 'debug' then
 else
   MapUtils.display( PuzzleGen:generate(arg[1] and tonumber(arg[1]) or 4, 6, 10) )
 end
-

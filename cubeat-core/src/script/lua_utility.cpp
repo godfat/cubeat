@@ -1,5 +1,6 @@
 
 #include "script/lua_utility.hpp"
+#include "utils/Logger.hpp"
 
 using namespace psc;
 using namespace script;
@@ -7,7 +8,11 @@ using namespace script;
 bool Lua::run_script(lua_State* L, char const* filename) {
     if( luaL_loadfile(L, filename) || lua_pcall(L, 0, 0, 0) ) {
         //bad call will return non-zero
+        #ifdef _SHOOTING_CUBES_ANDROID_
+        LOGD("cannot load file: \n  %s", lua_tostring(L, -1));
+        #else
         error(L, "cannot load file: \n  %s", lua_tostring(L, -1) );
+        #endif
         return true;
     }
     return false;

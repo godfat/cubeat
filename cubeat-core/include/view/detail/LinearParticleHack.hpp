@@ -92,10 +92,22 @@ public:
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+
+    virtual void setMinLifeTime(u32 min) { MinLifeTime = min; }
+
+    virtual void setMaxLifeTime(u32 max) { MaxLifeTime = max; }
+
+    virtual void setMaxAngleDegrees(s32 deg) { MaxAngleDegrees = deg; }
+
+    virtual u32 getMinLifeTime() const { return MinLifeTime; }
+
+    virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+
+    virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
 
 private:
 
@@ -185,13 +197,14 @@ s32 LinearParticleEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& out
 				p.vector = tgt;
 			}
 
-			if(MaxLifeTime - MinLifeTime == 0)
-				p.endTime = now + MinLifeTime;
-			else
-				p.endTime = now + MinLifeTime + (utils::random(MaxLifeTime - MinLifeTime));
+      p.endTime = now + MinLifeTime;
+			if (MaxLifeTime != MinLifeTime)
+				p.endTime += utils::random(MaxLifeTime - MinLifeTime);
 
-			p.color = MinStartColor.getInterpolated(
-				MaxStartColor, (utils::random(100)) / 100.0f);
+			if (MinStartColor==MaxStartColor)
+				p.color = MinStartColor;
+			else
+				p.color = MinStartColor.getInterpolated(MaxStartColor, (utils::random(100)) / 100.0f);
 
 			p.startColor = p.color;
 			p.startVector = p.vector;
@@ -199,8 +212,7 @@ s32 LinearParticleEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& out
 			if (MinStartSize==MaxStartSize)
 				p.startSize = MinStartSize;
 			else
-				p.startSize = MinStartSize.getInterpolated(
-					MaxStartSize, (utils::random(100)) / 100.0f);
+				p.startSize = MinStartSize.getInterpolated(MaxStartSize, (utils::random(100)) / 100.0f);
 			p.size = p.startSize;
 
 			Particles.push_back(p);

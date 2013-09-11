@@ -1,15 +1,19 @@
 #ifndef _SHOOTING_CUBES_AUDIO_SOUND_OBJECT_
 #define _SHOOTING_CUBES_AUDIO_SOUND_OBJECT_
 
-#if !defined(ALC_VERSION_0_1) || !defined(AL_VERSION_1_0)
-#if defined(__APPLE__)
-#include <OpenAL/alure.h>
-#else
-#include <AL/alure.h>
-#endif
-#endif
+#ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+
+//#if !defined(ALC_VERSION_0_1) || !defined(AL_VERSION_1_0)
+//#if defined(__APPLE__)
+//#include <OpenAL/alure.h>
+//#else
+//#include <AL/alure.h>
+//#endif
+//#endif
 
 #include <ALmixer.h>
+
+#endif // _SHOOTING_CUBES_ENABLE_SOUND_
 
 #include <string>
 #include <boost/tr1/memory.hpp>
@@ -19,56 +23,61 @@ namespace audio {
 
 class SoundObject;
 
-class SoundStream
-{
-public:
-    typedef std::tr1::shared_ptr<SoundStream> pointer_type;
-    typedef std::tr1::weak_ptr<SoundStream> wpointer_type;
+//class SoundStream
+//{
+//public:
+//    typedef std::tr1::shared_ptr<SoundStream> pointer_type;
+//    typedef std::tr1::weak_ptr<SoundStream> wpointer_type;
+//
+//    static pointer_type create(std::string const& path,
+//                               int const& chunk_length = 250000)
+//    {
+//        return pointer_type(new SoundStream(path, chunk_length));
+//    }
+//    ~SoundStream();
+//
+//private:
+//    SoundStream(std::string const&, int const&);
+//
+//    static int const NUM_BUFS;
+//    std::string name_;
+//
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    alureStream* ALstream_;
+//    ALuint* buffer_;
+//    #endif
+//
+//    friend class SoundObject;
+//};
 
-    static pointer_type create(std::string const& path,
-                               int const& chunk_length = 250000)
-    {
-        return pointer_type(new SoundStream(path, chunk_length));
-    }
-    ~SoundStream();
+//typedef SoundStream::pointer_type pSoundStream;
+//typedef SoundStream::wpointer_type wpSoundStream;
 
-private:
-    SoundStream(std::string const&, int const&);
+//class SoundBuffer
+//{
+//public:
+//    typedef std::tr1::shared_ptr<SoundBuffer> pointer_type;
+//    typedef std::tr1::weak_ptr<SoundBuffer> wpointer_type;
+//
+//    static pointer_type create(std::string const& path)
+//    {
+//        return pointer_type(new SoundBuffer(path));
+//    }
+//    ~SoundBuffer();
+//
+//private:
+//    SoundBuffer(std::string const&);
+//
+//    std::string name_;
+//    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+//    ALuint ALbuffer_;
+//    #endif
+//
+//    friend class SoundObject;
+//};
 
-    static int const NUM_BUFS;
-    std::string name_;
-    alureStream* ALstream_;
-    ALuint* buffer_;
-
-    friend class SoundObject;
-};
-
-typedef SoundStream::pointer_type pSoundStream;
-typedef SoundStream::wpointer_type wpSoundStream;
-
-class SoundBuffer
-{
-public:
-    typedef std::tr1::shared_ptr<SoundBuffer> pointer_type;
-    typedef std::tr1::weak_ptr<SoundBuffer> wpointer_type;
-
-    static pointer_type create(std::string const& path)
-    {
-        return pointer_type(new SoundBuffer(path));
-    }
-    ~SoundBuffer();
-
-private:
-    SoundBuffer(std::string const&);
-
-    std::string name_;
-    ALuint ALbuffer_;
-
-    friend class SoundObject;
-};
-
-typedef SoundBuffer::pointer_type pSoundBuffer;
-typedef SoundBuffer::wpointer_type wpSoundBuffer;
+//typedef SoundBuffer::pointer_type pSoundBuffer;
+//typedef SoundBuffer::wpointer_type wpSoundBuffer;
 
 class SoundSample
 {
@@ -88,7 +97,9 @@ private:
     void init(bool const&);
 
     std::string name_;
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     ALmixer_Data* data_;
+    #endif
 
     friend class SoundObject;
 };
@@ -102,12 +113,12 @@ public:
     typedef std::tr1::shared_ptr<SoundObject> pointer_type;
     typedef std::tr1::weak_ptr<SoundObject> wpointer_type;
 
-    static pointer_type create(wpSoundStream const& stream, bool const& loop = false) {
-        return pointer_type(new SoundObject(stream, loop));
-    }
-    static pointer_type create(wpSoundBuffer const& buffer, bool const& loop = false) {
-        return pointer_type(new SoundObject(buffer, loop));
-    }
+//    static pointer_type create(wpSoundStream const& stream, bool const& loop = false) {
+//        return pointer_type(new SoundObject(stream, loop));
+//    }
+//    static pointer_type create(wpSoundBuffer const& buffer, bool const& loop = false) {
+//        return pointer_type(new SoundObject(buffer, loop));
+//    }
     static pointer_type create(wpSoundSample const& sample) {
         return pointer_type(new SoundObject(sample));
     }
@@ -132,15 +143,18 @@ public:
     void cycle();
 
 private:
-    SoundObject(wpSoundStream const&, bool const&);
-    SoundObject(wpSoundBuffer const&, bool const&);
+//    SoundObject(wpSoundStream const&, bool const&);
+//    SoundObject(wpSoundBuffer const&, bool const&);
     SoundObject(wpSoundSample const&);
     void gen_source();  //probably not going to be used after ALmixer used.
+
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     ALuint source;      //probably not going to be used after ALmixer used.
 
     //for ALmixer
     ALuint src_;
     ALint  ch_;
+    #endif
 
     wpSoundSample sampleA_;
     wpSoundSample sampleB_;

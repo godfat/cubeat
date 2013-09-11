@@ -10,6 +10,7 @@
 #include "view/Scene.hpp"       //warning: is this really good...?
 #include "view/Sprite.hpp"      //warning: is this really good...?
 #include "IrrDevice.hpp"        //warning: is this really good...?
+#include "utils/Logger.hpp"
 #include "utils/dictionary.hpp"
 #include "Conf.hpp"
 #include "private/MastEventReceiver.hpp"
@@ -96,7 +97,11 @@ bool InputMgr::cleanupInputs()
 void InputMgr::initManyMouse()
 {
     using std::tr1::bind;
+#if !defined(_SHOOTING_CUBES_ANDROID_) && !defined(_SHOOTING_CUBES_IPHONE_)
     if( int mice_detected_initially = ManyMouse_Init() ) {
+#else
+    if( int mice_detected_initially = 0 ) {
+#endif
         std::cout << "ManyMouse_Init: " << mice_detected_initially << std::endl;
         if( !poll_manymouse_event_ )
             poll_manymouse_event_ = bind(&InputMgr::pollManyMouseStates, this);
@@ -107,12 +112,15 @@ void InputMgr::initManyMouse()
 void InputMgr::quitManyMouse()
 {
     poll_manymouse_event_ = 0;
+#if !defined(_SHOOTING_CUBES_ANDROID_) && !defined(_SHOOTING_CUBES_IPHONE_)
     ManyMouse_Quit();
     std::cout << "ManyMouse_Quit." << std::endl;
+#endif
 }
 
 void InputMgr::pollManyMouseStates()
 {
+#if !defined(_SHOOTING_CUBES_ANDROID_) && !defined(_SHOOTING_CUBES_IPHONE_)
     ManyMouseEvent e;
     while ( ManyMouse_PollEvent(&e) )
     {
@@ -157,11 +165,12 @@ void InputMgr::pollManyMouseStates()
             default: break;
         }
     }
+#endif
 }
 
 void InputMgr::associate_input_manymouse(unsigned int const& device_id)
 {
-// #if !defined(__APPLE__) && !defined(__MACOSX__)
+#if !defined(_SHOOTING_CUBES_ANDROID_) && !defined(_SHOOTING_CUBES_IPHONE_)
     ++mice_detected_by_manymouse_; //add first.
 
     Input* it = inputs_[mice_detected_by_manymouse_ - 1];
@@ -172,7 +181,7 @@ void InputMgr::associate_input_manymouse(unsigned int const& device_id)
 
     it->reinit_config( find_input_name_accordingly(mice_detected_by_manymouse_ - 1) );
     std::cout << "Mice #" << mice_detected_by_manymouse_ - 1 << ": " << ms->name << std::endl;
-// #endif // we skip OSX for now, as manymouse aren't fixed there, yet.
+#endif
 }
 
 void InputMgr::handleManyMouseDisconnect()
@@ -458,11 +467,13 @@ void Input::buttons_by_keyboard_mouse()
 
 void Input::update_buttons_by_manymouse()
 {
+#if !defined(_SHOOTING_CUBES_ANDROID_) && !defined(_SHOOTING_CUBES_IPHONE_)
     unsigned int button_bits = state_->buttons;
     trig1_.now() = (button_bits & trig1_key_) > 0;
     trig2_.now() = (button_bits & trig2_key_) > 0;
     //haste_.now() = (button_bits & haste_key_) > 0;
     pause_.now() = (button_bits & pause_key_) > 0;
+#endif
 }
 
 void Input::update_buttons_by_sysmouse_or_keyboard()

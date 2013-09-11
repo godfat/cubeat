@@ -14,6 +14,7 @@
 #include "data/ViewSetting.hpp"
 #include "data/Color.hpp"
 
+#include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 #include "utils/to_s.hpp"
 
@@ -135,7 +136,11 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
 
         IParticleEmitter* em = ps->createPointEmitter(
             core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-            flying_distance/3, flying_distance/3,    // emit rate
+#if !defined(_SHOOTING_CUBES_ANDROID_)
+            flying_distance/4, flying_distance/4,    // emit rate
+#else
+            flying_distance/4, flying_distance/4,
+#endif
             video::SColor(0,255,255,255),       // darkest color
             video::SColor(0,255,255,255),       // brightest color
             200, 200, 0,                         // min and max age, angle
@@ -145,7 +150,7 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
         ps->setEmitter(em); // this grabs the emitter
         em->drop(); // so we can drop it here without deleting it
 
-        IParticleAffector* paf = ps->createFadeOutParticleAffector();
+        IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 500);
 
         ps->addAffector(paf); // same goes for the affector
         paf->drop();
@@ -154,7 +159,7 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
         ps->setMaterialFlag(video::EMF_LIGHTING, true);
         ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
         ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
-        ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+        ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
         /// Don't use the glowing ball effect for now:
         g->set<Alpha>(0);

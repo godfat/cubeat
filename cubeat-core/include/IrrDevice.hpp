@@ -14,6 +14,10 @@
      fullscreen or not, etc.)
 */
 
+#ifdef _SHOOTING_CUBES_ANDROID_
+struct android_app;
+#endif
+
 #include <irrlicht.h>
 #include <string>
 
@@ -29,14 +33,22 @@ public:
 
     irr::IrrlichtDevice* d() { return device_; }
 
+    #ifdef _SHOOTING_CUBES_ANDROID_
+    bool init( bool test, android_app* app);
+    #else
     bool init( bool test );
+    #endif
     int  getMaterialTypeBaseCount() const;
     int  getMaterialTypeEx(std::string const& mt_name) const;
     bool run() { return device_->run(); }
 
     ~IrrDevice() {
-        printf("device released.\n");
-        device_->drop();
+        if( device_ ) {
+            printf("device releasing....\n");
+            device_->drop();
+            printf("device releasd.\n");
+            device_ = 0;
+        }
     }
 
 private:

@@ -1,4 +1,6 @@
 
+#ifdef _SHOOTING_CUBES_ENABLE_SOUND_
+
 #include "audio/detail/OpenAL.hpp"
 #include <cstdio>
 
@@ -41,3 +43,5 @@ bool sound_cleanup()
 } //detail
 } //audio
 } //psc
+
+#endif // _SHOOTING_CUBES_ENABLE_SOUND_

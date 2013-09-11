@@ -167,6 +167,11 @@ Scene& Scene::redraw()
     smgr_->drawAll();
     smgr_->setActiveCamera(camera_);
     // 2012 WTF note: should I make rt_plane_ or rt_camera_ invisible here? so no picking hindering?
+
+    // 2013 note, we should actually clear z buffer every time after a scene redraw,
+    // because in this hierarchy we are likely to use multiple scene managers.
+    driver->clearZBuffer();
+
     return *this;
 }
 

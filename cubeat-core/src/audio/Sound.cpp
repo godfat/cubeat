@@ -1,10 +1,11 @@
 
 #include "audio/Sound.hpp"
 #include "audio/SoundObject.hpp"
-#include "audio/detail/OpenAL.hpp"
+//#include "audio/detail/OpenAL.hpp"
 #include "audio/detail/ALmixer.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
+#include "Conf.hpp"
 
 #include <utility>
 #include <boost/foreach.hpp>
@@ -15,11 +16,18 @@ using namespace psc;
 using namespace audio;
 
 Sound::Sound()
-    :base_path_("rc/sound/"), inited_(false), main_track_(0)
+#if defined(_SHOOTING_CUBES_ANDROID_)
+    :base_path_(Conf::i().android_ext_path() + "rc/sound/"),
+#else
+    :base_path_("rc/sound/"),
+#endif
+     inited_(false), main_track_(0)
 {
     //detail::sound_init();
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     detail2::sound_init();
     ALmixer_SetMasterVolume(.7f);
+    #endif
 }
 
 void audio::Sound::init()
@@ -30,14 +38,14 @@ void audio::Sound::init()
     inited_ = true;
 }
 
-Sound& Sound::loadStream(std::string const& path)
-{
-    std::string absolute_path = base_path_ + path;
-    pSoundStream new_stream = SoundStream::create(absolute_path);
-    //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
-    sound_streams_[path] = new_stream;
-    return *this;
-}
+//Sound& Sound::loadStream(std::string const& path)
+//{
+//    std::string absolute_path = base_path_ + path;
+//    pSoundStream new_stream = SoundStream::create(absolute_path);
+//    //you cannot use std::make_pair to increase the use_count of shared_ptr. It's probably reference.
+//    sound_streams_[path] = new_stream;
+//    return *this;
+//}
 
 Sound& Sound::loadBuffer(std::string const& path)
 {
@@ -244,7 +252,9 @@ Sound& Sound::stopAll()
     sound_buffers_.clear();
     sound_samples_.clear();
 
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     detail2::sound_channel_restore();
+    #endif
     std::cout << " Sound: all stopped, and all channels' volumn setting go back to 1." << std::endl;
     return *this;
 }
@@ -268,7 +278,9 @@ Sound& Sound::cycle()
 {
     //we should not call sleep here.
     //detail::sound_update();
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     detail2::sound_update();
+    #endif
     for(SoundList::iterator it = sound_list_.begin(), iend = sound_list_.end(); it != iend; ++it) {
         (*it)->cycle();
         if( !(*it)->is_active() ) {
@@ -294,15 +306,19 @@ Sound& Sound::cycle()
 
 void Sound::check_sound_volumes()
 {
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     for( int i = 0; i < 16; ++i ) {
         std::cout << ALmixer_GetVolumeChannel(i) << " ";
     }
+    #endif
     std::cout << std::endl;
 }
 
 Sound::~Sound()
 {
     stopAll();
+    #ifdef _SHOOTING_CUBES_ENABLE_SOUND_
     //detail::sound_cleanup();
-    detail::sound_cleanup();
+    detail2::sound_cleanup();
+    #endif
 }

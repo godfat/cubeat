@@ -3,5 +3,6 @@
 # all other number will make program to read from "puzzle_file"
 # puzzle_file's root is at rc/config
 
-generate_level: 8,
+generate_level: 19,
+color_num: 3, 
 puzzle_file: 'tmp/puzzle_level3.zzml'

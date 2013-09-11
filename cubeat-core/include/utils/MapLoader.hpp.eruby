@@ -19,12 +19,12 @@ namespace psc{ namespace utils{
 
 class MapLoader{
 public:
-    static presenter::Map::pointer_type generate(int level){
+    static presenter::Map::pointer_type generate(int level, int color_num = 4){
         using namespace script;
         lua_State* L = luaL_newstate();
         luaL_openlibs(L);
         Lua::run_script(L, Conf::i().script_path("puzzle/puzzle_gen_interface.lua").c_str());
-        Lua::call(L, "generate_to_file", level, 6, 10, true); //temp: true for debug
+        Lua::call(L, "generate_to_file", level, 6, 10, true, color_num); //temp: true for debug
         lua_close(L);
 
         return load("tmp/puzzle.zzml");

@@ -4,7 +4,7 @@ local reverse_i = require 'rc/script/puzzle/helpers'.reverse_i
 local MapUtils = require 'rc/script/puzzle/maputils'
 local PuzzleGen = require 'rc/script/puzzle/puzzle_gen'
 
-function generate_to_file(chain_limit, w, h, de_bug)
+function generate_to_file(chain_limit, w, h, de_bug, color_num)
 
   local ffi = require 'ffi'
   ffi.cdef[[
@@ -47,7 +47,7 @@ garbage_dumpable:0,
 use_broken_as_garbage:1,
 cube_colors:
 ]])
-  local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug)
+  local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug, color_num)
   file:write("[\n")
 
   file:write("[")

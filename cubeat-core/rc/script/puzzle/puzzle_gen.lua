@@ -7,10 +7,11 @@ math.randomseed(os.time())
 
 local PuzzleGen = {}
 
-function PuzzleGen:init(chain_limit, w, h)
+function PuzzleGen:init(chain_limit, w, h, color_num)
   self.chain_limit = chain_limit
   self.w = w
   self.h = h
+  self.color_num = color_num or 4
   self.all_combinations, self.starters = MapUtils.create_all_combinations(w, h)
 
   self:reinit()
@@ -101,7 +102,7 @@ function PuzzleGen:add_final_answer(colored_map)
     local ans = answers[ ((i+ptr) % #answers) + 1 ]
     if self:not_too_high(ans) then
       ans:push_up_blocks_of(colored_map)
-      for color = 1, 4 do
+      for color = 1, self.color_num do
         colored_map[ans.y][ans.x] = color
         if not MapUtils.find_chain(colored_map) then
           self.chains:push(ans:scopy())
@@ -125,8 +126,8 @@ function PuzzleGen:next_chain(level)
       self.chains:push(c:scopy())
       self:update_heights()
       self.chains:top():push_up_blocks_of( self.mapcache )
-      for k = 0, 3 do
-        self.chains:top().color = ((last_color + k) % 4) + 1
+      for k = 0, self.color_num - 1 do
+        self.chains:top().color = ((last_color + k) % self.color_num) + 1
         self.chains:top():put_color_in( self.mapcache ) -- important, only call this after color is assigned.
         local chained, possible_count = MapUtils.find_chain( self.mapcache )
         if possible_count == c.len then
@@ -145,9 +146,9 @@ function PuzzleGen:next_chain(level)
   return false -- if all possible answers for this level has been tried, return false
 end
 
-function PuzzleGen:generate(chain_limit, w, h, de_bug)
+function PuzzleGen:generate(chain_limit, w, h, de_bug, color_num)
   w, h = w or 6, h or 10
-  if not self.inited then self:init(chain_limit, w, h) end
+  if not self.inited then self:init(chain_limit, w, h, color_num) end
   repeat
     self:reinit()
   until self:next_chain(2)

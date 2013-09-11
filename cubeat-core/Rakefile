@@ -18,6 +18,7 @@ Project.name = 'cubeat'
 require 'rake/clean'
 require 'fileutils'
 CLEAN.include '*.o'
+CLEAN.exclude '*.bak'
 task :clobber => :clean do
   sh 'make clean' rescue nil
   File.delete 'Makefile' rescue nil

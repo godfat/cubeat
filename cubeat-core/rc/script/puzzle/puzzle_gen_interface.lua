@@ -4,7 +4,8 @@ local reverse_i = require 'rc/script/puzzle/helpers'.reverse_i
 local MapUtils = require 'rc/script/puzzle/maputils'
 local PuzzleGen = require 'rc/script/puzzle/puzzle_gen'
 
-function generate_to_file(chain_limit, w, h, de_bug, color_num)
+function generate_to_file(chain_limit, w, h, de_bug, color_num, outfile)
+  outfile = outfile or "rc/config/tmp/puzzle.zzml"
 
   local ffi = require 'ffi'
   ffi.cdef[[
@@ -22,7 +23,7 @@ function generate_to_file(chain_limit, w, h, de_bug, color_num)
   path = path.."/"
   if de_bug then print("Debug: getcwd = "..path) end
 
-  file = io.open( path.."rc/config/tmp/puzzle.zzml", "w")
+  file = io.open( path .. outfile, "w")
   file:write([[
 level:4,
 color_amounts:4,
@@ -83,3 +84,6 @@ cube_colors:
   file:close()
 end
 
+return {
+  gen = generate_to_file
+}

@@ -8,6 +8,7 @@ local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 local event   = require 'rc/script/event/event'
 local random= require 'rc/script/helper'.random
+local storystage = require 'rc/script/ui/demo/storyend/config'
 
 
 local demo_game_ = nil
@@ -25,10 +26,15 @@ local function game_start(self)
   if demo_game_ then
     local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
     local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+    local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
     
-    if data_ then
-      local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+    if data_ and data_.game_mode~=99 then
+      --local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
+    elseif data_ and data_.game_mode==99 then
+      local story_data = storystage.get_data()
+      local lv = story_data.lv
+      demo_game_:init_story(c1p, c2p, sconf, lv)
     else
       switch.load_page('mainmenu', 'in')
     end
@@ -41,6 +47,15 @@ local function get_script( lang )
   if lang == 'TW'   then script = require 'rc/script/ui/demo/talk/script_TW' end
   
   if script == nil then script = require 'rc/script/ui/demo/talk/script_EN' end --default EN
+  return script
+end
+
+local function get_end_script( lang )
+  local script
+  if lang == 'EN'   then script = require 'rc/script/ui/demo/talk/script_end_EN' end
+  if lang == 'TW'   then script = require 'rc/script/ui/demo/talk/script_end_TW' end
+  
+  if script == nil then script = require 'rc/script/ui/demo/talk/script_end_EN' end --default EN
   return script
 end
 
@@ -175,8 +190,28 @@ local function action(menu, rundown)
   --Talk End
   if step_>table.getn(rundown) then
     reset()
-    --switch.load_page('testmenu', 'in')
-    game_start()
+    
+    if data_ and data_.game_mode==99 then
+      if data_.game_end then
+        if storystage.get_stage()==6 then -- story mode end
+          demo_game_:leave_and_cleanup()
+        else -- go to next story game talk
+          storystage.next_stage()
+          local story_data = storystage.get_data()
+          select_config.ch_choose[2] = story_data.ch
+          local function load_talk_page()
+            switch.load_page('talk', nil, {game_mode=99})
+            switch.slide_out_transfer()
+          end
+          switch.slide_in_transfer(load_talk_page)
+        end
+      else -- start next story game
+        game_start()
+      end
+      
+    else -- start game
+      game_start()
+    end
   end
 end
 
@@ -191,7 +226,12 @@ local function init(demo, parent, data)
   ch_choose[2] = select_config.ch_choose[2]
   
   local function play()
-    local script  = get_script(config.lang)
+    local script
+    if data.game_end then
+      script = get_end_script(config.lang)
+    else
+      script = get_script(config.lang)
+    end
     local rundown = script.get_rundown(ch_choose[1], ch_choose[2])
     if rundown ~= nil then
       action(menu, rundown)

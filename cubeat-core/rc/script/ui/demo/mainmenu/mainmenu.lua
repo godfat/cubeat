@@ -73,6 +73,9 @@ local function init(demo, parent)
   menu.btn_test    = ui.new_text{ parent = parent, title='test menu', x=360, y=300, size=32 }
   menu.btn_test:set_scale(1.5)
   
+  menu.btn_tut2     = ui.new_text{ parent = parent, title='tutorial test', x=360, y=180, size=32 }
+  menu.btn_tut2:set_scale(1.5)
+  
   menu.btn_vs_cpu:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
     switch.load_page('difficulty', nil, { game_mode = 1 })
@@ -92,6 +95,11 @@ local function init(demo, parent)
     
   menu.btn_tut:on_press(function(self) 
     switch.load_page('tutorial')
+  end)
+  
+  menu.btn_tut2:on_press(function(self)
+    demo:init_tutorial('char/char1_new', 'char/char1_new', 'stage/jungle1')
+    switch.slide_out_title()
   end)
   
   menu.btn_prac:on_press(function(self)

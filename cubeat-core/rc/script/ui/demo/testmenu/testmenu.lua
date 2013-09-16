@@ -4,6 +4,7 @@ local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
 local basepath = require 'rc/script/helper'.basepath
+local storystage = require 'rc/script/ui/demo/storyend/config'
 
 
 local function init(demo, parent)
@@ -51,8 +52,8 @@ local function init(demo, parent)
     filemark:close()
   end)
   menu.btn_story:on_press(function(self)
-    demo:init_story('char/char1_new', 'char/char2_new', 'stage/jungle1', 1)
-    switch.load_page('select', 'out', { game_mode=1, level=0 })
+    storystage.set_stage(1)
+    switch.load_page('select', 'out', { game_mode=99, level=0 })
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

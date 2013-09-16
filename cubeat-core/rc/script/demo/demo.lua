@@ -9,6 +9,8 @@ require 'rc/script/strict'
 local challenge = require 'rc/script/ui/demo/challenge/challenge'
 local jit = require 'jit'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
+local storyend    = require 'rc/script/ui/demo/storyend/storyend'
+local select_config = require 'rc/script/ui/demo/select/config'
 
 ----------------------------------------------------------------------------
 
@@ -78,6 +80,7 @@ function init(demo)
 
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)
+  storyend.create(scene_)
 end
 
 function tutorial()
@@ -110,7 +113,32 @@ end
 -- mainly used for setting up ending UI
 function ending(submode)
   print('---- single mode: ending ----')
-  challenge.ending(demo_, submode)
+  
+  if submode==99 then
+    --if demo_:get_map_warning_level(1)==100 then -- story win
+    if true then
+      storyend.on_press_next(function(self)
+        storyend.hide()
+        switch.load_page('talk', nil, {game_mode=99, game_end=true})
+        switch.slide_in_page_obj()
+      end)
+    else
+      storyend.on_press_next(function(self)
+        storyend.hide()
+        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+        demo_:init_story(c1p, c2p, sconf, 0)
+      end)
+    end
+    storyend.on_press_quit(function(self)
+      storyend.hide()
+      demo_:leave_and_cleanup()
+    end)
+    storyend.show()
+  else
+    challenge.ending(demo_, submode)
+  end
 end
 
 -- occurs right after game ends (no reinit, go back to menu)

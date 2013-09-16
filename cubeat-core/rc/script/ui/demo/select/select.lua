@@ -5,6 +5,7 @@ local ui    = require 'rc/script/ui/ui'
 local config= require 'rc/script/ui/demo/select/config'
 local switch= require 'rc/script/ui/demo/switch/switch'
 local random= require 'rc/script/helper'.random
+local storystage = require 'rc/script/ui/demo/storyend/config'
 
 local Input1      = C.Input_get_input1()
 local Input2      = C.Input_get_input2()
@@ -22,8 +23,12 @@ local function choose_character(self)
     local ch2 = random(6)+1
     local c1p = "char/char"..tostring(config.ch_choose[1]).."_new"
     local c2p
-    if data_ and data_.game_mode ~= 1 then
+    if data_ and data_.game_mode == 0 then
       c2p = "char/char"..tostring(config.ch_choose[2]).."_new"
+    elseif data_ and data_.game_mode == 99 then
+      local story_data = storystage.get_data()
+      c2p = "char/char"..tostring(story_data.ch).."_new"
+      config.ch_choose[2] = story_data.ch
     else
       c2p = "char/char"..tostring(ch2).."_new"
       config.ch_choose[2] = ch2
@@ -43,7 +48,7 @@ end
 local function ready_to_start(menu)
   return  function(self)
             local ready = false
-            if data_ and data_.game_mode ~= 1 then
+            if data_ and data_.game_mode == 0 then
               ready = ( selectlock_[1]==true and selectlock_[2]==true )
             else
               ready = ( selectlock_[1]==true )
@@ -102,7 +107,7 @@ local function enter_icon(input, icon_no, menu)
 
     menu[fullkey]:set_pos(-config.full_w, config.full_y)
     menu[fullkey]:set_texture(config.full_path(icon_no))
-    if data_ and data_.game_mode ~= 1 then
+    if data_ and data_.game_mode == 0 then
       menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], config.move_end[input], config.move_time)
     else
       local move_end = ffi.new("value2", config.screen_w/2 - 225, 0)
@@ -158,13 +163,13 @@ local function init(demo, parent, data)
 
   -- create actor_full & actor_fade & ready_text
   local num_actor = 1
-  if data_ and data_.game_mode ~= 1 then num_actor = 2 end
+  if data_ and data_.game_mode == 0 then num_actor = 2 end
   for ch=1, num_actor do
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
     local readykey= 'ready_'..tostring(ch)
     local actor_x
-    if data_ and data_.game_mode == 1 then 
+    if data_ and data_.game_mode ~= 0 then 
       actor_x = (config.screen_w/2) - (config.full_w/2)
     else 
       actor_x = config.full_x[ch] 
@@ -190,7 +195,7 @@ local function init(demo, parent, data)
     menu.actor_full_1:set_texture(config.full_path(i))
     menu.actor_fade_1:set_texture(config.full_path(i))
     
-    if data_ and data_.game_mode ~= 1 then 
+    if data_ and data_.game_mode == 0 then 
       menu.actor_full_2:set_texture(config.full_path(i)) 
       menu.actor_fade_2:set_texture(config.full_path(i)) 
     end
@@ -209,7 +214,7 @@ local function init(demo, parent, data)
     menu[k]:on_leave_focus( leave_icon(1, i, menu), Input1 )
     menu[k]:on_enter_focus( enter_icon(1, i, menu), Input1 )
     
-    if data_ and data_.game_mode ~= 1 then 
+    if data_ and data_.game_mode == 0 then 
       menu[k]:on_leave_focus( leave_icon(2, i, menu), Input2 )
       menu[k]:on_enter_focus( enter_icon(2, i, menu), Input2 )
     end
@@ -224,7 +229,7 @@ local function init(demo, parent, data)
   menu.actor_full_1:set_texture(config.full_path(config.ch_choose[1]))
   menu.actor_fade_1:set_texture(config.full_path(config.ch_choose[1]))
   
-  if data_ and data_.game_mode ~= 1 then
+  if data_ and data_.game_mode == 0 then
     menu.actor_full_2:set_texture(config.full_path(config.ch_choose[2]))
     menu.actor_fade_2:set_texture(config.full_path(config.ch_choose[2]))
   end

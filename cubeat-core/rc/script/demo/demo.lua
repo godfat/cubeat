@@ -14,9 +14,12 @@ local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 
 local demo_
 local scene_
+local tut_phase_ = 1
+local tut_actions_ = {}
+local ask_panel_ = nil
 
 --local win_ = false -- win state for SinglePlayer modes.
---local puzzle_level_ = 2 
+--local puzzle_level_ = 2
 
 local menu_ = {}
 
@@ -54,17 +57,34 @@ end
 function init(demo)
   demo_  = ffi.cast("Demo*", demo);
   scene_ = demo_:get_ui_scene()
-  
+
   --------------------------------------
-  
+
   switch.init(scene_, demo_)
-  
+
   --preload ui
   switch.load_page('select'   )
   switch.load_page('mainmenu' )
   
+  -- prepare a dialogue for tutorial
+  ask_panel_ = ui.new_askbox{ parent=scene_, w=800, h=480,
+                              title="Tutorial",
+                              cb={function(self)
+                                demo_:eventual_resume()
+                                tut_phase_ = tut_phase_ + 1
+                                ask_panel_:set_visible(false)
+                              end} }
+  ask_panel_:set_visible(false)
+
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)
+end
+
+function tutorial()
+  if tut_phase_ > #tut_actions_ then return end
+  ask_panel_:set_visible(true)
+  tut_actions_[tut_phase_]()
+  demo_:eventual_pause()
 end
 
 --- Other must-implemented events for main game on Lua-side: ---
@@ -74,7 +94,7 @@ end
 function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
-  
+
   challenge.init_override(demo_, in_place, submode)
 end
 
@@ -82,6 +102,7 @@ end
 -- but it WILL NOT BE CALLED after endgame(map_id) is called.
 function check_ending_condition_by_frame(submode)
   --print('---- single mode: check_ending_condition_by_frame ----')
+  if submode == 50 then tutorial() return end
   challenge.check_ending_condition_by_frame(demo_, submode)
 end
 
@@ -93,12 +114,71 @@ function ending(submode)
 end
 
 -- occurs right after game ends (no reinit, go back to menu)
--- Will be reached if you call leave_and_cleanup() in Lua, 
--- it will also be called if you PAUSE & QUIT. 
+-- Will be reached if you call leave_and_cleanup() in Lua,
+-- it will also be called if you PAUSE & QUIT.
 function cleanup(submode)
   print('---- single mode: cleanup ----')
   challenge.cleanup()
   demo_:set_countdown(false)
+  
+  tut_phase_ = 1
+  ask_panel_:set_visible(false)
+end
+
+tut_actions_[1] = function()
+  ask_panel_:set_title("Tutorial about cursor color and player position")
+end
+
+tut_actions_[2] = function()
+  ask_panel_:set_title("Tutorial about cursor color and player position:\nYour turn")
+end
+
+tut_actions_[3] = function()
+  ask_panel_:set_title("Tutorial about shooting")
+end
+
+tut_actions_[4] = function()
+  ask_panel_:set_title("Tutorial about shooting:\nYour turn")
+end
+
+tut_actions_[5] = function()
+  ask_panel_:set_title("Tutorial about a match")
+end
+
+tut_actions_[6] = function()
+  ask_panel_:set_title("Tutorial about a match:\nYour turn")
+end
+
+tut_actions_[7] = function()
+  ask_panel_:set_title("Tutorial about chains")
+end
+
+tut_actions_[8] = function()
+  ask_panel_:set_title("Tutorial about chains:\nYour turn")
+end
+
+tut_actions_[9] = function()
+  ask_panel_:set_title("Tutorial about chains:\nDon't forget to restore the broken cubes")
+end
+
+tut_actions_[10] = function()
+  ask_panel_:set_title("Tutorial about overheat:\nDon't do it!")
+end
+
+tut_actions_[11] = function()
+  ask_panel_:set_title("Tutorial about emergency")
+end
+
+tut_actions_[12] = function()
+  ask_panel_:set_title("Tutorial about emergency: about countdown lock")
+end
+
+tut_actions_[13] = function()
+  ask_panel_:set_title("Tutorial about emergency: your turn")
+end
+
+tut_actions_[14] = function()
+  ask_panel_:set_title("Tutorial about win/lose")
 end
 
 
@@ -106,20 +186,20 @@ end
 -- DEPRECATED
 
 -- function tutorial_update(state, data)
-  
+
   -- print("Lua: ".."tutorial state "..tostring(state))
-  
+
   -- local tut_script = nil
   -- if state == 0 then
     -- tut_script = require 'rc/script/ui/demo/tutorial/state0'
   -- elseif state == 1 then
     -- tut_script = require 'rc/script/ui/demo/tutorial/state1'
-  -- elseif state == 2 then 
+  -- elseif state == 2 then
     -- tut_script = require 'rc/script/ui/demo/tutorial/state2'
   -- end
-  
+
   -- if tut_script ~= nil then
     -- tut_script.update(demo_, scene_, data)
   -- end
-  
+
 -- end

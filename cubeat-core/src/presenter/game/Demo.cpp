@@ -93,6 +93,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 {
     btn_reinit_.reset();
 
+    game_state_ = GS_INIT;
     game_mode_ = game_mode;
     submode_ = submode;
     c1p_ = c1p;
@@ -223,8 +224,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
     /// ////////////////////////////
 
-//    ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
-//        std::tr1::bind(&Demo::game_start, this), 4000);
+    if( game_mode_ == GM_TUT ) {
+        submode_ = 50; /// WTF TEMP
+        gameplay_["dont_show_ready"] = true;
+        script::Lua::call(L_, "init_override", inplace, submode_);
+    }
 
     //start timer here.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
@@ -243,6 +247,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
 {
     btn_reinit_.reset();
 
+    game_state_ = GS_INIT;
     game_mode_ = GM_SINGLE; // assign this value to Puzzle Demo for now
     submode_   = submode;
     c1p_ = c1p;
@@ -292,7 +297,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
 
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
-    puzzle_started_ = false, end_ = false;
+    puzzle_started_ = false;
 
     script::Lua::call(L_, "init_override", inplace, submode_);
 
@@ -324,6 +329,11 @@ void Demo::init_story(std::string const& c1p, std::string const& c2p, std::strin
 {
     ai_level_ = ai_level; // WTF TEMP MEMO AGAIN
     init_(GM_PVC, c1p, c2p, scene_name, false, 99);
+}
+
+void Demo::init_tutorial(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
+{
+    init_(GM_TUT, c1p, c2p, scene_name);
 }
 
 void Demo::init_cpudemo(std::string const& c1p, std::string const& c2p, std::string const& scene_name)
@@ -494,11 +504,12 @@ void Demo::leaving_effect()
 
 void Demo::starting_effect(bool const& inplace)
 {
+    int count_step = !gameplay_.exist("dont_show_ready") ? 1 : 0;
     if( inplace ) {
-        ready_go(2);
+        ready_go(count_step + 1);
     }
     else {
-        std::tr1::function<void()> cb = bind(&Demo::ready_go, this, 1);
+        std::tr1::function<void()> cb = bind(&Demo::ready_go, this, count_step);
         scene_->tween<OSine, Pos2D>(
             vec2( - Conf::i().SCREEN_W() * 2, - Conf::i().SCREEN_H()/2 ),
             vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
@@ -538,11 +549,11 @@ void Demo::ready_go(int step)
         game_start();
     }
     else if ( step <= 1 ) {
-        audio::Sound::i().playBuffer("count.wav");
-        //ready_go_text_->showNumber(step);
-
         /// WTF Hack for demo
         if( !gameplay_.exist("dont_show_ready") ) {
+            audio::Sound::i().playBuffer("count.wav");
+            //ready_go_text_->showNumber(step);
+
             ready_go_text_->changeText("ready?");
             ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
             ready_go_text_->set<Visible>(true);
@@ -595,6 +606,8 @@ void Demo::game_start()
         player1_->startThinking();
     if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
         player0_->startThinking();
+
+    game_state_ = GS_STARTED;
 }
 
 void Demo::setup_ui()
@@ -887,7 +900,7 @@ bool Demo::ai_logging(pMap lose_map)
 void Demo::end(pMap lose_map)
 {
     game_stop();
-    end_ = true;
+    game_state_ = GS_ENDED;
 
     // ai_logging special_case:
     // if I call reinit directly, won't the call-stack explode here?
@@ -1017,7 +1030,7 @@ void Demo::pause_quit()
 {
     // Pause & Quit should be the equivalent of game_stop() & end(),
     // there are some stats to cleanup...
-    end_ = true;
+    game_state_ = GS_ENDED;
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     //audio::Sound::i().pauseAll(false);
@@ -1093,7 +1106,7 @@ void Demo::eventual_pause()
     if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
-    audio::Sound::i().pauseAll(true);
+//    audio::Sound::i().pauseAll(true);
     scene_->allowPicking(false);
 
     // you should not be able to overlapping pause state, so we still use this as indicator
@@ -1146,7 +1159,7 @@ void Demo::eventual_resume()
     if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
-    audio::Sound::i().pauseAll(false);
+//    audio::Sound::i().pauseAll(false);
     scene_->allowPicking(true);
 
     btn_pause_.reset(); //reset button event subscribed by this handle.
@@ -1255,7 +1268,7 @@ void Demo::cycle()
             if( game_mode_ != GM_SINGLE ) player1_->cycle();
         }
 
-        if( game_mode_ == GM_SINGLE && !end_ ) {
+        if( (game_mode_ == GM_SINGLE || game_mode_ == GM_TUT ) && game_state_ == GS_STARTED) {
             script::Lua::call(L_, "check_ending_condition_by_frame", submode_);
         }
 

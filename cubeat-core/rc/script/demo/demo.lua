@@ -19,6 +19,7 @@ local scene_
 local tut_phase_ = 1
 local tut_actions_ = {}
 local ask_panel_ = nil
+local story_flag_ = false
 
 --local win_ = false -- win state for SinglePlayer modes.
 --local puzzle_level_ = 2
@@ -51,9 +52,16 @@ end
 -- occurs right after game ends (no reinit, go back to menu), mainly used for UI transition
 -- If you have setup some UI during gameplay in Lua, hide/remove them here.
 function slide_in()
-  show_everything()
-  switch.load_page('mainmenu', 'in')
-  switch.slide_in_page_obj()
+  if story_flag_ then
+    story_flag_ = false
+    storyend.hide()
+    switch.load_page('talk', nil, {game_mode=99, game_end=true})
+    switch.slide_in_page_obj()
+  else
+    show_everything()
+    switch.load_page('mainmenu', 'in')
+    switch.slide_in_page_obj()
+  end
 end
 
 function init(demo)
@@ -115,29 +123,35 @@ function ending(submode)
   print('---- single mode: ending ----')
   
   if submode==99 then
-    --if demo_:get_map_warning_level(1)==100 then -- story win
-    if true then
-      storyend.set_title('WIN')
-      storyend.on_press_next(function(self)
+      --if demo_:get_map_warning_level(1)==100 then -- story win
+      if true then
+        storyend.set_board('win')
+        storyend.set_btn_title('Next')
+        storyend.on_press_next(function(self)
+          story_flag_ = true
+          demo_:leave_and_cleanup()
+          --[[
+          storyend.hide()
+          switch.load_page('talk', nil, {game_mode=99, game_end=true})
+          switch.slide_in_page_obj()
+          --]]
+        end)
+      else
+        storyend.set_board('lose')
+        storyend.set_btn_title('Retry')
+        storyend.on_press_next(function(self)
+          storyend.hide()
+          local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+          local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+          local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+          demo_:init_story(c1p, c2p, sconf, 0)
+        end)
+      end
+      storyend.on_press_quit(function(self)
         storyend.hide()
-        switch.load_page('talk', nil, {game_mode=99, game_end=true})
-        switch.slide_in_page_obj()
+        demo_:leave_and_cleanup()
       end)
-    else
-      storyend.set_title('LOSE')
-      storyend.on_press_next(function(self)
-        storyend.hide()
-        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
-        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
-        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
-        demo_:init_story(c1p, c2p, sconf, 0)
-      end)
-    end
-    storyend.on_press_quit(function(self)
-      storyend.hide()
-      demo_:leave_and_cleanup()
-    end)
-    storyend.show()
+      storyend.show()
   else
     challenge.ending(demo_, submode)
   end

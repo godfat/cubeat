@@ -14,14 +14,14 @@ local btn_quit_
 
 local function hide()
   board_:set_visible(false)
-  title_:set_visible(false)
+  --title_:set_visible(false)
   btn_next_:set_visible(false)
   btn_quit_:set_visible(false)
 end
 
 local function show()
   board_:set_visible(true)
-  title_:set_visible(true)
+  --title_:set_visible(true)
   btn_next_:set_visible(true)
   btn_quit_:set_visible(true)
 end
@@ -29,12 +29,12 @@ end
 local function create(scene)
   local center_x = screen_w_/2
   local center_y = screen_h_/2
-  board_        = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=300, depth=-100, center=true, alpha=128 }
-  title_        = ui.new_text { parent=scene, x=center_x    , y=center_y-120, size=32, title='Title'  , depth=-110, center=true }
-  title_:set_scale(1.5)
-  btn_next_         = ui.new_text { parent=scene, x=center_x-120, y=center_y+130, size=32, title='Next'   , depth=-110, center=true }
-  btn_quit_         = ui.new_text { parent=scene, x=center_x+120, y=center_y+130, size=32, title='Quit'   , depth=-110, center=true }
-  board_:set_color(0,0,0)
+  board_        = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=384, h=192, depth=-100, center=true }
+  --title_        = ui.new_text { parent=scene, x=center_x    , y=center_y-120, size=32, title='Title'  , depth=-110, center=true }
+  --title_:set_scale(1.5)
+  btn_next_         = ui.new_text { parent=scene, x=center_x, y=center_y+110, size=32, title='Next'   , depth=-110, center=true }
+  btn_quit_         = ui.new_text { parent=scene, x=center_x, y=center_y+160, size=32, title='Quit'   , depth=-110, center=true }
+  --board_:set_color(0,0,0)
   hide()
 end
 
@@ -46,9 +46,19 @@ local function on_press_quit(f)
   btn_quit_:on_press(f)
 end
 
+local function set_board(path)
+  board_:set_texture(path)
+end
+
+local function set_btn_title(s)
+  btn_next_:change_text(s)
+end
+
+--[[
 local function set_title(s)
   title_:change_text(s)
 end
+--]]
 
 return {
   hide            = hide,
@@ -56,5 +66,7 @@ return {
   create          = create,
   on_press_next   = on_press_next,
   on_press_quit   = on_press_quit,
-  set_title       = set_title
+  set_board       = set_board,
+  set_btn_title   = set_btn_title
+  --set_title       = set_title
 }

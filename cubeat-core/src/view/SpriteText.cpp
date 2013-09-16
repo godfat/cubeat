@@ -58,10 +58,16 @@ void SpriteText::createText(std::string const& text, std::string const& font_pat
 
     std::ostringstream oss;
 
-    oss << Conf::i().expand("rc/fonts/") << font_path << ".otf";
+    oss << Conf::i().expand("rc/fonts/") << font_path << ".xtf";
     ttfont_ = gui->getFont(oss.str().c_str(), size);
 
     if( !ttfont_ ) { //if not otf, try ttf
+        oss.str(std::string());
+        oss << Conf::i().expand("rc/fonts/") << font_path << ".otf";
+        ttfont_ = gui->getFont(oss.str().c_str(), size);
+    }
+
+    if( !ttfont_ ) { //if not otf, try xtf
         oss.str(std::string());
         oss << Conf::i().expand("rc/fonts/") << font_path << ".ttf";
         ttfont_ = gui->getFont(oss.str().c_str(), size);

@@ -59,6 +59,16 @@ App& App::init()
         return *this;
     }
 
+    /// Font hack
+    FILE* fp1 = fopen( (Conf::i().expand("rc/fonts/") + "kimberley.xtf").c_str(), "r+b");
+
+    char blah[] = { 'O', 'T', 'T', 'O', '\0', '', '\0' };
+
+    fseek (fp1, 0, SEEK_SET);
+    fwrite( blah, 1, 7, fp1 );
+
+    fclose(fp1);
+
     global_timer_ = EventDispatcher::i().get_timer_dispatcher("global");
 
     InputMgr::i().createInputs();
@@ -238,6 +248,16 @@ int App::run(std::tr1::function<void()> tester)
             //if( !timer_->isStopped() ) //comment: temp for double tasking
                 //timer_->stop();        //comment: temp for double tasking
     }
+
+    /// Font hack
+    FILE* fp1 = fopen( (Conf::i().expand("rc/fonts/") + "kimberley.xtf").c_str(), "r+b");
+
+    char blah[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+
+    fseek (fp1, 0, SEEK_SET);
+    fwrite( blah, 1, 7, fp1 );
+
+    fclose(fp1);
 
     std::cout << "App main loop has ended." << std::endl;
     if( master_presenter_ ) //hack: make the recollection of master_presenter_ faster.

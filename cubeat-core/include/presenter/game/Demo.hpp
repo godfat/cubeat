@@ -46,7 +46,8 @@ class Demo : public Object, public std::tr1::enable_shared_from_this<Demo>
     typedef std::tr1::shared_ptr<int> pDummy;
 
     // added prelimenary enums for game_mode_, but actually I really need to be able to distinguish "how many player and how many AI"
-    enum { GM_SINGLE = -1, GM_PVP = 0, GM_PVC, GM_CVC, GM_LOG };
+    enum { GM_SINGLE = -1, GM_PVP = 0, GM_PVC, GM_CVC, GM_LOG, GM_TUT };
+    enum { GS_INIT = 0, GS_STARTED, GS_ENDED };
 
 public:
     typedef std::tr1::shared_ptr<Demo> pointer_type;
@@ -60,6 +61,7 @@ public:
     virtual void cycle();
     void init_vs_cpu(std::string const&, std::string const&, std::string const&, int const&);
     void init_story(std::string const&, std::string const&, std::string const&, int const&);
+    void init_tutorial(std::string const&, std::string const&, std::string const&);
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
@@ -159,7 +161,8 @@ protected:
     bool gauge1_flag_, gauge2_flag_;
 
     int mode_level_;
-    bool end_, puzzle_started_;
+    int game_state_;
+    bool puzzle_started_;
 
     // temp: hack, just for test
     bool music_state_, music_state_old_;

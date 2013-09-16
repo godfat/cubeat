@@ -4,10 +4,7 @@ CuBeat 測試版使用說明
   http://cubeat.game.tw
   
 問題回報：
-  cubeat.tw@gmail.com
-  arch.jslin@gmail.com
-  http://cubeat.game.tw/devblog/?page_id=2
-  
+  cubeat.contact@gmail.com
   
 系統需求
 =========================================================
@@ -43,8 +40,6 @@ CuBeat 測試版使用說明
 4. 在仍有方塊保有連鎖屬性的情況下，死亡倒數會停住。
 5. 1p 盤面一定在左邊、2p 盤面一定在右邊。可以打對手盤面作為干擾。
 6. 射擊與加速到一定程度都會造成過熱（無法動作）。
-
-圖說請參考：http://cubeat.game.tw/rule.htm
 
 
 注意事項及已知問題
@@ -83,12 +78,7 @@ Linux 版：
 =========================================================
 若有其他任何疑問或建議，請來信：
   
-  arch.jslin@gmail.com
-  cubeat.tw@gmail.com 
-  
-  或是至 
-  
-  http://cubeat.game.tw/devblog/?page_id=2 留言，
+  cubeat.contact@gmail.com 
   
 感謝！
 

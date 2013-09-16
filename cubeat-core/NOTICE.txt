@@ -61,3 +61,9 @@ Please see doc/easing_equation_license.txt, doc/mit_license.txt or http://code.g
 * A Catmull-Rom spline implementation and a Gauss-Legendre Numerical Integration implementation written in ActionScript 3 from "Singularity Library", are ported to C++ in this program.
 Copyright (c) 2006-2007, Jim Armstrong. All Rights Reserved.
 Please see doc/singularity_license.txt or http://www.algorithmist.net/as3pc.html
+
+==
+
+Font "Kimberley" is included under its License Agreement. 
+Please see doc/kimberly license agreement.pdf
+

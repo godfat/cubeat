@@ -66,33 +66,33 @@ void AnimatedSprite::loadAllAnime()
 
 /// BIG TROUBLE BCZ OF ANDROID
 
-//    IFileSystem* fs = IrrDevice::i().d()->getFileSystem();
-//    std::string work_dir = Conf::i().WORKING_PATH().empty() ? fs->getWorkingDirectory().c_str() :
-//                           Conf::i().WORKING_PATH();
-//    std::string to_path( (work_dir + "/rc/texture/") + name_ );
-//    fs->changeWorkingDirectoryTo( to_path.c_str() );
-//    IFileList* flist = fs->createFileList();
-//    for( unsigned int i = 0; i < flist->getFileCount(); ++i ) {
-//        if( flist->isDirectory(i) ) {
-//            if( std::string( flist->getFileName(i).c_str() ) == std::string(".") ||
-//                std::string( flist->getFileName(i).c_str() ) == std::string("..") ) continue;
-//
-//            std::string anim_path( flist->getFileName(i).c_str() );
-//            fs->changeWorkingDirectoryTo( ((to_path + "/")+anim_path).c_str() );
-//            IFileList* animlist = fs->createFileList();
-//            int count_frame = animlist->getFileCount();
-//            int num_of_dirs_to_skip = 0;
-//            for( unsigned int j = 0; j < animlist->getFileCount(); ++j )
-//                if( animlist->isDirectory(j) ) ++num_of_dirs_to_skip;
-//
-//            fs->changeWorkingDirectoryTo( work_dir.c_str() );
-//            //must call this in root dir, for old client code compatibility.
-//            addAnime( anim_path, count_frame - num_of_dirs_to_skip );
-//
-//            fs->changeWorkingDirectoryTo( to_path.c_str() );
-//        }
-//    }
-//    fs->changeWorkingDirectoryTo( work_dir.c_str() );
+    IFileSystem* fs = IrrDevice::i().d()->getFileSystem();
+    std::string work_dir = Conf::i().WORKING_PATH().empty() ? fs->getWorkingDirectory().c_str() :
+                           Conf::i().WORKING_PATH();
+    std::string to_path( (work_dir + "/rc/texture/") + name_ );
+    fs->changeWorkingDirectoryTo( to_path.c_str() );
+    IFileList* flist = fs->createFileList();
+    for( unsigned int i = 0; i < flist->getFileCount(); ++i ) {
+        if( flist->isDirectory(i) ) {
+            if( std::string( flist->getFileName(i).c_str() ) == std::string(".") ||
+                std::string( flist->getFileName(i).c_str() ) == std::string("..") ) continue;
+
+            std::string anim_path( flist->getFileName(i).c_str() );
+            fs->changeWorkingDirectoryTo( ((to_path + "/")+anim_path).c_str() );
+            IFileList* animlist = fs->createFileList();
+            int count_frame = animlist->getFileCount();
+            int num_of_dirs_to_skip = 0;
+            for( unsigned int j = 0; j < animlist->getFileCount(); ++j )
+                if( animlist->isDirectory(j) ) ++num_of_dirs_to_skip;
+
+            fs->changeWorkingDirectoryTo( work_dir.c_str() );
+            //must call this in root dir, for old client code compatibility.
+            addAnime( anim_path, count_frame - num_of_dirs_to_skip );
+
+            fs->changeWorkingDirectoryTo( to_path.c_str() );
+        }
+    }
+    fs->changeWorkingDirectoryTo( work_dir.c_str() );
 }
 
 AnimatedSprite&

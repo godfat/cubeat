@@ -36,7 +36,7 @@ player1: {
     #This only affect newly created cubes, and determines
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
-    sink_speed: 100.0,
+    sink_speed: 65.0,
 
     #add every 5 seconds.
     sink_speed_add: 10.0,

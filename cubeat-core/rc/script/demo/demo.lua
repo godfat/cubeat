@@ -123,8 +123,7 @@ function ending(submode)
   print('---- single mode: ending ----')
   
   if submode==99 then
-      --if demo_:get_map_warning_level(1)==100 then -- story win
-      if true then
+      if demo_:get_map_warning_level(1)==100 then -- story win
         storyend.set_board('win')
         storyend.set_btn_title('Next')
         storyend.on_press_next(function(self)

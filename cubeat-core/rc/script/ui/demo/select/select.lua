@@ -6,6 +6,8 @@ local config= require 'rc/script/ui/demo/select/config'
 local switch= require 'rc/script/ui/demo/switch/switch'
 local random= require 'rc/script/helper'.random
 local storystage = require 'rc/script/ui/demo/storyend/config'
+local parameter   = require 'rc/script/ui/demo/challenge/parameter'
+local record      = require 'rc/script/ui/demo/challenge/record'
 
 local Input1      = C.Input_get_input1()
 local Input2      = C.Input_get_input2()
@@ -201,8 +203,15 @@ local function init(demo, parent, data)
     end
   end
 
+  local ch_lock = 2
+  for i=1,3 do
+    local lock_b = record.load(parameter.story, {character=i*2})
+    local lock_a = record.load(parameter.story, {character=i*2-1})
+    if lock_b and lock_a then ch_lock = (i+1)*2 end
+    if ch_lock>6 then ch_lock=6 end
+  end
   --for i,v in ipairs(actor_icon) do
-  for i=1,6 do
+  for i=1,ch_lock do
     local k = 'actor_icon_'..tostring(i)
     --menu[k]:on_press( choose_character, 1 ) -- only allow player 1 to "check" for now.
     menu[k]:on_press( select_effect(menu, 1), Input1_left )
@@ -217,6 +226,13 @@ local function init(demo, parent, data)
     if data_ and data_.game_mode == 0 then 
       menu[k]:on_leave_focus( leave_icon(2, i, menu), Input2 )
       menu[k]:on_enter_focus( enter_icon(2, i, menu), Input2 )
+    end
+  end
+  
+  if ch_lock~=6 then
+    for i=ch_lock+1,6 do
+      local k = 'actor_icon_'..tostring(i)
+      menu[k]:set_color(128,128,128)
     end
   end
   

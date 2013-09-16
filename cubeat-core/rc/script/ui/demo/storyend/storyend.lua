@@ -46,10 +46,15 @@ local function on_press_quit(f)
   btn_quit_:on_press(f)
 end
 
+local function set_title(s)
+  title_:change_text(s)
+end
+
 return {
   hide            = hide,
   show            = show,
   create          = create,
   on_press_next   = on_press_next,
-  on_press_quit   = on_press_quit
+  on_press_quit   = on_press_quit,
+  set_title       = set_title
 }

@@ -87,6 +87,29 @@ save_record_[parameter.score] = function(demo, data)
   end
 end
 
+------------------------------------------------------
+-- Save story mode clear record
+save_record_[parameter.story] = function(demo, data)
+  local win = data.win
+  local ch  = data.character
+  
+  local k = 'story_' .. tostring(ch)
+  
+  local challenge_record = file.load_data('challenge_record', "rb")
+  if challenge_record then -- find record file
+  
+    if challenge_record[k]==nil then
+      challenge_record[k]=true
+      file.save_data('challenge_record', challenge_record, "wb")
+    end
+    
+  else -- not have record file, create one & save it.
+    challenge_record = {}
+    challenge_record[k]=true
+    file.save_data('challenge_record', challenge_record, "wb")
+  end
+end
+
 
 ------------------------------------------------------
 local function save(demo, save_type, data)
@@ -121,6 +144,12 @@ local function load(load_type, data)
   if load_type==parameter.score then
     if data.submode==nil then return nil end
     local k = 'score_' .. tostring(data.submode)
+    return challenge_record[k]
+  end
+  
+  if load_type==parameter.story then
+    if data.character==nil then return nil end
+    local k = 'story_' .. tostring(data.character)
     return challenge_record[k]
   end
 end

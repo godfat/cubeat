@@ -8,7 +8,9 @@ local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 local event   = require 'rc/script/event/event'
 local random= require 'rc/script/helper'.random
-local storystage = require 'rc/script/ui/demo/storyend/config'
+local storystage  = require 'rc/script/ui/demo/storyend/config'
+local parameter   = require 'rc/script/ui/demo/challenge/parameter'
+local record      = require 'rc/script/ui/demo/challenge/record'
 
 
 local demo_game_ = nil
@@ -134,9 +136,9 @@ local function action(menu, rundown)
   end
   --]]
   
-  -- just show one character
+  -- just show one character content
   local hide_ch = (ch==1 and 2) or 1
-  menu['actor'..tostring(hide_ch)]:set_visible(false)
+  --menu['actor'..tostring(hide_ch)]:set_visible(false)
   menu['content'..tostring(hide_ch)]:set_visible(false)
   menu['panel'..tostring(hide_ch)]:set_visible(false)
   menu[actor]:set_visible(true)
@@ -194,6 +196,10 @@ local function action(menu, rundown)
     if data_ and data_.game_mode==99 then
       if data_.game_end then
         if storystage.get_stage()==6 then -- story mode end
+          -- save story character clear data
+          local data = { win='true', character=select_config.ch_choose[1] }
+          record.save(demo_game_, parameter.story, data)
+          -- end game
           demo_game_:leave_and_cleanup()
         else -- go to next story game talk
           storystage.next_stage()

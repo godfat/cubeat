@@ -23,6 +23,7 @@ return {
   clear = 1,
   retry = 2,
   score = 3,
+  story = 4,
   
   
   --[[

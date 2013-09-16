@@ -96,12 +96,14 @@ function ending(submode)
   if submode==99 then
     --if demo_:get_map_warning_level(1)==100 then -- story win
     if true then
+      storyend.set_title('WIN')
       storyend.on_press_next(function(self)
         storyend.hide()
         switch.load_page('talk', nil, {game_mode=99, game_end=true})
         switch.slide_in_page_obj()
       end)
     else
+      storyend.set_title('LOSE')
       storyend.on_press_next(function(self)
         storyend.hide()
         local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"

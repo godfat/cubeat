@@ -141,7 +141,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     if( game_mode_ == GM_PVC || game_mode_ == GM_TUT ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, GM_TUT ? "ai/tutor.lua" : ai_temp[ai_level_]);
     }
     else if( game_mode_ == GM_CVC || game_mode_ == GM_LOG ) {
         input0->setControlledByAI(true);
@@ -366,6 +366,64 @@ void Demo::init_map_starting_line(int const& map_id, int const& n) {
     }
 }
 
+void Demo::init_map_with_config(int const& map_id, std::string const& filename)
+{
+    data::pMapSetting new_setting = utils::MapLoader::load_map_setting(filename);
+    if( map_id == 1 && map1_ ) {
+        map1_-> purge_all();
+        map1_-> map_setting()->color_amounts( new_setting->color_amounts() ).
+                chain_amounts( new_setting->chain_amounts() ).
+                starting_line( new_setting->starting_line() ).
+                chaining_duration( new_setting->chaining_duration() ).
+                cube_dying_duration( new_setting->cube_dying_duration() ).
+                cube_sinking_duration( new_setting->cube_sinking_duration() ).
+                cube_dropping_duration( new_setting->cube_dropping_duration() ).
+                sink_speed( new_setting->sink_speed() ).
+                sink_speed_add( new_setting->sink_speed_add() ).
+                sink_speed_limit( new_setting->sink_speed_limit() ).
+                drop_speed( new_setting->drop_speed() ).
+                warning_gap( new_setting->warning_gap() ).
+                damage_factor( new_setting->damage_factor() ).
+                negate_damage_factor( new_setting->negate_damage_factor() ).
+                drop_normal_chance( new_setting->drop_normal_chance() ).
+                width( new_setting->width() ).
+                height( new_setting->height() ).
+                dropping_creatable( new_setting->dropping_creatable() ).
+                garbage_dumpable( new_setting->garbage_dumpable() ).
+                use_broken_as_garbage( new_setting->use_broken_as_garbage() ).
+                preset( new_setting->preset() ).
+                preset_data( new_setting->preset_data() );
+
+        map1_->init_cubes( utils::MapLoader::load_cube_colors(filename) );
+    } else {
+        map0_->purge_all();
+        map0_-> map_setting()->color_amounts( new_setting->color_amounts() ).
+                chain_amounts( new_setting->chain_amounts() ).
+                starting_line( new_setting->starting_line() ).
+                chaining_duration( new_setting->chaining_duration() ).
+                cube_dying_duration( new_setting->cube_dying_duration() ).
+                cube_sinking_duration( new_setting->cube_sinking_duration() ).
+                cube_dropping_duration( new_setting->cube_dropping_duration() ).
+                sink_speed( new_setting->sink_speed() ).
+                sink_speed_add( new_setting->sink_speed_add() ).
+                sink_speed_limit( new_setting->sink_speed_limit() ).
+                drop_speed( new_setting->drop_speed() ).
+                warning_gap( new_setting->warning_gap() ).
+                damage_factor( new_setting->damage_factor() ).
+                negate_damage_factor( new_setting->negate_damage_factor() ).
+                drop_normal_chance( new_setting->drop_normal_chance() ).
+                width( new_setting->width() ).
+                height( new_setting->height() ).
+                dropping_creatable( new_setting->dropping_creatable() ).
+                garbage_dumpable( new_setting->garbage_dumpable() ).
+                use_broken_as_garbage( new_setting->use_broken_as_garbage() ).
+                preset( new_setting->preset() ).
+                preset_data( new_setting->preset_data() );
+
+        map0_->init_cubes( utils::MapLoader::load_cube_colors(filename) );
+    }
+}
+
 /// WTF MEMO Here... Another problem. Without map1, I can't call this method at all.
 /// Likely cause is the animation events... event though I've null-checked map1_,
 /// inside of set_garbage_amount() method, there are other problems....
@@ -384,7 +442,6 @@ void Demo::set_map_dropping(int const& map_id, bool const& flag) {
     if( map_id == 1 && map1_ ) {
         flag ? map1_->start_dropping() : map1_->stop_dropping();
     } else {
-        printf("Hello? %d\n", flag);
         flag ? map0_->start_dropping() : map0_->stop_dropping();
     }
 }
@@ -433,6 +490,12 @@ int  Demo::get_map_warning_level(int const& map_id) const {
     return map_id == 1 ?
         map1_->warning_level() :
         map0_->warning_level();
+}
+
+int  Demo::get_map_broken_num(int const& map_id) const {
+    return map_id == 1 ?
+        map1_->garbage_count() :
+        map0_->garbage_count();
 }
 
 int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {

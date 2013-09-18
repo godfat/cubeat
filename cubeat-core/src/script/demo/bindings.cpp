@@ -49,6 +49,10 @@ void Demo_init_map_starting_line(Demo* self, int map_id, int n) { // not shared_
     self->init_map_starting_line(map_id, n);
 }
 
+void Demo_init_map_with_config(Demo* self, int map_id, char const* filename) { // not shared_ptr!
+    self->init_map_with_config(map_id, filename);
+}
+
 void Demo_set_only_one_shot_for_puzzle(Demo* self) { // not shared_ptr!
     self->set_only_one_shot_for_puzzle();
 }
@@ -91,6 +95,10 @@ int Demo_get_map_garbage_left(Demo* self, int map_id) { // not shared_ptr!
 
 int Demo_get_map_warning_level(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_warning_level(map_id);
+}
+
+int Demo_get_map_broken_num(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_broken_num(map_id);
 }
 
 int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shared_ptr!

@@ -47,6 +47,7 @@ public:
     Map& push_view_slave(cube::pViewMaster);
     Map& push_garbage_land(wpMap map){ garbage_lands_.push_back(map); return *this; }
     Map& init_cubes() { model()->init_cubes(); return *this; }
+    Map& init_cubes(utils::vector_2d<int> const& data) { model()->init_cubes(data); return *this; }
     Map& stop_dropping();
     Map& start_dropping();
 

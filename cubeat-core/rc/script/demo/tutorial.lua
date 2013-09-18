@@ -164,17 +164,39 @@ end
 
 tut_actions_[7] = function() 
   ask_panel_:set_title("Tutorial about chains")
+  
+  demo_:set_map_dropping(1, true)
 
-  -- refresh map maybe needed
-  -- make AI shoot cubes to make at least 2 combo
+  local aiplayer = demo_:get_ai_player()
+  local cmdbuf   = ffi.new("LuaAICommand", {0, 0, 0, C.AI_NONE}) 
+  setcmd(cmdbuf, C.AI_SHOOT, 1000, 4, 0)
+  aiplayer:push_command(cmdbuf)
+  setcmd(cmdbuf, C.AI_SHOOT, 500, 5, 0)
+  aiplayer:push_command(cmdbuf)
+  setcmd(cmdbuf, C.AI_SHOOT, 500, 5, 0)
+  aiplayer:push_command(cmdbuf)
+  
+  haste_counter_ = 0;
 end
 --
 tut_checkpoints_[8] = function()
+  haste_counter_ = haste_counter_ + 1
+  if haste_counter_ > 350 then return true end
   return false
 end
 
 tut_actions_[8] = function()
   ask_panel_:set_title("Tutorial about chains:\nYour turn")
+  
+  demo_:set_map_dropping(1, false)
+  
+  -- do this so only the garbage will drop, there will be no new cubes
+  event.on_timer("game", function()
+    demo_:set_map_dropping(0, true)
+  end, 500)
+  event.on_timer("game", function()
+    demo_:set_map_dropping(0, false) 
+  end, 1000)
 end
 --
 tut_checkpoints_[9] = function()
@@ -186,50 +208,85 @@ end
 
 tut_actions_[9] = function()
   ask_panel_:set_title("Tutorial about chains:\nDon't forget to restore the broken cubes")
+  
+  -- do this so only the garbage will drop, there will be no new cubes
+  event.on_timer("game", function()
+    demo_:set_map_dropping(1, true)
+  end, 500)
+  event.on_timer("game", function()
+    demo_:set_map_dropping(1, false) 
+  end, 1000)
 end
 --
 tut_checkpoints_[10] = function()
-  -- if demo_:get_map_broken_num(0) == 0 then 
-    -- return true
-  -- end
+  if demo_:get_map_broken_num(0) == 0 then 
+    return true
+  end
   return false
 end
 
 tut_actions_[10] = function()
   ask_panel_:set_title("Tutorial about overheat:\nDon't do it!")
   
-  -- refresh map is needed, a near full map
-  -- make AI do many useless shots
+  -- demo_:set_map_dropping(1, true)
+  
+  local aiplayer = demo_:get_ai_player()
+  local cmdbuf   = ffi.new("LuaAICommand", {0, 0, 0, C.AI_NONE}) 
+  
+  demo_:init_map_with_config(1, 'tutorial2.zzml')
+  aiplayer:set_interval(200)
+  
+  setcmd(cmdbuf, C.AI_SHOOT, 1000, 0, 7)
+  aiplayer:push_command(cmdbuf)
+  for i = 1, 9 do 
+    setcmd(cmdbuf, C.AI_SHOOT, 0, i % 6, 7 - math.floor(i/6) )  -- pre-determined width. no way to know here.
+    aiplayer:push_command(cmdbuf)  
+  end  
+  
+  haste_counter_ = 0
 end
 --
 tut_checkpoints_[11] = function()
+  haste_counter_ = haste_counter_ + 1
+  if haste_counter_ > 270 then return true end
   return false
 end
 
 tut_actions_[11] = function()
   ask_panel_:set_title("Tutorial about emergency")
 
-  -- no need to refresh map, let AI idle for 3 secs 
+  local aiplayer = demo_:get_ai_player()
+  aiplayer:set_interval(450)
+  haste_counter_ = 0
 end
 --
 tut_checkpoints_[12] = function()
+  haste_counter_ = haste_counter_ + 1
+  if haste_counter_ > 150 then return true end
   return false
 end
 
 tut_actions_[12] = function()
   ask_panel_:set_title("Tutorial about emergency: about countdown lock")
 
-  -- now following the previous stage, 
-  -- make AI shoot for a few secs and let it use chain to lock down  
+  local aiplayer = demo_:get_ai_player()
+  aiplayer:start_thinking()  
+  haste_counter_ = 0
+  -- event.on_timer("game", function()
+    -- aiplayer:stop_thinking()
+  -- end, 3000)
 end
 --
 tut_checkpoints_[13] = function()
+  haste_counter_ = haste_counter_ + 1
+  if haste_counter_ > 240 then return true end
   return false
 end
 
 tut_actions_[13] = function()
   ask_panel_:set_title("Tutorial about emergency: your turn")
-  -- to not let AI die too fast, it must have some moves here?
+  
+  demo_:init_map_with_config(0, 'tutorial2.zzml')
 end
 --
 tut_checkpoints_[14] = function()

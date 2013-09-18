@@ -478,25 +478,37 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
     int unsigned width = ms()->width();
     std::vector<double> const& rez_chances = ms()->rez_chances();
     std::vector<int> preview_set; // color set
-    preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
 
-    if( utils::random(2) ) // need two?
-        preview_set.push_back(preview_set.front());
+    if( !ms()->preset() ) {
+        preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
 
-    while( preview_set.size() != width ){
-        int color = fill_preview_create_color(preview_set);
-        if( width - preview_set.size() == 1 ){
-            preview_set.push_back(color);
-        }
-        else{
-            if( utils::random(2) ){
-                preview_set.push_back(color);
+        if( utils::random(2) ) // need two?
+            preview_set.push_back(preview_set.front());
+
+        while( preview_set.size() != width ){
+            int color = fill_preview_create_color(preview_set);
+            if( width - preview_set.size() == 1 ){
                 preview_set.push_back(color);
             }
             else{
-                preview_set.push_back(color);
+                if( utils::random(2) ){
+                    preview_set.push_back(color);
+                    preview_set.push_back(color);
+                }
+                else{
+                    preview_set.push_back(color);
+                }
             }
         }
+    } else { // preset
+        preview_set = ms()->preset_data();
+        //rotate preset_data
+        std::vector<int> temp;
+        for( size_t i = 0; i < ms()->preset_data().size() - 1; ++i ) {
+            temp.push_back( ms()->preset_data()[i+1] );
+        }
+        temp.push_back( ms()->preset_data()[0] );
+        ms()->preset_data(temp);
     }
 
     presenter::pMap owner = owner_.lock();

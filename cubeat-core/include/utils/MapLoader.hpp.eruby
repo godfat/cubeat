@@ -79,7 +79,22 @@ public:
                 height(m.I("height")).
                 dropping_creatable(m.I("dropping_creatable") == 1 ? true : false).
                 garbage_dumpable(m.I("garbage_dumpable") == 1 ? true : false).
-                use_broken_as_garbage(m.I("use_broken_as_garbage") == 1 ? true : false);
+                use_broken_as_garbage(m.I("use_broken_as_garbage") == 1 ? true : false).
+                preset(m.I("preset") == 1 ? true : false);
+
+        std::vector<int> temp;
+        if( result->preset() ) {
+            if( m.exist("preset_data") ) {
+                for( int i = 0 ; i < result->width() ; ++i ) {
+                    temp.push_back( m.V("preset_data").I(i) );
+                }
+            } else {
+                for( int i = 0 ; i < result->width() ; ++i ) {
+                    temp.push_back( (i % result->color_amounts()) + 1 );
+                }
+            }
+            result->preset_data(temp);
+        }
 
         return result;
     }

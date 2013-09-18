@@ -46,6 +46,7 @@ drop_normal_chance:0,
 dropping_creatable:0,
 garbage_dumpable:0,
 use_broken_as_garbage:1,
+preset:0,
 cube_colors:
 ]])
   local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug, color_num)

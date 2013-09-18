@@ -28,7 +28,8 @@ public:
 <%= accessor :double, :sink_speed, :sink_speed_add, :sink_speed_limit, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
-<%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage %>
+<%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage, :preset %>
+<%= accessor 'std::vector<int>', :preset_data %>
 
 public:
     std::vector<double> rez_chances() const { return rez_chances_; }
@@ -62,7 +63,7 @@ private:
         sink_speed_(80.0), sink_speed_add_(10.0), sink_speed_limit_(400.0),
         drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
-        use_broken_as_garbage_(false)
+        use_broken_as_garbage_(false), preset_(false)
     {
         reset_size();
         setup_color_chances();

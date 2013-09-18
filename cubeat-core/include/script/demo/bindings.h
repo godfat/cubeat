@@ -29,6 +29,7 @@ APIEXPORT int     Demo_get_map_highest_chain(Demo*, int map_id); // not shared_p
 APIEXPORT int     Demo_get_map_garbage_left(Demo*, int map_id); // not shared_ptr!
 APIEXPORT int     Demo_get_map_warning_level(Demo*, int map_id); // not shared_ptr!
 APIEXPORT int const* Demo_get_map_cubes_cleared_data(Demo*, int map_id); // not shared_ptr!
+APIEXPORT int const* Demo_get_map_cubes_matched_data(Demo*, int map_id); // not shared_ptr!
 APIEXPORT AIPlayer*  Demo_get_ai_player(Demo*); // not shared_ptr!
 APIEXPORT bool    Demo_is_map_all_waiting(Demo*, int map_id); // not shared_ptr!
 APIEXPORT bool    Demo_is_map_empty(Demo*, int map_id); // not shared_ptr!

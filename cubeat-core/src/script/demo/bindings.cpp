@@ -97,6 +97,10 @@ int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shar
     return self->get_map_cubes_cleared_data(map_id);
 }
 
+int const* Demo_get_map_cubes_matched_data(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_cubes_matched_data(map_id);
+}
+
 AIPlayer* Demo_get_ai_player(Demo* self) { // not shared_ptr!
     return self->get_ai_player();
 }

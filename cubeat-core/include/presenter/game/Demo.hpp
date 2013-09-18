@@ -80,6 +80,7 @@ public:
     int  get_map_garbage_left(int const& map_id) const;
     int  get_map_warning_level(int const& map_id) const;
     int const* get_map_cubes_cleared_data(int const& map_id) const;
+    int const* get_map_cubes_matched_data(int const& map_id) const;
     ctrl::AIPlayer* get_ai_player() const;
     bool is_map_all_waiting(int const& map_id) const;
     bool is_map_empty(int const& map_id) const;

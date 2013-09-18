@@ -441,6 +441,12 @@ int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {
         map0_->cubes_cleared_data();
 }
 
+int const* Demo::get_map_cubes_matched_data(int const& map_id) const {
+    return map_id == 1 ?
+        map1_->cubes_matched_data() :
+        map0_->cubes_matched_data();
+}
+
 ctrl::AIPlayer* Demo::get_ai_player() const {
     return player1_ && game_mode_ != GM_PVP ?
            static_cast<ctrl::AIPlayer*>(player1_.get()) :

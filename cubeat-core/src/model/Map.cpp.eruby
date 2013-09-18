@@ -723,6 +723,10 @@ int const* Map::cubes_cleared_data() const {
     return cubes_cleared_;
 }
 
+int const* Map::cubes_matched_data() const {
+    return cubes_matched_;
+}
+
 bool Map::exist(int x, int y) const
 {
     return !!cubes_[x][y];
@@ -786,10 +790,16 @@ void Map::purge_all()
     }
 }
 
-void Map::cubes_cleared_add(int const& num, int const& id)
+void Map::cubes_cleared_add(int const& id)
+{
+    total_cubes_cleared_ += 1;
+    cubes_cleared_[id] += 1;
+}
+
+void Map::cubes_matched_add(int const& num, int const& id)
 {
     total_cubes_cleared_ += num;
-    cubes_cleared_[id] += num;
+    cubes_matched_[id] += num;
 // WTF MEMO 2012.9 failed to adjust for balance
 //    if( owner()->get_player_ability_left() < 1 ) {
 //        cubes_cleared_ += num;

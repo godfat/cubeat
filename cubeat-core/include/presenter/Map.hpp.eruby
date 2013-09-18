@@ -79,6 +79,7 @@ public:
     int  match_count() const { return model()->match_count(); }
     int  highest_chain() const { return model()->highest_chain(); }
     int const* cubes_cleared_data() const { return model()->cubes_cleared_data(); }
+    int const* cubes_matched_data() const { return model()->cubes_matched_data(); }
     bool all_empty() const { return model()->all_empty(); }
     bool all_waiting() const { return model()->all_waiting(); }
     int  sum_of_all_enemy() const;

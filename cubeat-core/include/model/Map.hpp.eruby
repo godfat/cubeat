@@ -77,6 +77,7 @@ public:
     int  match_count() const;
     int  highest_chain() const;
     int const* cubes_cleared_data() const;
+    int const* cubes_matched_data() const;
     bool all_empty() const;
     bool all_waiting() const;
 
@@ -92,7 +93,8 @@ public:
     void kill_cube_at(int x, int y);
     void new_cube_at(int x, int y, int color_id);
     void purge_all();
-    void cubes_cleared_add(int const& n, int const& id); //called from model::Cube only.
+    void cubes_cleared_add(int const& id);                  //called from model::Cube only.
+    void cubes_matched_add(int const& num, int const& id);  //called from model::Cube only.
 
     bool exist(int x, int y) const;
     bool below_is_dropping(int x, int y) const;
@@ -134,7 +136,7 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
-    int cubes_cleared_[data::COLOR_MAX], total_cubes_cleared_;
+    int cubes_cleared_[data::COLOR_MAX], cubes_matched_[data::COLOR_MAX], total_cubes_cleared_;
     int match_counter_;
     int highest_chain_;
     bool dropping_creatable_, garbage_dumpable_;

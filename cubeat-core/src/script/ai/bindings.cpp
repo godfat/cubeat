@@ -26,7 +26,7 @@ void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
             cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
             break;
         case LuaAICommand::AI_HASTE:
-            cmd->press_trig2();
+            cmd->delay(c->delay).press_trig2();
             break;
         default: break;
     }

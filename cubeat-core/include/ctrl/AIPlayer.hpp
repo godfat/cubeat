@@ -50,6 +50,8 @@ public:
     //scripting usage only -- does it have to be public?
     int        cmdQueueSize();
     void       pushCommand(model::pAICommand const& cmd);
+    void       set_interval(int const& interval);
+    void       set_missrate(int const& missrate);
     model::pSimpleMap getAllyMap (size_t const& index);
     model::pSimpleMap getEnemyMap(size_t const& index);
     //end of scripting usage

@@ -63,6 +63,16 @@ pAIPlayer AIPlayer::init()
     return self();
 }
 
+void AIPlayer::set_interval(int const& interval)
+{
+    think_interval_ = interval;
+}
+
+void AIPlayer::set_missrate(int const& missrate)
+{
+    missrate_ = missrate;
+}
+
 void AIPlayer::setMapList(std::vector<presenter::wpMap> const& mlist)
 {
     map_list_ = mlist;

@@ -17,6 +17,10 @@ typedef struct {
 } LuaAICommand;
 
 APIEXPORT void        AIPlayer_push_command(AIPlayer*, LuaAICommand*); //not shared_ptr!
+APIEXPORT void        AIPlayer_set_interval(AIPlayer*, unsigned int); //not shared_ptr!
+APIEXPORT void        AIPlayer_set_missrate(AIPlayer*, unsigned int); //not shared_ptr!
+APIEXPORT void        AIPlayer_start_thinking(AIPlayer* p); //not shared_ptr!
+APIEXPORT void        AIPlayer_stop_thinking(AIPlayer* p); //not shared_ptr!
 APIEXPORT pSimpleMap* AIPlayer_get_ally_map(AIPlayer*, unsigned int);  //not shared_ptr!
 APIEXPORT pSimpleMap* AIPlayer_get_enemy_map(AIPlayer*, unsigned int); //not shared_ptr!
 APIEXPORT int         AIPlayer_cmdqueue_size(AIPlayer*); //not shared_ptr!

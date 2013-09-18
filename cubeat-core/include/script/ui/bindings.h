@@ -70,6 +70,7 @@ APIEXPORT Button const* Input_get_trig1(Input* p);
 APIEXPORT Button const* Input_get_trig2(Input* p);
 APIEXPORT int       Input_get_cursor_x(Input* p);
 APIEXPORT int       Input_get_cursor_y(Input* p);
+APIEXPORT bool      Input_is_haste_button_down(Input* p);
 
 APIEXPORT void     Scene__gc(pScene*);
 APIEXPORT void     Sprite__gc(pSprite*);

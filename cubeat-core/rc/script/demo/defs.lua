@@ -7,6 +7,7 @@ require 'rc/script/ui/view'
 
 ffi.cdef[[
 typedef struct Demo Demo;
+typedef struct AIPlayer AIPlayer;
 ]]
 ffi.cdef( io.open( basepath().."rc/script/demo/bindings.ffi", 'r'):read('*a') )
 
@@ -26,6 +27,7 @@ Mt_Demo.init_ai_logging        = C.Demo_init_ai_logging
 Mt_Demo.init_single            = C.Demo_init_single
 Mt_Demo.init_map_starting_line = C.Demo_init_map_starting_line
 Mt_Demo.set_map_garbage_amount = C.Demo_set_map_garbage_amount
+Mt_Demo.set_map_dropping       = C.Demo_set_map_dropping
 Mt_Demo.set_only_one_shot_for_puzzle = C.Demo_set_only_one_shot_for_puzzle
 Mt_Demo.set_stage_name         = C.Demo_set_stage_name
 Mt_Demo.set_countdown          = C.Demo_set_countdown
@@ -36,6 +38,7 @@ Mt_Demo.get_map_highest_chain  = C.Demo_get_map_highest_chain
 Mt_Demo.get_map_garbage_left   = C.Demo_get_map_garbage_left
 Mt_Demo.get_map_warning_level  = C.Demo_get_map_warning_level
 Mt_Demo.get_map_cubes_cleared_data = C.Demo_get_map_cubes_cleared_data
+Mt_Demo.get_ai_player          = C.Demo_get_ai_player
 Mt_Demo.is_map_all_waiting     = C.Demo_is_map_all_waiting
 Mt_Demo.is_map_empty           = C.Demo_is_map_empty
 Mt_Demo.is_puzzle_started      = C.Demo_is_puzzle_started

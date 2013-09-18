@@ -247,6 +247,7 @@ return {
   Input2_left       = Input2_left,
   Input1_right      = Input1_right,
   Input2_right      = Input2_right,
+  is_haste_button_down = C.Input_is_haste_button_down,
 
   debug_hack        = debug_hack
 }

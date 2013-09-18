@@ -4,6 +4,7 @@
 using namespace psc;
 using namespace view;
 using namespace presenter;
+using namespace ctrl;
 using namespace game;
 
 extern "C" {
@@ -56,6 +57,10 @@ void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) { // not shared_
     self->set_map_garbage_amount(map_id, n);
 }
 
+void Demo_set_map_dropping(Demo* self, int map_id, bool flag) { // not shared_ptr!
+    self->set_map_dropping(map_id, flag);
+}
+
 void Demo_set_stage_name(Demo* self, char const* str) { // not shared_ptr!
     self->set_stage_name(str);
 }
@@ -90,6 +95,10 @@ int Demo_get_map_warning_level(Demo* self, int map_id) { // not shared_ptr!
 
 int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_cubes_cleared_data(map_id);
+}
+
+AIPlayer* Demo_get_ai_player(Demo* self) { // not shared_ptr!
+    return self->get_ai_player();
 }
 
 bool Demo_is_map_all_waiting(Demo* self, int map_id) { // not shared_ptr!

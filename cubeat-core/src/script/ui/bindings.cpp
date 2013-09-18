@@ -267,6 +267,11 @@ int Input_get_cursor_y(Input* p) {
     return p->cursor().y();
 }
 
+bool Input_is_haste_button_down(Input* p) {
+    return p->trig2().now() == BTN_DOWN;
+}
+
+
 void Scene__gc(pScene* self) {
     delete self;
 }

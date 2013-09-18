@@ -14,6 +14,7 @@ namespace psc {
 namespace ctrl {
 class Input;
 class Player;
+class AIPlayer;
 typedef std::tr1::shared_ptr<Player> pPlayer;
 }
 
@@ -68,6 +69,7 @@ public:
     void init_single(int const&, int const&, std::string const&, std::string const&, bool const& inplace = false);
     void init_map_starting_line(int const& map_id, int const& n);
     void set_map_garbage_amount(int const& map_id, int const& n);
+    void set_map_dropping(int const& map_id, bool const& flag);
     void set_only_one_shot_for_puzzle();
     void set_stage_name(std::string const&);
     void set_countdown(bool const&);
@@ -78,6 +80,7 @@ public:
     int  get_map_garbage_left(int const& map_id) const;
     int  get_map_warning_level(int const& map_id) const;
     int const* get_map_cubes_cleared_data(int const& map_id) const;
+    ctrl::AIPlayer* get_ai_player() const;
     bool is_map_all_waiting(int const& map_id) const;
     bool is_map_empty(int const& map_id) const;
     bool is_puzzle_started() const;

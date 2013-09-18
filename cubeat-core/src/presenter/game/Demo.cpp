@@ -138,7 +138,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
 
-    if( game_mode_ == GM_PVC ) {
+    if( game_mode_ == GM_PVC || game_mode_ == GM_TUT ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
@@ -180,6 +180,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 // WTF MEMO 2012.9 failed to adjust for balance
 //    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
+
+    if( game_mode_ == GM_TUT ) {
+        gameplay_["shortcut"]  = std::string("tutorial");
+        gameplay_["shortcut2"] = std::string("tutorial");
+    }
 
     /// WTF Wait, what does player do in creating Maps? using MapLoader didn't seem to break anything.
     if( gameplay_.exist("shortcut") ) map0_ = utils::MapLoader::load( gameplay_.S("shortcut") );
@@ -375,6 +380,15 @@ void Demo::set_map_garbage_amount(int const& map_id, int const& n) {
     }
 }
 
+void Demo::set_map_dropping(int const& map_id, bool const& flag) {
+    if( map_id == 1 && map1_ ) {
+        flag ? map1_->start_dropping() : map1_->stop_dropping();
+    } else {
+        printf("Hello? %d\n", flag);
+        flag ? map0_->start_dropping() : map0_->stop_dropping();
+    }
+}
+
 void Demo::set_only_one_shot_for_puzzle() {
     player0_->player_hit_event(bind(&Demo::remove_all_game_scene_obj_event, this));
 }
@@ -425,6 +439,12 @@ int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {
     return map_id == 1 ?
         map1_->cubes_cleared_data() :
         map0_->cubes_cleared_data();
+}
+
+ctrl::AIPlayer* Demo::get_ai_player() const {
+    return player1_ && game_mode_ != GM_PVP ?
+           static_cast<ctrl::AIPlayer*>(player1_.get()) :
+           0;
 }
 
 bool Demo::is_map_all_waiting(int const& map_id) const {
@@ -595,6 +615,9 @@ void Demo::game_start()
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
         map0_->start_dropping();
+    }
+    else if( game_mode_ == GM_TUT ) {
+        player1_->subscribe_player_specific_interactions();
     }
     else if( game_mode_ != GM_SINGLE ) {
         map0_->start_dropping();
@@ -1268,7 +1291,7 @@ void Demo::cycle()
             if( game_mode_ != GM_SINGLE ) player1_->cycle();
         }
 
-        if( (game_mode_ == GM_SINGLE || game_mode_ == GM_TUT ) && game_state_ == GS_STARTED) {
+        if( (game_mode_ == GM_SINGLE || game_mode_ == GM_TUT ) && game_state_ == GS_STARTED && !btn_pause_ ) {
             script::Lua::call(L_, "check_ending_condition_by_frame", submode_);
         }
 

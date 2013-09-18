@@ -318,6 +318,7 @@
 		<Unit filename="rc\script\ai\normal.lua" />
 		<Unit filename="rc\script\demo\defs.lua" />
 		<Unit filename="rc\script\demo\demo.lua" />
+		<Unit filename="rc\script\demo\tutorial.lua" />
 		<Unit filename="rc\script\helper.lua" />
 		<Unit filename="rc\script\net\eventloop.lua" />
 		<Unit filename="rc\script\net\kit.lua" />

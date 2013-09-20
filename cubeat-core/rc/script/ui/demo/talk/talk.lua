@@ -91,7 +91,7 @@ local function talk_end()
         demo_game_:leave_and_cleanup()
       else -- go to next story game talk
         storystage.next_stage()
-        local story_data = storystage.get_data()
+        local story_data = storystage.get_data(select_config.ch_choose[1])
         select_config.ch_choose[2] = story_data.ch
         local function load_talk_page()
           switch.load_page('talk', nil, {game_mode=99})

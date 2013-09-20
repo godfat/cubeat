@@ -1,6 +1,53 @@
 local story_stage = 1
 
-local data = {
+local data = {}
+
+data[1] = {
+  {ch=1, lv=0},
+  {ch=2, lv=0},
+  {ch=3, lv=0},
+  {ch=4, lv=1},
+  {ch=5, lv=1},
+  {ch=6, lv=2},
+}
+
+data[2] = {
+  {ch=6, lv=0},
+  {ch=5, lv=0},
+  {ch=4, lv=0},
+  {ch=3, lv=1},
+  {ch=2, lv=1},
+  {ch=1, lv=2},
+}
+
+data[3] = {
+  {ch=1, lv=0},
+  {ch=2, lv=0},
+  {ch=3, lv=0},
+  {ch=4, lv=1},
+  {ch=5, lv=1},
+  {ch=6, lv=2},
+}
+
+data[4] = {
+  {ch=1, lv=0},
+  {ch=2, lv=0},
+  {ch=3, lv=0},
+  {ch=4, lv=1},
+  {ch=5, lv=1},
+  {ch=6, lv=2},
+}
+
+data[5] = {
+  {ch=1, lv=0},
+  {ch=2, lv=0},
+  {ch=3, lv=0},
+  {ch=4, lv=1},
+  {ch=5, lv=1},
+  {ch=6, lv=2},
+}
+
+data[6] = {
   {ch=1, lv=0},
   {ch=2, lv=0},
   {ch=3, lv=0},
@@ -18,8 +65,8 @@ local function next_stage()
   if story_stage > 6 then story_stage=6 end
 end
 
-local function get_data()
-  return data[story_stage]
+local function get_data(n)
+  return data[n][story_stage]
 end
 
 local function get_stage()

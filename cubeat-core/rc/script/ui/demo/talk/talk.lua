@@ -34,7 +34,7 @@ local function game_start(self)
       --local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
     elseif data_ and data_.game_mode==99 then
-      local story_data = storystage.get_data()
+      local story_data = storystage.get_data(select_config.ch_choose[1])
       local lv = story_data.lv
       demo_game_:init_story(c1p, c2p, sconf, lv)
     else
@@ -75,6 +75,37 @@ local function reset()
   step_      = 1
   --actor_appear_ = {false, false}
   complete_rundown_ = 0
+end
+
+
+local function talk_end()
+  reset()
+  
+  if data_ and data_.game_mode==99 then
+    if data_.game_end then
+      if storystage.get_stage()==6 then -- story mode end
+        -- save story character clear data
+        local data = { win='true', character=select_config.ch_choose[1] }
+        record.save(demo_game_, parameter.story, data)
+        -- end game
+        demo_game_:leave_and_cleanup()
+      else -- go to next story game talk
+        storystage.next_stage()
+        local story_data = storystage.get_data()
+        select_config.ch_choose[2] = story_data.ch
+        local function load_talk_page()
+          switch.load_page('talk', nil, {game_mode=99})
+          switch.slide_out_transfer()
+        end
+        switch.slide_in_transfer(load_talk_page)
+      end
+    else -- start next story game
+      game_start()
+    end
+    
+  else -- start game
+    game_start()
+  end
 end
 
 
@@ -191,6 +222,8 @@ local function action(menu, rundown)
   
   --Talk End
   if step_>table.getn(rundown) then
+    talk_end()
+    --[[
     reset()
     
     if data_ and data_.game_mode==99 then
@@ -203,7 +236,7 @@ local function action(menu, rundown)
           demo_game_:leave_and_cleanup()
         else -- go to next story game talk
           storystage.next_stage()
-          local story_data = storystage.get_data()
+          local story_data = storystage.get_data(select_config.ch_choose[1])
           select_config.ch_choose[2] = story_data.ch
           local function load_talk_page()
             switch.load_page('talk', nil, {game_mode=99})
@@ -218,6 +251,7 @@ local function action(menu, rundown)
     else -- start game
       game_start()
     end
+    --]]
   end
 end
 
@@ -240,6 +274,7 @@ local function init(demo, parent, data)
     end
     local rundown = script.get_rundown(ch_choose[1], ch_choose[2])
     if rundown ~= nil then
+      --menu.skip:set_visible(true)
       action(menu, rundown)
     else
       reset()
@@ -270,6 +305,11 @@ local function init(demo, parent, data)
                                   w=config.light_w, h=config.light_h, depth=config.light_d, visible=false }
     if ch==2 then menu[actor]:texture_flipH() end
   end
+  --[[
+  menu.skip = ui.new_text{ parent=menu.TalkBackGround._cdata, title='skip', x=800, y=500,
+                           depth=-120, size=32, visible=false, font=get_font(config.lang) }
+  menu.skip:on_press(talk_end)
+  --]]
   
   menu.clickBlock = ui.new_image{ parent=menu.TalkBackGround._cdata, path='blahblah', x=config.block_x, y=config.block_y,
                                   w=config.block_w, h=config.block_h, alpha=config.block_a, depth=config.block_d }
@@ -284,6 +324,7 @@ local function init(demo, parent, data)
                                 ask_panel_:set_visible(true)
                               end
                             )
+  play() -- run first talk
   
   return menu
 end

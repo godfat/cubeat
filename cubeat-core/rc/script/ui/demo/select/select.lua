@@ -28,7 +28,7 @@ local function choose_character(self)
     if data_ and data_.game_mode == 0 then
       c2p = "char/char"..tostring(config.ch_choose[2]).."_new"
     elseif data_ and data_.game_mode == 99 then
-      local story_data = storystage.get_data()
+      local story_data = storystage.get_data(config.ch_choose[1])
       c2p = "char/char"..tostring(story_data.ch).."_new"
       config.ch_choose[2] = story_data.ch
     else

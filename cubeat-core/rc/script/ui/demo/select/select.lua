@@ -213,6 +213,7 @@ local function init(demo, parent, data)
     local lock_a = record.load(parameter.story, {character=i*2-1})
     if lock_b and lock_a then ch_lock = (i+1)*2 end
     if ch_lock>6 then ch_lock=6 end
+    if data_ and data_.game_mode ~= 99 then ch_lock=6 end -- Only TGS Ver.
   end
   --for i,v in ipairs(actor_icon) do
   for i=1,ch_lock do

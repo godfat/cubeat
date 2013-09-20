@@ -37,13 +37,17 @@ local function choose_character(self)
     end
     local sconf = "stage/jungle"..tostring(config.ch_choose[2])
 
-    --demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
-    local function load_talk_page()
-      switch.load_page('talk', nil, data_)
-      switch.slide_out_transfer()
-    end
-    switch.slide_in_transfer(load_talk_page)
+    if data_ and data_.game_mode == 99 then
+      local function load_talk_page()
+        switch.load_page('talk', nil, data_)
+        switch.slide_out_transfer()
+      end
+      switch.slide_in_transfer(load_talk_page)
     --switch.load_page('talk', nil, data_)
+    else
+      demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
+    end
+
   end
 end
 

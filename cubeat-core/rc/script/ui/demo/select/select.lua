@@ -237,7 +237,7 @@ local function init(demo, parent, data)
   if ch_lock~=6 then
     for i=ch_lock+1,6 do
       local k = 'actor_icon_'..tostring(i)
-      menu[k]:set_color(0,0,0)
+      menu[k]:set_color(50,50,50)
     end
   end
   

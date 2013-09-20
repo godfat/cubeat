@@ -63,6 +63,16 @@ pAIPlayer AIPlayer::init()
     return self();
 }
 
+void AIPlayer::set_interval(int const& interval)
+{
+    think_interval_ = interval;
+}
+
+void AIPlayer::set_missrate(int const& missrate)
+{
+    missrate_ = missrate;
+}
+
 void AIPlayer::setMapList(std::vector<presenter::wpMap> const& mlist)
 {
     map_list_ = mlist;
@@ -132,16 +142,29 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
 {
     using model::AICommand;
     typedef AICommand::pPosition pPosition;
+    pAIPlayer self = static_pointer_cast<AIPlayer>(shared_from_this());
+
     switch( cmd->type() ) {
         case AICommand::SHOOT:
         case AICommand::SHOOT_OTHER:
         case AICommand::USE_ABILITY:
             if( pPosition pos = cmd->pos() ) {
-                shoot( pos->first, pos->second, cmd->type() );
+                if( cmd->delay() < 1 ) {
+                    shoot( pos->first, pos->second, cmd->type() );
+                } else {
+                    EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                        bind(&AIPlayer::shoot, this, pos->first, pos->second, cmd->type()), self, cmd->delay());
+                }
             }
             break;
         case AICommand::HASTE:
-            haste( 500 );
+            if( cmd->delay() < 1 ) {
+                haste( 500 );
+            } else {
+                printf("Issue command delay: %d\n", cmd->delay());
+                EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&AIPlayer::haste, this, 500), self, cmd->delay());
+            }
             break;
         default:
             break;

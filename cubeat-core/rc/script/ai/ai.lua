@@ -14,6 +14,10 @@ ffi.cdef( io.open( basepath().."rc/script/ai/bindings.ffi", 'r'):read('*a') )
 local Mt_AIPlayer = {}
 Mt_AIPlayer.__index       = Mt_AIPlayer
 Mt_AIPlayer.push_command  = C.AIPlayer_push_command
+Mt_AIPlayer.set_interval  = C.AIPlayer_set_interval
+Mt_AIPlayer.set_missrate  = C.AIPlayer_set_missrate
+Mt_AIPlayer.start_thinking= C.AIPlayer_start_thinking
+Mt_AIPlayer.stop_thinking = C.AIPlayer_stop_thinking
 Mt_AIPlayer.cmdqueue_size = C.AIPlayer_cmdqueue_size
 Mt_AIPlayer.get_heat      = C.AIPlayer_get_heat
 Mt_AIPlayer.ability_kind  = C.AIPlayer_ability_kind
@@ -41,11 +45,11 @@ Mt_SimpleMap.grounded_cube_count  = C.SimpleMap_grounded_cube_count
 Mt_SimpleMap.still_chaining       = C.SimpleMap_still_chaining
 Mt_SimpleMap.dropping_locked      = C.SimpleMap_dropping_locked
 
-Mt_SimpleMap.get_cube             = function(self, x, y) 
+Mt_SimpleMap.get_cube             = function(self, x, y)
   return ffi.gc(C.SimpleMap_get_cube(self, x, y), C.SimpleCube__gc)
 end
 
-Mt_SimpleMap.get_grounded_cube    = function(self, x, y) 
+Mt_SimpleMap.get_grounded_cube    = function(self, x, y)
   return ffi.gc(C.SimpleMap_get_grounded_cube(self, x, y), C.SimpleCube__gc)
 end
 
@@ -53,7 +57,7 @@ Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub, em)
   return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub, em), C.SimpleCube__gc)
 end
 
-Mt_SimpleMap.get_garbages         = function(self) 
+Mt_SimpleMap.get_garbages         = function(self)
   local size_out = ffi.new("unsigned int[1]")
   return ffi.gc(C.SimpleMap_get_garbages(self, size_out), function(self)
     C.SimpleCubeList__gc(self, size_out[0])
@@ -61,7 +65,7 @@ Mt_SimpleMap.get_garbages         = function(self)
 end
 
 Mt_SimpleMap.get_brokens          = function(self)
-  local size_out = ffi.new("unsigned int[1]") 
+  local size_out = ffi.new("unsigned int[1]")
   return ffi.gc(C.SimpleMap_get_brokens(self, size_out), function(self)
     C.SimpleCubeList__gc(self, size_out[0])
   end), size_out[0]
@@ -71,9 +75,9 @@ Mt_SimpleMap.get_highcols         = function(self, threshold)
   local cols = ffi.new("int[?]", self:width())
   local size = 0
   for x = 0, self:width() - 1 do
-    for y = 0, self:height() - 1 do 
+    for y = 0, self:height() - 1 do
       if not self:get_cube(x, y):exist() then
-        if y >= threshold then cols[size] = x; size = size + 1 end 
+        if y >= threshold then cols[size] = x; size = size + 1 end
         break
       end
     end

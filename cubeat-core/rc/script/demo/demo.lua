@@ -1,4 +1,5 @@
 local ffi   = require 'ffi'
+local jit   = require 'jit'
 local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
@@ -7,18 +8,17 @@ local event = require 'rc/script/event/event'
 require 'rc/script/demo/defs'
 require 'rc/script/strict'
 local challenge = require 'rc/script/ui/demo/challenge/challenge'
-local jit = require 'jit'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local storyend    = require 'rc/script/ui/demo/storyend/storyend'
 local select_config = require 'rc/script/ui/demo/select/config'
+
+local tutorial = require 'rc/script/demo/tutorial'
 
 ----------------------------------------------------------------------------
 
 local demo_
 local scene_
-local tut_phase_ = 1
-local tut_actions_ = {}
-local ask_panel_ = nil
+
 local story_flag_ = false
 
 --local win_ = false -- win state for SinglePlayer modes.
@@ -75,28 +75,14 @@ function init(demo)
   --preload ui
   switch.load_page('select'   )
   switch.load_page('mainmenu' )
-  
-  -- prepare a dialogue for tutorial
-  ask_panel_ = ui.new_askbox{ parent=scene_, w=800, h=480,
-                              title="Tutorial",
-                              cb={function(self)
-                                demo_:eventual_resume()
-                                tut_phase_ = tut_phase_ + 1
-                                ask_panel_:set_visible(false)
-                              end} }
-  ask_panel_:set_visible(false)
 
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)
   storyend.create(scene_)
+  
+  tutorial.init(demo_)
 end
 
-function tutorial()
-  if tut_phase_ > #tut_actions_ then return end
-  ask_panel_:set_visible(true)
-  tut_actions_[tut_phase_]()
-  demo_:eventual_pause()
-end
 
 --- Other must-implemented events for main game on Lua-side: ---
 
@@ -113,7 +99,7 @@ end
 -- but it WILL NOT BE CALLED after endgame(map_id) is called.
 function check_ending_condition_by_frame(submode)
   --print('---- single mode: check_ending_condition_by_frame ----')
-  if submode == 50 then tutorial() return end
+  if submode == 50 then tutorial.update() return end
   challenge.check_ending_condition_by_frame(demo_, submode)
 end
 
@@ -164,66 +150,8 @@ function cleanup(submode)
   challenge.cleanup()
   demo_:set_countdown(false)
   
-  tut_phase_ = 1
-  ask_panel_:set_visible(false)
+  tutorial.cleanup()
 end
-
-tut_actions_[1] = function()
-  ask_panel_:set_title("Tutorial about cursor color and player position")
-end
-
-tut_actions_[2] = function()
-  ask_panel_:set_title("Tutorial about cursor color and player position:\nYour turn")
-end
-
-tut_actions_[3] = function()
-  ask_panel_:set_title("Tutorial about shooting")
-end
-
-tut_actions_[4] = function()
-  ask_panel_:set_title("Tutorial about shooting:\nYour turn")
-end
-
-tut_actions_[5] = function()
-  ask_panel_:set_title("Tutorial about a match")
-end
-
-tut_actions_[6] = function()
-  ask_panel_:set_title("Tutorial about a match:\nYour turn")
-end
-
-tut_actions_[7] = function()
-  ask_panel_:set_title("Tutorial about chains")
-end
-
-tut_actions_[8] = function()
-  ask_panel_:set_title("Tutorial about chains:\nYour turn")
-end
-
-tut_actions_[9] = function()
-  ask_panel_:set_title("Tutorial about chains:\nDon't forget to restore the broken cubes")
-end
-
-tut_actions_[10] = function()
-  ask_panel_:set_title("Tutorial about overheat:\nDon't do it!")
-end
-
-tut_actions_[11] = function()
-  ask_panel_:set_title("Tutorial about emergency")
-end
-
-tut_actions_[12] = function()
-  ask_panel_:set_title("Tutorial about emergency: about countdown lock")
-end
-
-tut_actions_[13] = function()
-  ask_panel_:set_title("Tutorial about emergency: your turn")
-end
-
-tut_actions_[14] = function()
-  ask_panel_:set_title("Tutorial about win/lose")
-end
-
 
 -- This really should just be a temporary solution, a separated menu page should be better
 -- DEPRECATED

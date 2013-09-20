@@ -16,6 +16,7 @@ drop_normal_chance:0,
 dropping_creatable:1,
 garbage_dumpable:1,
 use_broken_as_garbage:1,
+preset:0,
 width:6,
 height:11,
 cube_colors:

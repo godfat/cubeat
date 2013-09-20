@@ -4,6 +4,7 @@
 using namespace psc;
 using namespace view;
 using namespace presenter;
+using namespace ctrl;
 using namespace game;
 
 extern "C" {
@@ -48,12 +49,20 @@ void Demo_init_map_starting_line(Demo* self, int map_id, int n) { // not shared_
     self->init_map_starting_line(map_id, n);
 }
 
+void Demo_init_map_with_config(Demo* self, int map_id, char const* filename) { // not shared_ptr!
+    self->init_map_with_config(map_id, filename);
+}
+
 void Demo_set_only_one_shot_for_puzzle(Demo* self) { // not shared_ptr!
     self->set_only_one_shot_for_puzzle();
 }
 
 void Demo_set_map_garbage_amount(Demo* self, int map_id, int n) { // not shared_ptr!
     self->set_map_garbage_amount(map_id, n);
+}
+
+void Demo_set_map_dropping(Demo* self, int map_id, bool flag) { // not shared_ptr!
+    self->set_map_dropping(map_id, flag);
 }
 
 void Demo_set_stage_name(Demo* self, char const* str) { // not shared_ptr!
@@ -88,8 +97,20 @@ int Demo_get_map_warning_level(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_warning_level(map_id);
 }
 
+int Demo_get_map_broken_num(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_broken_num(map_id);
+}
+
 int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_cubes_cleared_data(map_id);
+}
+
+int const* Demo_get_map_cubes_matched_data(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_cubes_matched_data(map_id);
+}
+
+AIPlayer* Demo_get_ai_player(Demo* self) { // not shared_ptr!
+    return self->get_ai_player();
 }
 
 bool Demo_is_map_all_waiting(Demo* self, int map_id) { // not shared_ptr!

@@ -26,11 +26,27 @@ void AIPlayer_push_command(AIPlayer* p, LuaAICommand* c) { //not shared_ptr!
             cmd->delay(c->delay).weight(1).normal_shot(c->x, c->y);
             break;
         case LuaAICommand::AI_HASTE:
-            cmd->press_trig2();
+            cmd->delay(c->delay).press_trig2();
             break;
         default: break;
     }
     p->pushCommand(cmd);
+}
+
+void AIPlayer_set_interval(AIPlayer* p, unsigned int interval) { //not shared_ptr!
+    p->set_interval(interval);
+}
+
+void AIPlayer_set_missrate(AIPlayer* p, unsigned int missrate) { //not shared_ptr!
+    p->set_missrate(missrate);
+}
+
+void AIPlayer_start_thinking(AIPlayer* p) { //not shared_ptr!
+    p->startThinking();
+}
+
+void AIPlayer_stop_thinking(AIPlayer* p) { //not shared_ptr!
+    p->stopAllActions();
 }
 
 pSimpleMap* AIPlayer_get_ally_map(AIPlayer* p, unsigned int index) { //not shared_ptr!

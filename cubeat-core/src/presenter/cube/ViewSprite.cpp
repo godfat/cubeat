@@ -53,7 +53,11 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
 
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
-    shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
+    if( map_setting()->tutorial() ) {
+        shot_event(&model::Cube::go_exploding);
+    } else {
+        shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
+    }
 }
 
 void ViewSprite::drop_a_block(){
@@ -262,8 +266,11 @@ void ViewSprite::be_broken(){
     body_->set<accessor::GradientDiffuse>( 255 );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::restore, &model::Cube::go_exploding);
-    shot_event(&model::Cube::restore, &model::Cube::restore);
-    //audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
+    if( map_setting()->tutorial() ) {
+        shot_event(&model::Cube::restore);
+    } else {
+        shot_event(&model::Cube::restore, &model::Cube::restore);
+    }//audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
 }
 
 void ViewSprite::restore(int color_id){

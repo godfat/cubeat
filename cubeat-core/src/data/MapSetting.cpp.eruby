@@ -27,7 +27,8 @@ MapSetting::MapSetting(utils::map_any const& conf):
     dropping_creatable_( static_cast<bool>(conf.I("dropping_creatable")) ),
     garbage_dumpable_( static_cast<bool>(conf.I("garbage_dumpable")) ),
     use_broken_as_garbage_( static_cast<bool>(conf.I("use_broken_as_garbage")) ),
-    preset_( static_cast<bool>(conf.I("preset")) )
+    preset_( static_cast<bool>(conf.I("preset")) ),
+    tutorial_( conf.exist("tutorial") ? static_cast<bool>(conf.I("tutorial")) : false )
 {
     reset_size();
     setup_color_chances();
@@ -69,7 +70,8 @@ MapSetting::pointer_type MapSetting::clone() const {
            .drop_normal_chance(drop_normal_chance_)
            .rez_chances(rez_chances_)
            .preset(preset_)
-           .preset_data(preset_data_);
+           .preset_data(preset_data_)
+           .tutorial(tutorial_);
     return result;
 }
 

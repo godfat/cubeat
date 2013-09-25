@@ -217,10 +217,10 @@ local function new_askbox(object)
   object.panel  = new_image{parent=object._cdata, path='nothing',
                             w=object.w or 600, h=object.h or 300, center=true}
   object.panel:set_color(0, 0, 0)
-  object.panel:set_alpha(192)
+  object.panel:set_alpha(160)
   
   object.text   = new_text{ parent=object._cdata, title=object.title, size=object.size or 30,
-                            r=object.r, g=object.g, b=object.b, center=true }
+                            r=object.r, g=object.g, b=object.b, font=object.font, center=true }
   object.ok     = new_text{ parent=object._cdata, title='OK', size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, center=true }
   object.cancel = new_text{ parent=object._cdata, title='Cancel', size=object.size or 30,
@@ -228,10 +228,10 @@ local function new_askbox(object)
   object.text:set_pos(0, -45)
   object.text:set_depth(-50)
   object.ok:set_scale(1.5)
-  object.ok:set_pos(-75, 50)
+  object.ok:set_pos(-75, 80)
   object.ok:set_depth(-50)
   object.cancel:set_scale(1.5)
-  object.cancel:set_pos(75, 50)
+  object.cancel:set_pos(75, 80)
   object.cancel:set_depth(-50)
   
   object.ok:    on_press( function(self)
@@ -244,7 +244,7 @@ local function new_askbox(object)
                           end )
   
   if object.cb and table.getn(object.cb)==1 then
-    object.ok:set_pos(0, 50)
+    object.ok:set_pos(0, 80)
     object.cancel:set_visible(false)
   end
   

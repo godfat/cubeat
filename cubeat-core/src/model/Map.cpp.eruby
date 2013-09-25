@@ -75,6 +75,9 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
         }
     }
 
+    if( owner->pop_garbage_event() )
+        owner->pop_garbage_event()(9999); // clear garbage deposit if not zero
+
     fill_preview_queue(); // added
 
     //This point should be the end of the last init step, so start timing now:
@@ -632,6 +635,17 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
     return counter;
 }
 
+void Map::reset_record() {
+    match_counter_ = 0;
+    highest_chain_ = 0;
+
+    for( int i = 0; i < data::COLOR_MAX; ++i )
+        cubes_cleared_[i] = 0;
+
+    for( int i = 0; i < data::COLOR_MAX; ++i )
+        cubes_matched_[i] = 0;
+}
+
 int Map::garbage_count() const {
     int num = 0;
     for( int x=0; x < ms()->width(); ++x )
@@ -783,6 +797,8 @@ void Map::new_cube_at(int x, int y, int color_id)
 
 void Map::purge_all()
 {
+    ms()->dropping_creatable(false).garbage_dumpable(false);
+
     for( int x = 0; x < ms()->width(); ++x ) {
         for( int y = 0; y < ms()->height() - 1; ++y ) {
             kill_cube_at(x, y);

@@ -17,6 +17,12 @@ pScene* Demo_get_ui_scene(Demo* self) { // not shared_ptr!
     return s;
 }
 
+pScene* Demo_get_game_scene(Demo* self) { // not shared_ptr!
+    pScene* s = new pScene;
+    *s = self->get_game_scene();
+    return s;
+}
+
 void Demo_init_vs_ppl(Demo* self, char const* c1p, char const* c2p, char const* scene_name) { // not shared_ptr!
     self->init_vs_ppl(c1p, c2p, scene_name);
 }
@@ -53,6 +59,14 @@ void Demo_init_map_with_config(Demo* self, int map_id, char const* filename) { /
     self->init_map_with_config(map_id, filename);
 }
 
+void Demo_reset_map_record(Demo* self, int map_id) { // not shared_ptr!
+    self->reset_map_record(map_id);
+}
+
+void Demo_hide_map_warning(Demo* self, int map_id) { // not shared_ptr!
+    self->hide_map_warning(map_id);
+}
+
 void Demo_set_only_one_shot_for_puzzle(Demo* self) { // not shared_ptr!
     self->set_only_one_shot_for_puzzle();
 }
@@ -75,6 +89,10 @@ void Demo_set_countdown(Demo* self, bool flag) { // not shared_ptr!
 
 void Demo_set_time(Demo* self, int time) { // not shared_ptr!
     self->set_time(time);
+}
+
+void Demo_play_sound(Demo* self, char const* file) { // not shared_ptr!
+    self->play_sound(file);
 }
 
 int Demo_get_time(Demo* self) { // not shared_ptr!

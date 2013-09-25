@@ -32,6 +32,7 @@ struct AT{
             case AT::Z:
             case AT::ROTATION:
             case AT::SCALE:
+            case AT::VISIBLE:
                 return true;
             default:
                 return false;

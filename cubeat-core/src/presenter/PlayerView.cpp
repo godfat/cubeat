@@ -83,6 +83,12 @@ PlayerView& PlayerView::flipPosition()
     return *this;
 }
 
+PlayerView& PlayerView::setColor(vec3 const& color)
+{
+    character_->getAnimSprite("body").set<ColorDiffuseVec3>(color);
+    return *this;
+}
+
 PlayerView& PlayerView::switchCharacterState( STATE const& state )
 {
     using std::tr1::ref; using std::tr1::bind;

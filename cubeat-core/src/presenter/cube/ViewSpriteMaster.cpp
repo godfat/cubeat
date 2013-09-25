@@ -227,7 +227,14 @@ void ViewSpriteMaster::update_garbage(int delta) {
 
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
 
-    if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 60 ) {
+    if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 0 ) {
+        i_have_to_keep_track_of_garbage_count_visually_here_ = 0;
+        garbage_text_->changeText("0");
+        garbage_text_outline_->changeText("0");
+        garbage_text_outline_->set<Visible>(false);
+        return;
+    }
+    else if( i_have_to_keep_track_of_garbage_count_visually_here_ <= 60 ) {
         std::string num_str = utils::to_s(i_have_to_keep_track_of_garbage_count_visually_here_);
         garbage_text_->changeText( num_str );
         garbage_text_outline_->changeText( num_str );
@@ -237,7 +244,6 @@ void ViewSpriteMaster::update_garbage(int delta) {
         garbage_text_->clearAllTween();
         garbage_text_outline_->clearAllTween();
 
-        // Changes color and add other effects:
         if( i_have_to_keep_track_of_garbage_count_visually_here_ < 20 ) {
             garbage_text_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
             garbage_text_outline_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
@@ -361,7 +367,7 @@ void ViewSpriteMaster::create_warning_strips(){
             pos = (pos_vec2( 4000 , h/2) + pos_vec2( 4000 , h/2-1)) / 2;
         else pos = pos_vec2( 4000 , h/2);
         temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,64,64)).set<Alpha>(90).set<Visible>(/*false*/true);
+        temp->set<ColorDiffuseVec3>(vec3(255,64,64)).set<Alpha>(192).set<Visible>(/*false*/true);
         temp->tween<SineCirc, Alpha>(0, 1000u, -1);
         warning_strip_.push_back( temp );
 

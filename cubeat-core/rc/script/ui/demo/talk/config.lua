@@ -2,7 +2,7 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
-local lang_     = 'EN'
+local lang_     = 'JP'
 
 local bg_path_  = 'bg4/99complete'
 local bg_x_     = -480
@@ -10,35 +10,35 @@ local bg_y_     = -300
 local bg_w_     = view.GET_SCREEN_W()
 local bg_h_     = view.GET_SCREEN_H()
 
-local act_w_  = 480
-local act_h_  = 720
-local act_x_  = {0, bg_w_-act_w_}
-local act_y_  = {0, 0}
+local act_w_  = 592
+local act_h_  = 912
+local act_x_  = {-80, bg_w_-act_w_+80}
+local act_y_  = {16, 16}
 local act_d_  = -20
 local out_x_  = {-act_w_, bg_w_}
-local out_y_  = {0, 0}
+local out_y_  = {16, 16}
 
 local conBG_path_ = 'dialogue_bubble_1'
-local conBG_w_    = 512
-local conBG_h_    = 224
+local conBG_w_    = 640
+local conBG_h_    = 320
 local conBG_x_    = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
-local conBG_y_    = {300, 300}
+local conBG_y_    = {200, 300}
 local conBG_d_    = -40
 
-local con_offset_x_ =45
-local con_offset_y_ =52
+local con_offset_x_ =100
+local con_offset_y_ =90
 local con_x_        = {conBG_x_[1]+con_offset_x_, conBG_x_[2]+con_offset_x_}
 local con_y_        = {conBG_y_[1]+con_offset_y_, conBG_y_[2]+con_offset_y_}
 local con_d_        = -60
 
-local light_path_     = 'cubes/cube-r-1'
+local light_path_     = 'dialog_next'
 local light_time_     = 1000
-local light_offset_x_ = 435
-local light_offset_y_ = 180
+local light_offset_x_ = 500
+local light_offset_y_ = 200
 local light_x_  = {conBG_x_[1]+light_offset_x_, conBG_x_[2]+light_offset_x_}
 local light_y_  = {conBG_y_[1]+light_offset_y_, conBG_y_[2]+light_offset_y_}
-local light_w_  = 20
-local light_h_  = 20
+local light_w_  = 32
+local light_h_  = 32
 local light_d_  = -80
 
 local block_x_  = 0
@@ -54,7 +54,7 @@ local slide_out_time_ = 200
 local fade_in_time_   = 1000
 local fade_out_time_  = 1000
 
-local word_size_L_  = 1.7
+local word_size_L_  = 1.6
 local word_size_M_  = 1
 local word_size_S_  = 0.7
 

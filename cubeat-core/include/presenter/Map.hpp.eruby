@@ -50,6 +50,7 @@ public:
     Map& init_cubes(utils::vector_2d<int> const& data) { model()->init_cubes(data); return *this; }
     Map& stop_dropping();
     Map& start_dropping();
+    Map& reset_record() { model()->reset_record(); return *this; }
 
 public:
     pCube make_cube(int x = 0, int y = 0, int color_id = -1);
@@ -104,8 +105,8 @@ public:
     Map& new_cube_at(int x, int y, int color_id = -1) { model()->new_cube_at(x, y, color_id); return *this; }
     Map& purge_all() {
         model()->purge_all();
-        cubes_.clear(); /// WTF NOTE: Strangely, purge_all should call everything to go_exploding, thus removing presenter::Cubes as well,
-                        ///           but if I do it right at the beginning and call model::init_cubes again, presenter::Cubes will become ghosts.
+//        cubes_.clear(); /// WTF NOTE: Strangely, purge_all should call everything to go_exploding, thus removing presenter::Cubes as well,
+//                        ///           but if I do it right at the beginning and call model::init_cubes again, presenter::Cubes will become ghosts.
         return *this;
     }
     Map& push_player_ability();

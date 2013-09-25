@@ -80,7 +80,8 @@ public:
                 dropping_creatable(m.I("dropping_creatable") == 1 ? true : false).
                 garbage_dumpable(m.I("garbage_dumpable") == 1 ? true : false).
                 use_broken_as_garbage(m.I("use_broken_as_garbage") == 1 ? true : false).
-                preset(m.I("preset") == 1 ? true : false);
+                preset(m.I("preset") == 1 ? true : false).
+                tutorial(m.exist("tutorial") && m.I("tutorial") == 1 ? true : false);
 
         std::vector<int> temp;
         if( result->preset() ) {

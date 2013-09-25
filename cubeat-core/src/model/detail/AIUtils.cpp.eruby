@@ -39,6 +39,7 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
             if( pSimpleCube c = map_clone->simp_cubes_[x][y] ) {
                 current_score = simulate_fire_at( x, y, map_clone->clone() );
                 if( current_score >= incremental_lower_bound &&
+                    current_score > highest_score &&
                     current_score <= upper_bound ) {
                     best_cube = c;
                     highest_score = current_score;

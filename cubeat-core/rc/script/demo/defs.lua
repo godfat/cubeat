@@ -27,12 +27,15 @@ Mt_Demo.init_ai_logging        = C.Demo_init_ai_logging
 Mt_Demo.init_single            = C.Demo_init_single
 Mt_Demo.init_map_starting_line = C.Demo_init_map_starting_line
 Mt_Demo.init_map_with_config   = C.Demo_init_map_with_config
+Mt_Demo.reset_map_record       = C.Demo_reset_map_record
+Mt_Demo.hide_map_warning       = C.Demo_hide_map_warning
 Mt_Demo.set_map_garbage_amount = C.Demo_set_map_garbage_amount
 Mt_Demo.set_map_dropping       = C.Demo_set_map_dropping
 Mt_Demo.set_only_one_shot_for_puzzle = C.Demo_set_only_one_shot_for_puzzle
 Mt_Demo.set_stage_name         = C.Demo_set_stage_name
 Mt_Demo.set_countdown          = C.Demo_set_countdown
 Mt_Demo.set_time               = C.Demo_set_time
+Mt_Demo.play_sound             = C.Demo_play_sound
 Mt_Demo.get_time               = C.Demo_get_time
 Mt_Demo.get_map_score          = C.Demo_get_map_score
 Mt_Demo.get_map_highest_chain  = C.Demo_get_map_highest_chain
@@ -62,5 +65,8 @@ Mt_Demo.quit         = C.Demo_quit
 Mt_Demo.get_ui_scene = function(self)
   return ffi.gc(C.Demo_get_ui_scene(self), C.Scene__gc)
 end
+Mt_Demo.get_game_scene = function(self)
+  return ffi.gc(C.Demo_get_game_scene(self), C.Scene__gc)
+end  
 
 ffi.metatype("Demo", Mt_Demo)

@@ -69,12 +69,15 @@ public:
     void init_single(int const&, int const&, std::string const&, std::string const&, bool const& inplace = false);
     void init_map_starting_line(int const& map_id, int const& n);
     void init_map_with_config(int const& map_id, std::string const& fname);
+    void reset_map_record(int const& map_id);
+    void hide_map_warning(int const& map_id);
     void set_map_garbage_amount(int const& map_id, int const& n);
     void set_map_dropping(int const& map_id, bool const& flag);
     void set_only_one_shot_for_puzzle();
     void set_stage_name(std::string const&);
     void set_countdown(bool const&);
     void set_time(int const&);
+    void play_sound(std::string const& file);
     int  get_time() const;
     int  get_map_score(int const& map_id) const;
     int  get_map_highest_chain(int const& map_id) const;
@@ -98,6 +101,7 @@ public:
     void end_sequence1();
 
     view::pScene get_ui_scene();
+    view::pScene get_game_scene();
 
 protected:
     pointer_type init();

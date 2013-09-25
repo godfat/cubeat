@@ -240,6 +240,7 @@ void Player::end_overheat()
     overheat_ = false;
     if( presenter::pMap m = map_list_[id_].lock() ) {
         m->overheat_event()(false);
+        accumulated_heat_ /= 1.5;
     }
 }
 

@@ -80,7 +80,7 @@ function init(demo)
   recordboard.create_record_board(scene_)
   storyend.create(scene_)
   
-  tutorial.init(demo_)
+  --tutorial.init(demo_)
 end
 
 
@@ -92,7 +92,11 @@ function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
 
-  challenge.init_override(demo_, in_place, submode)
+  if submode == 50 then 
+    tutorial.init(demo_) 
+  else
+    challenge.init_override(demo_, in_place, submode)
+  end
 end
 
 -- occurs each frame, after map and player states update,
@@ -109,34 +113,64 @@ function ending(submode)
   print('---- single mode: ending ----')
   
   if submode==99 then
-      if demo_:get_map_warning_level(1)==100 then -- story win
-        storyend.set_board('win')
-        storyend.set_btn_title('Next')
-        storyend.on_press_next(function(self)
-          story_flag_ = true
-          demo_:leave_and_cleanup()
-          --[[
-          storyend.hide()
-          switch.load_page('talk', nil, {game_mode=99, game_end=true})
-          switch.slide_in_page_obj()
-          --]]
-        end)
-      else
-        storyend.set_board('lose')
-        storyend.set_btn_title('Retry')
-        storyend.on_press_next(function(self)
-          storyend.hide()
-          local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
-          local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
-          local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
-          demo_:init_story(c1p, c2p, sconf, 0)
-        end)
-      end
-      storyend.on_press_quit(function(self)
+    if demo_:get_map_warning_level(1)==100 then -- story win
+      storyend.set_board('win')
+      storyend.set_btn_title('Next')
+      storyend.on_press_next(function(self)
+        story_flag_ = true
+        demo_:leave_and_cleanup()
+        --[[
         storyend.hide()
+        switch.load_page('talk', nil, {game_mode=99, game_end=true})
+        switch.slide_in_page_obj()
+        --]]
+      end)
+      demo_:play_sound('3/3c/win.wav')
+    else
+      storyend.set_board('lose')
+      storyend.set_btn_title('Retry')
+      storyend.on_press_next(function(self)
+        storyend.hide()
+        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+        demo_:init_story(c1p, c2p, sconf, 0)
+      end)
+      demo_:play_sound('3/3c/lose.wav')
+    end
+    storyend.on_press_quit(function(self)
+      storyend.hide()
+      demo_:leave_and_cleanup()
+    end)
+    storyend.show()
+  elseif submode==50 then
+    if demo_:get_map_warning_level(0) ~= 100 then -- tutorial win 
+      storyend.set_board('win')
+      storyend.set_btn_title('Next')
+      storyend.on_press_next(function(self)
+        story_flag_ = true
         demo_:leave_and_cleanup()
       end)
-      storyend.show()
+      demo_:play_sound('3/3c/win.wav')
+    else
+      storyend.set_board('lose')
+      storyend.set_btn_title('Retry')
+      storyend.on_press_next(function(self)
+        storyend.hide()
+        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+        tutorial.cleanup()
+        tutorial.set_phase(11)
+        demo_:init_tutorial(c1p, c2p, sconf)
+      end)
+      demo_:play_sound('3/3c/lose.wav')
+    end
+    storyend.on_press_quit(function(self)
+      storyend.hide()
+      demo_:leave_and_cleanup()
+    end)
+    storyend.show()
   else
     challenge.ending(demo_, submode)
   end
@@ -151,6 +185,7 @@ function cleanup(submode)
   demo_:set_countdown(false)
   
   tutorial.cleanup()
+  collectgarbage("collect")
 end
 
 -- This really should just be a temporary solution, a separated menu page should be better

@@ -34,9 +34,14 @@ local function game_start(self)
       --local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
     elseif data_ and data_.game_mode==99 then
-      local story_data = storystage.get_data(select_config.ch_choose[1])
-      local lv = story_data.lv
-      demo_game_:init_story(c1p, c2p, sconf, lv)
+      --tutorial
+      if select_config.ch_choose[1] == select_config.ch_choose[2] then
+      --story
+      else
+        local story_data = storystage.get_data(select_config.ch_choose[1])
+        local lv = story_data.lv
+        demo_game_:init_story(c1p, c2p, sconf, lv)
+      end
     else
       switch.load_page('mainmenu', 'in')
     end

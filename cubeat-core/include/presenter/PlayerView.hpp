@@ -42,6 +42,7 @@ public:
     PlayerView& clearFaceState();
     PlayerView& setMap(presenter::wpMap m) { map_ = m; return *this; }
     PlayerView& setInput(ctrl::Input* i)   { input_ = i; return *this; }
+    PlayerView& setColor(vec3 const&);
     view::pMenu& getView() { return character_; }
 
     void cycle();

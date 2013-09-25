@@ -68,6 +68,19 @@ function ai_entry(self)
     end
   else
     --io.write "No keycube for now.\n"
+    
+    local highcol_threshold = 8
+    local highcols, hsize = my_map:get_highcols( highcol_threshold )
+    
+    if hsize > 0 then
+      shuffle(highcols, hsize)
+      local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
+      setcmd(cmdbuf, C.AI_SHOOT, 0, rnd_x, rnd_height)
+      self:push_command(cmdbuf)
+      -- if my_map:get_grounded_cube(rnd_x, rnd_height):is_broken() then
+        -- self:push_command(cmdbuf)
+      -- end
+    end
 
     -- if self:cmdqueue_size() < 1 then
       -- if ground_cube_num >= capacity * 0.8 and not my_map:still_chaining() then

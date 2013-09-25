@@ -71,6 +71,7 @@ public:
 
     color_map_type color_map() const;
 
+    void reset_record();
     int  garbage_count() const;
     int  grounded_cube_count() const;
     int  column_full_num() const;

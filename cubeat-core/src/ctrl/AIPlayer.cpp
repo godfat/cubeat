@@ -46,8 +46,8 @@ pAIPlayer AIPlayer::init()
     Player::init();
     self_ = std::tr1::static_pointer_cast<AIPlayer>(shared_from_this());
 
-    int x = utils::random( Conf::i().SCREEN_W() );
-    int y = utils::random( Conf::i().SCREEN_H() );
+    int x = id() == 0 ? 240 : 880;
+    int y = 120;
     input_->cursor().x() = x;
     input_->cursor().y() = y;
     input_->getCursor()->set<accessor::Pos2D>(vec2(x, y));
@@ -212,11 +212,11 @@ void AIPlayer::shoot(int x, int y, int type) //we must know ViewSetting here.
     vec2 curr(input_->cursor().x(), input_->cursor().y());
     double dist = (dest - curr).getLength() + 32; //add a very least handshaking possibility
 
-    int handshaking_x = utils::random(static_cast<int>(dist*0.07)) - static_cast<int>(dist*0.035);
-    int handshaking_y = utils::random(static_cast<int>(dist*0.07)) - static_cast<int>(dist*0.035);
+    int handshaking_x = utils::random(static_cast<int>(dist*0.05)) - static_cast<int>(dist*0.025);
+    int handshaking_y = utils::random(static_cast<int>(dist*0.05)) - static_cast<int>(dist*0.025);
     if( utils::random(100) < missrate_ ) { //this shot is probably going to miss the target
-        handshaking_x *= 5;
-        handshaking_y *= 5;
+        handshaking_x *= 7;
+        handshaking_y *= 7;
     }
 
     dest.X += handshaking_x;

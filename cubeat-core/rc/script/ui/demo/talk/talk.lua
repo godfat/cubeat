@@ -35,8 +35,13 @@ local function game_start(self)
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
     elseif data_ and data_.game_mode==99 then
       local story_data = storystage.get_data(select_config.ch_choose[1])
-      local lv = story_data.lv
-      demo_game_:init_story(c1p, c2p, sconf, lv)
+      
+      if story_data.ch == select_config.ch_choose[1] then
+        demo_game_:init_tutorial(c1p, c1p, sconf)
+      else        
+        local lv = story_data.lv
+        demo_game_:init_story(c1p, c2p, sconf, lv)
+      end
     else
       switch.load_page('mainmenu', 'in')
     end
@@ -47,6 +52,7 @@ local function get_script( lang )
   local script
   if lang == 'EN'   then script = require 'rc/script/ui/demo/talk/script_EN' end
   if lang == 'TW'   then script = require 'rc/script/ui/demo/talk/script_TW' end
+  if lang == 'JP'   then script = require 'rc/script/ui/demo/talk/script_JP' end
   
   if script == nil then script = require 'rc/script/ui/demo/talk/script_EN' end --default EN
   return script
@@ -56,6 +62,7 @@ local function get_end_script( lang )
   local script
   if lang == 'EN'   then script = require 'rc/script/ui/demo/talk/script_end_EN' end
   if lang == 'TW'   then script = require 'rc/script/ui/demo/talk/script_end_TW' end
+  if lang == 'JP'   then script = require 'rc/script/ui/demo/talk/script_end_JP' end
   
   if script == nil then script = require 'rc/script/ui/demo/talk/script_end_EN' end --default EN
   return script
@@ -64,7 +71,8 @@ end
 local function get_font( lang )
   local font
   if lang == 'EN'   then font = 'kimberley' end
-  if lang == 'TW'   then font = 'msjhbd' end
+  if lang == 'TW'   then font = 'wqy-microhei' end
+  if lang == 'JP'   then font = 'rounded-mplus-1m-medium' end
   
   if font == nil then font = 'kimberley' end
   return font
@@ -298,7 +306,7 @@ local function init(demo, parent, data)
     menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
     menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
-                                  depth=config.con_d, size=32, visible=false, font=get_font(config.lang) }
+                                  depth=config.con_d, size=28, visible=false, font=get_font(config.lang) }
     menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.conBG_path, x=config.conBG_x[ch], y=config.conBG_y[ch],
                                   w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
     menu[light]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.light_path, x=config.light_x[ch], y=config.light_y[ch],

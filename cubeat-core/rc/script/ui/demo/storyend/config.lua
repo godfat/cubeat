@@ -5,55 +5,55 @@ local data = {}
 data[1] = {
   {ch=1, lv=0},
   {ch=2, lv=0},
+  {ch=6, lv=0},
+  {ch=3, lv=1},
+  {ch=4, lv=1},
+  {ch=5, lv=2},
+}
+
+data[2] = {
+  {ch=2, lv=0},
+  {ch=1, lv=0},
   {ch=3, lv=0},
   {ch=4, lv=1},
   {ch=5, lv=1},
   {ch=6, lv=2},
 }
 
-data[2] = {
-  {ch=6, lv=0},
-  {ch=5, lv=0},
-  {ch=4, lv=0},
-  {ch=3, lv=1},
-  {ch=2, lv=1},
-  {ch=1, lv=2},
-}
-
 data[3] = {
-  {ch=1, lv=0},
-  {ch=2, lv=0},
   {ch=3, lv=0},
-  {ch=4, lv=1},
+  {ch=4, lv=0},
+  {ch=2, lv=0},
+  {ch=1, lv=1},
   {ch=5, lv=1},
   {ch=6, lv=2},
 }
 
 data[4] = {
+  {ch=4, lv=0},
   {ch=1, lv=0},
-  {ch=2, lv=0},
   {ch=3, lv=0},
-  {ch=4, lv=1},
-  {ch=5, lv=1},
-  {ch=6, lv=2},
+  {ch=6, lv=1},
+  {ch=1, lv=1},
+  {ch=5, lv=2},
 }
 
 data[5] = {
+  {ch=5, lv=0},
   {ch=1, lv=0},
   {ch=2, lv=0},
-  {ch=3, lv=0},
-  {ch=4, lv=1},
-  {ch=5, lv=1},
-  {ch=6, lv=2},
+  {ch=3, lv=1},
+  {ch=6, lv=1},
+  {ch=2, lv=2},
 }
 
 data[6] = {
-  {ch=1, lv=0},
+  {ch=6, lv=0},
+  {ch=4, lv=0},
   {ch=2, lv=0},
-  {ch=3, lv=0},
-  {ch=4, lv=1},
+  {ch=3, lv=1},
   {ch=5, lv=1},
-  {ch=6, lv=2},
+  {ch=1, lv=2},
 }
 
 local function set_stage(v)

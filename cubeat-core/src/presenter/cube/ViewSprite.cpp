@@ -45,12 +45,18 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     body_ = view::Sprite::create("cubes/cube1", view_orig_.lock(),
                                  s->cube_size(), s->cube_size(), true);
 
-    body_->set<accessor::Pos2D>(pos_vec2());
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+    outline_ = view::Sprite::create("cubes/cube1-out", body_,
+                                    s->cube_size(), s->cube_size(), true);
+    outline_->setPickable(false);
+    //outline_->tween<easing::SineCirc, accessor::Alpha>(0, 128, 500u, -1);
+    outline_->set<accessor::Alpha>(128);
+    outline_->set<accessor::Visible>(false);
+    outline_->setDepth(-1);
 
-    data::Color col = data::Color::from_id(c->data()->color_id());
-    col.offset();
-    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    /// OVERHAULING OUTLINE COLOR HERE
+
+    body_->set<accessor::Pos2D>(pos_vec2());
+    set_base_color_and_texture(c->data()->color_id());
 
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     if( map_setting()->tutorial() ) {
@@ -58,6 +64,17 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     } else {
         shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
     }
+}
+
+void ViewSprite::set_base_color_and_texture(int color_id){
+    std::string temp = utils::to_s(utils::random(4)+1);
+    body_->setTexture("cubes/cube" + temp);
+    outline_->setTexture("cubes/cube" + temp + "-out");
+
+    data::Color col = data::Color::from_id(color_id);
+    col.offset();
+    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    outline_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
 }
 
 void ViewSprite::drop_a_block(){
@@ -241,10 +258,15 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
 
 void ViewSprite::go_dying(){
     unsigned int duration = map_setting()->cube_dying_duration();
-    body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
-    body_->tween<easing::Linear, accessor::Alpha>(0, duration);
-    body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
-    body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
+//    body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
+    body_->tween<easing::Linear, accessor::Alpha>(255, 0, duration);
+//    outline_->set<accessor::Visible>(false);
+    outline_->setTexture("cubes/cube-white");
+    outline_->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
+    outline_->tween<easing::Linear, accessor::GradientEmissive>(255, 255, duration);
+    outline_->tween<easing::Linear, accessor::Alpha>(255, 0, duration);
+//    body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
+//    body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
 }
 
 void ViewSprite::go_exploding(){
@@ -262,8 +284,11 @@ void ViewSprite::go_exploding(){
 }
 
 void ViewSprite::be_broken(){
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+    std::string temp = utils::to_s(utils::random(4)+1);
+    body_->setTexture("cubes/cube-br-" + temp);
     body_->set<accessor::GradientDiffuse>( 255 );
+    outline_->setTexture("cubes/cube" + temp + "-out");
+    outline_->set<accessor::GradientDiffuse>( 255 );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::restore, &model::Cube::go_exploding);
     if( map_setting()->tutorial() ) {
@@ -275,10 +300,7 @@ void ViewSprite::be_broken(){
 
 void ViewSprite::restore(int color_id){
     if( color_id == -1 ) return;
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
-    data::Color col = data::Color::from_id(color_id);
-    col.offset();
-    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    set_base_color_and_texture(color_id);
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
@@ -303,13 +325,19 @@ void ViewSprite::hit(int /*dmg*/, int hp){
 }
 
 void ViewSprite::get_chain(){
-    if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
-        body_->tween<easing::SineCirc, accessor::GradientEmissive>(128, 500u, -1);
-    }
+//    if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
+        //body_->tween<easing::SineCirc, accessor::GradientEmissive>(128, 500u, -1);
+    outline_->set<accessor::Visible>(true);
+//    }
+}
+
+void ViewSprite::losing_chain(double percentage){
+    outline_->set<accessor::Alpha>(percentage * 255);
 }
 
 void ViewSprite::lose_chain(){
-    body_->tween<easing::Linear, accessor::GradientEmissive>(0, 100u);
+    //body_->tween<easing::Linear, accessor::GradientEmissive>(0, 100u);
+    outline_->set<accessor::Visible>(false);
 }
 
 ViewSprite& ViewSprite::shot_event( ShotEvent ally_cb, ShotEvent enemy_cb ) {

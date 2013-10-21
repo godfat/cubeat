@@ -263,6 +263,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, pChain chain){
 <% end %>
     // start chainging
+    time_t visual_delay = 0;
 	for(int x=in_x, y=in_y;
 	    x < ms()->width() && y < ms()->height()-1 &&
         //cubes_[x][y].use_count() != 0 && //if it's alive
@@ -272,7 +273,8 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
 		!cubes_[x][y]->chain()
 		; ++y)
     {
-        cubes_[x][y]->chain(chain);
+        cubes_[x][y]->chain(chain, visual_delay);
+        visual_delay += 33;
     }
 }
 

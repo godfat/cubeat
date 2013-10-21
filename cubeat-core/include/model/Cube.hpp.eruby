@@ -49,7 +49,7 @@ public:
     // begin only used by Map::next_state
     state::pWaiting is_waiting();
     state::pDropping is_dropping();
-    void lose_chain();
+    void losing_chain(time_t const& elapsed_t);
     // end
 
     // begin only used by Map::cube_can_lose_chain,
@@ -58,7 +58,7 @@ public:
     // end
 
     // begin only used by Map::attach_chain_bottom_up
-    void chain(pChain chain){ chain_belonged_to_ = chain; get_chain_event()(); }
+    void chain(pChain chain, time_t const& visual_delay);
     // end
 
     // begin only used by OneFading::get_the_chain,
@@ -119,6 +119,7 @@ private:
     void drop_a_block();
     void drop_a_frame(time_t const&, time_t const&);
     void sink_a_frame(time_t const&, time_t const&);
+    void lose_chain();
     pCube self() const{ return self_.lock(); }
 
 private:
@@ -129,6 +130,7 @@ private:
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event %>
 <%= accessor :'std::tr1::function<void()>', :get_chain_event, :lose_chain_event, :sink_a_block_event, :update_pos_event, :approach_pos_event, :garbage_fly_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>
+<%= accessor :'std::tr1::function<void(double)>', :losing_chain_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>
 };
 

@@ -24,6 +24,7 @@ public:
     virtual void hit(int /*dmg*/, int /*hp*/){}
     virtual void get_chain(){}
     virtual void lose_chain(){}
+    virtual void losing_chain(double percentage){}
     virtual void drop_a_block(){}
     virtual void sink_a_block(){}
     virtual void drop_a_block_with_callback(callback_type){}

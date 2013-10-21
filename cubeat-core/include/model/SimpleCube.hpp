@@ -46,12 +46,12 @@ public:
     SimpleCube(wpSimpleMap map, int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
         is_broken_(false), is_garbage_(false), is_new_garbage_(false),
-        hp_(1), map_(map), is_dead_(false)
+        hp_(1), time_to_lose_chain_(0), map_(map), is_dead_(false)
     {}
     SimpleCube(int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
         is_broken_(false), is_garbage_(false), is_new_garbage_(false),
-        hp_(1), map_(pSimpleMap()), is_dead_(false)
+        hp_(1), time_to_lose_chain_(0), map_(pSimpleMap()), is_dead_(false)
     {}
 
     ~SimpleCube(){ lose_chain(); }
@@ -102,6 +102,7 @@ protected:
     pChain        chain_belonged_to_;
     bool has_grounded_, is_broken_, is_garbage_, is_new_garbage_;
 	int hp_;
+	time_t time_to_lose_chain_;
 
 private:
     pointer_type init() {

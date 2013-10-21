@@ -28,7 +28,7 @@ local ATTACK_PWR     = 1
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
 --these are intended for C to call from.
-function THINK_INTERVAL() return 600 end --ms
+function THINK_INTERVAL() return 525 end --ms
 function MISSRATE()       return 20  end --percentage. 0 ~ 100
 
 function ai_entry(self)
@@ -50,29 +50,29 @@ function ai_entry(self)
 
   local attack_threshold = 1
   
-  if my_map:warning_level() > 25 or
+  if my_map:warning_level() > 0 or
      ground_cube_num + my_map:garbage_left() >= capacity
   then
-    emergency_level = 1
+    emergency_level = 42 -- dummy for easy level computer
   end
 
   local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
 
-  -- if keycube:exist() and random(100) > 70 and  
-     -- enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
-  -- then
-    -- --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
-    -- setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
-    -- self:push_command(cmdbuf)
-    -- if keycube:is_broken() then
-      -- self:push_command(cmdbuf)
-    -- end
-  -- else
-    --io.write "No keycube for now.\n"
+  if keycube:exist() and random(100) > 75 and  
+     enemy_map:garbage_left() < 3 -- so opponent doesn't feel like they are being overpowered too much.
+  then
+    --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
+    setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
+    self:push_command(cmdbuf)
+    if keycube:is_broken() then
+      self:push_command(cmdbuf)
+    end
+  else
+    -- io.write "No keycube for now.\n"
     
-    local highcol_threshold = 8
+    local highcol_threshold = 7
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
 
@@ -86,7 +86,7 @@ function ai_entry(self)
     -- so the middle way to take here is, when the number of broken cubes is not too many, 
     -- then by all means take out high columns by shooting at the lower half of the column,
     -- but when the broken cubes taking a portion of your map, you should consider shooting at them first.    
-    if hsize > 0 and --[[ground_cube_num <= capacity * 0.9 and ]]bsize < ground_cube_num * 0.4 then
+    if hsize > 0 and --[[ground_cube_num <= capacity * 0.9 and ]]bsize < ground_cube_num * 0.3 then
       shuffle(highcols, hsize)
       local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 ) + highcol_threshold/2
       setcmd(cmdbuf, C.AI_SHOOT, 0, rnd_x, rnd_height)
@@ -96,7 +96,7 @@ function ai_entry(self)
       -- end
     end
 
-    if bsize > 0 and self:cmdqueue_size() < 1 and random(100) > 70 then
+    if bsize > 0 and self:cmdqueue_size() < 1 then
       shuffle(brokens, bsize)
       local rnd = random(bsize)
       setcmd(cmdbuf, C.AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
@@ -118,7 +118,7 @@ function ai_entry(self)
         end
       end
     end
-  -- end
+  end
 
   --io.write(string.format("Hard AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
   collectgarbage("collect")

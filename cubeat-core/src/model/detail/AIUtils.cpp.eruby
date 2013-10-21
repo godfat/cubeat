@@ -30,6 +30,10 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
         //AIUtils::get_base_attack should be exported as well.
     }
 
+    if( em_level == 42 ) { ///WTF temporary for limiting upper_bound when emergency is too big
+        upper_bound = incremental_lower_bound;
+    }
+
 //    std::cout << " -------------------------------------- " << std::endl;
 //    std::cout << " current base attack: " << highest_score << std::endl;
 //    std::cout << " -------------------------------------- " << std::endl;
@@ -43,6 +47,9 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
                     current_score <= upper_bound ) {
                     best_cube = c;
                     highest_score = current_score;
+                    if( em_level == 42 ) { ///WTF temporary for limiting upper_bound when emergency is too big
+                        return best_cube;
+                    }
                 }
 //                std::cout << current_score << " ";
             }

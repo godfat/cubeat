@@ -130,6 +130,7 @@ private:
     /*static*/ void bind_view_event(cube::pViewMaster);
 
     void speedup();
+    void crushing_speedup();
 
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>

@@ -159,11 +159,11 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
             break;
         case AICommand::HASTE:
             if( cmd->delay() < 1 ) {
-                haste( 500 );
+                haste( 400 ); // was 500, but it concerns the cube_dropping_speed
             } else {
                 printf("Issue command delay: %d\n", cmd->delay());
                 EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&AIPlayer::haste, this, 500), self, cmd->delay());
+                    bind(&AIPlayer::haste, this, 400), self, cmd->delay());
             }
             break;
         default:

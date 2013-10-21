@@ -92,8 +92,12 @@ void Map::speedup(){
     if( map_setting()->sink_speed() < map_setting()->sink_speed_limit() ) {
         map_setting()->sink_speed( map_setting()->sink_speed() + map_setting()->sink_speed_add() );
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
+            std::tr1::bind(&Map::speedup, this), shared_from_this(), 30000);
     }
+}
+
+void Map::crushing_speedup(){
+    map_setting()->sink_speed( 400 );
 }
 
 pMap <% debug_hook 'Map::init' do %>(){
@@ -105,7 +109,10 @@ pMap <% debug_hook 'Map::init' do %>(){
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Map::crushing_speedup, this), self, 180000);
 
     return self;
 }
@@ -119,7 +126,10 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     // NOTE: this is bad!! why is set_view_master related to speedup?
     //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Map::crushing_speedup, this), self, 180000);
 
     return self;
 }
@@ -160,9 +170,10 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                      be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
                       be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
                         restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
-                            hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
+                            hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2) ).
                       get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
+                   losing_chain_event( std::tr1::bind( &Cube::losing_chain, cube.get(), _1) ).
                    drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
                      update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).

@@ -36,16 +36,25 @@ player1: {
     #This only affect newly created cubes, and determines
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
-    sink_speed: 65.0,
+    #sink_speed: 65.0,
+    sink_speed: 120.0,
+
+    # 400 - 65 = 335; 335 / 10 = 33.5; 33.5 * 5sec ~= 170sec
+    # 240 - 120= 120; 120 / 30 = 4; 4 * 30sec ~= 120sec
+    # 120 / 5 = 24; 24 * 10 = 240(speedup by 10/per5sec)
+    # 65 + 240 = 305;
+    # 120+ 120 = 240;
 
     #add every 5 seconds.
-    sink_speed_add: 10.0,
-    sink_speed_limit: 400.0,
+    #sink_speed_add: 10.0,
+    #sink_speed_limit: 400.0,
+    sink_speed_add: 40.0,
+    sink_speed_limit: 280.0,
 
     #How fast does the ALREADY DROPPED cubes drop from one block to another
     #This speed is constant during the game, and is used for HASTE as well.
     #(suggestion: 450.0 ~ 1000.0)
-    drop_speed: 450.0,
+    drop_speed: 540.0,
 
     #How much time does a cube need to drop from one block to another
     #This does not affect newly created cubes, only affects garbages
@@ -59,7 +68,7 @@ player1: {
     use_broken_as_garbage: 1,
 
     #how many ms between a single warning (alarm) sound.
-    warning_gap: 1000,
+    warning_gap: 1600,
 
     #damage_factor
     damage_factor: 1.0,
@@ -101,13 +110,13 @@ player2: {
     starting_line: 4,
     chaining_duration: 600,
     cube_dying_duration: 500,
-    sink_speed: 65.0,
-    sink_speed_add: 10.0,
-    sink_speed_limit: 400.0,
-    drop_speed: 450.0,
+    sink_speed: 120.0,
+    sink_speed_add: 40.0,
+    sink_speed_limit: 280.0,
+    drop_speed: 540.0,
     cube_dropping_duration: 600,
     use_broken_as_garbage: 1,
-    warning_gap: 1000,
+    warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 0,

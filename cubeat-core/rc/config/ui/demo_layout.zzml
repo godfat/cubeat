@@ -2,9 +2,7 @@
 
 # base size and texture
 base: {
-    layout_tex: 'ui/layout',
-    w: 1280,
-    h: 720,
+    infoboard: { img: 'ui/layout', w: 275, h: 429, x: 502, y: 0 }
 },
 
 # texts setup data

@@ -25,6 +25,7 @@
 #include "audio/Sound.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
+#include "Conf.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -359,7 +360,8 @@ void ViewSpriteMaster::create_warning_strips(){
     for( int i=0, width=map_setting()->width(),
                   h=map_setting()->height()-1; i<width; ++i )
     {
-        view::pSprite temp = view::Sprite::create("warning", scene, 64, 64*h, true);
+        int csize = view_setting()->cube_size();
+        view::pSprite temp = view::Sprite::create("warning", scene, csize, csize*h, true);
         vec2 pos;
         if( h % 2 == 0 )
 //            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
@@ -379,6 +381,7 @@ void ViewSpriteMaster::create_overheat_overlay(){
     using namespace accessor; using namespace easing;
     int w = map_setting()->width();
     int h = map_setting()->height() - 1;
+    int csize = view_setting()->cube_size();
     vec2 pos;
     if( w % 2 == 0 )
         pos = (pos_vec2(w/2, h/2) + pos_vec2(w/2-1, h/2)) / 2;
@@ -390,7 +393,7 @@ void ViewSpriteMaster::create_overheat_overlay(){
     overheat_->set<Visible>(false);
     overheat_->tween<SineCirc, Alpha>(0, 1000u, -1);
 
-    overheat_bg_ = view::Sprite::create("overheat_bg", scene_.lock(), 64*w, 64*h, true);
+    overheat_bg_ = view::Sprite::create("overheat_bg", scene_.lock(), csize*w, csize*h, true);
     overheat_bg_->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
     overheat_bg_->set<ColorDiffuseVec3>(vec3(0,0,0)).set<Alpha>(128).set<Visible>(false);
 }
@@ -405,20 +408,32 @@ void ViewSpriteMaster::derived_init(){
     else pos = pos_vec2(w/2, h); //memo: can we try to reuse this ..?
     pos.Y += 10;
 
+    int csize = view_setting()->cube_size();
+    //UI base, note, these position follows view_orig_ like cubes, not UI texts:
+    box_bottom_ = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+    box_top_    = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).setDepth(30);
+    box_left_   = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);
+    box_left_->set<Pos2D>( vec2(-24, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
+    box_right_  = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);
+    box_right_->set<Pos2D>( vec2(csize*w, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
+    box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
+    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30);
+
     //warning: the position and scale data here should be configurable.
-    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
+    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*w, 44, true);
     alert_bar_top_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
                    .set<Visible>(false).setPickable(false);
-    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
+    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), csize*w, 44, true);
     alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
                          .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 
     pos2 = pos; pos2.Y = 704;
 
-    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
+    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*w, 44, true);
     alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
                       .set<Visible>(false).setPickable(false);
-    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
+    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), csize*w, 44, true);
     alert_bar_cover_bottom_->setDepth(-70).set<Pos2D>( pos2 ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
                             .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 

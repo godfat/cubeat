@@ -740,8 +740,15 @@ void Demo::game_start()
 void Demo::setup_ui()
 {
     utils::map_any const& base = uiconf_.M("base");
-    ui_layout_ = view::Menu::create( base.S("layout_tex"), scene_, base.I("w"), base.I("h") );
-    ui_layout_->set<Alpha>(192);
+    ui_layout_ = view::Menu::create( "ui_orig", scene_, 0, 0 );
+
+    BOOST_FOREACH(utils::pair_any const& it, base) {
+        std::string    const& key  = boost::any_cast<std::string const>(it.first);
+        utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
+        ui_layout_->
+            addSprite(key, 0, attr.I("w"), attr.I("h"), false, attr.S("img"))
+           .getSprite(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
+    }
 
     utils::map_any const& misc = uiconf_.M("misc");
     BOOST_FOREACH(utils::pair_any const& it, misc) {

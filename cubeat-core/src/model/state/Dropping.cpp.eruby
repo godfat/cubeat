@@ -11,6 +11,7 @@ using namespace state;
 pState <% debug_hook 'Dropping::init' do %>(){
 <% end %>
     //owner()->drop_a_block();
+    owner()->retain_chain(false);
     return shared_from_this();
 }
 

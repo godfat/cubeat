@@ -34,10 +34,11 @@ public:
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
-            map.attach_chain_bottom_up_from((**i).x(), (**i).y(), chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
             }
+            (**i).chain(chain);
+            map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
         }
     }
     // end

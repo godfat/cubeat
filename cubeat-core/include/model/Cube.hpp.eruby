@@ -58,7 +58,7 @@ public:
     // end
 
     // begin only used by Map::attach_chain_bottom_up
-    void chain(pChain chain, time_t const& visual_delay);
+    void chain(pChain chain, time_t const& visual_delay = 0);
     // end
 
     // begin only used by OneFading::get_the_chain,
@@ -127,6 +127,7 @@ private:
     wpMap map_;
     state::pState state_;
     wpCube self_;
+<%= accessor :bool, :retain_chain %>
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :go_dying_event, :go_exploding_event, :be_garbage_event, :be_broken_event %>
 <%= accessor :'std::tr1::function<void()>', :get_chain_event, :lose_chain_event, :sink_a_block_event, :update_pos_event, :approach_pos_event, :garbage_fly_event %>
 <%= accessor :'std::tr1::function<void(int)>', :restore_event %>

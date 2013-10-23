@@ -75,7 +75,7 @@ void Cube::adjust_real_y(){
 
 void Cube::chain(pChain chain, time_t const& visual_delay) {
     chain_belonged_to_ = chain;
-    time_to_lose_chain_ = map()->ms()->chaining_duration() + map()->ms()->cube_dying_duration();
+    time_to_lose_chain_ = map()->ms()->chaining_duration();
     // Truth is, we have to account for cube_dying_duration because
     // all effectively tagged cubes will waste its time waiting for
     // the original chained-to-die cubes below
@@ -87,20 +87,20 @@ void Cube::chain(pChain chain, time_t const& visual_delay) {
 }
 
 void Cube::losing_chain(time_t const& elapsed_t){
-    if( time_to_lose_chain_ == 0 ) return;
+    if( time_to_lose_chain_ == 0 || retain_chain_ == true ) return;
     if( time_to_lose_chain_ <= elapsed_t ) {
         time_to_lose_chain_ = 0;
         lose_chain();
     } else {
         time_to_lose_chain_ -= elapsed_t;
         losing_chain_event()( static_cast<double>( time_to_lose_chain_ ) /
-                             (map()->ms()->chaining_duration() + map()->ms()->cube_dying_duration()) );
+                             (map()->ms()->chaining_duration()) );
     }
 }
 
 void <% debug_hook 'Cube::lose_chain' do %>(){
 <% end %>
-    if( chain() /* && map()->cube_can_lose_chain(self()) */ ){
+    if( chain() /*&& map()->cube_can_lose_chain(self())*/ ){
         SimpleCube::lose_chain();
         lose_chain_event()();
     }

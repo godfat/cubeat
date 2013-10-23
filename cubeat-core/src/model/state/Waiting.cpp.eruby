@@ -21,9 +21,11 @@ pState <% debug_hook 'Waiting::init' do %>(){
 
 void <% debug_hook 'Waiting::cycle' do %>(time_t const& now_t, time_t const& last_t){
 <% end %>
-    owner()->losing_chain(now_t - last_t);
-    if(pState result = map()->next_state(owner()))
+    if(pState result = map()->next_state(owner())) {
         switch_state(result);
+    } else {
+        owner()->losing_chain(now_t - last_t);
+    }
 }
 
 void <% debug_hook 'Waiting::check_chain_now' do %>(){

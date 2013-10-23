@@ -121,8 +121,8 @@ void Map::check_a_fade(pCube c, int x, int y)
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
-                one_fading->fade(*this, c);
                 c->go_dying();
+                one_fading->fade(*this, c);
             }
             else waiting->checked();
         }
@@ -268,13 +268,19 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
 	    x < ms()->width() && y < ms()->height()-1 &&
         //cubes_[x][y].use_count() != 0 && //if it's alive
         cubes_[x][y] &&
-        cubes_[x][y]->is_waiting() &&    //if it's at waiting state
+        cubes_[x][y]->is_waiting()     //if it's at waiting state
 		//cubes_[x][y]->chain().use_count() == 0 //and if it has a chain property
-		!cubes_[x][y]->chain()
 		; ++y)
     {
-        cubes_[x][y]->chain(chain, visual_delay);
-        visual_delay += 33;
+        if( !cubes_[x][y]->chain() ) {
+            cubes_[x][y]->chain(chain, visual_delay);
+            cubes_[x][y]->retain_chain(true);
+            visual_delay += 51;
+        } else if( cubes_[x][y]->chain() == chain ) {
+            cubes_[x][y]->retain_chain(true);
+        } else {
+            break;
+        }
     }
 }
 

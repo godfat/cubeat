@@ -291,6 +291,7 @@ void ViewSpriteMaster::update_garbage(int delta) {
     if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
         garbage_text_outline_->tween<Linear, Scale>(vec3(1.3, 1.3, 1), vec3(2.2, 2.2, 1), 500u);
         garbage_text_outline_->tween<Linear, Alpha>(255, 0, 500u);
+        garbage_text_outline_->set<Visible>(true);
     } else {
         garbage_text_outline_->set<Alpha>(0);
     }

@@ -7,6 +7,9 @@
 #include "IrrDevice.hpp"
 #include "utils/to_s.hpp"
 
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
+
 #include <boost/foreach.hpp>
 
 using namespace irr;
@@ -121,8 +124,14 @@ void SFX::cube_explode(pSprite sp)
     sp->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 300u);
     sp->tween<Linear, Alpha>(0, 300u);
 
+    hold(sp, 300u);
+}
+
+void SFX::hold(pSprite sp, time_t duration)
+{
     effects_holder_.push_front(sp);
-    sp->tween<Linear, GradientEmissive>(255, 300u, 0, bind(&SFX::clear_obj, this, effects_holder_.begin()));
+    ctrl::EventDispatcher::i().get_timer_dispatcher(sp->scene()->getName())->subscribe(
+        bind(&SFX::clear_obj, this, effects_holder_.begin()), duration + 16); //Make sure it is at least 1 frame later.
 }
 
 namespace psc { namespace view {

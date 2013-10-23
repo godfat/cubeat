@@ -39,6 +39,7 @@ public:
     void weapon_vfx2(view::pScene&, vec2 const&);
     void weapon_vfx3(view::pScene&, vec2 const&);
     void cube_explode(view::pSprite);
+    void hold(view::pSprite, time_t duration);
 
     template <template <class> class Eq, class Accessor>
     void custom_effect_holder(view::pObject o, data::AnimatorParam<Eq, Accessor> p)

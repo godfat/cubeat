@@ -80,6 +80,14 @@ void SimpleMap::cycle_cubes()
         simp_cubes_, bind(&SimpleMap::cycle_a_cube, this, _1, _2, _3));
 }
 
+void SimpleMap::check_a_fade(pSimpleCube cube, int x, int y, pChain)
+{
+    // Do nothing here. Because SimpleCube/SimpleMap are all discrete and logic only,
+    // There's no timing and state changing issue here.
+    // OneFadingSimple will still try to call this from bottom to top (recursively)
+    // But cycle_a_cube still handle everything in SimpleMap's case.
+}
+
 void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
 {
     if( is_below_empty(cube) )

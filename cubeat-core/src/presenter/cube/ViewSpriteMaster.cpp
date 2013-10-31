@@ -37,7 +37,7 @@ using namespace std::tr1::placeholders;
 
 ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
     ctrl::wpPlayer const& player): ViewMaster(setting),
-    scene_(scene), player_(player),
+    scene_(scene), player_(player), column_flag_(0),
     i_have_to_keep_track_of_garbage_count_visually_here_(0)
 {   //temporary
     view_orig_ = view::Object::create( scene );
@@ -59,10 +59,22 @@ void ViewSpriteMaster::setup_ability_button(){
 }
 
 void ViewSpriteMaster::column_full(int at){
+    column_flag_ |= (1 << at);
     show_warning_at(at, true);
 }
 void ViewSpriteMaster::column_not_full(int at){
+    if( column_flag_ & ( 1 << at ) ) {
+        column_flag_ ^= (1 << at);
+    }
     show_warning_at(at, false);
+
+    if( column_flag_ == 0 ) {
+        using namespace accessor;
+        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+        box_left_ ->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        box_right_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+    }
 }
 
 void ViewSpriteMaster::new_chain(model::wpChain const& chain){
@@ -298,17 +310,44 @@ void ViewSpriteMaster::update_garbage(int delta) {
 }
 
 void ViewSpriteMaster::warning_sound(int warning_level){
+    using namespace accessor; using namespace easing;
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
+
+    int csize = view_setting()->cube_size();
+    int w     = map_setting()->width();
+    time_t warning_gap = map_setting()->warning_gap();
+
+    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+    box_left_ ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(160);
+//               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
+    box_right_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(160);
+//               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
+    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+
+//    view::pSprite bar_light1 = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), true);
+//    bar_light1->set<Pos2D>( vec2(-12, -view_setting()->y_offset()/2) ).setDepth(-20).set<ColorDiffuseVec3>(vec3(255, 32, 32))
+//               .tween<Linear, Alpha>(192, 0, warning_gap)
+//               .tween<Linear, Scale>(vec3(1,1,1), vec3(1.5, 1.5, 1.5), warning_gap);
+//    view::pSprite bar_light2 = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), true);
+//    bar_light2->set<Pos2D>( vec2(csize*w + 12, -view_setting()->y_offset()/2) ).setDepth(-20).set<ColorDiffuseVec3>(vec3(255, 32, 32))
+//               .tween<Linear, Alpha>(192, 0, warning_gap)
+//               .tween<Linear, Scale>(vec3(1,1,1), vec3(1.5, 1.5, 1.5), warning_gap);
+//    view::SFX::i().hold(bar_light1, warning_gap).hold(bar_light2, warning_gap);
+
+    for( int x = 0; x < map_setting()->width(); ++x ) {
+        warning_strip_[x]->set<Alpha>(0);
+        warning_strip_[x]->tween<SineCirc, Alpha>(0, 192, warning_gap);
+    }
 }
 
 void ViewSpriteMaster::alert_bar_animate(int warning_level){
     using namespace accessor; using namespace easing;
 
-    alert_bar_top_->playAnime("moving", 1000);
-    alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
-    alert_bar_bottom_->playAnime("moving", 1000);
-    alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
-    printf("Animation given.\n");
+    time_t warning_gap = map_setting()->warning_gap();
+    alert_bar_top_->playAnime("moving", warning_gap);
+    alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
+    alert_bar_bottom_->playAnime("moving", warning_gap);
+    alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
@@ -320,6 +359,7 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed){
         alert_bar_bottom_->clearTween(AT::DIFFUSE);
         alert_bar_cover_top_->set<Visible>(true);
         alert_bar_cover_bottom_->set<Visible>(true);
+
     } else {
         alert_bar_cover_top_->set<Visible>(false);
         alert_bar_cover_bottom_->set<Visible>(false);
@@ -370,8 +410,8 @@ void ViewSpriteMaster::create_warning_strips(){
             pos = (pos_vec2( 4000 , h/2) + pos_vec2( 4000 , h/2-1)) / 2;
         else pos = pos_vec2( 4000 , h/2);
         temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,64,64)).set<Alpha>(192).set<Visible>(/*false*/true);
-        temp->tween<SineCirc, Alpha>(0, 1000u, -1);
+        temp->set<ColorDiffuseVec3>(vec3(255,255,255))
+             .set<Alpha>(0).set<Visible>(/*false*/true);
         warning_strip_.push_back( temp );
 
         /// For the WTF code here, see show_warning_at function for why.
@@ -412,8 +452,9 @@ void ViewSpriteMaster::derived_init(){
     int csize = view_setting()->cube_size();
     //UI base, note, these position follows view_orig_ like cubes, not UI texts:
     box_bottom_ = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+    box_bottom_->set<Alpha>(160);
     box_top_    = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
-    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).setDepth(30);
+    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
     box_left_   = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);
     box_left_->set<Pos2D>( vec2(-24, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
     box_right_  = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);

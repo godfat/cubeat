@@ -86,7 +86,7 @@ public:
         return *this;
     }
 
-    // these are for AI calculations, chain related.
+    // these are chain related, shared name with model::Map
     void attach_chain_bottom_up_from(int, int, pChain);
     void push_chain(pChain chain){ chains_.push_back(chain); }
     bool is_all_fallen() const;
@@ -137,12 +137,16 @@ private:
     void update_cube_position(pSimpleCube cube, int old_x, int old_y);
     void drop_cube_to_the_ground(pSimpleCube cube);
     void cleanup_map_and_drop_all();
+
+    void check_a_fade(pSimpleCube, int, int, pChain existing_chain);
+    pSimpleCube cube_at(int x, int y) { return simp_cubes_[x][y]; }
     pOneFadingSimple make_OneFading(pSimpleCube);
 
     container_type    simp_cubes_;
     preview_list_type simp_cubes_preview_;
 
     friend class ai_detail::AIUtils;
+    friend class OneFadingT<SimpleMap>;
 };
 
 typedef SimpleMap::pointer_type  pSimpleMap;

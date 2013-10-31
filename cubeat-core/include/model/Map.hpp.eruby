@@ -51,12 +51,11 @@ public:
 
     Map& cycle();
 
+    // used by Dying or OneFading
+    void attach_chain_bottom_up_from(int, int, pChain);
+
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
-    // end
-
-    // begin only used by OneFading::fade
-    void attach_chain_bottom_up_from(int, int, pChain);
     // end
 
     // only used by Game::make_garbage
@@ -112,7 +111,7 @@ private:
     void cycle_cubes();
     void check_one_fadings();
     void cycle_a_cube(pCube, int x, int y);
-    void check_a_fade(pCube, int x, int y);
+    void check_a_fade(pCube, int x, int y, pChain existing_chain);
     void cycle_creation();
     void cycle_creation_garbage();
     void cycle_warning();
@@ -120,6 +119,8 @@ private:
     int fill_preview_create_color(std::vector<int>&);
 
     pOneFadingOrig make_OneFading(pCube);
+    pCube cube_at(int x, int y) { return cubes_[x][y]; }
+
     bool is_below_empty(cpCube) const;
     void update_chains();
     void inc_warning(int&);
@@ -144,6 +145,8 @@ private:
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
     preview_list_type cubes_preview_;
+
+    friend class OneFadingT<Map>;
 };
 
 }} // end of namespace

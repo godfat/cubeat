@@ -127,11 +127,12 @@ void SFX::cube_explode(pSprite sp)
     hold(sp, 300u);
 }
 
-void SFX::hold(pSprite sp, time_t duration)
+SFX& SFX::hold(pSprite sp, time_t duration)
 {
     effects_holder_.push_front(sp);
     ctrl::EventDispatcher::i().get_timer_dispatcher(sp->scene()->getName())->subscribe(
         bind(&SFX::clear_obj, this, effects_holder_.begin()), duration + 16); //Make sure it is at least 1 frame later.
+    return *this;
 }
 
 namespace psc { namespace view {

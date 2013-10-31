@@ -119,6 +119,7 @@ private:
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
 
+    int column_flag_;
     int i_have_to_keep_track_of_garbage_count_visually_here_;
 };
 

@@ -98,7 +98,7 @@ void <% debug_hook 'Map::cycle_cubes' do %>(){
 
 void Map::check_one_fadings() {
     using namespace std::tr1::placeholders;
-    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3));
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3, pChain()));
 }
 
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
@@ -113,7 +113,7 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
     }
 }
 
-void Map::check_a_fade(pCube c, int x, int y)
+void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
 {
     if( state::pWaiting waiting = c->is_waiting() ){
         if( waiting->need_check() ){
@@ -121,8 +121,8 @@ void Map::check_a_fade(pCube c, int x, int y)
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
+                one_fading->fade(*this, c, existing_chain);
                 c->go_dying();
-                one_fading->fade(*this, c);
             }
             else waiting->checked();
         }
@@ -275,7 +275,7 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
         if( !cubes_[x][y]->chain() ) {
             cubes_[x][y]->chain(chain, visual_delay);
             cubes_[x][y]->retain_chain(true);
-            visual_delay += 51;
+            visual_delay += 33;
         } else if( cubes_[x][y]->chain() == chain ) {
             cubes_[x][y]->retain_chain(true);
         } else {

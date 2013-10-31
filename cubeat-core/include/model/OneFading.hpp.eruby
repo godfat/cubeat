@@ -27,18 +27,28 @@ public:
     typename cube_list_type::size_type size() const{ return list_.size(); }
 
     void <% debug_hook 'fade' do %>(MapType& map,
-                                    typename MapType::cube_type that_would_be_killed_by_map){
+                                    typename MapType::cube_type that_would_be_killed_by_map,
+                                    pChain existing_chain = pChain() ){
 <% end %>
-        pChain chain = get_the_chain(map);
+        pChain chain = existing_chain ? existing_chain : get_the_chain(map);
+        update_step(chain);
 
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
+            (**i).chain(chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
             }
-            (**i).chain(chain);
-            map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
+            //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
+            //note: Moved this line to Dying to be more reasonable chaining situation.
+
+            for( int x = (**i).x(), y = (**i).y() + 1; y < map.ms()->height() - 1; ++y ) {
+                if( map.cube_at(x, y) ) {
+                    map.check_a_fade(map.cube_at(x, y), x, y, chain);
+                }
+            }
+            /// WTF NOTE: Why I chose map here to be passed by reference and not shared_ptr?
         }
     }
     // end
@@ -63,12 +73,12 @@ private:
             chain->step_one();
             map.push_chain( chain );
         }
+        return chain;
+    }
 
-        //and add combo to it
+    void update_step(pChain chain) {
         chain->add_last_step_amounts( list_.size() );
         chain->set_last_step_position( (*list_.rbegin())->x(), (*list_.rbegin())->y() );
-
-        return chain;
     }
 
 private:

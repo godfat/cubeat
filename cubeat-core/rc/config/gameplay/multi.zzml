@@ -24,13 +24,13 @@ player1: {
 
     #How long does the chain property of the cubes hold
     #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
-    chaining_duration: 600,
+    chaining_duration: 500,
 
     #How long is the visual effect when the cubes invoke chains
     #and disappear (the effect duration could possibly affect gameplay,
     #because 'DYING cubes' still block other cubes from above.
     #(suggestion: 200 ~ 1000 milliseconds)
-    cube_dying_duration: 500,
+    cube_dying_duration: 750,
 
     #How fast does the cube sink from one block to another
     #This only affect newly created cubes, and determines
@@ -108,8 +108,8 @@ player2: {
     color_amounts: 4,
     chain_amounts: 3,
     starting_line: 4,
-    chaining_duration: 600,
-    cube_dying_duration: 500,
+    chaining_duration: 500,
+    cube_dying_duration: 750,
     sink_speed: 120.0,
     sink_speed_add: 40.0,
     sink_speed_limit: 280.0,

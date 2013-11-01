@@ -65,8 +65,6 @@ function init(scene)
   
   local l9 = new_layer{ name = "bg1/08whaleface", parent = scene_ }  
   l9:set_pos(180, 0)
-  
-  local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
 end
 
 function cycle()

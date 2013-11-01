@@ -27,8 +27,6 @@ function init(scene)
   local l5 = new_layer{ name = "radial_bloom", parent = scene_, width = 960, height = 640 }
   l5:set_pos(200, 30)
   l5:tween("SineCirc", "Alpha", 192, 96, 10000, -1)
-  
-  local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
 end
 
 function cycle()

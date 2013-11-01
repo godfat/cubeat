@@ -144,7 +144,8 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     new_chain_event(
         std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
     new_garbage_event(
-        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+//        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2)).
     pop_garbage_event(
         std::tr1::bind(&cube::ViewMaster::pop_garbage, view.get(), _1)).
     warning_sound_event(

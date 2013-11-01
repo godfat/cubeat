@@ -47,6 +47,13 @@ void SimpleMap::update_cube_position(pSimpleCube cube, int old_x, int old_y)
     simp_cubes_[old_x][old_y].reset();
 }
 
+SimpleMap& SimpleMap::cycle() {
+    update_chains();
+    cycle_cubes();
+    //cleanup_map_and_drop_all();
+    return *this;
+}
+
 void SimpleMap::update_chains()
 {
     int damage_factor = ms()->damage_factor();
@@ -58,8 +65,7 @@ void SimpleMap::update_chains()
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->attack_of_current_step()*damage_factor;
             current_sum_of_attack_ += amount;
-            // damage_factor adjustment (1.00 ~ 2.00)
-            score_ += (*i)->score_step() * damage_factor;
+            score_ += (*i)->score_step();
             (*i)->step_one();
         }
         // when the Chain's all dead then we fire up the attack and make this one null
@@ -90,20 +96,29 @@ void SimpleMap::check_a_fade(pSimpleCube cube, int x, int y, pChain)
 
 void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
 {
-    if( is_below_empty(cube) )
-        drop_cube_to_the_ground(cube);
+    if( is_below_empty(cube) ) {
+        if( cube->has_grounded() ) drop_cube_to_the_ground(cube);
+        else {
+            cube->y( y-1 );
+            update_cube_position(cube, x, y);
+        }
+    }
     else {
+        cube->set_grounded();
         pOneFadingSimple one_fading = make_OneFading(cube);
         if( one_fading ) {
             one_fading->fade(*this, cube);
             cube->go_dying(); //holy crap.. that_would_be_killed_by_map ..
         }
-    }
-    if( cube->cycle_and_die() )
-        simp_cubes_[x][y].reset();
-    else {
-        cube->set_grounded();
-        cube->lose_chain();
+        if( cube->cycle_and_die() ) {
+            if( cube->chain() ) {
+                attach_chain_bottom_up_from(cube->x(), cube->y()+1, cube->chain());
+            }
+            simp_cubes_[x][y].reset();
+        }
+        else {
+            cube->lose_chain();
+        }
     }
 }
 
@@ -135,10 +150,11 @@ bool SimpleMap::is_all_fallen() const {
 void SimpleMap::attach_chain_bottom_up_from(int in_x, int in_y, pChain chain)
 {
 	for(int x=in_x, y=in_y;
+        y < ms()->height()-1 &&
         //simp_cubes_[x][y].use_count() != 0 && //if it's alive
         simp_cubes_[x][y] &&
 		//simp_cubes_[x][y]->chain().use_count() == 0 //and if it has no chain property
-		simp_cubes_[x][y]->chain()
+		!simp_cubes_[x][y]->chain()
 		; ++y)
     {
         simp_cubes_[x][y]->chain(chain);

@@ -13,7 +13,8 @@ bool check_not_continue(
 {
     if( ya_that.use_count() == 0 )   return true;
     else if( *ya_that != *that )     return true;
-    list.push_back(ya_that);
+    else if( ya_that->has_grounded() ) list.push_back(ya_that);
+    else                             return true;
     return false;
 }
 

@@ -63,16 +63,17 @@ void ViewSpriteMaster::column_full(int at){
     show_warning_at(at, true);
 }
 void ViewSpriteMaster::column_not_full(int at){
+    int flag_old = column_flag_;
     if( column_flag_ & ( 1 << at ) ) {
         column_flag_ ^= (1 << at);
     }
     show_warning_at(at, false);
 
-    if( column_flag_ == 0 ) {
-        using namespace accessor;
+    if( column_flag_ == 0 && flag_old != 0 ) {
+        using namespace easing; using namespace accessor;
         box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
-        box_left_ ->set<ColorDiffuseVec3>(vec3(255, 255, 255));
-        box_right_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
+        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
         box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
     }
 }
@@ -119,11 +120,47 @@ void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
     ps->setEmitter(0);
 }
 
-void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
+void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power) {
+    using namespace accessor; using namespace easing; using std::tr1::bind;
+
+    view::pScene s = scene_.lock();
+    int csize = view_setting()->cube_size();
+
+    // calculate average:
+    int size = dying_cubes_position.size();
+    vec2 central_pos(0, 0);
+    for( int i = 0; i < size; ++i )
+        central_pos += pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+    central_pos /= size;
+
+    // "gathering" effect
+    for( int i = 0; i < size; ++i ) {
+        view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+        view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
+
+        vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+
+        glow_cube->setDepth(-10).setPickable(false)
+                  .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+                  .tween<OExpo, Alpha>(255, 0, 400u);
+        glow_circle->setDepth(-10).setPickable(false)
+                    .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+                    .tween<Linear, Alpha>(0, 255, 400u);
+
+        view::SFX::i().hold(glow_cube, 400u).hold(glow_circle, 400u);
+    }
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&ViewSpriteMaster::new_garbage_old, this, central_pos.X, central_pos.Y, power), shared_from_this(), 400);
+}
+
+void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
 
     using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
 
-    vec2 pos = pos_vec2(modelx, modely);
+//    vec2 pos = pos_vec2(modelx, modely);
+    vec2 pos(modelx, modely); /// WTF: I substitute model position to real position for now, should change later.
+
     view::pScene s = scene_.lock();
     int num = new_count>20?20:new_count; //limit the animated garbage up to 20 ...in case of too many
 
@@ -318,9 +355,9 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     time_t warning_gap = map_setting()->warning_gap();
 
     box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
-    box_left_ ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(160);
+    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
-    box_right_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(160);
+    box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
     box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 
@@ -334,9 +371,16 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 //               .tween<Linear, Scale>(vec3(1,1,1), vec3(1.5, 1.5, 1.5), warning_gap);
 //    view::SFX::i().hold(bar_light1, warning_gap).hold(bar_light2, warning_gap);
 
+    // determine currently how many column are full:
+    int column_count = 0;
+    for( int x = 0; x < map_setting()->width(); ++x ) {
+        if( column_flag_ & ( 1 << x ) )
+            column_count += 1;
+    }
+
     for( int x = 0; x < map_setting()->width(); ++x ) {
         warning_strip_[x]->set<Alpha>(0);
-        warning_strip_[x]->tween<SineCirc, Alpha>(0, 192, warning_gap);
+        warning_strip_[x]->tween<SineCirc, Alpha>(0, 224 - column_count*12 , warning_gap);
     }
 }
 
@@ -359,7 +403,6 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed){
         alert_bar_bottom_->clearTween(AT::DIFFUSE);
         alert_bar_cover_top_->set<Visible>(true);
         alert_bar_cover_bottom_->set<Visible>(true);
-
     } else {
         alert_bar_cover_top_->set<Visible>(false);
         alert_bar_cover_bottom_->set<Visible>(false);
@@ -405,12 +448,10 @@ void ViewSpriteMaster::create_warning_strips(){
         view::pSprite temp = view::Sprite::create("warning", scene, csize, csize*h, true);
         vec2 pos;
         if( h % 2 == 0 )
-//            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
-//        else pos = pos_vec2(i, h/2);
-            pos = (pos_vec2( 4000 , h/2) + pos_vec2( 4000 , h/2-1)) / 2;
-        else pos = pos_vec2( 4000 , h/2);
-        temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,255,255))
+            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
+        else pos = pos_vec2(i, h/2);
+        temp->setDepth(-50).set<Pos2D>( vec2( 4000, pos.Y ) ).setPickable(false)
+             .set<ColorDiffuseVec3>(vec3(255,255,255))
              .set<Alpha>(0).set<Visible>(/*false*/true);
         warning_strip_.push_back( temp );
 
@@ -495,14 +536,14 @@ void ViewSpriteMaster::derived_init(){
 
 void ViewSpriteMaster::show_warning_at(int x, bool visible){
     if( !map_setting()->dropping_creatable() ) visible = false;
-    //warning_strip_[x]->set<accessor::Visible>(visible);
+    using namespace accessor;
     // Invisible item will not be animated by Irrlicht. Damn it.. there should've been a switch to choose.
     if( visible ) {
-        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
-        warning_strip_[x]->set<accessor::Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+        vec2 pos = warning_strip_[x]->get<Pos2D>();
+        warning_strip_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
     } else {
-        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
-        warning_strip_[x]->set<accessor::Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
+        vec2 pos = warning_strip_[x]->get<Pos2D>();
+        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
     }
 }
 

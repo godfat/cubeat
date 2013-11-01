@@ -9,6 +9,7 @@
 #include "model/SimpleMap.hpp"
 
 #include <boost/tr1/functional.hpp>
+#include <map>
 #include <set>
 #include <list>
 #include <vector>
@@ -145,6 +146,8 @@ private:
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
     preview_list_type cubes_preview_;
+
+    std::map< wpChain, std::vector< std::pair<int, int> > > dying_cubes_position_;
 
     friend class OneFadingT<Map>;
 };

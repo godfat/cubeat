@@ -70,7 +70,8 @@ public:
     virtual void column_full(int at);
     virtual void column_not_full(int at);
     virtual void new_chain(model::wpChain const& chain);
-    virtual void new_garbage(int modelx, int modely, int new_count);
+    virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power);
+    virtual void new_garbage_old(int modelx, int modely, int new_count);
     virtual void pop_garbage(int this_frame_lands);
     virtual void warning_sound(int warning_level);
     virtual void alert_bar_animate(int warning_level);
@@ -113,6 +114,7 @@ private:
     view::pAnimatedSprite alert_bar_bottom_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
+    std::vector< view::pSprite > warning_strip2_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;

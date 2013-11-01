@@ -25,6 +25,10 @@ public:
     // begin only used by Map::next_state / next_step
     <% debug_hook 'OneFadingT' do %>(cube_list_type const& list): list_(list) {<%end%>}
     typename cube_list_type::size_type size() const{ return list_.size(); }
+    typename cube_list_type::iterator begin() const{ return list_.begin(); }
+    typename cube_list_type::iterator end()   const{ return list_.end(); }
+    pChain chain() const{ return chain_.lock(); }
+    wpChain wchain() const{ return chain_; }
 
     void <% debug_hook 'fade' do %>(MapType& map,
                                     typename MapType::cube_type that_would_be_killed_by_map,
@@ -33,6 +37,8 @@ public:
         pChain chain = existing_chain ? existing_chain : get_the_chain(map);
         update_step(chain);
 
+        chain_ = chain; // Associate this particular OneFading with its chain.
+
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
@@ -40,15 +46,10 @@ public:
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
             }
+
             //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
             //note: Moved this line to Dying to be more reasonable chaining situation.
-
-            for( int x = (**i).x(), y = (**i).y() + 1; y < map.ms()->height() - 1; ++y ) {
-                if( map.cube_at(x, y) ) {
-                    map.check_a_fade(map.cube_at(x, y), x, y, chain);
-                }
-            }
-            /// WTF NOTE: Why I chose map here to be passed by reference and not shared_ptr?
+            //      In SimpleMap this is invoked in cycle_a_cube
         }
     }
     // end
@@ -73,6 +74,7 @@ private:
             chain->step_one();
             map.push_chain( chain );
         }
+
         return chain;
     }
 
@@ -83,6 +85,7 @@ private:
 
 private:
     cube_list_type list_;
+    wpChain chain_; // just association, don't hold it.
 };
 
 }} // end of namespace

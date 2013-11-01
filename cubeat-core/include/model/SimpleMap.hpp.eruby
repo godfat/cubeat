@@ -79,12 +79,7 @@ public:
 
     ~SimpleMap();
 
-    SimpleMap& cycle() {
-        update_chains();
-        cycle_cubes();
-        //cleanup_map_and_drop_all();
-        return *this;
-    }
+    SimpleMap& cycle();
 
     // these are chain related, shared name with model::Map
     void attach_chain_bottom_up_from(int, int, pChain);

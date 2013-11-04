@@ -384,14 +384,14 @@ void <% debug_hook 'Map::update_chains' do %>(){
         if( (*i).use_count() == 1 ){
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->power_factor();
-            double actual_amount = amount * damage_factor;
+            double actual_amount = amount;// * damage_factor;
             //current_sum_of_attack_ -= amount;
             //o->throw_garbage( amount );
             std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
-                1850);
+                1000);
 
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()

@@ -126,9 +126,9 @@ pSimpleCube* SimpleMap_get_grounded_cube(pSimpleMap* p, int x, int y) {
     return ret;
 }
 
-pSimpleCube* SimpleMap_get_firepoint_cube(pSimpleMap* p, int lower_bound, int upper_bound, int em_level) {
+pSimpleCube* SimpleMap_get_firepoint_cube(pSimpleMap* p, int lower_bound, int upper_bound, int em_level, int* power_out) {
     pSimpleCube c =
-        AIUtils::find_keycube_for_highest_chain_power(*p, lower_bound, upper_bound, em_level);
+        AIUtils::find_keycube_for_highest_chain_power(*p, power_out, lower_bound, upper_bound, em_level);
     pSimpleCube* ret = new pSimpleCube;
     *ret = c;
     return ret;

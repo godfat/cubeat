@@ -24,7 +24,7 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
-local ATTACK_PWR     = 7
+local ATTACK_PWR     = 16
 local DELAY          = 0  --ms -- currently not very useful. it should be useful.
 
 --these are intended for C to call from.
@@ -45,10 +45,10 @@ function ai_entry(self)
   local ab_left   = self:ability_left()
   local capacity  = my_map:width() * (my_map:height() - 1)
   local ground_cube_num = my_map:grounded_cube_count()
-  
+
   local emergency_level = 0
 
-  local attack_threshold = 5
+  local attack_threshold = 8
   if ATTACK_PWR < 9 then      attack_threshold = 1
   elseif ATTACK_PWR < 20 then attack_threshold = 3
   end
@@ -59,14 +59,16 @@ function ai_entry(self)
     emergency_level = 1
   end
 
-  local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
 
+  io.write(string.format("enemy_garbage: %d, keycube atk: %d\n", enemy_map:garbage_left(), power))
+  
   if keycube:exist() and
-     enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
+     enemy_map:garbage_left() + power <= ATTACK_PWR -- so opponent doesn't feel like they are being overpowered too much.
   then
-    --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
+    io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
     setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
     self:push_command(cmdbuf)
     if keycube:is_broken() then
@@ -76,10 +78,10 @@ function ai_entry(self)
       self:push_command(cmdbuf)
     end
   else
-    --io.write "No keycube for now.\n"
-    
+    io.write "No keycube for now.\n"
+
     -- if ab_left > 0 then
-      -- if (my_map:warning_level() > 50 and ground_cube_num > capacity * 0.9) or 
+      -- if (my_map:warning_level() > 50 and ground_cube_num > capacity * 0.9) or
          -- should_use_ability[ab_kind](self, my_map, enemy_map) then
         -- io.write "Lua: AI Using ability!!\n"
         -- setcmd(cmdbuf, C.AI_USE_ABILITY, 0, -1, -1)
@@ -88,7 +90,7 @@ function ai_entry(self)
         -- return
       -- end
     -- end
-    
+
     local highcol_threshold = 9
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
@@ -97,12 +99,12 @@ function ai_entry(self)
     -- Usually we want to clear high columns asap, but when your map is already full, this becomes inappropriate.
     -- because we want to clear as many broken cubes as possible to get more chances at chaining (thus locking the countdown)
     -- but this no-brainer process kills AI, since even if there are still plenty of normal cube to shoot from,
-    -- it will still take its time to clear broken cubes. 
-    -- HOWEVER, if you always just clear high columns, without considering shooting at broken cubes, 
-    -- your map will become full of broken cubes very soon, and that's almost a certain death. 
-    -- so the middle way to take here is, when the number of broken cubes is not too many, 
+    -- it will still take its time to clear broken cubes.
+    -- HOWEVER, if you always just clear high columns, without considering shooting at broken cubes,
+    -- your map will become full of broken cubes very soon, and that's almost a certain death.
+    -- so the middle way to take here is, when the number of broken cubes is not too many,
     -- then by all means take out high columns by shooting at the lower half of the column,
-    -- but when the broken cubes taking a portion of your map, you should consider shooting at them first.    
+    -- but when the broken cubes taking a portion of your map, you should consider shooting at them first.
     if hsize > 0 and --[[ground_cube_num <= capacity * 0.9 and ]]bsize < ground_cube_num * 0.4 then
       shuffle(highcols, hsize)
       local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
@@ -127,21 +129,22 @@ function ai_entry(self)
         setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
         self:push_command(cmdbuf)
       else
-        local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
-        if event.get_time_of('game') > 20000 and interrupt_cube:exist() then
-          local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
-          local chance = random(3)+1
-          local x = dir[chance][1] + interrupt_cube:x()
-          local y = dir[chance][2] + interrupt_cube:y()
-          if x >= 0 and x < enemy_map:width() and y >= 0 and y < enemy_map:height()-1 then
-            local c = enemy_map:get_cube(x, y)
-            if c:exist() and not c:is_broken() then
-              --io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
-              setcmd(cmdbuf, C.AI_SHOOT_OTHER, 0, x, y)
-              self:push_command(cmdbuf)
-            end
-          end
-        elseif self:get_heat() < 0.7 then
+        -- local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
+        -- if event.get_time_of('game') > 20000 and interrupt_cube:exist() then
+          -- local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
+          -- local chance = random(3)+1
+          -- local x = dir[chance][1] + interrupt_cube:x()
+          -- local y = dir[chance][2] + interrupt_cube:y()
+          -- if x >= 0 and x < enemy_map:width() and y >= 0 and y < enemy_map:height()-1 then
+            -- local c = enemy_map:get_cube(x, y)
+            -- if c:exist() and not c:is_broken() then
+              -- --io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
+              -- setcmd(cmdbuf, C.AI_SHOOT_OTHER, 0, x, y)
+              -- self:push_command(cmdbuf)
+            -- end
+          -- end
+        --else
+        if self:get_heat() < 0.7 then
           setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
           self:push_command(cmdbuf)
         end

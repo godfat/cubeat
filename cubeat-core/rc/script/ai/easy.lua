@@ -56,12 +56,12 @@ function ai_entry(self)
     emergency_level = 42 -- dummy for easy level computer
   end
 
-  local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
 
   if keycube:exist() and random(100) > 75 and  
-     enemy_map:garbage_left() < 3 -- so opponent doesn't feel like they are being overpowered too much.
+     enemy_map:garbage_left() + power <= 7 -- so opponent doesn't feel like they are being overpowered too much.
   then
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
     setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())

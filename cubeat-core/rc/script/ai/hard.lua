@@ -24,7 +24,7 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
-local ATTACK_PWR     = 20
+local ATTACK_PWR     = 36
 local DELAY          = 0  --ms -- currently not very useful. it should be useful.
 
 --these are intended for C to call from.
@@ -48,7 +48,7 @@ function ai_entry(self)
   
   local emergency_level = 0
 
-  local attack_threshold = 5
+  local attack_threshold = 8
   if ATTACK_PWR < 9 then      attack_threshold = 1
   elseif ATTACK_PWR < 20 then attack_threshold = 3
   end
@@ -59,12 +59,12 @@ function ai_entry(self)
     emergency_level = 1
   end
 
-  local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
 
   if keycube:exist() and
-     enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
+     enemy_map:garbage_left() + power <= ATTACK_PWR -- so opponent doesn't feel like they are being overpowered too much.
   then
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
     setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())

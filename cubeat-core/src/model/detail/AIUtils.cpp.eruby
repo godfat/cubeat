@@ -16,10 +16,10 @@ pSimpleMap AIUtils::clone_map(pSimpleMap const& map)
 }
 
 pSimpleCube AIUtils::find_keycube_for_highest_chain_power
-    (pSimpleMap const& map, int lower_bound, int upper_bound, int em_level)
+    (pSimpleMap const& map, int* power_out, int lower_bound, int upper_bound, int em_level)
 {
     pSimpleMap map_clone = map->clone();
-    int highest_score = get_base_attack( map_clone ), current_score = 0;
+    int highest_score = get_base_attack( map ), current_score = 0;
     int incremental_lower_bound = lower_bound + highest_score;
     pSimpleCube best_cube;
 
@@ -40,13 +40,14 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
 
     for( int y=map->ms()->height() - 1; y >= 0; --y ) {
         for( int x=0; x < map->ms()->width(); ++x ) {
-            if( pSimpleCube c = map_clone->simp_cubes_[x][y] ) {
+            pSimpleCube c = map_clone->simp_cubes_[x][y];
+            if( c && c->has_grounded() ) {
                 current_score = simulate_fire_at( x, y, map_clone->clone() );
                 if( current_score >= incremental_lower_bound &&
                     current_score > highest_score &&
                     current_score <= upper_bound ) {
                     best_cube = c;
-                    highest_score = current_score;
+                    highest_score = *power_out = current_score;
                     if( em_level == 42 ) { ///WTF temporary for limiting upper_bound when emergency is too big
                         return best_cube;
                     }
@@ -167,7 +168,7 @@ int AIUtils::simulate_fire_at(int x, int y, pSimpleMap cloned_map)
 
 int AIUtils::get_base_attack(pSimpleMap cloned_map)
 {
-    cloned_map->cycle();
+    //cloned_map->cycle(); This line have no meaning.
     do {
         cloned_map->cycle();
     } while( cloned_map->chains_.size() );

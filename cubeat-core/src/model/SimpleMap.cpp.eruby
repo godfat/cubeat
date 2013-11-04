@@ -56,14 +56,14 @@ SimpleMap& SimpleMap::cycle() {
 
 void SimpleMap::update_chains()
 {
-    int damage_factor = ms()->damage_factor();
+    double damage_factor = ms()->damage_factor();
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end(); )
     {
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
             (*i)->update_power_factor();
             // damage_factor adjustment (1.00 ~ 2.00)
-            int amount = (*i)->attack_of_current_step()*damage_factor;
+            int amount = (*i)->attack_of_current_step(); //*damage_factor;
             current_sum_of_attack_ += amount;
             score_ += (*i)->score_step();
             (*i)->step_one();
@@ -96,6 +96,16 @@ void SimpleMap::check_a_fade(pSimpleCube cube, int x, int y, pChain)
 
 void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
 {
+    if( cube->cycle_and_die() ) {
+        // for the lack of better idea, if the cube is already dead here,
+        // it's because it is set fade by the OneFadings in the previous traversed cubes in the same frame,
+        // but I didn't have other obvious way to kill it. So just kill it here.
+        if( cube->chain() ) {
+            attach_chain_bottom_up_from(cube->x(), cube->y()+1, cube->chain());
+        }
+        simp_cubes_[x][y].reset();
+        return;
+    }
     if( is_below_empty(cube) ) {
         if( cube->has_grounded() ) drop_cube_to_the_ground(cube);
         else {

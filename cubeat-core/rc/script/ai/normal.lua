@@ -24,11 +24,11 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
-local ATTACK_PWR     = 16
+local ATTACK_PWR     = 8
 local DELAY          = 0  --ms -- currently not very useful. it should be useful.
 
 --these are intended for C to call from.
-function THINK_INTERVAL() return 400 end --ms
+function THINK_INTERVAL() return 475 end --ms
 function MISSRATE()       return 15  end --percentage. 0 ~ 100
 
 function ai_entry(self)
@@ -48,10 +48,7 @@ function ai_entry(self)
 
   local emergency_level = 0
 
-  local attack_threshold = 8
-  if ATTACK_PWR < 9 then      attack_threshold = 1
-  elseif ATTACK_PWR < 20 then attack_threshold = 3
-  end
+  local attack_threshold = 3
 
   if my_map:warning_level() > 25 or
      ground_cube_num + my_map:garbage_left() >= capacity
@@ -91,7 +88,7 @@ function ai_entry(self)
       -- end
     -- end
 
-    local highcol_threshold = 9
+    local highcol_threshold = 8
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
 

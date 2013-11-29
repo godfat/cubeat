@@ -5,7 +5,7 @@
 #dont_show_ready: 1,
 speed: 1.0,
 #shortcut: 'demo0',
-#shortcut2: 'demo1',
+#shortcut2: 'demo3',
 #time: 71,
 #score1: 1500,
 #score2: 1250,
@@ -62,7 +62,7 @@ player1: {
     #(suggestion: 120 ~ 200 milliseconds)
     #NOTE: THIS IS DEPRECATED.
     #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "NEW GARBAGE" ANIMATION (new scheme 2012.05)
-    cube_dropping_duration: 600,
+    cube_dropping_duration: 700,
 
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
@@ -77,7 +77,7 @@ player1: {
     negate_damage_factor: 1.0,
 
     #possibility of dropping normal cube instead of garbages (0 ~ 100):
-    drop_normal_chance: 0,
+    drop_normal_chance: 20,
 
     #weapon state, cooling event happens every 100ms,
     #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
@@ -114,12 +114,12 @@ player2: {
     sink_speed_add: 40.0,
     sink_speed_limit: 280.0,
     drop_speed: 540.0,
-    cube_dropping_duration: 600,
+    cube_dropping_duration: 700,
     use_broken_as_garbage: 1,
     warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 0,
+    drop_normal_chance: 20,
 
     weapon: {
         heat_rate: 0.18,

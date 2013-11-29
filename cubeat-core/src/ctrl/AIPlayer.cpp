@@ -36,7 +36,7 @@ AIPlayer::~AIPlayer()
 {
     input_->getCursor()->clearAllTween(); //in case AIPlayer's hold_button is still called after player's death.
     input_->getCursor()->tween<easing::Linear, accessor::Rotation>
-        (vec3(0,0,0), vec3(0,0,360), 3000u, -1); //replace it for original animation
+        (vec3(0,0,0), vec3(0,0,-360), 3000u, -1); //replace it for original animation
 
     lua_close(L_);
 }

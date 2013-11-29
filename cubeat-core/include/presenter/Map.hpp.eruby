@@ -71,6 +71,8 @@ public:
         return *this;
     }
 
+    Map& ending_effect();
+
     int  score()        const { return model()->score(); }
     int  garbage_left() const { return model()->garbage_left(); }
     int  current_sum_of_attack() const { return model()->current_sum_of_attack(); }

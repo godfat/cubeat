@@ -158,7 +158,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 
     view::pObject effect_body = view::Object::create(view_orig_.lock());
     effect_body->setPickable(false);
-    effect_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
+    vec3 tmp = body_->get<accessor::Pos3D>();
+    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
 
     IParticleSystemSceneNode* ps = effect_body->scene()->addParticleNodeTo(effect_body, false);
     ps->setIsDebugObject(true); // So it can't be picked.
@@ -169,19 +170,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     int flying_distance = flying_vector.getLength();
     core::vector2df normal = flying_vector.normalize();
 
-//    IParticleEmitter* em = ps->createBoxEmitter(
-//        core::aabbox3d<f32>(0, 0, 0, 0.1, 0.1, 0.1), // emitter size
-//        core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-//        flying_distance/2, flying_distance/2,    // emit rate
-//        video::SColor(0,255,255,255),       // darkest color
-//        video::SColor(0,255,255,255),       // brightest color
-//        200, 200, 0,                         // min and max age, angle
-//        core::dimension2df(40.f,40.f),         // min size
-//        core::dimension2df(40.f,40.f));        // max size
-
     IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
-        core::vector3df(0.0f, 0.0f, 0.0f),  // center -- more depth, so no z-fighting
-        core::vector3df(-normal.X, normal.Y, 0.0f), flying_distance/10, // normal, length
+        &body_->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
         core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
 #if !defined(_SHOOTING_CUBES_ANDROID_)
         flying_distance/3, flying_distance/3,    // emit rate
@@ -190,9 +180,9 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 #endif
         video::SColor(0,255,255,255),       // darkest color
         video::SColor(0,255,255,255),       // brightest color
-        200, 200, 0,                         // min and max age, angle
-        core::dimension2df(40.f,40.f),         // min size
-        core::dimension2df(40.f,40.f)         // max size
+        250, 250, 0,                         // min and max age, angle
+        core::dimension2df(64.f,64.f),         // min size
+        core::dimension2df(64.f,64.f)         // max size
     );
 
     ps->setEmitter(em); // this grabs the emitter
@@ -222,7 +212,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     vec3 rot(0, 0, 360 * factor);
     body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
     body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
-    body_->setDepth(-20);
+    body_->setDepth(-50);
 
     vec2 effect_dest = pos_vec2() - (normal * 20.0f);
 
@@ -295,6 +285,15 @@ void ViewSprite::go_exploding(){
     fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
     fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
     view::SFX::i().cube_explode(fx_body);
+}
+
+void ViewSprite::ending(int time_delay){
+    body_->clearAllTween();
+    body_->setPickable(false);
+
+    body_->setTexture( "cubes/cube-dead-" + utils::to_s(utils::random(4)+1) );
+    body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
+    body_->set<accessor::GradientDiffuse>(255);
 }
 
 void ViewSprite::be_broken(){

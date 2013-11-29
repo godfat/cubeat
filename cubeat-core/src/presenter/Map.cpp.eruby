@@ -106,8 +106,6 @@ pMap <% debug_hook 'Map::init' do %>(){
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(); // beware! this need refer model_!
 
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
         std::tr1::bind(&Map::speedup, this), self, 30000);
 
@@ -123,8 +121,6 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(data); // beware! this need refer model_!
 
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
         std::tr1::bind(&Map::speedup, this), self, 30000);
 
@@ -171,6 +167,7 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                      be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
                       be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
                         restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
+                         ending_event( std::tr1::bind( &Cube::ending, cube.get(), _1) ).
                             hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2) ).
                       get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
@@ -228,6 +225,11 @@ Map& <% debug_hook 'Map::cycle' do %>(){
         view->cycle(*this);
     }
     if( view_master_ ) view_master_->cycle(*this);
+    return *this;
+}
+
+Map& Map::ending_effect() {
+    model()->ending_effect();
     return *this;
 }
 

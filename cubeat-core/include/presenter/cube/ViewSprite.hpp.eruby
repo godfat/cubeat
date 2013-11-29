@@ -84,6 +84,7 @@ public:
     virtual void get_chain();
     virtual void lose_chain();
     virtual void losing_chain(double percentage);
+    virtual void ending(int time_delay);
 
 private:
     ViewSprite& shot_event( ShotEvent ally_cb, ShotEvent enemy_cb );

@@ -8,6 +8,8 @@
 #include "view/SpriteText.hpp"
 #include "view/SFX.hpp"
 
+#include "view/detail/LinearParticleHack.hpp"
+
 #include "presenter/cube/ViewSprite.hpp"
 #include "presenter/cube/ViewSpriteMaster.hpp"
 
@@ -125,9 +127,20 @@ void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dyi
 
     view::pScene s = scene_.lock();
     int csize = view_setting()->cube_size();
+    int size = dying_cubes_position.size();
+
+    if( power < 1 ) {
+        for( int i = 0; i < size; ++i ) {
+            view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+            vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+            glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(cube_pos)
+                      .tween<Linear, Alpha>(255, 0, 150u);
+            view::SFX::i().hold(glow_cube, 150u);
+        }
+        return;
+    }
 
     // calculate average:
-    int size = dying_cubes_position.size();
     vec2 central_pos(0, 0);
     for( int i = 0; i < size; ++i )
         central_pos += pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
@@ -151,15 +164,12 @@ void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dyi
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ViewSpriteMaster::new_garbage_old, this, central_pos.X, central_pos.Y, power), shared_from_this(), 400);
+        bind(&ViewSpriteMaster::new_garbage_2ndphase, this, central_pos, power), shared_from_this(), 400);
 }
 
-void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
+void ViewSpriteMaster::new_garbage_2ndphase(vec2 const& pos, int new_count){
 
     using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
-
-//    vec2 pos = pos_vec2(modelx, modely);
-    vec2 pos(modelx, modely); /// WTF: I substitute model position to real position for now, should change later.
 
     view::pScene s = scene_.lock();
     int num = new_count>20?20:new_count; //limit the animated garbage up to 20 ...in case of too many
@@ -175,6 +185,7 @@ void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
         using namespace irr; using namespace scene;
 
         view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
+        g->setDepth(-50).set<Pos2D>(pos);
         //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
         vec2 midp = (pos + endp)/2;
         midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
@@ -184,18 +195,20 @@ void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
 
         int flying_distance = (endp - pos).getLength();
 
-        IParticleEmitter* em = ps->createPointEmitter(
+        IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
+            &g->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
             core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
 #if !defined(_SHOOTING_CUBES_ANDROID_)
-            flying_distance/4, flying_distance/4,    // emit rate
+            flying_distance/6, flying_distance/6,    // emit rate
 #else
-            flying_distance/4, flying_distance/4,
+            flying_distance/6, flying_distance/6,    // emit rate
 #endif
             video::SColor(0,255,255,255),       // darkest color
             video::SColor(0,255,255,255),       // brightest color
             200, 200, 0,                         // min and max age, angle
-            core::dimension2df(40.f,40.f),         // min size
-            core::dimension2df(40.f,40.f));        // max size
+            core::dimension2df(64.f,64.f),         // min size
+            core::dimension2df(64.f,64.f)         // max size
+        );
 
         ps->setEmitter(em); // this grabs the emitter
         em->drop(); // so we can drop it here without deleting it
@@ -217,24 +230,18 @@ void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
         attack_cubes_.push_back(g);
 
         // Setup nodes above, setup animation below:
-
-        data::AnimatorParam<Linear, Rotation> rota;
-        data::AnimatorParam<IQuad, Alpha> alpha;
         data::AnimatorParam<Linear, Scale> scale;
 
         data::AnimatorParam<ISine, Pos2D> way1;
-        data::AnimatorParam<Linear, Pos2D> way2;
+        data::AnimatorParam<IOSine, Pos2D> way2;
 
-        rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
-        alpha.start(0).end(255).duration(700);
-        double sc = (utils::random(20)/100.0) + .8;
-        scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
+        scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(470);
 
         /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
         /// Some of its end callbacks won't fire. It has to be less than 700...
         /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
-        int total_dur = 670;
-        int first_seg = 400 + utils::random(100);
+        int total_dur = 470;
+        int first_seg = 200 + utils::random(70);
         int second_seg = total_dur - first_seg;
 
         std::tr1::function<void()> remove_trail_emitter =
@@ -242,8 +249,6 @@ void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
         way1.start(pos).end(midp).duration( first_seg );
         way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
 
-        g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota)./*tween(alpha).*/tween(scale);
-        //g->queue(way1).queue(way2).tween(circle);
         g->queue(way1).tween(way2);
     }
 
@@ -251,7 +256,7 @@ void ViewSpriteMaster::new_garbage_old(int modelx, int modely, int new_count){
     // Let's just take note that the "new_garbage" effect is supposed to cost 700ms.
     // This will probably cause more trouble when we consider rolling-back ...
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ViewSpriteMaster::update_garbage, this, new_count), shared_from_this(), 700);
+        bind(&ViewSpriteMaster::update_garbage, this, new_count), shared_from_this(), 500);
 }
 
 void ViewSpriteMaster::pop_garbage(int this_frame_lands) {
@@ -350,8 +355,6 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     using namespace accessor; using namespace easing;
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
 
-    int csize = view_setting()->cube_size();
-    int w     = map_setting()->width();
     time_t warning_gap = map_setting()->warning_gap();
 
     box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
@@ -360,16 +363,6 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
     box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
-
-//    view::pSprite bar_light1 = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), true);
-//    bar_light1->set<Pos2D>( vec2(-12, -view_setting()->y_offset()/2) ).setDepth(-20).set<ColorDiffuseVec3>(vec3(255, 32, 32))
-//               .tween<Linear, Alpha>(192, 0, warning_gap)
-//               .tween<Linear, Scale>(vec3(1,1,1), vec3(1.5, 1.5, 1.5), warning_gap);
-//    view::pSprite bar_light2 = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), true);
-//    bar_light2->set<Pos2D>( vec2(csize*w + 12, -view_setting()->y_offset()/2) ).setDepth(-20).set<ColorDiffuseVec3>(vec3(255, 32, 32))
-//               .tween<Linear, Alpha>(192, 0, warning_gap)
-//               .tween<Linear, Scale>(vec3(1,1,1), vec3(1.5, 1.5, 1.5), warning_gap);
-//    view::SFX::i().hold(bar_light1, warning_gap).hold(bar_light2, warning_gap);
 
     // determine currently how many column are full:
     int column_count = 0;

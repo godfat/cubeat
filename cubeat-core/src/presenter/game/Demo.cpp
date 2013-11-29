@@ -766,8 +766,13 @@ void Demo::setup_ui()
     pview1_ = presenter::PlayerView::create( c1p_, scene_, center_pos1 );
     pview1_->setMap( map0_ );
     pview1_->setInput( ctrl::InputMgr::i().getInputByIndex(0) ); //temp: for pview to know input for rumbling wiimote
-    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
+//    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+//    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
+    heatgauge1_ = view::Sprite::create("heat/gauge", ui_scene_, 96, 96, true);
+    for( int i = 0; i < 24; ++i ) {
+        heatunit1_[i] = view::Sprite::create("heat/unit0", heatgauge1_, 96, 96, true);
+        heatunit1_[i]->setDepth(-5).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
+    }
 
     if( game_mode_ == GM_SINGLE ) {    //2011.04.05 make stage number equal to puzzle level.
         ui_layout_->getSpriteText("stage").changeText( "level" + to_s(mode_level_ - 1) ); //first puzzle have 3 chains.
@@ -779,9 +784,13 @@ void Demo::setup_ui()
         pview2_->flipPosition();
         pview2_->setMap( map1_ );
         pview2_->setInput( ctrl::InputMgr::i().getInputByIndex(1) ); //temp: for pview to know input for rumbling wiimote
-        heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
-        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
-
+//        heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
+//        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
+        heatgauge2_ = view::Sprite::create("heat/gauge", ui_scene_, 96, 96, true);
+        for( int i = 0; i < 24; ++i ) {
+            heatunit2_[i] = view::Sprite::create("heat/unit0", heatgauge2_, 96, 96, true);
+            heatunit2_[i]->setDepth(-5).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);;
+        }
         if( game_mode_ == GM_TUT) {
             pview2_->setColor(vec3(0,0,0));
         }
@@ -884,22 +893,54 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
 {
     gauge->set<Pos2D>( player->input()->getCursor()->get<Pos2D>() );
     //gauge->set<Scale>( vec3(player->heat(), 1, 1) );
-    gauge->setTexture( "heat/"+utils::to_s( static_cast<int>(player->heat() * 12.0) ) );
+//    gauge->setTexture( "heat/"+utils::to_s( static_cast<int>(player->heat() * 12.0) ) );
+
+    /// HACK
+    view::pSprite *heatunit;
+    if( gauge == heatgauge1_ ) heatunit = heatunit1_;
+    else heatunit = heatunit2_;
+
+    int v = static_cast<int>(player->heat() * 24.0);
+
+    // 0~23 or 0~24 ??
+    for( int i = 0; i < 24; ++i ) {
+        if( i < 12 ) {
+            heatunit[i]->set<Green>( 255 /*205 + i / 24.0 * 50 * 2*/ );
+            heatunit[i]->set<Red>( i / 24.0 * 255 * 2 );
+        } else {
+            int color_green = 255 - (i / 24.0 - 0.5) * 255 * 3.5;
+            heatunit[i]->set<Green>( color_green >= 0 ? color_green : 0 );
+            heatunit[i]->set<Red>(255);
+        }
+        if( i < v ) {
+            heatunit[i]->setTexture("heat/unit1");
+        } else {
+            heatunit[i]->setTexture("heat/unit0");
+        }
+    }
 
     if( !player->is_overheat() ) {
         out_flag = false;
-        if( player->heat() < 0.5 ) {
-            gauge->set<Green>(255);
-            gauge->set<Red>( player->heat()*2*255 );
-        }
-        else {
-            gauge->set<Green>( 255 - (player->heat()-0.5)*255 );
-            gauge->set<Red>(255);
-        }
+//        if( player->heat() < 0.5 ) {
+//            for( int i = 0; i < 24; ++i ) {
+//                heatunit[i]->set<Green>(255);
+//                heatunit[i]->set<Red>( player->heat()*2*255 );
+//            }
+//        }
+//        else {
+//            for( int i = 0; i < 24; ++i ) {
+//                heatunit[i]->set<Green>( 255 - (player->heat()-0.5)*255*1.5);
+//                heatunit[i]->set<Red>(255);
+//            }
+//        }
     }
     else if( !out_flag ) {
         out_flag = true;
-        gauge->tween<SineCirc, ColorDiffuseVec3>(vec3(255,255,255), player->overheat_downtime()/4, 3);
+
+        audio::Sound::i().playBuffer("overheat.wav");
+
+        for( int i = 0; i < 24; ++i )
+            heatunit[i]->tween<SineCirc, ColorDiffuseVec3>(vec3(255,255,255), player->overheat_downtime()/4, 3);
     }
 }
 
@@ -1047,18 +1088,8 @@ bool Demo::ai_logging(pMap lose_map)
     }
 }
 
-//note: temp code
-void Demo::end(pMap lose_map)
+void Demo::end_phase2(pMap lose_map)
 {
-    game_stop();
-    game_state_ = GS_ENDED;
-
-    // ai_logging special_case:
-    // if I call reinit directly, won't the call-stack explode here?
-    if ( ai_logging(lose_map) ) {
-        return;
-    }
-
     // WTF BBQ!!!!!!!!!!!!!!!!!!!
     if( game_mode_ != GM_SINGLE ) {
         printf("submode: %d\n", submode_);
@@ -1138,6 +1169,26 @@ void Demo::end(pMap lose_map)
 //        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //            bind(&Demo::setup_end_button, this), 1000);
     }
+}
+
+
+//note: temp code
+void Demo::end(pMap lose_map)
+{
+    game_stop();
+    game_state_ = GS_ENDED;
+
+    // ai_logging special_case:
+    // if I call reinit directly, won't the call-stack explode here?
+
+    if ( ai_logging(lose_map) ) {
+        return;
+    }
+
+    lose_map->ending_effect();
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 3000);
 }
 
 void button_get_focus(view::pSpriteText& sp)

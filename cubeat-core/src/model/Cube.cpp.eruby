@@ -118,6 +118,7 @@ void <% debug_hook 'Cube::go_dying' do %>(){
 <% end %>
     state_ = state::Dying::create(self());
     map()->cubes_matched_add(1, color_id());
+//    map()->restore_neighbor(x(), y());
     go_dying_event()();
 }
 
@@ -147,6 +148,16 @@ void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
         map()->cubes_cleared_add(color_id());
         go_exploding_event()();
     }
+}
+
+void Cube::ending(int time_delay){
+    if( is_dying() ) return;
+
+    is_broken_ = true;
+    color_id(-1);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(ending_event(), time_delay), self(), time_delay);
 }
 
 void <% debug_hook 'Cube::be_broken' do %>(int){

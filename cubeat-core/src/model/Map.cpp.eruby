@@ -14,6 +14,8 @@
 #include "utils/ChainChecker.hpp"
 #include "utils/vector_2d.hpp"
 
+#include "audio/Sound.hpp"
+
 #include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
 #include <boost/function.hpp> // workaround for gcc43...
@@ -180,6 +182,21 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 <% end %>
     cubes_[cube->x()][cube->y()] = cube;
     cubes_[old_x][old_y].reset();
+    return *this;
+}
+
+Map& Map::ending_effect() {
+    int time_delay = 800;
+    for( int y = ms()->height()-2; y >= 0 ; --y ) {
+        for( int x = 0; x < ms()->width(); ++x ) {
+            if( cubes_[x][y] ) {
+                cubes_[x][y]->ending(time_delay);
+            }
+        }
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            std::tr1::bind(&audio::Sound::playBuffer, &audio::Sound::i(), "deadcube.wav", false), self(), time_delay);
+        time_delay += 200;
+    }
     return *this;
 }
 
@@ -852,6 +869,21 @@ void Map::cubes_matched_add(int const& num, int const& id)
 //        cubes_cleared_ = 0;
 //        owner()->push_player_ability();
 //    }
+}
+
+void Map::restore_neighbor(int x, int y)
+{
+    int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    for( int i = 0; i < 4; ++i ) {
+        int ix = x + dir[i][0];
+        int iy = y + dir[i][1];
+        if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
+            if( cubes_[ix][iy] && !cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->is_broken() ) {
+                cubes_[ix][iy]->restore(0);
+            }
+        }
+    }
 }
 
 pSimpleMap Map::dump_data() const

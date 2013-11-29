@@ -69,6 +69,9 @@ public:
     // for Cube#drop_a_block
     Map& update_cube_position(pCube cube, int old_x, int old_y);
 
+    // for notifying the ending effect to cubes.
+    Map& ending_effect();
+
     color_map_type color_map() const;
 
     void reset_record();
@@ -96,6 +99,7 @@ public:
     void purge_all();
     void cubes_cleared_add(int const& id);                  //called from model::Cube only.
     void cubes_matched_add(int const& num, int const& id);  //called from model::Cube only.
+    void restore_neighbor(int x, int y);                    //called from model::Cube only when go_dying() is called.
 
     bool exist(int x, int y) const;
     bool below_is_dropping(int x, int y) const;

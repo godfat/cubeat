@@ -53,8 +53,8 @@ function ai_entry(self)
   elseif ATTACK_PWR < 20 then attack_threshold = 3
   end
 
-  if my_map:warning_level() > 25 or
-     ground_cube_num + my_map:garbage_left() >= capacity
+  if my_map:warning_level() > 25 
+     --or ground_cube_num + my_map:garbage_left() >= capacity
   then
     emergency_level = 1
   end

@@ -68,6 +68,7 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
 
 void ViewSprite::set_base_color_and_texture(int color_id){
     std::string temp = utils::to_s(utils::random(4)+1);
+
     body_->setTexture("cubes/cube" + temp);
     outline_->setTexture("cubes/cube" + temp + "-out");
 
@@ -180,7 +181,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 #endif
         video::SColor(0,255,255,255),       // darkest color
         video::SColor(0,255,255,255),       // brightest color
-        250, 250, 0,                         // min and max age, angle
+        225, 225, 0,                         // min and max age, angle
         core::dimension2df(64.f,64.f),         // min size
         core::dimension2df(64.f,64.f)         // max size
     );
@@ -273,18 +274,22 @@ void ViewSprite::go_dying(){
 
 }
 
-void ViewSprite::go_exploding(){
+void ViewSprite::go_exploding(int color_id){
     body_->clearAllTween();
     body_->setPickable(false);
     if( cube_.lock()->is_garbage() )
         body_->setTexture( "cubes/garbage0" );
 
     double csize = view_setting_.lock()->cube_size();
-    view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
-    fx_body->setPickable(false);
-    fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
-    fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
-    view::SFX::i().cube_explode(fx_body);
+//    view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
+//    fx_body->setPickable(false);
+//    fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
+//    fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
+//    view::SFX::i().cube_explode(fx_body);
+//
+
+
+
 }
 
 void ViewSprite::ending(int time_delay){

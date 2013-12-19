@@ -78,9 +78,9 @@ public:
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_dying(); }
         if(view_master_) view_master_->go_dying();
     }
-    void <% debug_hook 'go_exploding' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_exploding(); }
-        if(view_master_) view_master_->go_exploding();
+    void <% debug_hook 'go_exploding' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_exploding(color_id); }
+        if(view_master_) view_master_->go_exploding(color_id);
     }
     void <% debug_hook 'be_garbage' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_garbage(); }

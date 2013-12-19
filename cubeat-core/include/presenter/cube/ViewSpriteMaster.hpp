@@ -93,6 +93,7 @@ private:
     virtual void derived_init();
     void update_garbage(int);
     void create_warning_strips();
+    void create_warning_strips2();
     void create_overheat_overlay();
     void show_warning_at(int x, bool visible);
     void pop_a_chain_text(model::wpChain const& key);
@@ -115,7 +116,8 @@ private:
     view::pAnimatedSprite alert_bar_bottom_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
-    std::vector< view::pSprite > warning_strip2_;
+    std::vector< view::pAnimatedSprite > warning_strip2_;
+    std::vector< view::pAnimatedSprite > warning_strip3_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;

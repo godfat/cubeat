@@ -73,10 +73,10 @@ void ViewSpriteMaster::column_not_full(int at){
 
     if( column_flag_ == 0 && flag_old != 0 ) {
         using namespace easing; using namespace accessor;
-        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
-        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
-        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
-        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+//        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+//        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
+//        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
+//        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
     }
 }
 
@@ -357,12 +357,12 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 
     time_t warning_gap = map_setting()->warning_gap();
 
-    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
-    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
+//    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+//    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
-    box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
+//    box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
-    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+//    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 
     // determine currently how many column are full:
     int column_count = 0;
@@ -371,9 +371,19 @@ void ViewSpriteMaster::warning_sound(int warning_level){
             column_count += 1;
     }
 
+//    for( int x = 0; x < map_setting()->width(); ++x ) {
+//        warning_strip_[x]->set<Alpha>(0);
+//        warning_strip_[x]->tween<SineCirc, Alpha>(0, 224 - column_count*12 , warning_gap);
+//    }
+
     for( int x = 0; x < map_setting()->width(); ++x ) {
-        warning_strip_[x]->set<Alpha>(0);
-        warning_strip_[x]->tween<SineCirc, Alpha>(0, 224 - column_count*12 , warning_gap);
+        vec2 pos = warning_strip2_[x]->get<Pos2D>();
+        warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
+        warning_strip2_[x]->tween<SineCirc, Pos2D>(pos, pos + vec2(0, 15), warning_gap/2, 1);
+
+        pos = warning_strip3_[x]->get<Pos2D>();
+        warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
+        warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
     }
 }
 
@@ -452,6 +462,31 @@ void ViewSpriteMaster::create_warning_strips(){
     }
 }
 
+void ViewSpriteMaster::create_warning_strips2(){
+    using namespace accessor; using namespace easing;
+    view::pScene scene = scene_.lock();
+    for( int i=0, width=map_setting()->width(),
+                  h=map_setting()->height()-1; i<width; ++i )
+    {
+        int csize = view_setting()->cube_size();
+        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", scene, 128, 128, true);
+        vec2 pos = pos_vec2(i, h) + vec2(0, csize*0.33);
+
+        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( vec2( 4000, pos.Y ) )
+             .setPickable(false).set<Visible>(true);
+        warning_strip2_.push_back( temp );
+
+        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", scene, 128, 128, true);
+        pos = pos_vec2(i, 0) + vec2(0, csize*0.66);
+
+        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( vec2( 4000, pos.Y ) )
+              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
+        warning_strip3_.push_back( temp2 );
+
+        /// For the WTF code here, see show_warning_at function for why.
+    }
+}
+
 void ViewSpriteMaster::create_overheat_overlay(){
     using namespace accessor; using namespace easing;
     int w = map_setting()->width();
@@ -485,14 +520,18 @@ void ViewSpriteMaster::derived_init(){
 
     int csize = view_setting()->cube_size();
     //UI base, note, these position follows view_orig_ like cubes, not UI texts:
-    box_bottom_ = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+//    box_bottom_ = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+//    box_bottom_->set<Alpha>(160);
+//    box_top_    = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+//    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
+    box_bottom_ = view::Sprite::create("blankstrip", view_orig_, csize*w, 24, false);
     box_bottom_->set<Alpha>(160);
-    box_top_    = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
-    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
-    box_left_   = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);
-    box_left_->set<Pos2D>( vec2(-24, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
-    box_right_  = view::Sprite::create("blankstrip", view_orig_, 24, Conf::i().SCREEN_H(), false);
-    box_right_->set<Pos2D>( vec2(csize*w, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
+    box_top_    = view::Sprite::create("blankstrip", view_orig_, csize*w, 24, false);
+    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
+    box_left_   = view::Sprite::create("blankstrip", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
+    box_left_->set<Pos2D>( vec2(-36, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
+    box_right_  = view::Sprite::create("blankstrip", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
+    box_right_->set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
     box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
     box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30);
 
@@ -514,7 +553,7 @@ void ViewSpriteMaster::derived_init(){
                             .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
 
     create_overheat_overlay();
-    create_warning_strips();
+    create_warning_strips2();
 
     garbage_text_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
@@ -531,12 +570,27 @@ void ViewSpriteMaster::show_warning_at(int x, bool visible){
     if( !map_setting()->dropping_creatable() ) visible = false;
     using namespace accessor;
     // Invisible item will not be animated by Irrlicht. Damn it.. there should've been a switch to choose.
+    int csize = view_setting()->cube_size();
+    int h = map_setting()->height()-1;
+
     if( visible ) {
-        vec2 pos = warning_strip_[x]->get<Pos2D>();
-        warning_strip_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+//        vec2 pos = warning_strip_[x]->get<Pos2D>();
+//        warning_strip_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+
+        vec2 pos = pos_vec2(x, h) + vec2(0, csize*0.33);
+        warning_strip2_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+
+        pos = pos_vec2(x, 0) + vec2(0, csize*0.66);
+        warning_strip3_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );
     } else {
-        vec2 pos = warning_strip_[x]->get<Pos2D>();
-        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
+//        vec2 pos = warning_strip_[x]->get<Pos2D>();
+//        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );  // we only want to ref X here
+
+        vec2 pos = pos_vec2(x, h) + vec2(0, csize*0.33);
+        warning_strip2_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
+
+        pos = pos_vec2(x, 0) + vec2(0, csize*0.66);
+        warning_strip3_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );
     }
 }
 

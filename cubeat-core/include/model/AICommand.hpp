@@ -4,7 +4,7 @@
 #include "utils/ObjectPool.hpp"
 #include "ButtonEnum.hpp"
 #include <boost/tr1/memory.hpp>
-#include <utility>
+//#include <utility>
 
 /* 2009.3 by arch.jslin
    This is a class for providing a unified & extensible interface

@@ -70,7 +70,7 @@ public:
             Normal = - (*LinkedPositionPtr - LastPosition).normalize();
 
             /// Make amount directly related to Length, divided by the texture unit length (may be taken from outside)
-            u32 amount = Length / 8;
+            u32 amount = Length / 5;
             amount += 1; // make it at least an additional one
 
             for(u32 i=1; i<=amount; ++i)

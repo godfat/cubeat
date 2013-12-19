@@ -26,9 +26,10 @@ using std::tr1::static_pointer_cast;
 
 IMesh* Sprite::sprite_plane_ptr_ = 0;
 SMesh  Sprite::sprite_plane_;
+std::vector< utils::map_any > Sprite::spritesheets_;
 
 Sprite::Sprite(std::string const& name, bool const& center)
-    :Object(name), center_(center), thismesh_(0)
+    :Object(name), center_(center), thismesh_(0), sheet_index_(0)
 {
     if( !sprite_plane_ptr_ ) {
         S3DVertex vertices[4];
@@ -58,6 +59,9 @@ Sprite::Sprite(std::string const& name, bool const& center)
         sprite_plane_ptr_ = &sprite_plane_;
         buf->drop(); //the addMeshBuffer method will grab it, so we can drop this ptr.
     }
+    if( spritesheets_.empty() ) {
+        spritesheets_.push_back( Conf::i().config_of("spritesheet0") );
+    }
 }
 
 pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
@@ -68,12 +72,86 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     }
     setupSceneAndManager(parent);
 
+    setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
+
+    size_t i = locateSheetNumber(name_);
+    if( i < spritesheets_.size() ) {
+        setupTextureFromSheetAndSize(i, w, h);
+    } else {
+        setupTextureSingleAndSize(w, h);
+    }
+    Size2D::set(body_, vec2(size_.Width, size_.Height));
+
+    pSprite self = static_pointer_cast<Sprite>( shared_from_this() );
+    scene()->addPickMapping( body_, self );
+
+    return self;
+}
+
+size_t Sprite::locateSheetNumber(std::string const& str) const
+{
+    size_t i = 0;
+    for( ; i < spritesheets_.size(); ++i ) {
+        if( spritesheets_[i].M("data").exist( str ) )
+            return i;
+    }
+    return i;
+}
+
+void Sprite::setupTextureFromSheetAndSize(size_t const& sheet_index, int const& w, int const& h)
+{
+    sheet_index_ = sheet_index;
+    utils::map_any const& sheet = spritesheets_[sheet_index];
+
+    std::ostringstream oss;
+    oss << Conf::i().expand("rc/texture/") << sheet.S("image") << ".png";
+
+    video::IVideoDriver* driver = smgr_->getVideoDriver();
+    ITexture* tex = driver->getTexture(oss.str().c_str());
+
+    utils::map_any const& tex_data = sheet.M("data").M(name_);
+
+    if( w < 0 || h < 0 ) {
+        size_ = dimension2df(tex_data.I("w"), tex_data.I("h"));
+    } else {
+        size_.Width  = w;
+        size_.Height = h;
+    }
+
+    adjustSheetUV(sheet);
+
+    SMaterial mat = create_std_material_for_sprite();
+    mat.setTexture(0, tex);
+    body_->getMaterial(0) = mat;
+}
+
+void Sprite::adjustSheetUV(utils::map_any const& sheet)
+{
+    utils::map_any const& tex_data = sheet.M("data").M(name_);
+    double sheetwidth  = sheet.M("size").I("w");
+    double sheetheight = sheet.M("size").I("h");
+    if( thismesh_ ) {
+        S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
+        double orig_x_uv = tex_data.I("x") / sheetwidth;
+        double orig_y_uv = tex_data.I("y") / sheetheight;
+        double width_uv  = tex_data.I("w") / sheetwidth;
+        double height_uv = tex_data.I("h") / sheetheight;
+        ptr[0].TCoords = vector2df( orig_x_uv            , orig_y_uv + height_uv);
+        ptr[1].TCoords = vector2df( orig_x_uv + width_uv , orig_y_uv + height_uv);
+        ptr[2].TCoords = vector2df( orig_x_uv            , orig_y_uv);
+        ptr[3].TCoords = vector2df( orig_x_uv + width_uv , orig_y_uv);
+    }
+
+}
+
+void Sprite::setupTextureSingleAndSize(int const& w, int const& h)
+{
     std::ostringstream oss;
     oss << Conf::i().expand("rc/texture/") << name_ << ".png";
 
     video::IVideoDriver* driver = smgr_->getVideoDriver();
-
     ITexture* tex = driver->getTexture(oss.str().c_str());
+
     if( w < 0 || h < 0 ) { //2012: added default case for ease.
         size_ = tex->getOriginalSize();
     } else {
@@ -83,15 +161,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
 
     SMaterial mat = create_std_material_for_sprite();
     mat.setTexture(0, tex);
-
-    setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
-    body_->grab(); //added so its d'tor order is consistent with view::Object.
     body_->getMaterial(0) = mat;
-
-    pSprite self = static_pointer_cast<Sprite>( shared_from_this() );
-    scene()->addPickMapping( body_, self );
-
-    return self;
 }
 
 SMaterial Sprite::create_std_material_for_sprite()
@@ -134,7 +204,8 @@ void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
     out_node->setAutomaticCulling(EAC_OFF);
     out_node->setName( debug_name.c_str() );
 
-    //body_->setDebugDataVisible(EDS_BBOX); //de-comment this when debugging.
+    out_node->grab(); //added so its d'tor order is consistent with view::Object.
+    //out_node->setDebugDataVisible(EDS_BBOX); //de-comment this when debugging.
 }
 
 void Sprite::adjust_texcoord_for_hand_made_texture(IMesh const* mesh, int const& w, int const& h)
@@ -175,6 +246,29 @@ Sprite& Sprite::setDepth(float d)
 {
     vector2df pos2d = get<Pos2D>();
     set<Pos3D>(vector3df(pos2d.X, -pos2d.Y, d));
+    return *this;
+}
+
+Sprite& Sprite::setTexture(std::string const& path)
+{
+    video::IVideoDriver* driver = smgr_->getVideoDriver();
+    size_t i = locateSheetNumber(path);
+
+    if( i >= spritesheets_.size() ) {
+        Object::setTexture(path);
+        return *this;
+    } else {
+        name_ = path; // name is actually important here. because we depend on name_ to lookup into spritesheet_
+        body_->setName(path.c_str());
+
+        if( i != sheet_index_ ) {
+            std::string full_path("rc/texture/");
+            full_path += spritesheets_[i].S("image") + ".png";
+            body_->setMaterialTexture(0, driver->getTexture(full_path.c_str()) );
+            sheet_index_ = i;
+        }
+        adjustSheetUV(spritesheets_[i]);
+    }
     return *this;
 }
 

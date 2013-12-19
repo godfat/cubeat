@@ -4,6 +4,8 @@
 #include "view/Object.hpp"
 #include "utils/ObjectPool.hpp"
 #include "CallbackDelegate.hpp"
+#include "utils/dictionary.hpp"
+
 #include "all_fwd.hpp"
 
 namespace irr {
@@ -56,6 +58,7 @@ public:
 
     virtual Sprite& setCenterAligned(bool const&);
     virtual Sprite& setDepth(float);
+    virtual Sprite& setTexture(std::string const& path);
     virtual Sprite& moveTo(int,int);
     virtual Sprite& moveTween(int,int,int,std::tr1::function<void()> cb = 0, int delay = 0);
     virtual Sprite& textureFlipH();
@@ -93,6 +96,11 @@ protected:
                           std::string const& debug_name = "sprite_mesh" );
     void adjust_texcoord_for_hand_made_texture(irr::scene::IMesh const*, int const&, int const&);
 
+    void setupTextureSingleAndSize(int const&, int const&);
+    void setupTextureFromSheetAndSize(size_t const&, int const&, int const&);
+    size_t locateSheetNumber(std::string const&) const;
+    void adjustSheetUV(utils::map_any const&);
+
     //Maybe this feature should move to another class and use multiple inheritance.
     inline ctrl::CallbackDelegate& onButtonEvent(ctrl::Button const*, ctrl::BSTATE const&);
     inline ctrl::CallbackDelegate& manualButtonEvent(ctrl::Button const*);
@@ -111,10 +119,14 @@ protected:
     bool center_;
     irr::core::dimension2df size_;
     irr::scene::IMesh* thismesh_;
+    size_t sheet_index_;
 
     //A shared base plane to provide simple mesh for sprite usage
     static irr::scene::IMesh* sprite_plane_ptr_;
     static irr::scene::SMesh  sprite_plane_;
+
+    //A shared spritesheet data
+    static std::vector< utils::map_any > spritesheets_;
 };
 
 } //view

@@ -26,6 +26,7 @@ bool check_not_continue(
     if( ya_that.use_count() == 0 )   return true;
     else if( *ya_that != *that )     return true;
     else if( ya_that->is_waiting() ) list.push_back(ya_that);
+    else if( ya_that->is_dying() )   list.push_back(ya_that);
     else                             return true;
     return false;
 }

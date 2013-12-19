@@ -35,17 +35,11 @@ void SFX::init_textures(pScene& s)
 {
     //pre-load textures, so this won't clash with the threading thingy.
     Sprite::create("spark", s, 96, 96, true);
-    Sprite::create("circle", s, 96, 96, true);
     Sprite::create("plight", s, 96, 96, true);
-    Sprite::create("square", s, 192, 192, true);
     Sprite::create("cubes/cube1", s, 64, 64, true);
     Sprite::create("cubes/cube2", s, 64, 64, true);
     Sprite::create("cubes/cube3", s, 64, 64, true);
     Sprite::create("cubes/cube4", s, 64, 64, true);
-
-    for( int i = 0 ; i <= 12; ++i ) {
-        Sprite::create("heat/"+utils::to_s(i), s, 64, 64, true);
-    }
 }
 
 void SFX::clear_obj(FXObjList::iterator obj)

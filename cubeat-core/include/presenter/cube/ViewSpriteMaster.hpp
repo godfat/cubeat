@@ -112,8 +112,10 @@ private:
     view::pSprite overheat_bg_;
     view::pSprite box_top_, box_bottom_, box_left_, box_right_, box_bg_;
     view::pSprite ability_btn_, alert_bar_cover_top_, alert_bar_cover_bottom_;
+    view::pSprite alert_text_bg1_, alert_text_bg2_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
+    view::pAnimatedSprite alert_text1_, alert_text2_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
     std::vector< view::pAnimatedSprite > warning_strip2_;

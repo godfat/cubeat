@@ -392,9 +392,9 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
 
     time_t warning_gap = map_setting()->warning_gap();
     alert_bar_top_->playAnime("moving", warning_gap);
-    alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
+    //alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
     alert_bar_bottom_->playAnime("moving", warning_gap);
-    alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
+    //alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
@@ -528,29 +528,33 @@ void ViewSpriteMaster::derived_init(){
     box_bottom_->set<Alpha>(160);
     box_top_    = view::Sprite::create("blankstrip", view_orig_, csize*w, 24, false);
     box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
-    box_left_   = view::Sprite::create("blankstrip", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
+    box_left_   = view::Sprite::create("danger_meter", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
     box_left_->set<Pos2D>( vec2(-36, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
-    box_right_  = view::Sprite::create("blankstrip", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
+    box_right_  = view::Sprite::create("danger_meter", view_orig_, 36, Conf::i().SCREEN_H() - 34, false);
     box_right_->set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 20) ).set<Alpha>(160).setDepth(30);
     box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
     box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30);
 
     //warning: the position and scale data here should be configurable.
-    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*w, 44, true);
-    alert_bar_top_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
-                   .set<Visible>(false).setPickable(false);
-    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), csize*w, 44, true);
-    alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                         .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
+    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 32, false);
+    alert_bar_top_->playAnime("moving", 1000).setDepth(-0).set<Pos2D>( pos_vec2(0, 0) + vec2(-66, 32) )
+                   .set<Visible>(false).setPickable(false)
+                   .set<Rotation>(vec3(0,0,90));
+    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), csize*h, 32, false);
+    alert_bar_cover_top_->setDepth(-5).set<Pos2D>( pos_vec2(0, 0) + vec2(-66, 32) ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
+                         .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false)
+                         .set<Rotation>(vec3(0,0,90));
 
     pos2 = pos; pos2.Y = 704;
 
-    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*w, 44, true);
-    alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
-                      .set<Visible>(false).setPickable(false);
-    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), csize*w, 44, true);
-    alert_bar_cover_bottom_->setDepth(-70).set<Pos2D>( pos2 ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                            .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
+    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 32, false);
+    alert_bar_bottom_->playAnime("moving", 1000).setDepth(-0).set<Pos2D>( pos_vec2(w, 0) + vec2(-30, 32) )
+                      .set<Visible>(false).setPickable(false)
+                      .set<Rotation>(vec3(0,0,90));
+    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), csize*h, 32, false);
+    alert_bar_cover_bottom_->setDepth(-5).set<Pos2D>( pos_vec2(w, 0) + vec2(-30, 32) ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
+                            .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false)
+                            .set<Rotation>(vec3(0,0,90));
 
     create_overheat_overlay();
     create_warning_strips2();

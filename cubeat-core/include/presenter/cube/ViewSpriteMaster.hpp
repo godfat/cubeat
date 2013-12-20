@@ -118,6 +118,7 @@ private:
     std::vector< view::pSprite > warning_strip_;
     std::vector< view::pAnimatedSprite > warning_strip2_;
     std::vector< view::pAnimatedSprite > warning_strip3_;
+    std::vector< view::pObject > warning_strip_holder_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;

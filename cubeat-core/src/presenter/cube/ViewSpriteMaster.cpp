@@ -376,12 +376,15 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 //        warning_strip_[x]->tween<SineCirc, Alpha>(0, 224 - column_count*12 , warning_gap);
 //    }
 
+    int csize = view_setting()->cube_size();
+    int h = map_setting()->height()-1;
+
     for( int x = 0; x < map_setting()->width(); ++x ) {
-        vec2 pos = warning_strip2_[x]->get<Pos2D>();
+        vec2 pos = vec2(0, -(h-0.33) * csize);
         warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
         warning_strip2_[x]->tween<SineCirc, Pos2D>(pos, pos + vec2(0, 15), warning_gap/2, 1);
 
-        pos = warning_strip3_[x]->get<Pos2D>();
+        pos = vec2(0, csize*0.66);
         warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
         warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
     }
@@ -457,8 +460,6 @@ void ViewSpriteMaster::create_warning_strips(){
              .set<ColorDiffuseVec3>(vec3(255,255,255))
              .set<Alpha>(0).set<Visible>(/*false*/true);
         warning_strip_.push_back( temp );
-
-        /// For the WTF code here, see show_warning_at function for why.
     }
 }
 
@@ -469,21 +470,26 @@ void ViewSpriteMaster::create_warning_strips2(){
                   h=map_setting()->height()-1; i<width; ++i )
     {
         int csize = view_setting()->cube_size();
-        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", scene, 128, 128, true);
-        vec2 pos = pos_vec2(i, h) + vec2(0, csize*0.33);
 
-        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( vec2( 4000, pos.Y ) )
+        view::pObject temp0 = view::Object::create(scene);
+        vec2 pos_holder = pos_vec2(i, 0);
+
+        temp0->set<Pos2D>( vec2( 4000, pos_holder.Y ) ).setPickable(false).set<Visible>(true);
+        warning_strip_holder_.push_back( temp0 );
+
+        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+        vec2 pos = vec2(0, -(h-0.33) * csize);
+
+        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
              .setPickable(false).set<Visible>(true);
         warning_strip2_.push_back( temp );
 
-        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", scene, 128, 128, true);
-        pos = pos_vec2(i, 0) + vec2(0, csize*0.66);
+        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+        pos = vec2(0, csize*0.66);
 
-        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( vec2( 4000, pos.Y ) )
+        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
               .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
         warning_strip3_.push_back( temp2 );
-
-        /// For the WTF code here, see show_warning_at function for why.
     }
 }
 
@@ -574,27 +580,19 @@ void ViewSpriteMaster::show_warning_at(int x, bool visible){
     if( !map_setting()->dropping_creatable() ) visible = false;
     using namespace accessor;
     // Invisible item will not be animated by Irrlicht. Damn it.. there should've been a switch to choose.
-    int csize = view_setting()->cube_size();
-    int h = map_setting()->height()-1;
 
     if( visible ) {
 //        vec2 pos = warning_strip_[x]->get<Pos2D>();
 //        warning_strip_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
 
-        vec2 pos = pos_vec2(x, h) + vec2(0, csize*0.33);
-        warning_strip2_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
-
-        pos = pos_vec2(x, 0) + vec2(0, csize*0.66);
-        warning_strip3_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );
+        vec2 pos = pos_vec2(x, 0);
+        warning_strip_holder_[x]->set<Pos2D>( pos ); // we only want to ref X here
     } else {
 //        vec2 pos = warning_strip_[x]->get<Pos2D>();
-//        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );  // we only want to ref X here
+//        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );  // move it out of screen horizontally
 
-        vec2 pos = pos_vec2(x, h) + vec2(0, csize*0.33);
-        warning_strip2_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
-
-        pos = pos_vec2(x, 0) + vec2(0, csize*0.66);
-        warning_strip3_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );
+        vec2 pos = pos_vec2(x, 0);
+        warning_strip_holder_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
     }
 }
 

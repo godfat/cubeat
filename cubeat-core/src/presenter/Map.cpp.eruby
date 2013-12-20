@@ -153,7 +153,9 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     alert_bar_update_event(
         std::tr1::bind(&cube::ViewMaster::alert_bar_update, view.get(), _1)).
     overheat_event(
-        std::tr1::bind(&cube::ViewMaster::show_overheat, view.get(), _1));
+        std::tr1::bind(&cube::ViewMaster::show_overheat, view.get(), _1)).
+    ending_effect_event(
+        std::tr1::bind(&cube::ViewMaster::ending_effect, view.get()));
 // WTF MEMO 2012.9 failed to adjust for balance
 //    ability_button_event(
 //        std::tr1::bind(&cube::ViewMaster::ability_button, view.get(), _1));
@@ -229,6 +231,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 }
 
 Map& Map::ending_effect() {
+    ending_effect_event()();
     model()->ending_effect();
     return *this;
 }

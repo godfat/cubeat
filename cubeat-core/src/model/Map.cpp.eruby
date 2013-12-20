@@ -195,7 +195,7 @@ Map& Map::ending_effect() {
         }
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             std::tr1::bind(&audio::Sound::playBuffer, &audio::Sound::i(), "deadcube.wav", false), self(), time_delay);
-        time_delay += 200;
+        time_delay += 60;
     }
     return *this;
 }

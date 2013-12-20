@@ -77,6 +77,7 @@ public:
     virtual void alert_bar_freeze(bool freezed);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
+    virtual void ending_effect();
     virtual void ability_button(int left);
 
     virtual void setup_ability_button();

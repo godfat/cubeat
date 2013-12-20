@@ -454,6 +454,14 @@ void ViewSpriteMaster::show_overheat(bool show){
     overheat_bg_->set<Visible>(show);
 }
 
+void ViewSpriteMaster::ending_effect(){
+    int duration = 800;
+    alert_bar_top_->playAnime("moving", duration/4, 3);
+    alert_bar_bottom_->playAnime("moving", duration/4, 3);
+    alert_text1_->playAnime("moving", duration/4, 3);
+    alert_text2_->playAnime("moving", duration/4, 3);
+}
+
 void ViewSpriteMaster::create_warning_strips(){
     using namespace accessor; using namespace easing;
     view::pScene scene = scene_.lock();

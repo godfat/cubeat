@@ -277,10 +277,10 @@ void ViewSprite::go_dying(){
 void ViewSprite::go_exploding(int color_id){
     body_->clearAllTween();
     body_->setPickable(false);
-    if( cube_.lock()->is_garbage() )
-        body_->setTexture( "cubes/garbage0" );
+//    if( cube_.lock()->is_garbage() )
+//        body_->setTexture( "cubes/garbage0" );
 
-    double csize = view_setting_.lock()->cube_size();
+//    double csize = view_setting_.lock()->cube_size();
 //    view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
 //    fx_body->setPickable(false);
 //    fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
@@ -288,8 +288,61 @@ void ViewSprite::go_exploding(int color_id){
 //    view::SFX::i().cube_explode(fx_body);
 //
 
+    using namespace irr;
+    using namespace scene;
 
+//    view::pObject effect_body = view::Object::create(view_orig_.lock());
+    view::pSprite effect_body = view::Sprite::create("circle", view_orig_.lock(), 64, 64, true);
+    effect_body->setPickable(false);
+    vec3 tmp = body_->get<accessor::Pos3D>();
+    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
 
+    data::Color col = data::Color::from_id(color_id);
+    col.offset();
+
+    effect_body->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    effect_body->tween<easing::Linear, accessor::Alpha>(255, 0, 333u);
+    effect_body->tween<easing::OExpo, accessor::Scale>(vec3(.1, .1, .1), vec3(2, 2, 2), 333u);
+
+//    IParticleSystemSceneNode* ps = effect_body->scene()->addParticleNodeTo(effect_body, false);
+//    ps->setIsDebugObject(true); // So it can't be picked.
+//
+//    IParticleEmitter* em = ps->createPointEmitter(
+//        vec3(0, 0, 0.07),
+//        500, 500,
+//        video::SColor(255,255,255,255), video::SColor(255,255,255,255),
+//        600, 600,
+//        360,
+//        core::dimension2df(32.0, 32.0), core::dimension2df(48.0, 48.0)
+//        );
+//
+//    ps->setEmitter(em); // this grabs the emitter
+//    em->drop(); // so we can drop it here without deleting it
+//
+//    IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 600);
+//
+//    ps->addAffector(paf); // same goes for the affector
+//    paf->drop();
+//
+//    ps->setPosition(core::vector3df(0,0,0));
+//    ps->setMaterialFlag(video::EMF_LIGHTING, true);
+//    ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+//    ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+//
+//    std::string colorstr;
+//    switch(color_id) {
+//        case 1: colorstr = "rc/texture/fire_b.bmp"; break;
+//        case 2: colorstr = "rc/texture/fire_g.bmp"; break;
+//        case 3: colorstr = "rc/texture/fire_r.bmp"; break;
+//        case 4: colorstr = "rc/texture/fire_y.bmp"; break;
+//        default: colorstr = "rc/texture/fire_b.bmp";
+//    }
+//    ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture(colorstr.c_str()));
+//
+//    // dummy animation to call a callback
+//    effect_body->tween<easing::Linear, accessor::Alpha>(255, 255, 100u, 0, std::tr1::bind(&stop_emitting_trail, ps));
+
+    view::SFX::i().hold(effect_body, 350);
 }
 
 void ViewSprite::ending(int time_delay){

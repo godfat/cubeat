@@ -20,6 +20,7 @@
 					<Add option="-fno-fast-math" />
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-DBOOST_TR1_USE_OLD_TUPLE" />
 					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
 					<Add option="-D_SHOOTING_CUBES_ENABLE_SOUND_" />
 					<Add option="-DNDEBUG" />
@@ -58,6 +59,7 @@
 					<Add option="-fno-fast-math" />
 					<Add option="-Wno-missing-braces" />
 					<Add option="-DBOOST_DISABLE_ASSERTS" />
+					<Add option="-DBOOST_TR1_USE_OLD_TUPLE" />
 					<Add option="-DALMIXER_COMPILE_WITHOUT_SDL" />
 					<Add option="-D_SHOOTING_CUBES_ENABLE_SOUND_" />
 					<Add option="-DNDEBUG" />

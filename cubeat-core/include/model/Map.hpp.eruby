@@ -153,6 +153,9 @@ private:
 
     std::map< wpChain, std::vector< std::pair<int, int> > > dying_cubes_position_;
 
+    typedef std::tr1::shared_ptr<int> pTimerDummy;
+    std::map< wpChain, pTimerDummy > chain_timer_handles_;
+
     friend class OneFadingT<Map>;
 };
 

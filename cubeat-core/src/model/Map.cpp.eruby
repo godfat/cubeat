@@ -322,8 +322,9 @@ pOneFadingOrig <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 <% end %>
     cube_list_type traveled, not_traveled, result;
     not_traveled.insert(that);
-    detail::make_clist<Map>(cubes_, traveled, not_traveled, result, ms()->chain_amounts());
-    return result.size() ? OneFadingT<Map>::create( result ) : pOneFadingOrig();
+    bool extending = false;
+    detail::make_clist<Map>(cubes_, traveled, not_traveled, result, extending, ms()->chain_amounts());
+    return result.size() ? OneFadingT<Map>::create( result, extending ) : pOneFadingOrig();
 }
 
 bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
@@ -364,19 +365,26 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
+        wpChain key_wchain = *i;
+
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
+            pTimerDummy handle = pTimerDummy(new int);
+            chain_timer_handles_[ key_wchain ] = handle; // if we are extending last chain, this assignment will effectively erase last timer calls.
+
             (*i)->update_power_factor();
             int amount = (*i)->attack_of_current_step(); // it is just superficial effects, so don't use damage_factor here.
             //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 1850); // The garbage effect now is total only about 1100 ms.
+                bind(&delay_adder, ref(current_sum_of_attack_), amount),
+                handle,
+                ms()->cube_dying_duration());
             o->new_chain_event()(*i);
             //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
-            wpChain key = *i;
+
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(o->new_garbage_event(), dying_cubes_position_[key] , amount), self(), 700);
-//            o->new_garbage_event()( dying_cubes_position_[key] , amount);
+                bind(o->new_garbage_event(), dying_cubes_position_[ key_wchain ] , amount), handle, ms()->cube_dying_duration());
+//            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
 
             match_counter_ += 1;
             score_ += (*i)->score_step();
@@ -396,7 +404,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
                 self(),
-                1000);
+                1500);
 
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
@@ -404,6 +412,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
             if( (*i)->step() - 1 > highest_chain_ ) {
                 highest_chain_ = (*i)->step() - 1;
             }
+
+            chain_timer_handles_.erase( key_wchain );
 
             i = chains_.erase(i);
         }

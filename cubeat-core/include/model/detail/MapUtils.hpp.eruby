@@ -17,12 +17,14 @@ namespace detail{
 bool check_not_continue(
     std::vector<pSimpleCube>& list,
     pSimpleCube that,
-    pSimpleCube ya_that); //prototype
+    pSimpleCube ya_that,
+    bool& extending_out); //prototype
 
 bool check_not_continue(
     std::vector<pCube>& list,
     pCube that,
-    pCube ya_that); //prototype
+    pCube ya_that,
+    bool& extending_out); //prototype
 
 // found the chaining! add them into not_traveled and result!
 template<class MapType>
@@ -49,16 +51,17 @@ void make_row(typename MapType::container_type const& cubes,
               typename MapType::cube_type that,
               typename MapType::cube_list_type& not_traveled,
               typename MapType::cube_list_type& result,
+              bool& extending_out,
               int chain_amount)
 {
     std::vector<typename MapType::cube_type> row;
 
     for(int i=that->x(); i>=0; --i) // include self
-        if( check_not_continue( row, that, cubes[i][that->y()] ) )
+        if( check_not_continue( row, that, cubes[i][that->y()], extending_out ) )
             break;
 
     for(int i=that->x()+1, iend=cubes.width(); i!=iend; ++i) // exclude self
-        if( check_not_continue( row, that, cubes[i][that->y()] ) )
+        if( check_not_continue( row, that, cubes[i][that->y()], extending_out ) )
             break;
 
     if(static_cast<int>(row.size()) >= chain_amount)
@@ -71,16 +74,17 @@ void make_column(typename MapType::container_type const& cubes,
                  typename MapType::cube_type that,
                  typename MapType::cube_list_type& not_traveled,
                  typename MapType::cube_list_type& result,
+                 bool& extending_out,
                  int chain_amount)
 {
     std::vector<typename MapType::cube_type> column;
 
     for(int i=that->y(); i>=0; --i) // include self
-        if( check_not_continue( column, that, cubes[that->x()][i] ) )
+        if( check_not_continue( column, that, cubes[that->x()][i], extending_out ) )
             break;
 
     for(int i=that->y()+1, iend=cubes.height(); i!=iend; ++i) // exclude self
-        if( check_not_continue( column, that, cubes[that->x()][i] ) )
+        if( check_not_continue( column, that, cubes[that->x()][i], extending_out ) )
             break;
 
     if(static_cast<int>(column.size()) >= chain_amount)
@@ -96,6 +100,7 @@ void make_clist(typename MapType::container_type const& cubes,
                 typename MapType::cube_list_type& traveled,
                 typename MapType::cube_list_type& not_traveled,
                 typename MapType::cube_list_type& result,
+                bool& extending_out,
                 int chain_amount)
 {
     if(not_traveled.size()){
@@ -103,12 +108,12 @@ void make_clist(typename MapType::container_type const& cubes,
         typename MapType::cube_type cube = *node;
 
         if( traveled.count(cube) == 0 ){
-            make_row<MapType>(cubes, cube, not_traveled, result, chain_amount);
-            make_column<MapType>(cubes, cube, not_traveled, result, chain_amount);
+            make_row<MapType>(cubes, cube, not_traveled, result, extending_out, chain_amount);
+            make_column<MapType>(cubes, cube, not_traveled, result, extending_out, chain_amount);
             traveled.insert(cube);
         }
         not_traveled.erase(node);
-        make_clist<MapType>(cubes, traveled, not_traveled, result, chain_amount);
+        make_clist<MapType>(cubes, traveled, not_traveled, result, extending_out, chain_amount);
     }
 }
 

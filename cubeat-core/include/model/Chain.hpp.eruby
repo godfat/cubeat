@@ -48,6 +48,16 @@ public:
             //power_factor_ += (new_step_amount - 2)*(stepnum);
             //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);
             //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
+
+        can_revert_ = true;
+    }
+
+    void revert_once() {
+        if( can_revert_ ) {
+            chain_step_.pop_back();
+            power_factor_ = last_power_factor_;
+            can_revert_ = false;
+        }
     }
 
     // this returns the score fragment made by the last combo
@@ -66,7 +76,7 @@ public:
         return power_factor_ - last_power_factor_;
     }
 
-    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
+    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0), can_revert_(false){}
 
     Chain(pointer_type const& that):
         chain_step_(that->chain_step_),
@@ -80,6 +90,7 @@ private:
     std::vector<int> chain_step_;
     int last_step_x_, last_step_y_;
     int power_factor_, last_power_factor_;
+    bool can_revert_;
     // int damage_factor_;
 };
 

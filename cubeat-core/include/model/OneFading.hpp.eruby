@@ -18,12 +18,13 @@ class OneFadingT{
 
 public:
     typedef std::tr1::shared_ptr<OneFadingT> pointer_type;
-    static pointer_type create(cube_list_type const& list){
-        return utils::ObjectPool<OneFadingT>::create(list);
+    static pointer_type create(cube_list_type const& list, bool const& extending = false){
+        return utils::ObjectPool<OneFadingT>::create(list, extending);
     }
 public:
     // begin only used by Map::next_state / next_step
-    <% debug_hook 'OneFadingT' do %>(cube_list_type const& list): list_(list) {<%end%>}
+    <% debug_hook 'OneFadingT' do %>(cube_list_type const& list, bool const& extending)
+        : list_(list), extending_(extending) {<%end%>}
     typename cube_list_type::size_type size() const{ return list_.size(); }
     typename cube_list_type::iterator begin() const{ return list_.begin(); }
     typename cube_list_type::iterator end()   const{ return list_.end(); }
@@ -34,14 +35,19 @@ public:
                                     typename MapType::cube_type that_would_be_killed_by_map,
                                     pChain existing_chain = pChain() ){
 <% end %>
+        int extending_amount = 0;
         pChain chain = existing_chain ? existing_chain : get_the_chain(map);
-        update_step(chain);
-
         chain_ = chain; // Associate this particular OneFading with its chain.
 
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
+            // calculate how many are "dying" or "not dying" in the traveled.
+            // Since we changed the rule to allow extending already happening "OneFading"s in 2013,
+            // we'll need this number to know exactly how many cubes we are extending.
+            if( (**i).is_waiting() )
+                extending_amount += 1;
+
             (**i).chain(chain);
             if( *i != that_would_be_killed_by_map ){
                 (**i).go_dying();
@@ -50,6 +56,13 @@ public:
             //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
             //note: Moved this line to Dying to be more reasonable chaining situation.
             //      In SimpleMap this is invoked in cycle_a_cube
+        }
+
+        if( extending_ ) {
+            chain->revert_once();
+            extend_last_step(chain, extending_amount);
+        } else {
+            update_step(chain);
         }
     }
     // end
@@ -83,9 +96,14 @@ private:
         chain->set_last_step_position( (*list_.rbegin())->x(), (*list_.rbegin())->y() );
     }
 
+    void extend_last_step(pChain chain, int amount) {
+        chain->add_last_step_amounts( amount );
+    }
+
 private:
     cube_list_type list_;
     wpChain chain_; // just association, don't hold it.
+    bool extending_;
 };
 
 }} // end of namespace

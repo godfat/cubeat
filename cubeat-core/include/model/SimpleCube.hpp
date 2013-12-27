@@ -91,6 +91,9 @@ public:
 	void set_grounded() { has_grounded_ = true; new_garbage(false); }
 	void new_garbage(bool const& f) { is_new_garbage_ = f; }
 
+	// pure dummy. Have to use this in OneFading<T>. I couldn't find a way to avoid it.
+	bool is_waiting() const{ return false; }
+
 
     data::pCube data() const{ return data_; }
     SimpleCube& data(data::pCube const& new_data){ data_ = new_data; return *this; }

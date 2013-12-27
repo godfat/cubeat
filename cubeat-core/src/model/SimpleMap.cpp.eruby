@@ -177,7 +177,8 @@ pOneFadingSimple SimpleMap::make_OneFading(pSimpleCube that)
 {
     cube_list_type traveled, not_traveled, result;
     not_traveled.insert(that);
-    detail::make_clist<SimpleMap>(simp_cubes_, traveled, not_traveled, result, ms()->chain_amounts());
+    bool extending = false;
+    detail::make_clist<SimpleMap>(simp_cubes_, traveled, not_traveled, result, extending, ms()->chain_amounts());
     return result.size() ? OneFadingT<SimpleMap>::create( result ) : pOneFadingSimple();
 }
 

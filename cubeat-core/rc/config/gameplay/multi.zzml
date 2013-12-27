@@ -61,7 +61,7 @@ player1: {
     #and cubes that already dropped.
     #(suggestion: 120 ~ 200 milliseconds)
     #NOTE: THIS IS DEPRECATED.
-    #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "NEW GARBAGE" ANIMATION (new scheme 2012.05)
+    #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "GARBAGE FLY" ANIMATION (new scheme 2012.05)
     cube_dropping_duration: 700,
 
     #whether it'll use broken cubes as garbage cubes or not:

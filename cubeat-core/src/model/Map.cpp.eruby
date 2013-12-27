@@ -359,20 +359,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
     using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
 
-
-
-    //int!? INT!? INTEGER!??????????
-    //ARE YOU FUCKING SERIOUS????????????
-
-    //int damage_factor = ms()->damage_factor();
-
     double damage_factor = ms()->damage_factor();
-
-
     presenter::pMap o = owner();
-
-//    if( !chains_.empty() )
-//        std::cout << "map: " << this << "\n";
 
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {

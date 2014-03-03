@@ -131,8 +131,8 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
     s1 = data::ViewSetting::create( uiconf_.M("mapview1") );
 
-    std::string ai_temp[4] =
-        {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};
+    std::string ai_temp[5] =
+        {"ai/level1.lua", "ai/level2.lua", "ai/level3.lua", "ai/level4.lua", "ai/level5.lua"};
 
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);

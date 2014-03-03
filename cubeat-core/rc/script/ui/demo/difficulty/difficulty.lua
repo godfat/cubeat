@@ -13,7 +13,9 @@ local function init(demo, parent, data)
   menu.btn_normal:set_scale(1.5)
   menu.btn_hard   = ui.new_text{ parent=parent, x=0, y=120, size=32, title='hard' }
   menu.btn_hard:set_scale(1.5)
-  menu.btn_back   = ui.new_text{ parent=parent, x=0, y=180, size=32, title='go back' }
+  menu.btn_veryhard= ui.new_text{ parent=parent, x=0, y=180, size=32, title='very hard' }
+  menu.btn_veryhard:set_scale(1.5)
+  menu.btn_back   = ui.new_text{ parent=parent, x=0, y=240, size=32, title='go back' }
   menu.btn_back:set_scale(1.5)
 
   menu.btn_easy:on_press(function(self)
@@ -28,6 +30,11 @@ local function init(demo, parent, data)
   end)
   menu.btn_hard:on_press(function(self)
     data.level = 2
+    data.last_menu = 'difficulty'
+    switch.load_page('select', 'out', data)
+  end)
+  menu.btn_veryhard:on_press(function(self)
+    data.level = 3
     data.last_menu = 'difficulty'
     switch.load_page('select', 'out', data)
   end)

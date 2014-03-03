@@ -248,7 +248,7 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
     body_->set<accessor::Pos2D>( pos );
 }
 
-void ViewSprite::go_dying(){
+void ViewSprite::go_dying(int dying_mode){
     using namespace easing; using namespace accessor;
     unsigned int duration = map_setting()->cube_dying_duration();
 //    body_->tween<Linear, GradientEmissive>(128, duration);
@@ -298,58 +298,61 @@ void ViewSprite::go_exploding(int color_id){
     using namespace irr;
     using namespace scene;
 
-//    view::pObject effect_body = view::Object::create(view_orig_.lock());
-    view::pSprite effect_body = view::Sprite::create("circle", view_orig_.lock(), 64, 64, true);
-    effect_body->setPickable(false);
-    vec3 tmp = body_->get<accessor::Pos3D>();
-    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+/// Circle exploding
+//    view::pSprite effect_body = view::Sprite::create("circle", view_orig_.lock(), 64, 64, true);
+//    effect_body->setPickable(false);
+//    vec3 tmp = body_->get<accessor::Pos3D>();
+//    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+//
+//    data::Color col = data::Color::from_id(color_id);
+//    col.offset();
+//
+//    effect_body->set<accessor::ColorDiffuse>( 0xff995500 | col.rgb() );
+//    effect_body->tween<easing::Linear, accessor::Alpha>(255, 0, 333u);
+//    effect_body->tween<easing::OExpo, accessor::Scale>(vec3(.1, .1, .1), vec3(2, 2, 2), 333u);
+/// /Circle exploding
 
-    data::Color col = data::Color::from_id(color_id);
-    col.offset();
+    for( int i = 0; i < 15; ++i ) {
+        view::pObject effect_body_orig = view::Object::create(view_orig_.lock());
+        view::pSprite effect_body = view::Sprite::create("smallblock", effect_body_orig, 16, 16, true);
+        view::pSprite effect_body_out = view::Sprite::create("smallblock_out", effect_body, 16, 16, true);
+        effect_body->setPickable(false);
+        effect_body_orig->setPickable(false);
+        effect_body_out->setPickable(false);
 
-    effect_body->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
-    effect_body->tween<easing::Linear, accessor::Alpha>(255, 0, 333u);
-    effect_body->tween<easing::OExpo, accessor::Scale>(vec3(.1, .1, .1), vec3(2, 2, 2), 333u);
+        vec3 tmp = body_->get<accessor::Pos3D>();
+        //effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+        effect_body_orig->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+        effect_body_out->setDepth(-5);
 
-//    IParticleSystemSceneNode* ps = effect_body->scene()->addParticleNodeTo(effect_body, false);
-//    ps->setIsDebugObject(true); // So it can't be picked.
-//
-//    IParticleEmitter* em = ps->createPointEmitter(
-//        vec3(0, 0, 0.07),
-//        500, 500,
-//        video::SColor(255,255,255,255), video::SColor(255,255,255,255),
-//        600, 600,
-//        360,
-//        core::dimension2df(32.0, 32.0), core::dimension2df(48.0, 48.0)
-//        );
-//
-//    ps->setEmitter(em); // this grabs the emitter
-//    em->drop(); // so we can drop it here without deleting it
-//
-//    IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 600);
-//
-//    ps->addAffector(paf); // same goes for the affector
-//    paf->drop();
-//
-//    ps->setPosition(core::vector3df(0,0,0));
-//    ps->setMaterialFlag(video::EMF_LIGHTING, true);
-//    ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-//    ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-//
-//    std::string colorstr;
-//    switch(color_id) {
-//        case 1: colorstr = "rc/texture/fire_b.bmp"; break;
-//        case 2: colorstr = "rc/texture/fire_g.bmp"; break;
-//        case 3: colorstr = "rc/texture/fire_r.bmp"; break;
-//        case 4: colorstr = "rc/texture/fire_y.bmp"; break;
-//        default: colorstr = "rc/texture/fire_b.bmp";
-//    }
-//    ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture(colorstr.c_str()));
-//
-//    // dummy animation to call a callback
-//    effect_body->tween<easing::Linear, accessor::Alpha>(255, 255, 100u, 0, std::tr1::bind(&stop_emitting_trail, ps));
+        data::Color col = data::Color::from_id(color_id);
+        col.offset();
+        effect_body->set<accessor::ColorDiffuse>( 0xff553300 | col.rgb() );
+        effect_body_out->set<accessor::ColorDiffuse>( 0xffaa7744 | col.rgb() );
 
-    view::SFX::i().hold(effect_body, 350);
+        effect_body->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);
+        effect_body_out->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);
+
+        /// Old translation calculation
+//        vec2 from = body_->get<accessor::Pos2D>();
+//        vec2 to = from + vec2( utils::random(80) - 40, utils::random(80) - 40 );
+//        effect_body->tween<easing::OExpo, accessor::Pos2D>(from, to, 333u);
+
+        vec2 to = vec2( utils::random(25) + 25, 0 );
+        effect_body->tween<easing::OExpo, accessor::Pos2D>(vec2(0,0), to, 400u);
+        effect_body_orig->set<accessor::Rotation>(vec3(0, 0, utils::random(360) - 180));
+
+        double rot1 = utils::random(180) - 90;
+        double rot2 = utils::random(180) - 90;
+        effect_body->tween<easing::OQuad, accessor::Rotation>(vec3(0, 0, rot1), vec3(0, 0, rot2), 400u);
+
+        double scale_ratio = (utils::random(175) + 75) / 150.f;
+        effect_body->set<accessor::Scale>(vec3( scale_ratio, scale_ratio, 1));
+
+        view::SFX::i().hold(effect_body, 420);
+        view::SFX::i().hold(effect_body_orig, 420);
+        view::SFX::i().hold(effect_body_out, 420);
+    }
 }
 
 void ViewSprite::ending(int time_delay){

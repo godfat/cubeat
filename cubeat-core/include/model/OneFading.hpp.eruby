@@ -50,7 +50,8 @@ public:
 
             (**i).chain(chain);
             if( *i != that_would_be_killed_by_map ){
-                (**i).go_dying();
+                (**i).go_dying(); /// ** do something here so cubes extending chain doesn't "die" again? *** ///
+                                  /// ** also remember "that_would_be_killed_by_map" *** ///
             }
 
             //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);

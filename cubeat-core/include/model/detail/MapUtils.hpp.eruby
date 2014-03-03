@@ -31,7 +31,8 @@ template<class MapType>
 void process_chaining(
     std::vector<typename MapType::cube_type> const& row_or_column,
     typename MapType::cube_list_type& not_traveled,
-    typename MapType::cube_list_type& result)
+    typename MapType::cube_list_type& result,
+    int const& dying_mode = 0x00)
 {
     typedef typename MapType::cube_type cube_type;
     for(typename std::vector<cube_type>::const_iterator i=row_or_column.begin(),
@@ -40,6 +41,7 @@ void process_chaining(
     {
         not_traveled.insert(*i);
         result.insert(*i);
+//        (*i)->logical_or_dying_mode(dying_mode);
     }
 }
 

@@ -869,16 +869,51 @@ void Map::cubes_matched_add(int const& num, int const& id)
 //    }
 }
 
-void Map::restore_neighbor(int x, int y)
+void Map::restore_neighbor(int x, int y, int dying_mode)
 {
-    int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    // dying mode:
+    //   00 : no special
+    //   01 : horizontal
+    //   10 : vertical
+    //   11 : four direction
 
-    for( int i = 0; i < 4; ++i ) {
-        int ix = x + dir[i][0];
-        int iy = y + dir[i][1];
-        if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
-            if( cubes_[ix][iy] && !cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->is_broken() ) {
-                cubes_[ix][iy]->restore(0);
+    /// HACK
+
+    if( dying_mode == 0x01 ) {
+
+        int dir[2] = {1, -1};
+
+        for( int i = 0; i < 2; ++i ) {
+            int ix = x + dir[i];
+            if( ix < ms()->width() && ix >= 0 ) {
+                if( cubes_[ix][y] && !cubes_[ix][y]->is_dying() && cubes_[ix][y]->is_broken() ) {
+                    cubes_[ix][y]->restore(0);
+                }
+            }
+        }
+    } else if( dying_mode == 0x10 ) {
+
+        int dir[2] = {1, -1};
+
+        for( int i = 0; i < 2; ++i ) {
+            int iy = y + dir[i];
+            if( iy < ms()->height() - 1 && iy >= 0 ) {
+                if( cubes_[x][iy] && !cubes_[x][iy]->is_dying() && cubes_[x][iy]->is_broken() ) {
+                    cubes_[x][iy]->restore(0);
+                }
+            }
+        }
+    } else if( dying_mode == 0x11 ) {
+
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        for( int i = 0; i < 4; ++i ) {
+            int ix = x + dir[i][0];
+            int iy = y + dir[i][1];
+            if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
+                if( cubes_[ix][iy] && !cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->is_broken() ) {
+                    cubes_[ix][iy]->restore(0);
+                }
             }
         }
     }

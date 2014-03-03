@@ -114,12 +114,19 @@ void <% debug_hook 'Cube::next_state' do %>(){
 }
 
 // only used by OneFading::fade
-void <% debug_hook 'Cube::go_dying' do %>(){
+void <% debug_hook 'Cube::go_dying' do %>(int dying_mode){
 <% end %>
+
+    // dying mode:
+    //   00 : no special
+    //   01 : horizontal
+    //   10 : vertical
+    //   11 : four direction
+
     state_ = state::Dying::create(self());
     map()->cubes_matched_add(1, color_id());
-//    map()->restore_neighbor(x(), y());
-    go_dying_event()();
+    map()->restore_neighbor(x(), y(), dying_mode_);
+    go_dying_event()(dying_mode_);
 }
 
 Cube& <% debug_hook 'Cube::go_dropping' do %>(){

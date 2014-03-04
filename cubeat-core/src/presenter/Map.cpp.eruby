@@ -167,7 +167,7 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
     cube->model()->    go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get(), _1 ) ).
                    go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get(), _1 ) ).
                      be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
-                      be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
+                      be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get(), _1 ) ).
                         restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
                          ending_event( std::tr1::bind( &Cube::ending, cube.get(), _1) ).
                             hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2) ).

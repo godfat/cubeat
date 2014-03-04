@@ -86,9 +86,9 @@ public:
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_garbage(); }
         if(view_master_) view_master_->be_garbage();
     }
-    void <% debug_hook 'be_broken' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_broken(); }
-        if(view_master_) view_master_->be_broken();
+    void <% debug_hook 'be_broken' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_broken(color_id); }
+        if(view_master_) view_master_->be_broken(color_id);
     }
     void <% debug_hook 'restore' do %>(int color_id){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->restore(color_id); }

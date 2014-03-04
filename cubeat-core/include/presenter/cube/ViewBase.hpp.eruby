@@ -19,7 +19,7 @@ public:
     virtual void go_dying(int /*dying_mode*/){}
     virtual void go_exploding(int color_id){}
     virtual void be_garbage(){}
-    virtual void be_broken(){}
+    virtual void be_broken(int /*color_id*/){}
     virtual void restore(int /*color_id*/){}
     virtual void hit(int /*dmg*/, int /*hp*/){}
     virtual void get_chain(){}

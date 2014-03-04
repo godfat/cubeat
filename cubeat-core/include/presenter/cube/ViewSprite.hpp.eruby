@@ -77,7 +77,7 @@ public:
     virtual void goto_garbage_orig(); //called from presenter::Map
     virtual void go_dying(int dying_mode);
     virtual void go_exploding(int color_id);
-    virtual void be_broken();
+    virtual void be_broken(int color_id);
     virtual void restore(int color_id);
     virtual void be_garbage();
     virtual void hit(int /*dmg*/, int hp);
@@ -102,6 +102,7 @@ private:
 private:
     view::pSprite  body_;
     view::pSprite  outline_;
+    view::pSprite  bodylayer2_;
     view::wpObject view_orig_;
     model::wpCube  cube_;
     data::wpMapSetting map_setting_;

@@ -364,7 +364,7 @@ void ViewSprite::ending(int time_delay){
     body_->set<accessor::GradientDiffuse>(255);
 }
 
-void ViewSprite::be_broken(){
+void ViewSprite::be_broken(int color_id){
     std::string temp = utils::to_s(utils::random(4)+1);
     body_->setTexture("cubes/cube-br-" + temp);
     body_->set<accessor::GradientDiffuse>( 255 );
@@ -377,6 +377,12 @@ void ViewSprite::be_broken(){
     } else {
         shot_event(&model::Cube::restore, &model::Cube::restore);
     }//audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
+
+    bodylayer2_ = view::Sprite::create("smallblock", body_, 24, 24, true);
+    data::Color col = data::Color::from_id(color_id);
+    col.offset();
+    bodylayer2_->setDepth(-5).set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    bodylayer2_->setPickable(false);
 }
 
 void ViewSprite::restore(int color_id){
@@ -385,6 +391,35 @@ void ViewSprite::restore(int color_id){
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
+
+    // effects
+    using namespace easing; using namespace accessor;
+
+    bodylayer2_.reset(); // resets broken's layer2 color
+
+    view::pObject effect_body_orig = view::Object::create(view_orig_.lock());
+    effect_body_orig->set<Pos2D>( body_->get<Pos2D>() );
+
+    view::pSprite effect_t = view::Sprite::create("smallblock", effect_body_orig, 64, 20, true);
+    view::pSprite effect_b = view::Sprite::create("smallblock", effect_body_orig, 64, 20, true);
+    view::pSprite effect_l = view::Sprite::create("smallblock", effect_body_orig, 20, 64, true);
+    view::pSprite effect_r = view::Sprite::create("smallblock", effect_body_orig, 20, 64, true);
+    effect_body_orig->setPickable(false);
+    effect_t->setDepth(-5).setPickable(false);
+    effect_b->setDepth(-5).setPickable(false);
+    effect_l->setDepth(-5).setPickable(false);
+    effect_r->setDepth(-5).setPickable(false);
+
+    effect_t->tween<OExpo, Pos2D>( vec2(0,-24), vec2(0,-50), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_b->tween<OExpo, Pos2D>( vec2(0, 24), vec2(0, 50), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_l->tween<OExpo, Pos2D>( vec2(-24,0), vec2(-50,0), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_r->tween<OExpo, Pos2D>( vec2(24, 0), vec2(50, 0), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+
+    view::SFX::i().hold(effect_body_orig, 300u);
+    view::SFX::i().hold(effect_t, 300u);
+    view::SFX::i().hold(effect_b, 300u);
+    view::SFX::i().hold(effect_l, 300u);
+    view::SFX::i().hold(effect_r, 300u);
 }
 
 void ViewSprite::be_garbage(){

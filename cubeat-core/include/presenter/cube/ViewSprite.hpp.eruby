@@ -103,6 +103,7 @@ private:
     view::pSprite  body_;
     view::pSprite  outline_;
     view::pSprite  bodylayer2_;
+    view::pSprite  bodylayer3_;
     view::wpObject view_orig_;
     model::wpCube  cube_;
     data::wpMapSetting map_setting_;

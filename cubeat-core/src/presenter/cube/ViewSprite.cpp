@@ -359,6 +359,9 @@ void ViewSprite::ending(int time_delay){
     body_->clearAllTween();
     body_->setPickable(false);
 
+    bodylayer2_.reset();
+    bodylayer3_.reset();
+
     body_->setTexture( "cubes/cube-dead-" + utils::to_s(utils::random(4)+1) );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     body_->set<accessor::GradientDiffuse>(255);
@@ -381,8 +384,12 @@ void ViewSprite::be_broken(int color_id){
     bodylayer2_ = view::Sprite::create("smallblock", body_, 24, 24, true);
     data::Color col = data::Color::from_id(color_id);
     col.offset();
-    bodylayer2_->setDepth(-5).set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    bodylayer2_->setDepth(-5).set<accessor::ColorDiffuse>( ( col.rgb() | 0xff353520 ) - 0x00202020 );
     bodylayer2_->setPickable(false);
+
+    bodylayer3_ = view::Sprite::create("smallblock_out", body_, 24, 24, true);
+    bodylayer3_->setDepth(-7).set<accessor::ColorDiffuse>( 0xffafafaf );
+    bodylayer3_->setPickable(false);
 }
 
 void ViewSprite::restore(int color_id){
@@ -396,14 +403,15 @@ void ViewSprite::restore(int color_id){
     using namespace easing; using namespace accessor;
 
     bodylayer2_.reset(); // resets broken's layer2 color
+    bodylayer3_.reset();
 
     view::pObject effect_body_orig = view::Object::create(view_orig_.lock());
     effect_body_orig->set<Pos2D>( body_->get<Pos2D>() );
 
-    view::pSprite effect_t = view::Sprite::create("smallblock", effect_body_orig, 64, 20, true);
-    view::pSprite effect_b = view::Sprite::create("smallblock", effect_body_orig, 64, 20, true);
-    view::pSprite effect_l = view::Sprite::create("smallblock", effect_body_orig, 20, 64, true);
-    view::pSprite effect_r = view::Sprite::create("smallblock", effect_body_orig, 20, 64, true);
+    view::pSprite effect_t = view::Sprite::create("cube-br-2-t", effect_body_orig, 64, 20, true);
+    view::pSprite effect_b = view::Sprite::create("cube-br-2-b", effect_body_orig, 64, 20, true);
+    view::pSprite effect_l = view::Sprite::create("cube-br-2-l", effect_body_orig, 20, 64, true);
+    view::pSprite effect_r = view::Sprite::create("cube-br-2-r", effect_body_orig, 20, 64, true);
     effect_body_orig->setPickable(false);
     effect_t->setDepth(-5).setPickable(false);
     effect_b->setDepth(-5).setPickable(false);

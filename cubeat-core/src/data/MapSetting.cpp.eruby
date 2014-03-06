@@ -89,12 +89,12 @@ MapSetting& MapSetting::apply_player_passive_mods(utils::map_any const& conf) {
 MapSetting& MapSetting::setup_color_chances(utils::map_any const& conf) {
     setup_color_chances();
     utils::map_any::const_iterator end = conf.end();
-    if( conf.find("r")  != end && rez_chances_.size() > 0 ) rez_chances_[0] *= conf.F("r");
+    if( conf.find("b")  != end && rez_chances_.size() > 0 ) rez_chances_[0] *= conf.F("b");
     if( conf.find("g")  != end && rez_chances_.size() > 1 ) rez_chances_[1] *= conf.F("g");
-    if( conf.find("b")  != end && rez_chances_.size() > 2 ) rez_chances_[2] *= conf.F("b");
+    if( conf.find("r")  != end && rez_chances_.size() > 2 ) rez_chances_[2] *= conf.F("r");
     if( conf.find("y")  != end && rez_chances_.size() > 3 ) rez_chances_[3] *= conf.F("y");
-    if( conf.find("gb") != end && rez_chances_.size() > 4 ) rez_chances_[4] *= conf.F("gb");
-    if( conf.find("rb") != end && rez_chances_.size() > 5 ) rez_chances_[5] *= conf.F("rb");
+    if( conf.find("rb") != end && rez_chances_.size() > 4 ) rez_chances_[4] *= conf.F("rb");
+    if( conf.find("gb") != end && rez_chances_.size() > 5 ) rez_chances_[5] *= conf.F("gb");
 
     //normalize back to 100.0 percentage
     double total = 0.0;

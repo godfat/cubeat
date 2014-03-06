@@ -72,6 +72,7 @@ public:
     virtual void new_chain(model::wpChain const& chain);
     virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power);
     virtual void pop_garbage(int this_frame_lands);
+    virtual void hit_by_garbage(int this_frame_lands);
     virtual void warning_sound(int warning_level);
     virtual void alert_bar_animate(int warning_level);
     virtual void alert_bar_freeze(bool freezed);
@@ -118,7 +119,7 @@ private:
     view::pAnimatedSprite alert_bar_bottom_;
     view::pAnimatedSprite alert_text1_, alert_text2_;
     view::pObject alert_leading_orig1_, alert_leading_orig2_;
-    view::pSprite alert_leading1_, alert_leading2_;
+    view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
     std::vector< view::pAnimatedSprite > warning_strip2_;

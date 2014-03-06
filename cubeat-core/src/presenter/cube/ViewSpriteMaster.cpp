@@ -235,8 +235,6 @@ void ViewSpriteMaster::new_garbage_2ndphase(vec2 const& pos, int new_count){
         data::AnimatorParam<ISine, Pos2D> way1;
         data::AnimatorParam<IOSine, Pos2D> way2;
 
-        scale.start(vec3(.1,.1,.1)).end(vec3(1,1,1)).duration(470);
-
         /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
         /// Some of its end callbacks won't fire. It has to be less than 700...
         /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
@@ -269,6 +267,15 @@ void ViewSpriteMaster::pop_garbage(int this_frame_lands) {
     }
     for( int i = 0; i < this_frame_lands; ++i )
         attack_cubes_.pop_front();
+}
+
+void ViewSpriteMaster::hit_by_garbage(int this_frame_lands) {
+    using namespace accessor; using namespace easing;
+
+    vec2 offset(utils::random(15) + 15, utils::random(15) + 15);
+    vec2 orig(view_setting()->x_offset(), view_setting()->y_offset());
+    view_orig_->tween<OElastic, Pos2D>( orig + offset, orig, 500u );
+
 }
 
 // This is a private function that will be called to alter the representation of
@@ -402,6 +409,32 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
 //    alert_bar_cover_bottom_->set<Visible>(true).set<GradientDiffuse>(255).tween<SineCirc, Alpha>(0, 128, warning_gap);
     alert_text1_->playAnime("moving", warning_gap);
     alert_text2_->playAnime("moving", warning_gap);
+
+    view::pSprite alert_text1_out1 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
+    view::pSprite alert_text1_out2 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
+    view::pSprite alert_text2_out1 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
+    view::pSprite alert_text2_out2 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
+    alert_text1_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text1_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text2_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text2_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+
+    data::AnimatorParam<Linear, Alpha> alpha, alpha2;
+    data::AnimatorParam<Linear, Scale> scale, scale2;
+    alpha.start(255).end(0).duration(500).delay();
+    scale.start(vec3(1,1,1)).end(vec3(2.0, 1.2, 1)).duration(500).delay();
+    alpha2 = alpha; alpha2.delay(250);
+    scale2 = scale; scale2.delay(250);
+
+    alert_text1_out1->tween(alpha).tween(scale);
+    alert_text1_out2->tween(alpha2).tween(scale2);
+    alert_text2_out1->tween(alpha).tween(scale);
+    alert_text2_out2->tween(alpha2).tween(scale2);
+
+    view::SFX::i().hold(alert_text1_out1, 500);
+    view::SFX::i().hold(alert_text1_out2, 500 + 250);
+    view::SFX::i().hold(alert_text2_out1, 500);
+    view::SFX::i().hold(alert_text2_out2, 500 + 250);
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
@@ -445,8 +478,10 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_text1_->set< Visible >(true);
         alert_text2_->set< Visible >(true);
 
-        alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, 36) );
-        alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, -2) );
+        alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/100.0 * 640, 36) );
+        alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640, -2) );
+
+        alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/100.0 * 640) );
 
         /// alert_leading "Grow" hack
         if( warning_level <= 27 ) {
@@ -604,10 +639,10 @@ void ViewSpriteMaster::derived_init(){
                             .set<ScaleWithUV>( vec2(0.0001,1) ).set<Visible>(false).setPickable(false)
                             .set<Rotation>(vec3(0,0,90));
 
-    alert_text_bg1_ = view::Sprite::create("alert_text/moving/1", scene_.lock(), 18, 192, false);
+    alert_text_bg1_ = view::Sprite::create("alert_text/moving/0", scene_.lock(), 18, 192, false);
     alert_text_bg1_->setDepth(-3).set<Pos2D>( pos_vec2(0, h) + vec2(-63, 48) ).set<Alpha>(64);
 
-    alert_text_bg2_ = view::Sprite::create("alert_text/moving/1", scene_.lock(), 18, 192, false);
+    alert_text_bg2_ = view::Sprite::create("alert_text/moving/0", scene_.lock(), 18, 192, false);
     alert_text_bg2_->setDepth(-3).set<Pos2D>( pos_vec2(w, h) + vec2(-18, 48) ).set<Alpha>(64);
 
     alert_text1_ = view::AnimatedSprite::create("alert_text", scene_.lock(), 18, 192, false);
@@ -627,6 +662,9 @@ void ViewSpriteMaster::derived_init(){
 
     alert_leading2_ = view::Sprite::create("stroke3", alert_leading_orig2_, 24, 16, false);
     alert_leading2_->set<Pos2D>(vec2(0, 2)).set<Rotation>(vec3(0,0,-90));
+
+    alert_leading_bg_ = view::Sprite::create("stroke0", view_orig_, csize*w, 16, false);
+    alert_leading_bg_->setDepth(25); //background
 
     create_overheat_overlay();
     create_warning_strips2();

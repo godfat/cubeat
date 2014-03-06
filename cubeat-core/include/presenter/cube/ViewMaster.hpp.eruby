@@ -34,6 +34,7 @@ public:
     virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power){}
     virtual void new_garbage_old(int modelx, int modely, int new_count){}
     virtual void pop_garbage(int this_frame_lands){}
+    virtual void hit_by_garbage(int this_frame_lands){}
     virtual void warning_sound(int warning_level){}
     virtual void alert_bar_animate(int warning_level){}
     virtual void alert_bar_freeze(bool freezed){}

@@ -467,6 +467,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_bar_cover_bottom_->set< ScaleWithUV >( vec2(0.0001, 1) );
         alert_text1_->set< Visible >( false );
         alert_text2_->set< Visible >( false );
+        alert_leading_bg_->set< Visible >( false );
     } else {
         alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
         alert_bar_top_->set< Visible >( true );
@@ -481,6 +482,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/100.0 * 640, 36) );
         alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640, -2) );
 
+        alert_leading_bg_->set< Visible >(true);
         alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/100.0 * 640) );
 
         /// alert_leading "Grow" hack
@@ -664,7 +666,7 @@ void ViewSpriteMaster::derived_init(){
     alert_leading2_->set<Pos2D>(vec2(0, 2)).set<Rotation>(vec3(0,0,-90));
 
     alert_leading_bg_ = view::Sprite::create("stroke0", view_orig_, csize*w, 16, false);
-    alert_leading_bg_->setDepth(25); //background
+    alert_leading_bg_->setDepth(25).set<Visible>(false); //background
 
     create_overheat_overlay();
     create_warning_strips2();

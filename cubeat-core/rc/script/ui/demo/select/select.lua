@@ -59,9 +59,11 @@ local function ready_to_start(menu)
             else
               ready = ( selectlock_[1]==true )
             end
-            
+
             if ready==true then
-              menu.start:set_visible(true)
+              choose_character()
+              -- menu.start:set_visible(true)
+              -- don't show "start", just simply start after characters are chosen
             end
           end
 end

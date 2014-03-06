@@ -276,6 +276,7 @@ void ViewSpriteMaster::hit_by_garbage(int this_frame_lands) {
     vec2 orig(view_setting()->x_offset(), view_setting()->y_offset());
     view_orig_->tween<OElastic, Pos2D>( orig + offset, orig, 500u );
 
+    audio::Sound::i().playBuffer("tm2r_bom34.ogg");
 }
 
 // This is a private function that will be called to alter the representation of

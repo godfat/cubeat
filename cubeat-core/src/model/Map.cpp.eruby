@@ -118,8 +118,15 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
 void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
 {
     if( state::pWaiting waiting = c->is_waiting() ){
-        if( waiting->need_check() ){
+        if( waiting->need_check() )
+        {
             c->set_grounded(); // once grounded, always grounded
+
+            if( c->is_broken() ) {
+                waiting->checked();
+                return;
+            } // if the current cube is broken, bail out here, don't bother do one_fading check
+
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
@@ -478,6 +485,16 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     if( !owner->garbage_lands().empty() ) {
         presenter::pMap main_enemy = owner->garbage_lands().front().lock();
         main_enemy->pop_garbage_event()( this_frame_lands);
+    }
+
+    /// Start here
+
+    if( this_frame_lands >= 30 ||
+        ( this_frame_lands >= 12 &&
+          this_frame_lands + grounded_cube_count() >= ms()->width() * (ms()->height()-2)
+        ) ) {
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(owner->hit_by_garbage_event(), this_frame_lands), shared_from_this(), ms()->cube_dropping_duration());
     }
 
     // 2012.09 remove player ability for now MEMO WTF

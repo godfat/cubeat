@@ -34,13 +34,18 @@ face_pos: [
 ],
 
 passive_mod: {
-    warning_gap: 1000,
+    # note to self 2014.03.06
+    # Pro: Color concentrate on green and blue.
+    # Con: Drop normal chance is slightly lower
+    warning_gap: 1600,
     damage_factor: 1.0,
-    negate_damage_factor: 0.85,
-    drop_normal_chance: 0, 
+    negate_damage_factor: 1.0,
+    drop_normal_chance: 10,
     restore: {
         r: 1.0,
-        g: 1.0
+        g: 2.0,
+        b: 2.0,
+        y: 1.0
     },
     weapon: {
         heat_rate: 0.18,

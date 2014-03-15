@@ -34,10 +34,13 @@ face_pos: [
 ],
 
 passive_mod: {
-    warning_gap: 1000,
+    # note to self 2014.03.06
+    # Pro: Drop normal chance is somewhat higher
+    # Con: cooling rate is somewhat lower
+    warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 16, 
+    drop_normal_chance: 22,
     restore: {
         r: 1.0,
         g: 1.0,
@@ -48,7 +51,7 @@ passive_mod: {
     },
     weapon: {
         heat_rate: 0.18,
-        cool_rate: 0.06,
+        cool_rate: 0.05,
         downtime: 2000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,

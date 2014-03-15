@@ -104,8 +104,8 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     uiconf_ = Conf::i().config_of("ui/demo_layout");
 
 // WTF MEMO 2012.9 failed to adjust for balance
-//    passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
-//    passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
+    passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
+    passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
 
     //stop timer for now because the initial loading gonna be some time.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0).stop();
@@ -173,8 +173,9 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     // update map settings with player passive modification:
 // WTF MEMO 2012.9 failed to adjust for balance
-//    set0->apply_player_passive_mods( passive_conf0_ );
-//    set1->apply_player_passive_mods( passive_conf1_ );
+// WTF MEMO 2014.3 try to use it again:
+    set0->apply_player_passive_mods( passive_conf0_ );
+    set1->apply_player_passive_mods( passive_conf1_ );
 
     // some interacting settings have to be resolved first:
 // WTF MEMO 2012.9 failed to adjust for balance
@@ -886,6 +887,8 @@ void Demo::hide_upper_layer_ui()
         pause_t_->set<Visible>(false);
         desc_text_->set<Visible>(false);
     }
+    char_big1_.reset();
+    char_big2_.reset();
 }
 
 //2012.05 fix
@@ -1099,14 +1102,16 @@ void Demo::end_phase2(pMap lose_map)
             return;
         }
         if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
-        blocker_->tween<Linear, Alpha>(0, 144, 500u).set<Visible>(true);
+        blocker_->set<Alpha>(0).tween<Linear, Alpha>(0, 144, 500u, 0, 0, 1500u).set<Visible>(true);
         blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
 
-        win_t_->set<Visible>(true);
-        lose_t_->set<Visible>(true);
+        win_t_->set<Visible>(true).set<Scale>(vec3(0,0,0));
+        lose_t_->set<Visible>(true).set<Scale>(vec3(0,0,0));
 
         vec2 pos1 = vec2(Conf::i().SCREEN_W() /4,   Conf::i().SCREEN_H() /2);
         vec2 pos2 = vec2(Conf::i().SCREEN_W() /4*3, Conf::i().SCREEN_H() /2);
+        std::string char_big_filename1 = "temp/" + c1p_.substr(5, c1p_.size()-5);
+        std::string char_big_filename2 = "temp/" + c2p_.substr(5, c2p_.size()-5);
         if( lose_map == map0_ ) {
             lose_t_->set<Pos2D>( pos1 );
             win_t_->set<Pos2D>( pos2 );
@@ -1114,15 +1119,32 @@ void Demo::end_phase2(pMap lose_map)
                 audio::Sound::i().playBuffer("3/3c/lose.wav");
             else
                 audio::Sound::i().playBuffer("3/3c/win.wav");
+
+            char_big_filename1 += "/sad";
+            char_big_filename2 += "/glad";
         }
         else {
             lose_t_->set<Pos2D>( pos2 );
             win_t_->set<Pos2D>( pos1 );
             audio::Sound::i().playBuffer("3/3c/win.wav");
+
+            char_big_filename1 += "/glad";
+            char_big_filename2 += "/sad";
         }
+
+        // show big character illustraion
+        char_big1_ = view::Sprite::create(char_big_filename1, ui_scene_, 432, 648, true);
+        char_big2_ = view::Sprite::create(char_big_filename2, ui_scene_, 432, 648, true);
+        char_big2_->textureFlipH();
+        char_big1_->tween<OBounce, Pos2D>( vec2(pos1.X - 32, - pos1.Y + 64), vec2(pos1.X - 64, pos1.Y - 48), 1500u );
+        char_big2_->tween<OBounce, Pos2D>( vec2(pos2.X + 32, - pos2.Y + 64), vec2(pos2.X + 64, pos2.Y - 48), 1500u );
+
+        pview1_->getView()->set<Visible>(false);
+        pview2_->getView()->set<Visible>(false);
+
         vec3 v0(0,0,0), v1(1,1,1);
-        win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
-        lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0);
+        win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0, 0, 1500u);
+        lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0, 0, 1500u);
 
         end_text_->set<Visible>(true);
         end_text_->changeText( "Retry" );
@@ -1130,11 +1152,11 @@ void Demo::end_phase2(pMap lose_map)
         end_text2_->changeText( "Leave" );
         end_text_->set<Pos2D> ( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 - 60) );
         end_text2_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 60) );
-        end_text_-> set<Alpha>(0).set<Scale>(vec3(1.3, 1.3, 1.3)).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
-        end_text2_->set<Alpha>(0).set<Scale>(vec3(1.3, 1.3, 1.3)).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 1000);
+        end_text_-> set<Alpha>(0).set<Scale>(vec3(1.3, 1.3, 1.3)).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 2500u);
+        end_text2_->set<Alpha>(0).set<Scale>(vec3(1.3, 1.3, 1.3)).setDepth(-450).tween<Linear, Alpha>(0, 255, 500u, 0, 0, 2500u);
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Demo::setup_end_button, this), 1000);
+            bind(&Demo::setup_end_button, this), 2500);
     }
     else {     // WTF BBQ!!!!!!!!!!!!!!!!!!!
         script::Lua::call(L_, "ending", submode_);

@@ -70,6 +70,7 @@ public:
     pChain const chain() const { return chain_belonged_to_; }
     void lose_chain()          { chain_belonged_to_.reset(); }
     void go_dying()            { is_dead_ = true; }
+    void restore()             { is_broken_ = false; }
     bool cycle_and_die();
 
     // differs from model::Cube

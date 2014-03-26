@@ -24,6 +24,7 @@ public:
     static std::vector<int> find_high_column_indexes(pSimpleMap const&, int threshold = 6);
     static pSimpleCube find_keycube_for_highest_chain_power
            (pSimpleMap const&, int* power_out, int lower_bound = 0, int upper_bound = 9999, int em_level = 0);
+    static void        collect_firemap(pSimpleMap const&, int* firemap_out);
     static std::vector<pSimpleCube> find_garbages(pSimpleMap const&);
     static std::vector<pSimpleCube> find_brokens(pSimpleMap const&);
     static pSimpleCube** find_garbages(pSimpleMap const&, unsigned int* size_out);
@@ -33,6 +34,7 @@ public:
     static pSimpleMap clone_map(pSimpleMap const&);
     static void setup(pSimpleMap&, int x, int y, pSimpleCube);
     static void kill (pSimpleMap&, int x, int y);
+    static void hit  (pSimpleMap&, int x, int y);
     static int get_base_attack(pSimpleMap cloned_map);
     static bool still_chaining(pSimpleMap const& map);
 

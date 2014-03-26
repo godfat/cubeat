@@ -134,6 +134,10 @@ pSimpleCube* SimpleMap_get_firepoint_cube(pSimpleMap* p, int lower_bound, int up
     return ret;
 }
 
+void SimpleMap_get_firemap(pSimpleMap* p, int* firemap_out) {
+    AIUtils::collect_firemap(*p, firemap_out);
+}
+
 pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p, unsigned int* size_out) {
     return AIUtils::find_garbages(*p, size_out);
 }

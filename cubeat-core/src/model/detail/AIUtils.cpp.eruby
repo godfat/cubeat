@@ -62,6 +62,24 @@ pSimpleCube AIUtils::find_keycube_for_highest_chain_power
     return best_cube;
 }
 
+void AIUtils::collect_firemap(pSimpleMap const& map, int* firemap_out)
+{
+    pSimpleMap map_clone = map->clone();
+    int base_attack = get_base_attack( map );
+
+    for( int y=map->ms()->height() - 1; y >= 0; --y ) {
+        for( int x=0; x < map->ms()->width(); ++x ) {
+            pSimpleCube c = map_clone->simp_cubes_[x][y];
+            if( c && c->has_grounded() ) {
+                int v = simulate_fire_at( x, y, map_clone->clone() );
+
+                // WELL, Simulated fire at SimpleMap can yield MINUS attack.......... fuck.
+                firemap_out[ (x*map->ms()->height()) + y ] = v;
+            }
+        }
+    }
+}
+
 std::vector<pSimpleCube> AIUtils::find_garbages(pSimpleMap const& map)
 {
     std::vector<pSimpleCube> garbages;
@@ -147,12 +165,9 @@ int AIUtils::grounded_cube_count(pSimpleMap const& map)
 //returns chain's score sum
 int AIUtils::simulate_fire_at(int x, int y, pSimpleMap cloned_map)
 {
-    //cloned_map->print_data_for_debug();
-    kill(cloned_map, x, y);
-    //cloned_map->print_data_for_debug();
-    cloned_map->cycle();
+    hit(cloned_map, x, y);
     cloned_map->cycle(); //NOTE: why twice ???? possibly we update_chains first then cycle_cubes.
-    //cloned_map->print_data_for_debug();
+
     bool did_trigger_chain = false;
     while( cloned_map->chains_.size() ) {
         cloned_map->cycle();
@@ -214,9 +229,19 @@ void AIUtils::setup(pSimpleMap& map, int x, int y, pSimpleCube c)
     map->simp_cubes_[x][y] = c;
 }
 
-void AIUtils::kill (pSimpleMap& map, int x, int y)
+void AIUtils::kill(pSimpleMap& map, int x, int y)
 {
     map->simp_cubes_[x][y].reset();
+    map->cycle();
+}
+
+void AIUtils::hit(pSimpleMap& map, int x, int y)
+{
+    if( map->simp_cubes_[x][y]->is_broken() ) {
+        map->simp_cubes_[x][y]->restore();
+    } else {
+        kill(map, x, y);
+    }
 }
 
 } //ai_detail

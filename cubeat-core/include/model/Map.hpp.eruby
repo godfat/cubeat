@@ -151,10 +151,10 @@ private:
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
     preview_list_type cubes_preview_;
 
-    std::map< wpChain, std::vector< std::pair<int, int> > > dying_cubes_position_;
+    std::map< std::pair<wpChain, int>, std::vector< std::pair<int, int> > > dying_cubes_position_;
 
     typedef std::tr1::shared_ptr<int> pTimerDummy;
-    std::map< wpChain, pTimerDummy > chain_timer_handles_;
+    std::map< std::pair<wpChain, int>, pTimerDummy > chain_timer_handles_;
 
     friend class OneFadingT<Map>;
 };

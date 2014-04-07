@@ -69,29 +69,22 @@ public:
         return chain_step_.size();
     }
 
-    void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
-    int last_step_x() const { return last_step_x_; }
-    int last_step_y() const { return last_step_y_; }
     int attack_of_current_step() const {
         return power_factor_ - last_power_factor_;
     }
 
-    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0), can_revert_(false){}
+    Chain():power_factor_(0), last_power_factor_(0), can_revert_(false){}
 
     Chain(pointer_type const& that):
         chain_step_(that->chain_step_),
-        last_step_x_(that->last_step_x_),
-        last_step_y_(that->last_step_y_),
         power_factor_(that->power_factor_),
         last_power_factor_(that->last_power_factor_)
     {}
 
 private:
     std::vector<int> chain_step_;
-    int last_step_x_, last_step_y_;
     int power_factor_, last_power_factor_;
     bool can_revert_;
-    // int damage_factor_;
 };
 
 typedef Chain::pointer_type pChain;

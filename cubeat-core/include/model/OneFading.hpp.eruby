@@ -94,7 +94,6 @@ private:
 
     void update_step(pChain chain) {
         chain->add_last_step_amounts( list_.size() );
-        chain->set_last_step_position( (*list_.rbegin())->x(), (*list_.rbegin())->y() );
     }
 
     void extend_last_step(pChain chain, int amount) {

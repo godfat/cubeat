@@ -145,7 +145,8 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                         }
                     }
                     // remember the dying_cubes_position according to chain for later use (visual)
-                    dying_cubes_position_[ one_fading->wchain() ].push_back( std::make_pair((**i).x(), (**i).y()) );
+                    dying_cubes_position_[ std::make_pair(one_fading->wchain(), one_fading->chain()->step()) ]
+                        .push_back( std::make_pair((**i).x(), (**i).y()) );
                 }
             }
             else waiting->checked();
@@ -356,9 +357,13 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-static void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
+static void delay_adder(int& be_added_to, int amount) {
+    printf(" original atk sum: %d, add amount: %d, new atk sum: %d\n", be_added_to, amount, be_added_to + amount);
+    be_added_to += amount;
+}
 static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount)
 {
+    printf(" original atk sum: %d, minus amount: %d, new atk sum: %d\n", be_subed_from, amount, be_subed_from - amount);
     be_subed_from -= amount;
     cb(actual_amount);
 }
@@ -367,7 +372,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
     using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
 
-    double damage_factor = ms()->damage_factor();
     presenter::pMap o = owner();
 
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
@@ -376,12 +380,15 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
         // when the Chain's rear is not zero we notify to add a new combo
         if( (*i)->last_step_amounts() != 0 ){
-            pTimerDummy handle = pTimerDummy(new int);
-            chain_timer_handles_[ key_wchain ] = handle; // if we are extending last chain, this assignment will effectively erase last timer calls.
-
             (*i)->update_power_factor();
-            int amount = (*i)->attack_of_current_step(); // it is just superficial effects, so don't use damage_factor here.
-            //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
+            int amount = (*i)->attack_of_current_step();
+            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, (*i)->step());
+
+            pTimerDummy handle = pTimerDummy(new int);
+            chain_timer_handles_[ chain_step_pair ] = handle;
+            // if we are extending last chain, this assignment will effectively erase last timer calls.
+
+            //current_sum_of_attack_ += (*i)->attack_of_current_step();
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&delay_adder, ref(current_sum_of_attack_), amount),
                 handle,
@@ -389,12 +396,14 @@ void <% debug_hook 'Map::update_chains' do %>(){
             o->new_chain_event()(*i);
             //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
 
+            printf(" -- Chain %x register for %d (c%dn%d), current atk %d\n", (*i).get(), amount, (*i)->step(), (*i)->last_step_amounts(), current_sum_of_attack_);
+
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(o->new_garbage_event(), dying_cubes_position_[ key_wchain ] , amount), handle, ms()->cube_dying_duration());
+                bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
 //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
 
             match_counter_ += 1;
-            score_ += (*i)->score_step();
+            score_ += (*i)->score_step(); /// This score is actually bogus. Doesn't count the effect of extending chains.
             (*i)->step_one();
         }
 
@@ -402,9 +411,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
         //std::cout << "  chain " << (*i) << " use count: " << (*i).use_count() << "\n";
 
         if( (*i).use_count() == 1 ){
-            // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->power_factor();
-            double actual_amount = amount;// * damage_factor;
+            double actual_amount = amount;
             //current_sum_of_attack_ -= amount;
             //o->throw_garbage( amount );
             std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
@@ -413,6 +421,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 self(),
                 1500);
 
+            printf(" -- Chain %x want to dump %d, current atk %d\n", (*i).get(), amount, current_sum_of_attack_);
+
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
             //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
@@ -420,9 +430,20 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 highest_chain_ = (*i)->step() - 1;
             }
 
-            chain_timer_handles_.erase( key_wchain );
+            typedef std::pair< std::pair<wpChain, int> const, pTimerDummy > ChainTimerHandlePair;
+            BOOST_FOREACH(ChainTimerHandlePair& it, chain_timer_handles_) {
+                if( it.first.first.lock() == (*i) ) {
+                    printf(" -- removing handle to Chain:step %x:%d -- ", (*i).get(), it.first.second);
+                    int res = chain_timer_handles_.erase( std::make_pair(key_wchain, it.first.second) );
+                    if( res > 0 ) printf(" done.\n"); else printf(" failed.\n");
+                }
+            }
+            //chain_timer_handles_.erase( key_wchain );
 
             i = chains_.erase(i);
+
+            /// CONTINUE THIS LATER: In a very intensive fight between char1 & 4, it just crashed? Why?
+
         }
         else{
             ++i;

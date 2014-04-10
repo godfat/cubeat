@@ -59,6 +59,17 @@ function ai_entry(self)
     emergency_level = 1
   end
 
+  -- Fire Map test
+  -- local firemap = my_map:get_firemap()
+  
+  -- for y = my_map:height() - 2, 0, -1 do
+    -- for x = 0, my_map:width() - 1 do
+      -- io.write(string.format("%2d", firemap[x*my_map:height() + y]))
+    -- end
+    -- io.write("\n")
+  -- end
+  -- io.write("\n")
+  
   local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
@@ -69,12 +80,12 @@ function ai_entry(self)
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
     setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
     self:push_command(cmdbuf)
-    if keycube:is_broken() then
-      self:push_command(cmdbuf)
-    elseif keycube:is_garbage() then
-      self:push_command(cmdbuf)
-      self:push_command(cmdbuf)
-    end
+    -- if keycube:is_broken() then
+      -- self:push_command(cmdbuf)
+    -- elseif keycube:is_garbage() then
+      -- self:push_command(cmdbuf)
+      -- self:push_command(cmdbuf)
+    -- end
   else
     --io.write "No keycube for now.\n"
     

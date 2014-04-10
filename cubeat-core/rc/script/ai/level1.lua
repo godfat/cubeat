@@ -24,12 +24,32 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
+local function pick_a_higher_half_coord_from(map)
+  local x, y
+  local bail_out_count = 0
+  repeat
+    x = random(map:width())
+    y = random(map:height()/2) + math.floor(map:height()/2) -- consider higher half only
+    bail_out_count = bail_out_count + 1
+  until map:get_grounded_cube(x, y):exist() or bail_out_count > 10
+  return x, y
+end
+
 local ATTACK_PWR     = 1
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
 --these are intended for C to call from.
 function THINK_INTERVAL() return 550 end --ms
-function MISSRATE()       return 20  end --percentage. 0 ~ 100
+function MISSRATE()       return 0  end --percentage. 0 ~ 100
+
+function normal_attack_consideration(keycube, power, my_map, enemy_map) 
+  return keycube:exist() 
+end
+
+function throttled_attack_consideration(keycube, power, my_map, enemy_map)
+  return keycube:exist() and random(100) > 75 and  
+         enemy_map:garbage_left() + power <= 6 -- so opponent doesn't feel like they are being overpowered too much.
+end
 
 function ai_entry(self)
 
@@ -59,9 +79,21 @@ function ai_entry(self)
   local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
-
-  if keycube:exist() and random(100) > 75 and  
-     enemy_map:garbage_left() + power <= 6 -- so opponent doesn't feel like they are being overpowered too much.
+  
+  -- Fire Map test 
+  -- local firemap = my_map:get_firemap()
+  
+  -- for y = my_map:height() - 2, 0, -1 do
+    -- for x = 0, my_map:width() - 1 do
+      -- io.write(string.format("%2d", firemap[x*my_map:height() + y]))
+    -- end
+    -- io.write("\n")
+  -- end
+  -- io.write("\n")
+  
+  if ( enemy_map:grounded_cube_count() < capacity * 0.5 and normal_attack_consideration(keycube, power, my_map, enemy_map) )
+     or
+     ( throttled_attack_consideration(keycube, power, my_map, enemy_map) ) 
   then
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
     setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
@@ -103,16 +135,19 @@ function ai_entry(self)
       self:push_command(cmdbuf)
     end
     -- don't do garbages for now.
-
+    
     if self:cmdqueue_size() < 1 then
       if ground_cube_num >= capacity * 0.5 --[[and not my_map:still_chaining()]] then
-        local x, y = pick_a_coord_from(my_map)
-        if not keycube:exist() or (x ~= keycube:x() or y ~= keycube:y()) then
+        local x, y = pick_a_higher_half_coord_from(my_map)
+        if ( not keycube:exist() or (x ~= keycube:x() or y ~= keycube:y()) ) and 
+           my_map:get_grounded_cube(x, y):exist() and
+           random(100) > 50 
+        then
           setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
           self:push_command(cmdbuf)
         end
       else
-        if self:get_heat() < 0.7 and random(100) > 70 then
+        if self:get_heat() < 0.7 and ground_cube_num <= capacity * 0.6 and random(100) > 40 then
           setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
           self:push_command(cmdbuf)
         end

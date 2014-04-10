@@ -1103,7 +1103,6 @@ void Demo::end_phase2(pMap lose_map)
     if( game_mode_ != GM_SINGLE ) {
         printf("submode: %d\n", submode_);
         if( ( game_mode_ == GM_PVC && submode_ == 99 ) || game_mode_ == GM_TUT ) { // GM_PVC && submode_ == 1 means STORY_MODE
-            printf("Hmm????\n");
             script::Lua::call(L_, "ending", submode_);
             return;
         }
@@ -1213,7 +1212,8 @@ void Demo::end(pMap lose_map)
         return;
     }
 
-    lose_map->ending_effect();
+    if( game_mode_ != GM_SINGLE )
+        lose_map->ending_effect();
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 1600);

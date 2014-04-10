@@ -144,7 +144,7 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                         }
                     }
                     // remember the dying_cubes_position according to chain for later use (visual)
-                    dying_cubes_position_[ std::make_pair(one_fading->wchain(), one_fading->chain()->step()) ]
+                    dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
                         .push_back( std::make_pair((**i).x(), (**i).y()) );
                 }
             }

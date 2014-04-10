@@ -69,7 +69,7 @@ public:
     void chain(pChain chain)   { chain_belonged_to_ = chain; }
     pChain const chain() const { return chain_belonged_to_; }
     void lose_chain()          { chain_belonged_to_.reset(); }
-    void go_dying()            { is_dead_ = true; }
+    void go_dying(int)         { is_dead_ = true; }
     void restore()             { is_broken_ = false; }
     bool cycle_and_die();
 
@@ -92,8 +92,11 @@ public:
 	void set_grounded() { has_grounded_ = true; new_garbage(false); }
 	void new_garbage(bool const& f) { is_new_garbage_ = f; }
 
-	// pure dummy. Have to use this in OneFading<T>. I couldn't find a way to avoid it.
+	// pure dummies. Have to use this in OneFading<T>. I couldn't find a way to avoid it.
 	bool is_waiting() const{ return false; }
+	bool is_dying() const{ return false; }
+	int dying_chain_step() const{ return 0; }
+	// end of dummies
 
 
     data::pCube data() const{ return data_; }

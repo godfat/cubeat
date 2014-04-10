@@ -56,7 +56,6 @@ SimpleMap& SimpleMap::cycle() {
 
 void SimpleMap::update_chains()
 {
-    double damage_factor = ms()->damage_factor();
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end(); )
     {
         // when the Chain's rear is not zero we notify to add a new combo
@@ -65,7 +64,7 @@ void SimpleMap::update_chains()
             // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->attack_of_current_step(); //*damage_factor;
             current_sum_of_attack_ += amount;
-            score_ += (*i)->score_step();
+            score_ += (*i)->step_score((*i)->step());
             (*i)->step_one();
         }
         // when the Chain's all dead then we fire up the attack and make this one null
@@ -117,8 +116,7 @@ void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
         cube->set_grounded();
         pOneFadingSimple one_fading = make_OneFading(cube);
         if( one_fading ) {
-            one_fading->fade(*this, cube);
-            cube->go_dying(); //holy crap.. that_would_be_killed_by_map ..
+            one_fading->fade(*this);
         }
         if( cube->cycle_and_die() ) {
             if( cube->chain() ) {

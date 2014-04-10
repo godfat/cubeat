@@ -171,6 +171,12 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
 
+    /// TEST: when ai_level_ == 0, reduce sink_speed_limit?
+    if( ai_level_ == 0 && game_mode_ == GM_PVC ) {
+        set0->sink_speed_limit(200);
+        set1->sink_speed_limit(200);
+    }
+
     // update map settings with player passive modification:
 // WTF MEMO 2012.9 failed to adjust for balance
 // WTF MEMO 2014.3 try to use it again:

@@ -248,7 +248,7 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
     body_->set<accessor::Pos2D>( pos );
 }
 
-void ViewSprite::go_dying(int dying_mode){
+void ViewSprite::go_dying(){
     using namespace easing; using namespace accessor;
     unsigned int duration = map_setting()->cube_dying_duration();
 //    body_->tween<Linear, GradientEmissive>(128, duration);

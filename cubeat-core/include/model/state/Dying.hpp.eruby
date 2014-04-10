@@ -15,20 +15,23 @@ public:
     typedef pDying pointer_type;
 
 public:
-    static pState create(wpCube owner){
-        return utils::ObjectPool<Dying>::create(owner)->init();
+    static pState create(wpCube owner, int dying_chain_step){
+        return utils::ObjectPool<Dying>::create(owner, dying_chain_step)->init();
     }
 
 public:
-    Dying(wpCube owner): State(owner), dying_step_(0){}
+    Dying(wpCube owner, int dying_chain_step):
+        State(owner), dying_step_(0), dying_chain_step_(dying_chain_step){}
     virtual <% debug_hook '~Dying' do %>(){<%end%>}
     virtual void next_state();
+    int dying_chain_step() const { return dying_chain_step_; }
 
 protected:
     virtual pState init(); // covariant return type... invalid for shared_ptr?
 
 private:
     int dying_step_;
+    int dying_chain_step_; // record what's the chain_step when it started dying ( and it should be the same for the same "dying" )
 };
 
 }}} // end of namespace

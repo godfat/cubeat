@@ -67,7 +67,8 @@ public:
     // end
 
     // begin only used by OneFading::fade, Map::check_a_fade
-    void go_dying(int dying_mode = -1);
+    void go_dying(int dying_chain_step);
+    int dying_chain_step() const;
     // end
 
     // begin only used by State::map
@@ -130,8 +131,8 @@ private:
     wpCube self_;
 <%= accessor :bool, :retain_chain %>
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :be_garbage_event %>
-<%= accessor :'std::tr1::function<void()>', :get_chain_event, :lose_chain_event, :sink_a_block_event, :update_pos_event, :approach_pos_event, :garbage_fly_event %>
-<%= accessor :'std::tr1::function<void(int)>', :restore_event, :go_exploding_event, :go_dying_event, :be_broken_event, :ending_event %>
+<%= accessor :'std::tr1::function<void()>', :get_chain_event, :lose_chain_event, :go_dying_event, :sink_a_block_event, :update_pos_event, :approach_pos_event, :garbage_fly_event %>
+<%= accessor :'std::tr1::function<void(int)>', :restore_event, :go_exploding_event, :be_broken_event, :ending_event %>
 <%= accessor :'std::tr1::function<void(double)>', :losing_chain_event %>
 <%= accessor :'std::tr1::function<void(int,int)>', :hit_event %>
 };

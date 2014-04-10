@@ -130,8 +130,7 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
-                one_fading->fade(*this, c, existing_chain);
-                c->go_dying();
+                one_fading->fade(*this, existing_chain);
 
                 // The first phase of chain tagging: If there are other OneFadings in the same frame,
                 // look it up and tag it. It will only affect other successfully constructed OneFadings.
@@ -358,12 +357,10 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 }
 
 static void delay_adder(int& be_added_to, int amount) {
-    printf(" original atk sum: %d, add amount: %d, new atk sum: %d\n", be_added_to, amount, be_added_to + amount);
     be_added_to += amount;
 }
 static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount)
 {
-    printf(" original atk sum: %d, minus amount: %d, new atk sum: %d\n", be_subed_from, amount, be_subed_from - amount);
     be_subed_from -= amount;
     cb(actual_amount);
 }
@@ -379,10 +376,17 @@ void <% debug_hook 'Map::update_chains' do %>(){
         wpChain key_wchain = *i;
 
         // when the Chain's rear is not zero we notify to add a new combo
-        if( (*i)->last_step_amounts() != 0 ){
-            (*i)->update_power_factor();
-            int amount = (*i)->attack_of_current_step();
-            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, (*i)->step());
+
+        /// This part need a total revamp -- It's not just the "last part of the chain" that needed update here
+        /// It's EVERY part of the chain might be updated during this process.
+        /// Need to somehow now which parts need updated:
+        /// It's even possible that you can add a step onto the chain and extending an older step of the same chain at the same frame!
+
+        for( int n = 0; n < (*i)->step_indices_size(); ++n ) {
+            int step = (*i)->step_indices(n);
+            (*i)->update_power_factor_step( step );
+            int amount = (*i)->attack_of_step( step );
+            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
 
             pTimerDummy handle = pTimerDummy(new int);
             chain_timer_handles_[ chain_step_pair ] = handle;
@@ -396,16 +400,21 @@ void <% debug_hook 'Map::update_chains' do %>(){
             o->new_chain_event()(*i);
             //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
 
-            printf(" -- Chain %x register for %d (c%dn%d), current atk %d\n", (*i).get(), amount, (*i)->step(), (*i)->last_step_amounts(), current_sum_of_attack_);
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                bind(&delay_adder, ref(score_), (*i)->step_score(step) ),
+                handle,
+                ms()->cube_dying_duration());
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
 //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
 
-            match_counter_ += 1;
-            score_ += (*i)->score_step(); /// This score is actually bogus. Doesn't count the effect of extending chains.
-            (*i)->step_one();
+            if( step == (*i)->step() && !(*i)->currently_extending() ) {
+                match_counter_ += 1;
+                (*i)->step_one();
+            }
         }
+        (*i)->clear_indices();
 
         // when the Chain's all dead then we fire up the attack and make this one null
         //std::cout << "  chain " << (*i) << " use count: " << (*i).use_count() << "\n";
@@ -421,8 +430,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 self(),
                 1500);
 
-            printf(" -- Chain %x want to dump %d, current atk %d\n", (*i).get(), amount, current_sum_of_attack_);
-
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
             //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
@@ -433,9 +440,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
             typedef std::pair< std::pair<wpChain, int> const, pTimerDummy > ChainTimerHandlePair;
             BOOST_FOREACH(ChainTimerHandlePair& it, chain_timer_handles_) {
                 if( it.first.first.lock() == (*i) ) {
-                    printf(" -- removing handle to Chain:step %x:%d -- ", (*i).get(), it.first.second);
-                    int res = chain_timer_handles_.erase( std::make_pair(key_wchain, it.first.second) );
-                    if( res > 0 ) printf(" done.\n"); else printf(" failed.\n");
+                    chain_timer_handles_.erase( std::make_pair(key_wchain, it.first.second) );
                 }
             }
             //chain_timer_handles_.erase( key_wchain );

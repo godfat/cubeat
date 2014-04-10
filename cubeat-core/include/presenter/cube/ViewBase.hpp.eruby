@@ -16,7 +16,7 @@ public:
 public:
     ViewBase(model::pCube cube): data_(cube->data()){}
     virtual ~ViewBase(){}
-    virtual void go_dying(int /*dying_mode*/){}
+    virtual void go_dying(){}
     virtual void go_exploding(int color_id){}
     virtual void be_garbage(){}
     virtual void be_broken(int /*color_id*/){}

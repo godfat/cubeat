@@ -75,7 +75,7 @@ public:
     virtual void approach_pos();
     virtual void garbage_fly(); //only called once when model::Map::insert_garbage
     virtual void goto_garbage_orig(); //called from presenter::Map
-    virtual void go_dying(int dying_mode);
+    virtual void go_dying();
     virtual void go_exploding(int color_id);
     virtual void be_broken(int color_id);
     virtual void restore(int color_id);

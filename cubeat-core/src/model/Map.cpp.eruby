@@ -437,10 +437,14 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 highest_chain_ = (*i)->step() - 1;
             }
 
-            typedef std::pair< std::pair<wpChain, int> const, pTimerDummy > ChainTimerHandlePair;
-            BOOST_FOREACH(ChainTimerHandlePair& it, chain_timer_handles_) {
-                if( it.first.first.lock() == (*i) ) {
-                    chain_timer_handles_.erase( std::make_pair(key_wchain, it.first.second) );
+            for( std::map< std::pair<wpChain, int>, pTimerDummy >::iterator it = chain_timer_handles_.begin(), iend = chain_timer_handles_.end();
+                 it != iend; )
+            {
+                if( it->first.first.lock() == (*i) ) {
+                    // note: key_wchain (wptr) is (*i) (sptr_to_chain)
+                    chain_timer_handles_.erase( std::make_pair(key_wchain, (it++)->first.second) );
+                } else {
+                    ++it;
                 }
             }
             //chain_timer_handles_.erase( key_wchain );

@@ -375,12 +375,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
     {
         wpChain key_wchain = *i;
 
-        // when the Chain's rear is not zero we notify to add a new combo
-
-        /// This part need a total revamp -- It's not just the "last part of the chain" that needed update here
-        /// It's EVERY part of the chain might be updated during this process.
-        /// Need to somehow now which parts need updated:
-        /// It's even possible that you can add a step onto the chain and extending an older step of the same chain at the same frame!
+        /// EVERY step of the chain might be updated during this process.
+        /// So we have to write it this way:
 
         for( int n = 0; n < (*i)->step_indices_size(); ++n ) {
             int step = (*i)->step_indices(n);

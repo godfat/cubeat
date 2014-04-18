@@ -125,7 +125,10 @@ int Cube::dying_chain_step() const {
     if( state::cpDying dying = is_dying() ) {
         return dying->dying_chain_step();
     }
-    else return 0;
+    else {
+        printf("\n\n in Cube::dying_chain_step(): DA FAQ? Impossible Flow.\n\n\n");
+        return 0;
+    }
 }
 
 Cube& <% debug_hook 'Cube::go_dropping' do %>(){

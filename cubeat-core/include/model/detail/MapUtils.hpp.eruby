@@ -57,17 +57,23 @@ void make_row(typename MapType::container_type const& cubes,
               int chain_amount)
 {
     std::vector<typename MapType::cube_type> row;
+    bool row_extending = false;
 
     for(int i=that->x(); i>=0; --i) // include self
-        if( check_not_continue( row, that, cubes[i][that->y()], extending_out ) )
+        if( check_not_continue( row, that, cubes[i][that->y()], row_extending ) )
             break;
 
     for(int i=that->x()+1, iend=cubes.width(); i!=iend; ++i) // exclude self
-        if( check_not_continue( row, that, cubes[i][that->y()], extending_out ) )
+        if( check_not_continue( row, that, cubes[i][that->y()], row_extending ) )
             break;
 
-    if(static_cast<int>(row.size()) >= chain_amount)
+    if(static_cast<int>(row.size()) >= chain_amount) {
         process_chaining<MapType>(row, not_traveled, result);
+        extending_out = extending_out || row_extending;
+        // note: this whole "extending" stuff is very unintuitive at this point
+        //       remember check_not_continue() may not have a column.size() >= chain_amount
+        //       if col_extending is set to true, we must not always accept it!
+    }
 }
 
 // same as make_row, but column instead.
@@ -80,17 +86,23 @@ void make_column(typename MapType::container_type const& cubes,
                  int chain_amount)
 {
     std::vector<typename MapType::cube_type> column;
+    bool col_extending = false;
 
     for(int i=that->y(); i>=0; --i) // include self
-        if( check_not_continue( column, that, cubes[that->x()][i], extending_out ) )
+        if( check_not_continue( column, that, cubes[that->x()][i], col_extending ) )
             break;
 
     for(int i=that->y()+1, iend=cubes.height(); i!=iend; ++i) // exclude self
-        if( check_not_continue( column, that, cubes[that->x()][i], extending_out ) )
+        if( check_not_continue( column, that, cubes[that->x()][i], col_extending ) )
             break;
 
-    if(static_cast<int>(column.size()) >= chain_amount)
+    if(static_cast<int>(column.size()) >= chain_amount) {
         process_chaining<MapType>(column, not_traveled, result);
+        extending_out = extending_out || col_extending;
+        // note: this whole "extending" stuff is very unintuitive at this point
+        //       remember check_not_continue() may not have a column.size() >= chain_amount
+        //       if col_extending is set to true, we must not always accept it!
+    }
 }
 
 // create a cube list that we need for one fading.

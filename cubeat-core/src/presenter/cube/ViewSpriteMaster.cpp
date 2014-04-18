@@ -80,8 +80,6 @@ void ViewSpriteMaster::column_not_full(int at){
     }
 }
 
-/// Because of the update at 2014.04 at Map::update_chain, this new_chain view implementation has to be revamped as well
-
 void ViewSpriteMaster::new_chain(model::wpChain const& chain){
     int combo = chain.lock()->step();
     int amounts = chain.lock()->last_step_amounts();
@@ -97,6 +95,7 @@ void ViewSpriteMaster::new_chain(model::wpChain const& chain){
         int n = chain.lock()->step_amounts(i);
         str2 += utils::to_s(n) + ( i < combo ? "+" : "" );
     }
+    str2 += " cubes";
 
     view::pScene s = scene_.lock();
 

@@ -41,12 +41,14 @@ public:
         // I have no good way around this. If this is an extending OneFading,
         // we need to know what step in a chain it is currently extending, so have to search through it first.
         if( extending_ ) {
-            chain->currently_extending(true);
             for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
                 i!=iend; ++i)
             {
                 if( (**i).is_dying() ) { // if it's extending, there must be a few cubes already dying.
                     extending_at_step_ = (**i).dying_chain_step();
+                    if( extending_at_step_ == chain->step() ) {
+                        chain->is_extending_final_step(true);
+                    }
                     break;
                 }
             }

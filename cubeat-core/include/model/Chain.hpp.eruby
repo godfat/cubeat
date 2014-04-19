@@ -102,26 +102,25 @@ public:
 
     void clear_indices() {
         step_indices_.clear();
-        currently_extending_ = false;
     }
 
-    bool currently_extending() const { return currently_extending_; }
-    void currently_extending(bool i) { currently_extending_ = i; }
+    bool is_extending_final_step() const { return is_extending_final_step_; }
+    void is_extending_final_step(bool i) { is_extending_final_step_ = i; }
 
-    Chain(): currently_extending_(false) {}
+    Chain(): is_extending_final_step_(false) {}
 
     Chain(pointer_type const& that):
         chain_step_(that->chain_step_),
         power_step_(that->power_step_),
         step_indices_(that->step_indices_),
-        currently_extending_(that->currently_extending_)
+        is_extending_final_step_(that->is_extending_final_step_)
     {}
 
 private:
     std::vector<int> chain_step_;
     std::vector<int> power_step_;
     std::vector<int> step_indices_;
-    bool currently_extending_;
+    bool is_extending_final_step_;
 };
 
 typedef Chain::pointer_type pChain;

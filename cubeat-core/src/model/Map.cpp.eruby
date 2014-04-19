@@ -356,11 +356,38 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-static void delay_adder(int& be_added_to, int amount) {
+static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain) {
+    pChain c = wchain.lock();
+    if( !c ) {
+        printf(" - chain not found!!!! \n");
+        fflush(stdout);
+        exit(0);
+    }
+    if( amount < 50 ) {
+        printf(" - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
+    }
     be_added_to += amount;
 }
-static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount)
+
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, pChain c)
 {
+//    pChain c = wchain.lock();
+//    if( !c ) {
+//        printf(" - chain not found (at throwing point) !!!! \n");
+//        exit(0);
+//    }
+    if( be_subed_from < amount ) {
+        printf("\n ------------- Impossible flow, power_factor(%d) > current_sum_of_attack_(%d).\n\n", amount, be_subed_from);
+        printf(" Dump data about chain %x: \n", c.get() );
+        for( int n = 1; n <= c->step(); ++n ) {
+            printf("  - step %d, amount %d = attack %d.\n", n, c->step_amounts(n), c->attack_of_step(n) );
+        }
+        printf("\n");
+        fflush(stdout);
+        exit(0);
+    } else {
+        printf(" | chain %x total power_factor %d throwing, current_sum %d -> %d \n", c.get(), amount, be_subed_from, be_subed_from - amount);
+    }
     be_subed_from -= amount;
     cb(actual_amount);
 }
@@ -382,32 +409,45 @@ void <% debug_hook 'Map::update_chains' do %>(){
             int step = (*i)->step_indices(n);
             (*i)->update_power_factor_step( step );
             int amount = (*i)->attack_of_step( step );
-            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
 
-            pTimerDummy handle = pTimerDummy(new int);
-            chain_timer_handles_[ chain_step_pair ] = handle;
-            // if we are extending last chain, this assignment will effectively erase last timer calls.
+            if( amount > 1000 || current_sum_of_attack_ > 1000 ) {// anomoly
+                printf("\n\n FUCK current_sum = %d, attack = %d, step = %d, total step of chain = %d \n\n", current_sum_of_attack_, amount, step, (*i)->step());
+                fflush(stdout);
+                exit(0);
+            }
 
-            //current_sum_of_attack_ += (*i)->attack_of_current_step();
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_adder, ref(current_sum_of_attack_), amount),
-                handle,
-                ms()->cube_dying_duration());
             o->new_chain_event()(*i);
-            //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
+            if( amount > 0 ) {
+                std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
 
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_adder, ref(score_), (*i)->step_score(step) ),
-                handle,
-                ms()->cube_dying_duration());
+                pTimerDummy handle = pTimerDummy(new int);
+                chain_timer_handles_[ chain_step_pair ] = handle;
+                // if we are extending last chain, this assignment will effectively erase last timer calls.
 
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
-//            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
+                //current_sum_of_attack_ += (*i)->attack_of_current_step();
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    handle,
+                    ms()->cube_dying_duration());
+                //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
 
-            if( step == (*i)->step() && !(*i)->currently_extending() ) {
-                match_counter_ += 1;
-                (*i)->step_one();
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    handle,
+                    ms()->cube_dying_duration());
+
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
+    //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
+            }
+            if( step == (*i)->step() ) {
+                if( (*i)->is_extending_final_step() ) {
+                    (*i)->is_extending_final_step(false);
+                }
+                else {
+                    match_counter_ += 1;
+                    (*i)->step_one();
+                }
             }
         }
         (*i)->clear_indices();
@@ -418,14 +458,16 @@ void <% debug_hook 'Map::update_chains' do %>(){
         if( (*i).use_count() == 1 ){
             int amount = (*i)->power_factor();
             double actual_amount = amount;
-            //current_sum_of_attack_ -= amount;
-            //o->throw_garbage( amount );
-            std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
-                self(),
-                1500);
+            if( amount > 0 ) {
+                //current_sum_of_attack_ -= amount;
+                //o->throw_garbage( amount );
 
+                std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i)),
+                    self(),
+                    1200);
+            }
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
             //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
@@ -446,9 +488,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
             //chain_timer_handles_.erase( key_wchain );
 
             i = chains_.erase(i);
-
-            /// CONTINUE THIS LATER: In a very intensive fight between char1 & 4, it just crashed? Why?
-
         }
         else{
             ++i;

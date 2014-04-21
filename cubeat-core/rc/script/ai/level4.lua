@@ -64,7 +64,7 @@ function ai_entry(self)
   
   for y = my_map:height() - 2, 0, -1 do
     for x = 0, my_map:width() - 1 do
-      io.write(string.format("%2d", firemap[x*my_map:height() + y]))
+      io.write(string.format("%2d", firemap:power_at(x, y)))
     end
     io.write("\n")
   end

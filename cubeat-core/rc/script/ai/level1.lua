@@ -35,6 +35,10 @@ local function pick_a_higher_half_coord_from(map)
   return x, y
 end
 
+local function attack_power_of(firemap, x, y)
+  return firemap[x*firemap:height() + y]
+end
+
 local ATTACK_PWR     = 1
 local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
  
@@ -78,18 +82,16 @@ function ai_entry(self)
 
   local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
-  local t2 = os.clock() - t
-  
   -- Fire Map test 
-  -- local firemap = my_map:get_firemap()
+  local firemap = my_map:get_firemap()
   
-  -- for y = my_map:height() - 2, 0, -1 do
-    -- for x = 0, my_map:width() - 1 do
-      -- io.write(string.format("%2d", firemap[x*my_map:height() + y]))
-    -- end
-    -- io.write("\n")
-  -- end
-  -- io.write("\n")
+  for y = my_map:height() - 2, 0, -1 do
+    for x = 0, my_map:width() - 1 do
+      io.write(string.format("%2d", attack_power_of(firemap, x, y)))
+    end
+    io.write("\n")
+  end
+  io.write("\n")
   
   if ( enemy_map:grounded_cube_count() < capacity * 0.5 and normal_attack_consideration(keycube, power, my_map, enemy_map) )
      or
@@ -155,7 +157,5 @@ function ai_entry(self)
     end
   end
 
-  --io.write(string.format("Hard AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
   collectgarbage("collect")
-
 end

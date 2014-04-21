@@ -59,8 +59,13 @@ Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub, em)
 end
 
 Mt_SimpleMap.get_firemap          = function(map)
-  local firemap = ffi.new("int["..(map:width() * map:height()).."]")
-  C.SimpleMap_get_firemap(map, firemap)
+  local firemap = {}
+  firemap.data = ffi.new("int["..(map:width() * map:height()).."]")
+  C.SimpleMap_get_firemap(map, firemap.data)
+  
+  firemap.height = function(self) return map:height() end
+  firemap.width  = function(self) return map:width() end
+  firemap.power_at = function(self, x, y) return self.data[x*self:height() + y] end
   return firemap
 end
 

@@ -78,17 +78,17 @@ public:
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_dying(); }
         if(view_master_) view_master_->go_dying();
     }
-    void <% debug_hook 'go_exploding' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_exploding(); }
-        if(view_master_) view_master_->go_exploding();
+    void <% debug_hook 'go_exploding' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->go_exploding(color_id); }
+        if(view_master_) view_master_->go_exploding(color_id);
     }
     void <% debug_hook 'be_garbage' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_garbage(); }
         if(view_master_) view_master_->be_garbage();
     }
-    void <% debug_hook 'be_broken' do %>(){ <% end %>
-        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_broken(); }
-        if(view_master_) view_master_->be_broken();
+    void <% debug_hook 'be_broken' do %>(int color_id){ <% end %>
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->be_broken(color_id); }
+        if(view_master_) view_master_->be_broken(color_id);
     }
     void <% debug_hook 'restore' do %>(int color_id){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->restore(color_id); }
@@ -105,6 +105,14 @@ public:
     void <% debug_hook 'lose_chain' do %>(){ <% end %>
         BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->lose_chain(); }
         if(view_master_) view_master_->lose_chain();
+    }
+    void losing_chain(double percentage){
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->losing_chain(percentage); }
+        if(view_master_) view_master_->losing_chain(percentage);
+    }
+    void ending(int time_delay){
+        BOOST_FOREACH(cube::pViewBase view, view_slaves_){ if(view) view->ending(time_delay); }
+        if(view_master_) view_master_->ending(time_delay);
     }
     Cube& set_view_master(cube::pViewBase view){ view_master_ = view; return *this; }
     Cube& push_view_slave(cube::pViewBase view){ view_slaves_.push_back(view); return *this; }

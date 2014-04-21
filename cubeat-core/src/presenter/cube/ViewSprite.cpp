@@ -45,12 +45,18 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     body_ = view::Sprite::create("cubes/cube1", view_orig_.lock(),
                                  s->cube_size(), s->cube_size(), true);
 
-    body_->set<accessor::Pos2D>(pos_vec2());
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+    outline_ = view::Sprite::create("cubes/cube1-out", body_,
+                                    s->cube_size(), s->cube_size(), true);
+    outline_->setPickable(false);
+    //outline_->tween<easing::SineCirc, accessor::Alpha>(0, 128, 500u, -1);
+    outline_->set<accessor::Alpha>(128);
+    outline_->set<accessor::Visible>(false);
+    outline_->setDepth(-1);
 
-    data::Color col = data::Color::from_id(c->data()->color_id());
-    col.offset();
-    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    /// OVERHAULING OUTLINE COLOR HERE
+
+    body_->set<accessor::Pos2D>(pos_vec2());
+    set_base_color_and_texture(c->data()->color_id());
 
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     if( map_setting()->tutorial() ) {
@@ -58,6 +64,19 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     } else {
         shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
     }
+}
+
+void ViewSprite::set_base_color_and_texture(int color_id){
+    std::string temp = utils::to_s(utils::random(4)+1);
+
+    body_->setTexture("cubes/cube" + temp);
+    outline_->setTexture("cubes/cube" + temp + "-out");
+
+    data::Color col = data::Color::from_id(color_id);
+    col.offset();
+    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    outline_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    outline_->set<accessor::GradientEmissive>(32);
 }
 
 void ViewSprite::drop_a_block(){
@@ -140,7 +159,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 
     view::pObject effect_body = view::Object::create(view_orig_.lock());
     effect_body->setPickable(false);
-    effect_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
+    vec3 tmp = body_->get<accessor::Pos3D>();
+    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
 
     IParticleSystemSceneNode* ps = effect_body->scene()->addParticleNodeTo(effect_body, false);
     ps->setIsDebugObject(true); // So it can't be picked.
@@ -151,19 +171,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     int flying_distance = flying_vector.getLength();
     core::vector2df normal = flying_vector.normalize();
 
-//    IParticleEmitter* em = ps->createBoxEmitter(
-//        core::aabbox3d<f32>(0, 0, 0, 0.1, 0.1, 0.1), // emitter size
-//        core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-//        flying_distance/2, flying_distance/2,    // emit rate
-//        video::SColor(0,255,255,255),       // darkest color
-//        video::SColor(0,255,255,255),       // brightest color
-//        200, 200, 0,                         // min and max age, angle
-//        core::dimension2df(40.f,40.f),         // min size
-//        core::dimension2df(40.f,40.f));        // max size
-
     IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
-        core::vector3df(0.0f, 0.0f, 0.0f),  // center -- more depth, so no z-fighting
-        core::vector3df(-normal.X, normal.Y, 0.0f), flying_distance/10, // normal, length
+        &body_->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
         core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
 #if !defined(_SHOOTING_CUBES_ANDROID_)
         flying_distance/3, flying_distance/3,    // emit rate
@@ -172,9 +181,9 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
 #endif
         video::SColor(0,255,255,255),       // darkest color
         video::SColor(0,255,255,255),       // brightest color
-        200, 200, 0,                         // min and max age, angle
-        core::dimension2df(40.f,40.f),         // min size
-        core::dimension2df(40.f,40.f)         // max size
+        225, 225, 0,                         // min and max age, angle
+        core::dimension2df(64.f,64.f),         // min size
+        core::dimension2df(64.f,64.f)         // max size
     );
 
     ps->setEmitter(em); // this grabs the emitter
@@ -204,7 +213,7 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     vec3 rot(0, 0, 360 * factor);
     body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
     body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
-    body_->setDepth(-20);
+    body_->setDepth(-50);
 
     vec2 effect_dest = pos_vec2() - (normal * 20.0f);
 
@@ -240,30 +249,130 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
 }
 
 void ViewSprite::go_dying(){
+    using namespace easing; using namespace accessor;
     unsigned int duration = map_setting()->cube_dying_duration();
-    body_->tween<easing::Linear, accessor::GradientEmissive>(128, duration);
-    body_->tween<easing::Linear, accessor::Alpha>(0, duration);
-    body_->tween<easing::Linear, accessor::Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
-    body_->tween<easing::IQuad, accessor::Scale>(vec3(0,0,0), duration);
+//    body_->tween<Linear, GradientEmissive>(128, duration);
+//    body_->tween<Linear, Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
+//    body_->tween<IQuad, Scale>(vec3(0,0,0), duration);
+//    outline_->set<Visible>(false);
+
+    body_->tween<Linear, Alpha>(255, 0, 150u, 0, 0, duration-200);
+    body_->tween<SineCirc, GradientEmissive>(0, 128, duration-200);
+
+    outline_->set<Alpha>(0);
+
+    int csize = view_setting()->cube_size();
+
+    view::pSprite white_cube = view::Sprite::create("cubes/cube-white", view_orig_.lock(), csize, csize, true);
+    white_cube->setDepth(-5).set<Pos2D>( body_->get<Pos2D>() ).set<Alpha>(0).set<GradientDiffuse>(255)
+               .setPickable(false)
+               .tween<Linear, Alpha>(0, 255, 250u, 0, 0, duration-200);
+
+    view::SFX::i().hold(white_cube, duration+50);
+
+    view::pSprite stroke = view::Sprite::create("stroke", body_, csize, 15, true);
+    stroke->setDepth(-5)
+           .set<ColorDiffuseVec3>( body_->get<ColorDiffuseVec3>() )
+           .set<GradientEmissive>(255)
+           .tween<SineCirc, Alpha>(0, 255, duration-200)
+           .tween<Linear, Pos2D>(vec2(0, csize/2), vec2(0, -csize/2), duration-200);
+
+    view::SFX::i().hold(stroke, duration-200);
+
 }
 
-void ViewSprite::go_exploding(){
+void ViewSprite::go_exploding(int color_id){
     body_->clearAllTween();
     body_->setPickable(false);
-    if( cube_.lock()->is_garbage() )
-        body_->setTexture( "cubes/garbage0" );
+//    if( cube_.lock()->is_garbage() )
+//        body_->setTexture( "cubes/garbage0" );
 
-    double csize = view_setting_.lock()->cube_size();
-    view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
-    fx_body->setPickable(false);
-    fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
-    fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
-    view::SFX::i().cube_explode(fx_body);
+//    double csize = view_setting_.lock()->cube_size();
+//    view::pSprite fx_body = view::Sprite::create(body_->body()->getName(), view_orig_.lock(), csize, csize, true);
+//    fx_body->setPickable(false);
+//    fx_body->set<accessor::Pos2D>( body_->get<accessor::Pos2D>() );
+//    fx_body->set<accessor::ColorDiffuse>( body_->get<accessor::ColorDiffuse>() );
+//    view::SFX::i().cube_explode(fx_body);
+//
+
+    using namespace irr;
+    using namespace scene;
+
+/// Circle exploding
+//    view::pSprite effect_body = view::Sprite::create("circle", view_orig_.lock(), 64, 64, true);
+//    effect_body->setPickable(false);
+//    vec3 tmp = body_->get<accessor::Pos3D>();
+//    effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+//
+//    data::Color col = data::Color::from_id(color_id);
+//    col.offset();
+//
+//    effect_body->set<accessor::ColorDiffuse>( 0xff995500 | col.rgb() );
+//    effect_body->tween<easing::Linear, accessor::Alpha>(255, 0, 333u);
+//    effect_body->tween<easing::OExpo, accessor::Scale>(vec3(.1, .1, .1), vec3(2, 2, 2), 333u);
+/// /Circle exploding
+
+    for( int i = 0; i < 15; ++i ) {
+        view::pObject effect_body_orig = view::Object::create(view_orig_.lock());
+        view::pSprite effect_body = view::Sprite::create("smallblock", effect_body_orig, 16, 16, true);
+        view::pSprite effect_body_out = view::Sprite::create("smallblock_out", effect_body, 16, 16, true);
+        effect_body->setPickable(false);
+        effect_body_orig->setPickable(false);
+        effect_body_out->setPickable(false);
+
+        vec3 tmp = body_->get<accessor::Pos3D>();
+        //effect_body->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+        effect_body_orig->set<accessor::Pos3D>( vec3(tmp.X, tmp.Y, -50) );
+        effect_body_out->setDepth(-5);
+
+        data::Color col = data::Color::from_id(color_id);
+        col.offset();
+        effect_body->set<accessor::ColorDiffuse>( 0xff553300 | col.rgb() );
+        effect_body_out->set<accessor::ColorDiffuse>( 0xffaa7744 | col.rgb() );
+
+        effect_body->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);
+        effect_body_out->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);
+
+        /// Old translation calculation
+//        vec2 from = body_->get<accessor::Pos2D>();
+//        vec2 to = from + vec2( utils::random(80) - 40, utils::random(80) - 40 );
+//        effect_body->tween<easing::OExpo, accessor::Pos2D>(from, to, 333u);
+
+        vec2 to = vec2( utils::random(25) + 25, 0 );
+        effect_body->tween<easing::OExpo, accessor::Pos2D>(vec2(0,0), to, 400u);
+        effect_body_orig->set<accessor::Rotation>(vec3(0, 0, utils::random(360) - 180));
+
+        double rot1 = utils::random(180) - 90;
+        double rot2 = utils::random(180) - 90;
+        effect_body->tween<easing::OQuad, accessor::Rotation>(vec3(0, 0, rot1), vec3(0, 0, rot2), 400u);
+
+        double scale_ratio = (utils::random(175) + 75) / 150.f;
+        effect_body->set<accessor::Scale>(vec3( scale_ratio, scale_ratio, 1));
+
+        view::SFX::i().hold(effect_body, 420);
+        view::SFX::i().hold(effect_body_orig, 420);
+        view::SFX::i().hold(effect_body_out, 420);
+    }
 }
 
-void ViewSprite::be_broken(){
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
+void ViewSprite::ending(int time_delay){
+    body_->clearAllTween();
+    body_->setPickable(false);
+
+    bodylayer2_.reset();
+    bodylayer3_.reset();
+
+    body_->setTexture( "cubes/cube-dead-" + utils::to_s(utils::random(4)+1) );
+    body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
+    body_->set<accessor::GradientDiffuse>(255);
+}
+
+void ViewSprite::be_broken(int color_id){
+    std::string temp = utils::to_s(utils::random(4)+1);
+    body_->setTexture("cubes/cube-br-" + temp);
     body_->set<accessor::GradientDiffuse>( 255 );
+    outline_->setTexture("cubes/cube" + temp + "-out");
+    outline_->set<accessor::GradientDiffuse>( 255 );
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::restore, &model::Cube::go_exploding);
     if( map_setting()->tutorial() ) {
@@ -271,17 +380,54 @@ void ViewSprite::be_broken(){
     } else {
         shot_event(&model::Cube::restore, &model::Cube::restore);
     }//audio::Sound::i().playBuffer("1/d/ShotA@11.wav");
+
+    bodylayer2_ = view::Sprite::create("smallblock", body_, 24, 24, true);
+    data::Color col = data::Color::from_id(color_id);
+    col.offset();
+    bodylayer2_->setDepth(-5).set<accessor::ColorDiffuse>( ( col.rgb() | 0xff353520 ) - 0x00202020 );
+    bodylayer2_->setPickable(false);
+
+    bodylayer3_ = view::Sprite::create("smallblock_out", body_, 24, 24, true);
+    bodylayer3_->setDepth(-7).set<accessor::ColorDiffuse>( 0xffafafaf );
+    bodylayer3_->setPickable(false);
 }
 
 void ViewSprite::restore(int color_id){
     if( color_id == -1 ) return;
-    body_->setTexture("cubes/cube" + utils::to_s(utils::random(4)+1));
-    data::Color col = data::Color::from_id(color_id);
-    col.offset();
-    body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
+    set_base_color_and_texture(color_id);
     body_->tween<easing::OBack, accessor::Scale>(vec3(.7,.7,.7), vec3(1,1,1), 300u);
     //shot_event(&model::Cube::go_exploding, &model::Cube::be_broken);
     shot_event(&model::Cube::go_exploding, &model::Cube::go_exploding);
+
+    // effects
+    using namespace easing; using namespace accessor;
+
+    bodylayer2_.reset(); // resets broken's layer2 color
+    bodylayer3_.reset();
+
+    view::pObject effect_body_orig = view::Object::create(view_orig_.lock());
+    effect_body_orig->set<Pos2D>( body_->get<Pos2D>() );
+
+    view::pSprite effect_t = view::Sprite::create("cube-br-2-t", effect_body_orig, 64, 20, true);
+    view::pSprite effect_b = view::Sprite::create("cube-br-2-b", effect_body_orig, 64, 20, true);
+    view::pSprite effect_l = view::Sprite::create("cube-br-2-l", effect_body_orig, 20, 64, true);
+    view::pSprite effect_r = view::Sprite::create("cube-br-2-r", effect_body_orig, 20, 64, true);
+    effect_body_orig->setPickable(false);
+    effect_t->setDepth(-5).setPickable(false);
+    effect_b->setDepth(-5).setPickable(false);
+    effect_l->setDepth(-5).setPickable(false);
+    effect_r->setDepth(-5).setPickable(false);
+
+    effect_t->tween<OExpo, Pos2D>( vec2(0,-24), vec2(0,-50), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_b->tween<OExpo, Pos2D>( vec2(0, 24), vec2(0, 50), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_l->tween<OExpo, Pos2D>( vec2(-24,0), vec2(-50,0), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+    effect_r->tween<OExpo, Pos2D>( vec2(24, 0), vec2(50, 0), 300u ).tween<Linear, Alpha>(255, 0, 300u);
+
+    view::SFX::i().hold(effect_body_orig, 300u);
+    view::SFX::i().hold(effect_t, 300u);
+    view::SFX::i().hold(effect_b, 300u);
+    view::SFX::i().hold(effect_l, 300u);
+    view::SFX::i().hold(effect_r, 300u);
 }
 
 void ViewSprite::be_garbage(){
@@ -303,13 +449,20 @@ void ViewSprite::hit(int /*dmg*/, int hp){
 }
 
 void ViewSprite::get_chain(){
-    if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
-        body_->tween<easing::SineCirc, accessor::GradientEmissive>(128, 500u, -1);
-    }
+//    if( !cube_.lock()->is_garbage() && !cube_.lock()->is_broken() ) {
+        //body_->tween<easing::SineCirc, accessor::GradientEmissive>(128, 500u, -1);
+    outline_->set<accessor::Alpha>(255);
+    outline_->set<accessor::Visible>(true);
+//    }
+}
+
+void ViewSprite::losing_chain(double percentage){
+    outline_->set<accessor::Alpha>(percentage * 255);
 }
 
 void ViewSprite::lose_chain(){
-    body_->tween<easing::Linear, accessor::GradientEmissive>(0, 100u);
+    //body_->tween<easing::Linear, accessor::GradientEmissive>(0, 100u);
+    outline_->set<accessor::Visible>(false);
 }
 
 ViewSprite& ViewSprite::shot_event( ShotEvent ally_cb, ShotEvent enemy_cb ) {

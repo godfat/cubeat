@@ -30,7 +30,7 @@
 
 #include <boost/tr1/functional.hpp>
 
-#include <utility>
+//#include <utility>
 #include <algorithm>
 
 #include <cstddef>

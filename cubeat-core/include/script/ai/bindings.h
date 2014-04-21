@@ -41,7 +41,8 @@ APIEXPORT bool SimpleMap_dropping_locked(pSimpleMap*);
 
 APIEXPORT pSimpleCube*  SimpleMap_get_cube(pSimpleMap*, int, int);
 APIEXPORT pSimpleCube*  SimpleMap_get_grounded_cube(pSimpleMap*, int, int);
-APIEXPORT pSimpleCube*  SimpleMap_get_firepoint_cube(pSimpleMap*, int, int, int);
+APIEXPORT pSimpleCube*  SimpleMap_get_firepoint_cube(pSimpleMap*, int, int, int, int* power_out);
+APIEXPORT void          SimpleMap_get_firemap(pSimpleMap*, int* firemap_out);
 APIEXPORT pSimpleCube** SimpleMap_get_garbages(pSimpleMap*, unsigned int* size_out);
 APIEXPORT pSimpleCube** SimpleMap_get_brokens(pSimpleMap*, unsigned int* size_out);
 

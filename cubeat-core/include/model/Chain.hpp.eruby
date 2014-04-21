@@ -17,70 +17,110 @@ public:
 
 public:
     int last_step_amounts() const{ return chain_step_.back(); }
+    int step_amounts(int const& step) const{ return chain_step_[step-1]; }
 
-    void add_last_step_amounts(int num){
-        chain_step_.back() += num;
-        // always add onto the rear element
-        // map will be responsible to notify Chain to push new elements to Chains.
+    // map will be responsible to notify Chain to push new elements to Chains.
+    void add_last_step_amounts(int const& num){
+        add_step_amounts(step(), num);
+    }
+
+    void add_step_amounts(int const& step, int const& num) {
+        chain_step_[step-1] += num;
+        step_indices_.push_back(step);
     }
 
     void step_one(){
         chain_step_.push_back(0);
+        power_step_.push_back(0);
     }
 
-    int power_factor() const{ return power_factor_; }
+    int power_factor() const{
+        int res = 0;
+        for( size_t i = 0; i < power_step_.size(); ++i ) {
+            res += power_step_[i];
+        }
+        return res;
+    }
 
     void update_power_factor() {
-        last_power_factor_ = power_factor_;
-        int new_step_amount = chain_step_.back();
-        if( new_step_amount < 3 ) return;
-        int stepnum = chain_step_.size();
-        if( stepnum == 1 ) {
-            // power_factor_ += (new_step_amount - 2);
-            if( new_step_amount > 3 ) {
-                power_factor_ += (new_step_amount - 1);
-            }
-        }
-        else
-            power_factor_ += (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;
-            //power_factor_ += (new_step_amount - 2)*(stepnum);
-            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);
-            //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
+        update_power_factor_step(chain_step_.size());
+//        int new_step_amount = chain_step_.back();
+//        if( new_step_amount < 3 ) return;
+//        int stepnum = chain_step_.size();
+//        if( stepnum == 1 ) {
+//            // power_factor_ += (new_step_amount - 2);
+//            if( new_step_amount > 3 ) {
+//                power_step_.back() = (new_step_amount - 1);
+//            }
+//        }
+//        else {
+//            power_step_.back() = (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
+//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
+//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;
+//            //power_factor_ += (new_step_amount - 2)*(stepnum);
+//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);
+//            //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
+//        }
     }
 
-    // this returns the score fragment made by the last combo
-    int score_step() const{
-        return attack_of_current_step() * 50;
+    void update_power_factor_step(int const& step) {
+        int step_amount = chain_step_[step-1];
+        int stepnum = step; //This is for specific step, not the last step of a chain
+        if( stepnum == 1 ) {
+            if( step_amount > 3 ) {
+                power_step_[step-1] = step_amount - 1;
+            }
+        }
+        else {
+            power_step_[step-1] = (step_amount - 1)*(stepnum)/2 + (stepnum-1);
+        }
+    }
+
+    int step_score(int const& step) const{
+        return attack_of_step(step) * 50;
     }
 
     int step() const{
         return chain_step_.size();
     }
 
-    void set_last_step_position(int x, int y) { last_step_x_ = x; last_step_y_ = y; }
-    int last_step_x() const { return last_step_x_; }
-    int last_step_y() const { return last_step_y_; }
     int attack_of_current_step() const {
-        return power_factor_ - last_power_factor_;
+        return power_step_.back();
     }
 
-    Chain():last_step_x_(0), last_step_y_(0), power_factor_(0), last_power_factor_(0){}
+    int attack_of_step(int step) const {
+        return power_step_[step-1];
+    }
+
+    int step_indices_size() const {
+        return step_indices_.size();
+    }
+
+    int step_indices(int const& i) const {
+        return step_indices_[i];
+    }
+
+    void clear_indices() {
+        step_indices_.clear();
+    }
+
+    bool is_extending_final_step() const { return is_extending_final_step_; }
+    void is_extending_final_step(bool i) { is_extending_final_step_ = i; }
+
+    Chain(): is_extending_final_step_(false) {}
 
     Chain(pointer_type const& that):
         chain_step_(that->chain_step_),
-        last_step_x_(that->last_step_x_),
-        last_step_y_(that->last_step_y_),
-        power_factor_(that->power_factor_),
-        last_power_factor_(that->last_power_factor_)
+        power_step_(that->power_step_),
+        step_indices_(that->step_indices_),
+        is_extending_final_step_(that->is_extending_final_step_)
     {}
 
 private:
     std::vector<int> chain_step_;
-    int last_step_x_, last_step_y_;
-    int power_factor_, last_power_factor_;
-    // int damage_factor_;
+    std::vector<int> power_step_;
+    std::vector<int> step_indices_;
+    bool is_extending_final_step_;
 };
 
 typedef Chain::pointer_type pChain;

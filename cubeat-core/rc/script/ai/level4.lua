@@ -6,7 +6,7 @@ local random   = helper.random
 local shuffle  = helper.C_random_shuffle
 local C        = ffi.C
 
--- we don't actually assign this to anything b/c it only setups cdefs and metatype
+-- we don't actually assign this to anything because it only setups cdefs and metatype
 require 'rc/script/ai/ai'
 local should_use_ability = require 'rc/script/ai/ability'
 local event = require 'rc/script/event/event'
@@ -24,12 +24,12 @@ local function pick_a_coord_from(map)
   return x, y
 end
 
-local ATTACK_PWR     = 1
-local DELAY          = 0  --ms -- currently not very useful. it should be useful. 
- 
+local ATTACK_PWR     = 36
+local DELAY          = 0  --ms -- currently not very useful. it should be useful.
+
 --these are intended for C to call from.
-function THINK_INTERVAL() return 600 end --ms
-function MISSRATE()       return 20  end --percentage. 0 ~ 100
+function THINK_INTERVAL() return 375 end --ms
+function MISSRATE()       return 8  end --percentage. 0 ~ 100
 
 function ai_entry(self)
 
@@ -48,31 +48,59 @@ function ai_entry(self)
   
   local emergency_level = 0
 
-  local attack_threshold = 1
-  
-  if my_map:warning_level() > 25 or
-     ground_cube_num + my_map:garbage_left() >= capacity
+  local attack_threshold = 8
+  if ATTACK_PWR < 9 then      attack_threshold = 1
+  elseif ATTACK_PWR < 20 then attack_threshold = 3
+  end
+
+  if my_map:warning_level() > 25 
+     --or ground_cube_num + my_map:garbage_left() >= capacity
   then
     emergency_level = 1
   end
 
-  local keycube = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
+  -- Fire Map test
+  -- local firemap = my_map:get_firemap()
+  
+  -- for y = my_map:height() - 2, 0, -1 do
+    -- for x = 0, my_map:width() - 1 do
+      -- io.write(string.format("%2d", firemap[x*my_map:height() + y]))
+    -- end
+    -- io.write("\n")
+  -- end
+  -- io.write("\n")
+  
+  local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 
   local t2 = os.clock() - t
 
-  -- if keycube:exist() and random(100) > 70 and  
-     -- enemy_map:garbage_left() < ATTACK_PWR * 2 -- so opponent doesn't feel like they are being overpowered too much.
-  -- then
-    -- --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
-    -- setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
-    -- self:push_command(cmdbuf)
+  if keycube:exist() and
+     enemy_map:garbage_left() + power <= ATTACK_PWR -- so opponent doesn't feel like they are being overpowered too much.
+  then
+    --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
+    setcmd(cmdbuf, C.AI_SHOOT, 0, keycube:x(), keycube:y())
+    self:push_command(cmdbuf)
     -- if keycube:is_broken() then
       -- self:push_command(cmdbuf)
+    -- elseif keycube:is_garbage() then
+      -- self:push_command(cmdbuf)
+      -- self:push_command(cmdbuf)
     -- end
-  -- else
+  else
     --io.write "No keycube for now.\n"
     
-    local highcol_threshold = 8
+    -- if ab_left > 0 then
+      -- if (my_map:warning_level() > 50 and ground_cube_num > capacity * 0.9) or 
+         -- should_use_ability[ab_kind](self, my_map, enemy_map) then
+        -- io.write "Lua: AI Using ability!!\n"
+        -- setcmd(cmdbuf, C.AI_USE_ABILITY, 0, -1, -1)
+        -- self:push_command(cmdbuf)
+        -- collectgarbage("collect")
+        -- return
+      -- end
+    -- end
+    
+    local highcol_threshold = 9
     local highcols, hsize = my_map:get_highcols( highcol_threshold )
     local brokens,  bsize = my_map:get_brokens()
 
@@ -88,7 +116,7 @@ function ai_entry(self)
     -- but when the broken cubes taking a portion of your map, you should consider shooting at them first.    
     if hsize > 0 and --[[ground_cube_num <= capacity * 0.9 and ]]bsize < ground_cube_num * 0.4 then
       shuffle(highcols, hsize)
-      local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 ) + highcol_threshold/2
+      local rnd_x, rnd_height = highcols[random(hsize)], random( highcol_threshold/2 )
       setcmd(cmdbuf, C.AI_SHOOT, 0, rnd_x, rnd_height)
       self:push_command(cmdbuf)
       -- if my_map:get_grounded_cube(rnd_x, rnd_height):is_broken() then
@@ -96,7 +124,7 @@ function ai_entry(self)
       -- end
     end
 
-    if bsize > 0 and self:cmdqueue_size() < 1 and random(100) > 70 then
+    if bsize > 0 and self:cmdqueue_size() < 1 then
       shuffle(brokens, bsize)
       local rnd = random(bsize)
       setcmd(cmdbuf, C.AI_SHOOT, 0, brokens[rnd]:x(), brokens[rnd]:y())
@@ -105,20 +133,32 @@ function ai_entry(self)
     -- don't do garbages for now.
 
     if self:cmdqueue_size() < 1 then
-      if ground_cube_num >= capacity * 0.6 --[[and not my_map:still_chaining()]] then
+      if ground_cube_num >= capacity * 0.8 and not my_map:still_chaining() then
         local x, y = pick_a_coord_from(my_map)
-        if not keycube:exist() or (x ~= keycube:x() or y ~= keycube:y()) then
-          setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
-          self:push_command(cmdbuf)
-        end
+        setcmd(cmdbuf, C.AI_SHOOT, 0, x, y)
+        self:push_command(cmdbuf)
       else
-        if self:get_heat() < 0.7 and random(100) > 70 then
+        local interrupt_cube = enemy_map:get_firepoint_cube(3, 99, 0)
+        if event.get_time_of('game') > 20000 and interrupt_cube:exist() then
+          local dir = { {-1, 1}, {0, 2}, {1, 1} } -- don't do bottom
+          local chance = random(3)+1
+          local x = dir[chance][1] + interrupt_cube:x()
+          local y = dir[chance][2] + interrupt_cube:y()
+          if x >= 0 and x < enemy_map:width() and y >= 0 and y < enemy_map:height()-1 then
+            local c = enemy_map:get_cube(x, y)
+            if c:exist() and not c:is_broken() then
+              --io.write(("AI: I think %d, %d is important, so I jama %d, %d\n"):format(interrupt_cube:x(), interrupt_cube:y(), x, y))
+              setcmd(cmdbuf, C.AI_SHOOT_OTHER, 0, x, y)
+              self:push_command(cmdbuf)
+            end
+          end
+        elseif self:get_heat() < 0.7 then
           setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
           self:push_command(cmdbuf)
         end
       end
     end
-  -- end
+  end
 
   --io.write(string.format("Hard AI current mem: %.2f(K), up-to-keycube time: %.3f, total time: %.3f\n", collectgarbage("count"), t2, os.clock() - t))
   collectgarbage("collect")

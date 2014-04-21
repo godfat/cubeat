@@ -8,6 +8,8 @@
 #include "view/SpriteText.hpp"
 #include "view/SFX.hpp"
 
+#include "view/detail/LinearParticleHack.hpp"
+
 #include "presenter/cube/ViewSprite.hpp"
 #include "presenter/cube/ViewSpriteMaster.hpp"
 
@@ -25,6 +27,7 @@
 #include "audio/Sound.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
+#include "Conf.hpp"
 
 #include <boost/foreach.hpp>
 
@@ -36,7 +39,7 @@ using namespace std::tr1::placeholders;
 
 ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
     ctrl::wpPlayer const& player): ViewMaster(setting),
-    scene_(scene), player_(player),
+    scene_(scene), player_(player), column_flag_(0),
     i_have_to_keep_track_of_garbage_count_visually_here_(0)
 {   //temporary
     view_orig_ = view::Object::create( scene );
@@ -58,19 +61,42 @@ void ViewSpriteMaster::setup_ability_button(){
 }
 
 void ViewSpriteMaster::column_full(int at){
+    column_flag_ |= (1 << at);
     show_warning_at(at, true);
 }
 void ViewSpriteMaster::column_not_full(int at){
+    int flag_old = column_flag_;
+    if( column_flag_ & ( 1 << at ) ) {
+        column_flag_ ^= (1 << at);
+    }
     show_warning_at(at, false);
+
+    if( column_flag_ == 0 && flag_old != 0 ) {
+        using namespace easing; using namespace accessor;
+//        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+//        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
+//        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
+//        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+    }
 }
 
 void ViewSpriteMaster::new_chain(model::wpChain const& chain){
     int combo = chain.lock()->step();
     int amounts = chain.lock()->last_step_amounts();
+    if( amounts < 1 ) combo -= 1;
 
     using namespace accessor; using namespace easing;
-    std::string str("Chain " + utils::to_s(combo));
-    std::string str2( utils::to_s(amounts) + " cubes!" );
+
+    std::string str("Chain " + utils::to_s( combo ));
+
+    /// Hack here
+    std::string str2;
+    for( int i = 1 ; i <= combo; ++i ) {
+        int n = chain.lock()->step_amounts(i);
+        str2 += utils::to_s(n) + ( i < combo ? "+" : "" );
+    }
+    str2 += " cubes";
+
     view::pScene s = scene_.lock();
 
     int y_offset = 200, x_offset = 0, w = map_setting()->width();
@@ -106,11 +132,55 @@ void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
     ps->setEmitter(0);
 }
 
-void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
+void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power) {
+    using namespace accessor; using namespace easing; using std::tr1::bind;
+
+    view::pScene s = scene_.lock();
+    int csize = view_setting()->cube_size();
+    int size = dying_cubes_position.size();
+
+    if( power < 1 ) {
+        for( int i = 0; i < size; ++i ) {
+            view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+            vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+            glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(cube_pos)
+                      .tween<Linear, Alpha>(255, 0, 150u);
+            view::SFX::i().hold(glow_cube, 150u);
+        }
+        return;
+    }
+
+    // calculate average:
+    vec2 central_pos(0, 0);
+    for( int i = 0; i < size; ++i )
+        central_pos += pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+    central_pos /= size;
+
+    // "gathering" effect
+    for( int i = 0; i < size; ++i ) {
+        view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+        view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
+
+        vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+
+        glow_cube->setDepth(-10).setPickable(false)
+                  .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+                  .tween<OExpo, Alpha>(255, 0, 400u);
+        glow_circle->setDepth(-10).setPickable(false)
+                    .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+                    .tween<Linear, Alpha>(0, 255, 400u);
+
+        view::SFX::i().hold(glow_cube, 400u).hold(glow_circle, 400u);
+    }
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&ViewSpriteMaster::new_garbage_2ndphase, this, central_pos, power), shared_from_this(), 400);
+}
+
+void ViewSpriteMaster::new_garbage_2ndphase(vec2 const& pos, int new_count){
 
     using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
 
-    vec2 pos = pos_vec2(modelx, modely);
     view::pScene s = scene_.lock();
     int num = new_count>20?20:new_count; //limit the animated garbage up to 20 ...in case of too many
 
@@ -125,6 +195,7 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
         using namespace irr; using namespace scene;
 
         view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
+        g->setDepth(-50).set<Pos2D>(pos);
         //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
         vec2 midp = (pos + endp)/2;
         midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
@@ -134,18 +205,20 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
 
         int flying_distance = (endp - pos).getLength();
 
-        IParticleEmitter* em = ps->createPointEmitter(
+        IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
+            &g->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
             core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
 #if !defined(_SHOOTING_CUBES_ANDROID_)
-            flying_distance/4, flying_distance/4,    // emit rate
+            flying_distance/6, flying_distance/6,    // emit rate
 #else
-            flying_distance/4, flying_distance/4,
+            flying_distance/6, flying_distance/6,    // emit rate
 #endif
             video::SColor(0,255,255,255),       // darkest color
             video::SColor(0,255,255,255),       // brightest color
             200, 200, 0,                         // min and max age, angle
-            core::dimension2df(40.f,40.f),         // min size
-            core::dimension2df(40.f,40.f));        // max size
+            core::dimension2df(64.f,64.f),         // min size
+            core::dimension2df(64.f,64.f)         // max size
+        );
 
         ps->setEmitter(em); // this grabs the emitter
         em->drop(); // so we can drop it here without deleting it
@@ -167,24 +240,16 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
         attack_cubes_.push_back(g);
 
         // Setup nodes above, setup animation below:
-
-        data::AnimatorParam<Linear, Rotation> rota;
-        data::AnimatorParam<IQuad, Alpha> alpha;
         data::AnimatorParam<Linear, Scale> scale;
 
         data::AnimatorParam<ISine, Pos2D> way1;
-        data::AnimatorParam<Linear, Pos2D> way2;
-
-        rota.end(vec3(0,0,360)).duration(700).loop(-1).delay(-utils::random(500));
-        alpha.start(0).end(255).duration(700);
-        double sc = (utils::random(20)/100.0) + .8;
-        scale.start(vec3(.1,.1,.1)).end(vec3(sc,sc,sc)).duration(700);
+        data::AnimatorParam<IOSine, Pos2D> way2;
 
         /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
         /// Some of its end callbacks won't fire. It has to be less than 700...
         /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
-        int total_dur = 670;
-        int first_seg = 400 + utils::random(100);
+        int total_dur = 470;
+        int first_seg = 200 + utils::random(70);
         int second_seg = total_dur - first_seg;
 
         std::tr1::function<void()> remove_trail_emitter =
@@ -192,8 +257,6 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
         way1.start(pos).end(midp).duration( first_seg );
         way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
 
-        g->setDepth(-50).set<GradientDiffuse>(192 + utils::random(64)).tween(rota)./*tween(alpha).*/tween(scale);
-        //g->queue(way1).queue(way2).tween(circle);
         g->queue(way1).tween(way2);
     }
 
@@ -201,7 +264,7 @@ void ViewSpriteMaster::new_garbage(int modelx, int modely, int new_count){
     // Let's just take note that the "new_garbage" effect is supposed to cost 700ms.
     // This will probably cause more trouble when we consider rolling-back ...
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ViewSpriteMaster::update_garbage, this, new_count), shared_from_this(), 700);
+        bind(&ViewSpriteMaster::update_garbage, this, new_count), shared_from_this(), 500);
 }
 
 void ViewSpriteMaster::pop_garbage(int this_frame_lands) {
@@ -214,6 +277,16 @@ void ViewSpriteMaster::pop_garbage(int this_frame_lands) {
     }
     for( int i = 0; i < this_frame_lands; ++i )
         attack_cubes_.pop_front();
+}
+
+void ViewSpriteMaster::hit_by_garbage(int this_frame_lands) {
+    using namespace accessor; using namespace easing;
+
+    vec2 offset(utils::random(15) + 15, utils::random(15) + 15);
+    vec2 orig(view_setting()->x_offset(), view_setting()->y_offset());
+    view_orig_->tween<OElastic, Pos2D>( orig + offset, orig, 500u );
+
+    audio::Sound::i().playBuffer("tm2r_bom34.ogg");
 }
 
 // This is a private function that will be called to alter the representation of
@@ -290,23 +363,89 @@ void ViewSpriteMaster::update_garbage(int delta) {
     if( delta > 0 ) { /// WTF Bad state situation. We should do boolean calculation reduction here.
         garbage_text_outline_->tween<Linear, Scale>(vec3(1.3, 1.3, 1), vec3(2.2, 2.2, 1), 500u);
         garbage_text_outline_->tween<Linear, Alpha>(255, 0, 500u);
+        garbage_text_outline_->set<Visible>(true);
     } else {
         garbage_text_outline_->set<Alpha>(0);
     }
 }
 
 void ViewSpriteMaster::warning_sound(int warning_level){
+    using namespace accessor; using namespace easing;
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
+
+    time_t warning_gap = map_setting()->warning_gap();
+
+//    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+//    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
+//               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
+//    box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
+//               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
+//    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
+
+    // determine currently how many column are full:
+    int column_count = 0;
+    for( int x = 0; x < map_setting()->width(); ++x ) {
+        if( column_flag_ & ( 1 << x ) )
+            column_count += 1;
+    }
+
+//    for( int x = 0; x < map_setting()->width(); ++x ) {
+//        warning_strip_[x]->set<Alpha>(0);
+//        warning_strip_[x]->tween<SineCirc, Alpha>(0, 224 - column_count*12 , warning_gap);
+//    }
+
+    int csize = view_setting()->cube_size();
+    int h = map_setting()->height()-1;
+
+    for( int x = 0; x < map_setting()->width(); ++x ) {
+        vec2 pos = vec2(0, -(h-0.33) * csize);
+        warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
+        warning_strip2_[x]->tween<SineCirc, Pos2D>(pos, pos + vec2(0, 15), warning_gap/2, 1);
+
+        pos = vec2(0, csize*0.66);
+        warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
+        warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
+    }
 }
 
 void ViewSpriteMaster::alert_bar_animate(int warning_level){
     using namespace accessor; using namespace easing;
 
-    alert_bar_top_->playAnime("moving", 1000);
-    alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
-    alert_bar_bottom_->playAnime("moving", 1000);
-    alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), 1000u);
-    printf("Animation given.\n");
+    time_t warning_gap = map_setting()->warning_gap();
+    alert_bar_top_->playAnime("moving", warning_gap);
+    //alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
+    alert_bar_bottom_->playAnime("moving", warning_gap);
+    //alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
+//    alert_bar_cover_top_->set<Visible>(true).set<GradientDiffuse>(255).tween<SineCirc, Alpha>(0, 128, warning_gap);
+//    alert_bar_cover_bottom_->set<Visible>(true).set<GradientDiffuse>(255).tween<SineCirc, Alpha>(0, 128, warning_gap);
+    alert_text1_->playAnime("moving", warning_gap);
+    alert_text2_->playAnime("moving", warning_gap);
+
+    view::pSprite alert_text1_out1 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
+    view::pSprite alert_text1_out2 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
+    view::pSprite alert_text2_out1 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
+    view::pSprite alert_text2_out2 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
+    alert_text1_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text1_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text2_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text2_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+
+    data::AnimatorParam<Linear, Alpha> alpha, alpha2;
+    data::AnimatorParam<Linear, Scale> scale, scale2;
+    alpha.start(255).end(0).duration(500).delay();
+    scale.start(vec3(1,1,1)).end(vec3(2.0, 1.2, 1)).duration(500).delay();
+    alpha2 = alpha; alpha2.delay(250);
+    scale2 = scale; scale2.delay(250);
+
+    alert_text1_out1->tween(alpha).tween(scale);
+    alert_text1_out2->tween(alpha2).tween(scale2);
+    alert_text2_out1->tween(alpha).tween(scale);
+    alert_text2_out2->tween(alpha2).tween(scale2);
+
+    view::SFX::i().hold(alert_text1_out1, 500);
+    view::SFX::i().hold(alert_text1_out2, 500 + 250);
+    view::SFX::i().hold(alert_text2_out1, 500);
+    view::SFX::i().hold(alert_text2_out2, 500 + 250);
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed){
@@ -314,10 +453,12 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed){
     alert_bar_top_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
     alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
     if( freezed ) {
-        alert_bar_top_->clearTween(AT::DIFFUSE);
-        alert_bar_bottom_->clearTween(AT::DIFFUSE);
-        alert_bar_cover_top_->set<Visible>(true);
-        alert_bar_cover_bottom_->set<Visible>(true);
+        alert_bar_top_->clearAllTween();
+        alert_bar_top_->setTexture("alert/moving/1");
+        alert_bar_bottom_->clearAllTween();
+        alert_bar_bottom_->setTexture("alert/moving/1");
+        alert_bar_cover_top_->set<Visible>(true).set<ColorDiffuseVec3>(vec3(0,255,255)).set<Alpha>(128);
+        alert_bar_cover_bottom_->set<Visible>(true).set<ColorDiffuseVec3>(vec3(0,255,255)).set<Alpha>(128);
     } else {
         alert_bar_cover_top_->set<Visible>(false);
         alert_bar_cover_bottom_->set<Visible>(false);
@@ -332,17 +473,48 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_bar_bottom_->set< Visible >( false );
         alert_bar_bottom_->set< ScaleWithUV >( vec2(1, 1) );
         alert_bar_cover_top_->set< Visible >( false );
-        alert_bar_cover_top_->set< Scale >( vec3(0, 1, 1) );
+        alert_bar_cover_top_->set< ScaleWithUV >( vec2(0.0001, 1) );
         alert_bar_cover_bottom_->set< Visible >( false );
-        alert_bar_cover_bottom_->set< Scale >( vec3(0, 1, 1) );
+        alert_bar_cover_bottom_->set< ScaleWithUV >( vec2(0.0001, 1) );
+        alert_text1_->set< Visible >( false );
+        alert_text2_->set< Visible >( false );
+        alert_leading_bg_->set< Visible >( false );
     } else {
         alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
         alert_bar_top_->set< Visible >( true );
         alert_bar_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
         alert_bar_bottom_->set< Visible >( true );
         // The visibility of cover bar is decided by freeze function.
-        alert_bar_cover_top_->set< Scale >( vec3((warning_level)/100.0, 1, 1) );
-        alert_bar_cover_bottom_->set< Scale >( vec3((warning_level)/100.0, 1, 1) );
+        alert_bar_cover_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+        alert_bar_cover_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+        alert_text1_->set< Visible >(true);
+        alert_text2_->set< Visible >(true);
+
+        alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/100.0 * 640, 36) );
+        alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640, -2) );
+
+        alert_leading_bg_->set< Visible >(true);
+        alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/100.0 * 640) );
+
+        /// alert_leading "Grow" hack
+        if( warning_level <= 27 ) {
+            alert_leading_orig1_->set<Scale>( vec3(1, 1, 1) );
+            alert_leading_orig2_->set<Scale>( vec3(1, 1, 1) );
+        } else if( warning_level > 27 && warning_level <= 30 ) {
+            alert_leading_orig1_->set<Scale>( vec3(1, 1.1, 1) );
+            alert_leading_orig2_->set<Scale>( vec3(1, 1.1, 1) );
+        } else if ( warning_level > 30 && warning_level <= 65 ) {
+            alert_leading_orig1_->set<Scale>( vec3(1, 1.2, 1) );
+            alert_leading_orig2_->set<Scale>( vec3(1, 1.2, 1) );
+        } else if ( warning_level > 65 && warning_level <= 68 ) {
+            alert_leading_orig1_->set<Scale>( vec3(1, 1.35, 1) );
+            alert_leading_orig2_->set<Scale>( vec3(1, 1.35, 1) );
+            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, -3) );
+        } else if ( warning_level > 68 ) {
+            alert_leading_orig1_->set<Scale>( vec3(1, 1.5, 1) );
+            alert_leading_orig2_->set<Scale>( vec3(1, 1.5, 1) );
+            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, -3) );
+        }
     }
 }
 
@@ -353,25 +525,60 @@ void ViewSpriteMaster::show_overheat(bool show){
     overheat_bg_->set<Visible>(show);
 }
 
+void ViewSpriteMaster::ending_effect(){
+    int duration = 800;
+    alert_bar_top_->playAnime("moving", duration/4, 3);
+    alert_bar_bottom_->playAnime("moving", duration/4, 3);
+    alert_text1_->playAnime("moving", duration/4, 3);
+    alert_text2_->playAnime("moving", duration/4, 3);
+}
+
 void ViewSpriteMaster::create_warning_strips(){
     using namespace accessor; using namespace easing;
     view::pScene scene = scene_.lock();
     for( int i=0, width=map_setting()->width(),
                   h=map_setting()->height()-1; i<width; ++i )
     {
-        view::pSprite temp = view::Sprite::create("warning", scene, 64, 64*h, true);
+        int csize = view_setting()->cube_size();
+        view::pSprite temp = view::Sprite::create("warning", scene, csize, csize*h, true);
         vec2 pos;
         if( h % 2 == 0 )
-//            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
-//        else pos = pos_vec2(i, h/2);
-            pos = (pos_vec2( 4000 , h/2) + pos_vec2( 4000 , h/2-1)) / 2;
-        else pos = pos_vec2( 4000 , h/2);
-        temp->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
-        temp->set<ColorDiffuseVec3>(vec3(255,64,64)).set<Alpha>(192).set<Visible>(/*false*/true);
-        temp->tween<SineCirc, Alpha>(0, 1000u, -1);
+            pos = (pos_vec2(i, h/2) + pos_vec2(i, h/2-1)) / 2;
+        else pos = pos_vec2(i, h/2);
+        temp->setDepth(-50).set<Pos2D>( vec2( 4000, pos.Y ) ).setPickable(false)
+             .set<ColorDiffuseVec3>(vec3(255,255,255))
+             .set<Alpha>(0).set<Visible>(/*false*/true);
         warning_strip_.push_back( temp );
+    }
+}
 
-        /// For the WTF code here, see show_warning_at function for why.
+void ViewSpriteMaster::create_warning_strips2(){
+    using namespace accessor; using namespace easing;
+    view::pScene scene = scene_.lock();
+    for( int i=0, width=map_setting()->width(),
+                  h=map_setting()->height()-1; i<width; ++i )
+    {
+        int csize = view_setting()->cube_size();
+
+        view::pObject temp0 = view::Object::create(scene);
+        vec2 pos_holder = pos_vec2(i, 0);
+
+        temp0->set<Pos2D>( vec2( 4000, pos_holder.Y ) ).setPickable(false).set<Visible>(true);
+        warning_strip_holder_.push_back( temp0 );
+
+        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+        vec2 pos = vec2(0, -(h-0.33) * csize);
+
+        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
+             .setPickable(false).set<Visible>(true);
+        warning_strip2_.push_back( temp );
+
+        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+        pos = vec2(0, csize*0.66);
+
+        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
+              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
+        warning_strip3_.push_back( temp2 );
     }
 }
 
@@ -379,6 +586,7 @@ void ViewSpriteMaster::create_overheat_overlay(){
     using namespace accessor; using namespace easing;
     int w = map_setting()->width();
     int h = map_setting()->height() - 1;
+    int csize = view_setting()->cube_size();
     vec2 pos;
     if( w % 2 == 0 )
         pos = (pos_vec2(w/2, h/2) + pos_vec2(w/2-1, h/2)) / 2;
@@ -390,7 +598,7 @@ void ViewSpriteMaster::create_overheat_overlay(){
     overheat_->set<Visible>(false);
     overheat_->tween<SineCirc, Alpha>(0, 1000u, -1);
 
-    overheat_bg_ = view::Sprite::create("overheat_bg", scene_.lock(), 64*w, 64*h, true);
+    overheat_bg_ = view::Sprite::create("overheat_bg", scene_.lock(), csize*w, csize*h, true);
     overheat_bg_->setDepth(-50).set<Pos2D>( pos ).setPickable(false);
     overheat_bg_->set<ColorDiffuseVec3>(vec3(0,0,0)).set<Alpha>(128).set<Visible>(false);
 }
@@ -405,25 +613,74 @@ void ViewSpriteMaster::derived_init(){
     else pos = pos_vec2(w/2, h); //memo: can we try to reuse this ..?
     pos.Y += 10;
 
+    int csize = view_setting()->cube_size();
+    //UI base, note, these position follows view_orig_ like cubes, not UI texts:
+//    box_bottom_ = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+//    box_bottom_->set<Alpha>(160);
+//    box_top_    = view::Sprite::create("ui/warning_cap", view_orig_, csize*w, 42, false);
+//    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset()) ).set<Alpha>(160).setDepth(30);
+    box_bottom_ = view::Sprite::create("blankstrip", view_orig_, csize*w, 10, false);
+    box_bottom_->set<Alpha>(160);
+    box_top_    = view::Sprite::create("blankstrip", view_orig_, csize*w, 10, false);
+    box_top_->set<Pos2D>( vec2(0, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
+    box_left_   = view::Sprite::create("danger_meter", view_orig_, 46, 660, false);
+    box_left_->set<Pos2D>( vec2(-46, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
+    box_right_  = view::Sprite::create("danger_meter", view_orig_, 46, 660, false);
+    box_right_->textureFlipH().set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
+    box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
+    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30);
+
     //warning: the position and scale data here should be configurable.
-    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
-    alert_bar_top_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos )
-                   .set<Visible>(false).setPickable(false);
-    alert_bar_cover_top_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
-    alert_bar_cover_top_->setDepth(-70).set<Pos2D>( pos ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                         .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
+    alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 34, false);
+    alert_bar_top_->playAnime("moving", 1000).setDepth(3).set<Pos2D>( pos_vec2(0, 0) + vec2(-72, 32) )
+                   .set<Visible>(false).setPickable(false)
+                   .set<Rotation>(vec3(0,0,90));
+    alert_bar_cover_top_ = view::Sprite::create("shade", scene_.lock(), csize*h, 33, false);
+    alert_bar_cover_top_->setDepth(-5).set<Pos2D>( pos_vec2(0, 0) + vec2(-71, 32) ).set<ColorDiffuseVec3>(vec3(255, 255, 255))
+                         .set<Alpha>(128).set<ScaleWithUV>( vec2(0.0001,1) ).set<Visible>(false).setPickable(false)
+                         .set<Rotation>(vec3(0,0,90));
 
     pos2 = pos; pos2.Y = 704;
 
-    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), 64*w, 44, true);
-    alert_bar_bottom_->playAnime("moving", 1000).setDepth(-50).set<Pos2D>( pos2 )
-                      .set<Visible>(false).setPickable(false);
-    alert_bar_cover_bottom_ = view::Sprite::create("bar", scene_.lock(), 64*w, 44, true);
-    alert_bar_cover_bottom_->setDepth(-70).set<Pos2D>( pos2 ).set<ColorDiffuseVec3>(vec3(0, 255, 255))
-                            .set<Alpha>(128).set<Scale>( vec3(0,1,1) ).set<Visible>(false).setPickable(false);
+    alert_bar_bottom_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 34, false);
+    alert_bar_bottom_->playAnime("moving", 1000).textureFlipV().setDepth(3).set<Pos2D>( pos_vec2(w, 0) + vec2(-26, 32) )
+                      .set<Visible>(false).setPickable(false)
+                      .set<Rotation>(vec3(0,0,90));
+    alert_bar_cover_bottom_ = view::Sprite::create("shade", scene_.lock(), csize*h, 33, false);
+    alert_bar_cover_bottom_->textureFlipV().setDepth(-5).set<Pos2D>( pos_vec2(w, 0) + vec2(-26, 32) )
+                            .set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(128)
+                            .set<ScaleWithUV>( vec2(0.0001,1) ).set<Visible>(false).setPickable(false)
+                            .set<Rotation>(vec3(0,0,90));
+
+    alert_text_bg1_ = view::Sprite::create("alert_text/moving/0", scene_.lock(), 18, 192, false);
+    alert_text_bg1_->setDepth(-3).set<Pos2D>( pos_vec2(0, h) + vec2(-63, 48) ).set<Alpha>(64);
+
+    alert_text_bg2_ = view::Sprite::create("alert_text/moving/0", scene_.lock(), 18, 192, false);
+    alert_text_bg2_->setDepth(-3).set<Pos2D>( pos_vec2(w, h) + vec2(-18, 48) ).set<Alpha>(64);
+
+    alert_text1_ = view::AnimatedSprite::create("alert_text", scene_.lock(), 18, 192, false);
+    alert_text1_->playAnime("moving", 1000).setDepth(-10).set<Pos2D>( pos_vec2(0, h) + vec2(-63, 48) ).set<Visible>(false);
+
+    alert_text2_ = view::AnimatedSprite::create("alert_text", scene_.lock(), 18, 192, false);
+    alert_text2_->playAnime("moving", 1000).setDepth(-10).set<Pos2D>( pos_vec2(w, h) + vec2(-18, 48) ).set<Visible>(false);
+
+    alert_leading_orig1_ = view::Object::create(alert_bar_top_);
+    alert_leading_orig1_->set<Pos2D>( vec2(0, 36) );
+
+    alert_leading_orig2_ = view::Object::create(alert_bar_bottom_);
+    alert_leading_orig2_->set<Pos2D>( vec2(0, -2) );
+
+    alert_leading1_ = view::Sprite::create("stroke2", alert_leading_orig1_, 24, 16, false);
+    alert_leading1_->set<Pos2D>(vec2(0, -25)).set<Rotation>(vec3(0,0,-90));
+
+    alert_leading2_ = view::Sprite::create("stroke3", alert_leading_orig2_, 24, 16, false);
+    alert_leading2_->set<Pos2D>(vec2(0, 2)).set<Rotation>(vec3(0,0,-90));
+
+    alert_leading_bg_ = view::Sprite::create("stroke0", view_orig_, csize*w, 16, false);
+    alert_leading_bg_->setDepth(25).set<Visible>(false); //background
 
     create_overheat_overlay();
-    create_warning_strips();
+    create_warning_strips2();
 
     garbage_text_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );
@@ -438,14 +695,21 @@ void ViewSpriteMaster::derived_init(){
 
 void ViewSpriteMaster::show_warning_at(int x, bool visible){
     if( !map_setting()->dropping_creatable() ) visible = false;
-    //warning_strip_[x]->set<accessor::Visible>(visible);
+    using namespace accessor;
     // Invisible item will not be animated by Irrlicht. Damn it.. there should've been a switch to choose.
+
     if( visible ) {
-        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
-        warning_strip_[x]->set<accessor::Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+//        vec2 pos = warning_strip_[x]->get<Pos2D>();
+//        warning_strip_[x]->set<Pos2D>( vec2( pos_vec2(x, 0).X, pos.Y ) );  // we only want to ref X here
+
+        vec2 pos = pos_vec2(x, 0);
+        warning_strip_holder_[x]->set<Pos2D>( pos ); // we only want to ref X here
     } else {
-        vec2 pos = warning_strip_[x]->get<accessor::Pos2D>();
-        warning_strip_[x]->set<accessor::Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
+//        vec2 pos = warning_strip_[x]->get<Pos2D>();
+//        warning_strip_[x]->set<Pos2D>( vec2( 4000, pos.Y ) );  // move it out of screen horizontally
+
+        vec2 pos = pos_vec2(x, 0);
+        warning_strip_holder_[x]->set<Pos2D>( vec2( 4000, pos.Y ) ); // move it out of screen horizontally
     }
 }
 

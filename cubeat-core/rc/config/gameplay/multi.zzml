@@ -5,7 +5,7 @@
 #dont_show_ready: 1,
 speed: 1.0,
 #shortcut: 'demo0',
-#shortcut2: 'demo1',
+#shortcut2: 'demo3',
 #time: 71,
 #score1: 1500,
 #score2: 1250,
@@ -24,42 +24,51 @@ player1: {
 
     #How long does the chain property of the cubes hold
     #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
-    chaining_duration: 600,
+    chaining_duration: 500,
 
     #How long is the visual effect when the cubes invoke chains
     #and disappear (the effect duration could possibly affect gameplay,
     #because 'DYING cubes' still block other cubes from above.
     #(suggestion: 200 ~ 1000 milliseconds)
-    cube_dying_duration: 500,
+    cube_dying_duration: 750,
 
     #How fast does the cube sink from one block to another
     #This only affect newly created cubes, and determines
     #only the speed of the very beginning of the game. the speed will accelerate over time.
     #(suggestion: 50.0 ~ 100.0)
-    sink_speed: 65.0,
+    #sink_speed: 65.0,
+    sink_speed: 120.0,
+
+    # 400 - 65 = 335; 335 / 10 = 33.5; 33.5 * 5sec ~= 170sec
+    # 240 - 120= 120; 120 / 30 = 4; 4 * 30sec ~= 120sec
+    # 120 / 5 = 24; 24 * 10 = 240(speedup by 10/per5sec)
+    # 65 + 240 = 305;
+    # 120+ 120 = 240;
 
     #add every 5 seconds.
-    sink_speed_add: 10.0,
-    sink_speed_limit: 400.0,
+    #sink_speed_add: 10.0,
+    #sink_speed_limit: 400.0,
+    sink_speed_add: 40.0,
+    sink_speed_limit: 280.0,
 
     #How fast does the ALREADY DROPPED cubes drop from one block to another
     #This speed is constant during the game, and is used for HASTE as well.
     #(suggestion: 450.0 ~ 1000.0)
-    drop_speed: 450.0,
+    drop_speed: 540.0,
 
     #How much time does a cube need to drop from one block to another
     #This does not affect newly created cubes, only affects garbages
     #and cubes that already dropped.
     #(suggestion: 120 ~ 200 milliseconds)
     #NOTE: THIS IS DEPRECATED.
-    #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "NEW GARBAGE" ANIMATION (new scheme 2012.05)
-    cube_dropping_duration: 600,
+    #NOTE2: THIS IS AGAIN ACTIVATED, USED BY HOW LONG IS THE "GARBAGE FLY" ANIMATION (new scheme 2012.05)
+    cube_dropping_duration: 700,
 
     #whether it'll use broken cubes as garbage cubes or not:
     use_broken_as_garbage: 1,
 
     #how many ms between a single warning (alarm) sound.
-    warning_gap: 1000,
+    warning_gap: 1600,
 
     #damage_factor
     damage_factor: 1.0,
@@ -68,7 +77,7 @@ player1: {
     negate_damage_factor: 1.0,
 
     #possibility of dropping normal cube instead of garbages (0 ~ 100):
-    drop_normal_chance: 0,
+    drop_normal_chance: 15,
 
     #weapon state, cooling event happens every 100ms,
     #so heat/cool = 0.16/0.06 means one shot needs around 266ms to cool down
@@ -99,18 +108,18 @@ player2: {
     color_amounts: 4,
     chain_amounts: 3,
     starting_line: 4,
-    chaining_duration: 600,
-    cube_dying_duration: 500,
-    sink_speed: 65.0,
-    sink_speed_add: 10.0,
-    sink_speed_limit: 400.0,
-    drop_speed: 450.0,
-    cube_dropping_duration: 600,
+    chaining_duration: 500,
+    cube_dying_duration: 750,
+    sink_speed: 120.0,
+    sink_speed_add: 40.0,
+    sink_speed_limit: 280.0,
+    drop_speed: 540.0,
+    cube_dropping_duration: 700,
     use_broken_as_garbage: 1,
-    warning_gap: 1000,
+    warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 0,
+    drop_normal_chance: 15,
 
     weapon: {
         heat_rate: 0.18,

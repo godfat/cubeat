@@ -34,10 +34,13 @@ face_pos: [
 ],
 
 passive_mod: {
-    warning_gap: 1000,
+    # note to self 2014.03.06
+    # Pro: Heat when shooting is less
+    # Con: Countdown is somewhat shorter.
+    warning_gap: 1400,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 0, 
+    drop_normal_chance: 15,
     restore: {
         r: 1.0,
         g: 1.0

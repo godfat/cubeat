@@ -84,8 +84,6 @@ function init(scene)
   l18:set_blending("SCREEN")
   
   -- local l0 = new_layer{ name = "bg6/99complete", parent = scene_ } 
-  
-  local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
 end
 
 function cycle()

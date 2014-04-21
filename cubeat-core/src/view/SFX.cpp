@@ -7,6 +7,9 @@
 #include "IrrDevice.hpp"
 #include "utils/to_s.hpp"
 
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
+
 #include <boost/foreach.hpp>
 
 using namespace irr;
@@ -32,17 +35,11 @@ void SFX::init_textures(pScene& s)
 {
     //pre-load textures, so this won't clash with the threading thingy.
     Sprite::create("spark", s, 96, 96, true);
-    Sprite::create("circle", s, 96, 96, true);
     Sprite::create("plight", s, 96, 96, true);
-    Sprite::create("square", s, 192, 192, true);
     Sprite::create("cubes/cube1", s, 64, 64, true);
     Sprite::create("cubes/cube2", s, 64, 64, true);
     Sprite::create("cubes/cube3", s, 64, 64, true);
     Sprite::create("cubes/cube4", s, 64, 64, true);
-
-    for( int i = 0 ; i <= 12; ++i ) {
-        Sprite::create("heat/"+utils::to_s(i), s, 64, 64, true);
-    }
 }
 
 void SFX::clear_obj(FXObjList::iterator obj)
@@ -121,8 +118,15 @@ void SFX::cube_explode(pSprite sp)
     sp->tween<OQuad, Scale>(vec3(1.3,1.3,1.3), 300u);
     sp->tween<Linear, Alpha>(0, 300u);
 
-    effects_holder_.push_front(sp);
-    sp->tween<Linear, GradientEmissive>(255, 300u, 0, bind(&SFX::clear_obj, this, effects_holder_.begin()));
+    hold(sp, 300u);
+}
+
+SFX& SFX::hold(pObject obj, time_t duration)
+{
+    effects_holder_.push_front(obj);
+    ctrl::EventDispatcher::i().get_timer_dispatcher(obj->scene()->getName())->subscribe(
+        bind(&SFX::clear_obj, this, effects_holder_.begin()), duration + 16); //Make sure it is at least 1 frame later.
+    return *this;
 }
 
 namespace psc { namespace view {

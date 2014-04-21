@@ -34,15 +34,18 @@ face_pos: [
 ],
 
 passive_mod: {
-    warning_gap: 1000,
-    damage_factor: 1.2,
+    # note to self 2014.03.06
+    # Pro: Likes RGB more, not so much yellow
+    # Con: None
+    warning_gap: 1600,
+    damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 0, 
+    drop_normal_chance: 15,
     restore: {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        y: 1.0
+        r: 1.5,
+        g: 1.5,
+        b: 1.5,
+        y: 0.5
     },
     weapon: {
         heat_rate: 0.18,

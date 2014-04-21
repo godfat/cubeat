@@ -71,6 +71,8 @@ public:
         return *this;
     }
 
+    Map& ending_effect();
+
     int  score()        const { return model()->score(); }
     int  garbage_left() const { return model()->garbage_left(); }
     int  current_sum_of_attack() const { return model()->current_sum_of_attack(); }
@@ -130,6 +132,7 @@ private:
     /*static*/ void bind_view_event(cube::pViewMaster);
 
     void speedup();
+    void crushing_speedup();
 
 private:
 <%= accessor 'data::pMapSetting', :map_setting %>
@@ -141,12 +144,12 @@ private:
     std::list<cube::pViewMaster> view_slaves_;
     container_type cubes_;
 
-<%= accessor 'std::tr1::function<void()>', :lose_event %>
+<%= accessor 'std::tr1::function<void()>', :lose_event, :ending_effect_event %>
 <%= accessor 'std::tr1::function<void(bool)>', :overheat_event, :alert_bar_freeze_event %>
 <%= accessor 'std::tr1::function<void(int)>', :column_full_event, :column_not_full_event, :warning_sound_event, :alert_bar_animate_event, :alert_bar_update_event, :ability_button_event %>
 <%= accessor 'std::tr1::function<void(model::wpChain const&)>', :new_chain_event %>
-<%= accessor 'std::tr1::function<void(int)>', :pop_garbage_event %>
-<%= accessor 'std::tr1::function<void(int, int, int)>', :new_garbage_event %>
+<%= accessor 'std::tr1::function<void(int)>', :pop_garbage_event, :hit_by_garbage_event %>
+<%= accessor 'std::tr1::function<void(std::vector< std::pair<int, int> > const&, int)>', :new_garbage_event %>
 
 <%= accessor 'std::tr1::function<bool()>', :hasting_cond %>
 };

@@ -70,13 +70,15 @@ public:
     virtual void column_full(int at);
     virtual void column_not_full(int at);
     virtual void new_chain(model::wpChain const& chain);
-    virtual void new_garbage(int modelx, int modely, int new_count);
+    virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power);
     virtual void pop_garbage(int this_frame_lands);
+    virtual void hit_by_garbage(int this_frame_lands);
     virtual void warning_sound(int warning_level);
     virtual void alert_bar_animate(int warning_level);
     virtual void alert_bar_freeze(bool freezed);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
+    virtual void ending_effect();
     virtual void ability_button(int left);
 
     virtual void setup_ability_button();
@@ -93,10 +95,13 @@ private:
     virtual void derived_init();
     void update_garbage(int);
     void create_warning_strips();
+    void create_warning_strips2();
     void create_overheat_overlay();
     void show_warning_at(int x, bool visible);
     void pop_a_chain_text(model::wpChain const& key);
     void invoke_ability(view::pSprite const& sp);
+
+    virtual void new_garbage_2ndphase(vec2 const& pos, int new_count);
 
     vec2 garbage_endpoint_vec2() const;
     vec2 pos_vec2(int const& x, int const& y) const;
@@ -107,17 +112,26 @@ private:
     ctrl::wpPlayer player_;
     view::pSprite overheat_;
     view::pSprite overheat_bg_;
+    view::pSprite box_top_, box_bottom_, box_left_, box_right_, box_bg_;
     view::pSprite ability_btn_, alert_bar_cover_top_, alert_bar_cover_bottom_;
+    view::pSprite alert_text_bg1_, alert_text_bg2_;
     view::pAnimatedSprite alert_bar_top_;
     view::pAnimatedSprite alert_bar_bottom_;
+    view::pAnimatedSprite alert_text1_, alert_text2_;
+    view::pObject alert_leading_orig1_, alert_leading_orig2_;
+    view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
+    std::vector< view::pAnimatedSprite > warning_strip2_;
+    std::vector< view::pAnimatedSprite > warning_strip3_;
+    std::vector< view::pObject > warning_strip_holder_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;
     typedef std::pair<model::wpChain const, view::pMenu > ChainTextPair;
     typedef std::map< model::wpChain, view::pMenu >       ChainTextMap;
 
+    int column_flag_;
     int i_have_to_keep_track_of_garbage_count_visually_here_;
 };
 

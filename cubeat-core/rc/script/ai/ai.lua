@@ -54,7 +54,14 @@ Mt_SimpleMap.get_grounded_cube    = function(self, x, y)
 end
 
 Mt_SimpleMap.get_firepoint_cube   = function(map, lb, ub, em)
-  return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub, em), C.SimpleCube__gc)
+  local atk = ffi.new("int[1]", 0)
+  return ffi.gc(C.SimpleMap_get_firepoint_cube(map, lb, ub, em, atk), C.SimpleCube__gc), atk[0]
+end
+
+Mt_SimpleMap.get_firemap          = function(map)
+  local firemap = ffi.new("int["..(map:width() * map:height()).."]")
+  C.SimpleMap_get_firemap(map, firemap)
+  return firemap
 end
 
 Mt_SimpleMap.get_garbages         = function(self)

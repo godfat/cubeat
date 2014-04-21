@@ -16,9 +16,6 @@ local scene_
 local game_scene_
 local into_emergency_ = false
 
--- PROBLEM:
--- Why phase 10 is odd looking? main_blocker_ is gone
-
 local tut_phase_ = 1
 local tut_actions_ = {}
 local tut_checkpoints_ = {}

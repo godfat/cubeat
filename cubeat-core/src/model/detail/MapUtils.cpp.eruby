@@ -9,22 +9,31 @@ namespace detail {
 bool check_not_continue(
     std::vector<pSimpleCube>& list,
     pSimpleCube that,
-    pSimpleCube ya_that)
+    pSimpleCube ya_that,
+    bool& extending_out)
 {
     if( ya_that.use_count() == 0 )   return true;
     else if( *ya_that != *that )     return true;
-    list.push_back(ya_that);
+    else if( ya_that->is_broken() )  return true;
+    else if( ya_that->has_grounded() ) list.push_back(ya_that);
+    else                             return true;
     return false;
 }
 
 bool check_not_continue(
     std::vector<pCube>& list,
     pCube that,
-    pCube ya_that)
+    pCube ya_that,
+    bool& extending_out)
 {
     if( ya_that.use_count() == 0 )   return true;
     else if( *ya_that != *that )     return true;
+    else if( ya_that->is_broken() )  return true;
     else if( ya_that->is_waiting() ) list.push_back(ya_that);
+    else if( ya_that->is_dying() ) {
+        list.push_back(ya_that);
+        extending_out = true;
+    }
     else                             return true;
     return false;
 }

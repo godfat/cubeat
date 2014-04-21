@@ -76,17 +76,21 @@ public:
     virtual void garbage_fly(); //only called once when model::Map::insert_garbage
     virtual void goto_garbage_orig(); //called from presenter::Map
     virtual void go_dying();
-    virtual void go_exploding();
-    virtual void be_broken();
+    virtual void go_exploding(int color_id);
+    virtual void be_broken(int color_id);
     virtual void restore(int color_id);
     virtual void be_garbage();
     virtual void hit(int /*dmg*/, int hp);
     virtual void get_chain();
     virtual void lose_chain();
+    virtual void losing_chain(double percentage);
+    virtual void ending(int time_delay);
 
 private:
     ViewSprite& shot_event( ShotEvent ally_cb, ShotEvent enemy_cb );
     ViewSprite& shot_event( ShotEvent ally_cb );
+
+    void set_base_color_and_texture(int color_id);
 
     data::pMapSetting map_setting() const;
     data::pViewSetting view_setting() const;
@@ -97,6 +101,9 @@ private:
 
 private:
     view::pSprite  body_;
+    view::pSprite  outline_;
+    view::pSprite  bodylayer2_;
+    view::pSprite  bodylayer3_;
     view::wpObject view_orig_;
     model::wpCube  cube_;
     data::wpMapSetting map_setting_;

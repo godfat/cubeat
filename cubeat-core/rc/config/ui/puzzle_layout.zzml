@@ -3,9 +3,7 @@
 
 # base size and texture
 base: {
-    layout_tex: 'ui/puzzle',
-    w: 1280,
-    h: 720,
+    infoboard: { img: 'ui/puzzle', w: 170, h: 288, x: 205, y: 28 }
 },
 
 # texts setup data

@@ -356,7 +356,7 @@ void Player::start_haste_effect()
     using namespace easing;
     if( !overheat_ ) {
         vec3 rot = input_->getCursor()->get<Rotation>();
-        rot.Z += 360; //will this overflow eventually?
+        rot.Z -= 360; //will this overflow eventually?
         input_->getCursor()->tween<Linear, Rotation>(rot, 1000u, -1);
         hasting_ = true;
     }
@@ -368,7 +368,7 @@ void Player::remove_haste_effect()
     using namespace easing;
     if( hasting_ ) {
         vec3 rot = input_->getCursor()->get<accessor::Rotation>();
-        rot.Z += 360; //will this overflow eventually?
+        rot.Z -= 360; //will this overflow eventually?
         input_->getCursor()->tween<Linear, Rotation>(rot, 3000u, -1);
         hasting_ = false;
     }

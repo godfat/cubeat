@@ -18,26 +18,65 @@ class OneFadingT{
 
 public:
     typedef std::tr1::shared_ptr<OneFadingT> pointer_type;
-    static pointer_type create(cube_list_type const& list){
-        return utils::ObjectPool<OneFadingT>::create(list);
+    static pointer_type create(cube_list_type const& list, bool const& extending = false){
+        return utils::ObjectPool<OneFadingT>::create(list, extending);
     }
 public:
     // begin only used by Map::next_state / next_step
-    <% debug_hook 'OneFadingT' do %>(cube_list_type const& list): list_(list) {<%end%>}
+    <% debug_hook 'OneFadingT' do %>(cube_list_type const& list, bool const& extending)
+        : list_(list), extending_(extending), extending_at_step_(0) {<%end%>}
     typename cube_list_type::size_type size() const{ return list_.size(); }
+    typename cube_list_type::iterator begin() const{ return list_.begin(); }
+    typename cube_list_type::iterator end()   const{ return list_.end(); }
+    pChain chain() const{ return chain_.lock(); }
+    wpChain wchain() const{ return chain_; }
 
     void <% debug_hook 'fade' do %>(MapType& map,
-                                    typename MapType::cube_type that_would_be_killed_by_map){
+                                    pChain existing_chain = pChain() ){
 <% end %>
-        pChain chain = get_the_chain(map);
+        int extending_amount = 0;
+        pChain chain = existing_chain ? existing_chain : get_the_chain(map);
+        chain_ = chain; // Associate this particular OneFading with its chain.
+
+        // I have no good way around this. If this is an extending OneFading,
+        // we need to know what step in a chain it is currently extending, so have to search through it first.
+        if( extending_ ) {
+            for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
+                i!=iend; ++i)
+            {
+                if( (**i).is_dying() ) { // if it's extending, there must be a few cubes already dying.
+                    extending_at_step_ = (**i).dying_chain_step();
+                    if( extending_at_step_ == chain->step() ) {
+                        chain->is_extending_final_step(true);
+                    }
+                    break;
+                }
+            }
+        }
 
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {
-            map.attach_chain_bottom_up_from((**i).x(), (**i).y(), chain);
-            if( *i != that_would_be_killed_by_map ){
-                (**i).go_dying();
+            // calculate how many are "dying" or "not dying" in the traveled.
+            // Since we changed the rule to allow extending already happening "OneFading"s in 2013,
+            // we'll need this number to know exactly how many cubes we are extending.
+            if( (**i).is_waiting() ) {
+                extending_amount += 1;
             }
+
+            (**i).chain(chain);
+            (**i).go_dying( extending_at_step_ != 0 ? extending_at_step_ : chain->step());
+            /// ** do something here so cubes extending chain doesn't "die" again? *** ///
+
+            //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
+            //note: Moved this line to Dying to be more reasonable chaining situation.
+            //      In SimpleMap this is invoked in cycle_a_cube
+        }
+
+        if( extending_ ) {
+            extend_step(chain, extending_at_step_, extending_amount);
+        } else {
+            update_step(chain);
         }
     }
     // end
@@ -63,15 +102,22 @@ private:
             map.push_chain( chain );
         }
 
-        //and add combo to it
-        chain->add_last_step_amounts( list_.size() );
-        chain->set_last_step_position( (*list_.rbegin())->x(), (*list_.rbegin())->y() );
-
         return chain;
+    }
+
+    void update_step(pChain chain) {
+        chain->add_last_step_amounts( list_.size() );
+    }
+
+    void extend_step(pChain chain, int step, int amount) {
+        chain->add_step_amounts( step, amount );
     }
 
 private:
     cube_list_type list_;
+    wpChain chain_; // just association, don't hold it.
+    bool extending_;
+    int extending_at_step_;
 };
 
 }} // end of namespace

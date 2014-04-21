@@ -13,19 +13,22 @@ using namespace state;
 pState <% debug_hook 'Waiting::init' do %>(){
 <% end %>
     pState result = shared_from_this();
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&Waiting::check_chain_now, this),
-        result, map()->ms()->chaining_duration());
+//    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//        std::tr1::bind(&Waiting::check_chain_now, this),
+//        result, map()->ms()->chaining_duration());
     return result;
 }
 
 void <% debug_hook 'Waiting::cycle' do %>(time_t const& now_t, time_t const& last_t){
 <% end %>
-    if(pState result = map()->next_state(owner()))
+    if(pState result = map()->next_state(owner())) {
         switch_state(result);
+    } else {
+        owner()->losing_chain(now_t - last_t);
+    }
 }
 
 void <% debug_hook 'Waiting::check_chain_now' do %>(){
 <% end %>
-    owner()->lose_chain();
+//    owner()->lose_chain();
 }

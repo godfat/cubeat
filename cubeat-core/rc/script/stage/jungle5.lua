@@ -66,8 +66,6 @@ function init(scene)
   
   local l5 = new_layer{ name = "bg5/09foreground", parent = scene_ }
   l5:set_pos( 0, 720 - l5:get_size_y() )
-  
-  local debug_timer = event.on_timer("global", function() view.debug_hack() end, 1000, -1)
 end
 
 function cycle()

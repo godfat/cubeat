@@ -34,12 +34,18 @@ face_pos: [
 ],
 
 passive_mod: {
-    warning_gap: 1000,
+    # note to self 2014.03.06
+    # Pro: Red color is significantly higher
+    # Con: Heat add for Hasting is also significantly higher
+    warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 0, 
+    drop_normal_chance: 15,
     restore: {
-        y: 0.6
+        r: 2.66,
+        g: 1.0,
+        b: 1.0,
+        y: 1.0
     },
     weapon: {
         heat_rate: 0.18,
@@ -48,7 +54,7 @@ passive_mod: {
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,
-        heat_for_haste: 0.02,
+        heat_for_haste: 0.033,
         heat_for_jama: 0.18,
         ability_kind: 4
     }

@@ -17,18 +17,20 @@ public:
     ViewBase(model::pCube cube): data_(cube->data()){}
     virtual ~ViewBase(){}
     virtual void go_dying(){}
-    virtual void go_exploding(){}
+    virtual void go_exploding(int color_id){}
     virtual void be_garbage(){}
-    virtual void be_broken(){}
+    virtual void be_broken(int /*color_id*/){}
     virtual void restore(int /*color_id*/){}
     virtual void hit(int /*dmg*/, int /*hp*/){}
     virtual void get_chain(){}
     virtual void lose_chain(){}
+    virtual void losing_chain(double percentage){}
     virtual void drop_a_block(){}
     virtual void sink_a_block(){}
     virtual void drop_a_block_with_callback(callback_type){}
     virtual void sink_a_block_with_callback(callback_type){}
     virtual void update_pos(){}
+    virtual void ending(int){}
 
     //hack
     virtual void approach_pos(){}

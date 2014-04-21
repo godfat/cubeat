@@ -17,85 +17,156 @@ class LinearParticleEmitter : public IParticleEmitter
 {
 public:
 
-	//! constructor
-	LinearParticleEmitter(
-		const core::vector3df& center,
-		const core::vector3df& normal, f32 length,
-		const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
-		u32 minParticlesPerSecond = 20,
-		u32 maxParticlesPerSecond = 40,
-		const video::SColor& minStartColor = video::SColor(255,0,0,0),
-		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
-		u32 lifeTimeMin=2000,
-		u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0,
-		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
-		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f)
-		);
+    //! constructor
+    LinearParticleEmitter(
+        //const core::vector3df& center,
+        core::vector3df const* vec3_to_be_followed,
+        const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
+        u32 minParticlesPerSecond = 20,
+        u32 maxParticlesPerSecond = 40,
+        const video::SColor& minStartColor = video::SColor(255,0,0,0),
+        const video::SColor& maxStartColor = video::SColor(255,255,255,255),
+        u32 lifeTimeMin=2000,
+        u32 lifeTimeMax=4000,
+        s32 maxAngleDegrees=0,
+        const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+        const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f)
+        ):
+        Direction(direction),
+        MaxStartSize(maxStartSize), MinStartSize(minStartSize),
+        MinParticlesPerSecond(minParticlesPerSecond),
+        MaxParticlesPerSecond(maxParticlesPerSecond),
+        MinStartColor(minStartColor), MaxStartColor(maxStartColor),
+        MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
+        Time(0), Emitted(0),
+        MaxAngleDegrees(maxAngleDegrees),
+        LinkedPositionPtr(vec3_to_be_followed),
+        LastPosition(*vec3_to_be_followed)
+    {
+        #ifdef _DEBUG
+        setDebugName("LinearParticleEmitter");
+        #endif
+    }
 
-	//! Prepares an array with new particles to emitt into the system
-	//! and returns how much new particles there are.
-	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
+    //! Prepares an array with new particles to emitt into the system
+    //! and returns how much new particles there are.
+    virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray)
+    {
+        Time += timeSinceLastCall;
 
-	//! Set the center of the radius for the cylinder, at one end of the cylinder
-	virtual void setCenter( const core::vector3df& center ) { Center = center; }
+        using namespace psc;
 
-	//! Set the normal of the cylinder
-	virtual void setNormal( const core::vector3df& normal ) { Normal = normal; }
+        const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
+        const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (utils::random(pps)) : MinParticlesPerSecond;
+        const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
-	//! Set the length of the cylinder
-	virtual void setLength( f32 length ) { Length = length; }
+        if(Time > everyWhatMillisecond)
+        {
+            Particles.set_used(0);
+            Time = 0;
+            SParticle p;
 
-	//! Set direction the emitter emits particles
-	virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
+            Length = (*LinkedPositionPtr - LastPosition).getLength();
+            Normal = - (*LinkedPositionPtr - LastPosition).normalize();
 
-	//! Set direction the emitter emits particles
-	virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
+            /// Make amount directly related to Length, divided by the texture unit length (may be taken from outside)
+            u32 amount = Length / 5;
+            amount += 1; // make it at least an additional one
 
-	//! Set direction the emitter emits particles
-	virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
+            for(u32 i=1; i<=amount; ++i)
+            {
+                p.pos = core::vector3df(0,0,0);//Center;
 
-	//! Set direction the emitter emits particles
-	virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
+                // Unit length
+                const f32 length = (i / (f32)amount) * Length;
 
-	//! Set direction the emitter emits particles
-	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+                // point distributed equally according to unit length
+                p.pos += Normal * length;
 
-	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+                p.startTime = now;
+                p.vector = Direction;
 
-	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+                if( MaxAngleDegrees )
+                {
+                    core::vector3df tgt = Direction;
+                    tgt.rotateXYBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+                    tgt.rotateYZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+                    tgt.rotateXZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+                    p.vector = tgt;
+                }
 
-	//! Get the center of the cylinder
-	virtual const core::vector3df& getCenter() const { return Center; }
+                p.endTime = now + MinLifeTime;
+                if (MaxLifeTime != MinLifeTime)
+                    p.endTime += utils::random(MaxLifeTime - MinLifeTime);
 
-	//! Get the normal of the cylinder
-	virtual const core::vector3df& getNormal() const { return Normal; }
+                if (MinStartColor==MaxStartColor)
+                    p.color = MinStartColor;
+                else
+                    p.color = MinStartColor.getInterpolated(MaxStartColor, (utils::random(100)) / 100.0f);
 
-	//! Get the center of the cylinder
-	virtual f32 getLength() const { return Length; }
+                p.startColor = p.color;
+                p.startVector = p.vector;
 
-	//! Gets direction the emitter emits particles
-	virtual const core::vector3df& getDirection() const { return Direction; }
+                if (MinStartSize==MaxStartSize)
+                    p.startSize = MinStartSize;
+                else
+                    p.startSize = MinStartSize.getInterpolated(MaxStartSize, (utils::random(100)) / 100.0f);
+                p.size = p.startSize;
 
-	//! Gets direction the emitter emits particles
-	virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
+                Particles.push_back(p);
+            }
 
-	//! Gets direction the emitter emits particles
-	virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
+            outArray = Particles.pointer();
 
-	//! Gets direction the emitter emits particles
-	virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
+            LastPosition = *LinkedPositionPtr;
 
-	//! Gets direction the emitter emits particles
-	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
+            return Particles.size();
+        }
 
-	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
+        return 0;
+    }
 
-	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+    //! Set direction the emitter emits particles
+    virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
+
+    //! Set direction the emitter emits particles
+    virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
+
+    //! Set direction the emitter emits particles
+    virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
+
+    //! Set direction the emitter emits particles
+    virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
+
+    //! Set direction the emitter emits particles
+    virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+
+    //! Set the maximum starting size for particles
+    virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+
+    //! Set the minimum starting size for particles
+    virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+
+    //! Gets direction the emitter emits particles
+    virtual const core::vector3df& getDirection() const { return Direction; }
+
+    //! Gets direction the emitter emits particles
+    virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
+
+    //! Gets direction the emitter emits particles
+    virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
+
+    //! Gets direction the emitter emits particles
+    virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
+
+    //! Gets direction the emitter emits particles
+    virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
+
+    //! Gets the maximum starting size for particles
+    virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
+
+    //! Gets the minimum starting size for particles
+    virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
 
     virtual void setMinLifeTime(u32 min) { MinLifeTime = min; }
 
@@ -111,120 +182,24 @@ public:
 
 private:
 
-	core::array<SParticle> Particles;
+    core::array<SParticle> Particles;
 
-	core::vector3df	Center;
-	core::vector3df	Normal;
-	core::vector3df Direction;
-	core::dimension2df MaxStartSize, MinStartSize;
-	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
-	video::SColor MinStartColor, MaxStartColor;
-	u32 MinLifeTime, MaxLifeTime;
+    core::vector3df	Normal;
+    core::vector3df Direction;
+    core::dimension2df MaxStartSize, MinStartSize;
+    u32 MinParticlesPerSecond, MaxParticlesPerSecond;
+    video::SColor MinStartColor, MaxStartColor;
+    u32 MinLifeTime, MaxLifeTime;
 
-	f32 Length;
+    f32 Length;
 
-	u32 Time;
-	u32 Emitted;
-	s32 MaxAngleDegrees;
+    u32 Time;
+    u32 Emitted;
+    s32 MaxAngleDegrees;
+
+    core::vector3df const* LinkedPositionPtr;
+    core::vector3df LastPosition;
 };
-
-//! constructor
-LinearParticleEmitter::LinearParticleEmitter(
-	const core::vector3df& center,
-	const core::vector3df& normal, f32 length,
-	const core::vector3df& direction,
-	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
-	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
-	const core::dimension2df& minStartSize,
-	const core::dimension2df& maxStartSize )
-	: Center(center), Normal(normal), Direction(direction),
-	MaxStartSize(maxStartSize), MinStartSize(minStartSize),
-	MinParticlesPerSecond(minParticlesPerSecond),
-	MaxParticlesPerSecond(maxParticlesPerSecond),
-	MinStartColor(minStartColor), MaxStartColor(maxStartColor),
-	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
-	Length(length), Time(0), Emitted(0),
-	MaxAngleDegrees(maxAngleDegrees)
-{
-	#ifdef _DEBUG
-	setDebugName("LinearParticleEmitter");
-	#endif
-}
-
-
-//! Prepares an array with new particles to emitt into the system
-//! and returns how much new particles there are.
-s32 LinearParticleEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray)
-{
-	Time += timeSinceLastCall;
-
-	using namespace psc;
-
-	const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (utils::random(pps)) : MinParticlesPerSecond;
-	const f32 everyWhatMillisecond = 1000.0f / perSecond;
-
-	if(Time > everyWhatMillisecond)
-	{
-		Particles.set_used(0);
-		u32 amount = (u32)((Time / everyWhatMillisecond) + 0.5f);
-		Time = 0;
-		SParticle p;
-
-		if(amount > MaxParticlesPerSecond*2)
-			amount = MaxParticlesPerSecond * 2;
-
-		for(u32 i=0; i<amount; ++i)
-		{
-		    p.pos = Center;
-
-			// Random length
-			const f32 length = (i / (f32)amount) * Length; //fmodf( (f32)os::Randomizer::rand(), Length * 1000.0f ) * 0.001f;
-
-			// Random point along the cylinders length
-			p.pos += Normal * length;
-
-			p.startTime = now;
-			p.vector = Direction;
-
-			if( MaxAngleDegrees )
-			{
-				core::vector3df tgt = Direction;
-				tgt.rotateXYBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
-				tgt.rotateYZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
-				tgt.rotateXZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
-				p.vector = tgt;
-			}
-
-      p.endTime = now + MinLifeTime;
-			if (MaxLifeTime != MinLifeTime)
-				p.endTime += utils::random(MaxLifeTime - MinLifeTime);
-
-			if (MinStartColor==MaxStartColor)
-				p.color = MinStartColor;
-			else
-				p.color = MinStartColor.getInterpolated(MaxStartColor, (utils::random(100)) / 100.0f);
-
-			p.startColor = p.color;
-			p.startVector = p.vector;
-
-			if (MinStartSize==MaxStartSize)
-				p.startSize = MinStartSize;
-			else
-				p.startSize = MinStartSize.getInterpolated(MaxStartSize, (utils::random(100)) / 100.0f);
-			p.size = p.startSize;
-
-			Particles.push_back(p);
-		}
-
-		outArray = Particles.pointer();
-
-		return Particles.size();
-	}
-
-	return 0;
-}
 
 } // end namespace scene
 } // end namespace irr

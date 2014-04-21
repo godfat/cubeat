@@ -9,7 +9,7 @@
 #include <vector>
 #include <boost/tr1/memory.hpp>
 #include <boost/thread/thread.hpp>
-#include <utility>
+//#include <utility>
 
 //for lua scripting, and this has to be global.. not in any namespaces
 struct lua_State;

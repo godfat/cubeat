@@ -1,5 +1,6 @@
 
 #include "model/state/Dying.hpp"
+#include "model/Cube.hpp"
 #include "model/Map.hpp"
 #include "EventDispatcher.hpp"
 #include "ctrl/TimerDispatcher.hpp"
@@ -24,6 +25,7 @@ void <% debug_hook 'Dying::next_state' do %>(){
     // else{
     //  return pState(); // really dead
     // }
+    map()->attach_chain_bottom_up_from(owner()->x(), owner()->y() + 1, owner()->chain());
     switch_state(pState());
 }
 

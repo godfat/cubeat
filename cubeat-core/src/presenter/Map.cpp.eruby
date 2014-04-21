@@ -92,8 +92,12 @@ void Map::speedup(){
     if( map_setting()->sink_speed() < map_setting()->sink_speed_limit() ) {
         map_setting()->sink_speed( map_setting()->sink_speed() + map_setting()->sink_speed_add() );
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            std::tr1::bind(&Map::speedup, this), shared_from_this(), 5000);
+            std::tr1::bind(&Map::speedup, this), shared_from_this(), 30000);
     }
+}
+
+void Map::crushing_speedup(){
+    map_setting()->sink_speed( 400 );
 }
 
 pMap <% debug_hook 'Map::init' do %>(){
@@ -102,10 +106,11 @@ pMap <% debug_hook 'Map::init' do %>(){
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(); // beware! this need refer model_!
 
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Map::crushing_speedup, this), self, 180000);
 
     return self;
 }
@@ -116,10 +121,11 @@ pMap <% debug_hook 'Map::init' do %>(utils::vector_2d<int> const& data){
     model_ = model::Map::create(self, map_setting_);
     model_->init_cubes(data); // beware! this need refer model_!
 
-    // NOTE: this is bad!! why is set_view_master related to speedup?
-    //       it should be placed in somewhere like start map or start game.
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe( //timer to call speed up
-        std::tr1::bind(&Map::speedup, this), self, 20000);
+        std::tr1::bind(&Map::speedup, this), self, 30000);
+
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        std::tr1::bind(&Map::crushing_speedup, this), self, 180000);
 
     return self;
 }
@@ -134,9 +140,12 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     new_chain_event(
         std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
     new_garbage_event(
-        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+//        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
+        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2)).
     pop_garbage_event(
         std::tr1::bind(&cube::ViewMaster::pop_garbage, view.get(), _1)).
+    hit_by_garbage_event(
+        std::tr1::bind(&cube::ViewMaster::hit_by_garbage, view.get(), _1)).
     warning_sound_event(
         std::tr1::bind(&cube::ViewMaster::warning_sound, view.get(), _1)).
     alert_bar_animate_event(
@@ -146,7 +155,9 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     alert_bar_update_event(
         std::tr1::bind(&cube::ViewMaster::alert_bar_update, view.get(), _1)).
     overheat_event(
-        std::tr1::bind(&cube::ViewMaster::show_overheat, view.get(), _1));
+        std::tr1::bind(&cube::ViewMaster::show_overheat, view.get(), _1)).
+    ending_effect_event(
+        std::tr1::bind(&cube::ViewMaster::ending_effect, view.get()));
 // WTF MEMO 2012.9 failed to adjust for balance
 //    ability_button_event(
 //        std::tr1::bind(&cube::ViewMaster::ability_button, view.get(), _1));
@@ -156,13 +167,15 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
 <% end %>
     using namespace std::tr1::placeholders;
     cube->model()->    go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
-                   go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get() ) ).
+                   go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get(), _1 ) ).
                      be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
-                      be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get() ) ).
+                      be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get(), _1 ) ).
                         restore_event( std::tr1::bind( &Cube::restore, cube.get(), _1) ).
-                            hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2 ) ).
+                         ending_event( std::tr1::bind( &Cube::ending, cube.get(), _1) ).
+                            hit_event( std::tr1::bind( &Cube::hit, cube.get(), _1, _2) ).
                       get_chain_event( std::tr1::bind( &Cube::get_chain, cube.get() ) ).
                      lose_chain_event( std::tr1::bind( &Cube::lose_chain, cube.get() ) ).
+                   losing_chain_event( std::tr1::bind( &Cube::losing_chain, cube.get(), _1) ).
                    drop_a_block_event( std::tr1::bind( &Cube::drop_a_block, cube.get() ) ).
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
                      update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).
@@ -216,6 +229,12 @@ Map& <% debug_hook 'Map::cycle' do %>(){
         view->cycle(*this);
     }
     if( view_master_ ) view_master_->cycle(*this);
+    return *this;
+}
+
+Map& Map::ending_effect() {
+    ending_effect_event()();
+    model()->ending_effect();
     return *this;
 }
 

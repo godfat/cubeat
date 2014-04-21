@@ -46,12 +46,12 @@ public:
     SimpleCube(wpSimpleMap map, int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
         is_broken_(false), is_garbage_(false), is_new_garbage_(false),
-        hp_(1), map_(map), is_dead_(false)
+        hp_(1), dying_mode_(0), time_to_lose_chain_(0), map_(map), is_dead_(false)
     {}
     SimpleCube(int x = 0, int y = 0, int color_id = 0):
         data_(data::Cube::create(x, y, color_id)), has_grounded_(false),
         is_broken_(false), is_garbage_(false), is_new_garbage_(false),
-        hp_(1), map_(pSimpleMap()), is_dead_(false)
+        hp_(1), dying_mode_(0), time_to_lose_chain_(0), map_(pSimpleMap()), is_dead_(false)
     {}
 
     ~SimpleCube(){ lose_chain(); }
@@ -69,7 +69,8 @@ public:
     void chain(pChain chain)   { chain_belonged_to_ = chain; }
     pChain const chain() const { return chain_belonged_to_; }
     void lose_chain()          { chain_belonged_to_.reset(); }
-    void go_dying()            { is_dead_ = true; }
+    void go_dying(int)         { is_dead_ = true; }
+    void restore()             { is_broken_ = false; }
     bool cycle_and_die();
 
     // differs from model::Cube
@@ -91,17 +92,29 @@ public:
 	void set_grounded() { has_grounded_ = true; new_garbage(false); }
 	void new_garbage(bool const& f) { is_new_garbage_ = f; }
 
+	// pure dummies. Have to use this in OneFading<T>. I couldn't find a way to avoid it.
+	bool is_waiting() const{ return false; }
+	bool is_dying() const{ return false; }
+	int dying_chain_step() const{ return 0; }
+	// end of dummies
+
 
     data::pCube data() const{ return data_; }
     SimpleCube& data(data::pCube const& new_data){ data_ = new_data; return *this; }
 
     pointer_type dump_data_to_map(wpSimpleMap) const;
 
+    SimpleCube& logical_or_dying_mode(int dying_mode = 0) {
+        dying_mode_ |= dying_mode;
+        return *this;
+    }
+
 protected:
     data::pCube   data_;
     pChain        chain_belonged_to_;
     bool has_grounded_, is_broken_, is_garbage_, is_new_garbage_;
-	int hp_;
+	int hp_, dying_mode_;
+	time_t time_to_lose_chain_;
 
 private:
     pointer_type init() {

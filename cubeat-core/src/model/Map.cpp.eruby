@@ -14,6 +14,8 @@
 #include "utils/ChainChecker.hpp"
 #include "utils/vector_2d.hpp"
 
+#include "audio/Sound.hpp"
+
 #include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
 #include <boost/function.hpp> // workaround for gcc43...
@@ -98,7 +100,7 @@ void <% debug_hook 'Map::cycle_cubes' do %>(){
 
 void Map::check_one_fadings() {
     using namespace std::tr1::placeholders;
-    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3));
+    utils::for_each_ignore_null(cubes_, std::tr1::bind(&Map::check_a_fade, this, _1, _2, _3, pChain()));
 }
 
 void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
@@ -113,16 +115,38 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
     }
 }
 
-void Map::check_a_fade(pCube c, int x, int y)
+void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
 {
     if( state::pWaiting waiting = c->is_waiting() ){
-        if( waiting->need_check() ){
+        if( waiting->need_check() )
+        {
             c->set_grounded(); // once grounded, always grounded
+
+            if( c->is_broken() ) {
+                waiting->checked();
+                return;
+            } // if the current cube is broken, bail out here, don't bother do one_fading check
+
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
-                one_fading->fade(*this, c);
-                c->go_dying();
+                one_fading->fade(*this, existing_chain);
+
+                // The first phase of chain tagging: If there are other OneFadings in the same frame,
+                // look it up and tag it. It will only affect other successfully constructed OneFadings.
+                // And since waiting will become checked, there will be no duplicated efforts.
+                for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
+                     i != iend; ++i )
+                {
+                    for( int x = (**i).x(), y = (**i).y() + 1; y < ms()->height() - 1; ++y ) {
+                        if( cubes_[x][y] ) {
+                            check_a_fade(cubes_[x][y], x, y, one_fading->chain());
+                        }
+                    }
+                    // remember the dying_cubes_position according to chain for later use (visual)
+                    dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
+                        .push_back( std::make_pair((**i).x(), (**i).y()) );
+                }
             }
             else waiting->checked();
         }
@@ -165,6 +189,21 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 <% end %>
     cubes_[cube->x()][cube->y()] = cube;
     cubes_[old_x][old_y].reset();
+    return *this;
+}
+
+Map& Map::ending_effect() {
+    int time_delay = 800;
+    for( int y = ms()->height()-2; y >= 0 ; --y ) {
+        for( int x = 0; x < ms()->width(); ++x ) {
+            if( cubes_[x][y] ) {
+                cubes_[x][y]->ending(time_delay);
+            }
+        }
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            std::tr1::bind(&audio::Sound::playBuffer, &audio::Sound::i(), "deadcube.wav", false), self(), time_delay);
+        time_delay += 60;
+    }
     return *this;
 }
 
@@ -263,16 +302,24 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, pChain chain){
 <% end %>
     // start chainging
+    time_t visual_delay = 0;
 	for(int x=in_x, y=in_y;
 	    x < ms()->width() && y < ms()->height()-1 &&
         //cubes_[x][y].use_count() != 0 && //if it's alive
         cubes_[x][y] &&
-        cubes_[x][y]->is_waiting() &&    //if it's at waiting state
+        cubes_[x][y]->is_waiting()     //if it's at waiting state
 		//cubes_[x][y]->chain().use_count() == 0 //and if it has a chain property
-		!cubes_[x][y]->chain()
 		; ++y)
     {
-        cubes_[x][y]->chain(chain);
+        if( !cubes_[x][y]->chain() ) {
+            cubes_[x][y]->chain(chain, visual_delay);
+            cubes_[x][y]->retain_chain(true);
+            visual_delay += 33;
+        } else if( cubes_[x][y]->chain() == chain ) {
+            cubes_[x][y]->retain_chain(true);
+        } else {
+            break;
+        }
     }
 }
 
@@ -282,8 +329,9 @@ pOneFadingOrig <% debug_hook 'Map::make_OneFading' do %>(pCube that){
 <% end %>
     cube_list_type traveled, not_traveled, result;
     not_traveled.insert(that);
-    detail::make_clist<Map>(cubes_, traveled, not_traveled, result, ms()->chain_amounts());
-    return result.size() ? OneFadingT<Map>::create( result ) : pOneFadingOrig();
+    bool extending = false;
+    detail::make_clist<Map>(cubes_, traveled, not_traveled, result, extending, ms()->chain_amounts());
+    return result.size() ? OneFadingT<Map>::create( result, extending ) : pOneFadingOrig();
 }
 
 bool <% debug_hook 'Map::is_below_empty' do %>(cpCube that) const{
@@ -308,9 +356,38 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-static void delay_adder(int& be_added_to, int amount) { be_added_to += amount; }
-static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount)
+static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain) {
+    pChain c = wchain.lock();
+    if( !c ) {
+        printf(" - chain not found!!!! \n");
+        fflush(stdout);
+        exit(0);
+    }
+    if( amount < 50 ) {
+        printf(" - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
+    }
+    be_added_to += amount;
+}
+
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, pChain c)
 {
+//    pChain c = wchain.lock();
+//    if( !c ) {
+//        printf(" - chain not found (at throwing point) !!!! \n");
+//        exit(0);
+//    }
+    if( be_subed_from < amount ) {
+        printf("\n ------------- Impossible flow, power_factor(%d) > current_sum_of_attack_(%d).\n\n", amount, be_subed_from);
+        printf(" Dump data about chain %x: \n", c.get() );
+        for( int n = 1; n <= c->step(); ++n ) {
+            printf("  - step %d, amount %d = attack %d.\n", n, c->step_amounts(n), c->attack_of_step(n) );
+        }
+        printf("\n");
+        fflush(stdout);
+        exit(0);
+    } else {
+        printf(" | chain %x total power_factor %d throwing, current_sum %d -> %d \n", c.get(), amount, be_subed_from, be_subed_from - amount);
+    }
     be_subed_from -= amount;
     cb(actual_amount);
 }
@@ -319,55 +396,78 @@ void <% debug_hook 'Map::update_chains' do %>(){
 <% end %>
     using std::tr1::bind; using std::tr1::ref; using namespace std::tr1::placeholders;
 
-
-
-    //int!? INT!? INTEGER!??????????
-    //ARE YOU FUCKING SERIOUS????????????
-
-    //int damage_factor = ms()->damage_factor();
-
-    double damage_factor = ms()->damage_factor();
-
-
     presenter::pMap o = owner();
-
-//    if( !chains_.empty() )
-//        std::cout << "map: " << this << "\n";
 
     for(chain_list_type::iterator i=chains_.begin(); i != chains_.end();)
     {
-        // when the Chain's rear is not zero we notify to add a new combo
-        if( (*i)->last_step_amounts() != 0 ){
-            (*i)->update_power_factor();
-            // damage_factor adjustment (1.00 ~ 2.00)
-            int amount = (*i)->attack_of_current_step(); // it is just superficial effects, so don't use damage_factor here.
-            //current_sum_of_attack_ += (*i)->attack_of_current_step()*damage_factor;
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_adder, ref(current_sum_of_attack_), amount), self(), 700); // The new garbage effect is only about 700 ms.
+        wpChain key_wchain = *i;
+
+        /// EVERY step of the chain might be updated during this process.
+        /// So we have to write it this way:
+
+        for( int n = 0; n < (*i)->step_indices_size(); ++n ) {
+            int step = (*i)->step_indices(n);
+            (*i)->update_power_factor_step( step );
+            int amount = (*i)->attack_of_step( step );
+
+            if( amount > 1000 || current_sum_of_attack_ > 1000 ) {// anomoly
+                printf("\n\n FUCK current_sum = %d, attack = %d, step = %d, total step of chain = %d \n\n", current_sum_of_attack_, amount, step, (*i)->step());
+                fflush(stdout);
+                exit(0);
+            }
+
             o->new_chain_event()(*i);
-            o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
-            // o->garbage_animation( amount, (*i)->last_step_x(), (*i)->last_step_y() );
-            // damage_factor adjustment (1.00 ~ 2.00)
-            match_counter_ += 1;
-            score_ += (*i)->score_step(); // 2012 note: damage_factor should not affect score
-            (*i)->step_one();
+            if( amount > 0 ) {
+                std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
+
+                pTimerDummy handle = pTimerDummy(new int);
+                chain_timer_handles_[ chain_step_pair ] = handle;
+                // if we are extending last chain, this assignment will effectively erase last timer calls.
+
+                //current_sum_of_attack_ += (*i)->attack_of_current_step();
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    handle,
+                    ms()->cube_dying_duration());
+                //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
+
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    handle,
+                    ms()->cube_dying_duration());
+
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
+    //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
+            }
+            if( step == (*i)->step() ) {
+                if( (*i)->is_extending_final_step() ) {
+                    (*i)->is_extending_final_step(false);
+                }
+                else {
+                    match_counter_ += 1;
+                    (*i)->step_one();
+                }
+            }
         }
+        (*i)->clear_indices();
 
         // when the Chain's all dead then we fire up the attack and make this one null
         //std::cout << "  chain " << (*i) << " use count: " << (*i).use_count() << "\n";
 
         if( (*i).use_count() == 1 ){
-            // damage_factor adjustment (1.00 ~ 2.00)
             int amount = (*i)->power_factor();
-            double actual_amount = amount * damage_factor;
-            //current_sum_of_attack_ -= amount;
-            //o->throw_garbage( amount );
-            std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount),
-                self(),
-                700);
+            double actual_amount = amount;
+            if( amount > 0 ) {
+                //current_sum_of_attack_ -= amount;
+                //o->throw_garbage( amount );
 
+                std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i)),
+                    self(),
+                    1200);
+            }
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
             //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
@@ -375,12 +475,26 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 highest_chain_ = (*i)->step() - 1;
             }
 
+            for( std::map< std::pair<wpChain, int>, pTimerDummy >::iterator it = chain_timer_handles_.begin(), iend = chain_timer_handles_.end();
+                 it != iend; )
+            {
+                if( it->first.first.lock() == (*i) ) {
+                    // note: key_wchain (wptr) is (*i) (sptr_to_chain)
+                    chain_timer_handles_.erase( std::make_pair(key_wchain, (it++)->first.second) );
+                } else {
+                    ++it;
+                }
+            }
+            //chain_timer_handles_.erase( key_wchain );
+
             i = chains_.erase(i);
         }
         else{
             ++i;
         }
     }
+
+    dying_cubes_position_.clear();
 }
 
 void Map::push_garbage(double amounts)
@@ -436,6 +550,16 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     if( !owner->garbage_lands().empty() ) {
         presenter::pMap main_enemy = owner->garbage_lands().front().lock();
         main_enemy->pop_garbage_event()( this_frame_lands);
+    }
+
+    /// Start here
+
+    if( this_frame_lands >= 30 ||
+        ( this_frame_lands >= 12 &&
+          this_frame_lands + grounded_cube_count() >= ms()->width() * (ms()->height()-2)
+        ) ) {
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(owner->hit_by_garbage_event(), this_frame_lands), shared_from_this(), ms()->cube_dropping_duration());
     }
 
     // 2012.09 remove player ability for now MEMO WTF
@@ -591,6 +715,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
                 bind(owner()->alert_bar_update_event(), ref(*warning_level_)), warning_level_, 50u, -1);
         } else {
             if( !chains_.empty() ) {
+                alarm_sound_.reset();
                 animate_alert_bar_.reset();
                 owner()->alert_bar_freeze_event()(true);
             } else {
@@ -605,7 +730,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             }
         }
 
-        if( !alarm_sound_ ) {
+        if( !alarm_sound_ && chains_.empty() ) {
             alarm_sound_   = std::tr1::shared_ptr<int>(new int(0));
 
             owner()->warning_sound_event()(0); //added for call warning as soon as column full, and, if no sound already.
@@ -824,6 +949,56 @@ void Map::cubes_matched_add(int const& num, int const& id)
 //        cubes_cleared_ = 0;
 //        owner()->push_player_ability();
 //    }
+}
+
+void Map::restore_neighbor(int x, int y, int dying_mode)
+{
+    // dying mode:
+    //   00 : no special
+    //   01 : horizontal
+    //   10 : vertical
+    //   11 : four direction
+
+    /// HACK
+
+    if( dying_mode == 0x01 ) {
+
+        int dir[2] = {1, -1};
+
+        for( int i = 0; i < 2; ++i ) {
+            int ix = x + dir[i];
+            if( ix < ms()->width() && ix >= 0 ) {
+                if( cubes_[ix][y] && !cubes_[ix][y]->is_dying() && cubes_[ix][y]->is_broken() ) {
+                    cubes_[ix][y]->restore(0);
+                }
+            }
+        }
+    } else if( dying_mode == 0x10 ) {
+
+        int dir[2] = {1, -1};
+
+        for( int i = 0; i < 2; ++i ) {
+            int iy = y + dir[i];
+            if( iy < ms()->height() - 1 && iy >= 0 ) {
+                if( cubes_[x][iy] && !cubes_[x][iy]->is_dying() && cubes_[x][iy]->is_broken() ) {
+                    cubes_[x][iy]->restore(0);
+                }
+            }
+        }
+    } else if( dying_mode == 0x11 ) {
+
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        for( int i = 0; i < 4; ++i ) {
+            int ix = x + dir[i][0];
+            int iy = y + dir[i][1];
+            if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
+                if( cubes_[ix][iy] && !cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->is_broken() ) {
+                    cubes_[ix][iy]->restore(0);
+                }
+            }
+        }
+    }
 }
 
 pSimpleMap Map::dump_data() const

@@ -35,7 +35,7 @@ public:
     static void setup(pSimpleMap&, int x, int y, pSimpleCube);
     static void kill (pSimpleMap&, int x, int y);
     static void hit  (pSimpleMap&, int x, int y);
-    static int get_base_attack(pSimpleMap cloned_map);
+    static int get_base_attack(pSimpleMap const& map);
     static bool still_chaining(pSimpleMap const& map);
 
 private:

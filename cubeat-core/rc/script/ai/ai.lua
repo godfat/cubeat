@@ -69,6 +69,10 @@ Mt_SimpleMap.get_firemap          = function(map)
   return firemap
 end
 
+Mt_SimpleMap.get_base_attack      = function(self)
+  return C.SimpleMap_get_base_attack(self)
+end
+
 Mt_SimpleMap.get_garbages         = function(self)
   local size_out = ffi.new("unsigned int[1]")
   return ffi.gc(C.SimpleMap_get_garbages(self, size_out), function(self)

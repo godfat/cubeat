@@ -7,6 +7,8 @@
 #define APIEXPORT
 #endif
 
+APIEXPORT long    get_ftime(char const*);
+
 APIEXPORT pScene* Demo_get_ui_scene(Demo*); // not shared_ptr!
 APIEXPORT pScene* Demo_get_game_scene(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_init_vs_ppl(Demo*, char const*, char const*, char const*); // not shared_ptr!

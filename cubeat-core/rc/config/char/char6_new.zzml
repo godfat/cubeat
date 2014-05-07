@@ -40,7 +40,7 @@ passive_mod: {
     warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 22,
+    drop_normal_chance: 20,
     restore: {
         r: 1.0,
         g: 1.0,
@@ -50,7 +50,7 @@ passive_mod: {
         rb: 1.0
     },
     weapon: {
-        heat_rate: 0.18,
+        heat_rate: 0.185,
         cool_rate: 0.05,
         downtime: 2000,
         item1_start_ammo: 10,

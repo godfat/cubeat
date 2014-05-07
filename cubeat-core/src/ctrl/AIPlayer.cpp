@@ -84,8 +84,9 @@ void AIPlayer::update_map_models()
     ally_maps_.clear();
     enemy_maps_.clear();
     for( std::list<int>::const_iterator i = ally_input_ids_.begin(); i != ally_input_ids_.end(); ++i ) {
-        if( presenter::pMap m = map_list_[ *i ].lock() )
+        if( presenter::pMap m = map_list_[ *i ].lock() ) {
             ally_maps_.push_back( m->model()->dump_data() );
+        }
     }
     for( std::list<int>::const_iterator i = enemy_input_ids_.begin(); i != enemy_input_ids_.end(); ++i ) {
         if( presenter::pMap m = map_list_[ *i ].lock() )

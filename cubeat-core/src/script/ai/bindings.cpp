@@ -138,6 +138,10 @@ void SimpleMap_get_firemap(pSimpleMap* p, int* firemap_out) {
     AIUtils::collect_firemap(*p, firemap_out);
 }
 
+int SimpleMap_get_base_attack(pSimpleMap* p) {
+    return AIUtils::get_base_attack(*p);
+}
+
 pSimpleCube** SimpleMap_get_garbages(pSimpleMap* p, unsigned int* size_out) {
     return AIUtils::find_garbages(*p, size_out);
 }

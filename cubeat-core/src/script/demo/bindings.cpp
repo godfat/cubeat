@@ -1,6 +1,9 @@
 #include "view/Scene.hpp"
 #include "presenter/game/Demo.hpp"
 
+// Is this really cross-platform?
+#include <sys/stat.h>
+
 using namespace psc;
 using namespace view;
 using namespace presenter;
@@ -9,6 +12,12 @@ using namespace game;
 
 extern "C" {
 #include "script/demo/bindings.h"
+}
+
+long get_ftime(char const* path) {
+    struct stat fs;
+    stat(path, &fs);
+    return fs.st_mtime;
 }
 
 pScene* Demo_get_ui_scene(Demo* self) { // not shared_ptr!

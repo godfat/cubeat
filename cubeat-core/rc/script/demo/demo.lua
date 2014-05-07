@@ -75,6 +75,9 @@ function init(demo)
   --preload ui
   switch.load_page('select'   )
   switch.load_page('mainmenu' )
+  
+  -- test: show file time: 
+  print( " ftime of mainmenu.lua: " .. C.get_ftime( 'rc/script/ui/demo/mainmenu/mainmenu.lua' ) )
 
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)

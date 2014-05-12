@@ -163,7 +163,7 @@ protected:
     view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
     view::pSprite         heatunit1_[24], heatunit2_[24];
     view::pSprite         char_big1_, char_big2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_, desc_text_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_;
     pDummy timer_ui_, btn_reinit_, btn_pause_;
     std::string c1p_, c2p_, sconf_;
 

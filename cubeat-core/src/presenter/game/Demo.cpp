@@ -171,12 +171,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
     data::pMapSetting set1 = data::MapSetting::create( gameplay_.M("player2") );
 
-    /// TEST: when ai_level_ == 0, reduce sink_speed_limit?
-    if( ai_level_ == 0 && game_mode_ == GM_PVC ) {
-        set0->sink_speed_limit(200);
-        set1->sink_speed_limit(200);
-    }
-
     // update map settings with player passive modification:
 // WTF MEMO 2012.9 failed to adjust for balance
 // WTF MEMO 2014.3 try to use it again:
@@ -716,9 +710,6 @@ void Demo::game_start()
         blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H() + 130));
         pause_note_text_->set<Visible>(true);
     }
-    if( game_mode_ == GM_SINGLE ) {
-        desc_text_->set<Visible>(true);
-    }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     scene_->allowPicking(true);
@@ -859,22 +850,6 @@ void Demo::setup_ui()
         some_ui_inited_ = true;
     }
 
-    //These has to be reinit'd when setup_ui() is called each time
-    if ( submode_ >= 0 && submode_ <= 9 )
-        //desc_text_ = view::SpriteText::create("\n\n\nclear all cubes\nin one shot", ui_scene_, "kimberley", 30, true);
-        desc_text_ = view::SpriteText::create("\n一発全消しよう！", ui_scene_, "rounded-mplus-1m-medium", 30, true);
-
-    else if ( submode_ >= 10 && submode_ <= 19 )
-        //desc_text_ = view::SpriteText::create("\n\n\nget out of\nemergency!", ui_scene_, "kimberley", 30, true);
-        desc_text_ = view::SpriteText::create("\n緊急状態解除しよう！", ui_scene_, "rounded-mplus-1m-medium", 30, true);
-
-    else if ( submode_ >= 20 && submode_ <= 29 )
-        //desc_text_ = view::SpriteText::create("\n\n\nget highest score!", ui_scene_, "kimberley", 30, true);
-        desc_text_ = view::SpriteText::create("\nハイスコアを\n目指しましょう！", ui_scene_, "rounded-mplus-1m-medium", 30, true);
-
-    desc_text_->set<Pos2D>( vec2(1065, 150) );
-    desc_text_->setDepth(-20).setPickable(false);
-
     hide_upper_layer_ui();
 }
 
@@ -891,7 +866,6 @@ void Demo::hide_upper_layer_ui()
         win_t_->set<Visible>(false);
         lose_t_->set<Visible>(false);
         pause_t_->set<Visible>(false);
-        desc_text_->set<Visible>(false);
     }
     char_big1_.reset();
     char_big2_.reset();

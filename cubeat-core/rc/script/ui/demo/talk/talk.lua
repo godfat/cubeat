@@ -23,6 +23,10 @@ local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
 local special_effect_end_flag_= true
 
+local function get_data()
+  --if step_~=1 then data_.step = step_-1 end
+  return data_
+end
 
 local function game_start(self)
   if demo_game_ then
@@ -83,6 +87,12 @@ local function reset()
   step_      = 1
   --actor_appear_ = {false, false}
   complete_rundown_ = 0
+end
+
+local function set_step(v)
+  if v==nil then return end
+  step_=v
+  complete_rundown_ = step_-1
 end
 
 
@@ -191,6 +201,10 @@ local function action(menu, rundown)
   --actor image
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
+  end
+  --actor image pos
+  if rundown[step_].ch_pos then
+    menu[actor]:set_pos(rundown[step_].ch_pos.x, rundown[step_].ch_pos.y)
   end
   --board
   if rundown[step_].board then
@@ -339,5 +353,6 @@ end
 
 
 return {
-  init = init
+  init = init,
+  get_data = get_data
 }

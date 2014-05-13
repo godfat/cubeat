@@ -23,11 +23,6 @@ local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
 local special_effect_end_flag_= true
 
-local function get_data()
-  --if step_~=1 then data_.step = step_-1 end
-  return data_
-end
-
 local function game_start(self)
   if demo_game_ then
     local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
@@ -41,7 +36,9 @@ local function game_start(self)
       local story_data = storystage.get_data(select_config.ch_choose[1])
       
       if story_data.ch == select_config.ch_choose[1] then
-        demo_game_:init_tutorial(c1p, c1p, sconf)
+        --demo_game_:init_tutorial(c1p, c1p, sconf)
+        local lv = story_data.lv
+        demo_game_:init_story(c1p, c2p, sconf, lv)
       else        
         local lv = story_data.lv
         demo_game_:init_story(c1p, c2p, sconf, lv)
@@ -87,12 +84,6 @@ local function reset()
   step_      = 1
   --actor_appear_ = {false, false}
   complete_rundown_ = 0
-end
-
-local function set_step(v)
-  if v==nil then return end
-  step_=v
-  complete_rundown_ = step_-1
 end
 
 
@@ -353,6 +344,5 @@ end
 
 
 return {
-  init = init,
-  get_data = get_data
+  init = init
 }

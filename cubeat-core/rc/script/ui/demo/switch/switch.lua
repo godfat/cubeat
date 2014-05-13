@@ -6,6 +6,7 @@ local ui   = require 'rc/script/ui/ui'
 
 local page_obj_ = {}
 local to_be_delete_
+local data_ = nil
 
 local game_demo_
 local vorig_
@@ -174,12 +175,13 @@ local function load_page(name, slide_title, data)
 
   to_be_delete_ = page_obj_
   local p = require ('rc/script/ui/demo/'..name..'/'..name)
+  data_ = data
   page_obj_ = p.init(game_demo_, vorig_, data)
 
   view.debug_hack()
 end
 
-local function refresh_page(root, data)
+local function refresh_page(root)
   remove_to_be_delete()
   hide_page_obj()
   
@@ -187,7 +189,7 @@ local function refresh_page(root, data)
   
   to_be_delete_ = page_obj_
   local p = require ( string.sub(root,1,-5) )
-  page_obj_ = p.init(game_demo_, vorig_, data)
+  page_obj_ = p.init(game_demo_, vorig_, data_)
 
   view.debug_hack()
 end

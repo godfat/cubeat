@@ -60,22 +60,19 @@ public:
         return pointer_type(new SimpleMap(setting))->init();
     }
     static pointer_type create(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
-        std::tr1::shared_ptr<int> warning_lv) {
+        int warning_lv) {
         return pointer_type(new SimpleMap(setting, garb, sc, soa, ld, warning_lv))->init();
     }
 
     SimpleMap(data::pMapSetting setting):
         map_setting_(setting), garbage_left_(0), score_(0),
-        current_sum_of_attack_(0), lock_dropping_(false), simp_cubes_(0, 0){}
+        current_sum_of_attack_(0), lock_dropping_(false), warning_level_(0), simp_cubes_(0, 0){}
 
     SimpleMap(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
-              std::tr1::shared_ptr<int> warning_lv):
+              int warning_lv):
         map_setting_(setting), garbage_left_(garb), score_(sc),
-        current_sum_of_attack_(soa), lock_dropping_(ld), simp_cubes_(0, 0)
-    {
-        if( warning_lv )
-            warning_level_ = std::tr1::shared_ptr<int>(new int(*warning_lv));
-    }
+        current_sum_of_attack_(soa), lock_dropping_(ld), warning_level_(warning_lv), simp_cubes_(0, 0)
+    {}
 
     ~SimpleMap();
 
@@ -87,11 +84,7 @@ public:
     bool is_all_fallen() const;
     // end
 
-    int warning_level() const {
-        if( warning_level_ )
-            return *warning_level_;
-        else return 0;
-    }
+    int warning_level() const         { return warning_level_; }
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }
@@ -118,7 +111,7 @@ protected:
     int score_, current_sum_of_attack_;
     bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle
     chain_list_type chains_;// someday make it to be std::list
-    std::tr1::shared_ptr<int> warning_level_; //warning timer dummy
+    int warning_level_; //warning level value
 
 private:
     pointer_type init() {

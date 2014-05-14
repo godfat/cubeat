@@ -149,6 +149,7 @@ private:
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
+    std::tr1::shared_ptr<int> warning_handle_; //warning value's timer handle
     preview_list_type cubes_preview_;
 
     std::map< std::pair<wpChain, int>, std::vector< std::pair<int, int> > > dying_cubes_position_;

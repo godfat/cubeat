@@ -31,6 +31,7 @@ local function check_file_time(root, t)
             root=='rc/script/ui/demo/talk/script_end_EN.lua' then
       print('---- talk config ----')
       package.loaded[string.sub(root,1,-5)] = nil --unrequire
+      package.loaded['rc/script/ui/demo/talk/effect'] = nil
       switch.refresh_page('rc/script/ui/demo/talk/talk.lua')
       
     else

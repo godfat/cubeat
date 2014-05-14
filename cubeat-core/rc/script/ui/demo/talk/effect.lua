@@ -43,8 +43,13 @@ end
 
 actor_.slide_in = function(object, cb)
   local ch    = object.ch
-  local act_x = config.act_x[ch]
-  local act_y = config.act_y[ch]
+  local img   = object.img
+  local act_x
+  local act_y
+  if img then act_x=config.act_pos[img][ch].x else act_x = config.act_x[ch] end
+  if img then act_y=config.act_pos[img][ch].y else act_y = config.act_y[ch] end
+  --local act_x = config.act_x[ch]
+  --local act_y = config.act_y[ch]
   local out_x = config.out_x[ch]
   local out_y = config.out_y[ch]
   object.actor:set_visible(true)
@@ -54,8 +59,13 @@ end
 
 actor_.slide_out = function(object, cb)
   local ch    = object.ch
-  local act_x = config.act_x[ch]
-  local act_y = config.act_y[ch]
+  local img   = object.img
+  local act_x
+  local act_y
+  if img then act_x=config.act_pos[img][ch].x else act_x = config.act_x[ch] end
+  if img then act_y=config.act_pos[img][ch].y else act_y = config.act_y[ch] end
+  --local act_x = config.act_x[ch]
+  --local act_y = config.act_y[ch]
   local out_x = config.out_x[ch]
   local out_y = config.out_y[ch]
   object.actor:set_visible(true)
@@ -75,8 +85,13 @@ end
 
 actor_.shake = function(object, cb)
   local ch    = object.ch
-  local act_x = config.act_x[ch]
-  local act_y = config.act_y[ch]
+  local img   = object.img
+  local act_x
+  local act_y
+  if img then act_x=config.act_pos[img][ch].x else act_x = config.act_x[ch] end
+  if img then act_y=config.act_pos[img][ch].y else act_y = config.act_y[ch] end
+  --local act_x = config.act_x[ch]
+  --local act_y = config.act_y[ch]
   local loop  = config.act_s_loop
   local dis   = config.act_s_dis
   local dur   = config.act_s_time
@@ -115,8 +130,13 @@ end
 
 special_.cube = function(object, cb, special)
   local ch    = object.ch
-  local act_x = config.act_x[ch]
-  local act_y = config.act_y[ch]
+  local img   = object.img
+  local act_x
+  local act_y
+  if img then act_x=config.act_pos[img][ch].x else act_x = config.act_x[ch] end
+  if img then act_y=config.act_pos[img][ch].y else act_y = config.act_y[ch] end
+  --local act_x = config.act_x[ch]
+  --local act_y = config.act_y[ch]
   local dis   = config.act_s_dis
   local dur   = config.act_s_time
 
@@ -187,19 +207,19 @@ end
 
 
 --
-local function actor_effect(effect_a, actor, content, panel, ch, cb)
+local function actor_effect(effect_a, actor, content, panel, ch, img, cb)
   if effect_a==nil then return end
-  local object = {actor=actor, content=content, panel=panel, ch=ch}
+  local object = {actor=actor, content=content, panel=panel, ch=ch, img=img}
   actor_[effect_a](object, cb)
 end
-local function word_effect(effect_w, actor, content, panel, ch, cb)
+local function word_effect(effect_w, actor, content, panel, ch, img, cb)
   if effect_w==nil then return end
-  local object = {actor=actor, content=content, panel=panel, ch=ch}
+  local object = {actor=actor, content=content, panel=panel, ch=ch, img=img}
   word_[effect_w](object, cb)
 end
-local function special_effect(special_id, actor, content, panel, ch, cb, special)
+local function special_effect(special_id, actor, content, panel, ch, img, cb, special)
   if special_id==nil then return end
-  local object = {actor=actor, content=content, panel=panel, ch=ch}
+  local object = {actor=actor, content=content, panel=panel, ch=ch, img=img}
   special_[special_id](object, cb, special)
 end
 

@@ -76,7 +76,60 @@ local cube_y3_    = -150
 local cube_w_     = 60
 local cube_h_     = 60
 local cube_time_  = 200
-
+----
+----
+local act_pos_ = {}
+act_pos_['char1_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char1_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char1_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char1_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char2_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char2_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char2_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char2_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char3_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char3_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char3_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char3_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char4_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char4_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char4_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char4_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char5_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char5_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char5_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char5_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char6_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char6_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char6_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char6_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+----
+----
+local conBG_pos_ = {}
+conBG_pos_['char1_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char1_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char1_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char1_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char2_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char2_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char2_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char2_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char3_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char3_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char3_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char3_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char4_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char4_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char4_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char4_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char5_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char5_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char5_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char5_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char6_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char6_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char6_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char6_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
 
 
 return {
@@ -153,5 +206,9 @@ return {
   cube_y3   = cube_y3_,
   cube_w    = cube_w_,
   cube_h    = cube_h_,
-  cube_time = cube_time_
+  cube_time = cube_time_,
+  ----
+  ----
+  act_pos   = act_pos_,
+  conBG_pos = conBG_pos_,
 }

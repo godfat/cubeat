@@ -6,6 +6,8 @@ local ui   = require 'rc/script/ui/ui'
 
 local page_obj_ = {}
 local to_be_delete_
+local data_ = nil
+local current_page_ = nil
 
 local game_demo_
 local vorig_
@@ -174,9 +176,31 @@ local function load_page(name, slide_title, data)
 
   to_be_delete_ = page_obj_
   local p = require ('rc/script/ui/demo/'..name..'/'..name)
+  data_ = data
+  current_page_ = 'rc/script/ui/demo/'..name..'/'..name
   page_obj_ = p.init(game_demo_, vorig_, data)
 
   view.debug_hack()
+end
+
+local function refresh_page(root)
+  if current_page_ ~= string.sub(root,1,-5) then
+    print('---- cannot refresh, not in current page ----') 
+    return false
+  end
+
+  remove_to_be_delete()
+  hide_page_obj()
+  
+  package.loaded[string.sub(root,1,-5)] = nil --unrequire
+  
+  to_be_delete_ = page_obj_
+  local p = require ( string.sub(root,1,-5) )
+  page_obj_ = p.init(game_demo_, vorig_, data_)
+
+  view.debug_hack()
+  
+  return true
 end
 
 local function get_page_obj()
@@ -199,6 +223,7 @@ return {
   slide_out_page_obj  = slide_out_page_obj,
   slide_in_page_obj   = slide_in_page_obj,
   load_page           = load_page,
+  refresh_page        = refresh_page,
   get_page_obj        = get_page_obj,
   ----
   slide_out_title = slide_out_title,

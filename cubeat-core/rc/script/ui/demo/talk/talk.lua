@@ -23,7 +23,6 @@ local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
 local special_effect_end_flag_= true
 
-
 local function game_start(self)
   if demo_game_ then
     local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
@@ -37,7 +36,9 @@ local function game_start(self)
       local story_data = storystage.get_data(select_config.ch_choose[1])
       
       if story_data.ch == select_config.ch_choose[1] then
-        demo_game_:init_tutorial(c1p, c1p, sconf)
+        --demo_game_:init_tutorial(c1p, c1p, sconf)
+        local lv = story_data.lv
+        demo_game_:init_story(c1p, c2p, sconf, lv)
       else        
         local lv = story_data.lv
         demo_game_:init_story(c1p, c2p, sconf, lv)
@@ -192,6 +193,14 @@ local function action(menu, rundown)
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
   end
+  --actor image pos
+  if rundown[step_].ch_pos then
+    menu[actor]:set_pos(rundown[step_].ch_pos.x, rundown[step_].ch_pos.y)
+  elseif rundown[step_].img then
+    local img = rundown[step_].img
+    local act_pos = config.act_pos[img][ch]
+    menu[actor]:set_pos(act_pos.x, act_pos.y)
+  end
   --board
   if rundown[step_].board then
     menu[panel]:set_texture(rundown[step_].board)
@@ -214,16 +223,22 @@ local function action(menu, rundown)
     menu[panel]:set_pos(rundown[step_].pos.x, rundown[step_].pos.y)
     menu[content]:set_pos(menu[panel]:get_pos_x()+config.con_offset_x,
                           menu[panel]:get_pos_y()+config.con_offset_y)
+  elseif rundown[step_].img then
+    local img = rundown[step_].img
+    local conBG_pos = config.conBG_pos[img][ch]
+    menu[panel]:set_pos(conBG_pos.x, conBG_pos.y)
+    menu[content]:set_pos(conBG_pos.x+config.con_offset_x,
+                          conBG_pos.y+config.con_offset_y)
   end
   --run effect
   local effect_a  = rundown[step_].effect_a
   local effect_w  = rundown[step_].effect_w
   local special = rundown[step_].special
   check_effect_status(effect_a, effect_w, special)
-  effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, actor_effect_cb)
-  effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, word_effect_cb)
+  effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, actor_effect_cb)
+  effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, word_effect_cb)
   if special then
-    effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, special_effect_cb, special)
+    effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, special_effect_cb, special)
   end
   
   step_=step_+1
@@ -303,11 +318,13 @@ local function init(demo, parent, data)
     local content = 'content'..tostring(ch)
     local panel   = 'panel'..tostring(ch)
     local light   = 'light'..tostring(ch)
-    menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=config.act_x[ch], y=config.act_y[ch],
+    local act_pos   = config.act_pos[ch_path][ch]
+    local conBG_pos = config.conBG_pos[ch_path][ch]
+    menu[actor]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=ch_path, x=act_pos.x, y=act_pos.y,
                                   w=config.act_w, h=config.act_h, depth=config.act_d, visible=false }
-    menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=config.con_x[ch], y=config.con_y[ch],
+    menu[content] = ui.new_text { parent=menu.TalkBackGround._cdata, title=' ', x=conBG_pos.x+config.con_offset_x, y=conBG_pos.y+config.con_offset_y,
                                   depth=config.con_d, size=28, visible=false, font=get_font(config.lang) }
-    menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.conBG_path, x=config.conBG_x[ch], y=config.conBG_y[ch],
+    menu[panel]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.conBG_path, x=conBG_pos.x, y=conBG_pos.y,
                                   w=config.conBG_w, h=config.conBG_h, depth=config.conBG_d, visible=false }
     menu[light]   = ui.new_image{ parent=menu.TalkBackGround._cdata, path=config.light_path, x=config.light_x[ch], y=config.light_y[ch],
                                   w=config.light_w, h=config.light_h, depth=config.light_d, visible=false }

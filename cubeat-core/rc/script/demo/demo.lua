@@ -18,6 +18,7 @@ local tutorial = require 'rc/script/demo/tutorial'
 
 local demo_
 local scene_
+local refresh_btn_
 
 local story_flag_ = false
 
@@ -78,6 +79,24 @@ function init(demo)
   
   -- test: show file time: 
   print( " ftime of mainmenu.lua: " .. C.get_ftime( 'rc/script/ui/demo/mainmenu/mainmenu.lua' ) )
+  
+  -- test: add refresh button
+  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=10, y=200, size=32, depth=-1000 }
+  refresh_btn_:set_scale(1.5)
+  local filelist = require 'rc/script/ui/demo/refresh/filelist'
+  local refresh  = require 'rc/script/ui/demo/refresh/refresh'
+  refresh_btn_:on_press(function(self)
+    print('---- check file time ----')
+    for k,root in pairs(filelist.list) do
+      local t = C.get_ftime(root)
+      refresh.check_file_time(root, t)
+    end
+  end)
+  -- check file time once when init
+  for k,root in pairs(filelist.list) do
+    local t = C.get_ftime(root)
+    refresh.check_file_time(root, t)
+  end
 
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)
@@ -116,11 +135,12 @@ function ending(submode)
   print('---- single mode: ending ----')
   
   if submode==99 then
+    print('---- submode99 and warning1 = ' .. tostring(demo_:get_map_warning_level(1)) .. ' warning0 = ' .. tostring(demo_:get_map_warning_level(0)) .. ' ----')
     if demo_:get_map_warning_level(1)==100 then -- story win
       storyend.set_board('win')
       storyend.set_btn_title('Next')
       storyend.on_press_next(function(self)
-        story_flag_ = true
+        story_flag_ = true -- if story_flag_=true, when slide_in(), it will switch.load_page() to story end talk script.
         demo_:leave_and_cleanup()
         --[[
         storyend.hide()

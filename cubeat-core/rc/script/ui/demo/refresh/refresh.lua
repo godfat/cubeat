@@ -15,12 +15,13 @@ local function check_file_time(root, t)
   
   if ftime_[root] ~= t then
     print('---- refresh ----')
-    ftime_[root] = t
     
+    local success = false
     if root=='rc/script/ui/demo/select/config.lua' then
       print('---- select config ----')
       package.loaded[string.sub(root,1,-5)] = nil --unrequire
-      switch.refresh_page('rc/script/ui/demo/select/select.lua')
+      
+      success = switch.refresh_page('rc/script/ui/demo/select/select.lua')
       
     elseif  root=='rc/script/ui/demo/talk/config.lua' or
             root=='rc/script/ui/demo/talk/script_TW.lua' or
@@ -32,11 +33,14 @@ local function check_file_time(root, t)
       print('---- talk config ----')
       package.loaded[string.sub(root,1,-5)] = nil --unrequire
       package.loaded['rc/script/ui/demo/talk/effect'] = nil
-      switch.refresh_page('rc/script/ui/demo/talk/talk.lua')
+      
+      success = switch.refresh_page('rc/script/ui/demo/talk/talk.lua')
       
     else
-      switch.refresh_page(root)
+      success = switch.refresh_page(root)
     end
+    
+    if success then ftime_[root] = t end
   end
 
   print(root, ftime_[root])

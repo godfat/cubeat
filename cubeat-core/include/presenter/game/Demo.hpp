@@ -78,6 +78,7 @@ public:
     void set_countdown(bool const&);
     void set_time(int const&);
     void play_sound(std::string const& file);
+    void hide_character_animations();
     int  get_time() const;
     int  get_map_score(int const& map_id) const;
     int  get_map_highest_chain(int const& map_id) const;

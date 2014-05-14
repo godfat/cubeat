@@ -495,6 +495,11 @@ void Demo::play_sound(std::string const& file) {
     audio::Sound::i().playBuffer(file);
 }
 
+void Demo::hide_character_animations() {
+    if( pview1_ ) pview1_->getView()->set<Visible>(false);
+    if( pview2_ ) pview2_->getView()->set<Visible>(false);
+}
+
 int  Demo::get_time() const {
     return min_*60 + sec_;
 }
@@ -1118,8 +1123,7 @@ void Demo::end_phase2(pMap lose_map)
         char_big1_->tween<OBounce, Pos2D>( vec2(pos1.X - 32, - pos1.Y + 64), vec2(pos1.X - 64, pos1.Y - 48), 1500u );
         char_big2_->tween<OBounce, Pos2D>( vec2(pos2.X + 32, - pos2.Y + 64), vec2(pos2.X + 64, pos2.Y - 48), 1500u );
 
-        pview1_->getView()->set<Visible>(false);
-        pview2_->getView()->set<Visible>(false);
+        hide_character_animations();
 
         vec3 v0(0,0,0), v1(1,1,1);
         win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0, 0, 1500u);

@@ -104,6 +104,10 @@ void Demo_play_sound(Demo* self, char const* file) { // not shared_ptr!
     self->play_sound(file);
 }
 
+void Demo_hide_character_animations(Demo* self) { // not shared_ptr!
+    self->hide_character_animations();
+}
+
 int Demo_get_time(Demo* self) { // not shared_ptr!
     return self->get_time();
 }

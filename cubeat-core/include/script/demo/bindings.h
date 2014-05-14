@@ -29,6 +29,7 @@ APIEXPORT void    Demo_set_stage_name(Demo*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_set_countdown(Demo*, bool); // not shared_ptr!
 APIEXPORT void    Demo_set_time(Demo*, int); // not shared_ptr!
 APIEXPORT void    Demo_play_sound(Demo*, char const*); // not shared_ptr!
+APIEXPORT void    Demo_hide_character_animations(Demo*); // not shared_ptr!
 
 APIEXPORT int     Demo_get_time(Demo*); // not shared_ptr!
 APIEXPORT int     Demo_get_map_score(Demo*, int map_id); // not shared_ptr!

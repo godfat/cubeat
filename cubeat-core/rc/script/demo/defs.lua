@@ -36,6 +36,7 @@ Mt_Demo.set_stage_name         = C.Demo_set_stage_name
 Mt_Demo.set_countdown          = C.Demo_set_countdown
 Mt_Demo.set_time               = C.Demo_set_time
 Mt_Demo.play_sound             = C.Demo_play_sound
+Mt_Demo.hide_character_animations = C.Demo_hide_character_animations
 Mt_Demo.get_time               = C.Demo_get_time
 Mt_Demo.get_map_score          = C.Demo_get_map_score
 Mt_Demo.get_map_highest_chain  = C.Demo_get_map_highest_chain

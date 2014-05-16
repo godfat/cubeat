@@ -2,7 +2,8 @@ local ffi     = require 'ffi'
 local C       = ffi.C
 local view    = require 'rc/script/ui/view'
 local ui      = require 'rc/script/ui/ui'
-local switch  = require 'rc/script/ui/demo/switch/switch'
+local config  = require 'rc/script/ui/demo/storyend/config'
+local select_config = require 'rc/script/ui/demo/select/config'
 
 local screen_w_ = C.Get_SCREEN_W()
 local screen_h_ = C.Get_SCREEN_H()
@@ -21,7 +22,62 @@ local function hide()
   btn_quit_:set_visible(false)
 end
 
-local function show()
+local function show(demo, ui_mode)
+  
+  -- story win
+  if ui_mode == config.story_win then
+    board_:set_texture('win')
+    btn_next_:change_text('Next')
+    btn_next_:on_press(function(self)
+      config.is_story_end = true -- if is_story_end=true, when slide_in(), it will switch.load_page() to story end talk script.
+      demo:leave_and_cleanup()
+    end)
+    demo:play_sound('3/3c/win.wav')
+  
+  -- story lose
+  elseif ui_mode == config.story_lose then
+    board_:set_texture('lose')
+    btn_next_:change_text('Retry')
+    btn_next_:on_press(function(self)
+      hide()
+      local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+      local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+      local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+      demo:init_story(c1p, c2p, sconf, 0)
+    end)
+    demo:play_sound('3/3c/lose.wav')
+    
+  -- tutorial win
+  elseif ui_mode == config.tutorial_win then
+    board_:set_texture('win')
+    btn_next_:change_text('Next')
+    btn_next_:on_press(function(self)
+      config.is_story_end = true
+      demo:leave_and_cleanup()
+    end)
+    demo:play_sound('3/3c/win.wav')
+    
+  -- tutorial lose
+  elseif ui_mode == config.tutorial_lose then
+    board_:set_texture('lose')
+    btn_next_:change_text('Retry')
+    btn_next_:on_press(function(self)
+      hide()
+      local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+      local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+      local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+      tutorial.cleanup()
+      tutorial.set_phase(11)
+      demo:init_tutorial(c1p, c2p, sconf)
+    end)
+    demo:play_sound('3/3c/lose.wav')
+  end
+  
+  btn_quit_:on_press(function(self)
+    hide()
+    demo:leave_and_cleanup()
+  end)
+  
   blocker_:set_visible(true)
   board_:set_visible(true)
   --title_:set_visible(true)

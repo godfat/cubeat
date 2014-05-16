@@ -10,7 +10,8 @@ require 'rc/script/strict'
 local challenge = require 'rc/script/ui/demo/challenge/challenge'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local storyend    = require 'rc/script/ui/demo/storyend/storyend'
-local select_config = require 'rc/script/ui/demo/select/config'
+local storyend_config = require 'rc/script/ui/demo/storyend/config'
+local endingcheck = require 'rc/script/ui/demo/endingcheck/endingcheck'
 
 local tutorial = require 'rc/script/demo/tutorial'
 
@@ -19,8 +20,6 @@ local tutorial = require 'rc/script/demo/tutorial'
 local demo_
 local scene_
 local refresh_btn_
-
-local story_flag_ = false
 
 --local win_ = false -- win state for SinglePlayer modes.
 --local puzzle_level_ = 2
@@ -53,8 +52,8 @@ end
 -- occurs right after game ends (no reinit, go back to menu), mainly used for UI transition
 -- If you have setup some UI during gameplay in Lua, hide/remove them here.
 function slide_in()
-  if story_flag_ then
-    story_flag_ = false
+  if storyend_config.is_story_end then
+    storyend_config.is_story_end = false
     storyend.hide()
     switch.load_page('talk', nil, {game_mode=99, game_end=true})
     switch.slide_in_page_obj()
@@ -91,6 +90,7 @@ function init(demo)
       local t = C.get_ftime(root)
       refresh.check_file_time(root, t)
     end
+    --demo_:hide_character_animations()
   end)
   -- check file time once when init
   for k,root in pairs(filelist.list) do
@@ -134,69 +134,7 @@ end
 function ending(submode)
   print('---- single mode: ending ----')
   
-  if submode==99 then
-    print('---- submode99 and warning1 = ' .. tostring(demo_:get_map_warning_level(1)) .. ' warning0 = ' .. tostring(demo_:get_map_warning_level(0)) .. ' ----')
-    if demo_:get_map_warning_level(1)==100 then -- story win
-      storyend.set_board('win')
-      storyend.set_btn_title('Next')
-      storyend.on_press_next(function(self)
-        story_flag_ = true -- if story_flag_=true, when slide_in(), it will switch.load_page() to story end talk script.
-        demo_:leave_and_cleanup()
-        --[[
-        storyend.hide()
-        switch.load_page('talk', nil, {game_mode=99, game_end=true})
-        switch.slide_in_page_obj()
-        --]]
-      end)
-      demo_:play_sound('3/3c/win.wav')
-    else
-      storyend.set_board('lose')
-      storyend.set_btn_title('Retry')
-      storyend.on_press_next(function(self)
-        storyend.hide()
-        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
-        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
-        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
-        demo_:init_story(c1p, c2p, sconf, 0)
-      end)
-      demo_:play_sound('3/3c/lose.wav')
-    end
-    storyend.on_press_quit(function(self)
-      storyend.hide()
-      demo_:leave_and_cleanup()
-    end)
-    storyend.show()
-  elseif submode==50 then
-    if demo_:get_map_warning_level(0) ~= 100 then -- tutorial win 
-      storyend.set_board('win')
-      storyend.set_btn_title('Next')
-      storyend.on_press_next(function(self)
-        story_flag_ = true
-        demo_:leave_and_cleanup()
-      end)
-      demo_:play_sound('3/3c/win.wav')
-    else
-      storyend.set_board('lose')
-      storyend.set_btn_title('Retry')
-      storyend.on_press_next(function(self)
-        storyend.hide()
-        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
-        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
-        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
-        tutorial.cleanup()
-        tutorial.set_phase(11)
-        demo_:init_tutorial(c1p, c2p, sconf)
-      end)
-      demo_:play_sound('3/3c/lose.wav')
-    end
-    storyend.on_press_quit(function(self)
-      storyend.hide()
-      demo_:leave_and_cleanup()
-    end)
-    storyend.show()
-  else
-    challenge.ending(demo_, submode)
-  end
+  endingcheck.show_ending_ui(demo_, submode)
 end
 
 -- occurs right after game ends (no reinit, go back to menu)

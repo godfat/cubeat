@@ -1,3 +1,9 @@
+local is_story_end_   = false
+local story_win_      = 1
+local story_lose_     = 2
+local tutorial_win_   = 3
+local tutorial_lose_  = 4
+
 local story_stage = 1
 
 local data = {}
@@ -74,8 +80,14 @@ local function get_stage()
 end
 
 return{
-  set_stage   = set_stage,
-  next_stage  = next_stage,
-  get_data    = get_data,
-  get_stage   = get_stage
+  is_story_end  = is_story_end_,
+  story_win     = story_win_,
+  story_lose    = story_lose_,
+  tutorial_win  = tutorial_win_,
+  tutorial_lose = tutorial_lose_,
+  --
+  set_stage     = set_stage,
+  next_stage    = next_stage,
+  get_data      = get_data,
+  get_stage     = get_stage
 }

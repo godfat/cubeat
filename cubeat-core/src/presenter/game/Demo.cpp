@@ -1082,9 +1082,10 @@ void Demo::end_phase2(pMap lose_map)
     if( game_mode_ != GM_SINGLE ) {
         printf("submode: %d\n", submode_);
         if( ( game_mode_ == GM_PVC && submode_ == 99 ) || game_mode_ == GM_TUT ) { // GM_PVC && submode_ == 1 means STORY_MODE
-            script::Lua::call(L_, "ending", submode_);
+            script::Lua::call(L_, "ending", game_mode_, submode_);
             return;
         }
+        script::Lua::call(L_, "ending", game_mode_, submode_);
         if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
         blocker_->set<Alpha>(0).tween<Linear, Alpha>(0, 144, 500u, 0, 0, 1500u).set<Visible>(true);
         blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
@@ -1142,7 +1143,7 @@ void Demo::end_phase2(pMap lose_map)
             bind(&Demo::setup_end_button, this), 2500);
     }
     else {     // WTF BBQ!!!!!!!!!!!!!!!!!!!
-        script::Lua::call(L_, "ending", submode_);
+        script::Lua::call(L_, "ending", game_mode_, submode_);
 //        blocker_->tween<Linear, Alpha>(0, 100, 500u).set<Visible>(true);
 //        blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
 //        audio::Sound::i().playBuffer( win_ ? "3/3c/win.wav" : "3/3c/lose.wav" );

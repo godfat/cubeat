@@ -9,7 +9,19 @@ local challenge       = require 'rc/script/ui/demo/challenge/challenge'
 
 
 
-local function vs_mode_end(demo)
+local function vs_mode_end(demo, game_mode)
+  -- PVC
+  if game_mode == config.GM_PVC then
+    print('---- endingcheck: PVC ----')
+  
+  -- PVP
+  elseif game_mode == config.GM_PVP then
+    print('---- endingcheck: PVP ----')
+  
+  -- CVC
+  elseif game_mode == config.GM_CVC then
+    print('---- endingcheck: CVC ----')
+  end
 end
 
 local function tutorial_mode_end(demo)
@@ -47,16 +59,21 @@ local function challenge_mode_end(demo, submode)
 end
 
 
-local function show_ending_ui(demo, submode)
-  if submode==config.submode_tutorial then
-    tutorial_mode_end(demo)
-    
-  elseif submode==config.submode_story then
-    story_mode_end(demo)
-    
+local function show_ending_ui(demo, game_mode, submode)
+  
+  -- not vs mode ending
+  if game_mode==config.GM_SINGLE or (game_mode==config.GM_PVC and submode==config.submode_story) or game_mode==config.GM_TUT then
+    if submode==config.submode_tutorial then
+      tutorial_mode_end(demo)
+    elseif submode==config.submode_story then
+      story_mode_end(demo)
+    else
+      challenge_mode_end(demo, submode)
+    end
+  
+  -- vs mode ending
   else
-    challenge_mode_end(demo, submode)
-    
+    vs_mode_end(demo, game_mode)
   end
 end
 

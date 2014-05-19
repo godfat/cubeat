@@ -131,10 +131,8 @@ end
 
 -- occurs when win/lose reached. Will be reached if you call endgame(map_id) in Lua
 -- mainly used for setting up ending UI
-function ending(submode)
-  print('---- single mode: ending ----')
-  
-  endingcheck.show_ending_ui(demo_, submode)
+function ending(game_mode, submode)
+  endingcheck.show_ending_ui(demo_, game_mode, submode)
 end
 
 -- occurs right after game ends (no reinit, go back to menu)

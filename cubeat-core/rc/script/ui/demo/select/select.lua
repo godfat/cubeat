@@ -132,6 +132,10 @@ local function init(demo, parent, data)
   data_ = data
   selectlock_ = {false, false}
   
+  -- init ch_choose
+  config.ch_choose[1] = 1
+  config.ch_choose[2] = 1
+  
   menu.btn_back = ui.new_text{ parent = parent, x=-470, y=-310, size=32, title='<= go back'}
   menu.btn_back:set_scale(1.5)
   menu.btn_back:set_depth(-300)

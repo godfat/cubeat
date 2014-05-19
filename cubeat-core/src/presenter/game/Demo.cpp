@@ -1085,8 +1085,9 @@ void Demo::end_phase2(pMap lose_map)
             script::Lua::call(L_, "ending", game_mode_, submode_);
             return;
         }
-        script::Lua::call(L_, "ending", game_mode_, submode_);
         if( pause_note_text_ ) pause_note_text_->set<Visible>(false);
+        script::Lua::call(L_, "ending", game_mode_, submode_);
+        /*
         blocker_->set<Alpha>(0).tween<Linear, Alpha>(0, 144, 500u, 0, 0, 1500u).set<Visible>(true);
         blocker_->set<Pos2D>(vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2));
 
@@ -1126,6 +1127,7 @@ void Demo::end_phase2(pMap lose_map)
 
         hide_character_animations();
 
+
         vec3 v0(0,0,0), v1(1,1,1);
         win_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0, 0, 1500u);
         lose_t_->setDepth(-450).tween<OElastic, Scale>(v0, v1, 1000u, 0, 0, 1500u);
@@ -1141,6 +1143,7 @@ void Demo::end_phase2(pMap lose_map)
 
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Demo::setup_end_button, this), 2500);
+        */
     }
     else {     // WTF BBQ!!!!!!!!!!!!!!!!!!!
         script::Lua::call(L_, "ending", game_mode_, submode_);

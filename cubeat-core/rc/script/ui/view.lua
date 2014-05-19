@@ -92,6 +92,7 @@ Mt_Sprite.set_scale               = C.Sprite_set_scale
 Mt_Sprite.set_size                = C.Sprite_set_size
 Mt_Sprite.set_depth               = C.Sprite_set_depth
 Mt_Sprite.set_color               = C.Sprite_set_color
+Mt_Sprite.set_gradient_diffuse    = C.Sprite_set_gradient_diffuse
 Mt_Sprite.set_emissive            = C.Sprite_set_emissive
 Mt_Sprite.set_red                 = C.Sprite_set_red
 Mt_Sprite.set_green               = C.Sprite_set_green

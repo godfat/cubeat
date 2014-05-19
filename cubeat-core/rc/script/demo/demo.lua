@@ -11,6 +11,7 @@ local challenge = require 'rc/script/ui/demo/challenge/challenge'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local storyend    = require 'rc/script/ui/demo/storyend/storyend'
 local storyend_config = require 'rc/script/ui/demo/storyend/config'
+local vsend       = require 'rc/script/ui/demo/vsend/vsend'
 local endingcheck = require 'rc/script/ui/demo/endingcheck/endingcheck'
 
 local tutorial = require 'rc/script/demo/tutorial'
@@ -101,6 +102,7 @@ function init(demo)
   -- test for temporary menu in Puzzle mode end
   recordboard.create_record_board(scene_)
   storyend.create(scene_)
+  vsend.create(scene_)
   
   --tutorial.init(demo_)
 end

@@ -22,6 +22,7 @@ APIEXPORT void      Sprite_set_scale(pSprite*, double, double);
 APIEXPORT void      Sprite_set_size(pSprite*, double, double);
 APIEXPORT void      Sprite_set_depth(pSprite*, double);
 APIEXPORT void      Sprite_set_color(pSprite*, int, int, int);
+APIEXPORT void      Sprite_set_gradient_diffuse(pSprite*, int);
 APIEXPORT void      Sprite_set_emissive(pSprite*, int, int, int);
 APIEXPORT void      Sprite_set_red(pSprite*, int);
 APIEXPORT void      Sprite_set_green(pSprite*, int);

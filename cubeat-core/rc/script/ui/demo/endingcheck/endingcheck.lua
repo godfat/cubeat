@@ -6,10 +6,17 @@ local config  = require 'rc/script/ui/demo/endingcheck/config'
 local storyend        = require 'rc/script/ui/demo/storyend/storyend'
 local storyend_config = require 'rc/script/ui/demo/storyend/config'
 local challenge       = require 'rc/script/ui/demo/challenge/challenge'
+local vsend   = require 'rc/script/ui/demo/vsend/vsend'
 
 
 
 local function vs_mode_end(demo, game_mode)
+
+  local p1_win = (demo:get_map_warning_level(0) ~= 100)
+  
+  vsend.show(demo, game_mode, p1_win)
+  
+  --[[
   -- PVC
   if game_mode == config.GM_PVC then
     print('---- endingcheck: PVC ----')
@@ -22,6 +29,7 @@ local function vs_mode_end(demo, game_mode)
   elseif game_mode == config.GM_CVC then
     print('---- endingcheck: CVC ----')
   end
+  --]]
 end
 
 local function tutorial_mode_end(demo)

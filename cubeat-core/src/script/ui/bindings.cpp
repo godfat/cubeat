@@ -66,6 +66,10 @@ void Sprite_set_color(pSprite* self, int r, int g, int b) {
     (*self)->set<ColorDiffuseVec3>(vec3(r, g, b));
 }
 
+void Sprite_set_gradient_diffuse(pSprite* self, int x) {
+    (*self)->set<GradientDiffuse>(x);
+}
+
 void Sprite_set_emissive(pSprite* self, int r, int g, int b) {
     (*self)->set<RedE>(r);
     (*self)->set<GreenE>(g);

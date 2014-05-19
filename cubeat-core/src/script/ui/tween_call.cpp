@@ -113,6 +113,10 @@ void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, vo
         {
             (*self)->tween<SineCirc, Pos2D>(vec2(start->x, start->y), vec2(end->x, end->y), duration, loop, call, delay);
         }
+        else if(strcmp("OBounce", Eq)==0)
+        {
+            (*self)->tween<OBounce, Pos2D>(vec2(start->x, start->y), vec2(end->x, end->y), duration, loop, call, delay);
+        }
     }
     else if(strcmp("Rotation", Accessor)==0)
     {

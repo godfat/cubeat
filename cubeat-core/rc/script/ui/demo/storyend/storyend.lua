@@ -92,7 +92,7 @@ local function create(scene)
   local center_y = screen_h_/2
   blocker_       = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=1280, h=420, depth=-50, alpha=128, center=true }
   blocker_:set_color(0, 0, 0)
-  board_         = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=384, h=192, depth=-100, center=true }
+  board_         = ui.new_image{ parent=scene, path="win", x=center_x, y=center_y, w=384, h=192, depth=-100, center=true }
   --title_       = ui.new_text { parent=scene, x=center_x    , y=center_y-120, size=32, title='Title'  , depth=-110, center=true }
   --title_:set_scale(1.5)
   btn_next_      = ui.new_text { parent=scene, x=center_x - 100, y=center_y+130, size=32, title='Next'   , depth=-110, center=true }

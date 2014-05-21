@@ -34,8 +34,8 @@ local function create(scene)
   blocker_  = ui.new_image{ parent=scene, path="blocker", x=center_x, y=center_y, w=screen_w_, h=368, depth=-10, alpha=144, center=true }
   blocker_:set_gradient_diffuse(0)
   
-  win_t_  = ui.new_text { parent=scene, path="Win" , x=384, y=192, size=32, depth=-450, center=true }
-  lose_t_ = ui.new_text { parent=scene, path="Lose", x=384, y=192, size=32, depth=-450, center=true }
+  win_t_  = ui.new_image { parent=scene, path="win" , x=0, y=0, w=384, h=192, depth=-450, center=true }
+  lose_t_ = ui.new_image { parent=scene, path="lose", x=0, y=0, w=384, h=192, depth=-450, center=true }
   
   end_text_ = ui.new_text{ parent=scene, x=0, y=0, size=30, title="play again?", center=true }
   end_text2_= ui.new_text{ parent=scene, x=0, y=0, size=30, title="\nyes: left click\nleave: right click", center=true }
@@ -56,9 +56,9 @@ local function show(demo, game_mode, p1_win)
   blocker_:set_pos(center_x, center_y)
   
   win_t_:set_visible(true)
-  win_t_:set_scale(0)
+  win_t_:set_scale(0,0)
   lose_t_:set_visible(true)
-  lose_t_:set_scale(0)
+  lose_t_:set_scale(0,0)
   
   local pos1 = {x=screen_w_/4, y=screen_h_/2}
   local pos2 = {x=screen_w_/4*3, y=screen_h_/2}
@@ -101,10 +101,12 @@ local function show(demo, game_mode, p1_win)
   
   demo:hide_character_animations()
   
+  local v1 = ffi.new("v3", 0, 0, 0)
+  local v2 = ffi.new("v3", 1, 1, 1)
   win_t_:set_depth(-450)
-  win_t_:tween("OElastic", "Scale", 0, 1, 1000, 0, nil, 1500)
   lose_t_:set_depth(-450)
-  lose_t_:tween("OElastic", "Scale", 0, 1, 1000, 0, nil, 1500)
+  win_t_:tween("OElastic", "Scale", v1, v2, 1000, 0, nil, 1500)
+  lose_t_:tween("OElastic", "Scale", v1, v2, 1000, 0, nil, 1500)
   
   end_text_:set_visible(true)
   end_text_:change_text("Retry")

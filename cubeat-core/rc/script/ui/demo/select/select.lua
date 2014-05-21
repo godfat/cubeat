@@ -118,7 +118,7 @@ local function enter_icon(input, icon_no, menu)
     if data_ and data_.game_mode == 0 then
       menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], config.move_end[input], config.move_time)
     else
-      local move_end = ffi.new("value2", config.screen_w/2 - 225, 0)
+      local move_end = ffi.new("value2", config.screen_w/2 - config.full_w/2, 0)
       menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[input], move_end, config.move_time)
     end
     config.ch_choose[input] = icon_no

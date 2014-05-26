@@ -40,8 +40,10 @@ local function create(scene)
   end_text_ = ui.new_text{ parent=scene, x=0, y=0, size=30, title="play again?", center=true }
   end_text2_= ui.new_text{ parent=scene, x=0, y=0, size=30, title="\nyes: left click\nleave: right click", center=true }
   
-  char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
-  char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
+  --char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
+  --char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
+  char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=384, h=768, center=true }
+  char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=384, h=768, center=true }
   
   --
   

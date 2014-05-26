@@ -81,8 +81,8 @@ function init(demo)
   print( " ftime of mainmenu.lua: " .. C.get_ftime( 'rc/script/ui/demo/mainmenu/mainmenu.lua' ) )
   
   -- test: add refresh button
-  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=10, y=200, size=32, depth=-1000 }
-  refresh_btn_:set_scale(1.5)
+  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=10, y=670, size=32, depth=-1000 }
+  refresh_btn_:set_scale(1.2)
   local filelist = require 'rc/script/ui/demo/refresh/filelist'
   local refresh  = require 'rc/script/ui/demo/refresh/refresh'
   refresh_btn_:on_press(function(self)

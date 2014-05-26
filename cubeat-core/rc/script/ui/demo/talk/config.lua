@@ -10,8 +10,8 @@ local bg_y_     = -300
 local bg_w_     = view.GET_SCREEN_W()
 local bg_h_     = view.GET_SCREEN_H()
 
-local act_w_  = 592
-local act_h_  = 912
+local act_w_  = 512
+local act_h_  = 1024
 local act_x_  = {-80, bg_w_-act_w_+80}
 local act_y_  = {16, 16}
 local act_d_  = -20
@@ -79,56 +79,56 @@ local cube_time_  = 200
 ----
 ----
 local act_pos_ = {}
-act_pos_['char1_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char1_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char1_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char1_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char2_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char2_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char2_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char2_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char3_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char3_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char3_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char3_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char4_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char4_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char4_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char4_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char5_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char5_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char5_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char5_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char6_new/anger']   = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char6_new/glad']    = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char6_new/normal']  = { {x=-80,y=16}, {x=768,y=16} }
-act_pos_['char6_new/sad']     = { {x=-80,y=16}, {x=768,y=16} }
+act_pos_['char1_new/anger']   = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char1_new/glad']    = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char1_new/normal']  = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char1_new/sad']     = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char2_new/anger']   = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char2_new/glad']    = { {x=0,y=-140}, {x=768,y=-100} }
+act_pos_['char2_new/normal']  = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char2_new/sad']     = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char3_new/anger']   = { {x=0,y=-120}, {x=768,y=-120} }
+act_pos_['char3_new/glad']    = { {x=0,y=-120}, {x=768,y=-120} }
+act_pos_['char3_new/normal']  = { {x=0,y=-120}, {x=768,y=-120} }
+act_pos_['char3_new/sad']     = { {x=0,y=-100}, {x=768,y=-120} }
+act_pos_['char4_new/anger']   = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char4_new/glad']    = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char4_new/normal']  = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char4_new/sad']     = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char5_new/anger']   = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char5_new/glad']    = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char5_new/normal']  = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char5_new/sad']     = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char6_new/anger']   = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char6_new/glad']    = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char6_new/normal']  = { {x=0,y=-100}, {x=768,y=-100} }
+act_pos_['char6_new/sad']     = { {x=0,y=-100}, {x=768,y=-100} }
 ----
 ----
 local conBG_pos_ = {}
-conBG_pos_['char1_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char1_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char1_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char1_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char2_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char2_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char2_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char2_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char3_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char3_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char3_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char3_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char4_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char4_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char4_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char4_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char5_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char5_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char5_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char5_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char6_new/anger']   = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char6_new/glad']    = { {x=320,y=200}, {x=320,y=300} }
-conBG_pos_['char6_new/normal']  = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char1_new/anger']   = { {x=330,y=20}, {x=340,y=300} }
+conBG_pos_['char1_new/glad']    = { {x=330,y=60}, {x=360,y=320} }
+conBG_pos_['char1_new/normal']  = { {x=270,y=-10}, {x=400,y=240} }
+conBG_pos_['char1_new/sad']     = { {x=350,y=130}, {x=310,y=380} }
+conBG_pos_['char2_new/anger']   = { {x=300,y=300}, {x=350,y=300} }
+conBG_pos_['char2_new/glad']    = { {x=280,y=170}, {x=340,y=260} }
+conBG_pos_['char2_new/normal']  = { {x=280,y=0}, {x=385,y=250} }
+conBG_pos_['char2_new/sad']     = { {x=320,y=200}, {x=390,y=260} }
+conBG_pos_['char3_new/anger']   = { {x=300,y=200}, {x=320,y=300} }
+conBG_pos_['char3_new/glad']    = { {x=300,y=240}, {x=360,y=240} }
+conBG_pos_['char3_new/normal']  = { {x=260,y=80}, {x=410,y=330} }
+conBG_pos_['char3_new/sad']     = { {x=320,y=200}, {x=280,y=260} }
+conBG_pos_['char4_new/anger']   = { {x=285,y=40}, {x=320,y=300} }
+conBG_pos_['char4_new/glad']    = { {x=260,y=0}, {x=420,y=260} }
+conBG_pos_['char4_new/normal']  = { {x=280,y=0}, {x=390,y=260} }
+conBG_pos_['char4_new/sad']     = { {x=320,y=200}, {x=420,y=270} }
+conBG_pos_['char5_new/anger']   = { {x=300,y=200}, {x=400,y=210} }
+conBG_pos_['char5_new/glad']    = { {x=290,y=210}, {x=400,y=200} }
+conBG_pos_['char5_new/normal']  = { {x=280,y=180}, {x=420,y=180} }
+conBG_pos_['char5_new/sad']     = { {x=340,y=240}, {x=305,y=240} }
+conBG_pos_['char6_new/anger']   = { {x=320,y=200}, {x=350,y=290} }
+conBG_pos_['char6_new/glad']    = { {x=320,y=200}, {x=410,y=220} }
+conBG_pos_['char6_new/normal']  = { {x=320,y=200}, {x=420,y=250} }
 conBG_pos_['char6_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
 
 

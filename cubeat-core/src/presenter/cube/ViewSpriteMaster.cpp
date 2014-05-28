@@ -160,7 +160,7 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
         }
 
         // resets scanline_ here:
-        scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_vec2(x, y));
+        scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
 
         if( x > rightmost ) rightmost = x;
         if( x < leftmost )  leftmost = x;
@@ -180,16 +180,16 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
         if( scan_going_up ) {
             time_t unit_dur = dying_duration / fading_h;
-            vec2 start = pos_vec2(x, y) + vec2(0, csize/2);
-            vec2 end   = pos_vec2(x, y) - vec2(0, csize/2);
+            vec2 start = pos_from_orig(x, y) + vec2(0, csize/2);
+            vec2 end   = pos_from_orig(x, y) - vec2(0, csize/2);
             scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(true).set<Alpha>(0)
                              .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (y-downmost))
                              .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (y-downmost))  // This is very hacky...
                              .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
         } else {
             time_t unit_dur = dying_duration / fading_w;
-            vec2 start = pos_vec2(x, y) - vec2(csize/2, 0);
-            vec2 end   = pos_vec2(x, y) + vec2(csize/2, 0);
+            vec2 start = pos_from_orig(x, y) - vec2(csize/2, 0);
+            vec2 end   = pos_from_orig(x, y) + vec2(csize/2, 0);
             scanlines_[x][y]->set<Rotation>(vec3(0,0,-90)).set<Visible>(true).set<Alpha>(0)
                              .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (x-leftmost))
                              .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (x-leftmost))  // This is very hacky...
@@ -211,7 +211,7 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
         int x = get<0>(dying_cubes_position[i]);
         int y = get<1>(dying_cubes_position[i]);
         edges_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false);
-        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_vec2(x, y));
+        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
     }
 
     if( power < 1 ) {
@@ -683,15 +683,14 @@ void ViewSpriteMaster::create_edges(){
     int w = map_setting()->width();
     int h = map_setting()->height() - 1;
     int csize = view_setting()->cube_size();
-    view::pScene sc = scene_.lock();
 
     for( int x = 0; x < w; ++x ) {
         std::vector< view::pSprite > col_edge;
         std::vector< view::pSprite > col_scanline;
         for( int y = 0; y < h; ++y ) {
-            view::pSprite e  = view::Sprite::create("cubes/cube-peri-1", sc, csize, csize, true);
-            view::pSprite sl = view::Sprite::create("stroke0", sc, csize, csize/3, true);
-            vec2 pos = pos_vec2(x, y);
+            view::pSprite e  = view::Sprite::create("cubes/cube-peri-1", view_orig_, csize, csize, true);
+            view::pSprite sl = view::Sprite::create("stroke0", view_orig_, csize, csize/3, true);
+            vec2 pos = pos_from_orig(x, y);
 
             e->setDepth(-20).setPickable(false).set<Pos2D>(pos).set<Visible>(false);
             sl->setDepth(-10).setPickable(false).set<Pos2D>(pos).set<Visible>(false);
@@ -838,6 +837,11 @@ void ViewSpriteMaster::ability_button(int left) {
 
 vec2 ViewSpriteMaster::pos_vec2(int const& x, int const& y) const{
     return pos_vec2(view_setting(), x, y);
+}
+
+vec2 ViewSpriteMaster::pos_from_orig(int const& x, int const& y) const{
+    return vec2( x*view_setting()->cube_size() + view_setting()->cube_size()/2,
+                (y*view_setting()->cube_size() + view_setting()->cube_size()/2)*-1);
 }
 
 void ViewSpriteMaster::cycle(Map const& map) {

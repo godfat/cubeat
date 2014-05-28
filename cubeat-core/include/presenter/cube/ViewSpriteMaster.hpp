@@ -107,6 +107,7 @@ private:
 
     vec2 garbage_endpoint_vec2() const;
     vec2 pos_vec2(int const& x, int const& y) const;
+    vec2 pos_from_orig(int const& x, int const& y) const;
     static vec2 pos_vec2(data::pViewSetting const& setting, int const& x, int const& y);
 
 private:

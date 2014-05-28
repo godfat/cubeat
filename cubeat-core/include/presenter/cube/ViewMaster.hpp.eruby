@@ -4,6 +4,7 @@
 #include "presenter/cube/ViewBase.hpp"
 #include "data/BasicViewTypes.hpp"
 #include <boost/tr1/memory.hpp>
+#include <boost/tr1/tuple.hpp>
 
 namespace psc{
 namespace data{
@@ -31,7 +32,8 @@ public:
     virtual void column_full(int at){}
     virtual void column_not_full(int at){}
     virtual void new_chain(model::wpChain const& chain){}
-    virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power){}
+    virtual void new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power){}
+    virtual void new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power){}
     virtual void new_garbage_old(int modelx, int modely, int new_count){}
     virtual void pop_garbage(int this_frame_lands){}
     virtual void hit_by_garbage(int this_frame_lands){}

@@ -8,6 +8,7 @@
 #include "utils/vector_2d.hpp"
 #include "model/SimpleMap.hpp"
 
+#include <boost/tr1/tuple.hpp>
 #include <boost/tr1/functional.hpp>
 #include <map>
 #include <set>
@@ -116,6 +117,7 @@ private:
     void cycle_cubes();
     void check_one_fadings();
     void cycle_a_cube(pCube, int x, int y);
+    int  encode_dying_facing(cpCube c);
     void check_a_fade(pCube, int x, int y, pChain existing_chain);
     void cycle_creation();
     void cycle_creation_garbage();
@@ -152,7 +154,7 @@ private:
     std::tr1::shared_ptr<int> warning_handle_; //warning value's timer handle
     preview_list_type cubes_preview_;
 
-    std::map< std::pair<wpChain, int>, std::vector< std::pair<int, int> > > dying_cubes_position_;
+    std::map< std::pair<wpChain, int>, std::vector< std::tr1::tuple<int, int, int> > > dying_cubes_position_;
 
     typedef std::tr1::shared_ptr<int> pTimerDummy;
     std::map< std::pair<wpChain, int>, pTimerDummy > chain_timer_handles_;

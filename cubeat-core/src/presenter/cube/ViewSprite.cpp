@@ -250,34 +250,30 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
 
 void ViewSprite::go_dying(){
     using namespace easing; using namespace accessor;
-    unsigned int duration = map_setting()->cube_dying_duration();
-//    body_->tween<Linear, GradientEmissive>(128, duration);
-//    body_->tween<Linear, Rotation>(vec3(0,0,0), vec3(0,0,180), duration);
-//    body_->tween<IQuad, Scale>(vec3(0,0,0), duration);
-//    outline_->set<Visible>(false);
-
-    body_->tween<Linear, Alpha>(255, 0, 150u, 0, 0, duration-200);
-    body_->tween<SineCirc, GradientEmissive>(0, 128, duration-200);
-
-    outline_->set<Alpha>(0);
-
-    int csize = view_setting()->cube_size();
-
-    view::pSprite white_cube = view::Sprite::create("cubes/cube-white", view_orig_.lock(), csize, csize, true);
-    white_cube->setDepth(-5).set<Pos2D>( body_->get<Pos2D>() ).set<Alpha>(0).set<GradientDiffuse>(255)
-               .setPickable(false)
-               .tween<Linear, Alpha>(0, 255, 250u, 0, 0, duration-200);
-
-    view::SFX::i().hold(white_cube, duration+50);
-
-    view::pSprite stroke = view::Sprite::create("stroke", body_, csize, 15, true);
-    stroke->setDepth(-5)
-           .set<ColorDiffuseVec3>( body_->get<ColorDiffuseVec3>() )
-           .set<GradientEmissive>(255)
-           .tween<SineCirc, Alpha>(0, 255, duration-200)
-           .tween<Linear, Pos2D>(vec2(0, csize/2), vec2(0, -csize/2), duration-200);
-
-    view::SFX::i().hold(stroke, duration-200);
+//    unsigned int duration = map_setting()->cube_dying_duration();
+//
+//    body_->tween<Linear, Alpha>(255, 0, 150u, 0, 0, duration-200);
+//    body_->tween<SineCirc, GradientEmissive>(0, 128, duration-200);
+//
+//    outline_->set<Alpha>(0);
+//
+//    int csize = view_setting()->cube_size();
+//
+//    view::pSprite white_cube = view::Sprite::create("cubes/cube-white", view_orig_.lock(), csize, csize, true);
+//    white_cube->setDepth(-5).set<Pos2D>( body_->get<Pos2D>() ).set<Alpha>(0).set<GradientDiffuse>(255)
+//               .setPickable(false)
+//               .tween<Linear, Alpha>(0, 255, 250u, 0, 0, duration-200);
+//
+//    view::SFX::i().hold(white_cube, duration+50);
+//
+//    view::pSprite stroke = view::Sprite::create("stroke", body_, csize, 15, true);
+//    stroke->setDepth(-5)
+//           .set<ColorDiffuseVec3>( body_->get<ColorDiffuseVec3>() )
+//           .set<GradientEmissive>(255)
+//           .tween<SineCirc, Alpha>(0, 255, duration-200)
+//           .tween<Linear, Pos2D>(vec2(0, csize/2), vec2(0, -csize/2), duration-200);
+//
+//    view::SFX::i().hold(stroke, duration-200);
 
 }
 

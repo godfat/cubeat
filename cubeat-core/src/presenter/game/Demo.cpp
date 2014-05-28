@@ -219,10 +219,10 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     /// Demo hacking for presentation purpose:
     map0_->score( gameplay_.I("score1") );
     map0_->set_garbage_amount(gameplay_.I("attack2"));
-    map0_->new_garbage_event()(std::vector< std::pair<int, int> >(), gameplay_.I("attack1"));
+    map0_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack1"));
     map1_->score( gameplay_.I("score2") );
     map1_->set_garbage_amount(gameplay_.I("attack1"));
-    map1_->new_garbage_event()(std::vector< std::pair<int, int> >(), gameplay_.I("attack2"));
+    map1_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack2"));
     int faketime = gameplay_.I("time");
     min_ = faketime / 60; sec_ = faketime % 60;
     std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
@@ -457,11 +457,11 @@ void Demo::hide_map_warning(int const& map_id) {
 void Demo::set_map_garbage_amount(int const& map_id, int const& n) {
     if( map_id == 1 && map1_ ) {
         map1_->set_garbage_amount(n);
-        map0_->new_garbage_event()(std::vector< std::pair<int, int> >(), n);
+        map0_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), n);
     } else {
         map0_->set_garbage_amount(n);
         if( map1_ )
-            map1_->new_garbage_event()(std::vector< std::pair<int, int> >(), n);
+            map1_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), n);
     }
 }
 

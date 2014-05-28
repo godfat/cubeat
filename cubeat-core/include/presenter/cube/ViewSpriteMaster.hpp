@@ -70,7 +70,8 @@ public:
     virtual void column_full(int at);
     virtual void column_not_full(int at);
     virtual void new_chain(model::wpChain const& chain);
-    virtual void new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power);
+    virtual void new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power);
+    virtual void new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power);
     virtual void pop_garbage(int this_frame_lands);
     virtual void hit_by_garbage(int this_frame_lands);
     virtual void warning_sound(int warning_level);
@@ -97,6 +98,7 @@ private:
     void create_warning_strips();
     void create_warning_strips2();
     void create_overheat_overlay();
+    void create_edges();
     void show_warning_at(int x, bool visible);
     void pop_a_chain_text(model::wpChain const& key);
     void invoke_ability(view::pSprite const& sp);
@@ -125,6 +127,8 @@ private:
     std::vector< view::pAnimatedSprite > warning_strip2_;
     std::vector< view::pAnimatedSprite > warning_strip3_;
     std::vector< view::pObject > warning_strip_holder_;
+    std::vector< std::vector< view::pSprite > > edges_;
+    std::vector< std::vector< view::pSprite > > scanlines_;
     std::map< model::wpChain, view::pMenu > chain_texts_;
     std::list< model::wpChain > chain_texts_to_be_deleted_;
     std::deque< view::pSprite > attack_cubes_;

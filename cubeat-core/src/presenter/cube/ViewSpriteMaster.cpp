@@ -132,28 +132,99 @@ void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
     ps->setEmitter(0);
 }
 
-void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dying_cubes_position, int power) {
-    using namespace accessor; using namespace easing; using std::tr1::bind;
+void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power) {
+    using namespace accessor; using namespace easing;
+    using std::tr1::bind; using std::tr1::get; using utils::to_s;
+
+    view::pScene s = scene_.lock();
+    int csize = view_setting()->cube_size();
+    int size = dying_cubes_position.size();
+    int upmost = 0;
+    int downmost = map_setting()->height() - 2;  // these limits are setup inversely, so can be used to test the bounding area
+    int leftmost = map_setting()->width() - 1;
+    int rightmost = 0;
+
+    for( int i = 0; i < size; ++i ) {
+        int code = get<2>(dying_cubes_position[i]);
+        int type = code / 10;
+        if( type > 4 ) continue;
+
+        int x = get<0>(dying_cubes_position[i]);
+        int y = get<1>(dying_cubes_position[i]);
+        int edge_rot = (code % 10) * -90; // unit is in 90-degree: 0 means 0, 3 means 270 (clockwise)
+
+        edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot));
+
+        // resets scanline_ here:
+        scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_vec2(x, y));
+
+        if( x > rightmost ) rightmost = x;
+        if( x < leftmost )  leftmost = x;
+        if( y > upmost )    upmost = y;
+        if( y < downmost )  downmost = y;
+    }
+
+    // when this chain's height span is greater than width span, scan go up
+    int fading_w = rightmost - leftmost;
+    int fading_h = upmost    - downmost;
+    bool scan_going_up = fading_h > fading_w ? true : false; // default is go right
+    int dying_duration = map_setting()->cube_dying_duration() - 150;  // WHY ? duration doesn't match???
+
+    for( int i = 0; i < size; ++i ) {
+        int x = get<0>(dying_cubes_position[i]);
+        int y = get<1>(dying_cubes_position[i]);
+
+        if( scan_going_up ) {
+            time_t unit_dur = dying_duration / fading_h;
+            vec2 start = pos_vec2(x, y) + vec2(0, csize/2);
+            vec2 end   = pos_vec2(x, y) - vec2(0, csize/2);
+            scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(true).set<Alpha>(0)
+                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (y-downmost))
+                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (y-downmost))  // This is very hacky...
+                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
+        } else {
+            time_t unit_dur = dying_duration / fading_w;
+            vec2 start = pos_vec2(x, y) - vec2(csize/2, 0);
+            vec2 end   = pos_vec2(x, y) + vec2(csize/2, 0);
+            scanlines_[x][y]->set<Rotation>(vec3(0,0,-90)).set<Visible>(true).set<Alpha>(0)
+                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (x-leftmost))
+                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (x-leftmost))  // This is very hacky...
+                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
+        }
+    }
+}
+
+void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power) {
+    using namespace accessor; using namespace easing;
+    using std::tr1::bind; using std::tr1::get;
 
     view::pScene s = scene_.lock();
     int csize = view_setting()->cube_size();
     int size = dying_cubes_position.size();
 
+    // hide edges when new_garbage event occurs.
+    for( int i = 0; i < size; ++i ) {
+        int x = get<0>(dying_cubes_position[i]);
+        int y = get<1>(dying_cubes_position[i]);
+        edges_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false);
+        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_vec2(x, y));
+    }
+
     if( power < 1 ) {
-        for( int i = 0; i < size; ++i ) {
-            view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
-            vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
-            glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(cube_pos)
-                      .tween<Linear, Alpha>(255, 0, 150u);
-            view::SFX::i().hold(glow_cube, 150u);
-        }
+//        for( int i = 0; i < size; ++i ) {
+//            view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+//            vec2 cube_pos = pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
+//            glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(cube_pos)
+//                      .tween<Linear, Alpha>(255, 0, 150u);
+//            view::SFX::i().hold(glow_cube, 150u);
+//        }
         return;
     }
 
     // calculate average:
     vec2 central_pos(0, 0);
     for( int i = 0; i < size; ++i )
-        central_pos += pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+        central_pos += pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
     central_pos /= size;
 
     // "gathering" effect
@@ -161,7 +232,7 @@ void ViewSpriteMaster::new_garbage(std::vector< std::pair<int, int> > const& dyi
         view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
         view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
 
-        vec2 cube_pos = pos_vec2(dying_cubes_position[i].first, dying_cubes_position[i].second);
+        vec2 cube_pos = pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
 
         glow_cube->setDepth(-10).setPickable(false)
                   .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
@@ -603,6 +674,31 @@ void ViewSpriteMaster::create_overheat_overlay(){
     overheat_bg_->set<ColorDiffuseVec3>(vec3(0,0,0)).set<Alpha>(128).set<Visible>(false);
 }
 
+void ViewSpriteMaster::create_edges(){
+    using namespace accessor;
+    int w = map_setting()->width();
+    int h = map_setting()->height() - 1;
+    int csize = view_setting()->cube_size();
+    view::pScene sc = scene_.lock();
+
+    for( int x = 0; x < w; ++x ) {
+        std::vector< view::pSprite > col_edge;
+        std::vector< view::pSprite > col_scanline;
+        for( int y = 0; y < h; ++y ) {
+            view::pSprite e  = view::Sprite::create("cubes/cube-peri-1", sc, csize, csize, true);
+            view::pSprite sl = view::Sprite::create("stroke0", sc, csize, csize/3, true);
+            vec2 pos = pos_vec2(x, y);
+
+            e->setDepth(-20).setPickable(false).set<Pos2D>(pos).set<Visible>(false);
+            sl->setDepth(-10).setPickable(false).set<Pos2D>(pos).set<Visible>(false);
+            col_edge.push_back(e);
+            col_scanline.push_back(sl);
+        }
+        edges_.push_back(col_edge);
+        scanlines_.push_back(col_scanline);
+    }
+}
+
 void ViewSpriteMaster::derived_init(){
     using namespace accessor;
     int w = map_setting()->width();
@@ -681,6 +777,7 @@ void ViewSpriteMaster::derived_init(){
 
     create_overheat_overlay();
     create_warning_strips2();
+    create_edges();
 
     garbage_text_ = view::SpriteText::create("0", scene_.lock(), "kimberley", 40, true);
     vec2 rally_point( view_setting()->ats_x(), view_setting()->ats_y() );

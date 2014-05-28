@@ -114,8 +114,39 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
     }
 }
 
+// rotation table: the rotation code of each edge permutation encoding value.
+static int rottable_[16] = { 0, 3, 2, 2, 1, 1, 1, 1, 0, 3, 0, 2, 0, 3, 0, 0 };
+
+int Map::encode_dying_facing(cpCube c)
+{
+    int dir[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // clockwise
+    int connected_side_bit = 0;
+    int connected_side_sum = 0;
+    for( int i = 0; i < 4; ++i ) {
+        connected_side_bit <<= 1; // first direction (up) will become most-significant-digit
+        int ix = c->x() + dir[i][0];
+        int iy = c->y() + dir[i][1];
+        if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
+            if( cubes_[ix][iy] && cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->chain() == c->chain() ) {
+                connected_side_bit |= 1;
+                connected_side_sum += 1;
+            }
+        }
+    }
+
+    printf(" cube(%d,%d) conn_sum: %d, conn_bitnum: %d\n", c->x(), c->y(), connected_side_sum, connected_side_bit);
+
+    if( connected_side_sum == 4 ) return 50;
+
+    int type = connected_side_sum;
+    if( connected_side_bit == 5 || connected_side_bit == 10 ) { type = 4; }
+    return type * 10 + rottable_[connected_side_bit];
+}
+
 void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
 {
+    using std::tr1::make_tuple;
+
     if( state::pWaiting waiting = c->is_waiting() ){
         if( waiting->need_check() )
         {
@@ -134,6 +165,7 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                 // The first phase of chain tagging: If there are other OneFadings in the same frame,
                 // look it up and tag it. It will only affect other successfully constructed OneFadings.
                 // And since waiting will become checked, there will be no duplicated efforts.
+                printf("\n");
                 for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
                      i != iend; ++i )
                 {
@@ -142,9 +174,14 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                             check_a_fade(cubes_[x][y], x, y, one_fading->chain());
                         }
                     }
+                }
+                // note: have to re-iterate again, not in the same loop as above, to make sure all possible cubes
+                //       are called go_dying() before we start counting edges.
+                for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
+                     i != iend; ++i ) {
                     // remember the dying_cubes_position according to chain for later use (visual)
                     dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
-                        .push_back( std::make_pair((**i).x(), (**i).y()) );
+                        .push_back( make_tuple((**i).x(), (**i).y(), encode_dying_facing((*i))) );
                 }
             }
             else waiting->checked();
@@ -418,13 +455,15 @@ void <% debug_hook 'Map::update_chains' do %>(){
             }
 
             o->new_chain_event()(*i);
+
+            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
+            o->new_chain_grouping_event()( dying_cubes_position_[ chain_step_pair ] , amount);
+
+            pTimerDummy handle = pTimerDummy(new int);
+            chain_timer_handles_[ chain_step_pair ] = handle;
+            // if we are extending last chain, this assignment will effectively erase last timer calls.
+
             if( amount > 0 ) {
-                std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
-
-                pTimerDummy handle = pTimerDummy(new int);
-                chain_timer_handles_[ chain_step_pair ] = handle;
-                // if we are extending last chain, this assignment will effectively erase last timer calls.
-
                 //current_sum_of_attack_ += (*i)->attack_of_current_step();
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                     bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
@@ -436,11 +475,12 @@ void <% debug_hook 'Map::update_chains' do %>(){
                     bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
-
-                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
-    //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
             }
+
+            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
+//            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
+
             if( step == (*i)->step() ) {
                 if( (*i)->is_extending_final_step() ) {
                     (*i)->is_extending_final_step(false);

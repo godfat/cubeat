@@ -127,7 +127,8 @@ int Map::encode_dying_facing(cpCube c)
         int ix = c->x() + dir[i][0];
         int iy = c->y() + dir[i][1];
         if( ix < ms()->width() && ix >= 0 && iy < ms()->height() - 1 && iy >= 0 ) {
-            if( cubes_[ix][iy] && cubes_[ix][iy]->is_dying() && cubes_[ix][iy]->chain() == c->chain() ) {
+            if( cubes_[ix][iy] && cubes_[ix][iy]->is_dying() &&
+                cubes_[ix][iy]->chain() == c->chain() && cubes_[ix][iy]->dying_chain_step() == c->dying_chain_step() ) {
                 connected_side_bit |= 1;
                 connected_side_sum += 1;
             }

@@ -147,13 +147,17 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
     for( int i = 0; i < size; ++i ) {
         int code = get<2>(dying_cubes_position[i]);
         int type = code / 10;
-        if( type > 4 ) continue;
 
         int x = get<0>(dying_cubes_position[i]);
         int y = get<1>(dying_cubes_position[i]);
+
         int edge_rot = (code % 10) * -90; // unit is in 90-degree: 0 means 0, 3 means 270 (clockwise)
 
-        edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot));
+        if( type > 0 && type <= 4 ) {
+            edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot));
+        } else {
+            edges_[x][y]->set<Visible>(false).set<Rotation>(vec3(0,0,0));
+        }
 
         // resets scanline_ here:
         scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_vec2(x, y));

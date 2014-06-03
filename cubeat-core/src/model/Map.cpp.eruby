@@ -117,7 +117,7 @@ void <% debug_hook 'Map::cycle_a_cube' do %>(pCube c, int x, int y){
 // rotation table: the rotation code of each edge permutation encoding value.
 static int rottable_[16] = { 0, 3, 2, 2, 1, 1, 1, 1, 0, 3, 0, 2, 0, 3, 0, 0 };
 
-int Map::encode_dying_facing(cpCube c)
+int Map::encode_dying_metadata(cpCube c)
 {
     int dir[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // clockwise
     int connected_side_bit = 0;
@@ -135,13 +135,12 @@ int Map::encode_dying_facing(cpCube c)
         }
     }
 
-    printf(" cube(%d,%d) conn_sum: %d, conn_bitnum: %d\n", c->x(), c->y(), connected_side_sum, connected_side_bit);
-
-    if( connected_side_sum == 4 ) return 50;
-
     int type = connected_side_sum;
-    if( connected_side_bit == 5 || connected_side_bit == 10 ) { type = 4; }
-    return type * 10 + rottable_[connected_side_bit];
+    if( connected_side_bit == 5 || connected_side_bit == 10 ) { type = 5; }
+    return (one_fadings_per_cycle_ * 1000) +
+           (c->color_id() * 100) +
+           (type * 10) +
+           rottable_[connected_side_bit];
 }
 
 void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
@@ -178,11 +177,16 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                 }
                 // note: have to re-iterate again, not in the same loop as above, to make sure all possible cubes
                 //       are called go_dying() before we start counting edges.
+
+                // note: and this line has to be here -- because check_a_fade is actually a recursive call
+                //       if you just add one_fadings_per_cycle_ in a pre-fix way, then we are going to get only the biggest gid.
+                one_fadings_per_cycle_ += 1;
+
                 for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
                      i != iend; ++i ) {
                     // remember the dying_cubes_position according to chain for later use (visual)
                     dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
-                        .push_back( make_tuple((**i).x(), (**i).y(), encode_dying_facing((*i))) );
+                        .push_back( make_tuple((**i).x(), (**i).y(), encode_dying_metadata((*i))) );
                 }
             }
             else waiting->checked();
@@ -311,6 +315,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
         alarm_sound_.reset();
         animate_alert_bar_.reset();
     }
+    one_fadings_per_cycle_ = 0;
 
     update_chains();
     cycle_cubes();

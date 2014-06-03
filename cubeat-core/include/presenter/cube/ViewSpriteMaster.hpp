@@ -99,6 +99,7 @@ private:
     void create_warning_strips2();
     void create_overheat_overlay();
     void create_edges();
+    void hide_edge(int x, int y);
     void show_warning_at(int x, bool visible);
     void pop_a_chain_text(model::wpChain const& key);
     void invoke_ability(view::pSprite const& sp);

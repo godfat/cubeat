@@ -174,6 +174,12 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
         view::SFX::i().hold(glow_cube, 250u);
 
+        std::tr1::function<void()> f = bind(&ViewSpriteMaster::hide_edge, this, x, y);
+        edges_[x][y]->tween<Linear, Red>(edges_[x][y]->get<Red>(), static_cast<time_t>(map_setting()->cube_dying_duration()), 0, f);
+
+//        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//            bind(&ViewSpriteMaster::hide_edge, this, x, y), shared_from_this(), map_setting()->cube_dying_duration());
+
 //        } else {
 //            edges_[x][y]->set<Visible>(false).set<Rotation>(vec3(0,0,0));
 //        }
@@ -326,18 +332,16 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
                 effect_body_orig->tween<OQuad, Pos2D>(cube_pos, dest, 200u+ (200-delay_time), 0, 0, delay_time);
                 effect_body->tween<Linear, Scale>(vec3(0,0,0), 250u+ (200-delay_time), 0, 0, delay_time);
 
-                edges_[cx][cy]->clearAllTween();
-                edges_[cx][cy]->tween<OQuad, Scale>(vec3(1.44, 1.44, 1), 125u)
-                               .tween<IExpo, GradientEmissive>(0, 255, 125u)
-                               .tween<IExpo, Alpha>(255, 0, 125u);
+                edges_[cx][cy]->clearAllTween().set<Visible>(true);
+                edges_[cx][cy]->tween<OQuad, Scale>(vec3(1.44, 1.44, 1), 150u)
+                               .tween<IExpo, GradientEmissive>(0, 255, 150u)
+                               .tween<IExpo, Alpha>(255, 0, 150u);
 
                 double rot = utils::random(720) - 360;
                 effect_body->tween<OQuad, Rotation>(vec3(0, 0, rot), 400u);
             } else {
                 time_t delay_time = utils::random(100);
                 effect_body_orig->tween<Linear, Scale>(vec3(0,0,0), 200u + delay_time, 0, 0, delay_time);
-
-                edges_[cx][cy]->set<Visible>(false);
             }
 
             view::SFX::i().hold(effect_body, 420);
@@ -803,6 +807,10 @@ void ViewSpriteMaster::create_edges(){
         edges_.push_back(col_edge);
         scanlines_.push_back(col_scanline);
     }
+}
+
+void ViewSpriteMaster::hide_edge(int x, int y) {
+    edges_[x][y]->set<accessor::Visible>(false);
 }
 
 void ViewSpriteMaster::derived_init(){

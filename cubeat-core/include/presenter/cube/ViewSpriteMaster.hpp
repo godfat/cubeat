@@ -103,7 +103,7 @@ private:
     void pop_a_chain_text(model::wpChain const& key);
     void invoke_ability(view::pSprite const& sp);
 
-    virtual void new_garbage_2ndphase(vec2 const& pos, int new_count);
+    virtual void new_garbage_2ndphase(std::map<int, vec2> const& pos, int new_count);
 
     vec2 garbage_endpoint_vec2() const;
     vec2 pos_vec2(int const& x, int const& y) const;

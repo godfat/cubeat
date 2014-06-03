@@ -139,63 +139,82 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
     view::pScene s = scene_.lock();
     int csize = view_setting()->cube_size();
     int size = dying_cubes_position.size();
-    int upmost = 0;
-    int downmost = map_setting()->height() - 2;  // these limits are setup inversely, so can be used to test the bounding area
-    int leftmost = map_setting()->width() - 1;
-    int rightmost = 0;
+//    int upmost = 0;
+//    int downmost = map_setting()->height() - 2;  // these limits are setup inversely, so can be used to test the bounding area
+//    int leftmost = map_setting()->width() - 1;
+//    int rightmost = 0;
 
     for( int i = 0; i < size; ++i ) {
         int code = get<2>(dying_cubes_position[i]);
-        int type = code / 10;
+        int color_id = code / 100 % 10;
+        int type = (code / 10) % 10;
 
         int x = get<0>(dying_cubes_position[i]);
         int y = get<1>(dying_cubes_position[i]);
 
         int edge_rot = (code % 10) * -90; // unit is in 90-degree: 0 means 0, 3 means 270 (clockwise)
 
-        if( type > 0 && type <= 4 ) {
-            edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot));
-        } else {
-            edges_[x][y]->set<Visible>(false).set<Rotation>(vec3(0,0,0));
-        }
+        data::Color col = data::Color::from_id(color_id);
+        col.offset();
+
+        edges_[x][y]->clearAllTween().clearAllQueuedTween();
+
+//        if( type > 0 && type <= 4 ) {
+            edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot))
+                         .set<ColorDiffuse>( 0xffaa7744 | col.rgb() )
+                         .tween<Linear, Scale>(vec3(1.2, 1.2, 1.2), vec3(1,1,1), 150u)
+                         .tween<SineCirc, Alpha>(255, 128, 50u, -1, 0, 150)
+                         .queue<Linear, GradientEmissive>(0, 255, 150u)
+                         .tween<Linear, GradientEmissive>(255, 0, 200u);
+
+        view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", view_orig_, csize, csize, true);
+        glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(pos_from_orig(x, y))
+                  .set<ColorDiffuse>( 0xffaa7744 | col.rgb() )
+                  .tween<Linear, Alpha>(255, 0, 250u);
+
+        view::SFX::i().hold(glow_cube, 250u);
+
+//        } else {
+//            edges_[x][y]->set<Visible>(false).set<Rotation>(vec3(0,0,0));
+//        }
 
         // resets scanline_ here:
-        scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
+        // scanlines_[x][y]->clearAllTween().set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
 
-        if( x > rightmost ) rightmost = x;
-        if( x < leftmost )  leftmost = x;
-        if( y > upmost )    upmost = y;
-        if( y < downmost )  downmost = y;
+//        if( x > rightmost ) rightmost = x;
+//        if( x < leftmost )  leftmost = x;
+//        if( y > upmost )    upmost = y;
+//        if( y < downmost )  downmost = y;
     }
 
     // when this chain's height span is greater than width span, scan go up
-    int fading_w = rightmost - leftmost;
-    int fading_h = upmost    - downmost;
-    bool scan_going_up = fading_h > fading_w ? true : false; // default is go right
-    int dying_duration = map_setting()->cube_dying_duration() - 150;  // WHY ? duration doesn't match???
+//    int fading_w = rightmost - leftmost;
+//    int fading_h = upmost    - downmost;
+//    bool scan_going_up = fading_h > fading_w ? true : false; // default is go right
+//    int dying_duration = map_setting()->cube_dying_duration() - 150;  // WHY ? duration doesn't match???
 
-    for( int i = 0; i < size; ++i ) {
-        int x = get<0>(dying_cubes_position[i]);
-        int y = get<1>(dying_cubes_position[i]);
-
-        if( scan_going_up ) {
-            time_t unit_dur = dying_duration / fading_h;
-            vec2 start = pos_from_orig(x, y) + vec2(0, csize/2);
-            vec2 end   = pos_from_orig(x, y) - vec2(0, csize/2);
-            scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(true).set<Alpha>(0)
-                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (y-downmost))
-                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (y-downmost))  // This is very hacky...
-                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
-        } else {
-            time_t unit_dur = dying_duration / fading_w;
-            vec2 start = pos_from_orig(x, y) - vec2(csize/2, 0);
-            vec2 end   = pos_from_orig(x, y) + vec2(csize/2, 0);
-            scanlines_[x][y]->set<Rotation>(vec3(0,0,-90)).set<Visible>(true).set<Alpha>(0)
-                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (x-leftmost))
-                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (x-leftmost))  // This is very hacky...
-                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
-        }
-    }
+//    for( int i = 0; i < size; ++i ) {
+//        int x = get<0>(dying_cubes_position[i]);
+//        int y = get<1>(dying_cubes_position[i]);
+//
+//        if( scan_going_up ) {
+//            time_t unit_dur = dying_duration / fading_h;
+//            vec2 start = pos_from_orig(x, y) + vec2(0, csize/2);
+//            vec2 end   = pos_from_orig(x, y) - vec2(0, csize/2);
+//            scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(true).set<Alpha>(0)
+//                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (y-downmost))
+//                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (y-downmost))  // This is very hacky...
+//                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
+//        } else {
+//            time_t unit_dur = dying_duration / fading_w;
+//            vec2 start = pos_from_orig(x, y) - vec2(csize/2, 0);
+//            vec2 end   = pos_from_orig(x, y) + vec2(csize/2, 0);
+//            scanlines_[x][y]->set<Rotation>(vec3(0,0,-90)).set<Visible>(true).set<Alpha>(0)
+//                             .tween<Linear, Pos2D>(start, end, unit_dur, 0, 0, unit_dur * (x-leftmost))
+//                             .queue<Linear, Alpha>(255, 255, unit_dur, 0, 0, unit_dur * (x-leftmost))  // This is very hacky...
+//                             .tween<Linear, Alpha>(255, 0, 10u); // This is very hacky...
+//        }
+//    }
 }
 
 void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power) {
@@ -207,14 +226,14 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
     int size = dying_cubes_position.size();
 
     // hide edges when new_garbage event occurs.
-    for( int i = 0; i < size; ++i ) {
-        int x = get<0>(dying_cubes_position[i]);
-        int y = get<1>(dying_cubes_position[i]);
-        edges_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false);
-        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
-    }
+//    for( int i = 0; i < size; ++i ) {
+//        int x = get<0>(dying_cubes_position[i]);
+//        int y = get<1>(dying_cubes_position[i]);
+//        edges_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false);
+//        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
+//    }
 
-    if( power < 1 ) {
+//    if( power < 1 ) {
 //        for( int i = 0; i < size; ++i ) {
 //            view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
 //            vec2 cube_pos = pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
@@ -222,37 +241,116 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
 //                      .tween<Linear, Alpha>(255, 0, 150u);
 //            view::SFX::i().hold(glow_cube, 150u);
 //        }
-        return;
-    }
+//        return;
+//    }
 
     // calculate average:
-    vec2 central_pos(0, 0);
-    for( int i = 0; i < size; ++i )
-        central_pos += pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
-    central_pos /= size;
+//    vec2 central_pos(0, 0);
+//    for( int i = 0; i < size; ++i ) {
+//        central_pos += pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
+//    central_pos /= size;
+
+    std::map<int, vec2> central_pos;
+    std::map<int, int>  group_sizes;
+    for( int i = 0; i < size; ++i ) {
+        int gid = get<2>(dying_cubes_position[i]) / 1000;
+        central_pos[gid] += pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
+        group_sizes[gid] += 1;
+    }
+    for( std::map<int, vec2>::iterator it = central_pos.begin(), iend = central_pos.end();
+         it != iend; ++it ) {
+        it->second /= group_sizes[it->first];
+    }
 
     // "gathering" effect
+//    for( int i = 0; i < size; ++i ) {
+//        view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
+//        view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
+//
+//        vec2 cube_pos = pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
+//
+//        glow_cube->setDepth(-10).setPickable(false)
+//                  .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+//                  .tween<OExpo, Alpha>(255, 0, 400u);
+//        glow_circle->setDepth(-10).setPickable(false)
+//                    .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
+//                    .tween<Linear, Alpha>(0, 255, 400u);
+//
+//        view::SFX::i().hold(glow_cube, 400u).hold(glow_circle, 400u);
+//    }
+    int xyoff[4][2] = { {-csize/4, -csize/4}, {csize/4, -csize/4}, {csize/4, csize/4}, {-csize/4, csize/4} };
+
     for( int i = 0; i < size; ++i ) {
-        view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", s, csize, csize, true);
-        view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
+        int gid= get<2>(dying_cubes_position[i]) / 1000;
+        int cx = get<0>(dying_cubes_position[i]);
+        int cy = get<1>(dying_cubes_position[i]);
+        vec2 cube_pos = pos_vec2(cx, cy);
+        int code = get<2>(dying_cubes_position[i]);
+        int color_id = code / 100 % 10;
+        data::Color col = data::Color::from_id(color_id);
+        col.offset();
 
-        vec2 cube_pos = pos_vec2(get<0>(dying_cubes_position[i]), get<1>(dying_cubes_position[i]));
+        if( power > 1 ) {
+            view::pSprite glow_circle = view::Sprite::create("plight", s, csize, csize, true);
+            glow_circle->setDepth(-20).setPickable(false).set<Pos2D>(central_pos[gid])
+                        .tween<Linear, Alpha>(0, 255, 200u)
+                        .tween<OQuad, Scale>(vec3(0,0,0), vec3(1,1,1), 200u);
 
-        glow_cube->setDepth(-10).setPickable(false)
-                  .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
-                  .tween<OExpo, Alpha>(255, 0, 400u);
-        glow_circle->setDepth(-10).setPickable(false)
-                    .tween<OExpo, Pos2D>(cube_pos, central_pos, 400u)
-                    .tween<Linear, Alpha>(0, 255, 400u);
+            view::SFX::i().hold(glow_circle, 200u);
+        }
 
-        view::SFX::i().hold(glow_cube, 400u).hold(glow_circle, 400u);
+        for( int j = 0; j < 4; ++j ) {
+            view::pObject effect_body_orig = view::Object::create(scene_.lock());
+            view::pSprite effect_body = view::Sprite::create("smallblock", effect_body_orig, csize/4, csize/4, true);
+            view::pSprite effect_body_out = view::Sprite::create("smallblock_out", effect_body, csize/4, csize/4, true);
+            effect_body_orig->setPickable(false).set<Scale>(vec3(1.8f, 1.8f, 1));
+            effect_body->setPickable(false);
+            effect_body_out->setPickable(false);
+
+            effect_body_orig->set<Pos3D>( vec3(cube_pos.X + xyoff[j][0], -cube_pos.Y + xyoff[j][1], -10) );
+            effect_body_out->setDepth(-5);
+
+            effect_body->set<ColorDiffuse>( 0xff553300 | col.rgb() );
+            effect_body_out->set<ColorDiffuse>( 0xffaa7744 | col.rgb() );
+
+            effect_body->tween<IQuad, GradientEmissive>(0, 255, 400u);
+            effect_body_out->tween<Linear, Alpha>(255, 0, 400u);
+
+            if( power > 1 ) {
+                time_t delay_time = utils::random(200);
+
+                vec2 selfp = effect_body_orig->get<Pos2D>();
+                vec2 delp = (cube_pos - selfp) * (utils::random(50)/100.0 + 0.50);
+                vec2 dest = selfp - delp + (vec2(utils::random(30)-15, utils::random(30)-15));
+
+                effect_body_orig->tween<OQuad, Pos2D>(cube_pos, dest, 200u+ (200-delay_time), 0, 0, delay_time);
+                effect_body->tween<Linear, Scale>(vec3(0,0,0), 250u+ (200-delay_time), 0, 0, delay_time);
+
+                edges_[cx][cy]->clearAllTween();
+                edges_[cx][cy]->tween<OQuad, Scale>(vec3(1.44, 1.44, 1), 125u)
+                               .tween<IExpo, GradientEmissive>(0, 255, 125u)
+                               .tween<IExpo, Alpha>(255, 0, 125u);
+
+                double rot = utils::random(720) - 360;
+                effect_body->tween<OQuad, Rotation>(vec3(0, 0, rot), 400u);
+            } else {
+                time_t delay_time = utils::random(100);
+                effect_body_orig->tween<Linear, Scale>(vec3(0,0,0), 200u + delay_time, 0, 0, delay_time);
+
+                edges_[cx][cy]->set<Visible>(false);
+            }
+
+            view::SFX::i().hold(effect_body, 420);
+            view::SFX::i().hold(effect_body_orig, 420);
+            view::SFX::i().hold(effect_body_out, 420);
+        }
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&ViewSpriteMaster::new_garbage_2ndphase, this, central_pos, power), shared_from_this(), 400);
+        bind(&ViewSpriteMaster::new_garbage_2ndphase, this, central_pos, power), shared_from_this(), 100);
 }
 
-void ViewSpriteMaster::new_garbage_2ndphase(vec2 const& pos, int new_count){
+void ViewSpriteMaster::new_garbage_2ndphase(std::map<int, vec2> const& pos, int new_count){
 
     using namespace accessor; using namespace easing; using std::tr1::bind; using utils::to_s;
 
@@ -265,74 +363,79 @@ void ViewSpriteMaster::new_garbage_2ndphase(vec2 const& pos, int new_count){
     //2012.05 changed from throwing to off-screen, now throwing to over-head
     vec2 endp( view_setting()->ats_x(), view_setting()->ats_y() );
 
-    for( int i = 0; i < num; ++i ) {
+    for( std::map<int, vec2>::const_iterator it = pos.begin(), iend = pos.end(); it != iend ; ++it ) {
 
-        using namespace irr; using namespace scene;
+        int partial_num = num / pos.size();
 
-        view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
-        g->setDepth(-50).set<Pos2D>(pos);
-        //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-        vec2 midp = (pos + endp)/2;
-        midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
+        for( int i = 0; i < partial_num; ++i ) {
 
-        IParticleSystemSceneNode* ps = s->addParticleNodeTo(g, false);
-        ps->setIsDebugObject(true); // So it can't be picked.
+            using namespace irr; using namespace scene;
 
-        int flying_distance = (endp - pos).getLength();
+            view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
+            g->setDepth(-50).set<Pos2D>(/*pos*/ it->second);
+            //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+            vec2 midp = (/*pos*/ it->second + endp)/2;
+            midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
 
-        IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
-            &g->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
-            core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-#if !defined(_SHOOTING_CUBES_ANDROID_)
-            flying_distance/6, flying_distance/6,    // emit rate
-#else
-            flying_distance/6, flying_distance/6,    // emit rate
-#endif
-            video::SColor(0,255,255,255),       // darkest color
-            video::SColor(0,255,255,255),       // brightest color
-            200, 200, 0,                         // min and max age, angle
-            core::dimension2df(64.f,64.f),         // min size
-            core::dimension2df(64.f,64.f)         // max size
-        );
+            IParticleSystemSceneNode* ps = s->addParticleNodeTo(g, false);
+            ps->setIsDebugObject(true); // So it can't be picked.
 
-        ps->setEmitter(em); // this grabs the emitter
-        em->drop(); // so we can drop it here without deleting it
+            int flying_distance = (endp - /*pos*/ it->second).getLength();
 
-        IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 500);
+            IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
+                &g->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
+                core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
+    #if !defined(_SHOOTING_CUBES_ANDROID_)
+                flying_distance/6, flying_distance/6,    // emit rate
+    #else
+                flying_distance/6, flying_distance/6,    // emit rate
+    #endif
+                video::SColor(0,255,255,255),       // darkest color
+                video::SColor(0,255,255,255),       // brightest color
+                200, 200, 0,                         // min and max age, angle
+                core::dimension2df(64.f,64.f),         // min size
+                core::dimension2df(64.f,64.f)         // max size
+            );
 
-        ps->addAffector(paf); // same goes for the affector
-        paf->drop();
+            ps->setEmitter(em); // this grabs the emitter
+            em->drop(); // so we can drop it here without deleting it
 
-        ps->setPosition(core::vector3df(0,0,0));
-        ps->setMaterialFlag(video::EMF_LIGHTING, true);
-        ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-        ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
-        ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+            IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 500);
 
-        /// Don't use the glowing ball effect for now:
-        g->set<Alpha>(0);
+            ps->addAffector(paf); // same goes for the affector
+            paf->drop();
 
-        attack_cubes_.push_back(g);
+            ps->setPosition(core::vector3df(0,0,0));
+            ps->setMaterialFlag(video::EMF_LIGHTING, true);
+            ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+            ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/fire.bmp"));
+            ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
-        // Setup nodes above, setup animation below:
-        data::AnimatorParam<Linear, Scale> scale;
+            /// Don't use the glowing ball effect for now:
+            g->set<Alpha>(0);
 
-        data::AnimatorParam<ISine, Pos2D> way1;
-        data::AnimatorParam<IOSine, Pos2D> way2;
+            attack_cubes_.push_back(g);
 
-        /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
-        /// Some of its end callbacks won't fire. It has to be less than 700...
-        /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
-        int total_dur = 470;
-        int first_seg = 200 + utils::random(70);
-        int second_seg = total_dur - first_seg;
+            // Setup nodes above, setup animation below:
+            data::AnimatorParam<Linear, Scale> scale;
 
-        std::tr1::function<void()> remove_trail_emitter =
-            std::tr1::bind( &remove_emitter_of, ps );
-        way1.start(pos).end(midp).duration( first_seg );
-        way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
+            data::AnimatorParam<ISine, Pos2D> way1;
+            data::AnimatorParam<IOSine, Pos2D> way2;
 
-        g->queue(way1).tween(way2);
+            /// Though all the animator life time here is 700 ms, I don't know why if I set way2's duration to 700,
+            /// Some of its end callbacks won't fire. It has to be less than 700...
+            /// You can imagine if some lag happens, then it will happen again. Why is it anyway??
+            int total_dur = 470;
+            int first_seg = 200 + utils::random(70);
+            int second_seg = total_dur - first_seg;
+
+            std::tr1::function<void()> remove_trail_emitter =
+                std::tr1::bind( &remove_emitter_of, ps );
+            way1.start(/*pos*/ it->second).end(midp).duration( first_seg );
+            way2.start(midp).end(endp).duration( second_seg ).cb( remove_trail_emitter );
+
+            g->queue(way1).tween(way2);
+        }
     }
 
     // I should set the duration using config or script somehow,

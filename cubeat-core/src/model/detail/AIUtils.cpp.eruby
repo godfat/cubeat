@@ -183,7 +183,6 @@ int AIUtils::simulate_fire_at(int x, int y, pSimpleMap cloned_map)
 int AIUtils::get_base_attack(pSimpleMap const& map)
 {
     pSimpleMap cloned_map = map->clone();
-    //cloned_map->cycle(); This line have no meaning.
     do {
         cloned_map->cycle();
     } while( cloned_map->chains_.size() );

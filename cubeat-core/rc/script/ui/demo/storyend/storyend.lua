@@ -23,7 +23,7 @@ local function hide()
 end
 
 local function show(demo, ui_mode)
-  
+  --[[
   -- story win
   if ui_mode == config.story_win then
     board_:set_texture('win')
@@ -46,9 +46,9 @@ local function show(demo, ui_mode)
       demo:init_story(c1p, c2p, sconf, 0)
     end)
     demo:play_sound('3/3c/lose.wav')
-    
+  --]]
   -- tutorial win
-  elseif ui_mode == config.tutorial_win then
+  if ui_mode == config.tutorial_win then
     board_:set_texture('win')
     btn_next_:change_text('Next')
     btn_next_:on_press(function(self)

@@ -2,7 +2,7 @@ local ffi     = require 'ffi'
 local C       = ffi.C
 local view    = require 'rc/script/ui/view'
 local ui      = require 'rc/script/ui/ui'
-local config  = require 'rc/script/ui/demo/storyend/config'
+local storyend_config     = require 'rc/script/ui/demo/storyend/config'
 local select_config       = require 'rc/script/ui/demo/select/config'
 local endingcheck_config  = require 'rc/script/ui/demo/endingcheck/config'
 
@@ -51,7 +51,7 @@ local function create(scene)
   
 end
 
-local function show(demo, game_mode, p1_win)
+local function show(demo, game_mode, submode, p1_win)
   blocker_:set_alpha(0)
   blocker_:tween("Linear", "Alpha", 0, 144, 500, 0, nil, 1500)
   blocker_:set_visible(true)
@@ -67,24 +67,48 @@ local function show(demo, game_mode, p1_win)
   local char_big_filename1 = "char"..tostring(select_config.ch_choose[1]).."_new"
   local char_big_filename2 = "char"..tostring(select_config.ch_choose[2]).."_new"
   
-  if p1_win==false then
-    lose_t_:set_pos(pos1.x, pos1.y)
-    win_t_:set_pos(pos2.x, pos2.y)
-    if game_mode == endingcheck_config.GM_PVC then
+  if submode and submode == endingcheck_config.submode_story then
+    -- story mode lose
+    if p1_win==false then
+      lose_t_:set_pos(pos1.x, pos1.y)
+      win_t_:set_pos(pos2.x, pos2.y)
       demo:play_sound("3/3c/lose.wav")
+      char_big_filename1 = char_big_filename1 .. ("/sad")
+      char_big_filename2 = char_big_filename2 .. ("/glad")
+      
+    -- story mode win
     else
+      lose_t_:set_pos(pos2.x, pos2.y)
+      win_t_:set_pos(pos1.x, pos1.y)
       demo:play_sound("3/3c/win.wav")
+      char_big_filename1 = char_big_filename1 .. ("/glad")
+      char_big_filename2 = char_big_filename2 .. ("/sad")
     end
     
-    char_big_filename1 = char_big_filename1 .. ("/sad")
-    char_big_filename2 = char_big_filename2 .. ("/glad")
   else
-    lose_t_:set_pos(pos2.x, pos2.y)
-    win_t_:set_pos(pos1.x, pos1.y)
-    demo:play_sound("3/3c/win.wav")
+    -- vs mode p1 lose
+    if p1_win==false then
+      lose_t_:set_pos(pos1.x, pos1.y)
+      win_t_:set_pos(pos2.x, pos2.y)
+      if game_mode and game_mode == endingcheck_config.GM_PVC then
+        demo:play_sound("3/3c/lose.wav")
+      else
+        demo:play_sound("3/3c/win.wav")
+      end
+      
+      char_big_filename1 = char_big_filename1 .. ("/sad")
+      char_big_filename2 = char_big_filename2 .. ("/glad")
+      
+    -- vs mode p1 win
+    else
+      lose_t_:set_pos(pos2.x, pos2.y)
+      win_t_:set_pos(pos1.x, pos1.y)
+      demo:play_sound("3/3c/win.wav")
+      
+      char_big_filename1 = char_big_filename1 .. ("/glad")
+      char_big_filename2 = char_big_filename2 .. ("/sad")
+    end
     
-    char_big_filename1 = char_big_filename1 .. ("/glad")
-    char_big_filename2 = char_big_filename2 .. ("/sad")
   end
   
   --char_big1_ = ui.new_image{ parent=scene_, path=char_big_filename1, x=pos1.x-32, y=pos1.y+64, w=432, h=648, center=true }
@@ -111,7 +135,11 @@ local function show(demo, game_mode, p1_win)
   lose_t_:tween("OElastic", "Scale", v1, v2, 1000, 0, nil, 1500)
   
   end_text_:set_visible(true)
-  end_text_:change_text("Retry")
+  if submode and submode == endingcheck_config.submode_story and p1_win==true then
+    end_text_:change_text("Next") -- story mode win
+  else
+    end_text_:change_text("Retry")
+  end
   end_text_:set_pos(center_x, center_y - 60)
   end_text_:set_alpha(0)
   end_text_:set_scale(1.3)
@@ -125,10 +153,29 @@ local function show(demo, game_mode, p1_win)
   end_text2_:set_depth(-450)
   end_text2_:tween("Linear", "Alpha", 0, 255, 500, 0, nil, 2500)
   
-  end_text_:on_press(function(self)
-      hide()
-      demo:reinit()
-  end)
+  if submode and submode == endingcheck_config.submode_story then
+    if p1_win==true then -- story mode win
+      end_text_:on_press(function(self)
+        hide()
+        storyend_config.is_story_end = true -- if is_story_end=true, when slide_in(), it will switch.load_page() to story end talk script.
+        demo:leave_and_cleanup()
+      end)
+    else -- story mode lose
+      end_text_:on_press(function(self)
+        hide()
+        local c1p = "char/char"..tostring(select_config.ch_choose[1]).."_new"
+        local c2p = "char/char"..tostring(select_config.ch_choose[2]).."_new"
+        local sconf = "stage/jungle"..tostring(select_config.ch_choose[2])
+        demo:init_story(c1p, c2p, sconf, 0)
+      end)
+    end
+  else
+    -- vs mode end
+    end_text_:on_press(function(self)
+        hide()
+        demo:reinit()
+    end)
+  end
   end_text2_:on_press(function(self)
     hide()
     demo:leave_and_cleanup()

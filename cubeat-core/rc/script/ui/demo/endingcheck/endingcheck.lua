@@ -14,7 +14,7 @@ local function vs_mode_end(demo, game_mode)
 
   local p1_win = (demo:get_map_warning_level(0) ~= 100)
   
-  vsend.show(demo, game_mode, p1_win)
+  vsend.show(demo, game_mode, nil, p1_win)
   
   --[[
   -- PVC
@@ -46,16 +46,18 @@ local function tutorial_mode_end(demo)
   end
 end
 
-local function story_mode_end(demo)
+local function story_mode_end(demo, submode)
   -- story win
   if demo:get_map_warning_level(1)==100 then
     print('---- endingcheck: story win ----')
-    storyend.show(demo, storyend_config.story_win)
+    --storyend.show(demo, storyend_config.story_win)
+    vsend.show(demo, nil, submode, true)
     
   -- story lose
   else
     print('---- endingcheck: story lose ----')
-    storyend.show(demo, storyend_config.story_lose)
+    --storyend.show(demo, storyend_config.story_lose)
+    vsend.show(demo, nil, submode, false)
     
   end
 end
@@ -74,7 +76,7 @@ local function show_ending_ui(demo, game_mode, submode)
     if submode==config.submode_tutorial then
       tutorial_mode_end(demo)
     elseif submode==config.submode_story then
-      story_mode_end(demo)
+      story_mode_end(demo, submode)
     else
       challenge_mode_end(demo, submode)
     end

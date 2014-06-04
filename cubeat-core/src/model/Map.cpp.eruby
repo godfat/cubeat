@@ -513,7 +513,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                     bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i)),
                     self(),
-                    1200);
+                    700);
             }
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()

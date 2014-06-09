@@ -170,8 +170,12 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                      i != iend; ++i )
                 {
                     for( int x = (**i).x(), y = (**i).y() + 1; y < ms()->height() - 1; ++y ) {
-                        if( cubes_[x][y] ) {
+                        // Important, only waiting cubes propagates the search, break inner loop on dying/dropping
+                        if( cubes_[x][y] && cubes_[x][y]->is_waiting() &&
+                            !cubes_[x][y]->chain() ) {
                             check_a_fade(cubes_[x][y], x, y, one_fading->chain());
+                        } else {
+                            break;
                         }
                     }
                 }

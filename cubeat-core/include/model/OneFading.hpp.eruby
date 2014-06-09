@@ -35,7 +35,8 @@ public:
                                     pChain existing_chain = pChain() ){
 <% end %>
         int extending_amount = 0;
-        pChain chain = existing_chain ? existing_chain : get_the_chain(map);
+        pChain chain = get_the_chain(map, existing_chain);
+
         chain_ = chain; // Associate this particular OneFading with its chain.
 
         // I have no good way around this. If this is an extending OneFading,
@@ -82,26 +83,28 @@ public:
     // end
 
 private:
-    pChain get_the_chain(MapType& map){
-        pChain chain;
+    pChain get_the_chain(MapType& map, pChain existing_chain){
+        pChain chain = Chain::create();
 
         //this for loop will get the first Chain it finds in this column or row
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i != iend; ++i)
         {
-            if( (**i).chain() ) {
+            if( (**i).chain() && (**i).chain()->step() > chain->step() ) {
                 chain = (**i).chain();
-                break;
+                // 2014.06: compare for the highest chain
             }
         }
 
-        //if we can't find any useful Chain here, we'll create one
-        if( !chain ) {
-            chain = Chain::create();
-            chain->step_one();
-            map.push_chain( chain );
+        if( chain->step() == 0 ) {
+            if( existing_chain ) {
+                chain = existing_chain;
+            } else {
+                //if we can't find any useful Chain here, we'll create one
+                chain->step_one();
+                map.push_chain( chain );
+            }
         }
-
         return chain;
     }
 

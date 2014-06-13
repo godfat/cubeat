@@ -3,8 +3,6 @@ local MapUtils = require 'rc/script/puzzle/maputils'
 local Helper = require 'rc/script/puzzle/helpers'
 local random, Stack = Helper.random, Helper.stack
 
-math.randomseed(os.time())
-
 local PuzzleGen = {}
 
 function PuzzleGen:init(chain_limit, w, h, color_num)

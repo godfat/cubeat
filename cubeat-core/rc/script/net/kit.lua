@@ -10,10 +10,6 @@ local function curry(f)
   end
 end
 
-
--- random string generator
-math.randomseed(socket.gettime()*1000)
-
 local Chars = {}
 for Loop = 0, 255 do
    Chars[Loop+1] = string.char(Loop)

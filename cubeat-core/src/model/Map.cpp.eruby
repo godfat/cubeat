@@ -450,9 +450,12 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
         /// EVERY step of the chain might be updated during this process.
         /// So we have to write it this way:
+        for( std::set<int>::const_iterator it_index = (*i)->step_indices().begin(), it_index_end = (*i)->step_indices().end() ;
+             it_index != it_index_end; ++it_index ) {
+            int step = (*it_index);
 
-        for( int n = 0; n < (*i)->step_indices_size(); ++n ) {
-            int step = (*i)->step_indices(n);
+//            printf(" updating chain %x step %d..\n", (*i).get(), step);
+
             (*i)->update_power_factor_step( step );
             int amount = (*i)->attack_of_step( step );
 
@@ -464,14 +467,20 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 exit(0);
             }
 
-            o->new_chain_event()(*i);
-
-            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
-            o->new_chain_grouping_event()( dying_cubes_position_[ chain_step_pair ] , amount);
-
             pTimerDummy handle = pTimerDummy(new int);
+            std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
             chain_timer_handles_[ chain_step_pair ] = handle;
             // if we are extending last chain, this assignment will effectively erase last timer calls.
+
+            // 2014.6 case for weaker chain's steps getting merged, its step_amounts will appear to be less than before,
+            // even less than the chain_amounts(). When that happens, don't invoke anything,
+            // because it's no longer a viable step, so just skip it.
+            if( (*i)->step_amounts(step) < ms()->chain_amounts() ) {
+                continue;
+            }
+
+            o->new_chain_event()(*i);
+            o->new_chain_grouping_event()( dying_cubes_position_[ chain_step_pair ] , amount);
 
             if( amount > 0 ) {
                 //current_sum_of_attack_ += (*i)->attack_of_current_step();
@@ -492,13 +501,12 @@ void <% debug_hook 'Map::update_chains' do %>(){
 //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
 
             if( step == (*i)->step() ) {
-                if( (*i)->is_extending_final_step() ) {
-                    (*i)->is_extending_final_step(false);
-                }
-                else {
-                    match_counter_ += 1;
-                    (*i)->step_one();
-                }
+                //2014.6 Originally when we have extending mechanism, we have to consider if the last step is getting
+                //       extended or merged. But since we now treat all chain "steps" separately, there's no need to
+                //       keep track of this by adding booleans flags to chains, because
+                //       it's impossible to extend or merge the last step -- the next "empty step" will always be there
+                match_counter_ += 1;
+                (*i)->step_one();
             }
         }
         (*i)->clear_indices();
@@ -517,7 +525,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                     bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i)),
                     self(),
-                    700);
+                    1000);
             }
             //log highest chain
             //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()

@@ -117,7 +117,10 @@ void <% debug_hook 'Cube::next_state' do %>(){
 void <% debug_hook 'Cube::go_dying' do %>(int dying_chain_step){
 <% end %>
     state_ = state::Dying::create(self(), dying_chain_step);
-    map()->cubes_matched_add(1, color_id());
+
+    //2014.6 consider chain extending mechanism, this line is no longer logically correct.
+    //map()->cubes_matched_add(1, color_id());
+
     go_dying_event()();
 }
 

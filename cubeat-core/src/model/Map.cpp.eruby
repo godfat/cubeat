@@ -137,8 +137,7 @@ int Map::encode_dying_metadata(cpCube c)
 
     int type = connected_side_sum;
     if( connected_side_bit == 5 || connected_side_bit == 10 ) { type = 5; }
-    return (one_fadings_per_cycle_ * 1000) +
-           (c->color_id() * 100) +
+    return (c->color_id() * 100) +
            (type * 10) +
            rottable_[connected_side_bit];
 }
@@ -165,7 +164,6 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                 // The first phase of chain tagging: If there are other OneFadings in the same frame,
                 // look it up and tag it. It will only affect other successfully constructed OneFadings.
                 // And since waiting will become checked, there will be no duplicated efforts.
-                printf("\n");
                 for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
                      i != iend; ++i )
                 {
@@ -190,7 +188,9 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
                      i != iend; ++i ) {
                     // remember the dying_cubes_position according to chain for later use (visual)
                     dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
-                        .push_back( make_tuple((**i).x(), (**i).y(), encode_dying_metadata((*i))) );
+                        .push_back( make_tuple((**i).x(), (**i).y(), one_fadings_per_cycle_ * 1000) );
+                    // unable to actually encode the dying metadata here. the only thing that's strictly here
+                    // is one_fadings_per_cycle_. Have to encode others later when all check_a_fade has been done.
                 }
             }
             else waiting->checked();
@@ -324,6 +324,18 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     update_chains();
     cycle_cubes();
     check_one_fadings();
+
+    // 2014.6 After we checked all OneFadings, start to REALLY encode dying cubes' metadata
+    using std::tr1::get;
+    typedef std::vector< std::tr1::tuple<int, int, int> > DyingCubesData;
+    typedef std::map< std::pair<wpChain, int>, DyingCubesData > DyingCubesMap;
+    for( DyingCubesMap::iterator i = dying_cubes_position_.begin(), iend = dying_cubes_position_.end();
+         i != iend; ++i ) {
+        for( DyingCubesData::iterator n = i->second.begin(), nend = i->second.end();
+            n != nend; ++n ) {
+            get<2>(*n) += encode_dying_metadata( cubes_[get<0>(*n)][get<1>(*n)] );
+        }
+    }
 
     // 2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ here
     // not ms()->dropping_creatable(). it will affect cycle_warning().

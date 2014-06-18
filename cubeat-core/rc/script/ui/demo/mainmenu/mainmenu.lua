@@ -6,7 +6,8 @@ local switch = require 'rc/script/ui/demo/switch/switch'
 local event  = require 'rc/script/event/event'
 local random = require 'rc/script/helper'.random
 local basepath = require 'rc/script/helper'.basepath
-local storystage = require 'rc/script/ui/demo/storyend/config'
+local select_config = require 'rc/script/ui/demo/select/config'
+local storystage    = require 'rc/script/ui/demo/storyend/config'
 
 require 'rc/script/demo/defs'
 
@@ -104,6 +105,8 @@ local function init(demo, parent)
   menu.btn_cpudemo:on_press(function(self) 
     local ch1 = random(6)+1
     local ch2 = random(6)+1
+    select_config.ch_choose[1] = ch1
+    select_config.ch_choose[2] = ch2
     demo:init_cpudemo("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1)
     switch.slide_out_title()
   end)

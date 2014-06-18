@@ -40,7 +40,7 @@ passive_mod: {
     warning_gap: 1600,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
-    drop_normal_chance: 20,
+    drop_normal_chance: 24,
     restore: {
         r: 1.0,
         g: 1.0,

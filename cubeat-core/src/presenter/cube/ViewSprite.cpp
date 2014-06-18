@@ -51,7 +51,7 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     //outline_->tween<easing::SineCirc, accessor::Alpha>(0, 128, 500u, -1);
     outline_->set<accessor::Alpha>(128);
     outline_->set<accessor::Visible>(false);
-    outline_->setDepth(-1);
+    outline_->setDepth(-5);
 
     /// OVERHAULING OUTLINE COLOR HERE
 
@@ -250,14 +250,14 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
 
 void ViewSprite::go_dying(){
     using namespace easing; using namespace accessor;
-    unsigned int duration = map_setting()->cube_dying_duration();
+//    unsigned int duration = map_setting()->cube_dying_duration();
 
 //    body_->tween<Linear, Alpha>(255, 0, 150u, 0, 0, duration-200);
 //    body_->tween<SineCirc, GradientEmissive>(0, 128, duration-200);
 
-    outline_->set<Alpha>(0);
+//    outline_->set<Alpha>(0);
 
-    int csize = view_setting()->cube_size();
+//    int csize = view_setting()->cube_size();
 
 //    view::pSprite white_cube = view::Sprite::create("cubes/cube-white", view_orig_.lock(), csize, csize, true);
 //    white_cube->setDepth(-5).set<Pos2D>( body_->get<Pos2D>() ).set<Alpha>(0).set<GradientDiffuse>(255)
@@ -275,12 +275,10 @@ void ViewSprite::go_dying(){
 //
 //    view::SFX::i().hold(stroke, duration-200);
 
-    view::pSprite white_cube = view::Sprite::create("cubes/cube-white", view_orig_.lock(), csize, csize, true);
-    white_cube->setDepth(-5).setPickable(false).set<Pos2D>( body_->get<Pos2D>() ).set<Alpha>(0)
+    outline_->setTexture("cubes/cube-white").set<Visible>(true).set<Alpha>(0)
                .set<ColorDiffuse>( 0xffaa7744 | body_->get<ColorDiffuse>() )
-               .tween<SineCirc, Alpha>(0, 128, 50u, -1);
-
-    view::SFX::i().hold(white_cube, duration);
+               .set<Scale>( vec3(1.02, 1.02, 1) )
+               .tween<SineCirc, Alpha>(0, 128, 66u, -1);
 }
 
 void ViewSprite::go_exploding(int color_id){

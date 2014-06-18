@@ -66,6 +66,9 @@ function slide_in()
 end
 
 function init(demo)
+  -- This will be the only occurrence of calling randomseed() in gameplay scripts. 
+  math.randomseed(os.time())
+
   demo_  = ffi.cast("Demo*", demo);
   scene_ = demo_:get_ui_scene()
 

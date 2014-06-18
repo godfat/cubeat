@@ -35,7 +35,8 @@ public:
                                     pChain existing_chain = pChain() ){
 <% end %>
         int extending_amount = 0;
-        pChain chain = existing_chain ? existing_chain : get_the_chain(map);
+        pChain chain = get_the_chain(map, existing_chain);
+
         chain_ = chain; // Associate this particular OneFading with its chain.
 
         // I have no good way around this. If this is an extending OneFading,
@@ -44,12 +45,9 @@ public:
             for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
                 i!=iend; ++i)
             {
-                if( (**i).is_dying() ) { // if it's extending, there must be a few cubes already dying.
+                // 2014.6 We have to assure that we pick the highest dying_step in all these already dying cubes we extend from
+                if( (**i).is_dying() && (**i).dying_chain_step() > extending_at_step_ ) {
                     extending_at_step_ = (**i).dying_chain_step();
-                    if( extending_at_step_ == chain->step() ) {
-                        chain->is_extending_final_step(true);
-                    }
-                    break;
                 }
             }
         }
@@ -60,13 +58,21 @@ public:
             // calculate how many are "dying" or "not dying" in the traveled.
             // Since we changed the rule to allow extending already happening "OneFading"s in 2013,
             // we'll need this number to know exactly how many cubes we are extending.
+
+            // 2014.6 since it's possible to "merge" chains in this way, have to check this possiblilty as well.
+            //        other chains will be eroded after the merge.
             if( (**i).is_waiting() ) {
                 extending_amount += 1;
+            }
+            else if( ( (**i).is_dying() && (**i).chain() != chain ) ) {
+                extending_amount += 1;
+
+                // actually "take away" cubes from other chains
+                (**i).chain()->add_step_amounts( (**i).dying_chain_step(), -1 );
             }
 
             (**i).chain(chain);
             (**i).go_dying( extending_at_step_ != 0 ? extending_at_step_ : chain->step());
-            /// ** do something here so cubes extending chain doesn't "die" again? *** ///
 
             //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
             //note: Moved this line to Dying to be more reasonable chaining situation.
@@ -82,26 +88,28 @@ public:
     // end
 
 private:
-    pChain get_the_chain(MapType& map){
-        pChain chain;
+    pChain get_the_chain(MapType& map, pChain existing_chain){
+        pChain chain = Chain::create(map.ms()->chain_amounts());
 
         //this for loop will get the first Chain it finds in this column or row
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i != iend; ++i)
         {
-            if( (**i).chain() ) {
+            if( (**i).chain() && (**i).chain()->step() > chain->step() ) {
                 chain = (**i).chain();
-                break;
+                // 2014.06: compare for the highest chain
             }
         }
 
-        //if we can't find any useful Chain here, we'll create one
-        if( !chain ) {
-            chain = Chain::create();
-            chain->step_one();
-            map.push_chain( chain );
+        if( chain->step() == 0 ) {
+            if( existing_chain ) {
+                chain = existing_chain;
+            } else {
+                //if we can't find any useful Chain here, we'll create one
+                chain->step_one();
+                map.push_chain( chain );
+            }
         }
-
         return chain;
     }
 

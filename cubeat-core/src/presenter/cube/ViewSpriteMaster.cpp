@@ -163,7 +163,7 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
             edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot))
                          .set<ColorDiffuse>( 0xffaa7744 | col.rgb() )
                          .tween<Linear, Scale>(vec3(1.2, 1.2, 1.2), vec3(1,1,1), 150u)
-                         .tween<SineCirc, Alpha>(255, 128, 50u, -1, 0, 150)
+                         .tween<SineCirc, Alpha>(255, 128, 128u, -1, 0, 150)
                          .queue<Linear, GradientEmissive>(0, 255, 150u)
                          .tween<Linear, GradientEmissive>(255, 0, 200u);
 
@@ -174,8 +174,8 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
         view::SFX::i().hold(glow_cube, 250u);
 
-        std::tr1::function<void()> f = bind(&ViewSpriteMaster::hide_edge, this, x, y);
-        edges_[x][y]->tween<Linear, Red>(edges_[x][y]->get<Red>(), static_cast<time_t>(map_setting()->cube_dying_duration()), 0, f);
+//        std::tr1::function<void()> f = bind(&ViewSpriteMaster::hide_edge, this, x, y);
+        edges_[x][y]->tween<Linear, Red>(edges_[x][y]->get<Red>(), static_cast<time_t>(map_setting()->cube_dying_duration())/*, 0, f*/);
 
 //        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //            bind(&ViewSpriteMaster::hide_edge, this, x, y), shared_from_this(), map_setting()->cube_dying_duration());
@@ -232,12 +232,11 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
     int size = dying_cubes_position.size();
 
     // hide edges when new_garbage event occurs.
-//    for( int i = 0; i < size; ++i ) {
-//        int x = get<0>(dying_cubes_position[i]);
-//        int y = get<1>(dying_cubes_position[i]);
-//        edges_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false);
-//        scanlines_[x][y]->set<Rotation>(vec3(0,0,0)).set<Visible>(false).set<Pos2D>(pos_from_orig(x, y));
-//    }
+    for( int i = 0; i < size; ++i ) {
+        int x = get<0>(dying_cubes_position[i]);
+        int y = get<1>(dying_cubes_position[i]);
+        edges_[x][y]->set<Visible>(false);
+    }
 
 //    if( power < 1 ) {
 //        for( int i = 0; i < size; ++i ) {

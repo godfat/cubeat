@@ -47,6 +47,7 @@ public:
     App& pause();
     App& resume();
     App& quit();
+    App& screenShot();
 
     ~App();
 
@@ -65,6 +66,7 @@ private:
     presenter::pObject temp_presenter_;
 
     bool quit_;
+    bool this_frame_called_screenshot_;
 
     ctrl::wpTimerDispatcher global_timer_;
 };

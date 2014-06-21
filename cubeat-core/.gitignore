@@ -15,6 +15,7 @@ rc/fonts
 rc/model
 rc/sound
 rc/texture
+rc/screenshot
 
 # cmake generated
 Makefile

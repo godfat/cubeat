@@ -55,6 +55,7 @@ public:
 
     // used by Dying or OneFading
     void attach_chain_bottom_up_from(int, int, pChain);
+    void mark_chain_step_for_new_step(pChain, int);
 
     // begin used by Dropping::cycle, Waiting::cycle
     state::pState next_state(pCube);
@@ -156,6 +157,7 @@ private:
     preview_list_type cubes_preview_;
 
     std::map< std::pair<wpChain, int>, std::vector< std::tr1::tuple<int, int, int> > > dying_cubes_position_;
+    std::map< std::pair<wpChain, int>, int > successfully_died_cube_count_;
 
     typedef std::tr1::shared_ptr<int> pTimerDummy;
     std::map< std::pair<wpChain, int>, pTimerDummy > chain_timer_handles_;

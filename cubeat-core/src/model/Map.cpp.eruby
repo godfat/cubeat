@@ -450,6 +450,24 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
     }
 }
 
+void Map::mark_chain_step_for_new_step(pChain chain, int step) {
+    wpChain key_wchain = chain;
+    std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
+
+    std::map< std::pair<wpChain, int>, int >::iterator iter = successfully_died_cube_count_.find( chain_step_pair );
+
+    if( iter == successfully_died_cube_count_.end() ) {
+        successfully_died_cube_count_[ chain_step_pair ] = 0;
+        iter = successfully_died_cube_count_.find( chain_step_pair );
+    }
+    (*iter).second += 1;
+
+    if( (*iter).second == chain->step_amounts(step) ) {
+        successfully_died_cube_count_.erase(iter);
+        chain->step_one();
+    }
+}
+
 // create a one fading through that cube,
 // find the cubes in this one fading with make_clist
 pOneFadingOrig <% debug_hook 'Map::make_OneFading' do %>(pCube that){
@@ -587,7 +605,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 //       keep track of this by adding booleans flags to chains, because
                 //       it's impossible to extend or merge the last step -- the next "empty step" will always be there
                 match_counter_ += 1;
-                (*i)->step_one();
+//                (*i)->step_one();
             }
         }
         (*i)->clear_indices();

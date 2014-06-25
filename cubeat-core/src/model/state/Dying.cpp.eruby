@@ -25,6 +25,7 @@ void <% debug_hook 'Dying::next_state' do %>(){
     // else{
     //  return pState(); // really dead
     // }
+    map()->mark_chain_step_for_new_step(owner()->chain(), dying_chain_step());
     map()->attach_chain_bottom_up_from(owner()->x(), owner()->y() + 1, owner()->chain());
     switch_state(pState());
 }

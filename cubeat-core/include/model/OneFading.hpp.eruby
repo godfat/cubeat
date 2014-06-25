@@ -68,6 +68,15 @@ public:
             extending_ = false;
         }
 
+        if( !extending_ ) {
+            if( chain->last_step_amounts() != 0 ) {
+                // Meaning we are not extending in the current one_fading, but there are already cubes in the current step to be extended,
+                // Which are from other one_fadings
+                extending_ = true;
+                extending_at_step_ = chain->step();
+            }
+        }
+
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
             i!=iend; ++i)
         {

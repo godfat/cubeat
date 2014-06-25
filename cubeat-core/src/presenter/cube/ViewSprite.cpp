@@ -278,7 +278,7 @@ void ViewSprite::go_dying(){
     outline_->setTexture("cubes/cube-white").set<Visible>(true).set<Alpha>(0)
                .set<ColorDiffuse>( 0xffaa7744 | body_->get<ColorDiffuse>() )
                .set<Scale>( vec3(1.02, 1.02, 1) )
-               .tween<SineCirc, Alpha>(0, 128, 66u, -1);
+               .tween<SineCirc, Alpha>(0, 128, 128u, -1);
 }
 
 void ViewSprite::go_exploding(int color_id){

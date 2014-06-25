@@ -32,7 +32,7 @@ using namespace ctrl;
 using std::tr1::ref;
 
 App::App()
-    : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0), quit_(false)
+    : framerate_( Conf::i().FRAMERATE() ), last_timetick_(0), quit_(false), this_frame_called_screenshot_(false)
 {
 }
 
@@ -162,6 +162,21 @@ App& App::quit()
     return *this;
 }
 
+App& App::screenShot()
+{
+    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->stop();
+    if( this_frame_called_screenshot_ ) return *this;
+    this_frame_called_screenshot_ = true;
+    irr::video::IVideoDriver* dr = IrrDevice::i().d()->getVideoDriver();
+    irr::video::IImage* img = dr->createScreenShot();
+    char str[128] = {0};
+    sprintf(str, "rc/screenshot/%d.jpg", IrrDevice::i().d()->getTimer()->getRealTime());
+    dr->writeImageToFile(img, str);
+    img->drop();
+    //ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    return *this;
+}
+
 time_t realtime()
 {
     return IrrDevice::i().d()->getTimer()->getRealTime();
@@ -188,6 +203,8 @@ int App::run(std::tr1::function<void()> tester)
             //if( update_block() ) continue;
 
             MastEventReceiver::i().endEventProcess();
+
+            this_frame_called_screenshot_ = false;
 
             t1 = realtime();
             InputMgr::i().updateAll();

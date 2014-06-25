@@ -129,7 +129,8 @@ int Cube::dying_chain_step() const {
         return dying->dying_chain_step();
     }
     else {
-        printf("\n\n in Cube::dying_chain_step(): DA FAQ? Impossible Flow.\n\n\n");
+        printf("\n\n in Cube(%d,%d)::dying_chain_step(): DA FAQ? Impossible Flow.\n\n\n", x(), y());
+        fflush(stdout);
         return 0;
     }
 }

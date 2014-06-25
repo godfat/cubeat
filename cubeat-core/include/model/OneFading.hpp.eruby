@@ -32,6 +32,7 @@ public:
     wpChain wchain() const{ return chain_; }
 
     void <% debug_hook 'fade' do %>(MapType& map,
+                                    typename MapType::cube_type const& that,
                                     pChain existing_chain = pChain() ){
 <% end %>
         int extending_amount = 0;
@@ -41,14 +42,38 @@ public:
 
         // I have no good way around this. If this is an extending OneFading,
         // we need to know what step in a chain it is currently extending, so have to search through it first.
-        if( extending_ ) {
-            for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
-                i!=iend; ++i)
-            {
-                // 2014.6 We have to assure that we pick the highest dying_step in all these already dying cubes we extend from
-                if( (**i).is_dying() && (**i).dying_chain_step() > extending_at_step_ ) {
-                    extending_at_step_ = (**i).dying_chain_step();
-                }
+//        if( extending_ /* something like && (**i).chain() == chain */ ) {
+//            for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
+//                i!=iend; ++i)
+//            {
+//                // 2014.6 We have to assure that we pick the highest dying_step in all these already dying cubes we extend from
+//                if( (**i).is_dying() && (**i).dying_chain_step() > extending_at_step_ ) {
+//                    extending_at_step_ = (**i).dying_chain_step();
+//                }
+//            }
+//        }
+
+        pChain chain_extended;
+        for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();
+            i!=iend; ++i)
+        {
+            if( (**i).is_dying() && (**i).dying_chain_step() > extending_at_step_ ) {
+                chain_extended = (**i).chain();
+                extending_at_step_ = (**i).dying_chain_step();
+            }
+        }
+
+        if( chain_extended != chain ) {
+            extending_at_step_ = 0;
+            extending_ = false;
+        }
+
+        if( !extending_ ) {
+            if( chain->last_step_amounts() != 0 ) {
+                // Meaning we are not extending in the current one_fading, but there are already cubes in the current step to be extended,
+                // Which are from other one_fadings
+                extending_ = true;
+                extending_at_step_ = chain->step();
             }
         }
 
@@ -61,18 +86,21 @@ public:
 
             // 2014.6 since it's possible to "merge" chains in this way, have to check this possiblilty as well.
             //        other chains will be eroded after the merge.
+            int step = extending_at_step_ != 0 ? extending_at_step_ : chain->step();
             if( (**i).is_waiting() ) {
                 extending_amount += 1;
+                chain->add_step_cube( step, (**i).x(), (**i).y() );
             }
             else if( ( (**i).is_dying() && (**i).chain() != chain ) ) {
                 extending_amount += 1;
-
+                chain->add_step_cube( step, (**i).x(), (**i).y() );
                 // actually "take away" cubes from other chains
+                (**i).chain()->remove_step_cube( (**i).dying_chain_step(), (**i).x(), (**i).y() );
                 (**i).chain()->add_step_amounts( (**i).dying_chain_step(), -1 );
             }
 
             (**i).chain(chain);
-            (**i).go_dying( extending_at_step_ != 0 ? extending_at_step_ : chain->step());
+            (**i).go_dying( step );
 
             //map.attach_chain_bottom_up_from((**i).x(), (**i).y() + 1, chain);
             //note: Moved this line to Dying to be more reasonable chaining situation.
@@ -119,6 +147,7 @@ private:
 
     void extend_step(pChain chain, int step, int amount) {
         chain->add_step_amounts( step, amount );
+        chain->set_extending(step, true);
     }
 
 private:

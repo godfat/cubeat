@@ -116,7 +116,7 @@ void SimpleMap::cycle_a_cube(pSimpleCube cube, int x, int y)
         cube->set_grounded();
         pOneFadingSimple one_fading = make_OneFading(cube);
         if( one_fading ) {
-            one_fading->fade(*this);
+            one_fading->fade(*this, cube);
         }
         if( cube->cycle_and_die() ) {
             if( cube->chain() ) {

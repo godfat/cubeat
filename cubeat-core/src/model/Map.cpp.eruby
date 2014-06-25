@@ -24,6 +24,10 @@
 #include <cmath>
 #include <utils/Logger.hpp>
 
+
+#include <App.hpp> /// WTF TEMP, for Screen Shot hackery
+
+
 <%= debug_include %>
 
 using namespace psc;
@@ -137,7 +141,8 @@ int Map::encode_dying_metadata(cpCube c)
 
     int type = connected_side_sum;
     if( connected_side_bit == 5 || connected_side_bit == 10 ) { type = 5; }
-    return (c->color_id() * 100) +
+    return (c->fading_gid() * 1000) +
+           (c->color_id() * 100) +
            (type * 10) +
            rottable_[connected_side_bit];
 }
@@ -159,7 +164,7 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
             pOneFadingOrig one_fading = make_OneFading(c);
 
             if( one_fading ){
-                one_fading->fade(*this, existing_chain);
+                one_fading->fade(*this, c, existing_chain);
 
                 // The first phase of chain tagging: If there are other OneFadings in the same frame,
                 // look it up and tag it. It will only affect other successfully constructed OneFadings.
@@ -186,11 +191,13 @@ void Map::check_a_fade(pCube c, int x, int y, pChain existing_chain)
 
                 for( cube_list_type::iterator i = one_fading->begin(), iend = one_fading->end();
                      i != iend; ++i ) {
+
+                    (**i).fading_gid( one_fadings_per_cycle_ );
+
                     // remember the dying_cubes_position according to chain for later use (visual)
                     dying_cubes_position_[ std::make_pair(one_fading->wchain(), c->dying_chain_step()) ]
-                        .push_back( make_tuple((**i).x(), (**i).y(), one_fadings_per_cycle_ * 1000) );
-                    // unable to actually encode the dying metadata here. the only thing that's strictly here
-                    // is one_fadings_per_cycle_. Have to encode others later when all check_a_fade has been done.
+                        .push_back( make_tuple((**i).x(), (**i).y(), 0) );
+                    // don't encode metadata just yet.. put in 0.
                 }
             }
             else waiting->checked();
@@ -325,15 +332,77 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     cycle_cubes();
     check_one_fadings();
 
-    // 2014.6 After we checked all OneFadings, start to REALLY encode dying cubes' metadata
     using std::tr1::get;
+    using std::tr1::make_tuple;
     typedef std::vector< std::tr1::tuple<int, int, int> > DyingCubesData;
     typedef std::map< std::pair<wpChain, int>, DyingCubesData > DyingCubesMap;
+
+    // 2014.6 if we are sure that the chain step is being extended, then all the cubes in the same step
+    //        have to go_dying() again, so that onefadings of different colors in the same chain step can die together
+
+    // Following part is ESPECIALLY WHAT-THE-FUCKY, because the notion of "re-do" onefadings is actually totally dsync'd
+    // the program flow of the original implementation.
+
+//    if( chains_.size() ) {
+//        bool hack = false;
+//        for(chain_list_type::iterator i = chains_.begin(); i != chains_.end(); ++i) {
+//            if( (*i)->step() > 1 ) {
+//                for( int n = 1; n <= (*i)->step(); ++n ) {
+//                    if( (*i)->step_amounts(n) > 3 ) {
+//                        hack = true;
+//                    }
+//                }
+//            }
+//        }
+//        if( hack ) {
+//            App::i().screenShot();
+//        }
+//    }
+
+    for( chain_list_type::iterator i = chains_.begin(); i != chains_.end(); ++i ) {
+        wpChain key_wchain = (*i);
+        for( int n = 1; n <= (*i)->step(); ++n ) {
+            std::pair<wpChain, int> chain_step_pair = std::make_pair( key_wchain, n );
+            DyingCubesData & dyings = dying_cubes_position_[ chain_step_pair ];
+            if( (*i)->is_step_extending(n) ) {
+                /* make the cube associated with the chain step go_dying() again. */
+                for( std::list< std::pair<int, int> >::const_iterator
+                         p = (*i)->get_step_group(n).begin(), pend = (*i)->get_step_group(n).end();
+                     p != pend; ++p )
+                {
+                    pCube c = cubes_[p->first][p->second];
+//                    if( !c || (c && !c->is_dying()) ) {
+//                        if( !c ) {
+//                            printf(" WTF There's no cube at %d,%d!\n", p->first, p->second);
+//                        } else {
+//                            printf(" WTF The cube at %d,%d isn't dying!\n", p->first, p->second);
+//                        }
+//                        (*i)->debugging_print();
+//                    }
+                    c->go_dying(c->dying_chain_step());
+                    bool found = false;
+                    for( size_t k = 0; k < dyings.size(); ++k ) {
+                        if( p->first == get<0>(dyings[k]) && p->second == get<1>(dyings[k]) ) {
+                            found = true; break;
+                        }
+                    }
+
+                    if( !found ) {
+                        c->fading_gid(c->fading_gid() + one_fadings_per_cycle_);
+                        dyings.push_back( make_tuple(p->first, p->second, 0) );
+                    }
+                }
+                (*i)->set_extending(n, false);
+            }
+        }
+    }
+
+    // 2014.6 After we checked all OneFadings, start to REALLY encode dying cubes' metadata
     for( DyingCubesMap::iterator i = dying_cubes_position_.begin(), iend = dying_cubes_position_.end();
          i != iend; ++i ) {
         for( DyingCubesData::iterator n = i->second.begin(), nend = i->second.end();
-            n != nend; ++n ) {
-            get<2>(*n) += encode_dying_metadata( cubes_[get<0>(*n)][get<1>(*n)] );
+             n != nend; ++n ) {
+            get<2>(*n) = encode_dying_metadata( cubes_[get<0>(*n)][get<1>(*n)] );
         }
     }
 
@@ -378,6 +447,24 @@ void <% debug_hook 'Map::attach_chain_bottom_up_from' do %>(int in_x, int in_y, 
         } else {
             break;
         }
+    }
+}
+
+void Map::mark_chain_step_for_new_step(pChain chain, int step) {
+    wpChain key_wchain = chain;
+    std::pair<wpChain, int> chain_step_pair = std::make_pair(key_wchain, step);
+
+    std::map< std::pair<wpChain, int>, int >::iterator iter = successfully_died_cube_count_.find( chain_step_pair );
+
+    if( iter == successfully_died_cube_count_.end() ) {
+        successfully_died_cube_count_[ chain_step_pair ] = 0;
+        iter = successfully_died_cube_count_.find( chain_step_pair );
+    }
+    (*iter).second += 1;
+
+    if( (*iter).second == chain->step_amounts(step) ) {
+        successfully_died_cube_count_.erase(iter);
+        chain->step_one();
     }
 }
 
@@ -518,7 +605,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 //       keep track of this by adding booleans flags to chains, because
                 //       it's impossible to extend or merge the last step -- the next "empty step" will always be there
                 match_counter_ += 1;
-                (*i)->step_one();
+//                (*i)->step_one();
             }
         }
         (*i)->clear_indices();

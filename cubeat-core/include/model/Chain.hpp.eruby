@@ -5,7 +5,10 @@
 #include "utils/ObjectPool.hpp"
 #include <boost/tr1/memory.hpp>
 #include <vector>
+#include <list>
 #include <set>
+
+#include <cstdio>
 
 
 namespace psc{ namespace model{
@@ -31,9 +34,23 @@ public:
         step_indices_.insert(step);
     }
 
+    void add_step_cube(int step, int x, int y) {
+        step_group_[step-1].push_back( std::make_pair(x, y) );
+    }
+
+    void remove_step_cube(int step, int x, int y) {
+        step_group_[step-1].remove( std::make_pair(x, y) );
+    }
+
+    std::list< std::pair<int, int> > const & get_step_group(int step) {
+        return step_group_[step-1];
+    }
+
     void step_one(){
         chain_step_.push_back(0);
         power_step_.push_back(0);
+        is_step_extending_.push_back(false);
+        step_group_.push_back( std::list< std::pair<int, int> >() );
     }
 
     int power_factor() const{
@@ -106,8 +123,32 @@ public:
         return step_indices_;
     }
 
+    void set_extending(int step, bool flag) {
+        is_step_extending_[step-1] = flag;
+    }
+
+    bool is_step_extending(int step) const {
+        return is_step_extending_[step-1];
+    }
+
     void clear_indices() {
         step_indices_.clear();
+    }
+
+    void debugging_print() {
+        printf("Chain %x (updated indices: ", this);
+        for( std::set<int>::iterator i = step_indices_.begin(), iend = step_indices_.end(); i != iend; ++i ) {
+            printf("%d ", *i);
+        }
+        printf(")\n");
+        for( int i = 0; i < chain_step_.size(); ++i ) {
+            printf("  - step %d / %d cubes / power %d / extending %d: ", i+1, chain_step_[i], power_step_[i], static_cast<int>(is_step_extending_[i]));
+            for( std::list< std::pair<int, int> >::iterator j = step_group_[i].begin(), jend = step_group_[i].end(); j != jend; ++j ) {
+                printf("(%d,%d) ", j->first, j->second);
+            }
+            printf("\n");
+        }
+        printf("\n");
     }
 
     Chain(int chain_amounts):
@@ -117,7 +158,9 @@ public:
         chain_amounts_(that->chain_amounts_),
         chain_step_(that->chain_step_),
         power_step_(that->power_step_),
-        step_indices_(that->step_indices_)
+        step_indices_(that->step_indices_),
+        is_step_extending_(that->is_step_extending_),
+        step_group_(that->step_group_)
     {}
 
 private:
@@ -125,6 +168,8 @@ private:
     std::vector<int> chain_step_;
     std::vector<int> power_step_;
     std::set<int>    step_indices_;
+    std::vector<bool> is_step_extending_;
+    std::vector< std::list< std::pair<int, int> > > step_group_;
 };
 
 typedef Chain::pointer_type pChain;

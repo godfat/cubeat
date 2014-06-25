@@ -26,7 +26,7 @@ local icon_x      = { icon_x_base,
                       screen_w-icon_x_base-180-icon_w,
                       screen_w-icon_x_base-icon_w }
 local icon_y      = screen_h-200
-local icon_depth  = -200
+local icon_depth  = -300
 
 -- actor_full
 local full_path = function(i) return ('char'..tostring(i)..'_new/glad') end
@@ -35,7 +35,7 @@ local full_h    = 768
 local full_x    = { 0,
                     screen_w-full_w }
 local full_y    = 0
-local full_depth= -100
+local full_depth= -150
 
 local fade_time = 300
 local move_time = 300
@@ -44,7 +44,7 @@ local move_end  = { ffi.new("value2", full_x[1], full_y), ffi.new("value2", full
 
 -- ready_image
 local ready_y     = full_y + 300
-local ready_depth = -150
+local ready_depth = -300
 local ready_size  = 64
 
 -- start button

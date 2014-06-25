@@ -150,7 +150,7 @@ local function init(demo, parent, data)
   menu.up_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=52 }
   menu.up_blocker:set_color(0, 0, 0)
   menu.up_blocker:set_alpha(96)
-  menu.up_blocker:set_depth(-250)
+  menu.up_blocker:set_depth(-150)
   
   menu.bottom_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=500, w=1280, h=300 }
   menu.bottom_blocker:set_color(0, 0, 0)

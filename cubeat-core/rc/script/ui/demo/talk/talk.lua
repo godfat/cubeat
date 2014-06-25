@@ -12,6 +12,7 @@ local storystage  = require 'rc/script/ui/demo/storyend/config'
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local record      = require 'rc/script/ui/demo/challenge/record'
 
+local root_ = nil
 
 local demo_game_ = nil
 local data_ = nil
@@ -284,6 +285,8 @@ local function init(demo, parent, data)
   demo_game_ = demo
   data_ = data
   
+  root_ = view.new_sprite("blahblah", parent, 0, 0, false)
+  
   local ch_choose = {}
   ch_choose[1] = select_config.ch_choose[1]
   ch_choose[2] = select_config.ch_choose[2]
@@ -309,7 +312,7 @@ local function init(demo, parent, data)
     switch.load_page('mainmenu', 'in')
   end
   local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
-  menu.TalkBackGround = ui.new_image{ parent=parent, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,
+  menu.TalkBackGround = ui.new_image{ parent=root_, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,
                                       w=config.bg_w, h=config.bg_h }
   
   for ch=1,2 do

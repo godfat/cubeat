@@ -11,6 +11,8 @@ local storystage    = require 'rc/script/ui/demo/storyend/config'
 
 require 'rc/script/demo/defs'
 
+local root_ = nil
+
 local function check_tutorial(ask)
   local filemark = io.open(basepath().."rc/config/tmp/tutored", "r")
   if filemark then
@@ -46,6 +48,9 @@ end
 local function init(demo, parent)
   local menu = {}
   
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(480, 300)
+  
   --load_tutorials(demo:get_ui_scene(), menu)
   local ask_tutorial = ui.new_askbox { parent = demo:get_ui_scene(), title='Trying the tutorial first\n is HIGHLY recommended.', depth=-100 }
   ask_tutorial:set_visible(false)
@@ -61,26 +66,26 @@ local function init(demo, parent)
     ask_tutorial:set_visible(false)
   end, 1)
   
-  menu.btn_story   = ui.new_text{ parent = parent, title='story mode', x=0, y=0, size=32 }
+  menu.btn_story   = ui.new_text{ parent = root_, title='story mode', x=0, y=0, size=32 }
   menu.btn_story:set_scale(1.5)
-  menu.btn_vs_cpu  = ui.new_text{ parent = parent, title='player vs cpu', x=0, y=60, size=32 }
+  menu.btn_vs_cpu  = ui.new_text{ parent = root_, title='player vs cpu', x=0, y=60, size=32 }
   menu.btn_vs_cpu:set_scale(1.5)
-  menu.btn_vs_ppl  = ui.new_text{ parent = parent, title='player vs player', x=0, y=120, size=32 }
+  menu.btn_vs_ppl  = ui.new_text{ parent = root_, title='player vs player', x=0, y=120, size=32 }
   menu.btn_vs_ppl:set_scale(1.5)
-  menu.btn_chall   = ui.new_text{ parent = parent, title='challenge mode', x=0, y=180, size=32 }
+  menu.btn_chall   = ui.new_text{ parent = root_, title='challenge mode', x=0, y=180, size=32 }
   menu.btn_chall:set_scale(1.5)
-  menu.btn_cpudemo = ui.new_text{ parent = parent, title='cpu demo mode', x=0, y=240, size=32 }
+  menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=0, y=240, size=32 }
   menu.btn_cpudemo:set_scale(1.5)
-  -- menu.btn_tut     = ui.new_text{ parent = parent, title='show tutorial', x=0, y=240, size=32 }
+  -- menu.btn_tut     = ui.new_text{ parent = root_, title='show tutorial', x=0, y=240, size=32 }
   -- menu.btn_tut:set_scale(1.5)
-  -- menu.btn_prac    = ui.new_text{ parent = parent, title='chain practice', x=0, y=300, size=32 }
+  -- menu.btn_prac    = ui.new_text{ parent = root_, title='chain practice', x=0, y=300, size=32 }
   -- menu.btn_prac:set_scale(1.5)
-  menu.btn_quit    = ui.new_text{ parent = parent, title='quit', x=0, y=300, size=32 }
+  menu.btn_quit    = ui.new_text{ parent = root_, title='quit', x=0, y=300, size=32 }
   menu.btn_quit:set_scale(1.5)
-  --menu.btn_test    = ui.new_text{ parent = parent, title='test menu', x=360, y=300, size=32 }
+  --menu.btn_test    = ui.new_text{ parent = root_, title='test menu', x=360, y=300, size=32 }
   --menu.btn_test:set_scale(1.5)
   
-  -- menu.btn_tut2     = ui.new_text{ parent = parent, title='tutorial test', x=360, y=180, size=32 }
+  -- menu.btn_tut2     = ui.new_text{ parent = root_, title='tutorial test', x=360, y=180, size=32 }
   -- menu.btn_tut2:set_scale(1.5)
   
   menu.btn_story:on_press(function(self)

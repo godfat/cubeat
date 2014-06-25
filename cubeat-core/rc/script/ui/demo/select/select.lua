@@ -9,6 +9,8 @@ local storystage = require 'rc/script/ui/demo/storyend/config'
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local record      = require 'rc/script/ui/demo/challenge/record'
 
+local root_ = nil
+
 local Input1      = C.Input_get_input1()
 local Input2      = C.Input_get_input2()
 local Input1_left = C.Input_get_trig1(C.Input_get_input1())
@@ -132,7 +134,9 @@ local function init(demo, parent, data)
   data_ = data
   selectlock_ = {false, false}
   
-  menu.btn_back = ui.new_text{ parent = parent, x=-470, y=-310, size=32, title='<= go back'}
+  root_ = view.new_sprite("blahblah", parent, 0, 0, false)
+  
+  menu.btn_back = ui.new_text{ parent = root_, x=10, y=-10, size=32, title='<= go back'}
   menu.btn_back:set_scale(1.5)
   menu.btn_back:set_depth(-300)
   menu.btn_back:on_press(function(self)
@@ -143,28 +147,27 @@ local function init(demo, parent, data)
     end
   end)
   
-  menu.up_blocker = ui.new_image{ parent = parent, path='nothing', x=-480, y=-300, w=1280, h=52 }
+  menu.up_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=52 }
   menu.up_blocker:set_color(0, 0, 0)
   menu.up_blocker:set_alpha(96)
   menu.up_blocker:set_depth(-250)
   
-  menu.bottom_blocker = ui.new_image{ parent = parent, path='nothing', x=-480, y=200, w=1280, h=300 }
+  menu.bottom_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=500, w=1280, h=300 }
   menu.bottom_blocker:set_color(0, 0, 0)
   menu.bottom_blocker:set_alpha(96)
   menu.bottom_blocker:set_depth(-150)
   
-  menu.menutext = ui.new_text{ parent = parent, x=-20, y=-310, size=32, title='character select'}
+  menu.menutext = ui.new_text{ parent = root_, x=460, y=-10, size=32, title='character select'}
   menu.menutext:set_scale(1.5)
   menu.menutext:set_depth(-300)
 
   -- create select_actor_page
-  menu.select_actor_page = ui.new_image{ parent=parent, path='nothing', visible=true, x= -480, y= -300,
-                                         w=0, h=0 }
+  --menu.select_actor_page = ui.new_image{ parent=root_, path='nothing', visible=true, x=0, y=0, w=0, h=0 }
                                          
   -- create actor_icon
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
-    menu[k] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.icon_path(i),
+    menu[k] = ui.new_image{ parent=root_, path=config.icon_path(i),
                             x=config.icon_x[i], y=config.icon_y, w=config.icon_w, h=config.icon_h,
                             depth =config.icon_depth }
   end
@@ -182,15 +185,15 @@ local function init(demo, parent, data)
     else 
       actor_x = config.full_x[ch] 
     end
-    menu[fullkey] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.full_path(1),
+    menu[fullkey] = ui.new_image{ parent=root_, path=config.full_path(1),
                                   x= actor_x, 
                                   y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
-    menu[fadekey] = ui.new_image{ parent=menu.select_actor_page._cdata, path=config.full_path(1), alpha=0,
+    menu[fadekey] = ui.new_image{ parent=root_, path=config.full_path(1), alpha=0,
                                   x= actor_x, 
                                   y=config.full_y, w=config.full_w, h=config.full_h,
                                   depth=config.full_depth }
-    menu[readykey]= ui.new_text{ parent=menu.select_actor_page._cdata, x=actor_x+(config.full_w/2), y=config.ready_y,
+    menu[readykey]= ui.new_text{ parent=root_, x=actor_x+(config.full_w/2), y=config.ready_y,
                                  depth=config.ready_depth, size=config.ready_size, title='READY', center=true, visible=false }
     menu[readykey]:set_color(255,255,0)
     
@@ -244,7 +247,7 @@ local function init(demo, parent, data)
   end
   
   --create game start button
-  menu.start = ui.new_text{ parent=menu.select_actor_page._cdata, x=config.start_x, y=config.start_y,
+  menu.start = ui.new_text{ parent=root_, x=config.start_x, y=config.start_y,
                             depth=config.start_depth, size=config.start_size, title='START', center=true, visible=false}
   menu.start:on_press(choose_character)
 

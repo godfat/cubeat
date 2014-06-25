@@ -4,17 +4,21 @@ local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
 
+local root_
 
 local function init(demo, parent)
   local menu = {}
   
-  menu.target  = ui.new_image{ parent=parent, x=0, y= -50, center=true }
-  menu.btn1    = ui.new_text { parent=parent, x=-100, y= 110, title='alpha' }
-  menu.btn2    = ui.new_text { parent=parent, x=-100, y= 140, title='pos' }
-  menu.btn3    = ui.new_text { parent=parent, x=-100, y= 170, title='rotation'}
-  menu.btn4    = ui.new_text { parent=parent, x=-100, y= 200, title='scale'}
-  menu.scroll  = ui.new_scrollbar{ parent=parent, x=-80,y=230, range=255, index=255 }
-  menu.btn5    = ui.new_text { parent=parent, x=-100, y= 300, size=32, title='back' }
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(480, 300)
+  
+  menu.target  = ui.new_image{ parent=root_, x=0, y= -50, center=true }
+  menu.btn1    = ui.new_text { parent=root_, x=-100, y= 110, title='alpha' }
+  menu.btn2    = ui.new_text { parent=root_, x=-100, y= 140, title='pos' }
+  menu.btn3    = ui.new_text { parent=root_, x=-100, y= 170, title='rotation'}
+  menu.btn4    = ui.new_text { parent=root_, x=-100, y= 200, title='scale'}
+  menu.scroll  = ui.new_scrollbar{ parent=root_, x=-80,y=230, range=255, index=255 }
+  menu.btn5    = ui.new_text { parent=root_, x=-100, y= 300, size=32, title='back' }
   
   local alpha_s = 255
   local alpha_e = 50

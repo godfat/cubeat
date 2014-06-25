@@ -25,29 +25,29 @@ local has_blocker_ = true
 local function init(parent, demo)
   game_demo_ = demo
 
-  vorig_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  vorig_:set_pos(480, 300)
+  vorig_ = view.new_sprite("blahblah", parent, 0, 0, false)
+  --vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
 
-  title_   = ui.new_image{ parent = parent,
+  title_   = ui.new_image{ parent = vorig_,
     path='title2', x=640, y=150, w=840, h=250, center=true}
 
-  demobuild_ = ui.new_image{ parent = parent,
+  demobuild_ = ui.new_image{ parent = vorig_,
     path='demobuild', x=1000, y=780, w=246, h=76, center=true}
   demobuild_:set_rotation(9)
   local s = ffi.new("v2", 1000, 740)
   local e = ffi.new("v2", 1000, 280)
   demobuild_:tween("OElastic", "Pos2D", s, e, 2000, 0, nil, 1000) -- delay 1000
 
-  teamname_ = ui.new_image{ parent = parent,
+  teamname_ = ui.new_image{ parent = vorig_,
     path='teampsc', x=640, y=690, w=300, h=50, center=true}
 
-  blocker_ = view.new_sprite("blahblah", parent, 1280, 720, false)
+  blocker_ = view.new_sprite("blahblah", vorig_, 1280, 720, false)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(128)
   
-  transfer_ = ui.new_image{ parent=parent, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
+  transfer_ = ui.new_image{ parent=vorig_, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
   transfer_:set_red(0)
   transfer_:set_blue(0)
   transfer_:set_green(0)
@@ -134,16 +134,16 @@ end
 ------------------------------------------------------------
 
 local function slide_out_page_obj()
-  local s1 = ffi.new("v2", 480, 300)
-  local e1 = ffi.new("v2", 2480, 300)
+  local s1 = ffi.new("v2", 0, 0)
+  local e1 = ffi.new("v2", 2000, 0)
   vorig_:tween("OSine", "Pos2D", s1, e1, 1000)
   blocker_:tween("Linear", "Alpha", 128, 0, 500, 0, nil, 0)
   has_blocker_ = false
 end
 
 local function slide_in_page_obj()
-  local s1 = ffi.new("v2", -1680, 300)
-  local e1 = ffi.new("v2", 480, 300)
+  local s1 = ffi.new("v2", -2160, 0)
+  local e1 = ffi.new("v2", 0, 0)
   vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
   blocker_:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
   has_blocker_ = true

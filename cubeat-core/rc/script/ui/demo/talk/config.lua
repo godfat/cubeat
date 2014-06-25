@@ -5,8 +5,8 @@ local view = require 'rc/script/ui/view'
 local lang_     = 'JP'
 
 local bg_path_  = 'bg4/99complete'
-local bg_x_     = -480
-local bg_y_     = -300
+local bg_x_     = 0
+local bg_y_     = 0
 local bg_w_     = view.GET_SCREEN_W()
 local bg_h_     = view.GET_SCREEN_H()
 

@@ -14,7 +14,7 @@ local act_w_  = 512
 local act_h_  = 1024
 local act_x_  = {-80, bg_w_-act_w_+80}
 local act_y_  = {16, 16}
-local act_d_  = -20
+local act_d_  = -150
 local out_x_  = {-act_w_, bg_w_}
 local out_y_  = {16, 16}
 

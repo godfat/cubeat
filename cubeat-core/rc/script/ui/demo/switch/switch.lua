@@ -12,6 +12,7 @@ local starter_page_ = nil
 
 local game_demo_
 local vorig_
+local root_
 local title_
 local demobuild_
 local teamname_
@@ -29,32 +30,34 @@ local function init(parent, demo)
   vorig_ = view.new_sprite("blahblah", parent, 0, 0, false)
   --vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
+  
+  root_ = view.new_sprite("blahblah", parent, 0, 0, false)
 
-  title_   = ui.new_image{ parent = vorig_,
+  title_   = ui.new_image{ parent = root_,
     path='title2', x=640, y=150, w=840, h=250, center=true}
 
-  demobuild_ = ui.new_image{ parent = vorig_,
+  demobuild_ = ui.new_image{ parent = root_,
     path='demobuild', x=1000, y=780, w=246, h=76, center=true}
   demobuild_:set_rotation(9)
   local s = ffi.new("v2", 1000, 740)
   local e = ffi.new("v2", 1000, 280)
   demobuild_:tween("OElastic", "Pos2D", s, e, 2000, 0, nil, 1000) -- delay 1000
 
-  teamname_ = ui.new_image{ parent = vorig_,
+  teamname_ = ui.new_image{ parent = root_,
     path='teampsc', x=640, y=690, w=300, h=50, center=true}
 
-  blocker_ = view.new_sprite("blahblah", vorig_, 1280, 720, false)
+  blocker_ = view.new_sprite("blahblah", root_, 1280, 720, false)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
   blocker_:set_alpha(128)
   
-  transfer_ = ui.new_image{ parent=vorig_, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
+  transfer_ = ui.new_image{ parent=root_, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
   transfer_:set_red(0)
   transfer_:set_blue(0)
   transfer_:set_green(0)
   transfer_title_ = ui.new_image{ parent=transfer_._cdata, path='title', x=0, y=0, w=512, h=512, center=true }
   
-  --ask_panel_  = ui.new_askbox{ parent = parent, depth = -500, visible=false }
+  --ask_panel_  = ui.new_askbox{ parent = root_, depth = -500, visible=false }
 end
 
 ------------------------------------------------------------

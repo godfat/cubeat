@@ -105,7 +105,7 @@ local function talk_end()
         select_config.ch_choose[2] = story_data.ch
         local function load_talk_page()
           switch.load_page('talk', nil, {game_mode=99})
-          switch.slide_out_transfer()
+          switch.slide_out_transfer('talk')
         end
         switch.slide_in_transfer(load_talk_page)
       end
@@ -352,12 +352,29 @@ local function init(demo, parent, data)
                                 ask_panel_:set_visible(true)
                               end
                             )
-  play() -- run first talk
+  --play() -- run first talk
   
   return menu
 end
 
+local function starter(menu)
+  local script
+  if data_.game_end then
+    script = get_end_script(config.lang)
+  else
+    script = get_script(config.lang)
+  end
+  local rundown = script.get_rundown(select_config.ch_choose[1], select_config.ch_choose[2])
+  if rundown ~= nil then
+    --menu.skip:set_visible(true)
+    action(menu, rundown)
+  else
+    reset()
+    game_start()
+  end
+end
 
 return {
-  init = init
+  init = init,
+  starter = starter
 }

@@ -57,7 +57,7 @@ function slide_in()
     storyend_config.is_story_end = false
     storyend.hide()
     switch.load_page('talk', nil, {game_mode=99, game_end=true})
-    switch.slide_in_page_obj()
+    switch.slide_in_page_obj('talk')
   else
     show_everything()
     switch.load_page('mainmenu', 'in')

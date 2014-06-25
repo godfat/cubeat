@@ -8,6 +8,7 @@ local page_obj_ = {}
 local to_be_delete_
 local data_ = nil
 local current_page_ = nil
+local starter_page_ = nil
 
 local game_demo_
 local vorig_
@@ -80,10 +81,16 @@ end
 --]]
 ------------------------------------------------------------
 
-local function slide_out_transfer()
+local function slide_out_transfer(name)
   local s1 = ffi.new("v2", 640,  360)
   local e1 = ffi.new("v2", 640, -480)
-  transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, nil, 1000)
+  if name then
+    starter_page_ = require ('rc/script/ui/demo/'..name..'/'..name)
+    local function cb() starter_page_.starter(page_obj_) end
+    transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 1000)
+  else
+    transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, nil, 1000)
+  end
 end
 
 local function slide_in_transfer(cb)
@@ -141,10 +148,16 @@ local function slide_out_page_obj()
   has_blocker_ = false
 end
 
-local function slide_in_page_obj()
+local function slide_in_page_obj(name)
   local s1 = ffi.new("v2", -2160, 0)
   local e1 = ffi.new("v2", 0, 0)
-  vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
+  if name then
+    starter_page_ = require ('rc/script/ui/demo/'..name..'/'..name)
+    local function cb() starter_page_.starter(page_obj_) end
+    vorig_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 0)
+  else
+    vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
+  end
   blocker_:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
   has_blocker_ = true
 end

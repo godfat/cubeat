@@ -42,7 +42,7 @@ local function choose_character(self)
     if data_ and data_.game_mode == 99 then
       local function load_talk_page()
         switch.load_page('talk', nil, data_)
-        switch.slide_out_transfer()
+        switch.slide_out_transfer('talk')
       end
       switch.slide_in_transfer(load_talk_page)
     --switch.load_page('talk', nil, data_)

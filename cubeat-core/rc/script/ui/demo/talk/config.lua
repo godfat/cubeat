@@ -46,7 +46,7 @@ local block_y_  = 0
 local block_w_  = bg_w_
 local block_h_  = bg_h_
 local block_a_  = 0
-local block_d_  = -100
+local block_d_  = -200
 ----
 ----
 local slide_in_time_  = 200

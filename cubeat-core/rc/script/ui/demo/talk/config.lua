@@ -14,7 +14,7 @@ local act_w_  = 512
 local act_h_  = 1024
 local act_x_  = {-80, bg_w_-act_w_+80}
 local act_y_  = {16, 16}
-local act_d_  = -150
+local act_d_  = -160
 local out_x_  = {-act_w_, bg_w_}
 local out_y_  = {16, 16}
 
@@ -23,13 +23,13 @@ local conBG_w_    = 640
 local conBG_h_    = 320
 local conBG_x_    = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
 local conBG_y_    = {200, 300}
-local conBG_d_    = -40
+local conBG_d_    = -200
 
 local con_offset_x_ =100
 local con_offset_y_ =90
 local con_x_        = {conBG_x_[1]+con_offset_x_, conBG_x_[2]+con_offset_x_}
 local con_y_        = {conBG_y_[1]+con_offset_y_, conBG_y_[2]+con_offset_y_}
-local con_d_        = -60
+local con_d_        = -240
 
 local light_path_     = 'dialog_next'
 local light_time_     = 1000
@@ -39,14 +39,14 @@ local light_x_  = {conBG_x_[1]+light_offset_x_, conBG_x_[2]+light_offset_x_}
 local light_y_  = {conBG_y_[1]+light_offset_y_, conBG_y_[2]+light_offset_y_}
 local light_w_  = 32
 local light_h_  = 32
-local light_d_  = -80
+local light_d_  = -280
 
 local block_x_  = 0
 local block_y_  = 0
 local block_w_  = bg_w_
 local block_h_  = bg_h_
 local block_a_  = 0
-local block_d_  = -200
+local block_d_  = -320
 ----
 ----
 local slide_in_time_  = 200

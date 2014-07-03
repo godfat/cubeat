@@ -141,7 +141,7 @@ public:
             printf("%d ", *i);
         }
         printf(")\n");
-        for( int i = 0; i < chain_step_.size(); ++i ) {
+        for( size_t i = 0; i < chain_step_.size(); ++i ) {
             printf("  - step %d / %d cubes / power %d / extending %d: ", i+1, chain_step_[i], power_step_[i], static_cast<int>(is_step_extending_[i]));
             for( std::list< std::pair<int, int> >::iterator j = step_group_[i].begin(), jend = step_group_[i].end(); j != jend; ++j ) {
                 printf("(%d,%d) ", j->first, j->second);

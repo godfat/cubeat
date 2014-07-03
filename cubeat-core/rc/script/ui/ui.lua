@@ -37,6 +37,15 @@ local function set_on_press_callback_r(sprite, func, input)
   end
 end
 
+local function set_on_up_callback(sprite, func, input)
+  if input == nil then
+    sprite:on_up( Input1_left, func )
+    sprite:on_up( Input2_left, func )
+  else
+    sprite:on_up( input, func )
+  end
+end
+
 local function set_on_down_callback(sprite, func, input)
   if input == nil then
     sprite:on_down( Input1_left, func )
@@ -120,6 +129,10 @@ end
 
 view.Mt_Sprite_Ex.on_press_r = function(self, func, input)
   set_on_press_callback_r(self._cdata, func, input)
+end
+
+view.Mt_Sprite_Ex.on_up = function(self, func, input)
+  set_on_up_callback(self._cdata, func, input)
 end
 
 view.Mt_Sprite_Ex.on_down = function(self, func, input)

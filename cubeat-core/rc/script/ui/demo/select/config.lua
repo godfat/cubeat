@@ -18,7 +18,7 @@ local bg_h    = view.GET_SCREEN_H()
 local icon_path   = function(i) return ('char'..tostring(i)..'_new/character_icon_'..tostring(i)) end
 local icon_w      = 173
 local icon_h      = 173
-local icon_x_base = 80
+local icon_x_base = 10
 local icon_x      = { icon_x_base,
                       icon_x_base+180,
                       icon_x_base+360,

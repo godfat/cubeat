@@ -37,7 +37,7 @@ data[3] = {
 
 data[4] = {
   {ch=4, lv=0},
-  {ch=1, lv=0},
+  {ch=2, lv=0},
   {ch=3, lv=0},
   {ch=6, lv=1},
   {ch=1, lv=1},
@@ -47,7 +47,7 @@ data[4] = {
 data[5] = {
   {ch=5, lv=0},
   {ch=1, lv=0},
-  {ch=2, lv=0},
+  {ch=4, lv=0},
   {ch=3, lv=1},
   {ch=6, lv=1},
   {ch=2, lv=2},

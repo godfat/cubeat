@@ -30,8 +30,8 @@ local icon_depth  = -300
 
 -- actor_full
 local full_path = function(i) return ('char'..tostring(i)..'_new/glad') end
-local full_w    = 384
-local full_h    = 768
+local full_w    = 435
+local full_h    = 870
 local full_x    = { 0,
                     screen_w-full_w }
 local full_y    = 0

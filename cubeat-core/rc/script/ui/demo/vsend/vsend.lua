@@ -42,10 +42,9 @@ local function create(scene)
   
   --char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
   --char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
-  char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=384, h=768, center=true }
-  char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=384, h=768, center=true }
+  char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=435, h=870, center=true }
+  char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=435, h=870, center=true }
   char_big2_:texture_flipH()
-  
   --
   
   hide()
@@ -118,9 +117,9 @@ local function show(demo, game_mode, submode, p1_win)
   char_big2_:set_texture(char_big_filename2)
   --char_big2_:texture_flipH()
   local s1 = ffi.new("v2", pos1.x-32, -pos1.y+64)
-  local e1 = ffi.new("v2", pos1.x-64, pos1.y-48)
+  local e1 = ffi.new("v2", pos1.x-64, pos1.y)
   local s2 = ffi.new("v2", pos2.x+32, -pos2.y+64)
-  local e2 = ffi.new("v2", pos2.x+64, pos2.y-48)
+  local e2 = ffi.new("v2", pos2.x+64, pos2.y)
   char_big1_:set_visible(true)
   char_big2_:set_visible(true)
   char_big1_:tween("OBounce", "Pos2D", s1, e1, 1500, 0, nil, 0)

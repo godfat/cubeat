@@ -2,7 +2,7 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
-local lang_     = 'JP'
+local lang_     = 'TW'
 
 local bg_path_  = 'bg4/99complete'
 local bg_x_     = 0
@@ -25,8 +25,8 @@ local conBG_x_    = {bg_w_/2-conBG_w_/2, bg_w_/2-conBG_w_/2}
 local conBG_y_    = {200, 300}
 local conBG_d_    = -200
 
-local con_offset_x_ =100
-local con_offset_y_ =90
+local con_offset_x_ =106
+local con_offset_y_ =93
 local con_x_        = {conBG_x_[1]+con_offset_x_, conBG_x_[2]+con_offset_x_}
 local con_y_        = {conBG_y_[1]+con_offset_y_, conBG_y_[2]+con_offset_y_}
 local con_d_        = -240
@@ -113,8 +113,8 @@ conBG_pos_['char1_new/sad']     = { {x=350,y=130}, {x=310,y=380} }
 conBG_pos_['char2_new/anger']   = { {x=300,y=300}, {x=350,y=300} }
 conBG_pos_['char2_new/glad']    = { {x=280,y=170}, {x=340,y=260} }
 conBG_pos_['char2_new/normal']  = { {x=280,y=0}, {x=385,y=250} }
-conBG_pos_['char2_new/sad']     = { {x=320,y=200}, {x=390,y=260} }
-conBG_pos_['char3_new/anger']   = { {x=300,y=200}, {x=320,y=300} }
+conBG_pos_['char2_new/sad']     = { {x=320,y=260}, {x=390,y=260} }
+conBG_pos_['char3_new/anger']   = { {x=300,y=200}, {x=320,y=170} }
 conBG_pos_['char3_new/glad']    = { {x=300,y=240}, {x=360,y=240} }
 conBG_pos_['char3_new/normal']  = { {x=260,y=80}, {x=410,y=330} }
 conBG_pos_['char3_new/sad']     = { {x=320,y=200}, {x=280,y=260} }
@@ -126,10 +126,10 @@ conBG_pos_['char5_new/anger']   = { {x=300,y=200}, {x=400,y=210} }
 conBG_pos_['char5_new/glad']    = { {x=290,y=210}, {x=400,y=200} }
 conBG_pos_['char5_new/normal']  = { {x=280,y=180}, {x=420,y=180} }
 conBG_pos_['char5_new/sad']     = { {x=340,y=240}, {x=305,y=240} }
-conBG_pos_['char6_new/anger']   = { {x=320,y=200}, {x=350,y=290} }
-conBG_pos_['char6_new/glad']    = { {x=320,y=200}, {x=410,y=220} }
-conBG_pos_['char6_new/normal']  = { {x=320,y=200}, {x=420,y=250} }
-conBG_pos_['char6_new/sad']     = { {x=320,y=200}, {x=320,y=300} }
+conBG_pos_['char6_new/anger']   = { {x=320,y=290}, {x=350,y=290} }
+conBG_pos_['char6_new/glad']    = { {x=260,y=200}, {x=410,y=220} }
+conBG_pos_['char6_new/normal']  = { {x=250,y=220}, {x=400,y=250} }
+conBG_pos_['char6_new/sad']     = { {x=340,y=200}, {x=320,y=200} }
 
 
 return {

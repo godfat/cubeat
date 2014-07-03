@@ -53,8 +53,6 @@ ViewSprite::ViewSprite(model::pCube c, view::pObject orig, data::pMapSetting ms,
     outline_->set<accessor::Visible>(false);
     outline_->setDepth(-5);
 
-    /// OVERHAULING OUTLINE COLOR HERE
-
     body_->set<accessor::Pos2D>(pos_vec2());
     set_base_color_and_texture(c->data()->color_id());
 
@@ -76,7 +74,6 @@ void ViewSprite::set_base_color_and_texture(int color_id){
     col.offset();
     body_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
     outline_->set<accessor::ColorDiffuse>( 0xff000000 | col.rgb() );
-    outline_->set<accessor::GradientEmissive>(32);
 }
 
 void ViewSprite::drop_a_block(){
@@ -248,7 +245,7 @@ void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
     body_->set<accessor::Pos2D>( pos );
 }
 
-void ViewSprite::go_dying(){
+void ViewSprite::go_dying(int color_id){
     using namespace easing; using namespace accessor;
 //    unsigned int duration = map_setting()->cube_dying_duration();
 
@@ -275,8 +272,9 @@ void ViewSprite::go_dying(){
 //
 //    view::SFX::i().hold(stroke, duration-200);
 
+    data::Color col = data::Color::from_id(color_id);
     outline_->setTexture("cubes/cube-white").set<Visible>(true).set<Alpha>(0)
-               .set<ColorDiffuse>( 0xffaa7744 | body_->get<ColorDiffuse>() )
+               .set<ColorDiffuse>( col.get_bright2_argb() )
                .set<Scale>( vec3(1.02, 1.02, 1) )
                .tween<SineCirc, Alpha>(0, 128, 128u, -1);
 }
@@ -305,8 +303,8 @@ void ViewSprite::go_exploding(int color_id){
 
         data::Color col = data::Color::from_id(color_id);
         col.offset();
-        effect_body->set<accessor::ColorDiffuse>( 0xff553300 | col.rgb() );
-        effect_body_out->set<accessor::ColorDiffuse>( 0xffaa7744 | col.rgb() );
+        effect_body->set<accessor::ColorDiffuse>( col.get_bright1_argb()/*0xff553300 | col.rgb()*/ );
+        effect_body_out->set<accessor::ColorDiffuse>( col.get_bright2_argb()/*0xffaa7744 | col.rgb()*/ );
 
         effect_body->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);
         effect_body_out->tween<easing::IQuad, accessor::Alpha>(255, 0, 400u);

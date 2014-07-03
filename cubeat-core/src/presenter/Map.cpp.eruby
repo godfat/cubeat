@@ -168,7 +168,7 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
 void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
 <% end %>
     using namespace std::tr1::placeholders;
-    cube->model()->    go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get() ) ).
+    cube->model()->    go_dying_event( std::tr1::bind( &Cube::go_dying, cube.get(), _1 ) ).
                    go_exploding_event( std::tr1::bind( &Cube::go_exploding, cube.get(), _1 ) ).
                      be_garbage_event( std::tr1::bind( &Cube::be_garbage, cube.get() ) ).
                       be_broken_event( std::tr1::bind( &Cube::be_broken, cube.get(), _1 ) ).

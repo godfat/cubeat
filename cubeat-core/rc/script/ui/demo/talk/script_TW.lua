@@ -523,7 +523,7 @@ local act6_act2_ = {
   { ch=2, img="char2_new/normal" , text="啊，妳是魔術社的雪青？\n好酷喔。",board_flip="HV",effect_a="slide_in" },
   { ch=1, img="char6_new/glad" , text="…嗯。\n(露兩手給她看看吧。)"},
   { ch=2, img="char2_new/glad" , text="耶～！"},
-  { ch=1, img="char6_new/normal" , text="…沒什麼。\n(真希望可以不靠超能力…) "},
+  { ch=1, img="char6_new/normal" , text="…沒什麼。\n(真希望可以不用超能力…) "},
   { ch=2, img="char2_new/normal" , text="啊，對了。\n其實雅季好像也會變魔術呢。"},
   { ch=2, img="char2_new/normal" , text="是方塊魔術喔。\n剛剛才突然學會的。"},
   { ch=1, img="char6_new/anger" , text="哼！\n(讓你輸到以後不敢想方塊！)"},

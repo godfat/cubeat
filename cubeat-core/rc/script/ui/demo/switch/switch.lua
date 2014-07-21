@@ -22,6 +22,8 @@ local transfer_
 local transfer_title_
 --
 local effect_ = {}
+local effect_count_ = 0
+local effect_lock_  = false
 
 ------------------------------------------------------------
 
@@ -69,6 +71,19 @@ end
 local function fade_out_blocker()
   blocker_:tween("Linear", "Alpha", 128, 0, 500, 0, nil, 0)
   has_blocker_ = false
+end
+
+local function close_effect_lock()
+  effect_lock_  = false
+end
+
+local function add_effect_count()
+  effect_count_ = effect_count_ + 1
+end
+
+local function remove_effect_count()
+  effect_count_ = effect_count_ - 1
+  if effect_count_ == 0 then effect_lock_  = false end
 end
 
 ------------------------------------------------------------
@@ -196,7 +211,8 @@ local function load_page(name, effect, data)
   current_page_ = 'rc/script/ui/demo/'..name..'/'..name
   page_obj_ = p.init(game_demo_, vorig_, data)
   
-  if effect and effect.id ~= nil then effect_[effect.id](effect) end
+  --if effect and effect.id ~= nil then effect_[effect.id](effect) end
+  show_effect(effect)
 
   view.debug_hack()
 end

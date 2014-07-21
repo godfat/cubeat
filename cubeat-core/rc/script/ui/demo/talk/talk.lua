@@ -45,7 +45,7 @@ local function game_start(self)
         demo_game_:init_story(c1p, c2p, sconf, lv)
       end
     else
-      switch.load_page('mainmenu', 'in')
+      switch.load_page('mainmenu', {id="slide_in_title"})
     end
   end
 end
@@ -105,9 +105,9 @@ local function talk_end()
         select_config.ch_choose[2] = story_data.ch
         local function load_talk_page()
           switch.load_page('talk', nil, {game_mode=99})
-          switch.slide_out_transfer('talk')
+          switch.show_effect( {id="slide_out_transfer_to_talk"} )
         end
-        switch.slide_in_transfer(load_talk_page)
+        switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
       end
     else -- start next story game
       game_start()
@@ -309,7 +309,7 @@ local function init(demo, parent, data)
   end
   local function leave()
     reset()
-    switch.load_page('mainmenu', 'in')
+    switch.load_page('mainmenu', {id="slide_in_title"})
   end
   local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
   menu.TalkBackGround = ui.new_image{ parent=root_, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,

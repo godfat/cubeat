@@ -161,7 +161,7 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
 //        if( type > 0 && type <= 4 ) {
             edges_[x][y]->setTexture("cubes/cube-peri-"+to_s(type)).set<Visible>(true).set<Rotation>(vec3(0, 0, edge_rot))
-                         .set<ColorDiffuse>( 0xffaa7744 | col.rgb() )
+                         .set<ColorDiffuse>( col.get_bright2_argb()/*0xffaa7744 | col.rgb()*/ )
                          .tween<Linear, Scale>(vec3(1.2, 1.2, 1.2), vec3(1,1,1), 150u)
                          .tween<SineCirc, Alpha>(255, 128, 128u, -1, 0, 150)
                          .queue<Linear, GradientEmissive>(0, 255, 150u)
@@ -169,7 +169,7 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
         view::pSprite glow_cube = view::Sprite::create("cubes/cube-white", view_orig_, csize, csize, true);
         glow_cube->setDepth(-10).setPickable(false).set<Pos2D>(pos_from_orig(x, y))
-                  .set<ColorDiffuse>( 0xffaa7744 | col.rgb() )
+                  .set<ColorDiffuse>( col.get_bright2_argb() /*0xffaa7744 | col.rgb()*/ )
                   .tween<Linear, Alpha>(255, 0, 250u);
 
         view::SFX::i().hold(glow_cube, 250u);
@@ -315,8 +315,8 @@ void ViewSpriteMaster::new_garbage(std::vector< std::tr1::tuple<int, int, int> >
             effect_body_orig->set<Pos3D>( vec3(cube_pos.X + xyoff[j][0], -cube_pos.Y + xyoff[j][1], -10) );
             effect_body_out->setDepth(-5);
 
-            effect_body->set<ColorDiffuse>( 0xff553300 | col.rgb() );
-            effect_body_out->set<ColorDiffuse>( 0xffaa7744 | col.rgb() );
+            effect_body->set<ColorDiffuse>( col.get_bright1_argb() /*0xff553300 | col.rgb()*/ );
+            effect_body_out->set<ColorDiffuse>( col.get_bright2_argb() /*0xffaa7744 | col.rgb()*/ );
 
             effect_body->tween<IQuad, GradientEmissive>(0, 255, 400u);
             effect_body_out->tween<Linear, Alpha>(255, 0, 400u);

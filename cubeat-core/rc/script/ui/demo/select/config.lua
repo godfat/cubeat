@@ -34,7 +34,7 @@ local full_w    = 435
 local full_h    = 870
 local full_x    = { 0,
                     screen_w-full_w }
-local full_y    = 0
+local full_y    = -100
 local full_depth= -150
 
 local fade_time = 300

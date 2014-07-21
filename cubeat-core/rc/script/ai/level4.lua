@@ -60,15 +60,15 @@ function ai_entry(self)
   end
 
   -- Fire Map test
-  local firemap = my_map:get_firemap()
+  -- local firemap = my_map:get_firemap()
   
-  for y = my_map:height() - 2, 0, -1 do
-    for x = 0, my_map:width() - 1 do
-      io.write(string.format("%2d", firemap:power_at(x, y)))
-    end
-    io.write("\n")
-  end
-  io.write("\n")
+  -- for y = my_map:height() - 2, 0, -1 do
+    -- for x = 0, my_map:width() - 1 do
+      -- io.write(string.format("%2d", firemap:power_at(x, y)))
+    -- end
+    -- io.write("\n")
+  -- end
+  -- io.write("\n")
   
   local keycube, power = my_map:get_firepoint_cube(attack_threshold, ATTACK_PWR, emergency_level)
 

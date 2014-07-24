@@ -524,21 +524,24 @@ void Input::update_btn_state()
 
 void Input::recording_replay()
 {
-    int t = EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+    int tickcount = EventDispatcher::i().get_timer_dispatcher("game")->get_curr_tickcount();
+    int t         = EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+
+    printf("tick %d, time(ms) %d\n", tickcount, t);
 
     // collect flow for replay
     if( trig1_.pressed() ) {
-        printf("Input %x TRIG1 pressed at %d\n", this, t);
+        printf("Input %x TRIG1 pressed at fcount=%d t=%d\n", this, tickcount, t);
     }
     else if( trig1_.released() ) {
-        printf("Input %x TRIG1 released at %d\n", this, t);
+        printf("Input %x TRIG1 released at fcount=%d t=%d\n", this, tickcount, t);
     }
 
     if( trig2_.pressed() ) {
-        printf("Input %x TRIG2 pressed at %d\n", this, t);
+        printf("Input %x TRIG2 pressed at fcount=%d t=%d\n", this, tickcount, t);
     }
     else if( trig2_.released() ) {
-        printf("Input %x TRIG2 released at %d\n", this, t);
+        printf("Input %x TRIG2 released at fcount=%d t=%d\n", this, tickcount, t);
     }
 }
 

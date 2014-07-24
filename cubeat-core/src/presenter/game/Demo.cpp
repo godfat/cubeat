@@ -235,6 +235,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         script::Lua::call(L_, "init_override", inplace, submode_);
     }
 
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
     //start music
@@ -714,7 +715,8 @@ void Demo::game_start()
         pause_note_text_->set<Visible>(true);
     }
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    // Have to reset timer here again, because the "ready_go" part and scene_ slide effect can't do when timer is stopped.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0);
     scene_->allowPicking(true);
 
     /// MEMO: replay recording starts here

@@ -84,6 +84,7 @@ private:
     bool windowGotFocus() const      { return window_focus_now_ == true && window_focus_last_ == false; }
     bool windowReleasedFocus() const { return window_focus_now_ == false && window_focus_last_ == true; }
     void toggleInput(bool const&);
+    void toggleRecording(bool const&);
 
     std::string find_input_name_accordingly(int const&);
     void associate_input_manymouse(unsigned int const&);
@@ -95,6 +96,7 @@ private:
     bool window_focus_now_;
     bool window_focus_last_;
     int  mice_detected_by_manymouse_;
+    bool replay_recording_;
     std::tr1::function<void()> poll_manymouse_event_;
 };
 
@@ -149,6 +151,7 @@ private:
     void update_cursor_by_arrowkeys();
     void update_buttons_by_manymouse();
     void update_buttons_by_sysmouse_or_keyboard();
+    void recording_replay();
 
     Crosshair cursor_;
     Button trig1_;

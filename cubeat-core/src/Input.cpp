@@ -41,7 +41,7 @@ using namespace accessor;
 InputMgr::InputMgr()
     :MAX_INPUTS(2), keyboard_mouse_input_(false), inited_(false),
      window_focus_now_(false), window_focus_last_(false), mice_detected_by_manymouse_(0),
-     poll_manymouse_event_(0)
+     replay_recording_(false), poll_manymouse_event_(0)
 {
     std::cout << "InputMgr constructed." << std::endl;
 }
@@ -220,8 +220,12 @@ void InputMgr::updateAll()
     if( mice_detected_by_manymouse_ > 0 && keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
 
-    BOOST_FOREACH( Input* it, inputs_ )
+    BOOST_FOREACH( Input* it, inputs_ ) {
         it->update();
+        if( replay_recording_ ) {
+            it->recording_replay();
+        }
+    }
 
     //MastEventReceiver::i().startEventProcess();
 }
@@ -238,6 +242,11 @@ void InputMgr::toggleInput(bool const& flag)
     else {
         IrrDevice::i().d()->getCursorControl()->setVisible(true);
     }
+}
+
+void InputMgr::toggleRecording(bool const& flag)
+{
+    replay_recording_ = flag;
 }
 
 void InputMgr::initGraphicItems()
@@ -505,6 +514,26 @@ void Input::update_btn_state()
     wep3_.update_state();
     haste_.update_state();
     pause_.update_state();
+}
+
+void Input::recording_replay()
+{
+    int t = EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+
+    // collect flow for replay
+    if( trig1_.pressed() ) {
+        printf("Input %x TRIG1 pressed at %d\n", this, t);
+    }
+    else if( trig1_.released() ) {
+        printf("Input %x TRIG1 released at %d\n", this, t);
+    }
+
+    if( trig2_.pressed() ) {
+        printf("Input %x TRIG2 pressed at %d\n", this, t);
+    }
+    else if( trig2_.released() ) {
+        printf("Input %x TRIG2 released at %d\n", this, t);
+    }
 }
 
 Input&  Input::player(wpPlayer player) { player_ = player; return *this; }

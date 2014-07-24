@@ -35,7 +35,7 @@ local function init(demo, parent, submode)
           local level = i+1
           demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false)
           challenge.set_puzzle_level(level)
-          switch.slide_out_title()
+          switch.show_effect( {id="slide_out_title"} )
         end)
       else
         menu[k]:set_color(128,128,128)
@@ -47,7 +47,7 @@ local function init(demo, parent, submode)
       demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
       challenge.set_puzzle_level(2)
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
-      switch.slide_out_title()
+      switch.show_effect( {id="slide_out_title"} )
     end)
     
     menu.back = ui.new_text{ parent=root_, x=120, y=240, size=32, depth=-200, title='back' }
@@ -68,12 +68,12 @@ local function init(demo, parent, submode)
     menu.back = ui.new_text{ parent=root_, x=80, y=280, size=32, depth=-200, title='back' }
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.WarningCondition_20, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
+      switch.show_effect( {id="slide_out_title"} )
     end)
     if record.load(parameter.clear, {submode=parameter.WarningCondition_20}) then
       menu.btn2:on_press(function(self)
         demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
-        switch.slide_out_title()
+        switch.show_effect( {id="slide_out_title"} )
       end)
     else
       menu.btn2:set_color(128,128,128)
@@ -81,7 +81,7 @@ local function init(demo, parent, submode)
     if record.load(parameter.clear, {submode=parameter.WarningCondition_40}) then
       menu.btn3:on_press(function(self)
         demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
-        switch.slide_out_title()
+        switch.show_effect( {id="slide_out_title"} )
       end)
     else
       menu.btn3:set_color(128,128,128)
@@ -89,7 +89,7 @@ local function init(demo, parent, submode)
     if record.load(parameter.clear, {submode=parameter.WarningCondition_60}) then
       menu.btn4:on_press(function(self)
         demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
-        switch.slide_out_title()
+        switch.show_effect( {id="slide_out_title"} )
       end)
     else
       menu.btn4:set_color(128,128,128)
@@ -116,11 +116,11 @@ local function init(demo, parent, submode)
     menu.back = ui.new_text{ parent=root_, x=80, y=280, size=32, depth=-200, title='back' }
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.UnLimited_Normal, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
+      switch.show_effect( {id="slide_out_title"} )
     end)
     menu.btn2:on_press(function(self)
       demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
-      switch.slide_out_title()
+      switch.show_effect( {id="slide_out_title"} )
     end)
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')

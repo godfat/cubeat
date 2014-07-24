@@ -46,10 +46,9 @@ local function choose_character(self)
     if data_ and data_.game_mode == 99 then
       local function load_talk_page()
         switch.load_page('talk', nil, data_)
-        switch.slide_out_transfer('talk')
+        switch.show_effect( {id="slide_out_transfer_to_talk"} )
       end
-      switch.slide_in_transfer(load_talk_page)
-    --switch.load_page('talk', nil, data_)
+      switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
     else
       demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
     end
@@ -206,9 +205,9 @@ local function init(demo, parent, data)
   menu.btn_back:set_depth(-300)
   menu.btn_back:on_press(function(self)
     if data_ then
-      switch.load_page(data_.last_menu or 'mainmenu', 'in', data_)
+      switch.load_page(data_.last_menu or 'mainmenu', {id="slide_in_title"}, data_)
     else
-      switch.load_page('mainmenu', 'in')
+      switch.load_page('mainmenu', {id="slide_in_title"})
     end
   end)
   

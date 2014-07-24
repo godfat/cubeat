@@ -219,7 +219,7 @@ function ai_entry(self)
         if self:get_heat() < 0.7 and my_map:warning_level() < 1 and 
            ground_cube_num <= capacity * anti_emptiness_factor and random(100) > (1 - anti_emptiness_factor) * 100 
         then
-          io.write(string.format(" - entering haste block"))
+          io.write(string.format(" - entering haste block\n"))
           setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
           self:push_command(cmdbuf)
         end

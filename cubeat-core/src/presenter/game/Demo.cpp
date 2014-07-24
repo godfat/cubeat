@@ -235,8 +235,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         script::Lua::call(L_, "init_override", inplace, submode_);
     }
 
-    //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
     //start music
@@ -719,6 +717,9 @@ void Demo::game_start()
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     scene_->allowPicking(true);
 
+    /// MEMO: replay recording starts here
+    ctrl::InputMgr::i().toggleRecording(true);
+
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
         map0_->start_dropping();
@@ -1013,7 +1014,10 @@ void Demo::game_stop()
         map1_->stop_dropping();
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-   }
+    }
+
+    /// MEMO: replay recording stops here
+    ctrl::InputMgr::i().toggleRecording(false);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);

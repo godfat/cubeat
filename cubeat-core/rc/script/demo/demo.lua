@@ -46,7 +46,7 @@ function slide_out(inplace)
   if inplace then
     hide_everything()
   else
-    switch.slide_out_page_obj()
+    switch.show_effect( {id="slide_out"} )
   end
 end
 
@@ -57,11 +57,11 @@ function slide_in()
     storyend_config.is_story_end = false
     storyend.hide()
     switch.load_page('talk', nil, {game_mode=99, game_end=true})
-    switch.slide_in_page_obj('talk')
+    switch.show_effect( {id="slide_in_to_talk"} )
   else
     show_everything()
-    switch.load_page('mainmenu', 'in')
-    switch.slide_in_page_obj()
+    switch.load_page('mainmenu', {id="slide_in_title"})
+    switch.show_effect( {id="slide_in"} )
   end
 end
 

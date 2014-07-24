@@ -60,7 +60,7 @@ local function init(demo, parent)
   ask_tutorial:on_press_ok(function(self)
     ask_tutorial:set_visible(false)
     demo:init_tutorial('char/char1_new', 'char/char2_new', 'stage/jungle1') -- test
-    switch.slide_out_title()
+    switch.show_effect( {id="slide_out_title"} )
   end, 1)
   ask_tutorial:on_press_cancel(function(self)
     ask_tutorial:set_visible(false)
@@ -90,17 +90,18 @@ local function init(demo, parent)
   
   menu.btn_story:on_press(function(self)
     storystage.set_stage(1)
-    switch.load_page('select', 'out', { game_mode=99, level=0 })
+    switch.load_page('select', {id="slide_out_title", keep_blocker=true}, { game_mode=99, level=0 })
   end)
   
   menu.btn_vs_cpu:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
     switch.load_page('difficulty', nil, { game_mode = 1 })
+    --switch.load_page('difficulty', {id="fade"}, { game_mode = 1 })
   end)
   
   menu.btn_vs_ppl:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
-    switch.load_page('select', 'out', { game_mode = 0 })
+    switch.load_page('select', {id="slide_out_title", keep_blocker=true}, { game_mode = 0 })
   end)
   
   menu.btn_chall:on_press(function(self)
@@ -113,7 +114,7 @@ local function init(demo, parent)
     select_config.ch_choose[1] = ch1
     select_config.ch_choose[2] = ch2
     demo:init_cpudemo("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1)
-    switch.slide_out_title()
+    switch.show_effect( {id="slide_out_title"} )
   end)
     
   -- menu.btn_tut:on_press(function(self) 
@@ -122,7 +123,7 @@ local function init(demo, parent)
   
   -- menu.btn_tut2:on_press(function(self)
     -- demo:init_tutorial('char/char1_new', 'char/char1_new', 'stage/jungle1')
-    -- switch.slide_out_title()
+    -- switch.show_effect( {id="slide_out_title"} )
   -- end)
   
   -- menu.btn_prac:on_press(function(self)
@@ -130,7 +131,7 @@ local function init(demo, parent)
     -- -- init SinglePlayer, in Submode 0, and Level is 2 by default
     -- -- the last false means "in_place" is false, there will be slide-in/out effects.
     -- demo:init_single(0, 2, 'char/char1_new', 'stage/jungle1', false)
-    -- switch.slide_out_title()
+    -- switch.show_effect( {id="slide_out_title"} )
   -- end)  
   
   menu.btn_quit:on_press(function(self) 

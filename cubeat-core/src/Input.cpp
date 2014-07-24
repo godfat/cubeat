@@ -222,9 +222,6 @@ void InputMgr::updateAll()
 
     BOOST_FOREACH( Input* it, inputs_ ) {
         it->update();
-        if( replay_recording_ ) {
-            it->recording_replay();
-        }
     }
 
     //MastEventReceiver::i().startEventProcess();
@@ -247,6 +244,11 @@ void InputMgr::toggleInput(bool const& flag)
 void InputMgr::toggleRecording(bool const& flag)
 {
     replay_recording_ = flag;
+}
+
+bool InputMgr::isRecording() const
+{
+    return replay_recording_;
 }
 
 void InputMgr::initGraphicItems()
@@ -514,6 +516,10 @@ void Input::update_btn_state()
     wep3_.update_state();
     haste_.update_state();
     pause_.update_state();
+
+    if( InputMgr::i().isRecording() ) {
+        recording_replay();
+    }
 }
 
 void Input::recording_replay()

@@ -69,6 +69,9 @@ public:
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)
 
+    void toggleRecording(bool const&);
+    bool isRecording() const;
+
     int const MAX_INPUTS;
 
 private:
@@ -84,7 +87,6 @@ private:
     bool windowGotFocus() const      { return window_focus_now_ == true && window_focus_last_ == false; }
     bool windowReleasedFocus() const { return window_focus_now_ == false && window_focus_last_ == true; }
     void toggleInput(bool const&);
-    void toggleRecording(bool const&);
 
     std::string find_input_name_accordingly(int const&);
     void associate_input_manymouse(unsigned int const&);

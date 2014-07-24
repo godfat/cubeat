@@ -49,6 +49,7 @@ public:
     std::time_t      get_time()   const;
     std::string      get_name()   const { return name_; }
     double           get_speed()  const;
+    int              get_curr_tickcount() const;
 
     TimerDispatcher& clear_timer_event(); //note: has bug, don't use.
     //note: call to this has no effect, don't sure why. need to check in the future.
@@ -69,6 +70,7 @@ private:
     TimerList     timers_, newly_created_timers_;
     TimerRemoval  timers_to_be_deleted_;
     std::string   name_;
+    int           tickcount_;
     utils::Timer* timer_;
 
     wpointer_type self_;

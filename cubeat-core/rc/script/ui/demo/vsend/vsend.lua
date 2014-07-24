@@ -135,6 +135,7 @@ local function show(demo, game_mode, submode, p1_win)
   lose_t_:tween("OElastic", "Scale", v1, v2, 1000, 0, nil, 1500)
   
   end_text_:set_visible(true)
+  end_text_:set_color(255, 255, 255)
   if submode and submode == endingcheck_config.submode_story and p1_win==true then
     end_text_:change_text("Next") -- story mode win
   else
@@ -146,6 +147,7 @@ local function show(demo, game_mode, submode, p1_win)
   end_text_:set_depth(-450)
   end_text_:tween("Linear", "Alpha", 0, 255, 500, 0, nil, 2500)
   end_text2_:set_visible(true)
+  end_text2_:set_color(255, 255, 255)
   end_text2_:change_text("Leave")
   end_text2_:set_pos(center_x, center_y + 60)
   end_text2_:set_alpha(0)

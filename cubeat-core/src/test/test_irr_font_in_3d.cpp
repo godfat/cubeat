@@ -58,15 +58,21 @@ int main()
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 	guienv->addStaticText(L"Hello World! This is the Irrlicht Software renderer!",
 		rect<s32>(10,10,260,22), true);
-    smgr->addLightSceneNode( smgr->getRootSceneNode(), vector3df(0,0,-40), SColor(255,255,255,255));
+    smgr->addLightSceneNode( smgr->getRootSceneNode(), vector3df(0,0,0), SColor(255,255,255,255));
 
 	smgr->addCameraSceneNode(0, vector3df(0,-30,-80), vector3df(0,5,0));
     ISceneNode* textparent = smgr->addEmptySceneNode();
-    textparent->setPosition(vector3df(80,40,80));
-    IGUITTFont* font = guienv->getFont("rc/fonts/kimberley.ttf", 21, true);
+    textparent->setPosition(vector3df(10,20,100));
+    //IGUITTFont* font = guienv->getFont("rc/fonts/NotoSansHant-Medium.otf", 32, true);
+    IGUITTFont* font = guienv->getFont("rc/fonts/rounded-mplus-1m-medium.ttf", 32, true);
     font->setBatchLoadSize(1);
     font->setMaxPageTextureSize(dimension2du(512,512));
-    font->addTextSceneNode(L"\"star wars\"\nthe adventure\nof\ncharlie!!!!", smgr, textparent, SColor(255,255,255,0), true);
+    array<ISceneNode*> irrArray =
+        font->addTextSceneNode(L"The quick brown fox\njumps over a lazy dog!\n測試test\n中文chinese！", smgr, textparent, SColor(255,255,255,0), true);
+
+    for( size_t i = 0; i < irrArray.size(); ++i ) {
+        irrArray[i]->setDebugDataVisible(EDS_BBOX);
+    }
 
 //    IGUITTFont* font2= guienv->getFont("rc/fonts/kimberley.ttf", 21, true);
 //    font2->setBatchLoadSize(1);

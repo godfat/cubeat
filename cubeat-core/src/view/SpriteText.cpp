@@ -107,8 +107,11 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
     array<ISceneNode*> irrArray =
         ttfont_->addTextSceneNode(utf8s, smgr_, body_, textcolor, center_);
 
-    for( unsigned int i = 0; i < irrArray.size(); ++i)
+    for( unsigned int i = 0; i < irrArray.size(); ++i) {
         letter_node_.push_back( irrArray[i] );  //irr::core::array and std::vector inconsistency... only way.. *sigh*
+        //when debug text nodes un-comment this:
+//        letter_node_[i]->setDebugDataVisible(EDS_BBOX);
+    }
 
     if( body_ )
         Size2D::set(body_, vec2(size_.Width, size_.Height));

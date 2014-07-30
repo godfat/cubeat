@@ -103,6 +103,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     music_state_old_ = false;
     uiconf_ = Conf::i().config_of("ui/demo_layout");
 
+    // remember the random seed.
+    int seed = std::time(0)^std::clock();
+    App::i().getReplay().seed(seed);
+    utils::Random::i().seed(seed);
+
 // WTF MEMO 2012.9 failed to adjust for balance
     passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
     passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
@@ -146,7 +151,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     else if( game_mode_ == GM_CVC || game_mode_ == GM_LOG ) {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        //std::random_shuffle(ai_temp, ai_temp + 4);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[3]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[3]);
         if( game_mode_ == GM_LOG ) { // AI LOGGING's timer speed will overwrite the gameplay_ one
@@ -720,7 +724,7 @@ void Demo::game_start()
     scene_->allowPicking(true);
 
     /// MEMO: replay recording starts here
-    ctrl::InputMgr::i().toggleRecording(true);
+    App::i().getReplay().toggle_enable(true);
 
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
@@ -1019,7 +1023,7 @@ void Demo::game_stop()
     }
 
     /// MEMO: replay recording stops here
-    ctrl::InputMgr::i().toggleRecording(false);
+    App::i().getReplay().toggle_enable(false);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
@@ -1165,7 +1169,7 @@ void Demo::end_sequence1()
     btn_reinit_.reset();
 
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
-    //stage_->releaseResource(); //release when player isn't going to replay
+    //stage_->releaseResource(); //release when player isn't going to retry
     //App::i().launchMainMenu();
     std::cout << "game_demo end completed." << std::endl;
 

@@ -309,8 +309,6 @@ void EventDispatcher::dispatch()
     //profile these...
     int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
 
-    tick_timers();
-
     dispatch_btn();
     dispatch_obj();
     dispatch_timer();

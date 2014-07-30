@@ -92,7 +92,7 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     else {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        std::random_shuffle(ai_temp, ai_temp + 4);
+        std::random_shuffle(ai_temp, ai_temp + 4, utils::random);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
     }

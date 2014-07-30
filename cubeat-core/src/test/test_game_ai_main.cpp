@@ -53,7 +53,7 @@ public:
 
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        std::random_shuffle(ai_temp, ai_temp + 3);
+        std::random_shuffle(ai_temp, ai_temp + 3, utils::random);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
 

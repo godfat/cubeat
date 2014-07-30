@@ -681,7 +681,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
     // shuffle all the vectors
     for( unsigned int i = 0; i < row_empty.size(); ++i ) {
-        std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+        std::random_shuffle(row_empty[i].begin(), row_empty[i].end(), utils::random);
     }
 
     // drop them according to the empty column

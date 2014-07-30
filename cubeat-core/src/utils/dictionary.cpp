@@ -213,7 +213,7 @@ std::string map_any::serialize(std::string const& indent) const
                 int key = any_cast<int>(p.first);
                 ret += indent;
                 ret += "  ";
-                ret += key;
+                ret += boost::lexical_cast<std::string>(key); // note: if it is integer keys, we still have to to_s() it so that it won't become garbled data when read out.
                 ret += ": ";
                 any_to_literal(ret, p.second, ",\n", indent+"  ", true, index); //ret is passed as alias
             }

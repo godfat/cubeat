@@ -7,6 +7,7 @@
    will be removed later. (when player class is out) */
 
 #include "all_fwd.hpp"
+#include "utils/Replay.hpp"
 #include <boost/tr1/functional.hpp>
 
 #ifdef _SHOOTING_CUBES_ANDROID_
@@ -49,6 +50,8 @@ public:
     App& quit();
     App& screenShot();
 
+    utils::Replay& getReplay();
+
     ~App();
 
 private:
@@ -69,6 +72,8 @@ private:
     bool this_frame_called_screenshot_;
 
     ctrl::wpTimerDispatcher global_timer_;
+
+    utils::Replay replay_;
 };
 
 }  //psc

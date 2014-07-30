@@ -4,21 +4,23 @@
 */
 
 #include "Input.hpp"
-#include "EventDispatcher.hpp"
-#include "ctrl/TimerDispatcher.hpp"
 #include "Player.hpp"
 #include "view/Scene.hpp"       //warning: is this really good...?
 #include "view/Sprite.hpp"      //warning: is this really good...?
 #include "IrrDevice.hpp"        //warning: is this really good...?
 #include "utils/Logger.hpp"
 #include "utils/dictionary.hpp"
+#include "utils/Replay.hpp"
 #include "Conf.hpp"
+#include "App.hpp"
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_
 // 2011.04.18: code removed due to possibly unresolved copyright issue.
 // if you define _USE_WIIMOTE_, this code simply cannot compile.
 #include "private/Wiimote_IR_internal.hpp"
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #endif
 
 #include "private/MouseState.hpp"
@@ -41,7 +43,7 @@ using namespace accessor;
 InputMgr::InputMgr()
     :MAX_INPUTS(2), keyboard_mouse_input_(false), inited_(false),
      window_focus_now_(false), window_focus_last_(false), mice_detected_by_manymouse_(0),
-     replay_recording_(false), poll_manymouse_event_(0)
+     poll_manymouse_event_(0)
 {
     std::cout << "InputMgr constructed." << std::endl;
 }
@@ -239,16 +241,6 @@ void InputMgr::toggleInput(bool const& flag)
     else {
         IrrDevice::i().d()->getCursorControl()->setVisible(true);
     }
-}
-
-void InputMgr::toggleRecording(bool const& flag)
-{
-    replay_recording_ = flag;
-}
-
-bool InputMgr::isRecording() const
-{
-    return replay_recording_;
 }
 
 void InputMgr::initGraphicItems()
@@ -517,33 +509,9 @@ void Input::update_btn_state()
     haste_.update_state();
     pause_.update_state();
 
-    if( InputMgr::i().isRecording() ) {
-        recording_replay();
-    }
+    App::i().getReplay().record_input_state();
 }
 
-void Input::recording_replay()
-{
-    int tickcount = EventDispatcher::i().get_timer_dispatcher("game")->get_curr_tickcount();
-    int t         = EventDispatcher::i().get_timer_dispatcher("game")->get_time();
-
-    printf("tick %d, time(ms) %d\n", tickcount, t);
-
-    // collect flow for replay
-    if( trig1_.pressed() ) {
-        printf("Input %x TRIG1 pressed at fcount=%d t=%d\n", this, tickcount, t);
-    }
-    else if( trig1_.released() ) {
-        printf("Input %x TRIG1 released at fcount=%d t=%d\n", this, tickcount, t);
-    }
-
-    if( trig2_.pressed() ) {
-        printf("Input %x TRIG2 pressed at fcount=%d t=%d\n", this, tickcount, t);
-    }
-    else if( trig2_.released() ) {
-        printf("Input %x TRIG2 released at fcount=%d t=%d\n", this, tickcount, t);
-    }
-}
 
 Input&  Input::player(wpPlayer player) { player_ = player; return *this; }
 pPlayer Input::player() const { return player_.lock(); }

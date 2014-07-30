@@ -13,6 +13,7 @@
 
 #include "Crosshair.hpp"
 #include "Button.hpp"
+#include "utils/dictionary.hpp"
 
 #include <string>
 #include <vector>
@@ -69,9 +70,6 @@ public:
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)
 
-    void toggleRecording(bool const&);
-    bool isRecording() const;
-
     int const MAX_INPUTS;
 
 private:
@@ -98,7 +96,6 @@ private:
     bool window_focus_now_;
     bool window_focus_last_;
     int  mice_detected_by_manymouse_;
-    bool replay_recording_;
     std::tr1::function<void()> poll_manymouse_event_;
 };
 

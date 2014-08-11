@@ -39,7 +39,7 @@ local act1_act1_ = {
 }
 
 local act1_act2_ = {
-  { ch=1, img="char1_new/glad", text="おーい！アキー！\nまだ教室にいるか？"},
+  { ch=1, img="char1_new/glad", text="おーい！アキー！\nまだ教室にいるか？",effect_a="slide_in" },
   { ch=1, img="char1_new/glad", text="お前もう朝から放課後まで寝たぞ！" },
   { ch=2, img="char2_new/normal", text="……" , board="dialogue_bubble_1" ,board_flip="HV"},
   { ch=1, img="char1_new/glad", text="やっぱりいるか。\n十分に寝ただろ、あのさあのさ…" },
@@ -62,7 +62,7 @@ local act1_act2_ = {
 }
 
 local act1_act3_ = {
-  { ch=1, img="char1_new/normal", text="お~コンピュータ部の設備って\nすごそうに見えるぜ"},
+  { ch=1, img="char1_new/normal", text="お~コンピュータ部の設備って\nすごそうに見えるぜ",effect_a="slide_in" },
   { ch=2, img="char3_new/normal", text="何の用ですか？" ,board_flip="HV" ,effect_a="slide_in"},
   { ch=1, img="char1_new/normal", text="あ、いや別に、\nただ一つ聞きたい…" },
   { ch=1, img="char1_new/normal", text="知ってる？\n学校で大量なキューブが出現したぜ" },
@@ -79,7 +79,7 @@ local act1_act3_ = {
 }
 
 local act1_act4_ = {
-  { ch=1, img="char1_new/normal", text="美術室…これは壮観だぜ"},
+  { ch=1, img="char1_new/normal", text="美術室…これは壮観だぜ",effect_a="slide_in" },
   { ch=1, img="char1_new/normal", text="ジークがここにキュビートを\nもってる人がいるって。\nそれは本当かな？" },
   { ch=2, img="char4_new/normal", text="そこ、何をしてる！\n絵を描くのを邪魔しないて頂戴！",board_flip="HV" ,effect_a="slide_in"},
   { ch=1, img="char1_new/normal", text="絵？\nこれ全部お前が描いたのか？" }, 
@@ -90,13 +90,13 @@ local act1_act4_ = {
   { ch=2, img="char4_new/normal", text="あなたが何を言ってるのが\nわからないわ"},
   { ch=1, img="char1_new/sad", text="え？\nまさかジーク教えたのは偽情報？"},
   { ch=1, img="char1_new/sad", text="がっかりだぜ…"},
-  { ch=2, img="char4_new/anger", text="無礼な！\n誰もワタクシに\n失望できないわ！", board="dialogue_bubble_2", effect_w="shake", effect_a="shake", pos={x=350, y=180}},
+  { ch=2, img="char4_new/anger", text="無礼な！誰もワタクシ\nに失望できないわ！", board="dialogue_bubble_2", effect_w="shake", effect_a="shake", pos={x=350, y=180}},
   
   { ch=1, text="" }
 }
 
 local act1_act5_ = {
-  { ch=1, img="char1_new/normal", text="翔鯨道場…\nいつの間にかここに来ちまったぜ"},
+  { ch=1, img="char1_new/normal", text="翔鯨道場…\nいつの間にかここに来ちまったぜ",effect_a="slide_in" },
   { ch=1, img="char1_new/normal", text="伝説のヒロ先輩いるかな？" },
   { ch=1, img="char1_new/glad", text="もし本当に伝説通りの強さなら、\n彼に勝ったオレは最強だぜ！"},
   { ch=2, img="char5_new/normal", text="ははは、野球くん！\n君も心身鍛錬しにきたんかね？" ,board_flip="HV" ,effect_a="slide_in"},
@@ -120,7 +120,7 @@ local act1_act5_ = {
 }
 
 local act1_act6_ = {
-  { ch=1, img="char1_new/normal", text="キュビートって不思議の力、\n言ってみれば\n魔術みたいなもんだぜ"},
+  { ch=1, img="char1_new/normal", text="キュビートって不思議の力、\n言ってみれば\n魔術みたいなもんだぜ",effect_a="slide_in" },
   { ch=1, img="char1_new/normal", text="魔術部の人\n何が知ってるかもしれないぜ"},
   { ch=1, img="char1_new/glad", text="ヤッハロー、\n魔術部のみんなこんにちは！" },
   { ch=2, img="char6_new/normal", text="……" ,board_flip="HV" ,effect_a="slide_in"},
@@ -137,7 +137,7 @@ local act1_act6_ = {
 }
 
 local act2_act1_ = {
-  { ch=1, img="char2_new/normal", text="あ、リュタだ～"},
+  { ch=1, img="char2_new/normal", text="あ、リュタだ～",effect_a="slide_in" },
   { ch=2, img="char1_new/glad", text="アキ、ちょうどいい、\n面白れもん見せてあげるぜ"  ,board_flip="HV",effect_a="slide_in"},
   { ch=1, img="char2_new/glad", text="わい～本当ぉ？何がな\nウサギみたいなねこかな？" ,board_flip="V"},
   { ch=2, img="char1_new/normal", text="ぜってぇ違う。\nそれ面白いのか？"},
@@ -160,7 +160,7 @@ local act2_act2_ = {
 }
 
 local act2_act3_ = {
-  { ch=1, img="char2_new/normal", text="ここにコンピュターがいっぱだね\nたぶんコンピュータ部かな" },
+  { ch=1, img="char2_new/normal", text="ここにコンピュターがいっぱだね\nたぶんコンピュータ部かな" ,effect_a="slide_in" },
   { ch=1, img="char2_new/normal", text="パソコンでテレビと似てるねぇ。\nでもパソコンより、\nアキはテレビのほうが好き"},
   { ch=1, img="char2_new/normal", text="だってテレビのほうが\nあたま使わなくっていいねぇ"},
   { ch=2, img="char3_new/normal", text="お…ちょうどよかった、\n直接あらわれたですね",board_flip="HV" ,effect_a="slide_in"},  
@@ -179,7 +179,7 @@ local act2_act3_ = {
 }
 
 local act2_act4_ = {
-  { ch=1, img="char2_new/normal", text="わぁ～\nリアの絵相変わらずきれいだねぇ" },
+  { ch=1, img="char2_new/normal", text="わぁ～\nリアの絵相変わらずきれいだねぇ" ,effect_a="slide_in" },
   { ch=2, img="char4_new/glad", text="ん？アキか",board_flip="HV" ,effect_a="slide_in"},
   { ch=2, img="char4_new/normal", text="アナタが本当に絵の良さがわかる\n品性があるかどうか分らないけれど"},
   { ch=2, img="char4_new/glad", text="ワタクシの絵は誰にも\n失望させたことないわ"},
@@ -195,7 +195,7 @@ local act2_act4_ = {
 }
 
 local act2_act5_ = {
-  { ch=1, img="char2_new/normal", text="柔道部って木多いねぇ、\n森みたい"},
+  { ch=1, img="char2_new/normal", text="柔道部って木多いねぇ、\n森みたい",effect_a="slide_in" },
   { ch=2, img="char5_new/glad", text="ハハハッ！アホ毛くん！\n君も心身鍛錬しに来たのかね？" ,board_flip="HV" ,effect_a="slide_in"},
   { ch=1, img="char2_new/glad", text="うわっ！\nジャングルの野人があらわれた！",board_flip="V"},
   { ch=2, img="char5_new/sad", text="ジャングルの…野人…",board_flip="V"},
@@ -211,7 +211,7 @@ local act2_act5_ = {
 }
 
 local act2_act6_ = {
-  { ch=1, img="char2_new/glad", text="魔術部だァ！\nアキも魔術だいすき！" ,board_flip="V"},
+  { ch=1, img="char2_new/glad", text="魔術部だァ！\nアキも魔術だいすき！" ,board_flip="V",effect_a="slide_in" },
   { ch=2, img="char6_new/normal", text="……" ,board_flip="HV" ,effect_a="slide_in"},
   { ch=1, img="char2_new/normal", text="あ、\nあなたが魔術部のバイオレットだね" ,board_flip="V"},
   { ch=1, img="char2_new/normal", text="魔術がすごく上手と聞いたよ、\nアキにも見せてくれる？"},
@@ -228,7 +228,7 @@ local act2_act6_ = {
 }
 
 local act3_act1_ = {
-  { ch=1, img="char3_new/normal", text="ん？"},
+  { ch=1, img="char3_new/normal", text="ん？",effect_a="slide_in" },
   { ch=2, img="char1_new/glad", text="あはっ！\n最強のキュビート能力者オレはなる！" ,board_flip="HV",effect_a="slide_in"},
   { ch=1, img="char3_new/normal", text="おい、そこの赤毛" },
   { ch=2, img="char1_new/normal", text="よう、何の用だぜ？"},
@@ -292,7 +292,7 @@ local act3_act4_ = {
 }
 
 local act3_act5_ = {
-  { ch=1, img="char3_new/normal", text="そろそろキュビート能力の\n獲得条件を見えてきました"},
+  { ch=1, img="char3_new/normal", text="そろそろキュビート能力の\n獲得条件を見えてきました",effect_a="slide_in" },
   { ch=1, img="char3_new/normal", text="リアとアキの髪飾り、\nリュタのリストバンド…" },
   { ch=1, img="char3_new/normal", text="キューブ型アクセサリを着けて、\nキューブに触ると…" },
   { ch=1, img="char3_new/glad", text="キュビート能力を手に入れる！"},
@@ -308,7 +308,7 @@ local act3_act5_ = {
 }
 
 local act3_act6_ = {
-  { ch=1, img="char3_new/normal", text="最新の情報では魔術部も\nキュビートが上手な人がいると"},
+  { ch=1, img="char3_new/normal", text="最新の情報では魔術部も\nキュビートが上手な人がいると",effect_a="slide_in" },
   { ch=1, img="char3_new/normal", text="確かに魔術部に\nマジックがうまいが\n口ベタな女マジシャンがいますね…"},
   { ch=2, img="char6_new/glad", text="……はい",board_flip="HV",effect_a="slide_in"},
   { ch=1, img="char3_new/glad", text="いいですな、\nどうやら僕が探している人は君ね"},
@@ -390,7 +390,7 @@ local act4_act5_ = {
 }
 
 local act4_act6_ = {
-  { ch=1, img="char4_new/normal", text="うむ、魔術部か"},
+  { ch=1, img="char4_new/normal", text="うむ、魔術部か",effect_a="slide_in" },
   { ch=2, img="char6_new/glad", text="ハイ…",board_flip="HV"},
   { ch=1, img="char4_new/normal", text="わざわざ迎えにこなくてもいいよ、\nちょっと通っただけよ"},
   { ch=2, img="char6_new/normal", text="……"},

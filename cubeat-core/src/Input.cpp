@@ -327,6 +327,7 @@ void Input::update()
 {
     if( ai_controlled_ ) { //AI integration testing
         //This will update AI's button state using AI's simulated input of LAST FRAME.
+        App::i().getReplay().set_input_for(this);
         update_btn_state(); //that's why we have to call update_btn_state() first when it's ai_controlled_.
         write_state_now_to_last();
         if( InputMgr::i().keyboardMouseInput() ) {
@@ -509,7 +510,7 @@ void Input::update_btn_state()
     haste_.update_state();
     pause_.update_state();
 
-    App::i().getReplay().record_input_state();
+    App::i().getReplay().record_input_state(this);
 }
 
 

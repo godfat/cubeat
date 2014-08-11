@@ -49,6 +49,8 @@ public:
     App& quit();
     App& screenShot();
 
+    App& cheat1();
+    
     ~App();
 
 private:

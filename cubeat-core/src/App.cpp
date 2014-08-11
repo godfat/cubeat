@@ -177,6 +177,14 @@ App& App::screenShot()
     return *this;
 }
 
+App& App::cheat1()
+{
+    if( presenter::game::pDemo demo = std::tr1::dynamic_pointer_cast<presenter::game::Demo>(master_presenter_) ) {
+        demo->endgame(1);
+    }
+    return *this;
+}    
+
 time_t realtime()
 {
     return IrrDevice::i().d()->getTimer()->getRealTime();

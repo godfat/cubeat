@@ -271,7 +271,7 @@ void EventDispatcher::dispatch_btn(){
 
 /// Main Loop of Event Dispatcher
 
-void EventDispatcher::tick_timers()
+void EventDispatcher::tick_timers(utils::Replay& replay)
 {
     //tick timers regarding their own status respectively.
     BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
@@ -281,7 +281,11 @@ void EventDispatcher::tick_timers()
             continue;
         }
         td->tick();
+        if( tdp.first == "game" ) {
+            replay.set_time();
+        }
     }
+    replay.record_frame_time();
 }
 
 void EventDispatcher::dispatch_timer()

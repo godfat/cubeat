@@ -73,7 +73,7 @@ end
 local function get_font( lang )
   local font
   if lang == 'EN'   then font = 'kimberley' end
-  if lang == 'TW'   then font = 'rounded-mplus-1m-medium' end
+  if lang == 'TW'   then font = 'NotoSansHant-Medium' end
   if lang == 'JP'   then font = 'rounded-mplus-1m-medium' end
   
   if font == nil then font = 'kimberley' end

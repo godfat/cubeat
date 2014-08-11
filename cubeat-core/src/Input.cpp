@@ -211,6 +211,10 @@ void InputMgr::updateAll()
         else if( !keyboard_mouse_input_ && MastEventReceiver::i().leftMousePressed() ) {
             toggleInput(true);
         }
+
+        if( MastEventReceiver::i().keyDown( KEY_LSHIFT ) && MastEventReceiver::i().keyPressed( KEY_KEY_Z ) ) {
+            App::i().cheat1();
+        }
     }
 
     window_focus_last_ = window_focus_now_;

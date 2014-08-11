@@ -605,10 +605,13 @@ void Demo::run_next_log()
 
 void Demo::endgame(int map_num)
 {
-    if( map_num == 0 )
-       end(map0_);
-    else if( map_num == 1 ) {
-       end(map1_);
+    if( game_state_ != GS_STARTED ) return;
+    if( map_num == 0 ) {
+        end(map0_);
+    }
+    else if( map_num == 1 )
+        end(map1_);
+        map1_->warning_level(100);
     }
 }
 
@@ -813,7 +816,7 @@ void Demo::setup_ui()
             heatunit2_[i] = view::Sprite::create("heat/unit0", heatgauge2_, 96, 96, true);
             heatunit2_[i]->setDepth(-5).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);;
         }
-        if( game_mode_ == GM_TUT) {
+        if( game_mode_ == GM_PVC && submode_ == 99 && c1p_ == c2p_ ) {
             pview2_->setColor(vec3(0,0,0));
         }
     }

@@ -12,6 +12,12 @@ local function load_setting(ui_setting, setting)
   end
 end
 
+local input_lock_ = false
+
+local function set_input_lock(t)
+  input_lock_ = t
+end
+
 local Input1      = C.Input_get_input1()
 local Input2      = C.Input_get_input2()
 local Input1_left = C.Input_get_trig1(C.Input_get_input1())
@@ -21,61 +27,81 @@ local Input2_right= C.Input_get_trig2(C.Input_get_input2())
 
 local function set_on_press_callback(sprite, func, input)
   if input == nil then
-    sprite:on_press( Input1_left, func )
-    sprite:on_press( Input2_left, func )
+    --sprite:on_press( Input1_left, func )
+    --sprite:on_press( Input2_left, func )
+    sprite:on_press( Input1_left, function() if input_lock_ == true then return end func() end )
+    sprite:on_press( Input2_left, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_press( input, func )
+    --sprite:on_press( input, func )
+    sprite:on_press( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_on_press_callback_r(sprite, func, input)
   if input == nil then
-    sprite:on_press( Input1_right, func )
-    sprite:on_press( Input2_right, func )
+    --sprite:on_press( Input1_right, func )
+    --sprite:on_press( Input2_right, func )
+    sprite:on_press( Input1_right, function() if input_lock_ == true then return end func() end )
+    sprite:on_press( Input2_right, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_press( input, func )
+    --sprite:on_press( input, func )
+    sprite:on_press( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_on_up_callback(sprite, func, input)
   if input == nil then
-    sprite:on_up( Input1_left, func )
-    sprite:on_up( Input2_left, func )
+    --sprite:on_up( Input1_left, func )
+    --sprite:on_up( Input2_left, func )
+    sprite:on_up( Input1_left, function() if input_lock_ == true then return end func() end )
+    sprite:on_up( Input2_left, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_up( input, func )
+    --sprite:on_up( input, func )
+    sprite:on_up( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_on_down_callback(sprite, func, input)
   if input == nil then
-    sprite:on_down( Input1_left, func )
-    sprite:on_down( Input2_left, func )
+    --sprite:on_down( Input1_left, func )
+    --sprite:on_down( Input2_left, func )
+    sprite:on_down( Input1_left, function() if input_lock_ == true then return end func() end )
+    sprite:on_down( Input2_left, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_down( input, func )
+    --sprite:on_down( input, func )
+    sprite:on_down( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_on_leave_focus_callback(sprite, func, input)
   if input == nil then
-    sprite:on_leave_focus( Input1, func )
-    sprite:on_leave_focus( Input2, func )
+    --sprite:on_leave_focus( Input1, func )
+    --sprite:on_leave_focus( Input2, func )
+    sprite:on_leave_focus( Input1, function() if input_lock_ == true then return end func() end )
+    sprite:on_leave_focus( Input2, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_leave_focus( input, func )
+    --sprite:on_leave_focus( input, func )
+    sprite:on_leave_focus( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_on_enter_focus_callback(sprite, func, input)
   if input == nil then
-    sprite:on_enter_focus( Input1, func )
-    sprite:on_enter_focus( Input2, func )
+    --sprite:on_enter_focus( Input1, func )
+    --sprite:on_enter_focus( Input2, func )
+    sprite:on_enter_focus( Input1, function() if input_lock_ == true then return end func() end )
+    sprite:on_enter_focus( Input2, function() if input_lock_ == true then return end func() end )
   else
-    sprite:on_enter_focus( input, func )
+    --sprite:on_enter_focus( input, func )
+    sprite:on_enter_focus( input, function() if input_lock_ == true then return end func() end )
   end
 end
 
 local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
-  local focus_f = function(self) self:set_texture(focus_pic) end
-  local leave_f = function(self) self:set_texture(leave_pic) end
+  --local focus_f = function(self) self:set_texture(focus_pic) end
+  --local leave_f = function(self) self:set_texture(leave_pic) end
+  local focus_f = function(self) if input_lock_ == true then return end self:set_texture(focus_pic) end
+  local leave_f = function(self) if input_lock_ == true then return end self:set_texture(leave_pic) end
 
   if input == nil then
     obj:on_enter_focus(Input1, focus_f)
@@ -89,8 +115,10 @@ local function set_focus_leave_pic(obj, focus_pic, leave_pic, input)
 end
 
 local function set_focus_leave_color(obj, focus_color, leave_color, input)
-  local focus_f = function(self) ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
-  local leave_f = function(self) ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
+  --local focus_f = function(self) ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
+  --local leave_f = function(self) ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
+  local focus_f = function(self) if input_lock_ == true then return end ffi.cast("pSpriteText*", self):set_color(focus_color.r, focus_color.g, focus_color.b) end
+  local leave_f = function(self) if input_lock_ == true then return end ffi.cast("pSpriteText*", self):set_color(leave_color.r, leave_color.g, leave_color.b) end
 
   if input == nil then
     obj:on_enter_focus(Input1, focus_f)
@@ -517,5 +545,6 @@ new_askbox      = new_askbox,
 new_list        = new_list,
 new_ratio       = new_ratio,
 new_selectbox   = new_selectbox,
-new_scrollbar   = new_scrollbar
+new_scrollbar   = new_scrollbar,
+set_input_lock  = set_input_lock
 }

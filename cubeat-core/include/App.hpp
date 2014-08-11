@@ -52,6 +52,8 @@ public:
 
     utils::Replay& getReplay();
 
+    App& cheat1();
+    
     ~App();
 
 private:

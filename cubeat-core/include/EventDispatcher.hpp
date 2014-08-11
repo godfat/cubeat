@@ -3,6 +3,7 @@
 
 #include "ButtonEnum.hpp"
 #include "all_fwd.hpp"
+#include "utils/Replay.hpp"
 
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/tuple.hpp>
@@ -88,7 +89,7 @@ public:
     EventDispatcher& clear_obj_event(view::wpScene const& scene);
 
     void dispatch();
-    void tick_timers();
+    void tick_timers(utils::Replay& replay);
     ~EventDispatcher();
 
 private:

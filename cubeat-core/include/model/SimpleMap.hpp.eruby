@@ -85,6 +85,7 @@ public:
     // end
 
     int warning_level() const         { return warning_level_; }
+    void warning_level(int const& i)  { warning_level_ = i; }
     int score() const                 { return score_; }
     int garbage_left() const          { return garbage_left_; }
     int current_sum_of_attack() const { return current_sum_of_attack_; }

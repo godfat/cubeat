@@ -104,8 +104,14 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     uiconf_ = Conf::i().config_of("ui/demo_layout");
 
     // remember the random seed.
-    int seed = std::time(0)^std::clock();
-    App::i().getReplay().seed(seed);
+    int seed = 0;
+    if( App::i().getReplay().read_file("tmp/replay") ) {
+        seed = App::i().getReplay().seed();
+    } else {
+        seed = std::time(0)^std::clock();
+        App::i().getReplay().seed(seed);
+    }
+    App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
     utils::Random::i().seed(seed);
 
 // WTF MEMO 2012.9 failed to adjust for balance
@@ -601,8 +607,9 @@ void Demo::endgame(int map_num)
 {
     if( map_num == 0 )
        end(map0_);
-    else if( map_num == 1 )
+    else if( map_num == 1 ) {
        end(map1_);
+    }
 }
 
 view::pScene Demo::get_ui_scene()
@@ -724,7 +731,7 @@ void Demo::game_start()
     scene_->allowPicking(true);
 
     /// MEMO: replay recording starts here
-    App::i().getReplay().toggle_enable(true);
+    App::i().getReplay().toggle_recording_andor_replaying(true);
 
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
@@ -739,10 +746,15 @@ void Demo::game_start()
         map1_->start_dropping();
     }
 
-    if( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG )
-        player1_->startThinking();
-    if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
-        player0_->startThinking();
+    if( App::i().getReplay().is_replaying() ) {
+        ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(true);
+        ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
+    } else {
+        if( ( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG ) )
+            player1_->startThinking();
+        if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
+            player0_->startThinking();
+    }
 
     game_state_ = GS_STARTED;
 }
@@ -1023,7 +1035,7 @@ void Demo::game_stop()
     }
 
     /// MEMO: replay recording stops here
-    App::i().getReplay().toggle_enable(false);
+    App::i().getReplay().toggle_recording_andor_replaying(false);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);

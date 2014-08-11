@@ -209,6 +209,7 @@
 		<Unit filename="include\utils\dictionary.hpp" />
 		<Unit filename="include\utils\math.hpp" />
 		<Unit filename="include\utils\math.hpp.eruby" />
+		<Unit filename="include\utils\to_s.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp.eruby" />
 		<Unit filename="include\view\All.hpp" />

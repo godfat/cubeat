@@ -212,8 +212,8 @@ int App::run(std::tr1::function<void()> tester)
             this_frame_called_screenshot_ = false;
 
             t1 = realtime();
-            EventDispatcher::i().tick_timers();
-            replay_.record_frame_time();
+            EventDispatcher::i().tick_timers(replay_);
+            replay_.replay_advance();
             InputMgr::i().updateAll();
             t2 = realtime();
             EventDispatcher::i().dispatch();

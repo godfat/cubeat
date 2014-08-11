@@ -23,7 +23,6 @@ local transfer_title_
 --
 local effect_ = {}
 local effect_count_ = 0
-local effect_lock_  = false
 
 ------------------------------------------------------------
 
@@ -73,29 +72,29 @@ local function fade_out_blocker()
   has_blocker_ = false
 end
 
-local function close_effect_lock()
-  effect_lock_  = false
-end
-
 local function add_effect_count()
   effect_count_ = effect_count_ + 1
 end
 
 local function remove_effect_count()
   effect_count_ = effect_count_ - 1
-  if effect_count_ == 0 then effect_lock_  = false end
+  if effect_count_ == 0 then ui.set_input_lock(false) end
 end
 
 ------------------------------------------------------------
 -- EFFECT
 
 effect_.fade = function(effect)
+  ui.set_input_lock(true)
+
   for k,v1 in pairs(page_obj_) do
-    v1:tween("Linear", "Alpha",   0, 255, 500, 0, nil, 0)
+    add_effect_count()
+    v1:tween("Linear", "Alpha",   0, 255, 1500, 0, remove_effect_count, 0)
   end
   for k,v2 in pairs(to_be_delete_) do
+    add_effect_count()
     v2:set_visible(true)
-    v2:tween("Linear", "Alpha", 255,   0, 500, 0, function() v2:set_visible(false) end, 0)
+    v2:tween("Linear", "Alpha", 255,   0, 1500, 0, function() v2:set_visible(false) remove_effect_count() end, 0)
   end
 end
 
@@ -114,10 +113,12 @@ effect_.slide_in = function(effect)
 end
 
 effect_.slide_in_to_talk = function(effect)
+  ui.set_input_lock(true)
+  
   local s1 = ffi.new("v2", -2160, 0)
   local e1 = ffi.new("v2", 0, 0)
   starter_page_ = require ('rc/script/ui/demo/talk/talk')
-  local function cb() starter_page_.starter(page_obj_) end
+  local function cb() starter_page_.starter(page_obj_) ui.set_input_lock(false) end
   vorig_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 0)
   fade_in_blocker()
 end
@@ -165,10 +166,12 @@ effect_.slide_out_transfer = function(effect)
 end
 
 effect_.slide_out_transfer_to_talk = function(effect)
+  ui.set_input_lock(true)
+  
   local s1 = ffi.new("v2", 640,  360)
   local e1 = ffi.new("v2", 640, -480)
   starter_page_ = require ('rc/script/ui/demo/talk/talk')
-  local function cb() starter_page_.starter(page_obj_) end
+  local function cb() starter_page_.starter(page_obj_) ui.set_input_lock(false) end
   transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 1000)
 end
 

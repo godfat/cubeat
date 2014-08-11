@@ -57,7 +57,7 @@ public:
         using namespace psc;
 
         const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-        const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (utils::random(pps)) : MinParticlesPerSecond;
+        const f32 perSecond = /*pps ? (f32)MinParticlesPerSecond + (utils::random(pps)) : */MinParticlesPerSecond;
         const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
         if(Time > everyWhatMillisecond)
@@ -89,28 +89,28 @@ public:
                 if( MaxAngleDegrees )
                 {
                     core::vector3df tgt = Direction;
-                    tgt.rotateXYBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
-                    tgt.rotateYZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
-                    tgt.rotateXZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+//                    tgt.rotateXYBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+//                    tgt.rotateYZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
+//                    tgt.rotateXZBy( (utils::random(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df() );
                     p.vector = tgt;
                 }
 
                 p.endTime = now + MinLifeTime;
-                if (MaxLifeTime != MinLifeTime)
-                    p.endTime += utils::random(MaxLifeTime - MinLifeTime);
+//                if (MaxLifeTime != MinLifeTime)
+//                    p.endTime += utils::random(MaxLifeTime - MinLifeTime);
 
-                if (MinStartColor==MaxStartColor)
+//                if (MinStartColor==MaxStartColor)
                     p.color = MinStartColor;
-                else
-                    p.color = MinStartColor.getInterpolated(MaxStartColor, (utils::random(100)) / 100.0f);
+//                else
+//                    p.color = MinStartColor.getInterpolated(MaxStartColor, (utils::random(100)) / 100.0f);
 
                 p.startColor = p.color;
                 p.startVector = p.vector;
 
-                if (MinStartSize==MaxStartSize)
+//                if (MinStartSize==MaxStartSize)
                     p.startSize = MinStartSize;
-                else
-                    p.startSize = MinStartSize.getInterpolated(MaxStartSize, (utils::random(100)) / 100.0f);
+//                else
+//                    p.startSize = MinStartSize.getInterpolated(MaxStartSize, (utils::random(100)) / 100.0f);
                 p.size = p.startSize;
 
                 Particles.push_back(p);

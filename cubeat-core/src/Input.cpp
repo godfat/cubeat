@@ -13,6 +13,7 @@
 #include "utils/Logger.hpp"
 #include "utils/dictionary.hpp"
 #include "Conf.hpp"
+#include "App.hpp"
 #include "private/MastEventReceiver.hpp"
 
 #ifdef _USE_WIIMOTE_

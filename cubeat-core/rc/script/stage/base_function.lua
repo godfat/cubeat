@@ -23,6 +23,7 @@ end
 
 local function cleanup(texture_release)
   for i = 1, #layers do
+    print("Stage2: releasing layer "..tostring(i))
     layers[i]:remove(texture_release)
     layers[i] = nil
   end

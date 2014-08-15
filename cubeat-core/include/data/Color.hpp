@@ -34,7 +34,7 @@ public:
         return std::distance(id2rgb, std::find(id2rgb+1, id2rgb+8, color.rgb()));
     }
     static Color random_rgb_color(){
-        return Color(utils::random(white+1), 0);
+        return Color(utils::ya_random(white+1), 0);
     }
 
 public:
@@ -63,7 +63,7 @@ public:
 
 private:
     static int random_id(int limit){
-        return utils::random(limit)+1;
+        return utils::ya_random(limit)+1;
     }
 
 private:

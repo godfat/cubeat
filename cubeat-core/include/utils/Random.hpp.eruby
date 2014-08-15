@@ -106,10 +106,32 @@ inline int r_random(int max){
     return Random2::i().random(max);
 }
 
+class Random3{
+public:
+    static Random3& i(){ static Random3 rnd; return rnd; }
+
+public:
+    int random(int max){
+        if( max < 1 ) return 0;
+        return dice_(eng_) % max;
+    }
+    void seed(int const& seed){
+        eng_.seed(seed);
+    }
+private:
+    Random3(): eng_(std::time(0)^std::clock()), dice_(0, RAND_MAX-1){}
+    std::tr1::mt19937 eng_;
+    std::tr1::uniform_int<int> dice_;
+};
+
+inline int ya_random(int max){
+    return Random3::i().random(max);
+}
+
 inline int distributed_random(std::vector<double> const& d){
     //not yet...
     //double roll = static_cast<double>( utils::r_random(1000) ) / 10.0; // 0 ~ 99.9
-    double roll = static_cast<double>( utils::random(1000) ) / 10.0; // 0 ~ 99.9
+    double roll = static_cast<double>( utils::ya_random(1000) ) / 10.0; // 0 ~ 99.9
     for( size_t i = 0; i < d.size() - 1; ++i ) {
         if( roll >= d[i] ) {
             roll -= d[i];

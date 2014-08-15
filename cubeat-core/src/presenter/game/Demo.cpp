@@ -112,7 +112,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         App::i().getReplay().seed(seed);
     }
     App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
-    utils::Random::i().seed(seed);
+    utils::Random3::i().seed(seed);
 
 // WTF MEMO 2012.9 failed to adjust for balance
     passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");

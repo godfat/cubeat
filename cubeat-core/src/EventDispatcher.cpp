@@ -283,6 +283,11 @@ void EventDispatcher::tick_timers(utils::Replay& replay)
         td->tick();
         if( tdp.first == "game" ) {
             replay.set_time();
+
+            /// DEBUG
+            if( !td->is_stopped() && ( replay.is_recording() || replay.is_replaying() ) ) {
+                printf(" == EventDispatcher tick timer 'game', tick count: %d, time: %ld\n", td->get_curr_tickcount(), td->get_time());
+            }
         }
     }
     replay.record_frame_time();

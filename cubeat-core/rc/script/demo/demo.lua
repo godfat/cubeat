@@ -14,7 +14,7 @@ local storyend_config = require 'rc/script/ui/demo/storyend/config'
 local vsend       = require 'rc/script/ui/demo/vsend/vsend'
 local endingcheck = require 'rc/script/ui/demo/endingcheck/endingcheck'
 
-local tutorial = require 'rc/script/demo/tutorial'
+-- local tutorial = require 'rc/script/demo/tutorial'
 
 ----------------------------------------------------------------------------
 
@@ -119,18 +119,18 @@ function init_override(in_place, submode)
   print("Inplace: "..tostring(in_place))
   print("Submode: "..submode)
 
-  if submode == 50 then 
-    tutorial.init(demo_) 
-  else
+  -- if submode == 50 then 
+    -- tutorial.init(demo_) 
+  -- else
     challenge.init_override(demo_, in_place, submode)
-  end
+  -- end
 end
 
 -- occurs each frame, after map and player states update,
 -- but it WILL NOT BE CALLED after endgame(map_id) is called.
 function check_ending_condition_by_frame(submode)
   --print('---- single mode: check_ending_condition_by_frame ----')
-  if submode == 50 then tutorial.update() return end
+  -- if submode == 50 then tutorial.update() return end
   challenge.check_ending_condition_by_frame(demo_, submode)
 end
 
@@ -144,11 +144,11 @@ end
 -- Will be reached if you call leave_and_cleanup() in Lua,
 -- it will also be called if you PAUSE & QUIT.
 function cleanup(submode)
-  print('---- single mode: cleanup ----')
+  print('---- Demo (Lua side): cleanup ----')
   challenge.cleanup()
   demo_:set_countdown(false)
   
-  tutorial.cleanup()
+  -- tutorial.cleanup()
   collectgarbage("collect")
 end
 

@@ -72,7 +72,7 @@ pDemo Demo::init()
     PlayerAbility::ability_modify( gameplay_.M("ability_constants") );
 
     // setup stage & ui & player's view objects:
-    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
+//    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     L_ = luaL_newstate();
     luaL_openlibs(L_);
@@ -120,7 +120,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     scene_->allowPicking(false);
 
     //load scene again first
-    if( !inplace ) {
+    if( !inplace && stage_ ) {
         stage_->releaseResource();
         stage_.reset();
     }
@@ -268,11 +268,11 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     scene_->allowPicking(false);
 
     //load scene again first
-    if( !inplace ) {
+    if( !inplace && stage_ ) {
         stage_->releaseResource();
         stage_.reset();
-        stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
     }
+    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     data::pViewSetting s0;
     s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
@@ -602,7 +602,6 @@ void Demo::endgame(int map_num)
     }
     else if( map_num == 1 ) {
         end(map1_);
-        map1_->warning_level(100);
     }
 }
 
@@ -1036,6 +1035,11 @@ void Demo::cleanup()
         player1_.reset();
         pview2_.reset();
     }
+
+    if( stage_ ) {
+        stage_->releaseResource();
+        stage_.reset();
+    }
 }
 
 bool Demo::ai_logging(pMap lose_map)
@@ -1444,7 +1448,9 @@ void Demo::cycle()
 
         t4 = clock();
     }
-    stage_->cycle();
+    if( stage_ ) {
+        stage_->cycle();
+    }
     t5 = clock();
     scene_->redraw();
     t6 = clock();

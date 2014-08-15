@@ -49,7 +49,7 @@ void Replay::set_time()
     if( ctrl::pTimerDispatcher td = game_timer_.lock() ) {
         if( replaying_ && !td->is_stopped() ) {
             if( td->get_curr_tickcount() < static_cast<int>(replay_data_.V("frametime").size()) ) {
-                td->set_time( replay_data_.V("frametime").I( td->get_curr_tickcount() ) );
+                td->set_time( replay_data_.V("frametime").I( td->get_curr_tickcount()-1 ) );
             } else {
                 printf("Replay data frametime(tick %d) out of bound.\n", td->get_curr_tickcount());
             }
@@ -146,7 +146,7 @@ void Replay::record_input_state(ctrl::Input* input) {
             */
 
             // try to poll inputs
-            int current_tick_num = replay_data_.V("frametime").size() - 1; // starts from 0
+            int current_tick_num = replay_data_.V("frametime").size();// - 1; // starts from 0
             bool we_have_input_this_frame = false;
             vector_any input_data;
 
@@ -173,7 +173,7 @@ void Replay::record_input_state(ctrl::Input* input) {
                     replay_data_.M("input").insert(current_tick_num, vector_any());
                 }
                 replay_data_.M("input").V(current_tick_num).push_back(input_data);
-                printf(" tick: %d, time: %d, pid: %d, x: %d  y: %d\n", current_tick_num, replay_data_.V("frametime").I(current_tick_num), input_data.I(0), input_data.I(1), input_data.I(2) );
+                printf(" tick: %d, time: %d, pid: %d, x: %d  y: %d\n", current_tick_num, replay_data_.V("frametime").I(current_tick_num-1), input_data.I(0), input_data.I(1), input_data.I(2) );
                 printf(" -- button: %d, down: %d\n", input_data.V(3).I(0), input_data.V(3).I(1));
                 if( input_data.size() == 5 ) {
                     printf(" -- button: %d, down: %d\n", input_data.V(4).I(0), input_data.V(4).I(1));

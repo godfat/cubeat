@@ -17,17 +17,12 @@ local function init(demo, parent)
   
   local menu = {}
   
-  menu.bg = ui.new_image { parent = root_, path='nothing', w=1280, h=720, center=false }
-  menu.bg:set_depth(100)
-  menu.bg:set_red(0) 
-  menu.bg:set_green(200) 
-  
   menu.start_button = ui.new_text{ parent = root_, title='press any key', x=640, y=480, size=32, center=true }
   menu.start_button:set_scale(2.0)
   menu.start_button:tween("SineCirc", "Alpha", 255, 0, 1000, -1)
 
   menu.start_button:on_press(function(self)
-    switch.load_page('mainmenu', {id="slide_out_title"})
+    switch.load_page('mainmenu')
   end)
 
   return menu

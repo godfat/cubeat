@@ -1,4 +1,5 @@
 local list_ = {
+  'rc/script/ui/demo/startscreen/startscreen.lua',
   'rc/script/ui/demo/mainmenu/mainmenu.lua',
   'rc/script/ui/demo/difficulty/difficulty.lua',
   'rc/script/ui/demo/challengemenu/challengemenu.lua',

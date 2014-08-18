@@ -9,7 +9,7 @@ local to_be_delete_
 local data_ = nil
 local current_page_ = nil
 local starter_page_ = nil
-local has_blocker_  = true
+local has_blocker_  = false
 --
 local game_demo_
 local vorig_
@@ -51,7 +51,7 @@ local function init(parent, demo)
   blocker_ = view.new_sprite("blahblah", root_, 1280, 720, false)
   blocker_:set_pos(0, 0)
   blocker_:set_color(0, 0, 0)
-  blocker_:set_alpha(128)
+  blocker_:set_alpha(0)
   
   transfer_ = ui.new_image{ parent=root_, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
   transfer_:set_red(0)
@@ -135,10 +135,6 @@ effect_.slide_out_title = function(effect)
   local s4 = ffi.new("v2", 640, 690)
   local e4 = ffi.new("v2", 640, 780)
   teamname_:tween("ISine", "Pos2D", s4, e4, 400)
-
-  if not effect.keep_blocker then
-    fade_out_blocker()
-  end
 end
 
 effect_.slide_in_title = function(effect)
@@ -153,10 +149,6 @@ effect_.slide_in_title = function(effect)
   local s4 = ffi.new("v2", 640, 780)
   local e4 = ffi.new("v2", 640, 690)
   teamname_:tween("OSine", "Pos2D", s4, e4, 400)
-  
-  if not has_blocker_ then
-    fade_in_blocker()
-  end
 end
 
 effect_.slide_out_transfer = function(effect)
@@ -214,7 +206,6 @@ local function load_page(name, effect, data)
   current_page_ = 'rc/script/ui/demo/'..name..'/'..name
   page_obj_ = p.init(game_demo_, vorig_, data)
   
-  --if effect and effect.id ~= nil then effect_[effect.id](effect) end
   show_effect(effect)
 
   view.debug_hack()

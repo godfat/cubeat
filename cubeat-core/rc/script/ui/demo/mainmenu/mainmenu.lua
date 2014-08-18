@@ -9,7 +9,7 @@ local basepath = require 'rc/script/helper'.basepath
 local select_config = require 'rc/script/ui/demo/select/config'
 local storystage    = require 'rc/script/ui/demo/storyend/config'
 
-require 'rc/script/demo/defs'
+-------------------------------------------------------------------
 
 local root_ = nil
 
@@ -87,10 +87,11 @@ local function init(demo, parent)
   
   -- menu.btn_tut2     = ui.new_text{ parent = root_, title='tutorial test', x=360, y=180, size=32 }
   -- menu.btn_tut2:set_scale(1.5)
+  menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=550, y=380, size=32 }
   
   menu.btn_story:on_press(function(self)
     storystage.set_stage(1)
-    switch.load_page('select', {id="slide_out_title", keep_blocker=true}, { game_mode=99, level=0 })
+    switch.load_page('select', {id="slide_out_title"}, { game_mode=99, level=0 })
   end)
   
   menu.btn_vs_cpu:on_press(function(self)
@@ -101,7 +102,7 @@ local function init(demo, parent)
   
   menu.btn_vs_ppl:on_press(function(self)
     if not check_tutorial(ask_tutorial) then return end
-    switch.load_page('select', {id="slide_out_title", keep_blocker=true}, { game_mode = 0 })
+    switch.load_page('select', {id="slide_out_title"}, { game_mode = 0 })
   end)
   
   menu.btn_chall:on_press(function(self)
@@ -136,6 +137,10 @@ local function init(demo, parent)
   
   menu.btn_quit:on_press(function(self) 
     demo:quit()
+  end)
+  
+  menu.btn_backtostart:on_press(function(self)
+    switch.load_page('startscreen', {id="slide_in_title"})
   end)
   
   -- menu.btn_test:on_press(function(self)

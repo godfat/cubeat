@@ -60,7 +60,7 @@ function slide_in()
     switch.show_effect( {id="slide_in_to_talk"} )
   else
     show_everything()
-    switch.load_page('mainmenu', {id="slide_in_title"})
+    switch.load_page('mainmenu')
     switch.show_effect( {id="slide_in"} )
   end
 end
@@ -77,8 +77,8 @@ function init(demo)
   switch.init(scene_, demo_)
 
   --preload ui
-  switch.load_page('select')
-  switch.load_page('mainmenu')
+  switch.preload_page('select')
+  switch.preload_page('mainmenu')
   switch.load_page('startscreen')
     
   -- test: add refresh button

@@ -77,12 +77,10 @@ function init(demo)
   switch.init(scene_, demo_)
 
   --preload ui
-  switch.load_page('select'   )
-  switch.load_page('mainmenu' )
-  
-  -- test: show file time: 
-  print( " ftime of mainmenu.lua: " .. C.get_ftime( 'rc/script/ui/demo/mainmenu/mainmenu.lua' ) )
-  
+  switch.load_page('select')
+  switch.load_page('mainmenu')
+  switch.load_page('startscreen')
+    
   -- test: add refresh button
   refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=10, y=670, size=32, depth=-1000 }
   refresh_btn_:set_scale(1.2)

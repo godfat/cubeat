@@ -205,9 +205,9 @@ local function init(demo, parent, data)
   menu.btn_back:set_depth(-300)
   menu.btn_back:on_press(function(self)
     if data_ then
-      switch.load_page(data_.last_menu or 'mainmenu', {id="slide_in_title"}, data_)
+      switch.load_page(data_.last_menu or 'mainmenu', nil, data_)
     else
-      switch.load_page('mainmenu', {id="slide_in_title"})
+      switch.load_page('mainmenu')
     end
   end)
   

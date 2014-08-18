@@ -45,7 +45,7 @@ local function game_start(self)
         demo_game_:init_story(c1p, c2p, sconf, lv)
       end
     else
-      switch.load_page('mainmenu', {id="slide_in_title"})
+      switch.load_page('mainmenu')
     end
   end
 end
@@ -309,7 +309,7 @@ local function init(demo, parent, data)
   end
   local function leave()
     reset()
-    switch.load_page('mainmenu', {id="slide_in_title"})
+    switch.load_page('mainmenu')
   end
   local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
   menu.TalkBackGround = ui.new_image{ parent=root_, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,

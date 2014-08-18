@@ -26,22 +26,22 @@ local function init(demo, parent, data)
   menu.btn_easy:on_press(function(self)
     data.level = 0
     data.last_menu = 'difficulty'
-    switch.load_page('select', {id="slide_out_title"}, data)
+    switch.load_page('select', nil, data)
   end)
   menu.btn_normal:on_press(function(self)
     data.level = 1
     data.last_menu = 'difficulty'
-    switch.load_page('select', {id="slide_out_title"}, data)
+    switch.load_page('select', nil, data)
   end)
   menu.btn_hard:on_press(function(self)
     data.level = 2
     data.last_menu = 'difficulty'
-    switch.load_page('select', {id="slide_out_title"}, data)
+    switch.load_page('select', nil, data)
   end)
   menu.btn_veryhard:on_press(function(self)
     data.level = 3
     data.last_menu = 'difficulty'
-    switch.load_page('select', {id="slide_out_title"}, data)
+    switch.load_page('select', nil, data)
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

@@ -291,7 +291,7 @@ local function init(demo, parent, data)
   ch_choose[1] = select_config.ch_choose[1]
   ch_choose[2] = select_config.ch_choose[2]
   
-  local function play()
+  local function play() -- the same as "starter" need refactor
     local script
     if data.game_end then
       script = get_end_script(config.lang)
@@ -357,7 +357,7 @@ local function init(demo, parent, data)
   return menu
 end
 
-local function starter(menu)
+local function starter(menu) -- the same as "starter" need refactor
   local script
   if data_.game_end then
     script = get_end_script(config.lang)

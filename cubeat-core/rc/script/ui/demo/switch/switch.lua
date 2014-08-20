@@ -66,7 +66,7 @@ local function init(parent, demo)
   skyblue_ = ui.new_image { parent = root_, path='nothing', w=1280, h=720, center=false }
   skyblue_:set_depth(100)
   skyblue_:set_red(0) 
-  skyblue_:set_green(200) 
+  skyblue_:set_green(172) 
   
   bg_ = ui.new_image{ parent=root_, path='mainmenu/bg', y=720, w=1280, h=720, center=false }
   bg_:set_depth(50)

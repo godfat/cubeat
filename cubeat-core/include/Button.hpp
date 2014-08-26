@@ -17,7 +17,8 @@ public:
     BSTATE const& state() const { return state_; }
     bool const pressed() const { return (last_ == false && now_ == true); }
     bool const released()const { return (last_ == true && now_ == false); }
-    bool const changed() const { return last_ != now_; }
+    //bool const changed() const { return last_ != now_; }
+    bool const changed() const { return state_ == BTN_PRESS || state_ == BTN_RELEASE; }
 
     Input const* owner() const { return owner_; }
 

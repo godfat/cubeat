@@ -19,7 +19,7 @@ using namespace psc;
 using namespace ctrl;
 
 TimerDispatcher::TimerDispatcher(std::string const& name)
-    :name_(name)
+    :name_(name), tickcount_(0)
 {
     printf("TimerDispatcher created: %s\n", name_.c_str());
 }
@@ -87,6 +87,10 @@ TimerDispatcher& TimerDispatcher::set_speed(double const& factor)
 
 TimerDispatcher& TimerDispatcher::set_time(time_t const& t)
 {
+    if( t == 0 ) {
+        // hack: Reset tickcount_ when you want to reset t to 0. I can't figure out any other case why you'd do this
+        tickcount_ = 0;
+    }
     timer_->setTime(t);
     return *this;
 }
@@ -106,9 +110,17 @@ std::time_t TimerDispatcher::get_time() const
     return timer_->getTime();
 }
 
+int TimerDispatcher::get_curr_tickcount() const
+{
+    return tickcount_;
+}
+
 void TimerDispatcher::tick()
 {
     timer_->tick();
+    if( !timer_->isStopped() ) {
+        tickcount_ += 1;
+    }
 }
 
 /// This is the Main Loop of Timer

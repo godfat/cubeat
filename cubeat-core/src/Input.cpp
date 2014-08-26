@@ -4,14 +4,13 @@
 */
 
 #include "Input.hpp"
-#include "EventDispatcher.hpp"
-#include "ctrl/TimerDispatcher.hpp"
 #include "Player.hpp"
 #include "view/Scene.hpp"       //warning: is this really good...?
 #include "view/Sprite.hpp"      //warning: is this really good...?
 #include "IrrDevice.hpp"        //warning: is this really good...?
 #include "utils/Logger.hpp"
 #include "utils/dictionary.hpp"
+#include "utils/Replay.hpp"
 #include "Conf.hpp"
 #include "App.hpp"
 #include "private/MastEventReceiver.hpp"
@@ -20,6 +19,8 @@
 // 2011.04.18: code removed due to possibly unresolved copyright issue.
 // if you define _USE_WIIMOTE_, this code simply cannot compile.
 #include "private/Wiimote_IR_internal.hpp"
+#include "EventDispatcher.hpp"
+#include "ctrl/TimerDispatcher.hpp"
 #endif
 
 #include "private/MouseState.hpp"
@@ -225,8 +226,9 @@ void InputMgr::updateAll()
     if( mice_detected_by_manymouse_ > 0 && keyboard_mouse_input_ )
         IrrDevice::i().d()->getCursorControl()->setPosition(0.5f, 0.5f); //grab system cursor
 
-    BOOST_FOREACH( Input* it, inputs_ )
+    BOOST_FOREACH( Input* it, inputs_ ) {
         it->update();
+    }
 
     //MastEventReceiver::i().startEventProcess();
 }
@@ -329,6 +331,7 @@ void Input::update()
 {
     if( ai_controlled_ ) { //AI integration testing
         //This will update AI's button state using AI's simulated input of LAST FRAME.
+        App::i().getReplay().set_input_for(this);
         update_btn_state(); //that's why we have to call update_btn_state() first when it's ai_controlled_.
         write_state_now_to_last();
         if( InputMgr::i().keyboardMouseInput() ) {
@@ -510,7 +513,10 @@ void Input::update_btn_state()
     wep3_.update_state();
     haste_.update_state();
     pause_.update_state();
+
+    App::i().getReplay().record_input_state(this);
 }
+
 
 Input&  Input::player(wpPlayer player) { player_ = player; return *this; }
 pPlayer Input::player() const { return player_.lock(); }

@@ -224,7 +224,7 @@ Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
     cube->garbage_fly_event()();
 
     //add restoration here for passive ability
-    if( utils::random(100) < ms()->drop_normal_chance() ) {
+    if( utils::ya_random(100) < ms()->drop_normal_chance() ) {
         cube->restore(1); // ok?
     }
 
@@ -681,7 +681,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 
     // shuffle all the vectors
     for( unsigned int i = 0; i < row_empty.size(); ++i ) {
-        std::random_shuffle(row_empty[i].begin(), row_empty[i].end());
+        std::random_shuffle(row_empty[i].begin(), row_empty[i].end(), utils::ya_random);
     }
 
     // drop them according to the empty column
@@ -767,7 +767,7 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
     if( !ms()->preset() ) {
         preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
 
-        if( utils::random(2) ) // need two?
+        if( utils::ya_random(2) ) // need two?
             preview_set.push_back(preview_set.front());
 
         while( preview_set.size() != width ){
@@ -776,7 +776,7 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
                 preview_set.push_back(color);
             }
             else{
-                if( utils::random(2) ){
+                if( utils::ya_random(2) ){
                     preview_set.push_back(color);
                     preview_set.push_back(color);
                 }
@@ -806,7 +806,7 @@ int <% debug_hook 'Map::fill_preview_create_color' do %>(std::vector<int>& previ
     int color/*, color_amounts = ms()->color_amounts()*/;
     std::vector<double> const& rez_chances = ms()->rez_chances();
     do{
-        //color = utils::random( color_amounts )+1;
+        //color = utils::ya_random( color_amounts )+1;
         color = utils::distributed_random( rez_chances ) + 1;
     } while ( color == preview_set.back() );
     return color;

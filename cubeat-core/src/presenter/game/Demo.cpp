@@ -103,6 +103,17 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     music_state_old_ = false;
     uiconf_ = Conf::i().config_of("ui/demo_layout");
 
+    // remember the random seed.
+    int seed = 0;
+    if( App::i().getReplay().read_file("tmp/replay") ) {
+        seed = App::i().getReplay().seed();
+    } else {
+        seed = std::time(0)^std::clock();
+        App::i().getReplay().seed(seed);
+    }
+    App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
+    utils::Random3::i().seed(seed);
+
 // WTF MEMO 2012.9 failed to adjust for balance
     passive_conf0_ = Conf::i().config_of(c1p).M("passive_mod");
     passive_conf1_ = Conf::i().config_of(c2p).M("passive_mod");
@@ -146,7 +157,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     else if( game_mode_ == GM_CVC || game_mode_ == GM_LOG ) {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        //std::random_shuffle(ai_temp, ai_temp + 4);
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[3]);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[3]);
         if( game_mode_ == GM_LOG ) { // AI LOGGING's timer speed will overwrite the gameplay_ one
@@ -235,8 +245,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
         script::Lua::call(L_, "init_override", inplace, submode_);
     }
 
-    //start timer here.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start(); //move this to actual game_start()?
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->start();
 
     //start music
@@ -719,8 +728,12 @@ void Demo::game_start()
         pause_note_text_->set<Visible>(true);
     }
 
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->start();
+    // Have to reset timer here again, because the "ready_go" part and scene_ slide effect can't do when timer is stopped.
+    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0);
     scene_->allowPicking(true);
+
+    /// MEMO: replay recording starts here
+    App::i().getReplay().toggle_recording_andor_replaying(true);
 
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
@@ -735,10 +748,15 @@ void Demo::game_start()
         map1_->start_dropping();
     }
 
-    if( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG )
-        player1_->startThinking();
-    if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
-        player0_->startThinking();
+    if( App::i().getReplay().is_replaying() ) {
+        ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(true);
+        ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
+    } else {
+        if( ( game_mode_ == GM_PVC || game_mode_ == GM_CVC || game_mode_ == GM_LOG ) )
+            player1_->startThinking();
+        if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
+            player0_->startThinking();
+    }
 
     game_state_ = GS_STARTED;
 }
@@ -1016,7 +1034,10 @@ void Demo::game_stop()
         map1_->stop_dropping();
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
-   }
+    }
+
+    /// MEMO: replay recording stops here
+    App::i().getReplay().toggle_recording_andor_replaying(false);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
@@ -1167,7 +1188,7 @@ void Demo::end_sequence1()
     btn_reinit_.reset();
 
 //2012.05 memo: because we are staying in this master presenter, and not going anywhere.
-    //stage_->releaseResource(); //release when player isn't going to replay
+    //stage_->releaseResource(); //release when player isn't going to retry
     //App::i().launchMainMenu();
     std::cout << "game_demo end completed." << std::endl;
 

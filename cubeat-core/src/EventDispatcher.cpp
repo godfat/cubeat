@@ -271,7 +271,7 @@ void EventDispatcher::dispatch_btn(){
 
 /// Main Loop of Event Dispatcher
 
-void EventDispatcher::tick_timers()
+void EventDispatcher::tick_timers(utils::Replay& replay)
 {
     //tick timers regarding their own status respectively.
     BOOST_FOREACH(TimerDispatcherPair& tdp, timer_dispatchers_) {
@@ -281,7 +281,16 @@ void EventDispatcher::tick_timers()
             continue;
         }
         td->tick();
+        if( tdp.first == "game" ) {
+            replay.set_time();
+
+            /// DEBUG
+            if( !td->is_stopped() && ( replay.is_recording() || replay.is_replaying() ) ) {
+                printf(" == EventDispatcher tick timer 'game', tick count: %d, time: %ld\n", td->get_curr_tickcount(), td->get_time());
+            }
+        }
     }
+    replay.record_frame_time();
 }
 
 void EventDispatcher::dispatch_timer()
@@ -308,8 +317,6 @@ void EventDispatcher::dispatch()
 {
     //profile these...
     int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
-
-    tick_timers();
 
     dispatch_btn();
     dispatch_obj();

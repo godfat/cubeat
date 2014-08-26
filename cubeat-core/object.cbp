@@ -204,10 +204,12 @@
 		<Unit filename="include\utils\ObjectPool.hpp.eruby" />
 		<Unit filename="include\utils\Random.hpp" />
 		<Unit filename="include\utils\Random.hpp.eruby" />
+		<Unit filename="include\utils\Replay.hpp" />
 		<Unit filename="include\utils\Timer.hpp" />
 		<Unit filename="include\utils\dictionary.hpp" />
 		<Unit filename="include\utils\math.hpp" />
 		<Unit filename="include\utils\math.hpp.eruby" />
+		<Unit filename="include\utils\to_s.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp" />
 		<Unit filename="include\utils\vector_2d.hpp.eruby" />
 		<Unit filename="include\view\All.hpp" />
@@ -473,7 +475,6 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_irr_font_in_3d.cpp">
-			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="src\test\test_irr_vertex_material_main.cpp">
@@ -513,6 +514,7 @@
 		</Unit>
 		<Unit filename="src\utils\GaussLegendre.cpp" />
 		<Unit filename="src\utils\Logger.cpp" />
+		<Unit filename="src\utils\Replay.cpp" />
 		<Unit filename="src\utils\Timer.cpp" />
 		<Unit filename="src\utils\dictionary.cpp" />
 		<Unit filename="src\view\AnimatedSceneObject.cpp" />

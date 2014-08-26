@@ -143,7 +143,7 @@ void PlayerAbility::C6(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     if( !m1 ) return;
 
     std::vector< data::pCube > m0_cube_data = m0->clone_linear_data();
-    std::random_shuffle(m0_cube_data.begin(), m0_cube_data.end());
+    std::random_shuffle(m0_cube_data.begin(), m0_cube_data.end(), utils::ya_random);
 
     int count = 0;
     int k = 0;
@@ -186,7 +186,7 @@ void PlayerAbility::C7(ctrl::wpPlayer const& player, wpMap const& self_map, wpMa
     if( !m1 ) return;
 
     std::vector< data::pCube > m1_cube_data = m1->clone_linear_data();
-    std::random_shuffle(m1_cube_data.begin(), m1_cube_data.end());
+    std::random_shuffle(m1_cube_data.begin(), m1_cube_data.end(), utils::ya_random);
 
     for( size_t i = 0; i < m1_cube_data.size() && i < static_cast<size_t>(broken_cube_limit_) ; ++i ) {
         m1->apply_func_at(m1_cube_data[i]->x(), m1_cube_data[i]->y(), cube_broken);

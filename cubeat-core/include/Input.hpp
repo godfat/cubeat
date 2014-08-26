@@ -13,6 +13,7 @@
 
 #include "Crosshair.hpp"
 #include "Button.hpp"
+#include "utils/dictionary.hpp"
 
 #include <string>
 #include <vector>
@@ -149,6 +150,7 @@ private:
     void update_cursor_by_arrowkeys();
     void update_buttons_by_manymouse();
     void update_buttons_by_sysmouse_or_keyboard();
+    void recording_replay();
 
     Crosshair cursor_;
     Button trig1_;

@@ -2,6 +2,7 @@
 <% header_guard do %>
 
 #include "utils/vector_2d.hpp"
+#include "utils/Random.hpp"
 #include <algorithm> // for random_shuffle
 
 namespace psc{ namespace utils{
@@ -14,7 +15,8 @@ public:
         // this should implement some timeout mech
         while(has_chained_cubes(cube_colors, chain_amounts))
             std::random_shuffle(cube_colors.origin(),
-                                cube_colors.origin() + cube_colors.num_elements());
+                                cube_colors.origin() + cube_colors.num_elements(),
+                                utils::ya_random);
     }
     static bool has_chained_cubes(vector_2d<int> const& cube_colors, int chain_amounts){
         for(index y=0, yend=cube_colors.shape()[height]; y!=yend; ++y)

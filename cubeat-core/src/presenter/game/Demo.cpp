@@ -84,7 +84,7 @@ pDemo Demo::init()
     ctrl::EventDispatcher::i().get_timer_dispatcher("global")->subscribe(
         bind(loading_complete_, 100), 100);
 
-    audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
+    audio::Sound::i().playBGM_AB("title_a.ogg", "title_b.ogg");
 
     return shared_from_this();
 }

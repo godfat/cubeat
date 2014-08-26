@@ -36,6 +36,8 @@ local function check_file_time(root, t)
       
       success = switch.refresh_page('rc/script/ui/demo/talk/talk.lua')
       
+    elseif root == 'rc/script/ui/demo/switch/master_menu.lua' then
+      success = switch.refresh_master_menu()
     else
       success = switch.refresh_page(root)
     end

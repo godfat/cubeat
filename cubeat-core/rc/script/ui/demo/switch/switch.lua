@@ -2,28 +2,16 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 local ui   = require 'rc/script/ui/ui'
-
+local master_menu = require 'rc/script/ui/demo/switch/master_menu'
 
 local page_obj_ = {}
 local to_be_delete_
 local data_ = nil
 local current_page_ = nil
 local starter_page_ = nil
-local has_blocker_  = false
 --
 local game_demo_
 local vorig_
-local root_
-local title_
-local demobuild_
-local teamname_
-local blocker_
-local transfer_
-local transfer_title_
-
--- mainmenu bg --
-local skyblue_
-local bg_
 --
 local effect_ = {}
 local effect_count_ = 0
@@ -36,53 +24,11 @@ local function init(parent, demo)
   vorig_ = view.new_sprite("blahblah", parent, 0, 0, false)
   --vorig_:set_pos(480, 300)
   print '\n\nHello from Lua!\n\n'
-  
-  root_ = view.new_sprite("blahblah", parent, 0, 0, false)
 
-  title_   = ui.new_image{ parent = root_,
-    path='title2', x=640, y=150, w=840, h=250, center=true}
-
-  demobuild_ = ui.new_image{ parent = root_,
-    path='demobuild', x=1000, y=780, w=246, h=76, center=true}
-  demobuild_:set_rotation(9)
-  local s = ffi.new("v2", 1000, 740)
-  local e = ffi.new("v2", 1000, 280)
-  demobuild_:tween("OElastic", "Pos2D", s, e, 2000, 0, nil, 1000) -- delay 1000
-
-  teamname_ = ui.new_image{ parent = root_,
-    path='teampsc', x=640, y=690, w=300, h=50, center=true}
-
-  blocker_ = view.new_sprite("blahblah", root_, 1280, 720, false)
-  blocker_:set_pos(0, 0)
-  blocker_:set_color(0, 0, 0)
-  blocker_:set_alpha(0)
-  
-  transfer_ = ui.new_image{ parent=root_, path=' ', x=640, y=-480, w=1280, h=960, center=true, depth=-500 }
-  transfer_:set_red(0)
-  transfer_:set_blue(0)
-  transfer_:set_green(0)
-  transfer_title_ = ui.new_image{ parent=transfer_._cdata, path='title', x=0, y=0, w=512, h=512, center=true }
-  
-  skyblue_ = ui.new_image { parent = root_, path='nothing', w=1280, h=720, center=false }
-  skyblue_:set_depth(100)
-  skyblue_:set_red(0) 
-  skyblue_:set_green(172) 
-  
-  bg_ = ui.new_image{ parent=root_, path='mainmenu/bg', y=720, w=1280, h=720, center=false }
-  bg_:set_depth(50)
+  master_menu.init(parent, demo)
 end
 
 ------------------------------------------------------------
-
-local function fade_in_blocker()
-  blocker_:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
-  has_blocker_ = true
-end
-
-local function fade_out_blocker()
-  blocker_:tween("Linear", "Alpha", 128, 0, 500, 0, nil, 0)
-  has_blocker_ = false
-end
 
 local function add_effect_count()
   effect_count_ = effect_count_ + 1
@@ -114,16 +60,14 @@ effect_.slide_out = function(effect)
   local s1 = ffi.new("v2", 0, 0)
   local e1 = ffi.new("v2", 2000, 0)
   vorig_:tween("OSine", "Pos2D", s1, e1, 1000)
-  root_:tween("OSine", "Pos2D", s1, e1, 1000)
-  fade_out_blocker()
+  master_menu.slide_out(s1, e1, 1000)
 end
 
 effect_.slide_in = function(effect)
   local s1 = ffi.new("v2", -2160, 0)
   local e1 = ffi.new("v2", 0, 0)
   vorig_:tween("ISine", "Pos2D", s1, e1, 1000)
-  root_:tween("ISine", "Pos2D", s1, e1, 1000)
-  fade_in_blocker()
+  master_menu.slide_in(s1, e1, 1000)
 end
 
 effect_.slide_in_to_talk = function(effect)
@@ -134,7 +78,7 @@ effect_.slide_in_to_talk = function(effect)
   starter_page_ = require ('rc/script/ui/demo/talk/talk')
   local function cb() starter_page_.starter(page_obj_) ui.set_input_lock(false) end
   vorig_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 0)
-  fade_in_blocker()
+  master_menu.slide_in(s1, e1, 1000)
 end
 
 effect_.slide_out_title = function(effect)
@@ -144,66 +88,19 @@ effect_.slide_in_title = function(effect)
 end
 
 effect_.slide_out_transfer = function(effect)
-  local s1 = ffi.new("v2", 640,  360)
-  local e1 = ffi.new("v2", 640, -480)
-  transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, nil, 1000)
+  master_menu.slide_out_transfer(effect)
 end
 
 effect_.slide_out_transfer_to_talk = function(effect)
-  ui.set_input_lock(true)
-  
-  local s1 = ffi.new("v2", 640,  360)
-  local e1 = ffi.new("v2", 640, -480)
   starter_page_ = require ('rc/script/ui/demo/talk/talk')
   local function cb() starter_page_.starter(page_obj_) ui.set_input_lock(false) end
-  transfer_:tween("ISine", "Pos2D", s1, e1, 1000, 0, cb, 1000)
+  
+  master_menu.slide_out_transfer_to_talk(effect, cb)
 end
 
 effect_.slide_in_transfer = function(effect)
-  local s1 = ffi.new("v2", 640, -480)
-  local e1 = ffi.new("v2", 640,  360)
-  transfer_:tween("OElastic", "Pos2D", s1, e1, 2000, 0, effect.cb, 0)
+  master_menu.slide_in_transfer(effect)
 end
-
--- Global Effect regarding the main background + title etc.
-
-local function startscreen_to_mainmenu()
-  local s2 = ffi.new("v2", 640, 150)
-  local e2 = ffi.new("v2", 640, -200)
-  title_:tween("ISine", "Pos2D", s2, e2, 500)
-
-  local s3 = ffi.new("v2", 1000, 280)
-  local e3 = ffi.new("v2", 1000, 780)
-  demobuild_:tween("ISine", "Pos2D", s3, e3, 750)
-
-  local s4 = ffi.new("v2", 640, 690)
-  local e4 = ffi.new("v2", 640, 780)
-  teamname_:tween("ISine", "Pos2D", s4, e4, 400)
-
-  local s5 = ffi.new("v2", 0, 720)
-  local e5 = ffi.new("v2", 0, 0)
-  bg_:tween("ISine", "Pos2D", s5, e5, 1000)
-end
-
-local function mainmenu_to_startscreen()
-  local s2 = ffi.new("v2", 640, -200)
-  local e2 = ffi.new("v2", 640, 150)
-  title_:tween("OSine", "Pos2D", s2, e2, 500)
-
-  local s3 = ffi.new("v2", 1000, 780)
-  local e3 = ffi.new("v2", 1000, 280)
-  demobuild_:tween("OElastic", "Pos2D", s3, e3, 750)
-
-  local s4 = ffi.new("v2", 640, 780)
-  local e4 = ffi.new("v2", 640, 690)
-  teamname_:tween("OSine", "Pos2D", s4, e4, 400)
-
-  local s5 = ffi.new("v2", 0, 0)
-  local e5 = ffi.new("v2", 0, 720)
-  bg_:tween("ISine", "Pos2D", s5, e5, 1000)
-end
-
-------------------------------------------------------------
 
 local function show_effect(effect)
   if effect and effect.id ~= nil then effect_[effect.id](effect) end
@@ -246,14 +143,34 @@ local function load_page(name, effect, data)
   page_obj_ = p.init(game_demo_, vorig_, data)
   
   if name == 'mainmenu' and prev_page == 'rc/script/ui/demo/startscreen/startscreen' then
-    startscreen_to_mainmenu()
+    master_menu.startscreen_to_mainmenu()
   elseif name == 'startscreen' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
-    mainmenu_to_startscreen()
+    master_menu.mainmenu_to_startscreen()
   end
   
   show_effect(effect)
 
   view.debug_hack()
+end
+
+local function refresh_master_menu()
+  if current_page_ ~= 'rc/script/ui/demo/startscreen/startscreen' and 
+     current_page_ ~= 'rc/script/ui/demo/mainmenu/mainmenu' then
+    print('---- not in startscreen or mainmenu, not refreshing master_menu ----')
+    return false
+  end
+  master_menu.cleanup()
+  
+  package.loaded['rc/script/ui/demo/switch/master_menu'] = nil --unrequire
+  master_menu = require 'rc/script/ui/demo/switch/master_menu'
+  
+  local parent = game_demo_:get_ui_scene()
+  
+  master_menu.init(parent, game_demo_)
+  
+  view.debug_hack()
+  
+  return true
 end
 
 local function refresh_page(root)
@@ -288,5 +205,6 @@ return {
   preload_page  = preload_page,
   load_page     = load_page,
   refresh_page  = refresh_page,
+  refresh_master_menu = refresh_master_menu,
   get_page_obj  = get_page_obj
 }

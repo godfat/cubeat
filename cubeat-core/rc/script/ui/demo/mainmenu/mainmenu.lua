@@ -3,6 +3,7 @@ local C      = ffi.C
 local view   = require 'rc/script/ui/view'
 local ui     = require 'rc/script/ui/ui'
 local switch = require 'rc/script/ui/demo/switch/switch'
+local master_menu = require 'rc/script/ui/demo/switch/master_menu'
 local event  = require 'rc/script/event/event'
 local random = require 'rc/script/helper'.random
 local basepath = require 'rc/script/helper'.basepath
@@ -47,6 +48,8 @@ end
 
 local function init(demo, parent)
   local menu = {}
+  
+  master_menu.show()
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, true)
   root_:set_pos(480, 300)

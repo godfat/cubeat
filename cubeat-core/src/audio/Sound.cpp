@@ -164,6 +164,7 @@ Sound& Sound::playBGM_AB(std::string const& path_a, std::string const& path_b, t
 {
     //the playBGM API is strictly loading only 1 track and flip (so to resume it) directly.
     //this is just for convenience usages
+    printf("Audio: playing %s and %s.\n", path_a.c_str(), path_b.c_str());
     loadBGM_AB(path_a, path_b);
     trackFlip(fade_t, 0);
     return *this;
@@ -181,6 +182,7 @@ Sound& Sound::playBGM(std::string const& path, time_t const& fade_t, int const& 
 Sound& Sound::seek_and_playBGM_AB(
     std::string const& pa, std::string const& pb, time_t const& seekms, time_t const& fade_t)
 {
+    printf("Audio: playing %s and %s.\n", pa.c_str(), pb.c_str());
     loadBGM_AB(pa, pb);
     trackFlip(fade_t, 0, seekms);
     return *this;

@@ -105,12 +105,12 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     // remember the random seed.
     int seed = 0;
-    if( App::i().getReplay().read_file("tmp/replay") ) {
-        seed = App::i().getReplay().seed();
-    } else {
+//    if( App::i().getReplay().read_file("tmp/replay") ) {
+//        seed = App::i().getReplay().seed();
+//    } else {
         seed = std::time(0)^std::clock();
         App::i().getReplay().seed(seed);
-    }
+//    }
     App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
     utils::Random3::i().seed(seed);
 
@@ -131,11 +131,16 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     scene_->allowPicking(false);
 
     //load scene again first
-    if( !inplace && stage_ ) {
-        stage_->releaseResource();
-        stage_.reset();
+    /// NOTE update 2014.08: Now the life time of stage actually covers from talk_start->game->talk_end,
+    ///                      and not just in-game. So it's no longer OK to load stage here when submode_ indicates
+    ///                      it's not normal PVP/PVC game.
+    if( submode_ == 0 ) {
+        if( !inplace && stage_ ) {
+            stage_->releaseResource();
+            stage_.reset();
+        }
+        stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
     }
-    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     data::pViewSetting s0, s1;
 
@@ -251,7 +256,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     //start music
     audio::Sound::i().stopAll(); //stop old
 
-    stage_->playBGM();
+    if( stage_ ) {
+        stage_->playBGM();
+    } else {
+        printf("Demo (error): Stage isn't initialized, can't playBGM().\n");
+    }
 
     //ready_go(4);
     starting_effect(inplace);
@@ -277,11 +286,13 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     scene_->allowPicking(false);
 
     //load scene again first
-    if( !inplace && stage_ ) {
-        stage_->releaseResource();
-        stage_.reset();
+    if( !inplace ) {
+        if( stage_ ) {
+            stage_->releaseResource();
+            stage_.reset();
+        }
+        stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
     }
-    stage_ = presenter::Stage2::create( sconf_.size() ? sconf_ : "stage/jungle" );
 
     data::pViewSetting s0;
     s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
@@ -610,8 +621,23 @@ void Demo::endgame(int map_num)
         end(map0_);
     }
     else if( map_num == 1 ) {
+        map1_->warning_level(100);
         end(map1_);
     }
+}
+
+void Demo::load_stage(int stage_id)
+{
+    if( stage_ ) {
+        stage_->releaseResource();
+        stage_.reset();
+    }
+    std::string scene_name_base = "stage/jungle";
+    sconf_ = scene_name_base + utils::to_s(stage_id);
+    stage_ = presenter::Stage2::create( sconf_ );
+
+    audio::Sound::i().stopAll();
+    audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
 }
 
 view::pScene Demo::get_ui_scene()
@@ -733,7 +759,10 @@ void Demo::game_start()
     scene_->allowPicking(true);
 
     /// MEMO: replay recording starts here
-    App::i().getReplay().toggle_recording_andor_replaying(true);
+    if( game_mode_ != GM_SINGLE ) { /// WTF: Do we want to setup replay for single player modes ???
+        /// OK, probably we want... but let's just skip it here for the moment
+        App::i().getReplay().toggle_recording_andor_replaying(true);
+    }
 
     player0_->subscribe_player_specific_interactions();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
@@ -1057,9 +1086,12 @@ void Demo::cleanup()
         pview2_.reset();
     }
 
-    if( stage_ ) {
-        stage_->releaseResource();
-        stage_.reset();
+    /// NOTE: This conditional corresponds to the same one in init_(), please take notice there.
+    if( submode_ == 0 ) {
+        if( stage_ ) {
+            stage_->releaseResource();
+            stage_.reset();
+        }
     }
 }
 

@@ -176,6 +176,10 @@ void Demo_leave_and_cleanup(Demo* self) { // not shared_ptr!
     self->end_sequence1();
 }
 
+void Demo_load_stage(Demo* self, int stage_id) { // not shared_ptr!
+    self->load_stage(stage_id);
+}
+
 void Demo_quit(Demo* self) { // not shared_ptr!
     self->quit();
 }

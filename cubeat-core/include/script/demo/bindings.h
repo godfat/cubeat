@@ -49,6 +49,7 @@ APIEXPORT void    Demo_eventual_resume(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_reinit(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_endgame(Demo*, int); // not shared_ptr!
 APIEXPORT void    Demo_leave_and_cleanup(Demo*); // not shared_ptr!
+APIEXPORT void    Demo_load_stage(Demo*, int); // not shared_ptr!
 APIEXPORT void    Demo_quit(Demo*); // not shared_ptr!
 
 #endif // _SHOOTING_CUBES_SCRIPT_UI_DEMO_BINDINGS_H_

@@ -93,6 +93,7 @@ public:
     bool is_puzzle_started() const;
     void reinit();
     void endgame(int);
+    void load_stage(int);
     void quit();
 
     void leaving_effect();

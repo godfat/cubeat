@@ -7,10 +7,12 @@ local has_blocker_  = false
 
 -------------------------------------------
 
+local demo_ 
 local menu_ = {}
 local root_
 
 local function init(parent, demo)
+  demo_ = demo
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
 
   menu_.title = ui.new_image{ parent = root_, path='title2', x=640, y=150, w=840, h=250, center=true }
@@ -61,6 +63,11 @@ local function fade_out_blocker()
   has_blocker_ = false
 end
 
+local function show()
+  menu_.bg:set_alpha(255)
+  menu_.skyblue:set_alpha(255)
+end
+
 -- Global Effect regarding the main background + title etc.
 
 local function slide_out(s, e, dur)
@@ -79,6 +86,10 @@ end
 
 local slide_out_transfer_to_talk = function(effect, cb)
   ui.set_input_lock(true)
+  
+  menu_.bg:set_alpha(0)
+  menu_.skyblue:set_alpha(0)
+  demo_:load_stage(effect.stage_id)
   
   local s1 = ffi.new("v2", 640,  360)
   local e1 = ffi.new("v2", 640, -480)
@@ -136,6 +147,7 @@ return {
   cleanup = cleanup,
   fade_in_blocker = fade_in_blocker,
   fade_out_blocker = fade_out_blocker,
+  show = show,
   slide_out = slide_out,
   slide_in  = slide_in,
   slide_in_transfer = slide_in_transfer,

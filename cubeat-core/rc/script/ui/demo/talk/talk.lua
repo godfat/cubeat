@@ -105,7 +105,7 @@ local function talk_end()
         select_config.ch_choose[2] = story_data.ch
         local function load_talk_page()
           switch.load_page('talk', nil, {game_mode=99})
-          switch.show_effect( {id="slide_out_transfer_to_talk"} )
+          switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=select_config.ch_choose[2]} )
         end
         switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
       end
@@ -186,10 +186,6 @@ local function action(menu, rundown)
   menu[content]:set_visible(true)
   menu[panel]:set_visible(true)
   
-  --background
-  if rundown[step_].background then
-    menu.TalkBackGround:set_texture(rundown[step_].background)
-  end
   --actor image
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
@@ -311,9 +307,11 @@ local function init(demo, parent, data)
     reset()
     switch.load_page('mainmenu')
   end
-  local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
+  --local bg_path = 'bg' .. tostring(ch_choose[2]) .. '/99complete'
+  local bg_path = 'nothing'
   menu.TalkBackGround = ui.new_image{ parent=root_, path=bg_path or config.bg_path, x=config.bg_x, y=config.bg_y,
                                       w=config.bg_w, h=config.bg_h }
+  menu.TalkBackGround:set_alpha(0)
   
   for ch=1,2 do
     local ch_path = 'char'..tostring(ch_choose[ch])..'_new/glad'

@@ -46,7 +46,7 @@ local function choose_character(self)
     if data_ and data_.game_mode == 99 then
       local function load_talk_page()
         switch.load_page('talk', nil, data_)
-        switch.show_effect( {id="slide_out_transfer_to_talk"} )
+        switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=config.ch_choose[2]} )
       end
       switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
     else

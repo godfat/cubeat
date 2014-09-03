@@ -25,26 +25,30 @@ local function init(demo, parent, data)
 
   menu.btn_easy:on_press(function(self)
     data.level = 0
-    data.last_menu = 'difficulty'
-    switch.load_page('select', nil, data)
+    -- data.last_menu = 'difficulty'
+    -- switch.load_page('select', nil, data)
+    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
   end)
   menu.btn_normal:on_press(function(self)
     data.level = 1
-    data.last_menu = 'difficulty'
-    switch.load_page('select', nil, data)
+    -- data.last_menu = 'difficulty'
+    -- switch.load_page('select', nil, data)
+    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
   end)
   menu.btn_hard:on_press(function(self)
     data.level = 2
-    data.last_menu = 'difficulty'
-    switch.load_page('select', nil, data)
+    -- data.last_menu = 'difficulty'
+    -- switch.load_page('select', nil, data)
+    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
   end)
   menu.btn_veryhard:on_press(function(self)
     data.level = 3
-    data.last_menu = 'difficulty'
-    switch.load_page('select', nil, data)
+    -- data.last_menu = 'difficulty'
+    -- switch.load_page('select', nil, data)
+    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
   end)
   menu.btn_back:on_press(function(self)
-    switch.load_page('mainmenu')
+    switch.load_page('select', nil, { game_mode = data.game_mode })
   end)
 
   return menu

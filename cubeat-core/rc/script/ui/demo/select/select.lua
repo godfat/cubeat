@@ -43,14 +43,19 @@ local function choose_character(self)
     end
     local sconf = "stage/jungle"..tostring(config.ch_choose[2])
 
-    if data_ and data_.game_mode == 99 then
+    if data_ and data_.game_mode == 99 then -- Story
       local function load_talk_page()
         switch.load_page('talk', nil, data_)
         switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=config.ch_choose[2]} )
       end
       switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
-    else
-      demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, data_.level)
+    elseif data_ and data_.game_mode == 1 then -- PVC
+      data_.c1p = c1p
+      data_.c2p = c2p
+      data_.sconf = sconf
+      switch.load_page('difficulty', nil, data_)
+    else  
+      demo_game_:init_mode(data_.game_mode, c1p, c2p, sconf, 0) -- doesn't use data_.level for PVP mode.
     end
 
   end

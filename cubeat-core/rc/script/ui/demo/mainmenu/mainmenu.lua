@@ -3,7 +3,6 @@ local C      = ffi.C
 local view   = require 'rc/script/ui/view'
 local ui     = require 'rc/script/ui/ui'
 local switch = require 'rc/script/ui/demo/switch/switch'
-local master_menu = require 'rc/script/ui/demo/switch/master_menu'
 local event  = require 'rc/script/event/event'
 local random = require 'rc/script/helper'.random
 local basepath = require 'rc/script/helper'.basepath
@@ -13,6 +12,7 @@ local storystage    = require 'rc/script/ui/demo/storyend/config'
 -------------------------------------------------------------------
 
 local root_ = nil
+local menu_
 
 local function check_tutorial(ask)
   local filemark = io.open(basepath().."rc/config/tmp/tutored", "r")
@@ -46,13 +46,21 @@ local function load_tutorials(parent, menu)
   end
 end
 
+local function hide_main_buttons()
+  menu_.btn_story:set_visible(false)
+  menu_.btn_vs_cpu:set_visible(false)
+  menu_.btn_vs_ppl:set_visible(false)
+  menu_.btn_chall:set_visible(false)
+  menu_.btn_option:set_visible(false)
+end
+
 local function init(demo, parent)
   local menu = {}
   
-  master_menu.show()
+  switch.show_master_menu()
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  root_:set_pos(480, 300)
+  root_:set_pos(0, 0)
   
   --load_tutorials(demo:get_ui_scene(), menu)
   local ask_tutorial = ui.new_askbox { parent = demo:get_ui_scene(), title='Trying the tutorial first\n is HIGHLY recommended.', depth=-100 }
@@ -69,28 +77,44 @@ local function init(demo, parent)
     ask_tutorial:set_visible(false)
   end, 1)
   
-  menu.btn_story   = ui.new_text{ parent = root_, title='story mode', x=0, y=0, size=32 }
-  menu.btn_story:set_scale(1.5)
-  menu.btn_vs_cpu  = ui.new_text{ parent = root_, title='player vs cpu', x=0, y=60, size=32 }
-  menu.btn_vs_cpu:set_scale(1.5)
-  menu.btn_vs_ppl  = ui.new_text{ parent = root_, title='player vs player', x=0, y=120, size=32 }
-  menu.btn_vs_ppl:set_scale(1.5)
-  menu.btn_chall   = ui.new_text{ parent = root_, title='challenge mode', x=0, y=180, size=32 }
-  menu.btn_chall:set_scale(1.5)
-  menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=0, y=240, size=32 }
-  menu.btn_cpudemo:set_scale(1.5)
+  -- menu.btn_story   = ui.new_text{ parent = root_, title='story mode', x=0, y=0, size=32 }
+  -- menu.btn_story:set_scale(1.5)
+  -- menu.btn_vs_cpu  = ui.new_text{ parent = root_, title='player vs cpu', x=0, y=60, size=32 }
+  -- menu.btn_vs_cpu:set_scale(1.5)
+  -- menu.btn_vs_ppl  = ui.new_text{ parent = root_, title='player vs player', x=0, y=120, size=32 }
+  -- menu.btn_vs_ppl:set_scale(1.5)
+  -- menu.btn_chall   = ui.new_text{ parent = root_, title='challenge mode', x=0, y=180, size=32 }
+  -- menu.btn_chall:set_scale(1.5)
+  -- menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=0, y=240, size=32 }
+  -- menu.btn_cpudemo:set_scale(1.5)
   -- menu.btn_tut     = ui.new_text{ parent = root_, title='show tutorial', x=0, y=240, size=32 }
   -- menu.btn_tut:set_scale(1.5)
   -- menu.btn_prac    = ui.new_text{ parent = root_, title='chain practice', x=0, y=300, size=32 }
   -- menu.btn_prac:set_scale(1.5)
-  menu.btn_quit    = ui.new_text{ parent = root_, title='quit', x=0, y=300, size=32 }
-  menu.btn_quit:set_scale(1.5)
+  -- menu.btn_quit    = ui.new_text{ parent = root_, title='quit', x=0, y=300, size=32 }
+  -- menu.btn_quit:set_scale(1.5)
   --menu.btn_test    = ui.new_text{ parent = root_, title='test menu', x=360, y=300, size=32 }
   --menu.btn_test:set_scale(1.5)
   
+  -- New positioning here
+  menu.btn_story   = ui.new_text{ parent = root_, title='story mode', x=460, y=40, size=32 }
+  menu.btn_story:set_scale(1.5)
+  menu.btn_vs_cpu  = ui.new_text{ parent = root_, title='player vs cpu', x=660, y=90, size=32 }
+  menu.btn_vs_cpu:set_scale(1.5)
+  menu.btn_vs_ppl  = ui.new_text{ parent = root_, title='player vs player', x=700, y=350, size=32 }
+  menu.btn_vs_ppl:set_scale(1.5)
+  menu.btn_chall   = ui.new_text{ parent = root_, title='challenge mode', x=500, y=150, size=32 }
+  menu.btn_chall:set_scale(1.5)
+  menu.btn_option  = ui.new_text{ parent = root_, title='options', x=450, y=350, size=32 }
+  menu.btn_option:set_scale(1.5)
+  menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=400, y=660, size=32 }
+  menu.btn_cpudemo:set_scale(1.5)
+  menu.btn_quit    = ui.new_text{ parent = root_, title='[x]', x=1210, y=5, size=32 }
+  menu.btn_quit:set_scale(1.5)
+  
   -- menu.btn_tut2     = ui.new_text{ parent = root_, title='tutorial test', x=360, y=180, size=32 }
   -- menu.btn_tut2:set_scale(1.5)
-  menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=550, y=380, size=32 }
+  menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=1050, y=670, size=32 }
   
   menu.btn_story:on_press(function(self)
     storystage.set_stage(1)
@@ -150,9 +174,31 @@ local function init(demo, parent)
     -- switch.load_page('testmenu')
   -- end)
   
+  menu_ = menu
+  hide_main_buttons()
+  
   return menu
 end
 
+local function show_button(btn_name)
+  if menu_[btn_name] then 
+    menu_[btn_name]:set_visible(true)
+  else
+    print('Lua (mainmenu): no button named'..btn_name) 
+  end
+end
+
+local function hide_button(btn_name)
+  if menu_[btn_name] then 
+    menu_[btn_name]:set_visible(false)
+  else
+    print('Lua (mainmenu): no button named'..btn_name) 
+  end
+end
+
 return{
-  init  = init
+  init  = init,
+  hide_main_buttons = hide_main_buttons,
+  show_button = show_button,
+  hide_button = hide_button
 }

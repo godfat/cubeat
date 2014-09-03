@@ -146,6 +146,10 @@ local function load_page(name, effect, data)
     master_menu.startscreen_to_mainmenu()
   elseif name == 'startscreen' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
     master_menu.mainmenu_to_startscreen()
+  elseif name ~= 'startscreen' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
+    master_menu.fade_in_blocker()
+  elseif name == 'mainmenu' and prev_page ~= 'rc/script/ui/demo/mainmenu/startscreen' then
+    master_menu.fade_out_blocker()
   end
   
   show_effect(effect)
@@ -167,6 +171,10 @@ local function refresh_master_menu()
   local parent = game_demo_:get_ui_scene()
   
   master_menu.init(parent, game_demo_)
+  
+  if current_page_ == 'rc/script/ui/demo/mainmenu/mainmenu' then
+    master_menu.startscreen_to_mainmenu()
+  end
   
   view.debug_hack()
   
@@ -197,6 +205,10 @@ local function get_page_obj()
   return page_obj_
 end
 
+local function show_master_menu()
+  master_menu.show()
+end
+
 return {
   init  = init,
   ----
@@ -206,5 +218,6 @@ return {
   load_page     = load_page,
   refresh_page  = refresh_page,
   refresh_master_menu = refresh_master_menu,
-  get_page_obj  = get_page_obj
+  get_page_obj  = get_page_obj,
+  show_master_menu = show_master_menu
 }

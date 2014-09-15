@@ -97,16 +97,35 @@ local function init(demo, parent)
   --menu.btn_test:set_scale(1.5)
   
   -- New positioning here
-  menu.btn_story   = ui.new_image{ parent = root_, path='mainmenu/text_story', x=460, y=40, w=339, h=145 }
-  menu.btn_story:set_pickable(false) -- so it won't interfere when overlapping with the underlying button
-  menu.btn_vs_cpu  = ui.new_image{ parent = root_, path='mainmenu/text_vs_cpu', x=660, y=90, w=381, h=146 }
-  menu.btn_vs_cpu:set_pickable(false)
-  menu.btn_vs_ppl  = ui.new_image{ parent = root_, path='mainmenu/text_vs_ppl', x=700, y=350, w=453, h=137 }
-  menu.btn_vs_ppl:set_pickable(false)
-  menu.btn_chall   = ui.new_image{ parent = root_, path='mainmenu/text_chall', x=500, y=150, w=363, h=127 }
-  menu.btn_chall:set_pickable(false)
-  menu.btn_option  = ui.new_image{ parent = root_, path='mainmenu/text_option', x=450, y=350, w=290, h=127 }
-  menu.btn_option:set_pickable(false)
+  menu.btn_story     = view.new_sprite("blahblah", root_, 0, 0, true)
+  menu.btn_story:set_pos(460, 185)
+  menu.btn_story:set_rotation(8)
+  menu.btn_story_img = ui.new_image{ parent = menu.btn_story, path='mainmenu/text_story', x=0, y=-145, w=339, h=145 }
+  menu.btn_story_img:set_pickable(false) -- so it won't interfere when overlapping with the underlying button
+  
+  menu.btn_vs_cpu     = view.new_sprite("blahblah", root_, 0, 0, true)
+  menu.btn_vs_cpu:set_pos(980, 226)
+  menu.btn_vs_cpu:set_rotation(-6)
+  menu.btn_vs_cpu_img = ui.new_image{ parent = menu.btn_vs_cpu, path='mainmenu/text_vs_cpu', x=-381, y=-146, w=381, h=146 }
+  menu.btn_vs_cpu_img:set_pickable(false)
+  
+  menu.btn_vs_ppl     = view.new_sprite("blahblah", root_, 0, 0, true)
+  menu.btn_vs_ppl:set_pos(970, 497)
+  menu.btn_vs_ppl:set_rotation(-7)
+  menu.btn_vs_ppl_img = ui.new_image{ parent = menu.btn_vs_ppl, path='mainmenu/text_vs_ppl', x=-453, y=-137, w=453, h=137 }
+  menu.btn_vs_ppl_img:set_pickable(false)
+  
+  menu.btn_chall     = view.new_sprite("blahblah", root_, 0, 0, true)
+  menu.btn_chall:set_pos(681, 257)
+  menu.btn_chall:set_rotation(0)
+  menu.btn_chall_img = ui.new_image{ parent = menu.btn_chall, path='mainmenu/text_chall', x=-181, y=-127, w=363, h=127 }
+  menu.btn_chall_img:set_pickable(false)
+  
+  menu.btn_option     = view.new_sprite("blahblah", root_, 0, 0, true)
+  menu.btn_option:set_pos(520, 517)
+  menu.btn_option:set_rotation(10)
+  menu.btn_option_img = ui.new_image{ parent = menu.btn_option, path='mainmenu/text_option', x=0, y=-127, w=290, h=127 }
+  menu.btn_option_img:set_pickable(false)
   
   menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=400, y=660, size=32 }
   menu.btn_cpudemo:set_scale(1.5)
@@ -115,25 +134,25 @@ local function init(demo, parent)
   -- menu.btn_tut2:set_scale(1.5)
   menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=1050, y=670, size=32 }
   
-  menu.btn_story:on_press(function(self)
-    storystage.set_stage(1)
-    switch.load_page('select', nil, { game_mode=99, level=0 })
-  end)
+  -- menu.btn_story:on_press(function(self)
+    -- storystage.set_stage(1)
+    -- switch.load_page('select', nil, { game_mode=99, level=0 })
+  -- end)
   
-  menu.btn_vs_cpu:on_press(function(self)
-    if not check_tutorial(ask_tutorial) then return end
-    switch.load_page('difficulty', nil, { game_mode = 1 })
-    --switch.load_page('difficulty', {id="fade"}, { game_mode = 1 })
-  end)
+  -- menu.btn_vs_cpu:on_press(function(self)
+    -- if not check_tutorial(ask_tutorial) then return end
+    -- switch.load_page('difficulty', nil, { game_mode = 1 })
+    -- --switch.load_page('difficulty', {id="fade"}, { game_mode = 1 })
+  -- end)
   
-  menu.btn_vs_ppl:on_press(function(self)
-    if not check_tutorial(ask_tutorial) then return end
-    switch.load_page('select', nil, { game_mode = 0 })
-  end)
+  -- menu.btn_vs_ppl:on_press(function(self)
+    -- if not check_tutorial(ask_tutorial) then return end
+    -- switch.load_page('select', nil, { game_mode = 0 })
+  -- end)
   
-  menu.btn_chall:on_press(function(self)
-    switch.load_page('challengemenu')
-  end)
+  -- menu.btn_chall:on_press(function(self)
+    -- switch.load_page('challengemenu')
+  -- end)
   
   menu.btn_cpudemo:on_press(function(self) 
     local ch1 = random(6)+1
@@ -178,6 +197,9 @@ end
 local function show_button(btn_name)
   if menu_[btn_name] then 
     menu_[btn_name]:set_visible(true)
+    local s1 = ffi.new("v3", 0.1, 0.1, 0.1)
+    local e1 = ffi.new("v3", 1, 1, 1)
+    menu_[btn_name]:tween("OElastic", "Scale", s1, e1, 500)
   else
     print('Lua (mainmenu): no button named'..btn_name) 
   end

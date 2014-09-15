@@ -231,7 +231,7 @@ local function init(demo, parent, data)
   menu.bottom_blocker:set_alpha(96)
   menu.bottom_blocker:set_depth(-150)
   
-  menu.menutext = ui.new_text{ parent = root_, x=460, y=-10, size=32, title='character select'}
+  menu.menutext = ui.new_text{ parent = root_, x=460, y=-10, size=32, title='character selection'}
   menu.menutext:set_scale(1.5)
   menu.menutext:set_depth(-300)
 

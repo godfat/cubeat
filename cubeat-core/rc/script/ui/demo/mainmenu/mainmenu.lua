@@ -98,10 +98,15 @@ local function init(demo, parent)
   
   -- New positioning here
   menu.btn_story   = ui.new_image{ parent = root_, path='mainmenu/text_story', x=460, y=40, w=339, h=145 }
+  menu.btn_story:set_pickable(false) -- so it won't interfere when overlapping with the underlying button
   menu.btn_vs_cpu  = ui.new_image{ parent = root_, path='mainmenu/text_vs_cpu', x=660, y=90, w=381, h=146 }
+  menu.btn_vs_cpu:set_pickable(false)
   menu.btn_vs_ppl  = ui.new_image{ parent = root_, path='mainmenu/text_vs_ppl', x=700, y=350, w=453, h=137 }
+  menu.btn_vs_ppl:set_pickable(false)
   menu.btn_chall   = ui.new_image{ parent = root_, path='mainmenu/text_chall', x=500, y=150, w=363, h=127 }
+  menu.btn_chall:set_pickable(false)
   menu.btn_option  = ui.new_image{ parent = root_, path='mainmenu/text_option', x=450, y=350, w=290, h=127 }
+  menu.btn_option:set_pickable(false)
   
   menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=400, y=660, size=32 }
   menu.btn_cpudemo:set_scale(1.5)

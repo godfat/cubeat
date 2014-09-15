@@ -215,6 +215,13 @@ size_t Map::get_player_ability_left() const {
     return 0;
 }
 
+int Map::id() const {
+    if( ctrl::pPlayer p = player_.lock() ) {
+        return p->id();
+    }
+    return -1;
+}
+
 Map& Map::push_player_ability() {
     if( ctrl::pPlayer p = player_.lock() ) {
         p->push_ability();

@@ -105,12 +105,12 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     // remember the random seed.
     int seed = 0;
-//    if( App::i().getReplay().read_file("tmp/replay") ) {
-//        seed = App::i().getReplay().seed();
-//    } else {
+    if( App::i().getReplay().read_file("tmp/replay") ) {
+        seed = App::i().getReplay().seed();
+    } else {
         seed = std::time(0)^std::clock();
         App::i().getReplay().seed(seed);
-//    }
+    }
     App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
     utils::Random3::i().seed(seed);
 
@@ -761,7 +761,7 @@ void Demo::game_start()
     /// MEMO: replay recording starts here
     if( game_mode_ != GM_SINGLE ) { /// WTF: Do we want to setup replay for single player modes ???
         /// OK, probably we want... but let's just skip it here for the moment
-        App::i().getReplay().toggle_recording_andor_replaying(true);
+        App::i().getReplay().toggle_recording_andor_replaying(true, shared_from_this());
     }
 
     player0_->subscribe_player_specific_interactions();
@@ -822,9 +822,10 @@ void Demo::setup_ui()
 //    heatgauge1_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
 //    heatgauge1_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
     heatgauge1_ = view::Sprite::create("heat/gauge", ui_scene_, 96, 96, true);
+    heatgauge1_->setPickable(false);
     for( int i = 0; i < 24; ++i ) {
         heatunit1_[i] = view::Sprite::create("heat/unit0", heatgauge1_, 96, 96, true);
-        heatunit1_[i]->setDepth(-5).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
+        heatunit1_[i]->setDepth(-5).setPickable(false).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
     }
 
     if( game_mode_ == GM_SINGLE ) {    //2011.04.05 make stage number equal to puzzle level.
@@ -840,9 +841,10 @@ void Demo::setup_ui()
 //        heatgauge2_ = view::Sprite::create("heat/0", ui_scene_, 96, 96, true);
 //        heatgauge2_->set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
         heatgauge2_ = view::Sprite::create("heat/gauge", ui_scene_, 96, 96, true);
+        heatgauge2_->setPickable(false);
         for( int i = 0; i < 24; ++i ) {
             heatunit2_[i] = view::Sprite::create("heat/unit0", heatgauge2_, 96, 96, true);
-            heatunit2_[i]->setDepth(-5).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);;
+            heatunit2_[i]->setDepth(-5).setPickable(false).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);;
         }
         if( game_mode_ == GM_PVC && submode_ == 99 && c1p_ == c2p_ ) {
             pview2_->setColor(vec3(0,0,0));
@@ -893,7 +895,7 @@ void Demo::setup_ui()
         pause_t_->set<Pos2D>( vec2(Conf::i().SCREEN_W()/2, Conf::i().SCREEN_H()/2 - 50) );
         pause_t_->setDepth(-450).setPickable(false);
 
-        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "kimberley", 72, true);
+        ready_go_text_ = view::SpriteText::create("3", ui_scene_, "GN-KillGothic", 72, true);
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
         ready_go_text_->setDepth(-450).setPickable(false);
 
@@ -1066,7 +1068,7 @@ void Demo::game_stop()
     }
 
     /// MEMO: replay recording stops here
-    App::i().getReplay().toggle_recording_andor_replaying(false);
+    App::i().getReplay().toggle_recording_andor_replaying(false, shared_from_this());
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(1.0);
     ctrl::EventDispatcher::i().get_timer_dispatcher("ui")->set_speed(1.0);
@@ -1344,7 +1346,13 @@ void Demo::resume(ctrl::Input const* controller)
 {
     if( !btn_pause_ ) return; //if it's not paused at all, don't do anything
 
-    if( game_mode_ == GM_PVC || game_mode_ == GM_TUT ) {
+    if( App::i().getReplay().is_replaying() && game_mode_ != GM_SINGLE ) {
+        ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(true);
+        ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
+        player0_->stopAllActions();
+        player1_->stopAllActions();
+    }
+    else if( game_mode_ == GM_PVC || game_mode_ == GM_TUT ) {
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(true);
         player1_->startThinking();
     }

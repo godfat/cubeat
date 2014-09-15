@@ -27,6 +27,8 @@ void <% debug_hook 'Dying::next_state' do %>(){
     // }
     map()->mark_chain_step_for_new_step(owner()->chain(), dying_chain_step());
     map()->attach_chain_bottom_up_from(owner()->x(), owner()->y() + 1, owner()->chain());
+    map()->cubes_matched_add(1, owner()->color_id());
+    printf(" map %d cube(%d,%d) finished matching a chain.\n", map()->id(), owner()->x(), owner()->y());
     switch_state(pState());
 }
 

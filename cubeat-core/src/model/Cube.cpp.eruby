@@ -117,10 +117,6 @@ void <% debug_hook 'Cube::next_state' do %>(){
 void <% debug_hook 'Cube::go_dying' do %>(int dying_chain_step){
 <% end %>
     state_ = state::Dying::create(self(), dying_chain_step);
-
-    //2014.6 consider chain extending mechanism, this line is no longer logically correct.
-    //map()->cubes_matched_add(1, color_id());
-
     go_dying_event()(color_id());
 }
 
@@ -158,6 +154,9 @@ void <% debug_hook 'Cube::go_exploding' do %>(int dmg){
     }
     else{
         state_.reset();
+
+        printf(" map %d cube(%d,%d)(color: %d) is exploded.\n", map()->id(), x(), y(), color_id());
+
         map()->cubes_cleared_add(color_id());
         go_exploding_event()(color_id());
     }
@@ -200,4 +199,6 @@ void Cube::restore_internal(){
     is_broken_ = false;
     if( state::pWaiting w = is_waiting() ) w->uncheck();
     restore_event()(color_id());
+
+    printf(" map %d cube(%d,%d) is restored to %d\n", map()->id(), x(), y(), color_id());
 }

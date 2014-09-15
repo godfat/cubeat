@@ -142,6 +142,10 @@ void tween_call(pSprite* self, const char* Eq ,const char* Accessor, void* s, vo
         {
             (*self)->tween<SineCirc, Rotation>(vec3(start->x, start->y, start->z), vec3(end->x, end->y, end->z), duration, loop, call, delay);
         }
+        else if(strcmp("OExpo", Eq)==0)
+        {
+            (*self)->tween<OExpo, Rotation>(vec3(start->x, start->y, start->z), vec3(end->x, end->y, end->z), duration, loop, call, delay);
+        }
     }
     else if(strcmp("Scale", Accessor)==0)
     {

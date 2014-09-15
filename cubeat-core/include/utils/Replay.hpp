@@ -14,6 +14,13 @@ typedef std::tr1::shared_ptr<TimerDispatcher> pTimerDispatcher;
 typedef std::tr1::weak_ptr<TimerDispatcher> wpTimerDispatcher;
 }
 
+namespace presenter {
+namespace game {
+class Demo;
+typedef std::tr1::shared_ptr<Demo> pDemo;
+}
+}
+
 namespace utils {
 
 class Replay
@@ -28,7 +35,7 @@ public:
     void seed(int const& seed);
     int  seed() const;
     bool read_file(std::string const& path);
-    void toggle_recording_andor_replaying(bool const& f);
+    void toggle_recording_andor_replaying(bool const& f, presenter::game::pDemo const& demo);
     void reset_data();
     bool is_recording() const { return recording_; }
     bool is_replaying() const { return replaying_; }

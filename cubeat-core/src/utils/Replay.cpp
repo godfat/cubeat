@@ -7,6 +7,7 @@
 #include "view/Sprite.hpp"
 #include "Input.hpp"
 #include "Player.hpp"
+#include "presenter/game/Demo.hpp"
 #include "ctrl/TimerDispatcher.hpp"
 #include "Conf.hpp"
 
@@ -86,7 +87,7 @@ void Replay::replay_advance()
             utils::map_any::iterator it_input_data = replay_data_.M("input").find( td->get_curr_tickcount() );
 
             if( it_input_data != replay_data_.M("input").end() ) {
-                printf(" Replay: current frame: %d, current time: %ld\n", td->get_curr_tickcount(), td->get_time() );
+                //printf(" Replay: current frame: %d, current time: %ld\n", td->get_curr_tickcount(), td->get_time() );
                 utils::vector_any input_data = boost::any_cast<utils::vector_any const>((*it_input_data).second);
 
                 bool btn_tmp[2][2] = { {p1t1_, p1t2_} , {p2t1_, p2t2_} };
@@ -183,7 +184,7 @@ void Replay::record_input_state(ctrl::Input* input) {
     }
 }
 
-void Replay::toggle_recording_andor_replaying(bool const& f) {
+void Replay::toggle_recording_andor_replaying(bool const& f, presenter::game::pDemo const& demo) {
     if( f ) {
         if( replay_data_.V("frametime").size() == 0 ) {
             recording_ = true;
@@ -193,10 +194,24 @@ void Replay::toggle_recording_andor_replaying(bool const& f) {
     } else {
         if( recording_ ) {
             recording_ = false;
+            // write additional metadata
+            replay_data_["map0_score"] = demo->get_map_score(0);
+            replay_data_["map1_score"] = demo->get_map_score(1);
             Conf::i().save_config(replay_data_, "tmp/replay");
             reset_data();
         }
         if( replaying_ ) {
+            ctrl::pTimerDispatcher td = game_timer_.lock();
+            time_t t = replay_data_.V("frametime").I(replay_data_.V("frametime").size()-1);
+            if( td->get_time() != t ) {
+                printf("Replay: record time %d mismatches with current time %d\n", t, td->get_time());
+            }
+            if( replay_data_.I("map0_score") != demo->get_map_score(0) ) {
+                printf("Replay: map0_score mispatch: record %d, current %d\n", replay_data_.I("map0_score"), demo->get_map_score(0));
+            }
+            if( replay_data_.I("map1_score") != demo->get_map_score(1) ) {
+                printf("Replay: map1_score mispatch: record %d, current %d\n", replay_data_.I("map1_score"), demo->get_map_score(1));
+            }
             replaying_ = false;
         }
         p1t1_ = false, p1t2_ = false, p2t1_ = false, p2t2_ = false;

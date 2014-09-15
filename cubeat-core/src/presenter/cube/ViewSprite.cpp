@@ -137,6 +137,7 @@ static void garbage_fly_end(model::Cube* raw_cp, view::pSprite sp)
 {
     raw_cp->new_garbage(false);
     sp->setDepth(0);
+    sp->setPickable(true);
 }
 
 template<template <class> class Eq>
@@ -210,7 +211,8 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     vec3 rot(0, 0, 360 * factor);
     body_->tween<easing::Linear, accessor::Rotation>(rot, dur);
     body_->tween<easing::OSine, accessor::Alpha>(0, 255, dur);
-    body_->setDepth(-50);
+    body_->setDepth(-50);      // when the body_ is still flying, make sure it won't be covered by other stuff
+    body_->setPickable(false); // when the body_ is still flying, make it unpickable.
 
     vec2 effect_dest = pos_vec2() - (normal * 20.0f);
 

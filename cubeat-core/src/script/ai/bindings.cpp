@@ -99,6 +99,10 @@ int  SimpleMap_height(pSimpleMap* p) {
     return (*p)->ms()->height();
 }
 
+int  SimpleMap_id(pSimpleMap* p) {
+    return (*p)->id();
+}
+
 void SimpleMap__gc(pSimpleMap* p) {
     //Logger::i().buf("Map: ").buf(*p).buf(" __gc called.").endl();
     delete p;

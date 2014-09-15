@@ -33,6 +33,7 @@ APIEXPORT int  SimpleMap_warning_level(pSimpleMap*);
 APIEXPORT int  SimpleMap_garbage_left(pSimpleMap*);
 APIEXPORT int  SimpleMap_width(pSimpleMap*);
 APIEXPORT int  SimpleMap_height(pSimpleMap*);
+APIEXPORT int  SimpleMap_id(pSimpleMap*);
 APIEXPORT void SimpleMap__gc(pSimpleMap*);
 APIEXPORT bool SimpleMap_cube_exist_at(pSimpleMap*, int, int);
 APIEXPORT int  SimpleMap_grounded_cube_count(pSimpleMap*);

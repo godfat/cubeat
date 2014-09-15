@@ -59,18 +59,18 @@ public:
         // map doesn't need a pool
         return pointer_type(new SimpleMap(setting))->init();
     }
-    static pointer_type create(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
+    static pointer_type create(data::pMapSetting setting, int id, int garb, int sc, int soa, bool ld,
         int warning_lv) {
-        return pointer_type(new SimpleMap(setting, garb, sc, soa, ld, warning_lv))->init();
+        return pointer_type(new SimpleMap(setting, id, garb, sc, soa, ld, warning_lv))->init();
     }
 
     SimpleMap(data::pMapSetting setting):
-        map_setting_(setting), garbage_left_(0), score_(0),
+        map_setting_(setting), id_(-1), garbage_left_(0), score_(0),
         current_sum_of_attack_(0), lock_dropping_(false), warning_level_(0), simp_cubes_(0, 0){}
 
-    SimpleMap(data::pMapSetting setting, int garb, int sc, int soa, bool ld,
+    SimpleMap(data::pMapSetting setting, int id, int garb, int sc, int soa, bool ld,
               int warning_lv):
-        map_setting_(setting), garbage_left_(garb), score_(sc),
+        map_setting_(setting), id_(id), garbage_left_(garb), score_(sc),
         current_sum_of_attack_(soa), lock_dropping_(ld), warning_level_(warning_lv), simp_cubes_(0, 0)
     {}
 
@@ -84,6 +84,7 @@ public:
     bool is_all_fallen() const;
     // end
 
+    int id() const                    { return id_; }
     int warning_level() const         { return warning_level_; }
     void warning_level(int const& i)  { warning_level_ = i; }
     int score() const                 { return score_; }
@@ -108,6 +109,7 @@ protected:
     void dump_preview_to(pointer_type, preview_list_type const&) const;
 
     data::pMapSetting map_setting_;
+    int id_;
     double garbage_left_;
     int score_, current_sum_of_attack_;
     bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle

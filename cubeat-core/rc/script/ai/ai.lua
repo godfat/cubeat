@@ -44,6 +44,7 @@ Mt_SimpleMap.cube_exist_at        = C.SimpleMap_cube_exist_at
 Mt_SimpleMap.grounded_cube_count  = C.SimpleMap_grounded_cube_count
 Mt_SimpleMap.still_chaining       = C.SimpleMap_still_chaining
 Mt_SimpleMap.dropping_locked      = C.SimpleMap_dropping_locked
+Mt_SimpleMap.id                   = C.SimpleMap_id
 
 Mt_SimpleMap.get_cube             = function(self, x, y)
   return ffi.gc(C.SimpleMap_get_cube(self, x, y), C.SimpleCube__gc)

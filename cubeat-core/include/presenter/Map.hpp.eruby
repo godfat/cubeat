@@ -114,6 +114,7 @@ public:
         return *this;
     }
     Map& push_player_ability();
+    int  id() const; // using player->id() as is. returns -1 if player data hasn't been assigned.
 
     // Only used for hacking
     void score(int in) { model()->score(in); }

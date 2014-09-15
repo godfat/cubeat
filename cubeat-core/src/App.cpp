@@ -69,6 +69,13 @@ App& App::init()
 
     fclose(fp1);
 
+    /// Font hack2
+    FILE* fp2 = fopen( (Conf::i().expand("rc/fonts/") + "GN-KillGothic.xtf").c_str(), "r+b");
+    char blah2[] = { '\0', '\1', '\0', '\0', '\0', '\x12', '\1' };
+    fseek (fp2, 0, SEEK_SET);
+    fwrite(blah2, 1, 7, fp2);
+    fclose(fp2);
+
     global_timer_ = EventDispatcher::i().get_timer_dispatcher("global");
 
     InputMgr::i().createInputs();
@@ -188,7 +195,7 @@ App& App::cheat1()
         demo->endgame(1);
     }
     return *this;
-}    
+}
 
 time_t realtime()
 {
@@ -290,6 +297,12 @@ int App::run(std::tr1::function<void()> tester)
     fwrite( blah, 1, 7, fp1 );
 
     fclose(fp1);
+
+    /// Font hack2
+    FILE* fp2 = fopen( (Conf::i().expand("rc/fonts/") + "GN-KillGothic.xtf").c_str(), "r+b");
+    fseek (fp2, 0, SEEK_SET);
+    fwrite(blah, 1, 7, fp2);
+    fclose(fp2);
 
     std::cout << "App main loop has ended." << std::endl;
     if( master_presenter_ ) //hack: make the recollection of master_presenter_ faster.

@@ -145,6 +145,8 @@ local function enter_icon(input, icon_no, menu)
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
 
+    local desckey = 'char_desc_'..tostring(ch)
+    
     if icon_no ~= 0 then
       if icon_no == config.ch_choose[ch] then
         return
@@ -153,6 +155,7 @@ local function enter_icon(input, icon_no, menu)
       menu[fadekey]:tween('Linear', 'Alpha', 255, 0, config.fade_time)
       menu[fullkey]:set_pos(-config.full_w, config.full_y)
       menu[fullkey]:set_texture(config.full_path(icon_no))
+      menu[desckey]:change_text(config.char_desc[icon_no])
       if data_ and data_.game_mode ~= 99 then
         menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[ch], config.move_end[ch], config.move_time)
       else
@@ -183,6 +186,7 @@ local function random_icon_on_up(input, icon_no, menu)
     
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
+    local desckey = 'char_desc_'..tostring(ch)
     
     ----
     
@@ -191,6 +195,7 @@ local function random_icon_on_up(input, icon_no, menu)
     if i > 6 then i = 1 end
     menu[fullkey]:set_texture(config.full_path(i))
     menu[fullkey]:set_color(0, 0, 0)
+    menu[desckey]:change_text(config.char_desc[i])
     config.ch_choose[ch] = i
   end
   return show
@@ -205,7 +210,7 @@ local function init(demo, parent, data)
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
   
-  menu.btn_back = ui.new_text{ parent = root_, x=10, y=-10, size=32, title='<= go back'}
+  menu.btn_back = ui.new_text{ parent = root_, x=10, y=config.screen_h-60, size=32, title='< go back'}
   menu.btn_back:set_scale(1.5)
   menu.btn_back:set_depth(-300)
   menu.btn_back:on_press(function(self)
@@ -221,7 +226,7 @@ local function init(demo, parent, data)
   menu.up_blocker:set_alpha(96)
   menu.up_blocker:set_depth(-150)
   
-  menu.bottom_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=500, w=1280, h=300 }
+  menu.bottom_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=config.screen_h-52, w=1280, h=52 }
   menu.bottom_blocker:set_color(0, 0, 0)
   menu.bottom_blocker:set_alpha(96)
   menu.bottom_blocker:set_depth(-150)
@@ -237,14 +242,14 @@ local function init(demo, parent, data)
   for i=1,6 do
     local k = 'actor_icon_'..tostring(i)
     menu[k] = ui.new_image{ parent=root_, path=config.icon_path(i),
-                            x=config.icon_x[i], y=config.icon_y, w=config.icon_w, h=config.icon_h,
+                            x=config.icon_x[i], y=config.icon_y[i], w=config.icon_w, h=config.icon_h,
                             depth =config.icon_depth }
   end
   
   -- create random icon
   if data_ and data_.game_mode ~= 99 then
     menu['actor_icon_0'] = ui.new_image{ parent=root_, path='itembox/moving/2',
-                                         x=config.screen_w/2-config.icon_w/2, y=config.icon_y,
+                                         x=config.screen_w/2-config.icon_w/2, y=config.screen_h-200,
                                          w=config.icon_w, h=config.icon_h,
                                          depth =config.icon_depth }
   end
@@ -348,6 +353,12 @@ local function init(demo, parent, data)
     menu.actor_full_2:set_texture(config.full_path(config.ch_choose[2]))
     menu.actor_fade_2:set_texture(config.full_path(config.ch_choose[2]))
   end
+  
+  -- character descriptions
+  menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-250,
+                                  depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+  menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-250,
+                                  depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
   
   return menu
 end

@@ -82,7 +82,7 @@ function init(demo)
   switch.load_page('startscreen')
     
   -- test: add refresh button
-  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=10, y=670, size=32, depth=-1000 }
+  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=850, y=670, size=32, depth=-1000 }
   refresh_btn_:set_scale(1.2)
   local filelist = require 'rc/script/ui/demo/refresh/filelist'
   local refresh  = require 'rc/script/ui/demo/refresh/refresh'

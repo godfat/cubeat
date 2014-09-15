@@ -16,20 +16,29 @@ local bg_h    = view.GET_SCREEN_H()
 
 -- actor_icon
 local icon_path   = function(i) return ('char'..tostring(i)..'_new/character_icon_'..tostring(i)) end
-local icon_w      = 173
-local icon_h      = 173
-local icon_x_base = 10
-local icon_x      = { icon_x_base,
-                      icon_x_base+180,
-                      icon_x_base+360,
-                      screen_w-icon_x_base-360-icon_w,
-                      screen_w-icon_x_base-180-icon_w,
-                      screen_w-icon_x_base-icon_w }
-local icon_y      = screen_h-200
+local icon_w      = 160
+local icon_h      = 160
+local icon_x_base = screen_w/2
+local icon_y_base = 50
+local icon_x      = { icon_x_base-160,
+                      icon_x_base,
+                      icon_x_base-160,
+                      icon_x_base,
+                      icon_x_base-160,
+                      icon_x_base }           
+local icon_y      = { icon_y_base,
+                      icon_y_base,
+                      icon_y_base+160,
+                      icon_y_base+160,
+                      icon_y_base+320,
+                      icon_y_base+320 }
 local icon_depth  = -300
 
 -- actor_full
-local full_path = function(i) return ('char'..tostring(i)..'_new/glad') end
+local full_path = function(i) 
+  if i == 3 then return 'char3_new/normal' end
+  return ('char'..tostring(i)..'_new/glad') 
+end
 local full_w    = 435
 local full_h    = 870
 local full_x    = { 0,
@@ -49,9 +58,12 @@ local ready_size  = 64
 
 -- start button
 local start_x     = screen_w/2
-local start_y     = icon_y-50
+local start_y     = (screen_h/2)+100
 local start_depth = ready_depth
 local start_size  = 64
+
+-- character description
+local char_desc = require 'rc/script/ui/demo/select/char_desc_EN'
 
 return {
   ch_choose = ch_choose,
@@ -89,5 +101,7 @@ return {
   start_x     = start_x,
   start_y     = start_y,
   start_depth = start_depth,
-  start_size  = start_size
+  start_size  = start_size,
+  -- 
+  char_desc = char_desc
 }

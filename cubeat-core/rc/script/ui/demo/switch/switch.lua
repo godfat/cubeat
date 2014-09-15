@@ -117,7 +117,7 @@ end
 local function remove_to_be_delete()
   if to_be_delete_==nil then return end
   for k,v in pairs(to_be_delete_) do
-    if v.remove_cb ~= nil then v:remove_cb() end
+    if type(v) == 'table' and v.remove_cb ~= nil then v:remove_cb() end
     v:remove()
   end
 end

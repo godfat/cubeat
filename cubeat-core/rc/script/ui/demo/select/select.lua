@@ -161,7 +161,7 @@ local function enter_icon(input, icon_no, menu)
       if data_ and data_.game_mode ~= 99 then
         menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[ch], config.move_end[ch], config.move_time)
       else
-        local move_end = ffi.new("value2", config.screen_w/2 - config.full_w/2, -100)
+        local move_end = ffi.new("value2", config.screen_w/4 - config.full_w/2, -100)
         menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[ch], move_end, config.move_time)
       end
       config.ch_choose[ch] = icon_no
@@ -209,7 +209,7 @@ local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
   data_ = data
-  ch_lock_ = 2
+  ch_lock_ = 6
   selectlock_ = {false, false}
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
@@ -235,7 +235,7 @@ local function init(demo, parent, data)
   menu.bottom_blocker:set_alpha(96)
   menu.bottom_blocker:set_depth(-150)
   
-  menu.menutext = ui.new_text{ parent = root_, x=460, y=-10, size=32, title='character selection'}
+  menu.menutext = ui.new_text{ parent = root_, x=425, y=-10, size=32, title='character selection'}
   menu.menutext:set_scale(1.5)
   menu.menutext:set_depth(-300)
 
@@ -243,19 +243,46 @@ local function init(demo, parent, data)
   --menu.select_actor_page = ui.new_image{ parent=root_, path='nothing', visible=true, x=0, y=0, w=0, h=0 }
                                          
   -- create actor_icon
-  for i=1,6 do
-    local k = 'actor_icon_'..tostring(i)
-    menu[k] = ui.new_image{ parent=root_, path=config.icon_path(i),
-                            x=config.icon_x[i], y=config.icon_y[i], w=config.icon_w, h=config.icon_h,
-                            depth =config.icon_depth }
-  end
-  
-  -- create random icon
   if data_ and data_.game_mode ~= 99 then
+    for i=1,6 do
+      local k = 'actor_icon_'..tostring(i)
+      menu[k] = ui.new_image{ parent=root_, path=config.icon_path(i),
+                              x=config.icon_x[i], y=config.icon_y[i], w=config.icon_w, h=config.icon_h,
+                              depth =config.icon_depth }
+    end
+    -- create random icon
     menu['actor_icon_0'] = ui.new_image{ parent=root_, path='random_icon',
-                                         x=config.screen_w/2-config.icon_w/2, y=config.screen_h-205,
-                                         w=config.icon_w, h=config.icon_h,
-                                         depth =config.icon_depth }
+                                     x=config.screen_w/2-config.icon_w/2, y=config.screen_h-205,
+                                     w=config.icon_w, h=config.icon_h,
+                                     depth =config.icon_depth }
+                                     
+    -- character descriptions
+    menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[1],  y=config.screen_h-320,
+                                     depth=config.full_depth-60, w=401, h=84 }
+    menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[2],  y=config.screen_h-320,
+                                     depth=config.full_depth-60, w=401, h=84 }
+    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-200,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+    menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-200,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+    
+    menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[1]-15, y=config.screen_h-280,
+                                    depth=config.full_depth-10, w=481, h=236 }
+    menu.textarea_2 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[2]-25, y=config.screen_h-280,
+                                    depth=config.full_depth-10, w=481, h=236 }
+  else -- single player mode
+    for i=1,6 do
+      local k = 'actor_icon_'..tostring(i)
+      menu[k] = ui.new_image{ parent=root_, path=config.icon_path(i),
+                              x=config.icon_x_sp[i], y=config.icon_y_sp, w=config.icon_w_sp, h=config.icon_h_sp,
+                              depth =config.icon_depth }
+    end
+    menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.screen_w/2+15, y=config.screen_h/3-120,
+                                     depth=config.full_depth-60, w=401, h=84 }
+    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.screen_w/2 + config.full_w/2, y=config.screen_h/3,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+    menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.screen_w/2-15, y=config.screen_h/3-80,
+                                    depth=config.full_depth-10, w=481, h=236 }
   end
 
   -- create actor_full & actor_fade & ready_text
@@ -267,7 +294,7 @@ local function init(demo, parent, data)
     local readykey= 'ready_'..tostring(ch)
     local actor_x
     if data_ and data_.game_mode == 99 then 
-      actor_x = (config.screen_w/2) - (config.full_w/2)
+      actor_x = (config.screen_w/4) - (config.full_w/2)
     else 
       actor_x = config.full_x[ch] 
     end
@@ -357,21 +384,7 @@ local function init(demo, parent, data)
     menu.actor_full_2:set_texture(config.full_path(config.ch_choose[2]))
     menu.actor_fade_2:set_texture(config.full_path(config.ch_choose[2]))
   end
-  
-  -- character descriptions
-  menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[1],  y=config.screen_h-320,
-                                   depth=config.full_depth-60, w=401, h=84 }
-  menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[2],  y=config.screen_h-320,
-                                   depth=config.full_depth-60, w=401, h=84 }
-  menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-200,
-                                  depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
-  menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-200,
-                                  depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
-  
-  menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[1]-15, y=config.screen_h-280,
-                                  depth=config.full_depth-10, w=481, h=236 }
-  menu.textarea_2 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[2]-25, y=config.screen_h-280,
-                                  depth=config.full_depth-10, w=481, h=236 }
+
   return menu
 end
 

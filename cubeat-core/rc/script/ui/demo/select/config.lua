@@ -33,6 +33,16 @@ local icon_y      = { icon_y_base,
                       icon_y_base+154,
                       icon_y_base+308,
                       icon_y_base+308 }
+local icon_w_sp   = 170
+local icon_h_sp   = 170
+local icon_x_base_sp = 120
+local icon_x_sp   = { icon_x_base_sp, 
+                      icon_x_base_sp + icon_w_sp*1, 
+                      icon_x_base_sp + icon_w_sp*2,
+                      icon_x_base_sp + icon_w_sp*3,
+                      icon_x_base_sp + icon_w_sp*4,
+                      icon_x_base_sp + icon_w_sp*5 }
+local icon_y_sp   = screen_h - 225
 local icon_depth  = -300
 
 -- actor_full
@@ -83,6 +93,12 @@ return {
   icon_w    = icon_w,
   icon_h    = icon_h,
   icon_depth= icon_depth,
+  --
+  icon_w_sp = icon_w_sp,
+  icon_h_sp = icon_h_sp,
+  icon_x_base_sp = icon_x_base_sp,
+  icon_x_sp = icon_x_sp,
+  icon_y_sp = icon_y_sp,
   --
   full_path = full_path,
   full_x    = full_x,

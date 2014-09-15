@@ -18,12 +18,16 @@ local root_
 local function setup_focus_effect(item, btn_name)
   item:on_enter_focus(function()
     item:tween("SineCirc", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.97, 0.97, 0.97), 1000, -1)
-    mainmenu.show_button(btn_name)
+    if btn_name then
+      mainmenu.show_button(btn_name)
+    end
   end)
   item:on_leave_focus(function()
     -- shit, I don't have clear tween calls here in lua view scripts.
     item:tween("Linear", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.93, 0.93, 1), 1)
-    mainmenu.hide_button(btn_name)
+    if btn_name then
+      mainmenu.hide_button(btn_name)
+    end
   end)
 end
 
@@ -117,6 +121,14 @@ local function init(parent, demo)
   -- menu_.door:set_depth(-100)  
   -- menu_.door:set_scale(0.710, 0.72)
   -- menu_.door:set_visible(false)
+  
+  menu_.btn_quit    = ui.new_image{ parent = menu_.bg._cdata, path='mainmenu/text_quit', x=200, y=675, w=168, h=78, center=true }
+  menu_.btn_quit:on_press(function(self) 
+    demo:quit()
+  end)
+  menu_.btn_quit:set_scale(0.93, 0.93)
+  setup_focus_effect(menu_.btn_quit)
+  
 end
 
 local function cleanup()

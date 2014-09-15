@@ -106,15 +106,15 @@ void ViewSpriteMaster::new_chain(model::wpChain const& chain){
 
     if( chain_texts_.find( chain ) == chain_texts_.end() ) {
         BOOST_FOREACH(ChainTextPair const& it, chain_texts_)
-            y_offset += it.second->getSprite("chain").get<Size2D>().Y * 2;
+            y_offset += it.second->getSprite("chain").get<Size2D>().Y * 2.5;
         chain_texts_.insert( std::make_pair(chain, view::pMenu()) );
     } else y_offset = chain_texts_[chain]->get<Pos2D>().Y;
 
     view::pMenu m = view::Menu::create("", s, 100, 100, true);
-    m->addSpriteText("chaino",  str, "kimberley", 0, 40, true, data::Color(255,0,0))
-      .addSpriteText("chain",   str, "kimberley", 0, 40, true)
-      .addSpriteText("amounto", str2,"kimberley", 0, 25, true, data::Color(255,0,0))
-      .addSpriteText("amount",  str2,"kimberley", 0, 25, true)
+    m->addSpriteText("chaino",  str, "GN-KillGothic", 0, 32, true, data::Color(255,0,0))
+      .addSpriteText("chain",   str, "GN-KillGothic", 0, 32, true)
+      .addSpriteText("amounto", str2,"GN-KillGothic", 0, 24, true, data::Color(255,0,0))
+      .addSpriteText("amount",  str2,"GN-KillGothic", 0, 24, true)
       .setPickable(false);
     m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
     m->getSprite("chain").setDepth(-10).setPickable(false);
@@ -376,6 +376,7 @@ void ViewSpriteMaster::new_garbage_2ndphase(std::map<int, vec2> const& pos, int 
 
             view::pSprite g = view::Sprite::create("glow", s, 64, 64, true);
             g->setDepth(-50).set<Pos2D>(/*pos*/ it->second);
+            g->setPickable(false);
             //g->body()->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
             vec2 midp = (/*pos*/ it->second + endp)/2;
             midp.X += utils::random(120) - 60; midp.Y += utils::random(120) - 60;
@@ -837,7 +838,7 @@ void ViewSpriteMaster::derived_init(){
     box_right_  = view::Sprite::create("danger_meter", view_orig_, 46, 660, false);
     box_right_->textureFlipH().set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
     box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
-    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30);
+    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30).setPickable(false);
 
     //warning: the position and scale data here should be configurable.
     alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 34, false);

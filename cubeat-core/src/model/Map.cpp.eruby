@@ -85,9 +85,6 @@ Map& <% debug_hook 'Map::init_cubes' do %>(color_map_type const& cube_colors){
 
     fill_preview_queue(); // added
 
-    //This point should be the end of the last init step, so start timing now:
-    last_t_ = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
-
 //demo branch: don't use this yet
 //    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
 //        std::tr1::bind(&Map::check_one_fadings, this), shared_from_this(), 500, -1);
@@ -501,7 +498,7 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain) {
+static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain, pMap map) {
     pChain c = wchain.lock();
     if( !c ) {
         printf(" - chain not found!!!! \n");
@@ -509,12 +506,12 @@ static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain)
         exit(0);
     }
     if( amount < 50 ) {
-        printf(" - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
+        printf(" map %d - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", map->id(), c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
     }
     be_added_to += amount;
 }
 
-static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, pChain c)
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, pChain c, pMap map)
 {
 //    pChain c = wchain.lock();
 //    if( !c ) {
@@ -531,7 +528,7 @@ static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function
         fflush(stdout);
         exit(0);
     } else {
-        printf(" | chain %x total power_factor %d throwing, current_sum %d -> %d \n", c.get(), amount, be_subed_from, be_subed_from - amount);
+        printf(" map %d | chain %x total power_factor %d throwing, current_sum %d -> %d \n", map->id(), c.get(), amount, be_subed_from, be_subed_from - amount);
     }
     be_subed_from -= amount;
     cb(actual_amount);
@@ -584,13 +581,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
             if( amount > 0 ) {
                 //current_sum_of_attack_ += (*i)->attack_of_current_step();
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i), self()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
                 //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
 
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i)), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i), self()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
             }
@@ -622,7 +619,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
                 std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i)),
+                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i), self()),
                     self(),
                     1000);
             }
@@ -672,8 +669,9 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
                 row_empty[i].push_back( x );
             }
         }
-        if( row_empty[i].size() < 1 ) {
+        if( row_empty.back().size() < 1 ) {
             //ok, we go from top, and now we've encountered first row without any hole
+            row_empty.pop_back();
             break;
         }
     }
@@ -682,6 +680,11 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     // shuffle all the vectors
     for( unsigned int i = 0; i < row_empty.size(); ++i ) {
         std::random_shuffle(row_empty[i].begin(), row_empty[i].end(), utils::ya_random);
+    }
+
+    /// DEBUG: check what garbage/broken cubes dropped here
+    if( row_empty.size() > 0 ) {
+        printf(" Map %d dropping garbages: ", id());
     }
 
     // drop them according to the empty column
@@ -698,6 +701,9 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
             pCube c = owner->make_garbage( x, top - j )->model();
             insert_garbage( c );
 
+            /// DEBUG: check what garbage/broken cubes dropped here
+            printf("%d ", c->color_id());
+
             garbage_left_ -= 1; //garbage_left_ is double here.
             ++this_frame_lands;
         }
@@ -705,12 +711,15 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //2012.05 self garbage_left_ minus n,
     //means garbage effects that the opponent has to minus n
 
+    /// DEBUG: check what garbage/broken cubes dropped here
+    if( row_empty.size() > 0 ) {
+        printf("\n");
+    }
+
     if( !owner->garbage_lands().empty() ) {
         presenter::pMap main_enemy = owner->garbage_lands().front().lock();
         main_enemy->pop_garbage_event()( this_frame_lands);
     }
-
-    /// Start here
 
     if( this_frame_lands >= 30 ||
         ( this_frame_lands >= 12 &&
@@ -785,6 +794,14 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
                 }
             }
         }
+
+        // debug generated new cube colors
+        printf(" Map %d generated new cubes into preview: ", id());
+        for( size_t i = 0; i < width; ++i ) {
+            printf("%d ", preview_set[i]);
+        }
+        printf("\n");
+
     } else { // preset
         preview_set = ms()->preset_data();
         //rotate preset_data
@@ -1030,6 +1047,10 @@ bool Map::exist(int x, int y) const
     return !!cubes_[x][y];
 }
 
+int Map::id() const {
+    return owner()->id();
+}
+
 void Map::for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f)
 {
     for( int x = 0; x < ms()->width(); ++x )
@@ -1090,16 +1111,21 @@ void Map::purge_all()
     }
 }
 
-void Map::cubes_cleared_add(int const& id)
+void Map::cubes_cleared_add(int const& color_id)
 {
     total_cubes_cleared_ += 1;
-    cubes_cleared_[id] += 1;
+    cubes_cleared_[color_id] += 1;
+
+    printf(" map %d cubes_cleared_(%d, %d, %d, %d), total_cubes_cleared: %d\n", id(), cubes_cleared_[1], cubes_cleared_[2], cubes_cleared_[3], cubes_cleared_[4], total_cubes_cleared_);
 }
 
-void Map::cubes_matched_add(int const& num, int const& id)
+void Map::cubes_matched_add(int const& num, int const& color_id)
 {
     total_cubes_cleared_ += num;
-    cubes_matched_[id] += num;
+    cubes_matched_[color_id] += num;
+
+    printf(" map %d cubes_matched_(%d, %d, %d, %d), total_cubes_cleared: %d\n", id(), cubes_matched_[1], cubes_matched_[2], cubes_matched_[3], cubes_matched_[4], total_cubes_cleared_);
+
 // WTF MEMO 2012.9 failed to adjust for balance
 //    if( owner()->get_player_ability_left() < 1 ) {
 //        cubes_cleared_ += num;
@@ -1166,7 +1192,7 @@ pSimpleMap Map::dump_data() const
     //data::pMapSetting cloned_ms = data::MapSetting::create();
 
     pSimpleMap result = SimpleMap::create(
-        cloned_ms, garbage_left_, score_, current_sum_of_attack_, lock_dropping_, warning_level_);
+        cloned_ms, id(), garbage_left_, score_, current_sum_of_attack_, lock_dropping_, warning_level_);
 
     chain_list_type temp_chains;
 

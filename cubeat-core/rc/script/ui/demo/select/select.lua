@@ -146,6 +146,7 @@ local function enter_icon(input, icon_no, menu)
     local fadekey = 'actor_fade_'..tostring(ch)
 
     local desckey = 'char_desc_'..tostring(ch)
+    local namekey = 'char_name_'..tostring(ch)
     
     if icon_no ~= 0 then
       if icon_no == config.ch_choose[ch] then
@@ -155,6 +156,7 @@ local function enter_icon(input, icon_no, menu)
       menu[fadekey]:tween('Linear', 'Alpha', 255, 0, config.fade_time)
       menu[fullkey]:set_pos(-config.full_w, config.full_y)
       menu[fullkey]:set_texture(config.full_path(icon_no))
+      menu[namekey]:set_texture(config.name_path(icon_no))
       menu[desckey]:change_text(config.char_desc[icon_no])
       if data_ and data_.game_mode ~= 99 then
         menu[fullkey]:tween('Linear', 'Pos2D', config.move_start[ch], config.move_end[ch], config.move_time)
@@ -187,6 +189,7 @@ local function random_icon_on_up(input, icon_no, menu)
     local fullkey = 'actor_full_'..tostring(ch)
     local fadekey = 'actor_fade_'..tostring(ch)
     local desckey = 'char_desc_'..tostring(ch)
+    local namekey = 'char_name_'..tostring(ch)
     
     ----
     
@@ -195,6 +198,7 @@ local function random_icon_on_up(input, icon_no, menu)
     if i > 6 then i = 1 end
     menu[fullkey]:set_texture(config.full_path(i))
     menu[fullkey]:set_color(0, 0, 0)
+    menu[namekey]:set_texture(config.name_path(i))
     menu[desckey]:change_text(config.char_desc[i])
     config.ch_choose[ch] = i
   end
@@ -248,8 +252,8 @@ local function init(demo, parent, data)
   
   -- create random icon
   if data_ and data_.game_mode ~= 99 then
-    menu['actor_icon_0'] = ui.new_image{ parent=root_, path='itembox/moving/2',
-                                         x=config.screen_w/2-config.icon_w/2, y=config.screen_h-200,
+    menu['actor_icon_0'] = ui.new_image{ parent=root_, path='random_icon',
+                                         x=config.screen_w/2-config.icon_w/2, y=config.screen_h-205,
                                          w=config.icon_w, h=config.icon_h,
                                          depth =config.icon_depth }
   end
@@ -355,11 +359,19 @@ local function init(demo, parent, data)
   end
   
   -- character descriptions
-  menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-250,
+  menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[1],  y=config.screen_h-320,
+                                   depth=config.full_depth-60, w=401, h=84 }
+  menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[2],  y=config.screen_h-320,
+                                   depth=config.full_depth-60, w=401, h=84 }
+  menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-200,
                                   depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
-  menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-250,
+  menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-200,
                                   depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
   
+  menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[1]-15, y=config.screen_h-280,
+                                  depth=config.full_depth-10, w=481, h=236 }
+  menu.textarea_2 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[2]-25, y=config.screen_h-280,
+                                  depth=config.full_depth-10, w=481, h=236 }
   return menu
 end
 

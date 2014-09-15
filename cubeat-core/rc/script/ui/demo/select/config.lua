@@ -16,22 +16,23 @@ local bg_h    = view.GET_SCREEN_H()
 
 -- actor_icon
 local icon_path   = function(i) return ('char'..tostring(i)..'_new/character_icon_'..tostring(i)) end
-local icon_w      = 160
-local icon_h      = 160
+local name_path   = function(i) return ('char'..tostring(i)..'_new/name') end
+local icon_w      = 154
+local icon_h      = 154
 local icon_x_base = screen_w/2
-local icon_y_base = 50
-local icon_x      = { icon_x_base-160,
+local icon_y_base = 56
+local icon_x      = { icon_x_base-154,
                       icon_x_base,
-                      icon_x_base-160,
+                      icon_x_base-154,
                       icon_x_base,
-                      icon_x_base-160,
+                      icon_x_base-154,
                       icon_x_base }           
 local icon_y      = { icon_y_base,
                       icon_y_base,
-                      icon_y_base+160,
-                      icon_y_base+160,
-                      icon_y_base+320,
-                      icon_y_base+320 }
+                      icon_y_base+154,
+                      icon_y_base+154,
+                      icon_y_base+308,
+                      icon_y_base+308 }
 local icon_depth  = -300
 
 -- actor_full
@@ -41,8 +42,8 @@ local full_path = function(i)
 end
 local full_w    = 435
 local full_h    = 870
-local full_x    = { 0,
-                    screen_w-full_w }
+local full_x    = { 20,
+                    screen_w-full_w-20 }
 local full_y    = -100
 local full_depth= -150
 
@@ -76,6 +77,7 @@ return {
   bg_h      = bg_h,
   --
   icon_path = icon_path,
+  name_path = name_path,
   icon_x    = icon_x,
   icon_y    = icon_y,
   icon_w    = icon_w,

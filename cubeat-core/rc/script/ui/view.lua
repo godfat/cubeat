@@ -121,6 +121,7 @@ Mt_Sprite.get_screen_pos_y        = C.Sprite_get_screen_pos_y
 Mt_Sprite.lazy_fix_alpha_artifact = C.Sprite_lazy_fix_alpha_artifact
 Mt_Sprite.remove_texture          = C.Sprite_remove_texture
 Mt_Sprite.set_blending            = C.Sprite_set_blending
+Mt_Sprite.set_pickable            = C.Sprite_set_pickable
 
 Mt_Sprite.on_release              = function(p, b, func)
   C.Sprite_on_release(ffi.cast("pSprite*", p), b, tracked_cb(__on_release__, ObjCallbackT, p, b, func))

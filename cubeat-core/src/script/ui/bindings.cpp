@@ -186,6 +186,10 @@ void Sprite_set_blending(pSprite* self, char const* mt_name) {
     (*self)->setBlending(mt_name);
 }
 
+void Sprite_set_pickable(pSprite* self, bool flag) {
+    (*self)->setPickable(flag);
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 
 void SpriteText_change_text(pSpriteText* self, char const* text) {

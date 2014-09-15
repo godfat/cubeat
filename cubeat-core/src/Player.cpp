@@ -37,9 +37,6 @@ pPlayer Player::init()
     if( input_ )
         input_->player( shared_from_this() );
 
-    EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
-
     return shared_from_this();
 }
 
@@ -96,6 +93,9 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
         //    bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
         //EventDispatcher::i().subscribe_btn_event(
         //    bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
+
+        EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+            bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
 
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);
@@ -247,7 +247,14 @@ void Player::end_overheat()
 int Player::delta_heat(double d)
 {
     if( lock_heat_ ) return 0;
+
+    /// Heat Debug: Floating point determinism problem??
+    printf(" Player %d previous heat %lf, delta %lf, ", id(), accumulated_heat_, d);
+
     accumulated_heat_ += d;
+
+    printf("current heat = %lf (unconstrained).\n", accumulated_heat_);
+
     if( accumulated_heat_ > 1 ) {
         accumulated_heat_ = 1;
         return 1;
@@ -264,6 +271,7 @@ void Player::generate_heat(double heat)
     using std::tr1::ref;
     if( delta_heat( heat ) ) {
         overheat_ = true;
+        printf(" -= Player %d OVERHEAT =-\n", id());
         if( presenter::pMap m = map_list_[id_].lock() ) {
             m->overheat_event()(true);
         }

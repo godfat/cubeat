@@ -233,7 +233,7 @@ pSimpleMap SimpleMap::clone() const
     //Logger::i().buf(this).buf(" checkpoint 1 ").endl();
 
     pSimpleMap result = SimpleMap::create(
-        cloned_ms, garbage_left_, score_, current_sum_of_attack_, lock_dropping_, warning_level_);
+        cloned_ms, id_, garbage_left_, score_, current_sum_of_attack_, lock_dropping_, warning_level_);
 
     //Logger::i().buf(this).buf(" checkpoint 2: map ").buf(result).buf(" created via clone.").endl();
 

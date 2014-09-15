@@ -281,8 +281,32 @@ std::list<wpObject> const& Scene::pick(vec2 const& p)
     if( !allow_picking_ ) return picked_temporary_;
 
     position2di pos(p.X, p.Y);
+
+    /// HACK TO FIX -- this will have to do with actual UI / object layout design, very hacky.
+    if( pos.Y % 64 == 42 && pos.Y != 682 ) {
+        pos.Y += 1; /// below the line of conflict
+    }
+    else if ( pos.Y % 64 == 41 && pos.Y != 682 - (64*10) - 1 )  {
+        pos.Y -= 1; /// above the line of conflict
+    }
+
+    /// HACK HORIZONTAL FIX FOR 1P
+    if( pos.X % 64 == 31 && pos.X >= 95 && pos.X <  95 + (64*6) ) {
+        pos.X += 1; /// 1P right of the line of conflict
+    }
+    else if( pos.X % 64 == 30 && pos.X >  94 && pos.X <= 94 + (64*6) ) {
+        pos.X -= 1; /// 1P left of the line of conflict
+    }
+    else if( pos.X % 64 == 34 && pos.X >= 802 && pos.X < 802 + (64*6) ) {  /// HACK HORIZONTAL FIX FOR 2P
+        pos.X += 1; /// 2P right of the line of conflict
+    }
+    else if( pos.X % 63 == 33 && pos.X >  801 && pos.X <= 801 + (64*6) ) {
+        pos.X -= 1; /// 2P left of the line of conflict
+    }
+
     ISceneNode* picked = getCollisionMgr()->getSceneNodeFromScreenCoordinatesBB(pos, 1, true);
     if( picked ) {
+//        printf(" DEBUG/Scene(%s)::pick(): picked %s at (%d, %d)\n", body_->getName(), picked->getName(), pos.X, pos.Y);
         picked_temporary_.push_back( node2view_[picked] );
     }
     return picked_temporary_;

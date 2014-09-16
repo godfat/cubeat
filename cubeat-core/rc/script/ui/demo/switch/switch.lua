@@ -146,7 +146,7 @@ local function load_page(name, effect, data)
     master_menu.startscreen_to_mainmenu()
   elseif name == 'startscreen' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
     master_menu.mainmenu_to_startscreen()
-  elseif name ~= 'startscreen' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
+  elseif name ~= 'startscreen' and name ~= 'mainmenu' and prev_page == 'rc/script/ui/demo/mainmenu/mainmenu' then
     master_menu.fade_in_blocker()
   elseif name == 'mainmenu' and prev_page ~= 'rc/script/ui/demo/mainmenu/startscreen' then
     master_menu.fade_out_blocker()

@@ -156,12 +156,14 @@ end
 -----------------------------------------------------------
 
 local function fade_in_blocker()
+  if has_blocker_ then return end
   menu_.blocker:tween("Linear", "Alpha", 0, 128, 500, 0, nil, 0)
   menu_.blocker:set_visible(true)
   has_blocker_ = true
 end
 
 local function fade_out_blocker()
+  if not has_blocker_ then return end
   local cb = function()
     menu_.blocker:set_visible(false)
     has_blocker_ = false

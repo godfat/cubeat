@@ -174,11 +174,11 @@ void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int,
 
         view::SFX::i().hold(glow_cube, 250u);
 
-//        std::tr1::function<void()> f = bind(&ViewSpriteMaster::hide_edge, this, x, y);
-        edges_[x][y]->tween<Linear, Red>(edges_[x][y]->get<Red>(), static_cast<time_t>(map_setting()->cube_dying_duration())/*, 0, f*/);
-
-//        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-//            bind(&ViewSpriteMaster::hide_edge, this, x, y), shared_from_this(), map_setting()->cube_dying_duration());
+        /// Note: although calling hide_edge() manually is definitely a problem, but it doesn't entail any
+        ///       other bugs as it seems. So I am going to forcefully call hide_edge() from now on,
+        ///       unless I noticed anything wrong.
+        std::tr1::function<void()> f = bind(&ViewSpriteMaster::hide_edge, this, x, y);
+        edges_[x][y]->tween<Linear, Red>(edges_[x][y]->get<Red>(), static_cast<time_t>(map_setting()->cube_dying_duration()), 0, f);
 
 //        } else {
 //            edges_[x][y]->set<Visible>(false).set<Rotation>(vec3(0,0,0));

@@ -38,12 +38,12 @@ local function init(parent, demo)
   demo_ = demo
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
 
-  menu_.title = ui.new_image{ parent = root_, path='title2', x=640, y=150, w=840, h=250, center=true }
+  menu_.title = ui.new_image{ parent = root_, path='title2', x=640, y=230, w=840, h=250, center=true }
 
   menu_.demobuild = ui.new_image{ parent = root_, path='demobuild', x=1000, y=780, w=246, h=76, center=true }
   menu_.demobuild:set_rotation(9)
   local s = ffi.new("v2", 1000, 740)
-  local e = ffi.new("v2", 1000, 280)
+  local e = ffi.new("v2", 1000, 360)
   menu_.demobuild:tween("OElastic", "Pos2D", s, e, 2000, 0, nil, 1000) -- delay 1000
 
   menu_.teamname = ui.new_image{ parent = root_, path='teampsc', x=640, y=690, w=300, h=50, center=true }
@@ -215,11 +215,11 @@ local function startscreen_to_mainmenu()
   ui.set_input_lock(true)
   local unlock_cb = function() ui.set_input_lock(false) end
 
-  local s2 = ffi.new("v2", 640, 150)
+  local s2 = ffi.new("v2", 640, 230)
   local e2 = ffi.new("v2", 640, -200)
   menu_.title:tween("ISine", "Pos2D", s2, e2, 500, 0, unlock_cb)
 
-  local s3 = ffi.new("v2", 1000, 280)
+  local s3 = ffi.new("v2", 1000, 360)
   local e3 = ffi.new("v2", 1000, 780)
   menu_.demobuild:tween("ISine", "Pos2D", s3, e3, 750)
 
@@ -237,11 +237,11 @@ local function mainmenu_to_startscreen()
   local unlock_cb = function() ui.set_input_lock(false) end
   
   local s2 = ffi.new("v2", 640, -200)
-  local e2 = ffi.new("v2", 640, 150)
+  local e2 = ffi.new("v2", 640, 230)
   menu_.title:tween("OSine", "Pos2D", s2, e2, 500, 0, unlock_cb)
 
   local s3 = ffi.new("v2", 1000, 780)
-  local e3 = ffi.new("v2", 1000, 280)
+  local e3 = ffi.new("v2", 1000, 360)
   menu_.demobuild:tween("OElastic", "Pos2D", s3, e3, 750)
 
   local s4 = ffi.new("v2", 640, 780)

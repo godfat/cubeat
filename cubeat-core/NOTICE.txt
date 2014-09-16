@@ -67,3 +67,5 @@ Please see doc/singularity_license.txt or http://www.algorithmist.net/as3pc.html
 Font "Kimberley" is included under its License Agreement. 
 Please see doc/kimberly license agreement.pdf
 
+Font "GN-KMBFont/KillGothic" is included under terms specified by its readme file.
+Please see doc/GN-KillGothic_readme.txt

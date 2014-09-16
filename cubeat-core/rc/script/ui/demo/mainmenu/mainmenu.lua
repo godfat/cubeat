@@ -126,6 +126,8 @@ local function init(demo, parent)
   menu.btn_option:set_rotation(10)
   menu.btn_option_img = ui.new_image{ parent = menu.btn_option, path='mainmenu/text_option', x=0, y=-127, w=290, h=127 }
   menu.btn_option_img:set_pickable(false)
+  menu.btn_option_img:set_alpha(192)            -- grey out btn_option for the moment. 
+  menu.btn_option_img:set_color(192, 192, 192)  -- grey out btn_option for the moment. 
   
   menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=400, y=660, size=32 }
   menu.btn_cpudemo:set_scale(1.5)

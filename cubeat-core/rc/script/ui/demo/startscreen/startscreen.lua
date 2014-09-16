@@ -17,13 +17,20 @@ local function init(demo, parent)
   
   local menu = {}
   
-  menu.start_button = ui.new_text{ parent = root_, title='press any key', x=640, y=480, size=32, center=true }
+  menu.start_button = ui.new_text{ parent = root_, title='click to start', x=640, y=480, size=32, center=true }
   menu.start_button:set_scale(2.0)
   menu.start_button:tween("SineCirc", "Alpha", 255, 0, 1000, -1)
 
-  menu.start_button:on_press(function(self)
+  menu.hitarea = view.new_sprite("nothing", root_, 1280, 720, false)
+  menu.hitarea:set_alpha(0)
+  menu.hitarea:set_depth(-100)
+  menu.hitarea:on_press(view.Input1_left, function(self)
     switch.load_page('mainmenu')
   end)
+  
+  -- menu.start_button:on_press(function(self)
+    -- switch.load_page('mainmenu')
+  -- end)
 
   return menu
 end

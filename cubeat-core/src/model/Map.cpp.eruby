@@ -498,26 +498,25 @@ bool <% debug_hook 'Map::cube_can_lose_chain' do %>(cpCube that) const{
 	return true;
 }
 
-static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain, pMap map) {
+static void delay_adder(int& be_added_to, int amount, int cstep, wpChain wchain, int map_id) {
     pChain c = wchain.lock();
     if( !c ) {
         printf(" - chain not found!!!! \n");
         fflush(stdout);
-        exit(0);
     }
     if( amount < 50 ) {
-        printf(" map %d - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", map->id(), c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
+        printf(" map %d - chain %x step %d amount %d wants to add attack %d, current_sum %d -> %d \n", map_id, c.get(), cstep, c->step_amounts(cstep), amount, be_added_to, be_added_to + amount);
     }
     be_added_to += amount;
 }
 
-static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, pChain c, pMap map)
+static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function<void(double)> cb, int amount, double actual_amount, wpChain wc, int map_id)
 {
-//    pChain c = wchain.lock();
-//    if( !c ) {
-//        printf(" - chain not found (at throwing point) !!!! \n");
-//        exit(0);
-//    }
+    pChain c = wc.lock();
+    if( !c ) {
+        printf(" - chain not found (at throwing point) !!!! \n");
+        fflush(stdout);
+    }
     if( be_subed_from < amount ) {
         printf("\n ------------- Impossible flow, power_factor(%d) > current_sum_of_attack_(%d).\n\n", amount, be_subed_from);
         printf(" Dump data about chain %x: \n", c.get() );
@@ -528,7 +527,7 @@ static void delay_suber_and_throw_garbage(int& be_subed_from, std::tr1::function
         fflush(stdout);
         exit(0);
     } else {
-        printf(" map %d | chain %x total power_factor %d throwing, current_sum %d -> %d \n", map->id(), c.get(), amount, be_subed_from, be_subed_from - amount);
+        printf(" map %d | chain %x total power_factor %d throwing, current_sum %d -> %d \n", map_id, c.get(), amount, be_subed_from, be_subed_from - amount);
     }
     be_subed_from -= amount;
     cb(actual_amount);
@@ -581,13 +580,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
             if( amount > 0 ) {
                 //current_sum_of_attack_ += (*i)->attack_of_current_step();
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i), self()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    bind(&delay_adder, ref(current_sum_of_attack_), amount, step, (*i), id()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
                 //o->new_garbage_event()((*i)->last_step_x(), (*i)->last_step_y(), amount );
 
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i), self()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
+                    bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i), id()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
             }
@@ -619,8 +618,8 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
                 std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i), self()),
-                    self(),
+                    bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, actual_amount, (*i), id()),
+                    o,//self(), Important, throw_garbage relies on the life time of presenter::Map, not model::Map.
                     1000);
             }
             //log highest chain

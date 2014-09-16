@@ -105,12 +105,12 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 
     // remember the random seed.
     int seed = 0;
-    if( App::i().getReplay().read_file("tmp/replay") ) {
-        seed = App::i().getReplay().seed();
-    } else {
+//    if( App::i().getReplay().read_file("tmp/replay") ) {
+//        seed = App::i().getReplay().seed();
+//    } else {
         seed = std::time(0)^std::clock();
         App::i().getReplay().seed(seed);
-    }
+//    }
     App::i().getReplay().set_timer_dispatcher( ctrl::EventDispatcher::i().get_timer_dispatcher("game") );
     utils::Random3::i().seed(seed);
 

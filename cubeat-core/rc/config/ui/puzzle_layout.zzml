@@ -24,8 +24,8 @@ mapview0: {
    xoff: 445,
    yoff: 682,
   csize:  64,
-  garbage_src_x: 290,
-  garbage_src_y: 425,
+  garbage_src_x: 225,
+  garbage_src_y: -200,
   garbage_ene_x: 710,
   ability_btn_x: 290,
   ability_btn_y: 360

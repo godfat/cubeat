@@ -211,6 +211,7 @@ local function init(demo, parent, data)
   data_ = data
   ch_lock_ = 2
   selectlock_ = {false, false}
+  config.ch_choose[1] = 1
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
   

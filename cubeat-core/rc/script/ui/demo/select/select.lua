@@ -209,7 +209,7 @@ local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
   data_ = data
-  ch_lock_ = 6
+  ch_lock_ = 2
   selectlock_ = {false, false}
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
@@ -325,13 +325,16 @@ local function init(demo, parent, data)
     end
   end
 
-  for i=1,3 do
-    local lock_b = record.load(parameter.story, {character=i*2})
-    local lock_a = record.load(parameter.story, {character=i*2-1})
-    if lock_b and lock_a then ch_lock_ = (i+1)*2 end
-    if ch_lock_>6 then ch_lock_=6 end
-    if data_ and data_.game_mode ~= 99 then ch_lock_=6 end -- Only TGS Ver.
+  local stories_finished = {}
+  for i = 1, 5 do
+    stories_finished[i] = record.load(parameter.story, {character=i})
   end
+  if stories_finished[1] and stories_finished[2] then ch_lock_ = 4 end
+  if stories_finished[3] and stories_finished[4] then ch_lock_ = 5 end
+  if stories_finished[5] then ch_lock_ = 6 end
+  
+  if data_ and data_.game_mode ~= 99 then ch_lock_=6 end -- VS CPU / Player mode
+  
   --for i,v in ipairs(actor_icon) do
   for i=1,ch_lock_ do
     local k = 'actor_icon_'..tostring(i)

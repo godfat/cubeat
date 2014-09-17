@@ -61,7 +61,18 @@ event.on_timer = function(timer_name, callback, dur, loop)
   local handle = C.Handle_create()
   callback = tracked_timer(callback, handle)
   C.Event_on_timer(timer_name, callback, handle, dur, loop)
+  
+  event.debug()
+  
   return handle
+end
+
+event.debug = function()
+  local c = 0
+  for k, v in pairs(__tracked_timer__) do
+    c = c + 1
+  end
+  print("total obj count for timer callback table: ", c)
 end
 
 return event

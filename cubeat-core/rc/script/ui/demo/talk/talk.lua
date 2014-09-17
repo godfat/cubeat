@@ -23,7 +23,7 @@ local step_      = 1
 --local actor_appear_ = {false, false}
 local complete_rundown_ = 0
 local current_line_end_flag_  = false 
-local current_line_wordcount_ = 0
+local old_timer_handle_       = nil
 local timer_handle_           = nil
 local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
@@ -90,6 +90,17 @@ local function reset()
   step_      = 1
   --actor_appear_ = {false, false}
   complete_rundown_ = 0
+  current_line_end_flag_  = false 
+
+  if timer_handle_ then
+    timer_handle_:remove()
+    timer_handle_ = nil
+  end
+  if old_timer_handle_ then
+    old_timer_handle_:remove()
+    old_timer_handle_ = nil
+  end
+  collectgarbage("collect")
 end
 
 
@@ -129,6 +140,7 @@ local function action(menu, rundown)
   if step_ ~= complete_rundown_+1 and step_ ~= complete_rundown_ then return end
   if not current_line_end_flag_ and timer_handle_ then
     timer_handle_:remove()
+    collectgarbage("collect")
   end
   if step_ >= #rundown then
     talk_end()
@@ -173,7 +185,10 @@ local function action(menu, rundown)
     flag_check()
   end
   local function check_effect_status(effect_a, effect_w, special)
-    if effect_a==nil and (effect_w==nil or (effect_w and effect_w ~= "shake")) and special==nil then
+    if (effect_a==nil or (effect_a and effect_a == "slide_in")) and 
+       (effect_w==nil or (effect_w and effect_w ~= "shake")) and 
+       special==nil 
+    then
       return false
     else
       actor_effect_end_flag_  = (effect_a ==nil)
@@ -221,10 +236,12 @@ local function action(menu, rundown)
     menu[panel]:set_texture(rundown[step_].board)
   end
   --board_flip
-  if rundown[step_].board_flip then
-    if rundown[step_].board_flip=="H" then menu[panel]:texture_flipH() end
-    if rundown[step_].board_flip=="V" then menu[panel]:texture_flipV() end
-    if rundown[step_].board_flip=="HV" then menu[panel]:texture_flipH() menu[panel]:texture_flipV() end
+  if current_line_end_flag_ or not timer_handle_ then
+    if rundown[step_].board_flip then
+      if rundown[step_].board_flip=="H" then menu[panel]:texture_flipH() end
+      if rundown[step_].board_flip=="V" then menu[panel]:texture_flipV() end
+      if rundown[step_].board_flip=="HV" then menu[panel]:texture_flipH() menu[panel]:texture_flipV() end
+    end
   end
   --text pos
   if rundown[step_].pos then
@@ -241,6 +258,10 @@ local function action(menu, rundown)
   
   --text
   local show_full_text = function(call_rundown_complete)
+    if old_timer_handle_ then
+      old_timer_handle_:remove()
+      old_timer_handle_ = nil
+    end
     if rundown[step_].text then
       print('Lua talk: current line ends')
       menu[content]:change_text(rundown[step_].text)
@@ -256,10 +277,16 @@ local function action(menu, rundown)
   local currlen = utf8.len(rundown[step_].text)
   local word_by_word
   word_by_word = function(progress)
+    if old_timer_handle_ then
+      old_timer_handle_:remove()
+      old_timer_handle_ = nil
+    end
     menu[content]:change_text( utf8.sub(rundown[step_].text, 1, progress) )
     if progress == currlen - 1 then
+      old_timer_handle_ = timer_handle_
       timer_handle_ = event.on_timer("ui", function() show_full_text(true) end, 20)
     elseif progress < currlen - 1 then
+      old_timer_handle_ = timer_handle_ 
       timer_handle_ = event.on_timer("ui", function() word_by_word( progress + 1 ) end, 20)
     else
       print('Lua talk: error, impossible logic flow in word_by_word() function')
@@ -284,10 +311,12 @@ local function action(menu, rundown)
   local effect_w  = rundown[step_].effect_w
   local special = rundown[step_].special
     
-  effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, actor_effect_cb)
-  effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, word_effect_cb)
-  if special then
-    effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, special_effect_cb, special)
+  if current_line_end_flag_ or not timer_handle_ then
+    effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, actor_effect_cb)
+    effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, word_effect_cb)
+    if special then
+      effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, special_effect_cb, special)
+    end
   end
     
   if check_effect_status(effect_a, effect_w, special) then
@@ -423,6 +452,7 @@ local function starter(menu) -- the same as "starter" need refactor
   local rundown = script.get_rundown(select_config.ch_choose[1], select_config.ch_choose[2])
   if rundown ~= nil then
     --menu.skip:set_visible(true)
+    reset()
     action(menu, rundown)
   else
     reset()

@@ -103,17 +103,17 @@ end
 
 word_.size_L = function(object, cb)
   object.content:set_scale( config.word_size_L )
-  cb()
+  -- cb()
 end
 
 word_.size_M = function(object, cb)
   object.content:set_scale( config.word_size_M )
-  cb()
+  -- cb()
 end
 
 word_.size_S = function(object, cb)
   object.content:set_scale( config.word_size_S )
-  cb()
+  -- cb()
 end
 
 word_.shake = function(object, cb)

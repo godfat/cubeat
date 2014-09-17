@@ -7,7 +7,8 @@ local effect  = require 'rc/script/ui/demo/talk/effect'
 local switch  = require 'rc/script/ui/demo/switch/switch'
 local select_config = require 'rc/script/ui/demo/select/config'
 local event   = require 'rc/script/event/event'
-local random= require 'rc/script/helper'.random
+local utf8    = require 'rc/script/utf8_simple'
+local random  = require 'rc/script/helper'.random
 local storystage  = require 'rc/script/ui/demo/storyend/config'
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local record      = require 'rc/script/ui/demo/challenge/record'
@@ -15,11 +16,15 @@ local record      = require 'rc/script/ui/demo/challenge/record'
 local root_ = nil
 
 local demo_game_ = nil
+ 
 local data_ = nil
 local ask_panel_ = nil
 local step_      = 1
 --local actor_appear_ = {false, false}
 local complete_rundown_ = 0
+local current_line_end_flag_  = false 
+local current_line_wordcount_ = 0
+local timer_handle_           = nil
 local actor_effect_end_flag_  = true
 local word_effect_end_flag_   = true
 local special_effect_end_flag_= true
@@ -120,7 +125,14 @@ end
 
 
 local function action(menu, rundown)
-  if step_ ~= complete_rundown_+1 then return end
+  print("Lua talk: step "..step_..", completed "..complete_rundown_)
+  if step_ ~= complete_rundown_+1 and step_ ~= complete_rundown_ then return end
+  if not current_line_end_flag_ and timer_handle_ then
+    timer_handle_:remove()
+  end
+  if step_ >= #rundown then
+    talk_end()
+  end
   
   local ch = rundown[step_].ch
   local actor   = 'actor'..tostring(ch)
@@ -130,6 +142,11 @@ local function action(menu, rundown)
   
   local function add_complete_rundown()
     complete_rundown_ = complete_rundown_+1
+    current_line_end_flag_ = false
+    timer_handle_ = nil
+    
+    print('Lua talk: completed: '..complete_rundown_)
+    
     menu[light]:set_visible(true)
     local x = menu[panel]:get_pos_x()+config.light_offset_x
     local y = menu[panel]:get_pos_y()+config.light_offset_y
@@ -156,12 +173,13 @@ local function action(menu, rundown)
     flag_check()
   end
   local function check_effect_status(effect_a, effect_w, special)
-    if effect_a==nil and effect_w==nil and special==nil then
-      add_complete_rundown()
+    if effect_a==nil and (effect_w==nil or (effect_w and effect_w ~= "shake")) and special==nil then
+      return false
     else
       actor_effect_end_flag_  = (effect_a ==nil)
       word_effect_end_flag_   = (effect_w ==nil)
       special_effect_end_flag_= (special==nil)
+      return true
     end
   end
 
@@ -208,13 +226,6 @@ local function action(menu, rundown)
     if rundown[step_].board_flip=="V" then menu[panel]:texture_flipV() end
     if rundown[step_].board_flip=="HV" then menu[panel]:texture_flipH() menu[panel]:texture_flipV() end
   end
-  --text
-  if rundown[step_].text then
-    menu[content]:change_text(rundown[step_].text)
-    local s = 50
-    local e = 255
-    menu[content]:tween('Linear', 'Alpha', s, e, 200, 0, nil, 0)
-  end
   --text pos
   if rundown[step_].pos then
     menu[panel]:set_pos(rundown[step_].pos.x, rundown[step_].pos.y)
@@ -227,22 +238,69 @@ local function action(menu, rundown)
     menu[content]:set_pos(conBG_pos.x+config.con_offset_x,
                           conBG_pos.y+config.con_offset_y)
   end
+  
+  --text
+  local show_full_text = function(call_rundown_complete)
+    if rundown[step_].text then
+      print('Lua talk: current line ends')
+      menu[content]:change_text(rundown[step_].text)
+      current_line_end_flag_ = true
+      step_ = step_+1
+      print('Lua talk: step now is '..step_)
+      if call_rundown_complete then
+        add_complete_rundown()
+      end
+    end
+  end
+  
+  local currlen = utf8.len(rundown[step_].text)
+  local word_by_word
+  word_by_word = function(progress)
+    menu[content]:change_text( utf8.sub(rundown[step_].text, 1, progress) )
+    if progress == currlen - 1 then
+      timer_handle_ = event.on_timer("ui", function() show_full_text(true) end, 20)
+    elseif progress < currlen - 1 then
+      timer_handle_ = event.on_timer("ui", function() word_by_word( progress + 1 ) end, 20)
+    else
+      print('Lua talk: error, impossible logic flow in word_by_word() function')
+    end
+  end
+  
+  local show_slow_text = function()
+    if rundown[step_].text then
+      if not current_line_end_flag_ and not timer_handle_ then
+        print('Lua talk: no timer running and current line is still not end')
+        menu[content]:change_text("")
+        timer_handle_ = event.on_timer("ui", function() word_by_word(1) end, 100)
+      elseif timer_handle_ then
+        print('Lua talk: timer is already running but current line is not end and player clicks')
+        show_full_text(true)
+      end
+    end
+  end
+  
   --run effect
   local effect_a  = rundown[step_].effect_a
   local effect_w  = rundown[step_].effect_w
   local special = rundown[step_].special
-  check_effect_status(effect_a, effect_w, special)
+    
   effect.actor_effect  (effect_a, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, actor_effect_cb)
   effect.word_effect   (effect_w, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, word_effect_cb)
   if special then
     effect.special_effect(special.id, menu[actor], menu[content], menu[panel], ch, rundown[step_].img, special_effect_cb, special)
   end
-  
-  step_=step_+1
+    
+  if check_effect_status(effect_a, effect_w, special) then
+    print ('Lua talk: this line has effect (step_:'..step_..', text: '..rundown[step_].text..')')
+    show_full_text()
+  else 
+    print ('Lua talk: this line doesn\'t have effect (step_:'..step_..', text: '..rundown[step_].text..')')
+    show_slow_text()
+  end 
   
   --Talk End
-  if step_>table.getn(rundown) then
-    talk_end()
+  -- if step_ >= table.getn(rundown) then
+    -- talk_end()
     --[[
     reset()
     
@@ -272,7 +330,7 @@ local function action(menu, rundown)
       game_start()
     end
     --]]
-  end
+  -- end
 end
 
 

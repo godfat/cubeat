@@ -54,7 +54,7 @@ actor_.slide_in = function(object, cb)
   local out_y = config.out_y[ch]
   object.actor:set_visible(true)
   object.actor:tween( "Linear", "Pos2D", ffi.new("value2", out_x, out_y), ffi.new("value2", act_x, act_y),
-                      config.slide_in_time, 0, cb )
+                      config.slide_in_time --[[, 0, cb]] )
 end
 
 actor_.slide_out = function(object, cb)

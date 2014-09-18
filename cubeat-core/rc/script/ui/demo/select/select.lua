@@ -262,10 +262,14 @@ local function init(demo, parent, data)
                                      depth=config.full_depth-60, w=401, h=84 }
     menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[2],  y=config.screen_h-320,
                                      depth=config.full_depth-60, w=401, h=84 }
-    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2, y=config.screen_h-200,
-                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
-    menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2, y=config.screen_h-200,
-                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2 + 3, y=config.screen_h-200,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true,
+                                    font=config.char_desc_font }
+    menu.char_desc_1:set_scale(0.95)
+    menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2 - 3, y=config.screen_h-200,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true,
+                                    font=config.char_desc_font }
+    menu.char_desc_2:set_scale(0.95)
     
     menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.full_x[1]-15, y=config.screen_h-280,
                                     depth=config.full_depth-10, w=481, h=236 }
@@ -280,8 +284,10 @@ local function init(demo, parent, data)
     end
     menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.screen_w/2+15, y=config.screen_h/3-120,
                                      depth=config.full_depth-60, w=401, h=84 }
-    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.screen_w/2 + config.full_w/2, y=config.screen_h/3,
-                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true }
+    menu.char_desc_1 = ui.new_text{ parent=root_, x=config.screen_w/2 + config.full_w/2 + 6, y=config.screen_h/3,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true,
+                                    font=config.char_desc_font }
+    menu.char_desc_1:set_scale(0.95)
     menu.textarea_1 = ui.new_image{ parent=root_, path='textarea1', x=config.screen_w/2-15, y=config.screen_h/3-80,
                                     depth=config.full_depth-10, w=481, h=236 }
   end

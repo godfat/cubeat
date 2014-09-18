@@ -6,3 +6,4 @@ return {
   'Less yellow when hit\nNo weakness',
   'More auto restore when hit\nHeat cool down slower'
 }
+ 

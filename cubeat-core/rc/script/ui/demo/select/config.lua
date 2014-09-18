@@ -74,7 +74,8 @@ local start_depth = ready_depth
 local start_size  = 64
 
 -- character description
-local char_desc = require 'rc/script/ui/demo/select/char_desc_EN'
+local char_desc = require 'rc/script/ui/demo/select/char_desc_JP'
+local char_desc_font = 'rounded-mplus-1m-medium'
 
 return {
   ch_choose = ch_choose,
@@ -121,5 +122,6 @@ return {
   start_depth = start_depth,
   start_size  = start_size,
   -- 
-  char_desc = char_desc
+  char_desc = char_desc,
+  char_desc_font = char_desc_font
 }

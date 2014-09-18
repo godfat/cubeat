@@ -17,7 +17,7 @@ local function init(demo, parent)
   
   local menu = {}
   
-  menu.start_button = ui.new_text{ parent = root_, title='click to start', x=640, y=480, size=32, center=true }
+  menu.start_button = ui.new_text{ parent = root_, title='click to start', x=640, y=520, size=32, center=true }
   menu.start_button:set_scale(2.0)
   menu.start_button:tween("SineCirc", "Alpha", 255, 0, 1000, -1)
 

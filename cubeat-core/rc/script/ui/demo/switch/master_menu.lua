@@ -8,6 +8,7 @@ local select_config = require 'rc/script/ui/demo/select/config'
 local storystage    = require 'rc/script/ui/demo/storyend/config'
 local three_stage_alpha_tween = require 'rc/script/stage/base_function'.three_stage_alpha_tween
 local event = require 'rc/script/event/event'
+local random = require 'rc/script/helper'.random
 
 local has_blocker_  = false
 
@@ -142,6 +143,33 @@ local function create_mainmenu_clouds(parent)
   event.on_timer("global", produce_cloud5_timer, 11000)
 end
 
+local function produce_flying_cubes(parent)
+  if random(100) < 30 then
+    local n = random(3) + 1
+    for i = 1, n do 
+      local color = random(4) + 1
+      local vari = random(4) + 1
+      local cube = ui.new_image{ parent=parent, path='cubes/cube'..tostring(vari), w=64, h=64, center = true }
+      local scale = (random(40)+60) / 100 
+      cube:set_depth(50)
+      cube:set_scale(scale, scale)
+      if color == 1 then cube:set_color(50, 50, 255) 
+      elseif color == 2 then cube:set_color(0, 225, 0)
+      elseif color == 3 then cube:set_color(255, 30, 20)
+      elseif color == 4 then cube:set_color(255, 255, 20)
+      else cube:set_color(255, 255, 255)
+      end
+      local s = ffi.new("v2", view.GET_SCREEN_W() + random(200), random(100) - 200)
+      local e = ffi.new("v2", random(100) - 200, view.GET_SCREEN_H() - random(100) )
+      local dur = random(750) + 1250
+      local rot1 = ffi.new("v3", 0, 0, random(180))
+      local rot2 = ffi.new("v3", 0, 0, 360 + random(180))
+      cube:tween("Linear", "Pos2D", s, e, dur, 0, function(self) self:remove() end)
+      cube:tween("Linear", "Rotation", rot1, rot2, dur)
+    end
+  end
+end
+
 local function init(parent, demo)
   mainmenu = require 'rc/script/ui/demo/mainmenu/mainmenu'
   switch   = require 'rc/script/ui/demo/switch/switch'
@@ -179,6 +207,8 @@ local function init(parent, demo)
   
   create_startscreen_clouds(menu_.skyroot_)
   create_mainmenu_clouds(menu_.bg._cdata)
+  
+  event.on_timer("global", function() produce_flying_cubes(menu_.skyroot_) end, 3000, -1)
   
   -- actual main menu sprites
   

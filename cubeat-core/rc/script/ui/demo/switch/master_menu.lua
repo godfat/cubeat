@@ -33,6 +33,115 @@ local function setup_focus_effect(item, btn_name)
   end)
 end
 
+local function create_startscreen_clouds(parent)
+  local produce_cloud2 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud2', x=1280, y=60, w=294, h=121 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 60), ffi.new("v2", -294, 60), 22500)
+    three_stage_alpha_tween(local_cloud, 22500, 4000)
+  end
+  produce_cloud2()
+  event.on_timer("global", produce_cloud2, 17500, -1)
+  
+  local produce_cloud3 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud3', x=1280, y=370, w=433, h=107 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 370), ffi.new("v2", -433, 370), 20000)
+    three_stage_alpha_tween(local_cloud, 20000, 3600)
+  end
+  local produce_cloud3_timer = function()  
+    produce_cloud3()  
+    event.on_timer("global", produce_cloud3, 16000, -1)
+  end
+  event.on_timer("global", produce_cloud3_timer, 6000)
+  
+  local produce_cloud4 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud4', x=1280, y=170, w=437, h=191 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 170), ffi.new("v2", -437, 170), 17500)
+    three_stage_alpha_tween(local_cloud, 17500, 3500)
+  end
+  local produce_cloud4_timer = function()  
+    produce_cloud4()  
+    event.on_timer("global", produce_cloud4, 14000, -1)
+  end
+  event.on_timer("global", produce_cloud4_timer, 8500)
+  
+  local produce_cloud5 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud5', x=1280, y=370, w=517, h=254 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 370), ffi.new("v2", -517, 370), 15000)
+    three_stage_alpha_tween(local_cloud, 15000, 3000)
+  end
+  local produce_cloud5_timer = function()  
+    produce_cloud5()  
+    event.on_timer("global", produce_cloud5, 12000, -1)
+  end
+  event.on_timer("global", produce_cloud5_timer, 10500)
+end
+
+local function create_mainmenu_clouds(parent)
+  local produce_cloud1 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud1', x=1280, y=60, w=303, h=142 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 60), ffi.new("v2", -303, 60), 50000)
+    three_stage_alpha_tween(local_cloud, 50000, 9000)
+  end
+  local produce_cloud1_timer = function()
+    produce_cloud1()
+    event.on_timer("global", produce_cloud1, 32500, -1)
+  end
+  event.on_timer("global", produce_cloud1_timer, 30000)
+  
+  local produce_cloud2 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud2', x=1280, y=30, w=294, h=121 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 30), ffi.new("v2", -294, 30), 45000)
+    three_stage_alpha_tween(local_cloud, 45000, 8000)
+  end
+  local produce_cloud2_timer = function()
+    produce_cloud2()
+    event.on_timer("global", produce_cloud2, 35000, -1)
+  end
+  event.on_timer("global", produce_cloud2_timer, 1000)
+  
+  local produce_cloud3 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud3', x=1280, y=110, w=433, h=107 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 110), ffi.new("v2", -433, 110), 30000)
+    three_stage_alpha_tween(local_cloud, 30000, 5400)
+  end
+  local produce_cloud3_timer = function()  
+    produce_cloud3()  
+    event.on_timer("global", produce_cloud3, 24000, -1)
+  end
+  event.on_timer("global", produce_cloud3_timer, 24000)
+  
+  local produce_cloud4 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud4', x=1280, y=40, w=437, h=191 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 40), ffi.new("v2", -437, 40), 35000)
+    three_stage_alpha_tween(local_cloud, 35000, 7000)
+  end
+  local produce_cloud4_timer = function()  
+    produce_cloud4()  
+    event.on_timer("global", produce_cloud4, 28000, -1)
+  end
+  event.on_timer("global", produce_cloud4_timer, 17000)
+  
+  local produce_cloud5 = function()
+    local local_cloud = ui.new_image{ parent=parent, path='mainmenu/cloud5', x=1280, y=30, w=517, h=254 }
+    local_cloud:set_depth(100)
+    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 30), ffi.new("v2", -517, 30), 40000)
+    three_stage_alpha_tween(local_cloud, 40000, 8000)
+  end
+  local produce_cloud5_timer = function()  
+    produce_cloud5()  
+    event.on_timer("global", produce_cloud5, 32000, -1)
+  end
+  event.on_timer("global", produce_cloud5_timer, 11000)
+end
+
 local function init(parent, demo)
   mainmenu = require 'rc/script/ui/demo/mainmenu/mainmenu'
   switch   = require 'rc/script/ui/demo/switch/switch'
@@ -68,54 +177,8 @@ local function init(parent, demo)
   menu_.skyblue = ui.new_image { parent = menu_.skyroot_, path='mainmenu/skycolor', w=1280, h=1280, center=false }
   menu_.skyblue:set_depth(200)
   
-  local produce_cloud2 = function()
-    local local_cloud = ui.new_image{ parent=menu_.skyroot_, path='mainmenu/cloud2', x=1280, y=60, w=294, h=121 }
-    local_cloud:set_depth(100)
-    local_cloud:set_scale(1.25, 1.25)
-    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 60), ffi.new("v2", -294, 60), 15000)
-    three_stage_alpha_tween(local_cloud, 15000, 3000)
-  end
-  produce_cloud2()
-  event.on_timer("global", produce_cloud2, 12000, -1)
-  
-  local produce_cloud3 = function()
-    local local_cloud = ui.new_image{ parent=menu_.skyroot_, path='mainmenu/cloud3', x=1280, y=370, w=433, h=107 }
-    local_cloud:set_depth(100)
-    local_cloud:set_scale(1.25, 1.25)
-    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 370), ffi.new("v2", -433, 370), 15000)
-    three_stage_alpha_tween(local_cloud, 15000, 3000)
-  end
-  local produce_cloud3_timer = function()  
-    produce_cloud3()  
-    event.on_timer("global", produce_cloud3, 12000, -1)
-  end
-  event.on_timer("global", produce_cloud3_timer, 4500)
-  
-  local produce_cloud4 = function()
-    local local_cloud = ui.new_image{ parent=menu_.skyroot_, path='mainmenu/cloud4', x=1280, y=170, w=437, h=191 }
-    local_cloud:set_depth(100)
-    local_cloud:set_scale(1.25, 1.25)
-    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 170), ffi.new("v2", -437, 170), 15000)
-    three_stage_alpha_tween(local_cloud, 15000, 3000)
-  end
-  local produce_cloud4_timer = function()  
-    produce_cloud4()  
-    event.on_timer("global", produce_cloud4, 12000, -1)
-  end
-  event.on_timer("global", produce_cloud4_timer, 7500)
-  
-  local produce_cloud5 = function()
-    local local_cloud = ui.new_image{ parent=menu_.skyroot_, path='mainmenu/cloud5', x=1280, y=370, w=517, h=254 }
-    local_cloud:set_depth(100)
-    local_cloud:set_scale(1.25, 1.25)
-    local_cloud:tween("Linear", "Pos2D", ffi.new("v2", 1280, 370), ffi.new("v2", -517, 370), 15000)
-    three_stage_alpha_tween(local_cloud, 15000, 3000)
-  end
-  local produce_cloud5_timer = function()  
-    produce_cloud5()  
-    event.on_timer("global", produce_cloud5, 12000, -1)
-  end
-  event.on_timer("global", produce_cloud5_timer, 10500)
+  create_startscreen_clouds(menu_.skyroot_)
+  create_mainmenu_clouds(menu_.bg._cdata)
   
   -- actual main menu sprites
   

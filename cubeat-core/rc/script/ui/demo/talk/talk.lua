@@ -134,6 +134,23 @@ local function talk_end()
   end
 end
 
+local function play_blip_sound(soundtype)
+  if soundtype == 1 then
+    demo_game_:play_sound("talk/Blip73.wav")
+  elseif soundtype == 2 then
+    demo_game_:play_sound("talk/Blip74.wav")
+  elseif soundtype == 3 then
+    demo_game_:play_sound("talk/Blip73.wav")
+  elseif soundtype == 4 then
+    demo_game_:play_sound("talk/Blip67.wav")
+  elseif soundtype == 5 then
+    demo_game_:play_sound("talk/Blip86.wav")
+  elseif soundtype == 6 then
+    demo_game_:play_sound("talk/Blip67.wav")
+  else
+    print("Lua talk: play_blip_sound error")
+  end
+end
 
 local function action(menu, rundown)
   print("Lua talk: step "..step_..", completed "..complete_rundown_)
@@ -220,9 +237,12 @@ local function action(menu, rundown)
   menu[content]:set_visible(true)
   menu[panel]:set_visible(true)
   
+  local sound_type = 0
+  
   --actor image
   if rundown[step_].img then
     menu[actor]:set_texture(rundown[step_].img)
+    sound_type = tonumber(rundown[step_].img:sub(5,5)) -- get character number to decide what he/she sounds like.
   end
   --actor image pos
   if rundown[step_].ch_pos then
@@ -270,6 +290,7 @@ local function action(menu, rundown)
       step_ = step_+1
       print('Lua talk: step now is '..step_)
       if call_rundown_complete then
+        play_blip_sound(sound_type)
         add_complete_rundown()
       end
     end
@@ -283,12 +304,13 @@ local function action(menu, rundown)
       old_timer_handle_ = nil
     end
     menu[content]:change_text( utf8.sub(rundown[step_].text, 1, progress) )
+    play_blip_sound(sound_type)
     if progress == currlen - 1 then
       old_timer_handle_ = timer_handle_
-      timer_handle_ = event.on_timer("ui", function() show_full_text(true) end, 20)
+      timer_handle_ = event.on_timer("ui", function() show_full_text(true) end, 30)
     elseif progress < currlen - 1 then
       old_timer_handle_ = timer_handle_ 
-      timer_handle_ = event.on_timer("ui", function() word_by_word( progress + 1 ) end, 20)
+      timer_handle_ = event.on_timer("ui", function() word_by_word( progress + 1 ) end, 30)
     else
       print('Lua talk: error, impossible logic flow in word_by_word() function')
     end
@@ -322,6 +344,7 @@ local function action(menu, rundown)
     
   if check_effect_status(effect_a, effect_w, special) then
     print ('Lua talk: this line has effect (step_:'..step_..', text: '..rundown[step_].text..')')
+    demo_game_:play_sound("talk/Exp13.wav")
     show_full_text()
   else 
     print ('Lua talk: this line doesn\'t have effect (step_:'..step_..', text: '..rundown[step_].text..')')

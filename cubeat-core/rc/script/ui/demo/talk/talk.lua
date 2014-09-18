@@ -144,6 +144,7 @@ local function action(menu, rundown)
   end
   if step_ >= #rundown then
     talk_end()
+    return
   end
   
   local ch = rundown[step_].ch
@@ -326,40 +327,6 @@ local function action(menu, rundown)
     print ('Lua talk: this line doesn\'t have effect (step_:'..step_..', text: '..rundown[step_].text..')')
     show_slow_text()
   end 
-  
-  --Talk End
-  -- if step_ >= table.getn(rundown) then
-    -- talk_end()
-    --[[
-    reset()
-    
-    if data_ and data_.game_mode==99 then
-      if data_.game_end then
-        if storystage.get_stage()==6 then -- story mode end
-          -- save story character clear data
-          local data = { win='true', character=select_config.ch_choose[1] }
-          record.save(demo_game_, parameter.story, data)
-          -- end game
-          demo_game_:leave_and_cleanup()
-        else -- go to next story game talk
-          storystage.next_stage()
-          local story_data = storystage.get_data(select_config.ch_choose[1])
-          select_config.ch_choose[2] = story_data.ch
-          local function load_talk_page()
-            switch.load_page('talk', nil, {game_mode=99})
-            switch.slide_out_transfer()
-          end
-          switch.slide_in_transfer(load_talk_page)
-        end
-      else -- start next story game
-        game_start()
-      end
-      
-    else -- start game
-      game_start()
-    end
-    --]]
-  -- end
 end
 
 

@@ -60,15 +60,13 @@ local function init(parent, demo)
   menu_.transfer:set_green(0)
   menu_.transfer_title = ui.new_image{ parent = menu_.transfer._cdata, path='title', x=0, y=0, w=512, h=512, center=true }
   
-  menu_.skyblue = ui.new_image { parent = root_, path='nothing', w=1280, h=720, center=false }
-  menu_.skyblue:set_depth(200)
-  menu_.skyblue:set_red(0) 
-  menu_.skyblue:set_green(172) 
-  
   menu_.bg = ui.new_image{ parent=root_, path='mainmenu/bg', y=720, w=1280, h=720, center=false }
   menu_.bg:set_depth(150)
   
   menu_.skyroot_ = view.new_sprite("blahblah", root_, 0, 0, false)
+  
+  menu_.skyblue = ui.new_image { parent = menu_.skyroot_, path='mainmenu/skycolor', w=1280, h=1280, center=false }
+  menu_.skyblue:set_depth(200)
   
   local produce_cloud2 = function()
     local local_cloud = ui.new_image{ parent=menu_.skyroot_, path='mainmenu/cloud2', x=1280, y=60, w=294, h=121 }

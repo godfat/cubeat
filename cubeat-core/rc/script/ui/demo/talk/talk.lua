@@ -283,6 +283,10 @@ local function action(menu, rundown)
       old_timer_handle_:remove()
       old_timer_handle_ = nil
     end
+    if timer_handle_ then
+      timer_handle_:remove()
+      timer_handle_ = nil
+    end
     if rundown[step_].text then
       print('Lua talk: current line ends')
       menu[content]:change_text(rundown[step_].text)

@@ -201,12 +201,13 @@ local function init(parent, demo)
   menu_.bg:set_depth(150)
   
   menu_.skyroot_ = view.new_sprite("blahblah", root_, 0, 0, false)
+  menu_.bg_cloud_root = view.new_sprite("blahblah", menu_.bg._cdata, 0, 0, false)
   
   menu_.skyblue = ui.new_image { parent = menu_.skyroot_, path='mainmenu/skycolor', w=1280, h=1280, center=false }
   menu_.skyblue:set_depth(200)
   
   create_startscreen_clouds(menu_.skyroot_)
-  create_mainmenu_clouds(menu_.bg._cdata)
+  create_mainmenu_clouds(menu_.bg_cloud_root)
   
   event.on_timer("global", function() produce_flying_cubes(menu_.skyroot_) end, 3000, -1)
   
@@ -323,10 +324,16 @@ end
 
 local function slide_out(s, e, dur)
   root_:tween("OSine", "Pos2D", s, e, dur)
+  
+  -- avoid cloud being seen during transition
+  menu_.bg_cloud_root:tween("Linear", "Pos2D", ffi.new("v2", 0, 0), ffi.new("v2", 500, 0), 500)
 end
 
 local function slide_in(s, e, dur)
   root_:tween("ISine", "Pos2D", s, e, dur)
+  
+  -- adjust back the cloud into correct position
+  menu_.bg_cloud_root:tween("Linear", "Pos2D", ffi.new("v2", 500, 0), ffi.new("v2", 0, 0), 500)
 end
 
 local slide_out_transfer = function(effect)

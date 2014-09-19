@@ -24,7 +24,7 @@ function init(scene)
     local_cloud:tween("SineCirc", "Alpha", 0, 255, 20000, 0, function(self) self:remove() end)
   end
   produce_cloud1()
-  local cloud1_timer = event.on_timer("global", produce_cloud1, 10000, -1)
+  local cloud1_timer = event.on_timer("jungle1", produce_cloud1, 10000, -1)
   
   local produce_cloud2 = function()
     local local_cloud = new_layer{ name = "bg1/03cloud2", parent = scene_, layer = 3 }
@@ -33,7 +33,7 @@ function init(scene)
     local_cloud:tween("SineCirc", "Alpha", 64, 255, 15000, 0, function(self) self:remove() end)
   end
   produce_cloud2()
-  local cloud2_timer = event.on_timer("global", produce_cloud2, 7500, -1)
+  local cloud2_timer = event.on_timer("jungle1", produce_cloud2, 7500, -1)
   
   local produce_cloud3 = function()
     local local_cloud = new_layer{ name = "bg1/04cloud3", parent = scene_, layer = 4 }
@@ -43,7 +43,7 @@ function init(scene)
     three_stage_alpha_tween(local_cloud, 30000, 4000)
   end
   produce_cloud3()
-  local cloud3_timer = event.on_timer("global", produce_cloud3, 25000, -1)
+  local cloud3_timer = event.on_timer("jungle1", produce_cloud3, 25000, -1)
     
   local produce_cloud4 = function()
     local local_cloud = new_layer{ name = "bg1/05cloud4", parent = scene_, layer = 5 }
@@ -52,7 +52,7 @@ function init(scene)
     three_stage_alpha_tween(local_cloud, 10000, 2000)
   end
   produce_cloud4()
-  local cloud4_timer = event.on_timer("global", produce_cloud4, 8000, -1)
+  local cloud4_timer = event.on_timer("jungle1", produce_cloud4, 8000, -1)
   
   local l6 = new_layer{ name = "bg1/06cube", parent = scene_ }
   l6:set_pos(500, 107)
@@ -76,6 +76,6 @@ end
 
 function cleanup()
   stage_base.cleanup(need_release_)
-  event.clear_timers_of("global")
+  event.clear_timers_of("jungle1")
   collectgarbage 'collect'
 end

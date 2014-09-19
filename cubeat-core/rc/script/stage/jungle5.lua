@@ -40,7 +40,7 @@ function init(scene)
     water3:set_pos(532, 584)
     water3:tween("Linear", "Alpha", 255, 0, 750, 0, function(self) self:remove() end, 800)
   end
-  local fish_timer = event.on_timer("global", fish_effect, 10000, -1)
+  local fish_timer = event.on_timer("jungle5", fish_effect, 10000, -1)
   
   local monster_effect = function()
     local monster = new_layer{ name = "bg5/06monster", parent = scene_, layer = 3 }
@@ -52,10 +52,10 @@ function init(scene)
     local step2 = function()
       monster:tween("Linear", "Pos2D", ffi.new("v2", 660, 500), ffi.new("v2", 540, 650), 2500, 0, function(self) self:remove() end)
     end
-    local h1 = event.on_timer("global", step1, 3000) 
-    local h2 = event.on_timer("global", step2, 7000)
+    local h1 = event.on_timer("jungle5", step1, 3000) 
+    local h2 = event.on_timer("jungle5", step2, 7000)
   end
-  local monster_timer = event.on_timer("global", monster_effect, 10000, -1)
+  local monster_timer = event.on_timer("jungle5", monster_effect, 10000, -1)
   
   local l4_root = new_layer{ name = "nothing", parent = scene_, width = 0, height = 0 }
   l4_root:set_pos(1148, 198)
@@ -77,6 +77,6 @@ end
 
 function cleanup()
   stage_base.cleanup(need_release_)
-  event.clear_timers_of("global")
+  event.clear_timers_of("jungle5")
   collectgarbage 'collect'
 end

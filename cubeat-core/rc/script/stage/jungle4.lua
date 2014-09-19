@@ -27,7 +27,7 @@ function init(scene)
     sp:set_alpha(0)
     sp:tween("Linear", "Alpha", 255, 0, 1000, 0, function(self) self:remove() end)
   end
-  local sparkle_timer = event.on_timer("global", eye_sparkle, 2000, -1)
+  local sparkle_timer = event.on_timer("jungle4", eye_sparkle, 2000, -1)
   
   local l5 = new_layer{ name = "bg4/06whale", parent = scene_ }
   l5:set_pos(739, 0)
@@ -48,6 +48,6 @@ end
 
 function cleanup()
   stage_base.cleanup(need_release_)
-  event.clear_timers_of("global")
+  event.clear_timers_of("jungle4")
   collectgarbage 'collect'
 end

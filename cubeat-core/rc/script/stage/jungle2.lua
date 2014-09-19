@@ -38,6 +38,6 @@ end
 
 function cleanup()
   stage_base.cleanup(need_release_)
-  event.clear_timers_of("global")
+  event.clear_timers_of("jungle2")
   collectgarbage 'collect'
 end

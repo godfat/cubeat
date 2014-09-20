@@ -90,7 +90,7 @@ void Conf::save_config(utils::map_any const& c, std::string const& name) const
     //outfile << c.serialize();
     std::string str = c.serialize();
     std::string stripped = str.substr(2, str.size()-5);
-    std::cout << stripped << std::endl;
+//    std::cout << stripped << std::endl;
     fprintf(outfile, "%s\n", stripped.c_str());
     //outfile.close();
     fclose(outfile);

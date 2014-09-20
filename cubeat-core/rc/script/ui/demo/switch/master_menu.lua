@@ -326,14 +326,14 @@ local function slide_out(s, e, dur)
   root_:tween("OSine", "Pos2D", s, e, dur)
   
   -- avoid cloud being seen during transition
-  menu_.bg_cloud_root:tween("Linear", "Pos2D", ffi.new("v2", 0, 0), ffi.new("v2", 500, 0), 500)
+  menu_.bg_cloud_root:tween("OSine", "Pos2D", ffi.new("v2", 0, 0), ffi.new("v2", 640, 0), 500)
 end
 
 local function slide_in(s, e, dur)
   root_:tween("ISine", "Pos2D", s, e, dur)
   
   -- adjust back the cloud into correct position
-  menu_.bg_cloud_root:tween("Linear", "Pos2D", ffi.new("v2", 500, 0), ffi.new("v2", 0, 0), 500)
+  menu_.bg_cloud_root:tween("Linear", "Pos2D", ffi.new("v2", 640, 0), ffi.new("v2", 0, 0), 500)
 end
 
 local slide_out_transfer = function(effect)

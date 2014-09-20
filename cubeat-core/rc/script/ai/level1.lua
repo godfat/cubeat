@@ -45,7 +45,7 @@ local function pick_a_higher_half_coord_from(map, avoid_list)
 end
  
 --these are intended for C to call from.
-function THINK_INTERVAL() return 550 end --ms
+function THINK_INTERVAL() return 600 end --ms
 function MISSRATE()       return 0  end --percentage. 0 ~ 100
 
 function ai_entry(self)
@@ -70,9 +70,9 @@ function ai_entry(self)
   local ok_power_list = {}
   local emergency_list = {}
   
-  local excessive_threshold = 7
+  local excessive_threshold = 10
   if enemy_map:grounded_cube_count() < capacity * 0.25 then 
-    excessive_threshold = 21 
+    excessive_threshold = 25
   end 
   
   for y = my_map:height() - 2, 0, -1 do
@@ -199,9 +199,9 @@ function ai_entry(self)
     
     if self:cmdqueue_size() < 1 then
       
-      local anti_emptiness_factor = 0.5
-      if enemy_map:grounded_cube_count() < capacity * 0.4 then anti_emptiness_factor = 0.7 
-      elseif enemy_map:grounded_cube_count() < capacity * 0.6 then anti_emptiness_factor = 0.6 end
+      local anti_emptiness_factor = 0.3
+      if enemy_map:grounded_cube_count() < capacity * 0.4 then anti_emptiness_factor = 0.5 
+      elseif enemy_map:grounded_cube_count() < capacity * 0.6 then anti_emptiness_factor = 0.4 end
       
       if ground_cube_num >= capacity * anti_emptiness_factor and 
          random(100) > (1 - anti_emptiness_factor) * 100 

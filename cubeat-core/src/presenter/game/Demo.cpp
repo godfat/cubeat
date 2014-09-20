@@ -197,6 +197,11 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 //    set0->damage_factor( set0->damage_factor() * set1->negate_damage_factor() );
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
+    if( game_mode_ == GM_PVC && ai_level_ == 0 ) {
+        set0->cube_dying_duration(900).sink_speed(60).sink_speed_limit(160);
+        set1->cube_dying_duration(900).sink_speed(60).sink_speed_limit(160);
+    }
+
     if( game_mode_ == GM_TUT ) {
         map0_ = utils::MapLoader::load( "tutorial" );
         map1_ = utils::MapLoader::load( "tutorial" );

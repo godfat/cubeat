@@ -23,7 +23,7 @@ Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
      overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false), ability_kind_(7),
-     input_(input), player_hit_event_(0)
+     input_(input), player_hit_event_(0), player_overheat_event_(0)
 {
 }
 
@@ -240,6 +240,9 @@ void Player::end_overheat()
     overheat_ = false;
     if( presenter::pMap m = map_list_[id_].lock() ) {
         m->overheat_event()(false);
+        if( player_overheat_event_ ) {
+            player_overheat_event_(id(), false);
+        }
         accumulated_heat_ /= 1.5;
     }
 }
@@ -274,6 +277,9 @@ void Player::generate_heat(double heat)
         printf(" -= Player %d OVERHEAT =-\n", id());
         if( presenter::pMap m = map_list_[id_].lock() ) {
             m->overheat_event()(true);
+            if( player_overheat_event_ ) {
+                player_overheat_event_(id(), true);
+            }
         }
         remove_haste_effect(); // only call this after you're sure about overheat_ is true
         EventDispatcher::i().get_timer_dispatcher("game")->subscribe(

@@ -77,6 +77,7 @@ public:
     void set_stage_name(std::string const&);
     void set_countdown(bool const&);
     void set_time(int const&);
+    void set_player_overheat_ui(int const& id, bool const& flag);
     void play_sound(std::string const& file);
     void hide_character_animations();
     int  get_time() const;
@@ -164,6 +165,7 @@ protected:
     view::pAnimatedSprite item_;
     view::pSprite         blocker_, win_t_, lose_t_, pause_t_, heatgauge1_, heatgauge2_;
     view::pSprite         heatunit1_[24], heatunit2_[24];
+    view::pSprite         overheat1_, overheat2_;
     view::pSprite         char_big1_, char_big2_;
     view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_;
     pDummy timer_ui_, btn_reinit_, btn_pause_;

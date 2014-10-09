@@ -703,7 +703,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 void ViewSpriteMaster::show_overheat(bool show){
     using namespace accessor;
     //audio::Sound::i().play("overheat_sound");
-    overheat_->set<Visible>(show);
+    //overheat_->set<Visible>(show); If I want overheat_ UI to follow the cursor, then it can't be inside ViewSpriteMaster
     overheat_bg_->set<Visible>(show);
 }
 

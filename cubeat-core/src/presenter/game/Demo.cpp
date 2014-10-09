@@ -198,8 +198,8 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
 //    set1->damage_factor( set1->damage_factor() * set0->negate_damage_factor() );
 
     if( game_mode_ == GM_PVC && ai_level_ == 0 ) {
-        set0->cube_dying_duration(900).sink_speed(60).sink_speed_limit(160);
-        set1->cube_dying_duration(900).sink_speed(60).sink_speed_limit(160);
+        set0->cube_dying_duration(900).sink_speed(80).sink_speed_limit(240);
+        set1->cube_dying_duration(900).sink_speed(80).sink_speed_limit(240);
     }
 
     if( game_mode_ == GM_TUT ) {
@@ -514,6 +514,15 @@ void Demo::set_time(int const& time) {
     min_ = time / 60;
     sec_ = time % 60;
     update_ui_time();
+}
+
+void Demo::set_player_overheat_ui(int const& id, bool const& flag) {
+    if( id == 0 && player0_ ) {
+        overheat1_->set<Visible>(flag);
+    }
+    else if( id == 1 && player1_ ) {
+        overheat2_->set<Visible>(flag);
+    }
 }
 
 void Demo::play_sound(std::string const& file) {
@@ -832,6 +841,11 @@ void Demo::setup_ui()
         heatunit1_[i] = view::Sprite::create("heat/unit0", heatgauge1_, 96, 96, true);
         heatunit1_[i]->setDepth(-5).setPickable(false).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);
     }
+    overheat1_ = view::Sprite::create("ui/overheat4", ui_scene_, 338, 66, true);
+    overheat1_->setDepth(-60).setPickable(false);
+    overheat1_->set<Visible>(false);
+    overheat1_->tween<SineCirc, Alpha>(0, 1000u, -1);
+    player0_->player_overheat_event( bind(&Demo::set_player_overheat_ui, this, _1, _2) );
 
     if( game_mode_ == GM_SINGLE ) {    //2011.04.05 make stage number equal to puzzle level.
         ui_layout_->getSpriteText("stage").changeText( "level" + to_s(mode_level_ - 1) ); //first puzzle have 3 chains.
@@ -851,6 +865,12 @@ void Demo::setup_ui()
             heatunit2_[i] = view::Sprite::create("heat/unit0", heatgauge2_, 96, 96, true);
             heatunit2_[i]->setDepth(-5).setPickable(false).set<Rotation>(vec3(0,0,-i * 15)).set<ColorDiffuseVec3>( vec3(0,255,0) ).set<Alpha>(255);;
         }
+        overheat2_ = view::Sprite::create("ui/overheat4", ui_scene_, 338, 66, true);
+        overheat2_->setDepth(-60).setPickable(false);
+        overheat2_->set<Visible>(false);
+        overheat2_->tween<SineCirc, Alpha>(0, 1000u, -1);
+        player1_->player_overheat_event( bind(&Demo::set_player_overheat_ui, this, _1, _2) );
+
         if( game_mode_ == GM_PVC && submode_ == 99 && c1p_ == c2p_ ) {
             pview2_->setColor(vec3(0,0,0));
         }
@@ -992,6 +1012,11 @@ void Demo::update_heatgauge(ctrl::pPlayer player, view::pSprite gauge, bool& out
 void Demo::update_ui(){
     ui_layout_->getSpriteText("scr1p").showNumber(map0_->score(), 5);
     update_heatgauge(player0_, heatgauge1_, gauge1_flag_);
+
+    vec2 pos = player0_->input()->getCursor()->get<Pos2D>();
+    pos.Y -= 60; // about half of the height of overheat texture + heatgauge's half height
+    overheat1_->set<Pos2D>(pos);
+
     update_ui_time();
 
     if( game_mode_ != GM_SINGLE ) { // puzzle demo WTF temp
@@ -1030,6 +1055,10 @@ void Demo::update_ui(){
 //            last_garbage_2p_ > new_garbage_2p_ ) stage_->hitGroup(2);
 
         update_heatgauge(player1_, heatgauge2_, gauge2_flag_);
+
+        vec2 pos = player1_->input()->getCursor()->get<Pos2D>();
+        pos.Y -= 60; // about half of the height of overheat texture + heatgauge's half height
+        overheat2_->set<Pos2D>(pos);
 
         last_garbage_1p_ = new_garbage_1p_;
         last_garbage_2p_ = new_garbage_2p_;

@@ -12,7 +12,7 @@ local vsend   = require 'rc/script/ui/demo/vsend/vsend'
 
 local function vs_mode_end(demo, game_mode)
 
-  local p1_win = (demo:get_map_warning_level(0) ~= 100)
+  local p1_win = (demo:get_map_warning_level(1) >= 112)
   
   vsend.show(demo, game_mode, nil, p1_win)
   
@@ -34,7 +34,7 @@ end
 
 local function tutorial_mode_end(demo)
   -- tutorial win
-  if demo:get_map_warning_level(0) ~= 100 then
+  if demo:get_map_warning_level(0) < 112 then
     print('---- endingcheck: tutorial win ----')
     storyend.show(demo, storyend_config.tutorial_win)
     
@@ -48,7 +48,7 @@ end
 
 local function story_mode_end(demo, submode)
   -- story win
-  if demo:get_map_warning_level(1)==100 then
+  if demo:get_map_warning_level(1) >= 112 then
     print('---- endingcheck: story win ----')
     --storyend.show(demo, storyend_config.story_win)
     vsend.show(demo, nil, submode, true)

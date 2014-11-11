@@ -635,7 +635,7 @@ void Demo::endgame(int map_num)
         end(map0_);
     }
     else if( map_num == 1 ) {
-        map1_->warning_level(100);
+        map1_->warning_level(112);
         end(map1_);
     }
 }

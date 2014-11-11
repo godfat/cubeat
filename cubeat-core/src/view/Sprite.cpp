@@ -327,6 +327,18 @@ Sprite& Sprite::setBlending(std::string const& mt_name)
     return *this;
 }
 
+Sprite& Sprite::removeParticleChildren()
+{
+    core::list<ISceneNode*> children = body_->getChildren();
+    for( core::list<ISceneNode*>::ConstIterator it = children.begin(), iend = children.end();
+         it != iend; ++it ) {
+        if( (*it)->getType() == ESNT_PARTICLE_SYSTEM ) {
+            body_->removeChild(*it);
+        }
+    }
+    return *this;
+}
+
 /// Maybe this feature should move to another class and use multiple inheritance.
 
 ctrl::CallbackDelegate& Sprite::onPress(ctrl::Button const* btn) {

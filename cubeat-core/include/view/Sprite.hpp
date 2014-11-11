@@ -65,6 +65,7 @@ public:
     virtual Sprite& textureFlipV();
     virtual Sprite& lazyFixAlphaArtifact();
     virtual Sprite& setBlending(std::string const& mt_name);
+    virtual Sprite& removeParticleChildren();
 
     //normally you don't want to do this.
     virtual Sprite& removeTexture();

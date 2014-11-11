@@ -153,7 +153,7 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     alert_bar_animate_event(
         std::tr1::bind(&cube::ViewMaster::alert_bar_animate, view.get(), _1)).
     alert_bar_freeze_event(
-        std::tr1::bind(&cube::ViewMaster::alert_bar_freeze, view.get(), _1)).
+        std::tr1::bind(&cube::ViewMaster::alert_bar_freeze, view.get(), _1, _2)).
     alert_bar_update_event(
         std::tr1::bind(&cube::ViewMaster::alert_bar_update, view.get(), _1)).
     overheat_event(

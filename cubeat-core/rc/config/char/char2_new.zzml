@@ -37,7 +37,7 @@ passive_mod: {
     # note to self 2014.03.06
     # Pro: Countdown is somewhat longer.
     # Con: Overheat down time is also longer.
-    warning_gap: 2000,
+    warning_gap: 2200,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,

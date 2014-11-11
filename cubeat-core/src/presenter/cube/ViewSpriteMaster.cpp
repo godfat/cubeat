@@ -61,10 +61,19 @@ void ViewSpriteMaster::setup_ability_button(){
 }
 
 void ViewSpriteMaster::column_full(int at){
+    using namespace easing; using namespace accessor;
+
+    int flag_old = column_flag_;
     column_flag_ |= (1 << at);
     show_warning_at(at, true);
+
+    if( column_flag_ != 0 && flag_old == 0 ) {
+        box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,32)).set<Alpha>(255);
+    }
 }
 void ViewSpriteMaster::column_not_full(int at){
+    using namespace easing; using namespace accessor;
+
     int flag_old = column_flag_;
     if( column_flag_ & ( 1 << at ) ) {
         column_flag_ ^= (1 << at);
@@ -72,11 +81,12 @@ void ViewSpriteMaster::column_not_full(int at){
     show_warning_at(at, false);
 
     if( column_flag_ == 0 && flag_old != 0 ) {
-        using namespace easing; using namespace accessor;
 //        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
 //        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
 //        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
 //        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
+        box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+        box_highest_row_->clearAllTween();
     }
 }
 
@@ -128,8 +138,12 @@ void ViewSpriteMaster::new_chain(model::wpChain const& chain){
     audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
 }
 
-void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
+static void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
     ps->setEmitter(0);
+}
+
+static void remove_particle_system_of(view::pSprite sp) {
+    sp->removeParticleChildren();
 }
 
 void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power) {
@@ -580,13 +594,62 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     int h = map_setting()->height()-1;
 
     for( int x = 0; x < map_setting()->width(); ++x ) {
-        vec2 pos = vec2(0, -(h-0.33) * csize);
-        warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
-        warning_strip2_[x]->tween<SineCirc, Pos2D>(pos, pos + vec2(0, 15), warning_gap/2, 1);
+//        vec2 pos = vec2(0, -(h-0.33) * csize);
+//        warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
+//        warning_strip2_[x]->tween<SineCirc, Pos2D>(pos, pos + vec2(0, 15), warning_gap/2, 1);
 
-        pos = vec2(0, csize*0.66);
-        warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
-        warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
+//        pos = vec2(0, csize*0.66);
+//        warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
+//        warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
+        warning_strip2_[x] = view::Sprite::create("stroke_red", warning_strip_holder_[x], csize, csize, true);
+        warning_strip2_[x]->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false);
+
+        vec2 start(0, csize);
+        vec2 end(0, -((h-1)*csize));
+        unsigned int dur = warning_gap / 1.5;            // magical number 1
+        if( warning_level >= 48 ) dur = dur / 2 + 50;    // magical number 2
+        if( warning_level >= 80 ) dur = dur / 2 + 50;    // magical number 3
+        warning_strip2_[x]->set<Scale>(vec3(1,1,1));
+        warning_strip2_[x]->set<Alpha>(0);
+
+        using namespace irr; using namespace scene;
+        IParticleSystemSceneNode* ps = scene_.lock()->addParticleNodeTo(warning_strip2_[x], false);
+        ps->setIsDebugObject(true); // So it can't be picked.
+
+        std::tr1::function<void()> cb = std::tr1::bind(&remove_particle_system_of, warning_strip2_[x]);
+        warning_strip2_[x]->set<Pos2D>(start);
+        warning_strip2_[x]->tween<OQuad, Pos2D>(start, end, dur, 0, cb);
+
+        IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
+            &warning_strip2_[x]->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
+            core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
+            100, 100,    // emit rate
+            video::SColor(0,255,80,40),       // darkest color
+            video::SColor(0,255,80,40),       // brightest color
+            100, 100, 0,                         // min and max age, angle
+            core::dimension2df(64.f,8.f),         // min size
+            core::dimension2df(64.f,8.f)         // max size
+        );
+
+        ps->setEmitter(em); // this grabs the emitter
+        em->drop(); // so we can drop it here without deleting it
+
+        IParticleAffector* paf = ps->createFadeOutParticleAffector(video::SColor(0,0,0,0), 100);
+
+        ps->addAffector(paf); // same goes for the affector
+        paf->drop();
+
+        ps->setPosition(core::vector3df(0,32,0));
+        ps->setMaterialFlag(video::EMF_LIGHTING, true);
+        ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+        ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/stroke_narrow.bmp"));
+        ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+
+//        warning_strip3_[x]->tween<OExpo, Scale>(vec3(1, 0.125, 1), vec3(1, 1, 1), dur);
+//        warning_strip3_[x]->tween<SineCirc, Green>(64, 255, dur/2, 1);
+
+        box_highest_row_->set<Alpha>(255);
+        box_highest_row_->tween<SineCirc, Green>(255, 64, dur/2, 1);
     }
 }
 
@@ -630,10 +693,16 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
     view::SFX::i().hold(alert_text2_out2, 500 + 250);
 }
 
-void ViewSpriteMaster::alert_bar_freeze(bool freezed){
+void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
     using namespace accessor;
+    using namespace easing;
+
+    if( freezed_ == freezed ) return;
+    freezed_ = freezed;
+
     alert_bar_top_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
     alert_bar_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255));
+
     if( freezed ) {
         alert_bar_top_->clearAllTween();
         alert_bar_top_->setTexture("alert/moving/1");
@@ -641,6 +710,16 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed){
         alert_bar_bottom_->setTexture("alert/moving/1");
         alert_bar_cover_top_->set<Visible>(true).set<ColorDiffuseVec3>(vec3(0,255,255)).set<Alpha>(128);
         alert_bar_cover_bottom_->set<Visible>(true).set<ColorDiffuseVec3>(vec3(0,255,255)).set<Alpha>(128);
+
+        // Warning strips "exploding" when freeze effect kick in
+        if ( warning_level > 0 ) {
+            for( int x = 0; x < map_setting()->width(); ++x ) {
+                warning_strip2_[x]->clearAllTween();
+                warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2,2,2), 300u);
+                warning_strip2_[x]->tween<Linear, Alpha>(255, 0, 300u);
+                warning_strip2_[x]->removeParticleChildren();
+            }
+        }
     } else {
         alert_bar_cover_top_->set<Visible>(false);
         alert_bar_cover_bottom_->set<Visible>(false);
@@ -661,41 +740,42 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_text1_->set< Visible >( false );
         alert_text2_->set< Visible >( false );
         alert_leading_bg_->set< Visible >( false );
+
     } else {
-        alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+        alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
         alert_bar_top_->set< Visible >( true );
-        alert_bar_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+        alert_bar_bottom_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
         alert_bar_bottom_->set< Visible >( true );
         // The visibility of cover bar is decided by freeze function.
-        alert_bar_cover_top_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
-        alert_bar_cover_bottom_->set< ScaleWithUV >( vec2((warning_level)/100.0, 1) );
+        alert_bar_cover_top_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
+        alert_bar_cover_bottom_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
         alert_text1_->set< Visible >(true);
         alert_text2_->set< Visible >(true);
 
-        alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/100.0 * 640, 36) );
-        alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640, -2) );
+        alert_leading_orig1_->set< Pos2D >( vec2((warning_level)/112.0 * 640, 36) );
+        alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/112.0 * 640, -2) );
 
         alert_leading_bg_->set< Visible >(true);
-        alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/100.0 * 640) );
+        alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
 
         /// alert_leading "Grow" hack
-        if( warning_level <= 27 ) {
+        if( warning_level <= 30 ) {
             alert_leading_orig1_->set<Scale>( vec3(1, 1, 1) );
             alert_leading_orig2_->set<Scale>( vec3(1, 1, 1) );
-        } else if( warning_level > 27 && warning_level <= 30 ) {
+        } else if( warning_level > 30 && warning_level <= 35 ) {
             alert_leading_orig1_->set<Scale>( vec3(1, 1.1, 1) );
             alert_leading_orig2_->set<Scale>( vec3(1, 1.1, 1) );
-        } else if ( warning_level > 30 && warning_level <= 65 ) {
+        } else if ( warning_level > 35 && warning_level <= 70 ) {
             alert_leading_orig1_->set<Scale>( vec3(1, 1.2, 1) );
             alert_leading_orig2_->set<Scale>( vec3(1, 1.2, 1) );
-        } else if ( warning_level > 65 && warning_level <= 68 ) {
+        } else if ( warning_level > 70 && warning_level <= 74 ) {
             alert_leading_orig1_->set<Scale>( vec3(1, 1.35, 1) );
             alert_leading_orig2_->set<Scale>( vec3(1, 1.35, 1) );
-            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, -3) );
-        } else if ( warning_level > 68 ) {
+            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/112.0 * 640 - 0, -3) );
+        } else if ( warning_level > 74 ) {
             alert_leading_orig1_->set<Scale>( vec3(1, 1.5, 1) );
             alert_leading_orig2_->set<Scale>( vec3(1, 1.5, 1) );
-            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/100.0 * 640 - 0, -3) );
+            alert_leading_orig2_->set< Pos2D >( vec2((warning_level)/112.0 * 640 - 0, -3) );
         }
     }
 }
@@ -737,8 +817,8 @@ void ViewSpriteMaster::create_warning_strips(){
 void ViewSpriteMaster::create_warning_strips2(){
     using namespace accessor; using namespace easing;
     view::pScene scene = scene_.lock();
-    for( int i=0, width=map_setting()->width(),
-                  h=map_setting()->height()-1; i<width; ++i )
+    for( int i=0, width=map_setting()->width()/*,
+                  h=map_setting()->height()-1*/; i<width; ++i )
     {
         int csize = view_setting()->cube_size();
 
@@ -748,19 +828,27 @@ void ViewSpriteMaster::create_warning_strips2(){
         temp0->set<Pos2D>( vec2( 4000, pos_holder.Y ) ).setPickable(false).set<Visible>(true);
         warning_strip_holder_.push_back( temp0 );
 
-        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
-        vec2 pos = vec2(0, -(h-0.33) * csize);
-
-        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
-             .setPickable(false).set<Visible>(true);
+//        view::pAnimatedSprite temp = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+//        vec2 pos = vec2(0, -(h-0.33) * csize);
+//
+//        temp->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
+//             .setPickable(false).set<Visible>(true);
+//        warning_strip2_.push_back( temp );
+//
+//        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
+//        pos = vec2(0, csize*0.66);
+//
+//        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
+//              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
+//        warning_strip3_.push_back( temp2 );
+        view::pSprite temp = view::Sprite::create("stroke_red", temp0, csize, csize, true);
+        temp->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false);
         warning_strip2_.push_back( temp );
 
-        view::pAnimatedSprite temp2 = view::AnimatedSprite::create("red_tri", temp0, 128, 128, true);
-        pos = vec2(0, csize*0.66);
-
-        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
-              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
-        warning_strip3_.push_back( temp2 );
+//        view::pSprite temp2 = view::Sprite::create("warning2", temp0, csize, csize, true);
+//        temp2->setDepth(-100).set<ColorDiffuseVec3>(vec3(255, 64, 32)).set<Pos2D>(vec2(0, -((h-1)*csize) - csize/2 - 5))
+//              .set<Scale>(vec3(1, 0.125, 1)).setPickable(false);
+//        warning_strip3_.push_back( temp2 );
     }
 }
 
@@ -838,7 +926,9 @@ void ViewSpriteMaster::derived_init(){
     box_right_  = view::Sprite::create("danger_meter", view_orig_, 46, 660, false);
     box_right_->textureFlipH().set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
     box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
-    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(30).setPickable(false);
+    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(50).setPickable(false);
+    box_highest_row_ = view::Sprite::create("ui/warning_cap2", view_orig_, csize*w, csize, false);
+    box_highest_row_->set<Pos2D>( vec2(0, -csize*h) ).setDepth(30).set<Alpha>(144).setPickable(false);
 
     //warning: the position and scale data here should be configurable.
     alert_bar_top_ = view::AnimatedSprite::create("alert", scene_.lock(), csize*h, 34, false);

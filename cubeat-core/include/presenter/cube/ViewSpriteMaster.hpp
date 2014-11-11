@@ -76,7 +76,7 @@ public:
     virtual void hit_by_garbage(int this_frame_lands);
     virtual void warning_sound(int warning_level);
     virtual void alert_bar_animate(int warning_level);
-    virtual void alert_bar_freeze(bool freezed);
+    virtual void alert_bar_freeze(bool freezed, int warning_level);
     virtual void alert_bar_update(int warning_level);
     virtual void show_overheat(bool show);
     virtual void ending_effect();
@@ -116,7 +116,7 @@ private:
     ctrl::wpPlayer player_;
     view::pSprite overheat_;
     view::pSprite overheat_bg_;
-    view::pSprite box_top_, box_bottom_, box_left_, box_right_, box_bg_;
+    view::pSprite box_top_, box_bottom_, box_left_, box_right_, box_bg_, box_highest_row_;
     view::pSprite ability_btn_, alert_bar_cover_top_, alert_bar_cover_bottom_;
     view::pSprite alert_text_bg1_, alert_text_bg2_;
     view::pAnimatedSprite alert_bar_top_;
@@ -126,8 +126,8 @@ private:
     view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
-    std::vector< view::pAnimatedSprite > warning_strip2_;
-    std::vector< view::pAnimatedSprite > warning_strip3_;
+    std::vector< view::pSprite > warning_strip2_;
+//    std::vector< view::pSprite > warning_strip3_;
     std::vector< view::pObject > warning_strip_holder_;
     std::vector< std::vector< view::pSprite > > edges_;
     std::vector< std::vector< view::pSprite > > scanlines_;
@@ -139,6 +139,7 @@ private:
 
     int column_flag_;
     int i_have_to_keep_track_of_garbage_count_visually_here_;
+    bool freezed_;
 };
 
 } //cube

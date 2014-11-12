@@ -69,6 +69,11 @@ void ViewSpriteMaster::column_full(int at){
 
     if( column_flag_ != 0 && flag_old == 0 ) {
         box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,32)).set<Alpha>(255);
+
+        box_top_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
+        box_left_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
+        box_right_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
+        box_bottom_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
     }
 }
 void ViewSpriteMaster::column_not_full(int at){
@@ -87,6 +92,12 @@ void ViewSpriteMaster::column_not_full(int at){
 //        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
         box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
         box_highest_row_->clearAllTween();
+
+        box_top_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+        box_left_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+        box_right_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+        box_bottom_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+
     }
 }
 
@@ -657,40 +668,45 @@ void ViewSpriteMaster::alert_bar_animate(int warning_level){
     using namespace accessor; using namespace easing;
 
     time_t warning_gap = map_setting()->warning_gap();
-    alert_bar_top_->playAnime("moving", warning_gap);
+
+    unsigned int dur = warning_gap / 1.5;            // magical number 1
+    if( warning_level >= 48 ) dur = dur / 2 + 50;    // magical number 2
+    if( warning_level >= 80 ) dur = dur / 2 + 50;    // magical number 3
+
+    alert_bar_top_->playAnime("moving", dur);
     //alert_bar_top_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
-    alert_bar_bottom_->playAnime("moving", warning_gap);
+    alert_bar_bottom_->playAnime("moving", dur);
     //alert_bar_bottom_->tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 0, 0), warning_gap);
 //    alert_bar_cover_top_->set<Visible>(true).set<GradientDiffuse>(255).tween<SineCirc, Alpha>(0, 128, warning_gap);
 //    alert_bar_cover_bottom_->set<Visible>(true).set<GradientDiffuse>(255).tween<SineCirc, Alpha>(0, 128, warning_gap);
-    alert_text1_->playAnime("moving", warning_gap);
-    alert_text2_->playAnime("moving", warning_gap);
+    alert_text1_->playAnime("moving", dur);
+    alert_text2_->playAnime("moving", dur);
 
     view::pSprite alert_text1_out1 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
     view::pSprite alert_text1_out2 = view::Sprite::create("alert_text/moving/0", alert_text1_, 18, 192, true);
     view::pSprite alert_text2_out1 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
     view::pSprite alert_text2_out2 = view::Sprite::create("alert_text/moving/0", alert_text2_, 18, 192, true);
-    alert_text1_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
-    alert_text1_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
-    alert_text2_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
-    alert_text2_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96));
+    alert_text1_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96)).setPickable(false);
+    alert_text1_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96)).setPickable(false);
+    alert_text2_out1->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96)).setPickable(false);
+    alert_text2_out2->setDepth(-5).set<Alpha>(0).set<Pos2D>(vec2(9, 96)).setPickable(false);
 
     data::AnimatorParam<Linear, Alpha> alpha, alpha2;
     data::AnimatorParam<Linear, Scale> scale, scale2;
-    alpha.start(255).end(0).duration(500).delay();
-    scale.start(vec3(1,1,1)).end(vec3(2.0, 1.2, 1)).duration(500).delay();
-    alpha2 = alpha; alpha2.delay(250);
-    scale2 = scale; scale2.delay(250);
+    alpha.start(255).end(0).duration(dur/2).delay();
+    scale.start(vec3(1,1,1)).end(vec3(2.0, 1.2, 1)).duration(dur/2).delay();
+    alpha2 = alpha; alpha2.delay(dur/4);
+    scale2 = scale; scale2.delay(dur/4);
 
     alert_text1_out1->tween(alpha).tween(scale);
     alert_text1_out2->tween(alpha2).tween(scale2);
     alert_text2_out1->tween(alpha).tween(scale);
     alert_text2_out2->tween(alpha2).tween(scale2);
 
-    view::SFX::i().hold(alert_text1_out1, 500);
-    view::SFX::i().hold(alert_text1_out2, 500 + 250);
-    view::SFX::i().hold(alert_text2_out1, 500);
-    view::SFX::i().hold(alert_text2_out2, 500 + 250);
+    view::SFX::i().hold(alert_text1_out1, dur);
+    view::SFX::i().hold(alert_text1_out2, dur);
+    view::SFX::i().hold(alert_text2_out1, dur);
+    view::SFX::i().hold(alert_text2_out2, dur);
 }
 
 void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){

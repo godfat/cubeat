@@ -1197,7 +1197,7 @@ void Demo::end(pMap lose_map)
         lose_map->ending_effect();
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 1600);
+        std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 800);
 }
 
 void button_get_focus(view::pSpriteText& sp)

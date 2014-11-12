@@ -242,7 +242,7 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 }
 
 Map& Map::ending_effect() {
-    int time_delay = 800;
+    int time_delay = 0;
     for( int y = ms()->height()-2; y >= 0 ; --y ) {
         for( int x = 0; x < ms()->width(); ++x ) {
             if( cubes_[x][y] ) {
@@ -921,10 +921,21 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
                 if( !animate_alert_bar_ ) {
                     owner()->alert_bar_freeze_event()(false, warning_level_);
 
-                    animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
-                    owner()->alert_bar_animate_event()(0); //added for animating as soon as column full, and, if not animated already.
-                    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                        bind(owner()->alert_bar_animate_event(), warning_level_), animate_alert_bar_, warning_gap, -1);
+                    if( fall_through_check_number(warning_level_) ) {
+                        animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
+                        owner()->alert_bar_animate_event()(warning_level_);
+                    }
+//                    owner()->alert_bar_freeze_event()(false, warning_level_);
+//
+//                    animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
+//                    owner()->alert_bar_animate_event()(0); //added for animating as soon as column full, and, if not animated already.
+//                    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+//                        bind(owner()->alert_bar_animate_event(), warning_level_), animate_alert_bar_, warning_gap, -1);
+                }
+                else {
+                    if( warning_level_ % 2 == 1 ) {
+                        animate_alert_bar_.reset();
+                    }
                 }
             }
         }

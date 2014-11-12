@@ -242,7 +242,7 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 }
 
 Map& Map::ending_effect() {
-    ending_effect_event()();
+    //ending_effect_event()();
     model()->ending_effect();
     return *this;
 }

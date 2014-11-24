@@ -15,6 +15,8 @@ local list_ = {
   'rc/script/ui/demo/talk/script_end_TW.lua',
   'rc/script/ui/demo/talk/script_end_JP.lua',
   'rc/script/ui/demo/talk/script_end_EN.lua',
+  'rc/script/ui/demo/staffroll/staffroll.lua',
+  'rc/script/ui/demo/staffroll/script.lua',
 }
 
 return {

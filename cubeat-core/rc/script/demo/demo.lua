@@ -21,6 +21,7 @@ local endingcheck = require 'rc/script/ui/demo/endingcheck/endingcheck'
 local demo_
 local scene_
 local refresh_btn_
+local staffroll_btn_
 
 --local win_ = false -- win state for SinglePlayer modes.
 --local puzzle_level_ = 2
@@ -93,6 +94,12 @@ function init(demo)
       refresh.check_file_time(root, t)
     end
     --demo_:hide_character_animations()
+  end)
+  -- test: switch to staffroll page
+  staffroll_btn_ = ui.new_text{ parent = scene_, title='staffroll', x=850, y=630, size=32, depth=-1000 }
+  staffroll_btn_:set_scale(1.2)
+  staffroll_btn_:on_press(function(self)
+    switch.load_page('staffroll', nil, nil)
   end)
   -- check file time once when init
   for k,root in pairs(filelist.list) do

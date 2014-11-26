@@ -588,8 +588,8 @@ local act6_act6_ = {
   { ch=1, img="char6_new/normal" , text="(本当は手品でやるつもりなのに…)",board_flip="V"},
   { ch=1, img="char6_new/sad" , text="(いつもうっかりして、\n超能力を使っちゃう…)",board_flip="V"},
   { ch=1, img="char6_new/normal" , text="(もう一回やろう！)",board_flip="V"},
-  { ch=1, img="char6_new/sad" , text="うッ！\n(痛い！) ",effect_w="shake", special={id="cube", x1=500, y1=-50, x2=270, y2=420, x3=-100, y3=-100, path='cubes/cube-r-1', w=64, h=64, dur=250},effect_w="size_M",board_flip="V"},
-  { ch=1, img="char6_new/sad" , text="(何で\nまた超能力使っちゃったのよ…)"},
+  { ch=1, img="char6_new/sad" , text="うッ！\n(痛い！) ",effect_w="shake", special={id="cube", x1=500, y1=-50, x2=270, y2=420, x3=-100, y3=-100, path='cubes/cube-r-1', w=64, h=64, dur=250}, board_flip="V"},
+  { ch=1, img="char6_new/sad" , text="(何で\nまた超能力使っちゃったのよ…)", effect_w="size_M"},
   { ch=1, img="char6_new/normal" , text="…え？\n(このキューブたちは？)",board_flip="V"},
 
   { ch=1, text="" }

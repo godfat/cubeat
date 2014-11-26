@@ -56,7 +56,7 @@ effect_.fade = function(effect)
   end
 end
 
-effect_.show = function(effect)
+effect_.storyend = function(effect)
   for k,v in pairs(to_be_delete_) do
     if k~="content2" and k~="panel2" and k~="light2" and k~="clickBlock" then
       v:set_visible(true)

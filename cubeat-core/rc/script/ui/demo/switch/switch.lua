@@ -56,6 +56,14 @@ effect_.fade = function(effect)
   end
 end
 
+effect_.show = function(effect)
+  for k,v in pairs(to_be_delete_) do
+    if k~="content2" and k~="panel2" and k~="light2" and k~="clickBlock" then
+      v:set_visible(true)
+    end
+  end
+end
+
 effect_.slide_out = function(effect)
   local s1 = ffi.new("v2", 0, 0)
   local e1 = ffi.new("v2", 2000, 0)

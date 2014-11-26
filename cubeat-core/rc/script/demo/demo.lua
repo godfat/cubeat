@@ -99,7 +99,7 @@ function init(demo)
   staffroll_btn_ = ui.new_text{ parent = scene_, title='staffroll', x=850, y=630, size=32, depth=-1000 }
   staffroll_btn_:set_scale(1.2)
   staffroll_btn_:on_press(function(self)
-    switch.load_page('staffroll', nil, nil)
+    switch.load_page('staffroll', {id='show'}, nil)
   end)
   -- check file time once when init
   for k,root in pairs(filelist.list) do

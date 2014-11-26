@@ -17,7 +17,7 @@ local function init(demo, parent, data)
   data_         = data
   roll_content_ = script.get_staffroll()
   
-  menu.background = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=768 }
+  menu.background = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=768, depth=-400 }
   menu.background:set_red(0)
   menu.background:set_blue(0)
   menu.background:set_green(0)
@@ -31,11 +31,13 @@ local function init(demo, parent, data)
   for k,v in pairs(roll_content_) do
     -- text
     if v.text then
-      menu[k] = ui.new_text{ parent = menu.roll, x=v.x or 0, y=v.y or 0, size=32, title=v.text, size=v.size or default_size }
+      menu[k] = ui.new_text{ parent = menu.roll, x=v.x or 0, y=v.y or 0, size=32, title=v.text, size=v.size or default_size, depth=v.depth or default_depth }
+      menu[k]:set_visible(false)
     -- image
     elseif v.img then
       menu[k] = ui.new_image{ parent = menu.roll, path=v.img, x=v.x or 0, y=v.y or 0, w=v.w or 0, h=v.h or 0, depth=v.depth or default_depth }
       if v.flip then menu[k]:texture_flipH() end
+      menu[k]:set_visible(false)
     end
   end
   
@@ -46,9 +48,16 @@ local function init(demo, parent, data)
   -- this callback function use for talk_end() in talk.lua when story end
   --local function cb() demo_game_:leave_and_cleanup() end
   
-  local roll_distance = script.get_roll_distance()
-  local roll_time     = script.get_roll_time()
-  menu.roll:tween('Linear', 'Pos2D', ffi.new("value2", 0, 0), ffi.new("value2", 0, roll_distance), roll_time, 0, cb, 0)
+  local function startroll()
+    for k,v in pairs(menu) do
+      v:set_visible(true)
+    end
+    local roll_distance = script.get_roll_distance()
+    local roll_time     = script.get_roll_time()
+    menu.roll:tween('Linear', 'Pos2D', ffi.new("value2", 0, 0), ffi.new("value2", 0, roll_distance), roll_time, 0, cb, 0)
+  end
+  
+  menu.background:tween('Linear', 'Alpha', 0, 255, 3000, 0, startroll, 0)
   
   return menu
 end

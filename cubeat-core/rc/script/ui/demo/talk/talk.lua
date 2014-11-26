@@ -114,7 +114,8 @@ local function talk_end()
         local data = { win='true', character=select_config.ch_choose[1] }
         record.save(demo_game_, parameter.story, data)
         -- end game
-        demo_game_:leave_and_cleanup()
+        --demo_game_:leave_and_cleanup()
+        switch.load_page('staffroll', {id='show'}, nil)
       else -- go to next story game talk
         storystage.next_stage()
         local story_data = storystage.get_data(select_config.ch_choose[1])

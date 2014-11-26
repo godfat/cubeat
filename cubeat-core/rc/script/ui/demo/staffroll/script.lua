@@ -43,7 +43,7 @@ local script_ = {
 local roll_time_      = 15000
 local roll_distance_  = -3700
 local default_size_   = 40
-local default_depth_  = -500
+local default_depth_  = -600
 
 --
 

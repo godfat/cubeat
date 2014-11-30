@@ -40,12 +40,12 @@ local function pick_a_higher_half_coord_from(map, avoid_list)
       end
     end
     bail_out_count = bail_out_count + 1
-  until ( map:get_grounded_cube(x, y):exist() and reroll == false ) or bail_out_count > 10
+  until ( map:get_grounded_cube(x, y):exist() and reroll == false ) or bail_out_count > 6
   return x, y, bail_out_count
 end
  
 --these are intended for C to call from.
-function THINK_INTERVAL() return 600 end --ms
+function THINK_INTERVAL() return 800 end --ms
 function MISSRATE()       return 0  end --percentage. 0 ~ 100
 
 function ai_entry(self)
@@ -70,9 +70,9 @@ function ai_entry(self)
   local ok_power_list = {}
   local emergency_list = {}
   
-  local excessive_threshold = 10
+  local excessive_threshold = 6
   if enemy_map:grounded_cube_count() < capacity * 0.25 then 
-    excessive_threshold = 25
+    excessive_threshold = 15
   end 
   
   for y = my_map:height() - 2, 0, -1 do
@@ -109,7 +109,7 @@ function ai_entry(self)
     self:push_command(cmdbuf)
     
   elseif enemy_map:grounded_cube_count() < capacity * 0.6 and 
-     enemy_map:warning_level() < 1 and #ok_power_list > 0 and random(100) > 50 and
+     enemy_map:warning_level() < 1 and #ok_power_list > 0 and random(100) > 66 and
      event.get_time_of('game') > 10000
   then
     --io.write( string.format("keycube at: %d, %d\n", keycube:x(), keycube:y()) )
@@ -118,7 +118,7 @@ function ai_entry(self)
     setcmd(cmdbuf, C.AI_SHOOT, 0, ok_power_list[1][1], ok_power_list[1][2])
     self:push_command(cmdbuf)
   
-  elseif my_map:warning_level() > 0 and #emergency_list > 0 and random(100) > 40
+  elseif my_map:warning_level() > 0 and #emergency_list > 0 and random(100) > 66
   then
     io.write(string.format(" - entering emergency block\n"))
     setcmd(cmdbuf, C.AI_SHOOT, 0, emergency_list[1][1], emergency_list[1][2])
@@ -200,14 +200,14 @@ function ai_entry(self)
     if self:cmdqueue_size() < 1 then
       
       local anti_emptiness_factor = 0.3
-      if enemy_map:grounded_cube_count() < capacity * 0.4 then anti_emptiness_factor = 0.5 
-      elseif enemy_map:grounded_cube_count() < capacity * 0.6 then anti_emptiness_factor = 0.4 end
+      if enemy_map:grounded_cube_count() < capacity * 0.4 then anti_emptiness_factor = 0.6 
+      elseif enemy_map:grounded_cube_count() < capacity * 0.6 then anti_emptiness_factor = 0.5 end
       
       if ground_cube_num >= capacity * anti_emptiness_factor and 
          random(100) > (1 - anti_emptiness_factor) * 100 
       then
         local x, y, bail_out_count = pick_a_higher_half_coord_from(my_map)
-        if my_map:get_grounded_cube(x, y):exist() and bail_out_count <= 10
+        if my_map:get_grounded_cube(x, y):exist() and bail_out_count <= 6
         then
           io.write(string.format(" - entering random block, shooting(%d, %d) \n", x, y))
         

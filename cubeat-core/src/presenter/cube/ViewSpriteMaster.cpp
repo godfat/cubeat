@@ -581,6 +581,9 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
 
     time_t warning_gap = map_setting()->warning_gap();
+    unsigned int dur = warning_gap / 1.5;            // magical number 1
+    if( warning_level >= 48 ) dur = dur / 2 + 50;    // magical number 2
+    if( warning_level >= 80 ) dur = dur / 2 + 50;    // magical number 3
 
 //    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 //    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
@@ -604,6 +607,9 @@ void ViewSpriteMaster::warning_sound(int warning_level){
     int csize = view_setting()->cube_size();
     int h = map_setting()->height()-1;
 
+    //alert_leading_bg_->tween<Linear, Alpha>(255, 96, dur);
+//    alert_flood_bg_->tween<Linear, Alpha>(128, 0, dur);
+
     for( int x = 0; x < map_setting()->width(); ++x ) {
 //        vec2 pos = vec2(0, -(h-0.33) * csize);
 //        warning_strip2_[x]->playAnime("moving", warning_gap/2, 1);
@@ -617,9 +623,7 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 
         vec2 start(0, csize);
         vec2 end(0, -((h-1)*csize));
-        unsigned int dur = warning_gap / 1.5;            // magical number 1
-        if( warning_level >= 48 ) dur = dur / 2 + 50;    // magical number 2
-        if( warning_level >= 80 ) dur = dur / 2 + 50;    // magical number 3
+
         warning_strip2_[x]->set<Scale>(vec3(1,1,1));
         warning_strip2_[x]->set<Alpha>(0);
 
@@ -731,8 +735,8 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
         if ( warning_level > 0 ) {
             for( int x = 0; x < map_setting()->width(); ++x ) {
                 warning_strip2_[x]->clearAllTween();
-                warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2,2,2), 300u);
-                warning_strip2_[x]->tween<Linear, Alpha>(255, 0, 300u);
+                warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2.5,2.5,2.5), 600u);
+                warning_strip2_[x]->tween<OCubic, Alpha>(255, 0, 600u);
                 warning_strip2_[x]->removeParticleChildren();
             }
         }
@@ -756,6 +760,9 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
         alert_text1_->set< Visible >( false );
         alert_text2_->set< Visible >( false );
         alert_leading_bg_->set< Visible >( false );
+        alert_flood_bg_->set< Visible >( false );
+        alert_flood_bg_->set< Scale >( vec3(1, 0.0001, 1) );
+        alert_flood_bg_->set< Pos2D >( vec2(0, 0) );
 
     } else {
         alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
@@ -773,6 +780,10 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 
         alert_leading_bg_->set< Visible >(true);
         alert_leading_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
+
+        alert_flood_bg_->set< Visible >(true);
+        alert_flood_bg_->set< Scale >(  vec3(1, (warning_level)/112.0, 1) );
+        alert_flood_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
 
         /// alert_leading "Grow" hack
         if( warning_level <= 30 ) {
@@ -858,7 +869,7 @@ void ViewSpriteMaster::create_warning_strips2(){
 //              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
 //        warning_strip3_.push_back( temp2 );
         view::pSprite temp = view::Sprite::create("stroke_red", temp0, csize, csize, true);
-        temp->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false);
+        temp->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false).set<Alpha>(0);
         warning_strip2_.push_back( temp );
 
 //        view::pSprite temp2 = view::Sprite::create("warning2", temp0, csize, csize, true);
@@ -942,7 +953,7 @@ void ViewSpriteMaster::derived_init(){
     box_right_  = view::Sprite::create("danger_meter", view_orig_, 46, 660, false);
     box_right_->textureFlipH().set<Pos2D>( vec2(csize*w, -view_setting()->y_offset() + 32) ).set<Alpha>(160).setDepth(30);
     box_bg_     = view::Sprite::create("blocker", view_orig_, csize*w, csize*h, false);
-    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(50).setPickable(false);
+    box_bg_->set<Pos2D>( vec2(0, -csize*h) ).set<GradientDiffuse>(0).set<Alpha>(160).setDepth(60).setPickable(false);
     box_highest_row_ = view::Sprite::create("ui/warning_cap2", view_orig_, csize*w, csize, false);
     box_highest_row_->set<Pos2D>( vec2(0, -csize*h) ).setDepth(30).set<Alpha>(144).setPickable(false);
 
@@ -993,7 +1004,12 @@ void ViewSpriteMaster::derived_init(){
     alert_leading2_->set<Pos2D>(vec2(0, 2)).set<Rotation>(vec3(0,0,-90));
 
     alert_leading_bg_ = view::Sprite::create("stroke0", view_orig_, csize*w, 16, false);
-    alert_leading_bg_->setDepth(25).set<Visible>(false); //background
+    alert_leading_bg_->setDepth(30).set<ColorDiffuseVec3>(vec3(255, 255, 255))//.set<Alpha>(96)
+                      .set<Visible>(false).setPickable(false); //background
+
+    alert_flood_bg_ = view::Sprite::create("blahblah", view_orig_, csize*w, csize*h, false);
+    alert_flood_bg_->setDepth(45).set<ColorDiffuseVec3>(vec3(255, 64, 32)).set<Alpha>(128)
+                    .set<Scale>(vec3(1, 0.0001, 1)).setPickable(false); // background
 
     create_overheat_overlay();
     create_warning_strips2();

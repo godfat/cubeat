@@ -123,7 +123,7 @@ private:
     view::pAnimatedSprite alert_bar_bottom_;
     view::pAnimatedSprite alert_text1_, alert_text2_;
     view::pObject alert_leading_orig1_, alert_leading_orig2_;
-    view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_;
+    view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_, alert_flood_bg_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
     std::vector< view::pSprite > warning_strip_;
     std::vector< view::pSprite > warning_strip2_;

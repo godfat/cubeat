@@ -87,7 +87,7 @@ public:
         int stepnum = step; //This is for specific step, not the last step of a chain
         if( stepnum == 1 ) {
             if( step_amount > chain_amounts_ ) { // notice the strictly-greater sign.
-                power_step_[step-1] = step_amount - 1;
+                power_step_[step-1] = step_amount;
             } else {
                 power_step_[step-1] = 0;
                 // 2014.6 To cope with chain merge problem, it's totally possible for "weaker" chains to be
@@ -96,7 +96,7 @@ public:
         }
         else {
             if( step_amount >= chain_amounts_ ) { // notice the greater-equal sign.
-                power_step_[step-1] = (step_amount - 1)*(stepnum)/2 + (stepnum-1);
+                power_step_[step-1] = (step_amount) /* *(stepnum)/2 */ + (stepnum);
             } else {
                 power_step_[step-1] = 0;
             }

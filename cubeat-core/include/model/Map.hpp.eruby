@@ -62,7 +62,7 @@ public:
     // end
 
     // only used by Game::make_garbage
-    void push_garbage(double amounts);
+    void push_garbage(int amounts);
     // end
 
     // for Cube#lose_chain

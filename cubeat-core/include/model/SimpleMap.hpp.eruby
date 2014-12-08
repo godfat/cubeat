@@ -110,7 +110,7 @@ protected:
 
     data::pMapSetting map_setting_;
     int id_;
-    double garbage_left_;
+    int garbage_left_;
     int score_, current_sum_of_attack_;
     bool lock_dropping_; //2012 note: setup a state to alter garbage_dumpable_ && dropping_creatable_ in Map::cycle
     chain_list_type chains_;// someday make it to be std::list

@@ -52,6 +52,11 @@ bool Map::enemy_column_full() const {
     return full >= not_full;
 }
 
+Map& Map::push_garbage(int amounts) {
+    model()->push_garbage(amounts);
+    return *this;
+}
+
 Map& <% debug_hook 'Map::push_view_slave' do %>(cube::pViewMaster view){
 <% end %>
     view->init(map_setting());

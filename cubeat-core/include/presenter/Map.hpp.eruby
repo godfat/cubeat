@@ -65,7 +65,7 @@ public:
     void <% debug_hook 'release' do %>(model::wpCube cube){ <%end%> cubes_.erase(cube); }
 
     color_map_type color_map() const{ return model_->color_map(); }
-    Map& throw_garbage(double amounts){
+    Map& throw_garbage(int amounts){
         BOOST_FOREACH(wpMap map, garbage_lands_){
             map.lock()->push_garbage(amounts);
         }
@@ -96,10 +96,7 @@ public:
                 data::pViewSetting();
     }
 
-    Map& push_garbage(double amounts){
-        model()->push_garbage(amounts);
-        return *this;
-    }
+    Map& push_garbage(int amounts);
     Map& set_garbage_amount(int const& n) { model()->set_garbage_amount(n); return *this; }
     Map& foreach(std::tr1::function<void(model::pCube&, int, int)> f)   { model()->foreach(f); return *this; }
     Map& for_row(int r, std::tr1::function<void(model::pCube&, int, int)> f) { model()->for_row(r, f); return *this; }

@@ -659,12 +659,16 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
 <% end %>
     std::vector< std::vector<int> > row_empty;
     int top = ms()->height()-1;
+
+    int this_frame_empty_slots = 0;
+
     // check empty columns
     for( int y=top-1, i = 0; y >= 0; --y, ++i ) {
         row_empty.push_back( std::vector<int>() );
         for( int x=0, width=ms()->width(); x < width; ++x ) {
             if( !cubes_[x][y+1] && !cubes_[x][y] ) {
                 row_empty[i].push_back( x );
+                this_frame_empty_slots += 1;
             }
         }
         if( row_empty.back().size() < 1 ) {
@@ -674,6 +678,11 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         }
     }
     //so here you have a upside-down view of where to drop the garbages.
+
+    // don't feeble-drop.
+    if( this_frame_empty_slots < 6 && garbage_left_ >= 6 ) {
+        return;
+    }
 
     // shuffle all the vectors
     for( unsigned int i = 0; i < row_empty.size(); ++i ) {
@@ -724,6 +733,16 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         ) ) {
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(owner->hit_by_garbage_event(), this_frame_lands), shared_from_this(), ms()->cube_dropping_duration());
+    }
+
+    if( this_frame_lands > 0 && warning_level() < 112 )
+    {
+        // we also need visual effect here
+
+        warning_level( warning_level() + (garbage_left_) + (this_frame_lands)/2 );
+        if( warning_level() >= 112 ) {
+            warning_level(111);
+        }
     }
 }
 

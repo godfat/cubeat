@@ -7,9 +7,9 @@ return {
   cube_r  = 3,
   cube_y  = 4,
   --
-  OneShotClear      = 0,
-  WarningCondition  = 1,
-  UnLimited         = 2,
+  OneShotClear          = 0,
+  WarningCondition      = 1,
+  UnLimited             = 2,
   --
   WarningCondition_20   = 10,
   WarningCondition_40   = 11,
@@ -24,6 +24,8 @@ return {
   retry = 2,
   score = 3,
   story = 4,
+  --
+  OneShotClearStageNum  = 18,
   
   
   --[[

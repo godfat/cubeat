@@ -96,7 +96,7 @@ public:
         }
         else {
             if( step_amount >= chain_amounts_ ) { // notice the greater-equal sign.
-                power_step_[step-1] = (step_amount) /* *(stepnum)/2 */ + (stepnum);
+                power_step_[step-1] = (step_amount) /* *(stepnum)/2 */ + (stepnum-1);
             } else {
                 power_step_[step-1] = 0;
             }

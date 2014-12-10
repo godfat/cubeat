@@ -589,12 +589,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
                     bind(&delay_adder, ref(score_), (*i)->step_score(step), step, (*i), id()), // note: hold sptr to ensure throw_garbage part won't be executed prematurely
                     handle,
                     ms()->cube_dying_duration());
-
-                //TEST: reduce warning_level_ when you make chains (only use this with slowed dec_warning)
-//                warning_level_ -= amount/2;
-//                if( warning_level_ < 0 ) {
-//                    warning_level_ = 0;
-//                }
             }
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -740,16 +734,6 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(owner->hit_by_garbage_event(), this_frame_lands), shared_from_this(), ms()->cube_dropping_duration());
     }
-
-//    if( this_frame_lands > 0 && warning_level() < 112 )
-//    {
-//        // we also need visual effect here
-//
-//        warning_level( warning_level() + (garbage_left_) + (this_frame_lands)/2 );
-//        if( warning_level() >= 112 ) {
-//            warning_level(111);
-//        }
-//    }
 }
 
 void <% debug_hook 'Map::cycle_creation' do %>(){
@@ -867,7 +851,7 @@ void Map::inc_warning(int& warning_lv) {
 
 void Map::dec_warning(int& warning_lv) {
     if( !column_full_num_ && warning_lv > 0 ) {
-        warning_lv -= 2;
+        warning_lv -= 1;
         if( warning_lv < 0 )
             warning_lv = 0;
     }
@@ -921,11 +905,8 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&Map::inc_warning, this, ref(warning_level_)), warning_handle_, warning_gap / 20, -1);
 
-//            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-//                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 100u, -1);
-
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 400u, -1);
+                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 200u, -1);
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->alert_bar_update_event(), ref(warning_level_)), warning_handle_, 50u, -1);

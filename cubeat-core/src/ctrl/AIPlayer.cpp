@@ -162,9 +162,9 @@ void AIPlayer::issue_command( model::pAICommand const& cmd )
             if( cmd->delay() < 1 ) {
                 haste( 400 ); // was 500, but it concerns the cube_dropping_speed
             } else {
-                printf("Issue command delay: %d\n", cmd->delay());
-                EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                    bind(&AIPlayer::haste, this, 400), self, cmd->delay());
+                //printf("Issue command delay: %d\n", cmd->delay());
+                //2014.12: respec the "delay" when HASTE is issuing: it becomes the delay before you release HASTE button
+                haste( cmd->delay() );
             }
             break;
         default:

@@ -779,15 +779,18 @@ void Demo::game_start()
     }
 
     player0_->subscribe_player_specific_interactions();
+    player0_->start_heat_timer();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
         map0_->start_dropping();
     }
     else if( game_mode_ == GM_TUT ) {
         player1_->subscribe_player_specific_interactions();
+        player1_->start_heat_timer();
     }
     else if( game_mode_ != GM_SINGLE ) {
         map0_->start_dropping();
         player1_->subscribe_player_specific_interactions();
+        player1_->start_heat_timer();
         map1_->start_dropping();
     }
 

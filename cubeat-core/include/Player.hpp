@@ -40,6 +40,7 @@ public:
     Player& disable_all_wep_reloadability();
     Player& push_ally(int id);
     Player& push_enemy(int id);
+    Player& start_heat_timer();
     Player& subscribe_player_specific_interactions(bool const& can_haste = true);
     Player& subscribe_shot_event(view::pSprite&, HitCallback const&, HitCallback const& enemy_cb = 0);
 

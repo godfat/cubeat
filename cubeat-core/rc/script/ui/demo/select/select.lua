@@ -212,6 +212,7 @@ local function init(demo, parent, data)
   ch_lock_ = 2
   selectlock_ = {false, false}
   config.ch_choose[1] = 1
+  config.ch_choose[2] = 2
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
   
@@ -260,14 +261,14 @@ local function init(demo, parent, data)
     -- character descriptions
     menu.char_name_1 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[1],  y=config.screen_h-320,
                                      depth=config.full_depth-60, w=401, h=84 }
-    menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(1), x=config.full_x[2],  y=config.screen_h-320,
+    menu.char_name_2 = ui.new_image{ parent=root_, path=config.name_path(2), x=config.full_x[2],  y=config.screen_h-320,
                                      depth=config.full_depth-60, w=401, h=84 }
     menu.char_desc_1 = ui.new_text{ parent=root_, x=config.full_x[1] + config.full_w/2 + 3, y=config.screen_h-200,
                                     depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true,
                                     font=config.char_desc_font }
     menu.char_desc_1:set_scale(0.95)
     menu.char_desc_2 = ui.new_text{ parent=root_, x=config.full_x[2] + config.full_w/2 - 3, y=config.screen_h-200,
-                                    depth=config.full_depth-50, size=30, title=config.char_desc[1], center=true,
+                                    depth=config.full_depth-50, size=30, title=config.char_desc[2], center=true,
                                     font=config.char_desc_font }
     menu.char_desc_2:set_scale(0.95)
     

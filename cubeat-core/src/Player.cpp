@@ -83,6 +83,12 @@ void Player::heat_cooling()
     }
 }
 
+Player& Player::start_heat_timer()
+{
+    EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+        bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
+}
+
 Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
 {
     if( input_ ) {
@@ -93,9 +99,6 @@ Player& Player::subscribe_player_specific_interactions(bool const& can_haste)
         //    bind(&Player::set_active_weapon, this, 1), shared_from_this(), &input_->wep2(), BTN_PRESS);
         //EventDispatcher::i().subscribe_btn_event(
         //    bind(&Player::set_active_weapon, this, 2), shared_from_this(), &input_->wep3(), BTN_PRESS);
-
-        EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-            bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
 
         EventDispatcher::i().subscribe_btn_event(
             bind(&Player::normal_weapon_fx, this), shared_from_this(), &input_->trig1(), BTN_PRESS);

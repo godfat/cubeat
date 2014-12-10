@@ -45,7 +45,7 @@ local function pick_a_higher_half_coord_from(map, avoid_list)
 end
  
 --these are intended for C to call from.
-function THINK_INTERVAL() return 475 end --ms
+function THINK_INTERVAL() return 525 end --ms
 function MISSRATE()       return 15  end --percentage. 0 ~ 100
 
 function ai_entry(self)
@@ -220,7 +220,7 @@ function ai_entry(self)
            ground_cube_num <= capacity * anti_emptiness_factor and random(100) > (1 - anti_emptiness_factor) * 66 
         then
           io.write(string.format(" - entering haste block"))
-          setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
+          setcmd(cmdbuf, C.AI_HASTE, 550, 0, 0)
           self:push_command(cmdbuf)
         end
       end

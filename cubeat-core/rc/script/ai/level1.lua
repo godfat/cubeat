@@ -220,7 +220,7 @@ function ai_entry(self)
            ground_cube_num <= capacity * anti_emptiness_factor and random(100) > (1 - anti_emptiness_factor) * 100 
         then
           io.write(string.format(" - entering haste block\n"))
-          setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
+          setcmd(cmdbuf, C.AI_HASTE, 400, 0, 0)
           self:push_command(cmdbuf)
         end
       end

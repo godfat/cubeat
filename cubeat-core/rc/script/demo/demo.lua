@@ -112,6 +112,11 @@ function init(demo)
   storyend.create(scene_)
   vsend.create(scene_)
   
+  -- print challenge record data
+  local record = require 'rc/script/ui/demo/challenge/record'
+  record.print_challenge_record_origin_data()
+  record.print_challenge_record_data()
+  
   --tutorial.init(demo_)
 end
 

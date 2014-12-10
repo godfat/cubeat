@@ -17,7 +17,7 @@ local function init(demo, parent, submode)
   
   -- OneShotClear
   if submode == parameter.OneShotClear then
-    local stage_num = 18  -- how many puzzle stage, use for create btn and puzzle_level in init_single function.
+    local stage_num = parameter.OneShotClearStageNum  -- how many puzzle stage, use for create btn and puzzle_level in init_single function.
     
     menu.panel = ui.new_image{ parent = root_, path='blahblah', x=-320, y=-200, w=1000, h=500, alpha=168 }
     menu.panel:set_depth(-150)

@@ -353,18 +353,20 @@ local function new_list(object)
                           local pos_y = 120 - (height/2)
                           local i = 1
                           for k,v in pairs(object.list) do
-                            object.text_score[i] = new_text{parent=object._cdata, title=k,           x=-100, y=pos_y, center=true}
+                            object.text_score[i] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, center=true}
                             object.text_name[i]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
                             pos_y=pos_y+30
                             i=i+1
                           end
                         end
+  --[[
   object.load_list    = function(self, filename)
                           self:set_list( file.load_data(filename) or object.list )
                         end
   object.save_list    = function(self, filename)
                           file.save_data(filename, object.list)
                         end
+  --]]
   object.on_press_back= function(self, func)
                           object.back:on_press(func)
                         end

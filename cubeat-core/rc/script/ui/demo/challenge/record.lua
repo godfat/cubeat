@@ -172,73 +172,79 @@ local function print_challenge_record_data()
   if challenge_record then -- find record file
     print("------------ challenge_record data ------------")
   -- Story Clear Info
-    local story_clear_info = "Story Clear :"
+    local t = "Story Clear :"
     for i=1,6 do
-      local character_number = tostring(i)
-      if challenge_record["story_" .. character_number] then
-        story_clear_info = story_clear_info .. " " .. character_number
+      local ch_id = tostring(i)
+      if challenge_record["story_" .. ch_id] then
+        t = t .. " " .. ch_id
       end
     end
-    print(story_clear_info)
+    print(t .. "\n")
   -- Puzzle Mode Clear Info
-    local puzzle_mode_clear_info = "Puzzle Mode Clear :"
+    local t = "Puzzle Mode Clear :"
     for i=2,parameter.OneShotClearStageNum+1 do -- puzzle mode stage level started from lv2.
-      local stage_level = tostring(i)
+      local stage_level   = tostring(i)
+      local stage_number  = tostring(i-1) -- the stage number in Game is stage level - 1.
       if challenge_record["clear_0_" .. stage_level] then
-        local stage_number = tostring(i-1) -- the stage number in Game is stage level - 1.
-        puzzle_mode_clear_info = puzzle_mode_clear_info .. " " .. stage_number
+        t = t .. "\n" .. "Stage " .. stage_number .. " : " .. "clear"
+      else
+        t = t .. "\n" .. "Stage " .. stage_number .. " : " .. "no"
       end
     end
-    print(puzzle_mode_clear_info)
+    print(t .. "\n")
   -- Puzzle Mode Retry Info
-    local puzzle_mode_retry_info = "Puzzle Mode Retry :"
+    local t = "Puzzle Mode Retry :"
     for i=2,parameter.OneShotClearStageNum+1 do -- puzzle mode stage level started from lv2.
-      local stage_level = tostring(i)
+      local stage_level   = tostring(i)
+      local stage_number  = tostring(i-1) -- the stage number in Game is stage level - 1.
       if challenge_record["retry_" .. stage_level] then
-        local stage_number  = tostring(i-1) -- the stage number in Game is stage level - 1.
-        local retry_times   = tostring(challenge_record["retry_" .. stage_level])
-        puzzle_mode_retry_info = puzzle_mode_retry_info .. "\n" .. stage_number .. " - " .. retry_times
+        local retry_times = tostring(challenge_record["retry_" .. stage_level])
+        t = t .. "\n" .. "Stage " .. stage_number .. " : " .. retry_times
+      else
+        t = t .. "\n" .. "Stage " .. stage_number .. " : " .. "no"
       end
     end
-    print(puzzle_mode_retry_info)
+    print(t .. "\n")
   -- Emergency Mode Clear Info
-    local emergency_mode_clear_info = "Emergency Mode Clear :"
+    local t = "Emergency Mode Clear :"
     for i=1,5 do
       local condition = "WarningCondition_" .. tostring(i*20)
       local stage_id  = parameter[condition]
       if challenge_record["clear_" .. tostring(stage_id)] then
-        emergency_mode_clear_info = emergency_mode_clear_info .. "\n" .. condition
+        t = t .. "\n" .. condition .. " : clear"
+      else
+        t = t .. "\n" .. condition .. " : no"
       end
     end
-    print(emergency_mode_clear_info)
+    print(t .. "\n")
   -- Unlimited Mode Normal Score
-    local unlimited_mode_normal_score = "Unlimited Mode Normal Score :"
+    local t = "Unlimited Mode Normal Score :"
     local normal_score = challenge_record["score_" .. tostring(parameter.UnLimited_Normal)]
     if normal_score then
       local sortFunc = function(a, b) return b < a end
       table.sort(normal_score, sortFunc)
       for i=1,10 do
         local s = tostring(i) .. " - " .. tostring(normal_score[i])
-        unlimited_mode_normal_score = unlimited_mode_normal_score .. "\n" .. s
+        t = t .. "\n" .. s
       end
     else
-      unlimited_mode_normal_score = unlimited_mode_normal_score .. "\nno record"
+      t = t .. "\nno record"
     end
-    print(unlimited_mode_normal_score)
+    print(t .. "\n")
   -- Unlimited Mode Countdown Score
-    local unlimited_mode_countdown_score = "Unlimited Mode Countdown Score :"
+    local t = "Unlimited Mode Countdown Score :"
     local countdown_score = challenge_record["score_" .. tostring(parameter.UnLimited_Countdown)]
     if countdown_score then
       local sortFunc = function(a, b) return b < a end
       table.sort(countdown_score, sortFunc)
       for i=1,10 do
         local s = tostring(i) .. " - " .. tostring(countdown_score[i])
-        unlimited_mode_countdown_score = unlimited_mode_countdown_score .. "\n" .. s
+        t = t .. "\n" .. s
       end
     else
-      unlimited_mode_countdown_score = unlimited_mode_countdown_score .. "\nno record"
+      t = t .. "\nno record"
     end
-    print(unlimited_mode_countdown_score)
+    print(t)
     print("------------------ data end  ------------------")
   else -- not have record file, print "challenge_record file not found"
     print("challenge_record file not found")

@@ -153,7 +153,7 @@ function ai_entry(self)
             end
           end
         elseif self:get_heat() < 0.7 then
-          setcmd(cmdbuf, C.AI_HASTE, 0, 0, 0)
+          setcmd(cmdbuf, C.AI_HASTE, 500, 0, 0)
           self:push_command(cmdbuf)
         end
       end

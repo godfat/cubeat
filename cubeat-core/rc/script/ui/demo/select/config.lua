@@ -16,7 +16,7 @@ local bg_h    = view.GET_SCREEN_H()
 
 -- actor_icon
 local icon_path   = function(i) return ('char'..tostring(i)..'_new/character_icon_'..tostring(i)) end
-local name_path   = function(i) return ('char'..tostring(i)..'_new/name') end
+local name_path   = function(i) return ('char'..tostring(i)..'_new/name_tw') end
 local icon_w      = 154
 local icon_h      = 154
 local icon_x_base = screen_w/2
@@ -74,8 +74,11 @@ local start_depth = ready_depth
 local start_size  = 64
 
 -- character description
-local char_desc = require 'rc/script/ui/demo/select/char_desc_JP'
-local char_desc_font = 'rounded-mplus-1m-medium'
+-- local char_desc = require 'rc/script/ui/demo/select/char_desc_JP'
+-- local char_desc_font = 'rounded-mplus-1m-medium'
+
+local char_desc = require 'rc/script/ui/demo/select/char_desc_TW'
+local char_desc_font = 'NotoSansHant-Medium'
 
 return {
   ch_choose = ch_choose,

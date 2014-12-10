@@ -2,7 +2,7 @@ local ffi  = require 'ffi'
 local C    = ffi.C
 local view = require 'rc/script/ui/view'
 
-local lang_     = 'JP'
+local lang_     = 'TW'
 
 local bg_path_  = 'bg4/99complete'
 local bg_x_     = 0

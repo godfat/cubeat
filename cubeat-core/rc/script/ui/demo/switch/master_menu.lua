@@ -250,6 +250,9 @@ local function init(parent, demo)
   menu_.option = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/option', w=237, h=283, x=485, y=565, center=true }
   menu_.option:set_depth(-60)
   menu_.option:set_scale(0.93, 0.93)
+  menu_.option:on_press(function(self)
+    switch.load_page('extramenu')
+  end)
   setup_focus_effect(menu_.option, 'btn_option')
   -- menu_.option:set_visible(false)
 

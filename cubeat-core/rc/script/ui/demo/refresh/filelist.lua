@@ -17,6 +17,8 @@ local list_ = {
   'rc/script/ui/demo/talk/script_end_EN.lua',
   'rc/script/ui/demo/staffroll/staffroll.lua',
   'rc/script/ui/demo/staffroll/script.lua',
+  'rc/script/ui/demo/achievement/achievement.lua',
+  'rc/script/ui/demo/optionmenu/optionmenu.lua',
 }
 
 return {

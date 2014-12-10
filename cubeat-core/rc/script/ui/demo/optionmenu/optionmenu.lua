@@ -9,12 +9,12 @@ local root_
 local function init(demo, parent)
   local menu = {}
   
-  root_ = view.new_sprite("blahblah", parent, 0, 0, false)
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(480, 300)
   
-  menu.score_list = ui.new_list{ parent=root_, depth=-1000, visible=true, x=640, y=400 }
-  --menu.score_list:load_list('score')
-  menu.score_list:on_press_back(function(self)
-    --switch.load_page('testmenu')
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=32, title='go back' }
+  menu.btn_back:set_scale(1.5)
+  menu.btn_back:on_press(function(self)
     switch.load_page('extramenu')
   end)
   

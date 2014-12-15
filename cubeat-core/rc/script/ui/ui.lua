@@ -328,6 +328,7 @@ local function new_list(object)
   object.list = {}
   local width = 400
   local height= 600
+  local value = 0
   local screen_w  = C.Get_SCREEN_W()
   local screen_h  = C.Get_SCREEN_H()
   setmetatable(object, Sprite_Based_Mt)
@@ -342,21 +343,30 @@ local function new_list(object)
   
   -- functions
   object.clear_list   = function(self)
+                          for i=1,value do
+                            if object.text_score[i] then
+                              object.text_score[i]:set_visible(false)
+                              object.text_score[i]:remove()
+                            end
+                            if object.text_name[i]  then
+                              object.text_name[i]:set_visible(false)
+                              object.text_name[i]:remove()
+                            end
+                          end
                           object.text_name  = {}
                           object.text_score = {}
                           object.list = {}
-                          collectgarbage('collect')
+                          value = 0
                         end
   object.set_list     = function(self, list)
                           object:clear_list()
                           object.list = list
                           local pos_y = 120 - (height/2)
-                          local i = 1
                           for k,v in pairs(object.list) do
-                            object.text_score[i] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, center=true}
-                            object.text_name[i]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
+                            value = value + 1
+                            object.text_score[value] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, center=true}
+                            object.text_name[value]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
                             pos_y=pos_y+30
-                            i=i+1
                           end
                         end
   --[[
@@ -367,6 +377,9 @@ local function new_list(object)
                           file.save_data(filename, object.list)
                         end
   --]]
+  object.set_title    = function(self, t)
+                          object.score:change_text(tostring(t))
+                        end
   object.on_press_back= function(self, func)
                           object.back:on_press(func)
                         end

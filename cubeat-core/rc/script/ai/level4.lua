@@ -36,6 +36,8 @@ function ai_entry(self)
   local t = os.clock()
 
   self = ffi.cast("AIPlayer*", self)
+  
+  if self:get_heat() > 0.75 then return end
 
   --since we only have two map, one for each side, so let the first in ally-list be one's self.
   local my_map    = self:get_ally_map(0)
@@ -152,7 +154,7 @@ function ai_entry(self)
               self:push_command(cmdbuf)
             end
           end
-        elseif self:get_heat() < 0.7 then
+        elseif self:get_heat() < 0.6 then
           setcmd(cmdbuf, C.AI_HASTE, 500, 0, 0)
           self:push_command(cmdbuf)
         end

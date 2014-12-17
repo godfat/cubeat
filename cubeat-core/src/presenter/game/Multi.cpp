@@ -74,9 +74,6 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     s1 = data::ViewSetting::create(64);   //must use config
     s1->x_offset(740).y_offset(684);
 
-    std::string ai_temp[4] =
-        {"ai/easy.lua", "ai/normal.lua", "ai/hard.lua", "ai/insane.lua"};
-
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
@@ -87,14 +84,13 @@ pMulti Multi::init(std::string const& c1p, std::string const& c2p,
     else if( num_of_cpu == 1 ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[ai_level_]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_level_);
     }
     else {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        std::random_shuffle(ai_temp, ai_temp + 4, utils::random);
-        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[0]);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[1]);
+        player0_ = ctrl::AIPlayer::create(input0, 0, utils::random(ai_level_+1) );
+        player1_ = ctrl::AIPlayer::create(input1, 1, utils::random(ai_level_+1) );
     }
     player0_->push_ally(0).push_enemy(1);
     player1_->push_ally(1).push_enemy(0);

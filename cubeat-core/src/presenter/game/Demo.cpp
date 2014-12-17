@@ -147,9 +147,6 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     s0 = data::ViewSetting::create( uiconf_.M("mapview0") );
     s1 = data::ViewSetting::create( uiconf_.M("mapview1") );
 
-    std::string ai_temp[5] =
-        {"ai/level1.lua", "ai/level2.lua", "ai/level3.lua", "ai/level4.lua", "ai/level5.lua"};
-
     ///THIS IS IMPORTANT, ALL PLAYERS MUST BE DEFINED FIRST.
     ctrl::Input* input0 = ctrl::InputMgr::i().getInputByIndex(0);
     ctrl::Input* input1 = ctrl::InputMgr::i().getInputByIndex(1);
@@ -157,13 +154,13 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     if( game_mode_ == GM_PVC || game_mode_ == GM_TUT ) {
         input1->setControlledByAI(true);
         player0_ = ctrl::Player::create(input0, 0);
-        player1_ = ctrl::AIPlayer::create(input1, 1, game_mode_ == GM_TUT ? "ai/tutor.lua" : ai_temp[ai_level_]);
+        player1_ = ctrl::AIPlayer::create(input1, 1, game_mode_ == GM_TUT ? -1 : ai_level_);
     }
     else if( game_mode_ == GM_CVC || game_mode_ == GM_LOG ) {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
-        player0_ = ctrl::AIPlayer::create(input0, 0, ai_temp[3]);
-        player1_ = ctrl::AIPlayer::create(input1, 1, ai_temp[3]);
+        player0_ = ctrl::AIPlayer::create(input0, 0, ai_level_);
+        player1_ = ctrl::AIPlayer::create(input1, 1, ai_level_);
         if( game_mode_ == GM_LOG ) { // AI LOGGING's timer speed will overwrite the gameplay_ one
             double speed = Conf::i().config_of("ai_logging_config").F("speed");
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_speed(speed);

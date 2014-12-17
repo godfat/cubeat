@@ -38,8 +38,8 @@ public:
     typedef std::tr1::shared_ptr< int >      pDummy;
     typedef std::deque< model::pAICommand >  CommandQueue;
 
-    static pointer_type create(Input* input, int const& id, std::string const& ai_name = "ai/hard.lua") {
-        return pointer_type(new AIPlayer(input, id, ai_name))->init();
+    static pointer_type create(Input* input, int const& id, int const& ai_level = 3) {
+        return pointer_type(new AIPlayer(input, id, ai_level))->init();
     }
 
     virtual void setMapList(std::vector<presenter::wpMap> const& mlist);
@@ -59,7 +59,7 @@ public:
     virtual ~AIPlayer();
 
 protected:
-    AIPlayer(Input* input, int const&, std::string const&);
+    AIPlayer(Input* input, int const&, int const&);
     pointer_type init();
 
     void open_thread_to_think();
@@ -86,7 +86,7 @@ protected:
     pDummy          think_timer_;
     bool            is_executing_;
     bool            trig1_, trig2_;
-    std::string     ai_name_;
+    int             ai_level_;
     int             think_interval_;
     int             missrate_;
 

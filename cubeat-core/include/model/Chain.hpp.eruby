@@ -8,8 +8,6 @@
 #include <list>
 #include <set>
 
-#include <cstdio>
-
 
 namespace psc{ namespace model{
 
@@ -61,47 +59,8 @@ public:
         return res;
     }
 
-    void update_power_factor() {
-        update_power_factor_step(chain_step_.size());
-//        int new_step_amount = chain_step_.back();
-//        if( new_step_amount < 3 ) return;
-//        int stepnum = chain_step_.size();
-//        if( stepnum == 1 ) {
-//            // power_factor_ += (new_step_amount - 2);
-//            if( new_step_amount > 3 ) {
-//                power_step_.back() = (new_step_amount - 1);
-//            }
-//        }
-//        else {
-//            power_step_.back() = (new_step_amount - 1)*(stepnum)/2 + (stepnum-1);
-//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2);
-//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + (stepnum-2)*2;
-//            //power_factor_ += (new_step_amount - 2)*(stepnum);
-//            //power_factor_ += (new_step_amount - 1)/2*(stepnum) + utils::power2(stepnum-2);
-//            //power_factor_ += (new_step_amount - 1)*(stepnum) + utils::power2(stepnum-2);
-//        }
-    }
-
-    void update_power_factor_step(int const& step) {
-        int step_amount = chain_step_[step-1];
-        int stepnum = step; //This is for specific step, not the last step of a chain
-        if( stepnum == 1 ) {
-            if( step_amount > chain_amounts_ ) { // notice the strictly-greater sign.
-                power_step_[step-1] = step_amount;
-            } else {
-                power_step_[step-1] = 0;
-                // 2014.6 To cope with chain merge problem, it's totally possible for "weaker" chains to be
-                //        absorbed and cleaned out of its attack power, so have to consider it here.
-            }
-        }
-        else {
-            if( step_amount >= chain_amounts_ ) { // notice the greater-equal sign.
-                power_step_[step-1] = (step_amount) /* *(stepnum)/2 */ + (stepnum-1);
-            } else {
-                power_step_[step-1] = 0;
-            }
-        }
-    }
+    void update_power_factor();
+    void update_power_factor_step(int const& step);
 
     int step_score(int const& step) const{
         return attack_of_step(step) * 50;
@@ -135,21 +94,7 @@ public:
         step_indices_.clear();
     }
 
-    void debugging_print() {
-        printf("Chain %x (updated indices: ", this);
-        for( std::set<int>::iterator i = step_indices_.begin(), iend = step_indices_.end(); i != iend; ++i ) {
-            printf("%d ", *i);
-        }
-        printf(")\n");
-        for( size_t i = 0; i < chain_step_.size(); ++i ) {
-            printf("  - step %d / %d cubes / power %d / extending %d: ", i+1, chain_step_[i], power_step_[i], static_cast<int>(is_step_extending_[i]));
-            for( std::list< std::pair<int, int> >::iterator j = step_group_[i].begin(), jend = step_group_[i].end(); j != jend; ++j ) {
-                printf("(%d,%d) ", j->first, j->second);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
+    void debugging_print();
 
     Chain(int chain_amounts):
         chain_amounts_(chain_amounts) {}

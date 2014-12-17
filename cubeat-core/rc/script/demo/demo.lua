@@ -100,7 +100,7 @@ function init(demo)
   staffroll_btn_:set_scale(1.2)
   staffroll_btn_:on_press(function(self)
     switch.load_page('staffroll', {id='storyend'}, nil)
-  end)
+  end, C.Input_get_trig1(C.Input_get_input1())) -- only player1 can call staffroll
   -- check file time once when init
   for k,root in pairs(filelist.list) do
     local t = C.get_ftime(root)

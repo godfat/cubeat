@@ -24,13 +24,13 @@ local function init(demo, parent)
   
   -- load score data
   local score_data = {}
-  score_data["normal"]    = record.load( parameter.score, {submode = parameter.UnLimited_Normal} )
-  score_data["countdown"] = record.load( parameter.score, {submode = parameter.UnLimited_Countdown} )
+  score_data["Normal"]    = record.load( parameter.score, {submode = parameter.UnLimited_Normal} )
+  score_data["Countdown"] = record.load( parameter.score, {submode = parameter.UnLimited_Countdown} )
   
   -- sort score data
   local sortFunc = function(a, b) return b < a end
-  if score_data["normal"]     then table.sort(score_data["normal"]   , sortFunc) end
-  if score_data["countdown"]  then table.sort(score_data["countdown"], sortFunc) end
+  if score_data["Normal"]     then table.sort(score_data["Normal"]   , sortFunc) end
+  if score_data["Countdown"]  then table.sort(score_data["Countdown"], sortFunc) end
   
   -- create some function
   local function set_data(t)
@@ -41,19 +41,19 @@ local function init(demo, parent)
   end
   
   -- show normal mode score first
-  local current_data = "normal"
+  local current_data = "Normal"
   set_data(current_data)
   
   -- set on_press funciton
   menu.left_btn:on_press(function(self)
     menu.score_list:clear_list()
-    current_data = (current_data=="normal" and "countdown") or (current_data=="countdown" and "normal")
+    current_data = (current_data=="Normal" and "Countdown") or (current_data=="Countdown" and "Normal")
     set_data(current_data)
   end)
   
   menu.right_btn:on_press(function(self)
     menu.score_list:clear_list()
-    current_data = (current_data=="normal" and "countdown") or (current_data=="countdown" and "normal")
+    current_data = (current_data=="Normal" and "Countdown") or (current_data=="Countdown" and "Normal")
     set_data(current_data)
   end)
   

@@ -385,6 +385,7 @@
 		<Unit filename="src\data\MapSetting.cpp.eruby" />
 		<Unit filename="src\data\ViewSetting.cpp" />
 		<Unit filename="src\model\AICommand.cpp" />
+		<Unit filename="src\model\Chain.cpp" />
 		<Unit filename="src\model\Cube.cpp" />
 		<Unit filename="src\model\Cube.cpp.eruby" />
 		<Unit filename="src\model\Map.cpp" />

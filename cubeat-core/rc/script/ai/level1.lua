@@ -71,8 +71,8 @@ function ai_entry(self)
   local emergency_list = {}
   
   local excessive_threshold = 6
-  if enemy_map:grounded_cube_count() < capacity * 0.25 then 
-    excessive_threshold = 15
+  if enemy_map:grounded_cube_count() < capacity * 0.2 then 
+    excessive_threshold = 20
   end 
   
   for y = my_map:height() - 2, 0, -1 do
@@ -101,7 +101,7 @@ function ai_entry(self)
     -- return 
   -- end
   
-  if enemy_map:grounded_cube_count() < capacity * 0.25 and 
+  if enemy_map:grounded_cube_count() < capacity * 0.2 and 
      #ok_power_list > 0 and event.get_time_of('game') > 20000
   then
     io.write(string.format(" - entering keycube (ok_power: preemptive attack) block\n"))

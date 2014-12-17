@@ -483,12 +483,12 @@ local function new_scrollbar(object)
   object.index  = object.index or 0
   object.range  = object.range or 100
   setmetatable(object, Sprite_Based_Mt)
-  object._cdata = view.new_sprite('', object.parent, 256, 32, false)
+  object._cdata = view.new_sprite('', object.parent, 280, 44, false)
   
-  object.line   = new_image{parent=object._cdata, path='cubes/cube1',     w=100, h= 8, x=0, y=12}
-  object.button = new_image{parent=object._cdata, path='cubes/cube1.bak', w= 20, h=20, x=0, y= 6, depth=-100}
+  object.line   = new_image{parent=object._cdata, path='cubes/cube1',     w=200, h=20, x=0, y=12}
+  object.button = new_image{parent=object._cdata, path='cubes/cube1.bak', w= 40, h=40, x=0, y= 2, depth=-100}
   
-  object.text   = new_text{parent=object._cdata, title='0', x=160, y=16, center=true}
+  object.text   = new_text{parent=object._cdata, title='0', x=240, y=20, size=32, center=true}
   
   -- functions
   local function update_button_position(input)

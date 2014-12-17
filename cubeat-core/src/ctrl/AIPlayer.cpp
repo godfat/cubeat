@@ -10,6 +10,7 @@
 #include "Input.hpp"
 #include "Accessors.hpp"
 #include "EasingEquations.hpp"
+#include "utils/to_s.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Random.hpp"
 #include "script/lua_utility.hpp"
@@ -26,9 +27,9 @@ using std::tr1::function;
 using std::tr1::tuple;
 using utils::Logger;
 
-AIPlayer::AIPlayer(Input* input, int const& id, std::string const& ai_name)
+AIPlayer::AIPlayer(Input* input, int const& id, int const& ai_level)
     :Player(input, id), is_executing_(false), trig1_(false), trig2_(false),
-     ai_name_(ai_name), think_interval_(350), missrate_(10)
+     ai_level_(ai_level), think_interval_(350), missrate_(10)
 {
 }
 
@@ -55,7 +56,16 @@ pAIPlayer AIPlayer::init()
     std::cout << "AI processing unit created." << std::endl;
     L_ = luaL_newstate();
     luaL_openlibs(L_);
-    script::Lua::run_script(L_, Conf::i().script_path(ai_name_).c_str());
+
+    std::string ai_name;
+    if( ai_level_ >= 0 ) {
+        ai_name = "ai/level" + utils::to_s(ai_level_+1) + ".lua";
+    }
+    else if( ai_level_ == -1 ) {
+        ai_name = "ai/tutor.lua";
+    }
+
+    script::Lua::run_script(L_, Conf::i().script_path(ai_name).c_str());
 
     think_interval_ = script::Lua::call_R<int>(L_, "THINK_INTERVAL");
     missrate_       = script::Lua::call_R<int>(L_, "MISSRATE");

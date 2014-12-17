@@ -24,7 +24,7 @@ player1: {
 
     #How long does the chain property of the cubes hold
     #when the cubes switch states to 'Waiting' (suggestion: 0 ~ 500 milliseconds)
-    chaining_duration: 150,
+    chaining_duration: 100,
 
     #How long is the visual effect when the cubes invoke chains
     #and disappear (the effect duration could possibly affect gameplay,
@@ -108,7 +108,7 @@ player2: {
     color_amounts: 4,
     chain_amounts: 3,
     starting_line: 4,
-    chaining_duration: 150,
+    chaining_duration: 100,
     cube_dying_duration: 750,
     sink_speed: 120.0,
     sink_speed_add: 40.0,

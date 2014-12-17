@@ -71,8 +71,8 @@ function ai_entry(self)
   local emergency_list = {}
   
   local excessive_threshold = 7
-  if enemy_map:grounded_cube_count() < capacity * 0.25 then 
-    excessive_threshold = 21 
+  if enemy_map:grounded_cube_count() < capacity * 0.2 then 
+    excessive_threshold = 25 
   end 
   
   -- Note: Now the problem actually isn't the cubes the excess_power_list. It's sometimes 2 consecutive ok_power choices
@@ -101,7 +101,7 @@ function ai_entry(self)
   if #ok_power_list     > 0 then io.write(string.format("ok_list     head: (%d, %d), pwr: %d\n", ok_power_list[1][1], ok_power_list[1][2], firemap:power_at(ok_power_list[1][1], ok_power_list[1][2]))) end
   if #emergency_list    > 0 then io.write(string.format("emergency   head: (%d, %d), pwr: %d\n", emergency_list[1][1], emergency_list[1][2], firemap:power_at(emergency_list[1][1], emergency_list[1][2]))) end
   
-  if enemy_map:grounded_cube_count() < capacity * 0.25 and 
+  if enemy_map:grounded_cube_count() < capacity * 0.2 and 
      #ok_power_list > 0 and event.get_time_of('game') > 10000
   then
     io.write(string.format(" - entering keycube (ok_power: preemptive attack) block\n"))

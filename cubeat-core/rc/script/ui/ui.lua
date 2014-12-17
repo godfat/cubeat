@@ -404,13 +404,13 @@ local function new_ratio(object)
   -- create
   object.pressed = object.pressed or false
   local width = 256
-  local height= 24
+  local height= 44
   setmetatable(object, Sprite_Based_Mt)
   object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
   
-  object.box    = new_image{parent=object._cdata, path='cubes/cube1.bak', w=20, h=20, x=0, y=2}
+  object.box    = new_image{parent=object._cdata, path='cubes/cube1.bak', w=40, h=40, x=0, y=2}
   
-  object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=40, y=-4}
+  object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=60, y=0, size=32}
   
   -- functions
   object.on_press = function(self, func)

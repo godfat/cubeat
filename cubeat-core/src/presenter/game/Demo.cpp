@@ -45,7 +45,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(GM_PVC),
-     submode_(0), ai_level_(2), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false),
+     submode_(0), ai_level_(3), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false),
      is_countdown_(false), L_(0)
 {
 }

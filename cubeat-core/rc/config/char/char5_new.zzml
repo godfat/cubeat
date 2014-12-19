@@ -41,6 +41,11 @@ passive_mod: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,
+    drop_normal_per_bag: 1,
+    
+    # lesser yellow
+    
+    color_bag: [1, 1, 2, 2, 3, 3, 4],
     restore: {
         r: 1.5,
         g: 1.5,

@@ -9,6 +9,7 @@ namespace psc{
 
 namespace utils {
 class map_any;
+class vector_any;
 }
 
 namespace data{
@@ -24,12 +25,13 @@ public:
         return pointer_type(new MapSetting(conf));
     }
 
-<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :drop_normal_chance %>
+<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :drop_normal_chance, :drop_normal_per_bag %>
 <%= accessor :double, :sink_speed, :sink_speed_add, :sink_speed_limit, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
 <%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage, :preset, :tutorial %>
 <%= accessor 'std::vector<int>', :preset_data %>
+<%= accessor 'std::vector<int>', :color_bag %>
 
 public:
     std::vector<double> rez_chances() const { return rez_chances_; }
@@ -60,13 +62,14 @@ private:
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
         cube_dropping_duration_(135), warning_check_delay_(100), warning_gap_(1000), drop_normal_chance_(0),
-        sink_speed_(80.0), sink_speed_add_(10.0), sink_speed_limit_(400.0),
+        drop_normal_per_bag_(0), sink_speed_(80.0), sink_speed_add_(10.0), sink_speed_limit_(400.0),
         drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
         use_broken_as_garbage_(false), preset_(false), tutorial_(false)
     {
         reset_size();
         setup_color_chances();
+        setup_color_bag();
     }
 
     MapSetting(utils::map_any const& conf);
@@ -74,6 +77,8 @@ private:
 private:
     MapSetting& setup_color_chances(utils::map_any const& conf);
     MapSetting& setup_color_chances();
+    MapSetting& setup_color_bag(utils::vector_any const& conf);
+    MapSetting& setup_color_bag();
     MapSetting& <% debug_hook 'reset_size' do %>(){ <%end%> size_ = width_ * height_; return *this; }
 };
 

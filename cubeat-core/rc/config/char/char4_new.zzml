@@ -41,6 +41,12 @@ passive_mod: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,
+    drop_normal_per_bag: 1,
+    
+    # shoots slower and haste produces quite some more heat, 
+    # but its red is very concentrated when counterattack
+    
+    color_bag: [1, 2, 3, 3, 3, 3, 4],
     restore: {
         r: 2.66,
         g: 1.0,
@@ -48,13 +54,13 @@ passive_mod: {
         y: 1.0
     },
     weapon: {
-        heat_rate: 0.235,
+        heat_rate: 0.23,
         cool_rate: 0.06,
         downtime: 2000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,
-        heat_for_haste: 0.017,
+        heat_for_haste: 0.016,
         heat_for_jama: 0.18,
         ability_kind: 4
     }

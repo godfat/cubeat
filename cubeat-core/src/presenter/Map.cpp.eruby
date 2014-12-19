@@ -202,8 +202,8 @@ pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){
     return cube;
 }
 
-pCube Map::make_garbage(int x, int y){
-    pCube c = make_cube(x, y, -1);
+pCube Map::make_garbage(int x, int y, int color_id){
+    pCube c = make_cube(x, y, color_id);
     c->goto_garbage_orig();
     return c;
 }

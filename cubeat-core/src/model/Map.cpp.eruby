@@ -208,24 +208,63 @@ Map& <% debug_hook 'Map::insert_cube' do %>(pCube cube){
     return *this;
 }
 
-Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
-<% end %>
-    if( ms()->use_broken_as_garbage() ) {
-        cube->be_broken(0);
-        cube->go_dropping();
+// 2014.12: deprecated, kept for reference.
+//Map& <% debug_hook 'Map::insert_garbage' do %>(pCube cube){
+//<% end %>
+//    if( ms()->use_broken_as_garbage() ) {
+//        cube->be_broken(0);
+//        cube->go_dropping();
+//    }
+//    else
+//        cube->be_garbage().go_dropping();
+//
+//    cube->new_garbage(true);
+//    cube->garbage_fly_event()();
+//
+//    //add restoration here for passive ability
+//    if( utils::ya_random(100) < ms()->drop_normal_chance() ) {
+//        cube->restore(1); // ok?
+//    }
+//
+//    return insert_cube(cube);
+//}
+
+void Map::fill_color_bag() {
+    color_bag_ = ms()->color_bag(); // this should be deep clone already (std::vector).
+    std::random_shuffle(color_bag_.begin(), color_bag_.end(), utils::ya_random);
+    // shuffle to randomize the colors in the bag
+
+    for( size_t i = 0; i < color_bag_.size(); ++i ) {
+        if( i >= static_cast<size_t>(ms()->drop_normal_per_bag()) ) {
+            color_bag_[i] += 10; // using second digit to represent "should be broken"
+        } // do nothing if it's < drop_normal_per_bag, so the second dight is zero.
     }
-    else
-        cube->be_garbage().go_dropping();
+    std::random_shuffle(color_bag_.begin(), color_bag_.end(), utils::ya_random);
+    // shuffle again to randomize broken cube position
+}
 
-    cube->new_garbage(true);
-    cube->garbage_fly_event()();
+pCube Map::insert_new_garbage_from_bag(int x, int y) {
 
-    //add restoration here for passive ability
-    if( utils::ya_random(100) < ms()->drop_normal_chance() ) {
-        cube->restore(1); // ok?
+    if( color_bag_.empty() ) {
+        fill_color_bag();
     }
 
-    return insert_cube(cube);
+    int  color_id = 1;
+    bool broken = true;
+
+    color_id = color_bag_.back() % 10;
+    broken   = static_cast<bool>( color_bag_.back() / 10 ); // double digit encoding
+    color_bag_.pop_back(); // remember to pop so the bag can re-new
+
+    pCube res = owner()->make_garbage(x, y, color_id)->model();
+    if( broken ) res->be_broken(0);
+    res->go_dropping();
+    res->new_garbage(true);
+    res->garbage_fly_event()();
+
+    insert_cube(res);
+
+    return res;
 }
 
 Map& <% debug_hook 'Map::insert_preview' do %>(pCube cube){
@@ -704,8 +743,11 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
         for( unsigned int i=0; i < row_empty[j].size() && garbage_left_ >= 1 ; ++i ){
             int x = row_empty[j][i];
 
-            pCube c = owner->make_garbage( x, top - j )->model();
+            /*
+            pCube c = owner->make_garbage( x, top - j, pop_from_garbage_cube_bag() )->model();
             insert_garbage( c );
+            */
+            pCube c = insert_new_garbage_from_bag( x, top - j );
 
             /// DEBUG: check what garbage/broken cubes dropped here
             printf("%d ", c->color_id());
@@ -767,11 +809,22 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 <% end %>
     cubes_preview_.clear();
     int unsigned width = ms()->width();
-    std::vector<double> const& rez_chances = ms()->rez_chances();
+    int color_amounts = ms()->color_amounts();
+    //std::vector<double> const& rez_chances = ms()->rez_chances();
     std::vector<int> preview_set; // color set
 
     if( !ms()->preset() ) {
-        preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
+        //preview_set.push_back( utils::distributed_random( rez_chances ) + 1 );
+
+        /* 2014.12:
+            No, we are not going to use this "distributed_random" stuff, instead use grab bag system
+            to make randomness more predictable, for better gameplay experience.
+
+            That being said, color distribution should've only happened at garbage cubes,
+            why was that ever in this place? must have been confused and then overlooked.
+        */
+
+        preview_set.push_back( utils::ya_random(color_amounts) + 1 );
 
         if( utils::ya_random(2) ) // need two?
             preview_set.push_back(preview_set.front());
@@ -817,11 +870,11 @@ void <% debug_hook 'Map::fill_preview_queue' do %>(){
 
 int <% debug_hook 'Map::fill_preview_create_color' do %>(std::vector<int>& preview_set){
 <% end %>
-    int color/*, color_amounts = ms()->color_amounts()*/;
-    std::vector<double> const& rez_chances = ms()->rez_chances();
+    int color, color_amounts = ms()->color_amounts();
+    //std::vector<double> const& rez_chances = ms()->rez_chances();
     do{
-        //color = utils::ya_random( color_amounts )+1;
-        color = utils::distributed_random( rez_chances ) + 1;
+        color = utils::ya_random( color_amounts ) + 1;
+        //color = utils::distributed_random( rez_chances ) + 1;
     } while ( color == preview_set.back() );
     return color;
 }

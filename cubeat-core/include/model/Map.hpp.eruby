@@ -123,9 +123,11 @@ private:
     void check_a_fade(pCube, int x, int y, pChain existing_chain);
     void cycle_creation();
     void cycle_creation_garbage();
+    pCube insert_new_garbage_from_bag(int x, int y);
     void cycle_warning();
     void fill_preview_queue();
     int fill_preview_create_color(std::vector<int>&);
+    void fill_color_bag();
 
     pOneFadingOrig make_OneFading(pCube);
     pCube cube_at(int x, int y) { return cubes_[x][y]; }
@@ -156,6 +158,7 @@ private:
     std::tr1::shared_ptr<int> alarm_sound_, animate_alert_bar_; //alarming dummy
     std::tr1::shared_ptr<int> warning_handle_; //warning value's timer handle
     preview_list_type cubes_preview_;
+    std::vector<int> color_bag_;
 
     std::map< std::pair<wpChain, int>, std::vector< std::tr1::tuple<int, int, int> > > dying_cubes_position_;
     std::map< std::pair<wpChain, int>, int > successfully_died_cube_count_;

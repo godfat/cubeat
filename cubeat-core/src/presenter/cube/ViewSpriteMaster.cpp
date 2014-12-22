@@ -618,8 +618,13 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 //        pos = vec2(0, csize*0.66);
 //        warning_strip3_[x]->playAnime("moving", warning_gap/2, 1);
 //        warning_strip3_[x]->tween<SineCirc, Pos2D>(pos, pos - vec2(0, 15), warning_gap/2, 1);
+
+        warning_strip2_[x]->tween<Linear, Alpha>(200, 0, warning_gap);
+
+/* NOTE: Particle Effect Based Warning Strip -- Too Flashy?
+
         warning_strip2_[x] = view::Sprite::create("stroke_red", warning_strip_holder_[x], csize, csize, true);
-        warning_strip2_[x]->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false);
+        warning_strip2_[x]->setDepth(-100).setPickable(false);
 
         vec2 start(0, csize);
         vec2 end(0, -((h-1)*csize));
@@ -659,6 +664,7 @@ void ViewSpriteMaster::warning_sound(int warning_level){
         ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
         ps->setMaterialTexture(0, IrrDevice::i().d()->getVideoDriver()->getTexture("rc/texture/stroke_narrow.bmp"));
         ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+*/
 
 //        warning_strip3_[x]->tween<OExpo, Scale>(vec3(1, 0.125, 1), vec3(1, 1, 1), dur);
 //        warning_strip3_[x]->tween<SineCirc, Green>(64, 255, dur/2, 1);
@@ -734,10 +740,14 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
         // Warning strips "exploding" when freeze effect kick in
         if ( warning_level > 0 ) {
             for( int x = 0; x < map_setting()->width(); ++x ) {
+            /* NOTE: Particle Based effects maybe too Flashy?
                 warning_strip2_[x]->clearAllTween();
                 warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2.5,2.5,2.5), 600u);
                 warning_strip2_[x]->tween<OCubic, Alpha>(255, 0, 600u);
-                warning_strip2_[x]->removeParticleChildren();
+                warning_strip2_[x]->removeParticleChildren(); */
+
+                warning_strip2_[x]->clearAllTween();
+                warning_strip2_[x]->set<Alpha>(64);
             }
         }
     } else {
@@ -844,8 +854,8 @@ void ViewSpriteMaster::create_warning_strips(){
 void ViewSpriteMaster::create_warning_strips2(){
     using namespace accessor; using namespace easing;
     view::pScene scene = scene_.lock();
-    for( int i=0, width=map_setting()->width()/*,
-                  h=map_setting()->height()-1*/; i<width; ++i )
+    for( int i=0, width = map_setting()->width(),
+                  h = map_setting()->height()-1 ; i < width; ++i )
     {
         int csize = view_setting()->cube_size();
 
@@ -868,14 +878,16 @@ void ViewSpriteMaster::create_warning_strips2(){
 //        temp2->playAnime("moving", 1000).setDepth(-100).set<Pos2D>( pos )
 //              .set<Rotation>(vec3(0,0,180)).setPickable(false).set<Visible>(true);
 //        warning_strip3_.push_back( temp2 );
-        view::pSprite temp = view::Sprite::create("stroke_red", temp0, csize, csize, true);
-        temp->setDepth(-100)./*set<ColorDiffuseVec3>(vec3(255, 128, 64)).*/setPickable(false).set<Alpha>(0);
-        warning_strip2_.push_back( temp );
 
-//        view::pSprite temp2 = view::Sprite::create("warning2", temp0, csize, csize, true);
-//        temp2->setDepth(-100).set<ColorDiffuseVec3>(vec3(255, 64, 32)).set<Pos2D>(vec2(0, -((h-1)*csize) - csize/2 - 5))
-//              .set<Scale>(vec3(1, 0.125, 1)).setPickable(false);
-//        warning_strip3_.push_back( temp2 );
+/* NOTE: Particle Based effect may be too Flashy?
+        view::pSprite temp = view::Sprite::create("stroke_red", temp0, csize, csize, true);
+        temp->setDepth(-100).setPickable(false).set<Alpha>(0);
+        warning_strip2_.push_back( temp );
+*/
+        view::pSprite temp = view::Sprite::create("warning2", temp0, csize, csize * h, false);
+        temp->setDepth(-100).setPickable(false).set<ColorDiffuseVec3>( vec3(255, 96, 32) )
+             .set<Pos2D>( vec2(-csize/2, -csize*h + csize/2) ).set<Alpha>(64);
+        warning_strip2_.push_back( temp );
     }
 }
 

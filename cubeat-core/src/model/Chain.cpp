@@ -77,6 +77,9 @@ void Chain::update_power_factor_step(int const& step) {
             // 2014.6 To cope with chain merge problem, it's totally possible for "weaker" chains to be
             //        absorbed and cleaned out of its attack power, so have to consider it here.
         }
+    } else {
+        printf("model::Chain::update_power_factor_step: \n");
+        printf("    something must be wrong, it's impossible to have step >= 20\n\n");
     }
 }
 

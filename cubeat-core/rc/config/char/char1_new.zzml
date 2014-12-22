@@ -41,18 +41,23 @@ passive_mod: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,
+    drop_normal_per_bag: 1,
+    
+    #significantly lower char1's drop normal chance by give him a bigger bag
+    
+    color_bag: [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4],
     restore: {
         r: 1.0,
         g: 1.0
     },
     weapon: {
-        heat_rate: 0.195,
+        heat_rate: 0.200,
         cool_rate: 0.06,
         downtime: 3000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,
-        heat_for_haste: 0.0125,
+        heat_for_haste: 0.014,
         heat_for_jama: 0.16,
         ability_kind: 1
     }

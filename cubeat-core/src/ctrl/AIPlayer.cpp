@@ -128,7 +128,7 @@ bool AIPlayer::startThinking()
         think_timer_ = pDummy(new int);
 
         //2012 BAD WTF, but for ability test here:
-        if( ability_kind_ == 1 ) think_interval_ *= 0.925;
+        if( ability_kind_ == 1 ) think_interval_ *= 0.9;
         std::cout << " -- think_interval_: " << think_interval_ << "\n";
 
         EventDispatcher::i().get_timer_dispatcher("game")->subscribe(

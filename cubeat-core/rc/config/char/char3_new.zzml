@@ -41,6 +41,10 @@ passive_mod: {
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 10,
+    drop_normal_per_bag: 1,
+    
+    # blue and green inclined
+    color_bag: [1, 1, 1, 2, 2, 2, 3, 3, 4, 4],
     restore: {
         r: 1.0,
         g: 2.0,
@@ -48,13 +52,13 @@ passive_mod: {
         y: 1.0
     },
     weapon: {
-        heat_rate: 0.21,
+        heat_rate: 0.215,
         cool_rate: 0.06,
         downtime: 2000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,
-        heat_for_haste: 0.0125,
+        heat_for_haste: 0.014,
         heat_for_jama: 0.18,
         ability_kind: 3
     }

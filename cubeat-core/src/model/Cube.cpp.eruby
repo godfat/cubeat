@@ -179,13 +179,19 @@ void <% debug_hook 'Cube::be_broken' do %>(int){
     is_broken_ = true;
     //color_id(-1);
     //be_broken_event()();
-    color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 ); /// Decide color when broken
+
+    //2014.12: Cube should not decide its color on its own.
+
+    //color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 );
     be_broken_event()(color_id());
 }
 
 void <% debug_hook 'Cube::restore' do %>(int){
 <% end %>
     //color_id(utils::random(map()->ms()->color_amounts())+1);
+
+    //2014.12: Cube should not decide its color on its own.
+
     //color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 );
     restore_internal();
 }

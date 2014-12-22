@@ -16,6 +16,7 @@ MapSetting::MapSetting(utils::map_any const& conf):
     warning_check_delay_( conf.I("warning_check_delay") ),
     warning_gap_( conf.I("warning_gap") ),
     drop_normal_chance_( conf.I("drop_normal_chance") ),
+    drop_normal_per_bag_( conf.I("drop_normal_per_bag") ),
     sink_speed_( conf.F("sink_speed") ),
     sink_speed_add_( conf.F("sink_speed_add") ),
     sink_speed_limit_( conf.F("sink_speed_limit") ),
@@ -32,6 +33,12 @@ MapSetting::MapSetting(utils::map_any const& conf):
 {
     reset_size();
     setup_color_chances();
+
+    if( conf.exist("color_bag") ) {
+        setup_color_bag( conf.V("color_bag") );
+    } else {
+        setup_color_bag();
+    }
 
     if( preset_ ) {
         if( conf.exist("preset_data") ) {
@@ -68,20 +75,24 @@ MapSetting::pointer_type MapSetting::clone() const {
            .warning_gap(warning_gap_)
            .negate_damage_factor(negate_damage_factor_)
            .drop_normal_chance(drop_normal_chance_)
+           .drop_normal_per_bag(drop_normal_per_bag_)
            .rez_chances(rez_chances_)
            .preset(preset_)
            .preset_data(preset_data_)
-           .tutorial(tutorial_);
+           .tutorial(tutorial_)
+           .color_bag(color_bag_);
     return result;
 }
 
 MapSetting& MapSetting::apply_player_passive_mods(utils::map_any const& conf) {
     setup_color_chances( conf.M("restore") );
+    setup_color_bag( conf.V("color_bag") );
 
     warning_gap_          = conf.I("warning_gap");
     damage_factor_        = conf.F("damage_factor");
     negate_damage_factor_ = conf.F("negate_damage_factor");
     drop_normal_chance_   = conf.I("drop_normal_chance");
+    drop_normal_per_bag_  = conf.I("drop_normal_per_bag");
 
     return *this;
 }
@@ -113,6 +124,23 @@ MapSetting& MapSetting::setup_color_chances() {
     rez_chances_.clear();
     for( int i = 0; i < color_amounts_; ++i ) {
         rez_chances_.push_back( avg );
+    }
+    return *this;
+}
+
+MapSetting& MapSetting::setup_color_bag(utils::vector_any const& conf) {
+    color_bag_.clear();
+    for( size_t i = 0; i < conf.size(); ++i ) {
+        color_bag_.push_back( conf.I(i) );
+    }
+    return *this;
+}
+
+MapSetting& MapSetting::setup_color_bag() {
+    // the default color_bag_;
+    color_bag_.clear();
+    for( int i = 0; i < color_amounts_ * 2; ++i ) {
+        color_bag_.push_back( (i % color_amounts_) + 1 );
     }
     return *this;
 }

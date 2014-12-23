@@ -9,6 +9,7 @@ local root_         = nil
 local demo_game_    = nil
 local data_         = nil
 local roll_content_ = {}
+local character_id_ = nil
 
 local function init(demo, parent, data)
   local menu = {}
@@ -16,6 +17,7 @@ local function init(demo, parent, data)
   demo_game_    = demo
   data_         = data
   roll_content_ = script.get_staffroll()
+  character_id_ = data_.character or ( 1 and print("-------- No Character ID !!!! --------") )
   
   menu.background = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=768, depth=-400 }
   menu.background:set_red(0)
@@ -41,20 +43,30 @@ local function init(demo, parent, data)
     end
   end
   
-  -- this callback function use for staffroll_btn_ test in demo.lua
-  local function back_to_title() switch.load_page('mainmenu', nil, nil) end
-  local function cb() menu[table.getn(roll_content_)]:tween('Linear', 'Alpha', 255, 0, 3000, 0, back_to_title, 3000 ) end
+  -- create endcg, then hide it.
+  local cg_path = 'endcg/char' .. tostring(character_id_)
+  menu.endcg = ui.new_image{ parent = root_, path = cg_path, x=0, y=0, w=view.GET_SCREEN_W(), h=view.GET_SCREEN_H(), depth=-500 }
+  menu.endcg:set_visible(false)
   
-  -- this callback function use for talk_end() in talk.lua when story end
-  --local function cb() demo_game_:leave_and_cleanup() end
-  
+  -- create callback functions
+  local function set_endcg_onpress()
+    menu.endcg:on_press( function(self) switch.load_page('mainmenu', nil, nil) end )
+  end
+  local function show_cg()
+    menu.endcg:set_visible(true)
+    menu.endcg:tween('Linear', 'Alpha', 0, 255, 3000, 0, set_endcg_onpress, 0)
+  end
+  local function fade_out()
+    menu[table.getn(roll_content_)]:tween('Linear', 'Alpha', 255, 0, 3000, 0, show_cg, 3000 )
+  end
   local function startroll()
     for k,v in pairs(menu) do
-      v:set_visible(true)
+      if k~="endcg" then v:set_visible(true) end
     end
     local roll_distance = script.get_roll_distance()
     local roll_time     = script.get_roll_time()
-    menu.roll:tween('Linear', 'Pos2D', ffi.new("value2", 0, 0), ffi.new("value2", 0, roll_distance), roll_time, 0, cb, 0)
+    menu.roll:tween('Linear', 'Pos2D', ffi.new("value2", 0, 0), ffi.new("value2", 0, roll_distance),
+                    roll_time, 0, fade_out, 0)
   end
   
   menu.background:tween('Linear', 'Alpha', 0, 255, 3000, 0, startroll, 0)

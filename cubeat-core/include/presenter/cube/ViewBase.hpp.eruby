@@ -32,9 +32,9 @@ public:
     virtual void update_pos(){}
     virtual void ending(int){}
 
-    //hack
     virtual void approach_pos(){}
     virtual void garbage_fly(){}
+    virtual void normal_entry(){}
     virtual void goto_garbage_orig(){}
 
 protected:

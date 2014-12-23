@@ -705,7 +705,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     for( int y=top-1, i = 0; y >= 0; --y, ++i ) {
         row_empty.push_back( std::vector<int>() );
         for( int x=0, width=ms()->width(); x < width; ++x ) {
-            if( !cubes_[x][y+1] && !cubes_[x][y] ) {
+            if( /*!cubes_[x][y+1] &&*/ !cubes_[x][y] ) {
                 row_empty[i].push_back( x );
                 this_frame_empty_slots += 1;
             }
@@ -747,7 +747,7 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
             pCube c = owner->make_garbage( x, top - j, pop_from_garbage_cube_bag() )->model();
             insert_garbage( c );
             */
-            pCube c = insert_new_garbage_from_bag( x, top - j );
+            pCube c = insert_new_garbage_from_bag( x, top - 1 - j );
 
             /// DEBUG: check what garbage/broken cubes dropped here
             printf("%d ", c->color_id());
@@ -793,7 +793,9 @@ void <% debug_hook 'Map::cycle_creation' do %>(){
     if( is_empty.size() == 0 ) return;
 
     BOOST_FOREACH(int x, is_empty){
-        cubes_preview_[x]->x(x).y(top).go_sinking();
+        cubes_preview_[x]->x(x).y(top-1).real_y((top-1)*64).go_sinking();
+        cubes_preview_[x]->new_garbage(true);
+        cubes_preview_[x]->normal_entry_event()();
         insert_cube(cubes_preview_[x]);
     }
 

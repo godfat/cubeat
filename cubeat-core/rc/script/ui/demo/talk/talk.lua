@@ -210,8 +210,8 @@ local function action(menu, rundown)
     then
       return false
     else
-      actor_effect_end_flag_  = (effect_a ==nil)
-      word_effect_end_flag_   = (effect_w ==nil)
+      actor_effect_end_flag_  = (effect_a ==nil or effect_a=="slide_in")
+      word_effect_end_flag_   = (effect_w ==nil or effect_w=="size_L" or effect_w=="size_M" or effect_w=="size_S")
       special_effect_end_flag_= (special==nil)
       return true
     end

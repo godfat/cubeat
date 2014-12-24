@@ -187,7 +187,8 @@ void <% debug_hook 'Map::bind_cube_event' do %>(pCube cube){
                    sink_a_block_event( std::tr1::bind( &Cube::sink_a_block, cube.get() ) ).
                      update_pos_event( std::tr1::bind( &Cube::update_pos, cube.get() ) ).
                    approach_pos_event( std::tr1::bind( &Cube::approach_pos, cube.get() ) ).
-                    garbage_fly_event( std::tr1::bind( &Cube::garbage_fly, cube.get() ) );
+                    garbage_fly_event( std::tr1::bind( &Cube::garbage_fly, cube.get() ) ).
+                   normal_entry_event( std::tr1::bind( &Cube::normal_entry, cube.get() ) );
 }
 
 pCube <% debug_hook 'Map::make_cube' do %>(int x, int y, int color_id){

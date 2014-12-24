@@ -241,6 +241,13 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     }
 }
 
+void ViewSprite::normal_entry() { // called from model::Map::cycle_creation
+    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), body_);
+    //body_->setPickable(false);
+    body_->set<accessor::Pos2D>( pos_vec2() );
+    body_->tween<easing::OBack, accessor::Scale>(vec3(.1, .1, .1), vec3(1, 1, 1), 500u, 0, cb);
+}
+
 void ViewSprite::goto_garbage_orig(){ //called from presenter::Map
     vec2 origpos = view_orig_.lock()->get<accessor::Pos2D>();
     vec2 pos( view_setting()->atf_x() - origpos.X, view_setting()->atf_y() - origpos.Y );

@@ -60,8 +60,10 @@ void Cube::drop_a_frame(time_t const& now_t, time_t const& last_t){
 }
 
 void Cube::sink_a_frame(time_t const& now_t, time_t const& last_t){
-    real_y(real_y() - (map()->get_sink_speed() * static_cast<double>(now_t - last_t) / 1000.0 ));
-    update_pos_event()();
+    if( !is_new_garbage() ) {
+        real_y(real_y() - (map()->get_sink_speed() * static_cast<double>(now_t - last_t) / 1000.0 ));
+        update_pos_event()();
+    }
 }
 
 bool Cube::arrived_at_logical_y(){

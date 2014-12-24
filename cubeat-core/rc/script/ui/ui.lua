@@ -408,9 +408,9 @@ local function new_ratio(object)
   setmetatable(object, Sprite_Based_Mt)
   object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
   
-  object.box    = new_image{parent=object._cdata, path='cubes/cube1.bak', w=40, h=40, x=0, y=2}
+  object.box    = new_image{parent=object._cdata, path='cubes/cube1.bak', w=40, h=40, x=380, y=2}
   
-  object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=60, y=0, size=32}
+  object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=0, y=0, size=32}
   
   -- functions
   object.on_press = function(self, func)

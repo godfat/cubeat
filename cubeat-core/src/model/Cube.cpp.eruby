@@ -63,6 +63,13 @@ void Cube::sink_a_frame(time_t const& now_t, time_t const& last_t){
     if( !is_new_garbage() ) {
         real_y(real_y() - (map()->get_sink_speed() * static_cast<double>(now_t - last_t) / 1000.0 ));
         update_pos_event()();
+    } else {
+        if( entry_progress() < 64.0 ) {
+            entry_progress( entry_progress() + map()->get_sink_speed() * static_cast<double>(now_t - last_t) / 1000.0 );
+        } else {
+            new_garbage(false);
+        }
+        normal_entry_event()();
     }
 }
 

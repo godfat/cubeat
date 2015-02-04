@@ -289,7 +289,7 @@ local act3_act4_ = {
 }
 
 local act3_act5_ = {
-  { ch=1, img="char3_new/normal", text="差不多可以推測出nCuBeat能力的\n獲得條件了。"},
+  { ch=1, img="char3_new/normal", text="差不多可以推測出CuBeat能力的\n獲得條件了。"},
   { ch=1, img="char3_new/normal", text="俐亞跟雅季的髮飾、\n嵐泰的護腕…" },
   { ch=1, img="char3_new/normal", text="只要身上有著方塊型配件、\n再去碰觸到方塊…" },
   { ch=1, img="char3_new/glad", text="就會得到CuBeat能力！"},

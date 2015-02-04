@@ -69,7 +69,7 @@ local function init(demo, parent, data)
                     roll_time, 0, fade_out, 0)
   end
   
-  menu.background:tween('Linear', 'Alpha', 0, 255, 3000, 0, startroll, 0)
+  menu.background:tween('Linear', 'Alpha', 0, 128, 3000, 0, startroll, 0)
   
   return menu
 end

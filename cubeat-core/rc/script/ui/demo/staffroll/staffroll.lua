@@ -64,7 +64,7 @@ local function init(demo, parent, data)
       if k~="endcg" then v:set_visible(true) end
     end
     local roll_distance = script.get_roll_distance()
-    local roll_time     = script.get_roll_time()
+    local roll_time     = script.get_roll_time(character_id_)
     menu.roll:tween('Linear', 'Pos2D', ffi.new("value2", 0, 0), ffi.new("value2", 0, roll_distance),
                     roll_time, 0, fade_out, 0)
   end

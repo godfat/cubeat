@@ -40,7 +40,12 @@ local script_ = {
   
   { text="TEAM PSC", x=500, y=4000, size=60 },
 }
-local roll_time_      = 15000
+local roll_time_      = {15000,
+                         15000,
+                         15000,
+                         15000,
+                         15000,
+                         15000,}
 local roll_distance_  = -3700
 local default_size_   = 40
 local default_depth_  = -600
@@ -51,8 +56,8 @@ local function get_staffroll()
   return script_
 end
 
-local function get_roll_time()
-  return roll_time_
+local function get_roll_time(i)
+  return roll_time_[i]
 end
 
 local function get_roll_distance()

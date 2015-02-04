@@ -172,8 +172,8 @@ void Demo_eventual_resume(Demo* self) { // not shared_ptr!
     self->eventual_resume();
 }
 
-void Demo_leave_and_cleanup(Demo* self) { // not shared_ptr!
-    self->end_sequence1();
+void Demo_leave_and_cleanup(Demo* self, bool ending_theme) { // not shared_ptr!
+    self->end_sequence1(ending_theme);
 }
 
 void Demo_load_stage(Demo* self, int stage_id) { // not shared_ptr!

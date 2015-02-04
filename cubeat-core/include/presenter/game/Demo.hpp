@@ -97,11 +97,9 @@ public:
     void load_stage(int);
     void quit();
 
-    void leaving_effect();
-    void starting_effect(bool const&);
     void eventual_pause();
     void eventual_resume();
-    void end_sequence1();
+    void end_sequence1(bool const& ending_theme = false);
 
     view::pScene get_ui_scene();
     view::pScene get_game_scene();
@@ -113,6 +111,8 @@ protected:
     void game_start();
     void game_stop();
 
+    void leaving_effect(bool const&);
+    void starting_effect(bool const&);
     void end_phase2(pMap lose_map);
 
     void ready_go(int);

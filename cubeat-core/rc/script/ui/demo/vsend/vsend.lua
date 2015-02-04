@@ -160,7 +160,11 @@ local function show(demo, game_mode, submode, p1_win)
       end_text_:on_press(function(self)
         hide()
         storyend_config.is_story_end = true -- if is_story_end=true, when slide_in(), it will switch.load_page() to story end talk script.
-        demo:leave_and_cleanup()
+        if storyend_config.get_stage() == 6 then 
+          demo:leave_and_cleanup(true)
+        else
+          demo:leave_and_cleanup(false)
+        end
       end)
     else -- story mode lose
       end_text_:on_press(function(self)

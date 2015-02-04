@@ -29,7 +29,7 @@ public:
         return utils::ObjectPool<Cube>::create(map, x, y, color_id)->init();
     }
     Cube(wpMap map, int x = 0, int y = 0, int color_id = 0):
-        SimpleCube(x, y, color_id), map_(map)
+        SimpleCube(x, y, color_id), map_(map), retain_chain_(false), fading_gid_(0), entry_progress_(0)
     {}
     <% debug_hook '~Cube' do %>(){ <% end %> }
 
@@ -131,6 +131,7 @@ private:
     wpCube self_;
 <%= accessor :bool, :retain_chain %>
 <%= accessor :int , :fading_gid %> // throw away value
+<%= accessor :double, :entry_progress %>
 <%= accessor :'std::tr1::function<void()>', :drop_a_block_event, :be_garbage_event %>
 <%= accessor :'std::tr1::function<void()>', :get_chain_event, :lose_chain_event, :sink_a_block_event, :update_pos_event, :approach_pos_event, :garbage_fly_event, :normal_entry_event %>
 <%= accessor :'std::tr1::function<void(int)>', :go_dying_event, :restore_event, :go_exploding_event, :be_broken_event, :ending_event %>

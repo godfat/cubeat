@@ -118,11 +118,13 @@ void Sprite::setupTextureFromSheetAndSize(size_t const& sheet_index, int const& 
         size_.Height = h;
     }
 
-    adjustSheetUV(sheet);
+    //adjustSheetUV(sheet);
 
     SMaterial mat = create_std_material_for_sprite();
     mat.setTexture(0, tex);
     body_->getMaterial(0) = mat;
+
+    adjustSheetUV(sheet);
 }
 
 void Sprite::adjustSheetUV(utils::map_any const& sheet)
@@ -131,15 +133,13 @@ void Sprite::adjustSheetUV(utils::map_any const& sheet)
     double sheetwidth  = sheet.M("size").I("w");
     double sheetheight = sheet.M("size").I("h");
     if( thismesh_ ) {
-        S3DVertex* ptr = static_cast<S3DVertex*>(thismesh_->getMeshBuffer(0)->getVertices());
-        double orig_x_uv = tex_data.I("x") / sheetwidth;
-        double orig_y_uv = tex_data.I("y") / sheetheight;
-        double width_uv  = tex_data.I("w") / sheetwidth;
-        double height_uv = tex_data.I("h") / sheetheight;
-        ptr[0].TCoords = vector2df( orig_x_uv            , orig_y_uv + height_uv);
-        ptr[1].TCoords = vector2df( orig_x_uv + width_uv , orig_y_uv + height_uv);
-        ptr[2].TCoords = vector2df( orig_x_uv            , orig_y_uv);
-        ptr[3].TCoords = vector2df( orig_x_uv + width_uv , orig_y_uv);
+        double orig_u = tex_data.I("x") / sheetwidth;
+        double orig_v = tex_data.I("y") / sheetheight;
+        double width_u  = tex_data.I("w") / sheetwidth;
+        double height_v = tex_data.I("h") / sheetheight;
+
+        body_->getMaterial(0).getTextureMatrix(0).setTextureTranslate(orig_u, orig_v);
+        body_->getMaterial(0).getTextureMatrix(0).setTextureScale(width_u, height_v);
     }
 
 }

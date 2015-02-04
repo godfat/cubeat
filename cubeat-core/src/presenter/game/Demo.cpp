@@ -666,7 +666,7 @@ void Demo::quit()
     App::i().quit();
 }
 
-void Demo::leaving_effect()
+void Demo::leaving_effect(bool const& ending_theme)
 {
     heatgauge1_->set<Visible>(false);
     if( game_mode_ != GM_SINGLE ) heatgauge2_->set<Visible>(false);
@@ -675,7 +675,12 @@ void Demo::leaving_effect()
     script::Lua::call(L_, "slide_in");
 
     audio::Sound::i().stopAll();
-    audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
+
+    if( ending_theme ) {
+        audio::Sound::i().playBGM("ending.ogg");
+    } else {
+        audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
+    }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::cleanup, this), shared_from_this(), 1000); //1000 ms
@@ -1210,29 +1215,30 @@ void button_lose_focus(view::pSpriteText& sp)
     sp->set<Red>(255);
 }
 
-void Demo::setup_end_button()
-{
-    using namespace std::tr1::placeholders;
-    std::tr1::function<void(/*int, int*/view::pSprite&)> clicka = bind(&Demo::reinit, this);
-    std::tr1::function<void(/*int, int*/view::pSprite&)> clickb = bind(&Demo::end_sequence1, this);
-    btn_reinit_ = pDummy(new int);
-
-    /// DUNNO WHY, but these additions will crash the game when quitting.
-
-    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
-    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
-    end_text_->onPress(&input1->trig1()) = clicka;
-    end_text_->onPress(&input2->trig1()) = clicka;
-    end_text2_->onPress(&input1->trig1()) = clickb;
-    end_text2_->onPress(&input2->trig1()) = clickb;
-    end_text_->onEnterFocus(input1) = bind(&button_get_focus, ref(end_text_));
-    end_text_->onEnterFocus(input2) = bind(&button_get_focus, ref(end_text_));
-    end_text2_->onEnterFocus(input1) = bind(&button_get_focus, ref(end_text2_));
-    end_text2_->onEnterFocus(input2) = bind(&button_get_focus, ref(end_text2_));
-    end_text_->onLeaveFocus(input1) = bind(&button_lose_focus, ref(end_text_));
-    end_text_->onLeaveFocus(input2) = bind(&button_lose_focus, ref(end_text_));
-    end_text2_->onLeaveFocus(input1) = bind(&button_lose_focus, ref(end_text2_));
-    end_text2_->onLeaveFocus(input2) = bind(&button_lose_focus, ref(end_text2_));
+// 2015.02: Functionality already subsitituded by Lua. Keeping only for reference
+//void Demo::setup_end_button()
+//{
+//    using namespace std::tr1::placeholders;
+//    std::tr1::function<void(/*int, int*/view::pSprite&)> clicka = bind(&Demo::reinit, this);
+//    std::tr1::function<void(/*int, int*/view::pSprite&)> clickb = bind(&Demo::end_sequence1, this);
+//    btn_reinit_ = pDummy(new int);
+//
+//    /// DUNNO WHY, but these additions will crash the game when quitting.
+//
+//    ctrl::Input const* input1 = ctrl::InputMgr::i().getInputByIndex(0);
+//    ctrl::Input const* input2 = ctrl::InputMgr::i().getInputByIndex(1);
+//    end_text_->onPress(&input1->trig1()) = clicka;
+//    end_text_->onPress(&input2->trig1()) = clicka;
+//    end_text2_->onPress(&input1->trig1()) = clickb;
+//    end_text2_->onPress(&input2->trig1()) = clickb;
+//    end_text_->onEnterFocus(input1) = bind(&button_get_focus, ref(end_text_));
+//    end_text_->onEnterFocus(input2) = bind(&button_get_focus, ref(end_text_));
+//    end_text2_->onEnterFocus(input1) = bind(&button_get_focus, ref(end_text2_));
+//    end_text2_->onEnterFocus(input2) = bind(&button_get_focus, ref(end_text2_));
+//    end_text_->onLeaveFocus(input1) = bind(&button_lose_focus, ref(end_text_));
+//    end_text_->onLeaveFocus(input2) = bind(&button_lose_focus, ref(end_text_));
+//    end_text2_->onLeaveFocus(input1) = bind(&button_lose_focus, ref(end_text2_));
+//    end_text2_->onLeaveFocus(input2) = bind(&button_lose_focus, ref(end_text2_));
 //    if( game_mode_ != GM_SINGLE ) { // puzzle demo WTF temp
 //        BOOST_FOREACH(ctrl::Input const* input, ctrl::InputMgr::i().getInputs()) {
 //            ctrl::EventDispatcher::i().subscribe_btn_event(
@@ -1248,9 +1254,9 @@ void Demo::setup_end_button()
 //        ctrl::EventDispatcher::i().subscribe_btn_event(
 //            clickb, btn_reinit_, &input->trig2(), ctrl::BTN_PRESS);
 //    }
-}
+//}
 
-void Demo::end_sequence1()
+void Demo::end_sequence1(bool const& ending_theme)
 {
     audio::Sound::i().playBuffer("4/4c.wav");
     btn_reinit_.reset();
@@ -1261,7 +1267,7 @@ void Demo::end_sequence1()
     std::cout << "game_demo end completed." << std::endl;
 
     script::Lua::call(L_, "cleanup", submode_);
-    leaving_effect();
+    leaving_effect(ending_theme);
 }
 
 void Demo::pause_quit()
@@ -1278,7 +1284,7 @@ void Demo::pause_quit()
         bind(&Demo::game_stop, this), shared_from_this(), 1); //1 ms
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        bind(&Demo::end_sequence1, this), shared_from_this(), 1); //1 ms
+        bind(&Demo::end_sequence1, this, false), shared_from_this(), 1); //1 ms
 }
 
 void Demo::reinit()

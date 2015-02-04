@@ -241,11 +241,28 @@ void ViewSprite::garbage_fly(){ //only called once when model::Map::insert_garba
     }
 }
 
-void ViewSprite::normal_entry() { // called from model::Map::cycle_creation
-    std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), body_);
+template<class T>
+static T OBack_curve(float t, T const& b, T const& c, float const& d)
+{   // note: t is 0->1, and I have to speed the curve up by giving bigger t gaps
+    float s = 1.70158f;
+    t=(t/d)-1;
+    return c*(t*t*((s+1)*t + s) + 1) + b;
+}
+
+void ViewSprite::normal_entry() { // called from model::Map::cycle_creation AND model::Cube::sink_a_frame
+    //std::tr1::function<void()> cb = std::tr1::bind(&garbage_fly_end, cube_.lock().get(), body_);
     //body_->setPickable(false);
+    //body_->tween<easing::OBack, accessor::Scale>(vec3(.1, .1, .1), vec3(1, 1, 1), 500u, 0, cb);
+
     body_->set<accessor::Pos2D>( pos_vec2() );
-    body_->tween<easing::OBack, accessor::Scale>(vec3(.1, .1, .1), vec3(1, 1, 1), 500u, 0, cb);
+
+    double entry_progress = cube_.lock()->entry_progress();
+    if( entry_progress < 64.0 ) {
+        vec3 scale = OBack_curve( entry_progress, vec3(.1,.1,.1), vec3(1, 1, 1), 64.f );
+        body_->set<accessor::Scale>(scale);
+    } else {
+        body_->set<accessor::Scale>(vec3(1, 1, 1));
+    }
 }
 
 void ViewSprite::goto_garbage_orig(){ //called from presenter::Map

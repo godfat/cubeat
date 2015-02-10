@@ -172,19 +172,37 @@ local function action(menu, rundown)
   local light   = 'light'..tostring(ch)
   
   local function add_complete_rundown()
-    complete_rundown_ = complete_rundown_+1
-    current_line_end_flag_ = false
-    timer_handle_ = nil
-    
-    print('Lua talk: completed: '..complete_rundown_)
-    
-    menu[light]:set_visible(true)
-    local x = menu[panel]:get_pos_x()+config.light_offset_x
-    local y = menu[panel]:get_pos_y()+config.light_offset_y
-    menu[light]:tween("Linear", "Pos2D",
-                      ffi.new("v2", x, y-10),
-                      ffi.new("v2", x, y),
-                      config.light_time, -1)
+    -- autoplay if end of stage 6
+    if storystage.get_stage() == 6 and data_.game_end then
+      -- step_ will be always a step ahead here, but "delay" should depend on the length of the line "just ended"
+      local currlen = utf8.len(rundown[step_-1].text) 
+      local delay = (currlen > 14) and 3000 or 2000
+      if old_timer_handle_ then
+        old_timer_handle_:remove()
+        old_timer_handle_ = nil
+      end
+      timer_handle_ = event.on_timer("ui", function() 
+        complete_rundown_ = complete_rundown_+1
+        current_line_end_flag_ = false
+        old_timer_handle_ = timer_handle_ 
+        timer_handle_ = nil -- is it OK ??
+        action(menu, rundown) 
+      end, delay)
+    else
+      complete_rundown_ = complete_rundown_+1
+      current_line_end_flag_ = false
+      timer_handle_ = nil
+      
+      print('Lua talk: completed: '..complete_rundown_)
+      
+      menu[light]:set_visible(true)
+      local x = menu[panel]:get_pos_x()+config.light_offset_x
+      local y = menu[panel]:get_pos_y()+config.light_offset_y
+      menu[light]:tween("Linear", "Pos2D",
+                        ffi.new("v2", x, y-10),
+                        ffi.new("v2", x, y),
+                        config.light_time, -1)
+    end
   end
   local function flag_check()
     if (actor_effect_end_flag_==true and word_effect_end_flag_==true and special_effect_end_flag_==true) then
@@ -279,6 +297,7 @@ local function action(menu, rundown)
   end
   
   --text
+  
   local show_full_text = function(call_rundown_complete)
     if old_timer_handle_ then
       old_timer_handle_:remove()
@@ -295,7 +314,6 @@ local function action(menu, rundown)
       step_ = step_+1
       print('Lua talk: step now is '..step_)
       if call_rundown_complete then
-        play_blip_sound(sound_type)
         add_complete_rundown()
       end
     end
@@ -312,7 +330,10 @@ local function action(menu, rundown)
     play_blip_sound(sound_type)
     if progress == currlen - 1 then
       old_timer_handle_ = timer_handle_
-      timer_handle_ = event.on_timer("ui", function() show_full_text(true) end, 30)
+      timer_handle_ = event.on_timer("ui", function() 
+        play_blip_sound(sound_type)
+        show_full_text(true) 
+      end, 30)
     elseif progress < currlen - 1 then
       old_timer_handle_ = timer_handle_ 
       timer_handle_ = event.on_timer("ui", function() word_by_word( progress + 1 ) end, 30)
@@ -364,6 +385,12 @@ local function init(demo, parent, data)
   data_ = data
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
+  
+  -- for easier test for the ending dialogue
+  storystage.set_stage(6)
+  local story_data = storystage.get_data(select_config.ch_choose[1])
+  select_config.ch_choose[2] = story_data.ch
+  -- end of test
   
   local ch_choose = {}
   ch_choose[1] = select_config.ch_choose[1]
@@ -421,7 +448,11 @@ local function init(demo, parent, data)
   
   menu.clickBlock = ui.new_image{ parent=menu.TalkBackGround._cdata, path='blahblah', x=config.block_x, y=config.block_y,
                                   w=config.block_w, h=config.block_h, alpha=config.block_a, depth=config.block_d }
-  menu.clickBlock:on_press(play)
+  
+  if not (storystage.get_stage() == 6 and data_.game_end) then
+    menu.clickBlock:on_press(play) -- block fast click when its stage 6's end
+  end 
+  
   menu.clickBlock:on_press_r(
                               function(self)
                                 ask_panel_ = ui.new_askbox{ parent = menu.TalkBackGround._cdata,

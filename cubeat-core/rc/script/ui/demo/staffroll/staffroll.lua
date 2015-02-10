@@ -50,7 +50,10 @@ local function init(demo, parent, data)
   
   -- create callback functions
   local function set_endcg_onpress()
-    menu.endcg:on_press( function(self) switch.load_page('mainmenu', nil, nil) end )
+    menu.endcg:on_press( function(self) 
+      switch.load_page('mainmenu', nil, nil) 
+      demo:leave_and_cleanup(false) -- cleanup again so there's a transition back to mainmenu
+    end )
   end
   local function show_cg()
     menu.endcg:set_visible(true)

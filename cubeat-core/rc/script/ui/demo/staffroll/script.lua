@@ -40,12 +40,12 @@ local script_ = {
   
   { text="TEAM PSC", x=500, y=4000, size=60 },
 }
-local roll_time_      = {15000,
-                         15000,
-                         15000,
-                         15000,
-                         15000,
-                         15000,}
+local roll_time_      = {45000,
+                         45000,
+                         45000,
+                         45000,
+                         45000,
+                         45000,}
 local roll_distance_  = -3700
 local default_size_   = 40
 local default_depth_  = -600

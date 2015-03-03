@@ -226,6 +226,7 @@
 		<Unit filename="include\view\Sprite.hpp" />
 		<Unit filename="include\view\SpriteMovie.hpp" />
 		<Unit filename="include\view\SpriteText.hpp" />
+		<Unit filename="include\view\SpriteText2.hpp" />
 		<Unit filename="include\view\detail\CirclingAnimator.hpp" />
 		<Unit filename="include\view\detail\CustomAnimator.hpp" />
 		<Unit filename="include\view\detail\LinearParticleHack.hpp" />
@@ -529,6 +530,7 @@
 		<Unit filename="src\view\Sprite.cpp" />
 		<Unit filename="src\view\SpriteMovie.cpp" />
 		<Unit filename="src\view\SpriteText.cpp" />
+		<Unit filename="src\view\SpriteText2.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

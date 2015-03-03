@@ -87,6 +87,7 @@ Player& Player::start_heat_timer()
 {
     EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Player::heat_cooling, this), shared_from_this(), 100, -1); //check for cooling every 100ms
+    return *this;
 }
 
 Player& Player::subscribe_player_specific_interactions(bool const& can_haste)

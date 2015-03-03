@@ -409,6 +409,7 @@ void Demo::init_map_with_config(int const& map_id, std::string const& filename)
                 sink_speed_limit( new_setting->sink_speed_limit() ).
                 drop_speed( new_setting->drop_speed() ).
                 warning_gap( new_setting->warning_gap() ).
+                max_warning_count( new_setting->max_warning_count() ).
                 damage_factor( new_setting->damage_factor() ).
                 negate_damage_factor( new_setting->negate_damage_factor() ).
                 drop_normal_chance( new_setting->drop_normal_chance() ).
@@ -439,6 +440,7 @@ void Demo::init_map_with_config(int const& map_id, std::string const& filename)
                 sink_speed_limit( new_setting->sink_speed_limit() ).
                 drop_speed( new_setting->drop_speed() ).
                 warning_gap( new_setting->warning_gap() ).
+                max_warning_count( new_setting->max_warning_count() ).
                 damage_factor( new_setting->damage_factor() ).
                 negate_damage_factor( new_setting->negate_damage_factor() ).
                 drop_normal_chance( new_setting->drop_normal_chance() ).
@@ -565,6 +567,12 @@ int  Demo::get_map_broken_num(int const& map_id) const {
         map0_->garbage_count();
 }
 
+int  Demo::get_map_max_warning_count(int const& map_id) const {
+    return map_id == 1 ?
+        map1_->model()->ms()->max_warning_count() :
+        map0_->model()->ms()->max_warning_count();
+}
+
 int const* Demo::get_map_cubes_cleared_data(int const& map_id) const {
     return map_id == 1 ?
         map1_->cubes_cleared_data() :
@@ -632,7 +640,7 @@ void Demo::endgame(int map_num)
         end(map0_);
     }
     else if( map_num == 1 ) {
-        map1_->warning_level(112);
+        map1_->warning_level( map1_->model()->ms()->max_warning_count() * 1000 );
         end(map1_);
     }
 }

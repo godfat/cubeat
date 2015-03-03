@@ -15,6 +15,7 @@ MapSetting::MapSetting(utils::map_any const& conf):
     cube_dropping_duration_( conf.I("cube_dropping_duration") ),
     warning_check_delay_( conf.I("warning_check_delay") ),
     warning_gap_( conf.I("warning_gap") ),
+    max_warning_count_( conf.I("max_warning_count") ),
     drop_normal_chance_( conf.I("drop_normal_chance") ),
     drop_normal_per_bag_( conf.I("drop_normal_per_bag") ),
     sink_speed_( conf.F("sink_speed") ),
@@ -73,6 +74,7 @@ MapSetting::pointer_type MapSetting::clone() const {
            .garbage_dumpable(garbage_dumpable_)
            .use_broken_as_garbage(use_broken_as_garbage_)
            .warning_gap(warning_gap_)
+           .max_warning_count(max_warning_count_)
            .negate_damage_factor(negate_damage_factor_)
            .drop_normal_chance(drop_normal_chance_)
            .drop_normal_per_bag(drop_normal_per_bag_)
@@ -89,6 +91,7 @@ MapSetting& MapSetting::apply_player_passive_mods(utils::map_any const& conf) {
     setup_color_bag( conf.V("color_bag") );
 
     warning_gap_          = conf.I("warning_gap");
+    max_warning_count_    = conf.I("max_warning_count");
     damage_factor_        = conf.F("damage_factor");
     negate_damage_factor_ = conf.F("negate_damage_factor");
     drop_normal_chance_   = conf.I("drop_normal_chance");

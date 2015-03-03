@@ -132,6 +132,10 @@ int Demo_get_map_broken_num(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_broken_num(map_id);
 }
 
+int Demo_get_map_max_warning_count(Demo* self, int map_id) { // not shared_ptr!
+    return self->get_map_max_warning_count(map_id);
+}
+
 int const* Demo_get_map_cubes_cleared_data(Demo* self, int map_id) { // not shared_ptr!
     return self->get_map_cubes_cleared_data(map_id);
 }

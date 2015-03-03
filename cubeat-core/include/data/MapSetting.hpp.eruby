@@ -25,7 +25,7 @@ public:
         return pointer_type(new MapSetting(conf));
     }
 
-<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :drop_normal_chance, :drop_normal_per_bag %>
+<%= accessor :int, :color_amounts, :chain_amounts, :starting_line, :chaining_duration, :cube_dying_duration, :cube_sinking_duration, :cube_dropping_duration, :warning_check_delay, :warning_gap, :max_warning_count, :drop_normal_chance, :drop_normal_per_bag %>
 <%= accessor :double, :sink_speed, :sink_speed_add, :sink_speed_limit, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
@@ -61,7 +61,7 @@ private:
     MapSetting():
         color_amounts_(4), chain_amounts_(3), starting_line_(4),
         chaining_duration_(300), cube_dying_duration_(300), cube_sinking_duration_(500),
-        cube_dropping_duration_(135), warning_check_delay_(100), warning_gap_(1000), drop_normal_chance_(0),
+        cube_dropping_duration_(135), warning_check_delay_(100), warning_gap_(1000), max_warning_count_(10), drop_normal_chance_(0),
         drop_normal_per_bag_(0), sink_speed_(80.0), sink_speed_add_(10.0), sink_speed_limit_(400.0),
         drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
         width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),

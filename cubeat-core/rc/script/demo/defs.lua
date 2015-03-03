@@ -43,6 +43,7 @@ Mt_Demo.get_map_highest_chain  = C.Demo_get_map_highest_chain
 Mt_Demo.get_map_garbage_left   = C.Demo_get_map_garbage_left
 Mt_Demo.get_map_warning_level  = C.Demo_get_map_warning_level
 Mt_Demo.get_map_broken_num     = C.Demo_get_map_broken_num
+Mt_Demo.get_map_max_warning_count  = C.Demo_get_map_max_warning_count
 Mt_Demo.get_map_cubes_cleared_data = C.Demo_get_map_cubes_cleared_data
 Mt_Demo.get_map_cubes_matched_data = C.Demo_get_map_cubes_matched_data
 Mt_Demo.get_ai_player          = C.Demo_get_ai_player

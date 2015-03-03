@@ -38,6 +38,7 @@ passive_mod: {
     # Pro: Red color is significantly higher
     # Con: Heat add for Hasting is also significantly higher
     warning_gap: 1600,
+    max_warning_count: 10,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,

@@ -38,6 +38,7 @@ passive_mod: {
     # Pro: Heat when shooting is less
     # Con: Countdown is somewhat shorter.
     warning_gap: 1400,
+    max_warning_count: 8,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,

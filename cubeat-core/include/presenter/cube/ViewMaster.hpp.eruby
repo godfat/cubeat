@@ -31,8 +31,8 @@ public:
     data::pViewSetting view_setting() const{ return view_setting_; }
     virtual void column_full(int at){}
     virtual void column_not_full(int at){}
-    virtual void new_chain(model::wpChain const& chain){}
-    virtual void new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power){}
+    virtual void new_chain(model::wpChain const& chain,
+                           std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position){}
     virtual void new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power){}
     virtual void new_garbage_old(int modelx, int modely, int new_count){}
     virtual void pop_garbage(int this_frame_lands){}

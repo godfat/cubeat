@@ -143,9 +143,7 @@ void <% debug_hook 'Map::bind_view_event' do %>(cube::pViewMaster view){
     column_not_full_event(
         std::tr1::bind(&cube::ViewMaster::column_not_full, view.get(), _1)).
     new_chain_event(
-        std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1)).
-    new_chain_grouping_event(
-        std::tr1::bind(&cube::ViewMaster::new_chain_grouping, view.get(), _1, _2)).
+        std::tr1::bind(&cube::ViewMaster::new_chain, view.get(), _1, _2)).
     new_garbage_event(
 //        std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2, _3)).
         std::tr1::bind(&cube::ViewMaster::new_garbage, view.get(), _1, _2)).

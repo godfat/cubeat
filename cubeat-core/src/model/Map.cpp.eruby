@@ -613,8 +613,7 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 continue;
             }
 
-            o->new_chain_event()(*i);
-            o->new_chain_grouping_event()( dying_cubes_position_[ chain_step_pair ] , amount);
+            o->new_chain_event()(*i, dying_cubes_position_[ chain_step_pair ]);
 
             if( amount > 0 ) {
                 //current_sum_of_attack_ += (*i)->attack_of_current_step();
@@ -894,47 +893,27 @@ Map::color_map_type <% debug_hook 'Map::color_map' do %>() const{
 
 // temp
 void Map::inc_warning(int& warning_lv) {
-    if( column_full_num_ && chains_.empty() && warning_lv < 112 )
-        warning_lv += 1;
-//    else if( !column_full_num_ && warning_lv > 0 ) {
-//        warning_lv -= 2;
-//        if( warning_lv < 0 )
-//            warning_lv = 0;
-//    }
+    int warning_level_cap = ms()->max_warning_count() * 1000;
+    if( column_full_num_ && chains_.empty() && warning_lv < warning_level_cap ) {
+        warning_lv += 20;
+        if( warning_lv > warning_level_cap )
+            warning_lv = warning_level_cap;
+    }
 // 2012 note: separate inc_warning and dec_warning for different countdown speed control
 }
 
 void Map::dec_warning(int& warning_lv) {
     if( !column_full_num_ && warning_lv > 0 ) {
-        warning_lv -= 1;
+        warning_lv -= 20;
         if( warning_lv < 0 )
             warning_lv = 0;
     }
 }
 
 bool fall_through_check_number(int num) {
-    switch (num) {
-        default:
-            return false;
-        case 0:
-        case 12:
-        case 24:
-        case 36:
-        case 48:
-        case 56:
-        case 64:
-        case 72:
-        case 80:
-        case 84:
-        case 88:
-        case 92:
-        case 96:
-        case 100:
-        case 104:
-        case 108:
-//        case 112:
-            return true;
-    }
+    if( num < 4000 && num % 500 == 0 ) return true;
+    if( num % 1000 == 0 ) return true;
+    return false;
 }
 
 // added: split warning check from cycle_creation:
@@ -943,7 +922,9 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
     using std::tr1::bind; using std::tr1::ref;
 
     column_full_num_ = column_full_num();
-    int warning_gap  = ms()->warning_gap();
+    //int warning_gap  = ms()->warning_gap();
+    int warning_level_cap = ms()->max_warning_count() * 1000;
+    int inverted_warning_level = warning_level_cap - warning_level_;
 
     if( !column_full_num_ ) {
         if( warning_handle_ && warning_level_ == 0 ) {
@@ -958,13 +939,13 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             warning_handle_ = std::tr1::shared_ptr<int>(new int(0));
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Map::inc_warning, this, ref(warning_level_)), warning_handle_, warning_gap / 20, -1);
+                bind(&Map::inc_warning, this, ref(warning_level_)), warning_handle_, 20/*warning_gap / 20*/, -1);
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 200u, -1);
+                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 40u/*200u*/, -1);
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(owner()->alert_bar_update_event(), ref(warning_level_)), warning_handle_, 50u, -1);
+                bind(owner()->alert_bar_update_event(), ref(warning_level_)), warning_handle_, 20u/*50u*/, -1);
         } else {
             if( !chains_.empty() ) {
                 alarm_sound_.reset();
@@ -974,7 +955,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
                 if( !animate_alert_bar_ ) {
                     owner()->alert_bar_freeze_event()(false, warning_level_);
 
-                    if( fall_through_check_number(warning_level_) ) {
+                    if( fall_through_check_number(inverted_warning_level) ) {
                         animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
                         owner()->alert_bar_animate_event()(warning_level_);
                     }
@@ -986,9 +967,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 //                        bind(owner()->alert_bar_animate_event(), warning_level_), animate_alert_bar_, warning_gap, -1);
                 }
                 else {
-                    if( warning_level_ % 2 == 1 ) {
-                        animate_alert_bar_.reset();
-                    }
+                    animate_alert_bar_.reset();
                 }
             }
         }
@@ -1002,20 +981,18 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 //        }
         if( chains_.empty() ) {
             if( !alarm_sound_ ) {
-                if( fall_through_check_number(warning_level_) ) {
+                if( fall_through_check_number(inverted_warning_level) ) {
                     alarm_sound_ = std::tr1::shared_ptr<int>(new int(0));
                     owner()->warning_sound_event()(warning_level_);
                 }
             }
             else {
-                if( warning_level_ % 2 == 1 ) {
-                    alarm_sound_.reset();
-                }
+                alarm_sound_.reset();
             }
         }
     }
 
-    if( warning_handle_ && warning_level_ >= 112 && owner()->lose_event() ) {
+    if( warning_handle_ && warning_level_ >= ms()->max_warning_count() * 1000 && owner()->lose_event() ) {
         owner()->alert_bar_update_event()(warning_level_);
         owner()->lose_event()();
         warning_handle_.reset(); // take out warning_handle_ so that warning_level_ won't change again after we lose for sure.

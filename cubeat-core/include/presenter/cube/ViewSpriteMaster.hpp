@@ -36,6 +36,7 @@ class Menu;
 class Scene;
 class AnimatedSprite;
 class SpriteText;
+class SpriteText2;
 class SFX;
 typedef std::tr1::shared_ptr<Sprite> pSprite;
 typedef std::tr1::weak_ptr<Sprite> wpSprite;
@@ -47,6 +48,8 @@ typedef std::tr1::shared_ptr<AnimatedSprite> pAnimatedSprite;
 typedef std::tr1::weak_ptr<AnimatedSprite> wpAnimatedSprite;
 typedef std::tr1::shared_ptr<SpriteText> pSpriteText;
 typedef std::tr1::weak_ptr<SpriteText> wpSpriteText;
+typedef std::tr1::shared_ptr<SpriteText2> pSpriteText2;
+typedef std::tr1::weak_ptr<SpriteText2> wpSpriteText2;
 } //view
 
 namespace presenter {
@@ -69,8 +72,8 @@ public:
     virtual ViewBase::pointer_type create(model::pCube cube) const;
     virtual void column_full(int at);
     virtual void column_not_full(int at);
-    virtual void new_chain(model::wpChain const& chain);
-    virtual void new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power);
+    virtual void new_chain(model::wpChain const& chain,
+                           std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position);
     virtual void new_garbage(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position, int power);
     virtual void pop_garbage(int this_frame_lands);
     virtual void hit_by_garbage(int this_frame_lands);
@@ -91,6 +94,10 @@ public:
 private:
     ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
         ctrl::wpPlayer const& player);
+
+    void new_chain_text(model::wpChain const& chain,
+                        std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position);
+    void new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position);
 
 private:
     virtual void derived_init();
@@ -125,6 +132,7 @@ private:
     view::pObject alert_leading_orig1_, alert_leading_orig2_;
     view::pSprite alert_leading1_, alert_leading2_, alert_leading_bg_, alert_flood_bg_;
     view::pSpriteText garbage_text_, garbage_text_outline_;
+    view::pSpriteText2 countdown_text_;
     std::vector< view::pSprite > warning_strip_;
     std::vector< view::pSprite > warning_strip2_;
 //    std::vector< view::pSprite > warning_strip3_;

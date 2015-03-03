@@ -92,7 +92,7 @@ public:
 protected:
     pointer_type init(pObject const&, int const&, int const&);
     irr::video::SMaterial create_std_material_for_sprite();
-    void setupMeshAndNode(irr::scene::IMesh*&, irr::scene::ISceneNode*&, pObject const&,
+    void setupMeshAndNode(irr::scene::IMesh*&, irr::scene::ISceneNode*&, irr::scene::ISceneNode* const&,
                           irr::core::dimension2df const&, bool const& center = false,
                           std::string const& debug_name = "sprite_mesh" );
     void adjust_texcoord_for_hand_made_texture(irr::scene::IMesh const*, int const&, int const&);

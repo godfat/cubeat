@@ -28,7 +28,7 @@ pAnimatedSprite AnimatedSprite::init(pObject const& parent, int const& w, int co
 
     SMaterial mat = create_std_material_for_sprite();
 
-    setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
+    setupMeshAndNode(thismesh_, body_, parent->body(), size_, center_, name_);
     body_->getMaterial(0) = mat;
 
     pAnimatedSprite self = static_pointer_cast<AnimatedSprite>( shared_from_this() );

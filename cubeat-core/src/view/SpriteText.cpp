@@ -34,7 +34,7 @@ SpriteText::init(std::string const& text, std::string const& font_path,
     fsize_ = size;
     fpath_ = font_path;
 
-    setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
+    setupMeshAndNode(thismesh_, body_, parent->body(), dimension2df(100, 100), center_, name_);
     SMaterial mat = create_std_material_for_sprite();
     mat.DiffuseColor = SColor( color.rgb() );
     body_->getMaterial(0) = mat;

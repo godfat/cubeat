@@ -38,7 +38,7 @@ pSpriteMovie SpriteMovie::init(pObject const& parent, int const& w, int const& h
     mat.DiffuseColor.set(255,255,255,255);
     /////////////// End of this part /////////////////////////////////////////
 
-    setupMeshAndNode(thismesh_, body_, parent, size_, center_, name_);
+    setupMeshAndNode(thismesh_, body_, parent->body(), size_, center_, name_);
     body_->getMaterial(0) = mat;
 
     dimension2di avi_actual_size = avi->getSize();

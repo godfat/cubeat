@@ -72,7 +72,7 @@ pSprite Sprite::init(pObject const& parent, int const& w, int const& h)
     }
     setupSceneAndManager(parent);
 
-    setupMeshAndNode(thismesh_, body_, parent, dimension2df(100, 100), center_, name_);
+    setupMeshAndNode(thismesh_, body_, parent->body(), dimension2df(100, 100), center_, name_);
 
     size_t i = locateSheetNumber(name_);
     if( i < spritesheets_.size() ) {
@@ -187,7 +187,7 @@ SMaterial Sprite::create_std_material_for_sprite()
 }
 
 void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
-     pObject const& parent, dimension2df const& size, bool const& center,
+     ISceneNode* const& parent_body, dimension2df const& size, bool const& center,
      std::string const& debug_name)
 {
     IMeshManipulator* mani = smgr_->getMeshManipulator();
@@ -200,7 +200,7 @@ void Sprite::setupMeshAndNode(IMesh*& out_mesh, ISceneNode*& out_node,
         mani->transform( out_mesh, mat );
     }
 
-    out_node = smgr_->addMeshSceneNode( out_mesh, parent->body(), -1, vector3df(0,0,0) );
+    out_node = smgr_->addMeshSceneNode( out_mesh, parent_body, -1, vector3df(0,0,0) );
     out_node->setAutomaticCulling(EAC_OFF);
     out_node->setName( debug_name.c_str() );
 

@@ -41,7 +41,8 @@ using namespace std::tr1::placeholders;
 ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
     ctrl::wpPlayer const& player): ViewMaster(setting),
     scene_(scene), player_(player), column_flag_(0),
-    i_have_to_keep_track_of_garbage_count_visually_here_(0)
+    i_have_to_keep_track_of_garbage_count_visually_here_(0),
+    freezed_(false), ui_flag1_(false)
 {   //temporary
     view_orig_ = view::Object::create( scene );
     view_orig_->set<accessor::Pos2D>( vec2(setting->x_offset(), setting->y_offset()) );
@@ -71,10 +72,10 @@ void ViewSpriteMaster::column_full(int at){
     if( column_flag_ != 0 && flag_old == 0 ) {
         box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,32)).set<Alpha>(255);
 
-        box_top_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
-        box_left_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
-        box_right_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
-        box_bottom_->set<ColorDiffuseVec3>(vec3(255,64,32)).set<Alpha>(255);
+        box_top_->set<ColorDiffuseVec3>(vec3(255,32,16)).set<Alpha>(255);
+        box_left_->set<ColorDiffuseVec3>(vec3(255,32,16)).set<Alpha>(255);
+        box_right_->set<ColorDiffuseVec3>(vec3(255,32,16)).set<Alpha>(255);
+        box_bottom_->set<ColorDiffuseVec3>(vec3(255,32,16)).set<Alpha>(255);
     }
 }
 void ViewSpriteMaster::column_not_full(int at){
@@ -100,8 +101,8 @@ void ViewSpriteMaster::column_not_full(int at){
         box_bottom_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
 
         // apparently this is the most reliable place to check "out of danger"
-        countdown_text_->tween<Linear, Alpha>(128, 0, 1000u);
-        countdown_text_->tween_outline<Linear, Alpha>(255, 0, 1000u);
+        countdown_text_->tween<Linear, Alpha>(144, 0, 1500u);
+        countdown_text_->tween_outline<Linear, Alpha>(255, 0, 1500u);
     }
 }
 
@@ -597,12 +598,13 @@ void ViewSpriteMaster::update_garbage(int delta) {
     }
 }
 
-void ViewSpriteMaster::warning_sound(int warning_level){
+void ViewSpriteMaster::warning_sound(int inverted_warning_level){
     using namespace accessor; using namespace easing;
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
 
     time_t warning_gap = map_setting()->warning_gap();
-    unsigned int dur = static_cast<unsigned int>(static_cast<double>(warning_gap) / 3);            // magical number 1
+    unsigned int dur = 1000;
+    if( inverted_warning_level <= 4000 ) dur = 500;
 
 //    box_top_  ->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 //    box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), 800).set<Alpha>(160);
@@ -612,7 +614,7 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 //    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 
     countdown_text_->glow_animation();
-    countdown_text_->tween<Linear, Alpha>(255, 128, dur);
+    countdown_text_->tween<Linear, Alpha>(255, 144, dur);
 
     // determine currently how many column are full:
     int column_count = 0;
@@ -658,25 +660,25 @@ void ViewSpriteMaster::warning_sound(int warning_level){
 
         std::tr1::function<void()> cb = std::tr1::bind(&remove_particle_system_of, warning_strip2_[x]);
         warning_strip2_[x]->set<Pos2D>(start);
-        warning_strip2_[x]->tween<OQuad, Pos2D>(start, end, dur, 0, cb);
+        warning_strip2_[x]->tween<OQuad, Pos2D>(start, end, dur + 100, 0, cb);
 
         // 2015.3 hacky adjustment to how strong and how long should the effect looks
-        int particle_age = 200, fadeout_time = 275;
-        if( dur < 300 ) {
-            particle_age = 100, fadeout_time = 150;
+        int particle_age = 250, fadeout_time = 250, emitrate = 100;
+        if( dur <= 500 ) {
+            particle_age = 150, fadeout_time = 150;
             if( column_count < 3 ) {
-                particle_age = 100, fadeout_time = 100;
+                particle_age = 300, fadeout_time = 300;
             }
         } else {
             if( column_count < 3 ) {
-                particle_age = 200, fadeout_time = 200;
+                particle_age = 600, fadeout_time = 600;
             }
         }
 
         IParticleEmitter* em = new irr::scene::LinearParticleEmitter(
             &warning_strip2_[x]->body()->getPosition(),  /// Very fucking hacky, but Irrlicht's Particle emitter is really rigid.
             core::vector3df(0.0f, 0.0f, 0.0f),   // initial direction
-            100, 100,    // emit rate
+            emitrate, emitrate,    // emit rate
             video::SColor(0,255,80,40),       // darkest color
             video::SColor(0,255,80,40),       // brightest color
             particle_age, particle_age, 0,                         // min and max age, angle
@@ -806,7 +808,6 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 //        alert_flood_bg_->set< Pos2D >( vec2(0, 0) );
 
         countdown_text_->set< Pos2D >( vec2( 4000, 0 ) );
-        countdown_text_->showDouble(9.88);
 
     } else {
 //        alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
@@ -829,11 +830,31 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 //        alert_flood_bg_->set< Scale >(  vec3(1, (warning_level)/112.0, 1) );
 //        alert_flood_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
 
-        countdown_text_->set< Pos2D >( pos_vec2(3, 7) + vec2(-csize/2, csize/2) );
+        if( !ui_flag1_ ) {
+            countdown_text_->set< Pos2D >( pos_vec2(3, 5) + vec2(-csize/2, 0) );
+            countdown_text_->set< Scale >( vec3(0.825, 0.825, 1) );
+        }
 
         if( column_flag_ != 0 ) {
-            countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) ).set<Alpha>(128);
+            countdown_text_->clearAllTween();
+            countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) ).set<Alpha>(144);
             countdown_text_->set_outline<Alpha>(255);
+
+            if( freezed_ ) {
+                countdown_text_->set_outline<ColorDiffuseVec3>( vec3(64, 255, 255) );
+                countdown_text_->set<ColorDiffuseVec3>( vec3(32, 128, 255) );
+                countdown_text_->set_outline<Alpha>(192);
+                countdown_text_->set<Alpha>(96);
+            } else {
+                countdown_text_->set_outline<ColorDiffuseVec3>( vec3(255, 255, 255) );
+                countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) );
+                countdown_text_->set_outline<Alpha>(255);
+                countdown_text_->set<Alpha>(144);
+            }
+
+        } else {
+            countdown_text_->set_outline<ColorDiffuseVec3>( vec3(96, 255, 96) );
+            countdown_text_->set<ColorDiffuseVec3>( vec3(0, 255, 0) );
         }
 
         double mapped_countdown_value = (map_setting()->max_warning_count() * 1000) - warning_level;
@@ -1085,8 +1106,8 @@ void ViewSpriteMaster::derived_init(){
     countdown_text_ = view::SpriteText2::create("9.99", scene_.lock(), true);
     countdown_text_->set<Pos2D>( vec2(4000, 0) );
     countdown_text_->setDepth(-200);
-    countdown_text_->set<Scale>( vec3(.7, .7, 1) );
-    countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) ).set<Alpha>(128);
+    countdown_text_->set<Scale>( vec3(0.825, 0.825, 1) );
+    countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) ).set<Alpha>(144);
     countdown_text_->setPickable(false);
 }
 
@@ -1147,6 +1168,19 @@ vec2 ViewSpriteMaster::pos_from_orig(int const& x, int const& y) const{
 }
 
 void ViewSpriteMaster::cycle(Map const& map) {
+
+    using namespace accessor; using namespace easing;
+
+    if( ctrl::InputMgr::i().keyPressed( 'A' ) ) {
+        ui_flag1_ = !ui_flag1_;
+    }
+
+    if( ui_flag1_ ) {
+        vec2 pos_cursor = player_.lock()->input()->getCursor()->get< Pos2D >();
+        countdown_text_->set< Pos2D >( pos_cursor + vec2( 0, 72 ) );
+        countdown_text_->set< Scale >( vec3(0.667, 0.667, 1) );
+    }
+
     cleanup_chaintext();
 }
 

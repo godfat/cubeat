@@ -196,6 +196,18 @@ void InputMgr::reinitManyMouse()
     initManyMouse();
 }
 
+bool InputMgr::keyDown(unsigned char const& code) const {
+    return MastEventReceiver::i().keyDown( code );
+}
+
+bool InputMgr::keyPressed(unsigned char const& code) const {
+    return MastEventReceiver::i().keyPressed( code );
+}
+
+bool InputMgr::keyReleased(unsigned char const& code) const {
+    return MastEventReceiver::i().keyReleased( code );
+}
+
 void InputMgr::updateAll()
 {
     if( poll_manymouse_event_ )

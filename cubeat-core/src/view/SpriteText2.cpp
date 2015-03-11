@@ -78,7 +78,7 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
     video::IVideoDriver* driver = smgr_->getVideoDriver();
     std::string full_path("rc/texture/sptxt/");
 
-    if( new_text.size() != text_.size() ) {
+    if( new_text.size() != text_.size() ) {  // This will have problem if non-monospaced
         clearText();
         text_ = new_text;
         // 2012 new scheme, now we just use the ustring from irr::core,
@@ -86,8 +86,14 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
         // identify it using BOM, which is undesirable (we don't use BOM in anyway)
         // so, the reinterpret_cast from char const* to unsigned char const* is necessary.
 
-        size_.Width = 128 * text_.size(); // Temporary and treat them as monospaced words now.
-        size_.Height= 128;
+        size_.Width  = getWidth();
+        size_.Height = 128;
+
+        int startx = 0, starty = 0;
+        if( center_ ) {
+            startx -= size_.Width / 2;
+            starty += 128 / 2; // y-inversed!
+        }
 
         for( size_t i = 0; i < text_.size(); ++i) {
             IMesh* tmp_mesh;
@@ -99,13 +105,7 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
             setupMeshAndNode(tmp_mesh, temp_letter_node_outline, temp_letter_node, dimension2df(128, 128), false, "");
             tmp_mesh->drop();
 
-            int startx = 0, starty = 0;
-            if( center_ ) {
-                startx -= static_cast<int>(text_.size())*128 / 2;
-                starty += 128 / 2; // y-inversed!
-            }
-
-            vector3df node_pos(startx + static_cast<int>(i) * 128, starty, 0);
+            vector3df node_pos(startx, starty, 0);
             vector3df outline_pos(0, 0, -5);
 
             temp_letter_node->setPosition(node_pos);
@@ -118,6 +118,7 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
             std::string texture_name;
             if( text_[i] == '.' ) {
                 texture_name = full_path + "dot";
+                temp_letter_node->setPosition( node_pos - vector3df(32, 0, 0) );
             } else {
                 texture_name = full_path + text_[i];
             }
@@ -130,6 +131,9 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
 
             letter_node_.push_back( temp_letter_node );
             letter_node_outline_.push_back( temp_letter_node_outline );
+
+            startx += getCharWidthByIndex(i);
+
             //when debug text nodes un-comment this:
             //letter_node_[i]->setDebugDataVisible(EDS_BBOX);
             printf("SpriteText2: changeText totally new string\n");
@@ -137,17 +141,29 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
     } else { // when the length of the SpriteText2 didn't change, which is most what happens with this class' use case
         text_ = new_text;
 
+        int startx = 0, starty = 0;
+        if( center_ ) {
+            startx -= size_.Width / 2;
+            starty += 128 / 2; // y-inversed!
+        }
+
         for( size_t i = 0; i < text_.size(); ++i ) {
+
+            vector3df node_pos(startx, starty, 0);
+            letter_node_[i]->setPosition(node_pos);
 
             std::string texture_name;
             if( text_[i] == '.' ) {
                 texture_name = full_path + "dot";
+                letter_node_[i]->setPosition( letter_node_[i]->getPosition() - vector3df(32, 0, 0) );
             } else {
                 texture_name = full_path + text_[i];
             }
 
             letter_node_[i]->setMaterialTexture(0, driver->getTexture( (texture_name + ".png").c_str() ) );
             letter_node_outline_[i]->setMaterialTexture(0, driver->getTexture( (texture_name + "o.png").c_str() ) );
+
+            startx += getCharWidthByIndex(i);
         }
     }
 
@@ -168,15 +184,15 @@ SpriteText2& SpriteText2::showDouble(double num, unsigned int precision)
 
     if( i < str.size() ) {
         size_t j = i + 1;
-        for( ; j - i < precision && j < str.size()-1 ; ++j );
+        for( ; j - i < static_cast<int>(precision) && j < str.size()-1 ; ++j );
         res = str.substr(0, j+1);
 
-        for( ; j - i < precision ; ++j ) {
+        for( ; j - i < static_cast<int>(precision) ; ++j ) {
             res += "0";
         }
     } else {
         res += str.substr(0, i) + ".";
-        for( int j = 0; j < precision; ++j ) {
+        for( int j = 0; j < static_cast<int>(precision); ++j ) {
             res += "0";
         }
     }
@@ -273,31 +289,54 @@ void SpriteText2::startTween_outline()
     }
 }
 
+int SpriteText2::getCharWidthByIndex(int const& i) const {
+    if( i < 0 || i >= static_cast<int>(text_.size()) ) return -1;
+    if( text_[i] == '.' ) return 64;
+    return 128;
+}
+
+int SpriteText2::getWidth() const {
+    int res = 0;
+    for( size_t i = 0; i < text_.size(); ++i ) {
+        res += getCharWidthByIndex(i);
+    }
+
+    printf("\n\n\n Text is %s \n", text_.c_str());
+    printf("    Width is %d\n\n\n\n", res);
+
+    return res;
+}
+
 SpriteText2& SpriteText2::glow_animation()
 {
     std::string full_path("sptxt/");
 
+    int startx = 64, starty = 0;
+    if( center_ ) {
+        startx -= size_.Width / 2;
+    }
+
     for( size_t i = 0; i < text_.size(); ++i) {
 
         std::string texture_name;
+        int actualx = startx;
+
         if( text_[i] == '.' ) {
             texture_name = full_path + "doto";
+            actualx -= 32;
         } else {
             texture_name = full_path + text_[i] + "o";
         }
 
-        int startx = static_cast<int>(i) * 128 + 64 , starty = 0;
-        if( center_ ) {
-            startx -= static_cast<int>(text_.size())*128 / 2;
-        }
-
         pSprite temp = Sprite::create(texture_name, shared_from_this(), 128, 128, true);
-        temp->set<Pos2D>( vec2(startx, starty) ).setDepth(-5).setPickable(false);
-        temp->set<ColorDiffuseVec3>( vec3(255, 255, 0) );
-        temp->tween<OQuad, Scale>( vec3(1,1,1), vec3(1.5, 1.5, 1), 200u );
-        temp->tween<Linear, Alpha>( 255, 0, 200u );
+        temp->set<Pos2D>( vec2(actualx, starty) ).setDepth(-5).setPickable(false);
+        temp->set<ColorDiffuseVec3>( vec3(255, 255, 32) );
+        temp->tween<OQuad, Scale>( vec3(1,1,1), vec3(1.5, 1.5, 1), 350u );
+        temp->tween<Linear, Alpha>( 255, 0, 350u );
 
-        SFX::i().hold( temp, 250u );
+        startx += getCharWidthByIndex(i);
+
+        SFX::i().hold( temp, 400u );
     }
 
     return *this;
@@ -350,6 +389,7 @@ SpriteText2& SpriteText2::clearTween_outline(AT::ATEnum const& eType)
             }
         }
     }
+    return *this;
 }
 
 SpriteText2::~SpriteText2()

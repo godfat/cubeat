@@ -69,6 +69,9 @@ public:
     void updateAll(); //we can't combine updateAll and redrawAll,
     void redrawAll(); //because we must update input before everything in the main loop,
                       //however redraw input after everything (so the cursors won't be covered)
+    bool keyDown(unsigned char const& code) const;
+    bool keyPressed(unsigned char const& code) const;
+    bool keyReleased(unsigned char const& code) const;
 
     int const MAX_INPUTS;
 

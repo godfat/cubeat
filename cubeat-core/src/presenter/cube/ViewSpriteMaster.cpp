@@ -602,7 +602,7 @@ void ViewSpriteMaster::warning_sound(int inverted_warning_level){
     using namespace accessor; using namespace easing;
     audio::Sound::i().playBuffer("3/3d/alarm.wav");
 
-    time_t warning_gap = map_setting()->warning_gap();
+//    time_t warning_gap = map_setting()->warning_gap();
     unsigned int dur = 1000;
     if( inverted_warning_level <= 4000 ) dur = 500;
 
@@ -613,7 +613,12 @@ void ViewSpriteMaster::warning_sound(int inverted_warning_level){
 //               .tween<SineCirc, ColorDiffuseVec3>(vec3(255, 255, 255), vec3(255, 32, 32), warning_gap);
 //    box_bottom_->set<ColorDiffuseVec3>(vec3(255, 32, 32)).set<Alpha>(224);
 
-    countdown_text_->glow_animation();
+    if( !ui_flag1_ ) {
+        countdown_text_->tween<OElastic, Scale>( vec3(1, 1, 1), vec3(0.825, 0.825, 1), 500u );
+    } else {
+        countdown_text_->tween<OElastic, Scale>( vec3(0.8, 0.8, 0.8), vec3(0.667, 0.667, 1), 500u );
+    }
+
     countdown_text_->tween<Linear, Alpha>(255, 144, dur);
 
     // determine currently how many column are full:
@@ -660,7 +665,7 @@ void ViewSpriteMaster::warning_sound(int inverted_warning_level){
 
         std::tr1::function<void()> cb = std::tr1::bind(&remove_particle_system_of, warning_strip2_[x]);
         warning_strip2_[x]->set<Pos2D>(start);
-        warning_strip2_[x]->tween<OQuad, Pos2D>(start, end, dur + 100, 0, cb);
+        warning_strip2_[x]->tween<OQuad, Pos2D>(start, end, dur, 0, cb);
 
         // 2015.3 hacky adjustment to how strong and how long should the effect looks
         int particle_age = 250, fadeout_time = 250, emitrate = 100;
@@ -783,6 +788,11 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
     } else {
 //        alert_bar_cover_top_->set<Visible>(false);
 //        alert_bar_cover_bottom_->set<Visible>(false);
+        if ( warning_level < 40 ) {
+            // if unfreezing and warning_level is still extremely low, probably means that we've missed the first alarm
+            // so sound the alarm!
+            warning_sound( map_setting()->max_warning_count() * 1000 - warning_level );
+        }
     }
 }
 
@@ -832,16 +842,16 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 
         if( !ui_flag1_ ) {
             countdown_text_->set< Pos2D >( pos_vec2(3, 5) + vec2(-csize/2, 0) );
-            countdown_text_->set< Scale >( vec3(0.825, 0.825, 1) );
         }
 
         if( column_flag_ != 0 ) {
-            countdown_text_->clearAllTween();
+            countdown_text_->clearTween( AT::A );
+            countdown_text_->clearTween_outline( AT::A );
             countdown_text_->set<ColorDiffuseVec3>( vec3(255, 64, 32) ).set<Alpha>(144);
             countdown_text_->set_outline<Alpha>(255);
 
             if( freezed_ ) {
-                countdown_text_->set_outline<ColorDiffuseVec3>( vec3(64, 255, 255) );
+                countdown_text_->set_outline<ColorDiffuseVec3>( vec3(96, 255, 255) );
                 countdown_text_->set<ColorDiffuseVec3>( vec3(32, 128, 255) );
                 countdown_text_->set_outline<Alpha>(192);
                 countdown_text_->set<Alpha>(96);
@@ -853,7 +863,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
             }
 
         } else {
-            countdown_text_->set_outline<ColorDiffuseVec3>( vec3(96, 255, 96) );
+            countdown_text_->set_outline<ColorDiffuseVec3>( vec3(128, 255, 144) );
             countdown_text_->set<ColorDiffuseVec3>( vec3(0, 255, 0) );
         }
 
@@ -925,8 +935,8 @@ void ViewSpriteMaster::create_warning_strips(){
 void ViewSpriteMaster::create_warning_strips2(){
     using namespace accessor; using namespace easing;
     view::pScene scene = scene_.lock();
-    for( int i=0, width = map_setting()->width(),
-                  h = map_setting()->height()-1 ; i < width; ++i )
+    for( int i=0, width = map_setting()->width()
+              /*, h = map_setting()->height()-1 */ ; i < width; ++i )
     {
         int csize = view_setting()->cube_size();
 
@@ -1173,12 +1183,16 @@ void ViewSpriteMaster::cycle(Map const& map) {
 
     if( ctrl::InputMgr::i().keyPressed( 'A' ) ) {
         ui_flag1_ = !ui_flag1_;
+        if( ui_flag1_ ) {
+            countdown_text_->set< Scale >( vec3(0.667, 0.667, 1) );
+        } else {
+            countdown_text_->set< Scale >( vec3(0.825, 0.825, 1) );
+        }
     }
 
     if( ui_flag1_ ) {
         vec2 pos_cursor = player_.lock()->input()->getCursor()->get< Pos2D >();
         countdown_text_->set< Pos2D >( pos_cursor + vec2( 0, 72 ) );
-        countdown_text_->set< Scale >( vec3(0.667, 0.667, 1) );
     }
 
     cleanup_chaintext();

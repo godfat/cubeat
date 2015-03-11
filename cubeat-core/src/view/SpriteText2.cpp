@@ -309,35 +309,37 @@ int SpriteText2::getWidth() const {
 
 SpriteText2& SpriteText2::glow_animation()
 {
-    std::string full_path("sptxt/");
+//    std::string full_path("sptxt/");
+//
+//    int startx = 64, starty = 0;
+//    if( center_ ) {
+//        startx -= size_.Width / 2;
+//    }
+//
+//    for( size_t i = 0; i < text_.size(); ++i) {
+//
+//        std::string texture_name;
+//        int actualx = startx;
+//
+//        if( text_[i] == '.' ) {
+//            texture_name = full_path + "doto";
+//            actualx -= 32;
+//        } else {
+//            texture_name = full_path + text_[i] + "o";
+//        }
+//
+//        pSprite temp = Sprite::create(texture_name, shared_from_this(), 128, 128, true);
+//        temp->set<Pos2D>( vec2(actualx, starty) ).setDepth(-5).setPickable(false);
+//        temp->set<ColorDiffuseVec3>( vec3(255, 255, 32) );
+//        temp->tween<OQuad, Scale>( vec3(1,1,1), vec3(1.5, 1.5, 1), 350u );
+//        temp->tween<Linear, Alpha>( 255, 0, 350u );
+//
+//        startx += getCharWidthByIndex(i);
+//
+//        SFX::i().hold( temp, 400u );
+//    }
 
-    int startx = 64, starty = 0;
-    if( center_ ) {
-        startx -= size_.Width / 2;
-    }
-
-    for( size_t i = 0; i < text_.size(); ++i) {
-
-        std::string texture_name;
-        int actualx = startx;
-
-        if( text_[i] == '.' ) {
-            texture_name = full_path + "doto";
-            actualx -= 32;
-        } else {
-            texture_name = full_path + text_[i] + "o";
-        }
-
-        pSprite temp = Sprite::create(texture_name, shared_from_this(), 128, 128, true);
-        temp->set<Pos2D>( vec2(actualx, starty) ).setDepth(-5).setPickable(false);
-        temp->set<ColorDiffuseVec3>( vec3(255, 255, 32) );
-        temp->tween<OQuad, Scale>( vec3(1,1,1), vec3(1.5, 1.5, 1), 350u );
-        temp->tween<Linear, Alpha>( 255, 0, 350u );
-
-        startx += getCharWidthByIndex(i);
-
-        SFX::i().hold( temp, 400u );
-    }
+    tween<OElastic, Scale>( vec3(1, 1, 1), vec3(0.825, 0.825, 1), 500u );
 
     return *this;
 }

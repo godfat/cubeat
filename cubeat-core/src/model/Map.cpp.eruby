@@ -983,7 +983,7 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             if( !alarm_sound_ ) {
                 if( fall_through_check_number(inverted_warning_level) ) {
                     alarm_sound_ = std::tr1::shared_ptr<int>(new int(0));
-                    owner()->warning_sound_event()(warning_level_);
+                    owner()->warning_sound_event()(inverted_warning_level);
                 }
             }
             else {

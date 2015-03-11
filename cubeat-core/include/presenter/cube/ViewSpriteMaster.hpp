@@ -148,6 +148,8 @@ private:
     int column_flag_;
     int i_have_to_keep_track_of_garbage_count_visually_here_;
     bool freezed_;
+
+    bool ui_flag1_;
 };
 
 } //cube

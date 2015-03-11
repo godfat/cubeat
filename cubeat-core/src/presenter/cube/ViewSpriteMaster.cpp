@@ -788,7 +788,7 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
     } else {
 //        alert_bar_cover_top_->set<Visible>(false);
 //        alert_bar_cover_bottom_->set<Visible>(false);
-        if ( warning_level < 40 ) {
+        if ( warning_level < 30 ) {
             // if unfreezing and warning_level is still extremely low, probably means that we've missed the first alarm
             // so sound the alarm!
             warning_sound( map_setting()->max_warning_count() * 1000 - warning_level );

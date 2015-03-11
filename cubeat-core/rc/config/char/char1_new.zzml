@@ -54,7 +54,7 @@ passive_mod: {
     weapon: {
         heat_rate: 0.200,
         cool_rate: 0.06,
-        downtime: 3000,
+        downtime: 2000,
         item1_start_ammo: 10,
         item2_start_ammo: 10,
         item3_start_ammo: 1,

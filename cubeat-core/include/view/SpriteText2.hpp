@@ -158,6 +158,8 @@ public:
     SpriteText2& changeText(std::string const&);
     SpriteText2& showDouble(double, unsigned int precision = 2);
     SpriteText2& glow_animation();
+    int getWidth() const;
+    int getCharWidthByIndex(int const& i) const;
     std::string const& getText() const { return text_; }
 
     virtual ~SpriteText2();

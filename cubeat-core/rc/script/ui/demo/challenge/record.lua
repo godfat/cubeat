@@ -110,6 +110,11 @@ save_record_[parameter.story] = function(demo, data)
   end
 end
 
+-- Save statistical data record
+save_record_[parameter.stat] = function(demo, key, value)
+  local k = 'stat_' .. tostring(key)
+  local challenge_record = file.load_data('challenge_record', "rb")
+end
 
 ------------------------------------------------------
 local function save(demo, save_type, data)
@@ -152,6 +157,13 @@ local function load(load_type, data)
     local k = 'story_' .. tostring(data.character)
     return challenge_record[k]
   end
+end
+
+local function load_raw(str)
+  local challenge_record = file.load_data('challenge_record', "rb")
+  if challenge_record==nil then return nil end
+  
+  return challenge_record[str]
 end
 
 local function print_challenge_record_origin_data()
@@ -254,6 +266,7 @@ end
 return {
   save = save,
   load = load,
+  load_raw = load_raw,
   print_challenge_record_origin_data  = print_challenge_record_origin_data,
   print_challenge_record_data         = print_challenge_record_data,
 }

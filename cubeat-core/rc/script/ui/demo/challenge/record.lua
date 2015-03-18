@@ -110,6 +110,27 @@ save_record_[parameter.story] = function(demo, data)
   end
 end
 
+------------------------------------------------------
+-- Save story mode quicksave record
+save_record_[parameter.quicksave] = function(demo, data)
+  local ch    = data.character
+  local stage = data.stage  -- clear stage
+  
+  local k = 'quicksave'
+  
+  local challenge_record = file.load_data('challenge_record', "rb")
+  
+  if challenge_record then -- find record file
+    challenge_record[k] = { ch=ch, stage=stage }
+    file.save_data('challenge_record', challenge_record, "wb")
+    
+  else -- not have record file, create one & save it.
+    challenge_record = {}
+    challenge_record[k] = { ch=ch, stage=stage }
+    file.save_data('challenge_record', challenge_record, "wb")
+  end
+end
+
 
 ------------------------------------------------------
 local function save(demo, save_type, data)
@@ -171,6 +192,14 @@ local function print_challenge_record_data()
   local challenge_record = file.load_data('challenge_record', "rb")
   if challenge_record then -- find record file
     print("------------ challenge_record data ------------")
+  -- Story QuickSave Info
+    local t = "QuickSave :"
+    if challenge_record["quicksave"] then
+      local ch    = challenge_record["quicksave"]["ch"]
+      local stage = challenge_record["quicksave"]["stage"]
+      t = t .. " ch : " .. tostring(ch) .. " stage : " .. tostring(stage)
+    end
+    print(t .. "\n")
   -- Story Clear Info
     local t = "Story Clear :"
     for i=1,6 do

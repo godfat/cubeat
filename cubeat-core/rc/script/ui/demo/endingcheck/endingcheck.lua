@@ -56,6 +56,9 @@ local function story_mode_end(demo, submode)
     print('---- endingcheck: story win ----')
     --storyend.show(demo, storyend_config.story_win)
     vsend.show(demo, nil, submode, true)
+    -- save story quicksave data
+    local data = { character=select_config.ch_choose[1], stage=storystage.get_stage() }
+    record.save(demo, parameter.quicksave, data)
     -- save story character clear data
     if storystage.get_stage()==6 then
       print('-------- save story character clear data --------')

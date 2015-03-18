@@ -20,10 +20,11 @@ return {
   UnLimited_Normal      = 20,
   UnLimited_Countdown   = 21,
   --
-  clear = 1,
-  retry = 2,
-  score = 3,
-  story = 4,
+  clear     = 1,
+  retry     = 2,
+  score     = 3,
+  story     = 4,
+  quicksave = 5,
   --
   OneShotClearStageNum  = 18,
   

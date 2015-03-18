@@ -136,7 +136,6 @@ SpriteText2& SpriteText2::changeText(std::string const& new_text)
 
             //when debug text nodes un-comment this:
             //letter_node_[i]->setDebugDataVisible(EDS_BBOX);
-            printf("SpriteText2: changeText totally new string\n");
         }
     } else { // when the length of the SpriteText2 didn't change, which is most what happens with this class' use case
         text_ = new_text;
@@ -300,10 +299,6 @@ int SpriteText2::getWidth() const {
     for( size_t i = 0; i < text_.size(); ++i ) {
         res += getCharWidthByIndex(i);
     }
-
-    printf("\n\n\n Text is %s \n", text_.c_str());
-    printf("    Width is %d\n\n\n\n", res);
-
     return res;
 }
 

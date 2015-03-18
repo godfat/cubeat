@@ -69,6 +69,10 @@ player1: {
 
     #how many ms between a single warning (alarm) sound.
     warning_gap: 1600,
+    
+    # ABOVE 'warning_gap' IS CURRENTLY DEPRECATED AS OF 2015. This is proper second-based time counter setting 
+    # for determine how many seconds before you are dead
+    max_warning_count: 10,
 
     #damage_factor
     damage_factor: 1.0,
@@ -124,6 +128,7 @@ player2: {
     cube_dropping_duration: 700,
     use_broken_as_garbage: 1,
     warning_gap: 1600,
+    max_warning_count: 10,
     damage_factor: 1.0,
     negate_damage_factor: 1.0,
     drop_normal_chance: 15,

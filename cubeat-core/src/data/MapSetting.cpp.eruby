@@ -29,7 +29,7 @@ MapSetting::MapSetting(utils::map_any const& conf):
     dropping_creatable_( static_cast<bool>(conf.I("dropping_creatable")) ),
     garbage_dumpable_( static_cast<bool>(conf.I("garbage_dumpable")) ),
     use_broken_as_garbage_( static_cast<bool>(conf.I("use_broken_as_garbage")) ),
-    preset_( static_cast<bool>(conf.I("preset")) ),
+    preset_( conf.exist("preset") ? static_cast<bool>(conf.I("preset")) : false ),
     tutorial_( conf.exist("tutorial") ? static_cast<bool>(conf.I("tutorial")) : false )
 {
     reset_size();

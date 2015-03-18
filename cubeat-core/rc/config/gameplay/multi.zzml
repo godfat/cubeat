@@ -105,14 +105,16 @@ player1: {
         heat_for_jama: 0.18,
         ability_kind: 7
     },
-
+    
     #currently not controllable or thing that should not be changed:
     cube_sinking_duration: 500,
     warning_check_delay: 100,
     width: 6,
     height: 11,
     dropping_creatable: 1,
-    garbage_dumpable: 1
+    garbage_dumpable: 1,
+    preset: 0, 
+    tutorial: 0
 },
 
 player2: {
@@ -153,7 +155,9 @@ player2: {
     width: 6,
     height: 11,
     dropping_creatable: 1,
-    garbage_dumpable: 1
+    garbage_dumpable: 1,
+    preset: 0, 
+    tutorial: 0
 },
 
 ability_constants: {

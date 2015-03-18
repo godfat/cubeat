@@ -44,6 +44,9 @@ local function choose_character(self)
     local sconf = "stage/jungle"..tostring(config.ch_choose[2])
 
     if data_ and data_.game_mode == 99 then -- Story
+      -- save story quicksave data
+      record.save( demo_game_, parameter.quicksave, {character=config.ch_choose[1], stage=0} )
+      
       local function load_talk_page()
         switch.load_page('talk', nil, data_)
         switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=config.ch_choose[2]} )

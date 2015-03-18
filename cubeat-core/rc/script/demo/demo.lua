@@ -13,6 +13,7 @@ local storyend    = require 'rc/script/ui/demo/storyend/storyend'
 local storyend_config = require 'rc/script/ui/demo/storyend/config'
 local vsend       = require 'rc/script/ui/demo/vsend/vsend'
 local endingcheck = require 'rc/script/ui/demo/endingcheck/endingcheck'
+local record      = require 'rc/script/ui/demo/challenge/record'
 
 -- local tutorial = require 'rc/script/demo/tutorial'
 
@@ -160,6 +161,21 @@ function cleanup(submode)
   
   -- tutorial.cleanup()
   collectgarbage("collect")
+end
+
+-- used by C++ side to check if record is present
+function record_exist(key)
+  local res = record.load_raw(key) 
+  if res then 
+    return true
+  end
+  return false
+end
+
+-- used by C++ side to read from record data
+function get_record(key)
+  local res = record.load_raw(key)    
+  return res
 end
 
 -- This really should just be a temporary solution, a separated menu page should be better

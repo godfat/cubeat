@@ -110,9 +110,9 @@ local function talk_end()
   if data_ and data_.game_mode==99 then
     if data_.game_end then
       if storystage.get_stage()==6 then -- story mode end
-        -- save story character clear data
-        local data = { win='true', character=select_config.ch_choose[1] }
-        record.save(demo_game_, parameter.story, data)
+        -- save story character clear data (remove this code to endingcheck.lua)
+        --local data = { win='true', character=select_config.ch_choose[1] }
+        --record.save(demo_game_, parameter.story, data)
         -- end game
         --demo_game_:leave_and_cleanup()
         switch.load_page('staffroll', {id='storyend'}, {character=select_config.ch_choose[1]})

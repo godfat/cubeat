@@ -7,6 +7,10 @@ local storyend        = require 'rc/script/ui/demo/storyend/storyend'
 local storyend_config = require 'rc/script/ui/demo/storyend/config'
 local challenge       = require 'rc/script/ui/demo/challenge/challenge'
 local vsend   = require 'rc/script/ui/demo/vsend/vsend'
+local select_config = require 'rc/script/ui/demo/select/config'
+local storystage    = require 'rc/script/ui/demo/storyend/config'
+local parameter     = require 'rc/script/ui/demo/challenge/parameter'
+local record        = require 'rc/script/ui/demo/challenge/record'
 
 
 
@@ -52,7 +56,16 @@ local function story_mode_end(demo, submode)
     print('---- endingcheck: story win ----')
     --storyend.show(demo, storyend_config.story_win)
     vsend.show(demo, nil, submode, true)
-    
+    -- save story quicksave data
+    local data = { character=select_config.ch_choose[1], stage=storystage.get_stage() }
+    record.save(demo, parameter.quicksave, data)
+    -- save story character clear data
+    if storystage.get_stage()==6 then
+      print('-------- save story character clear data --------')
+      local data = { win='true', character=select_config.ch_choose[1] }
+      record.save(demo, parameter.story, data)
+    end
+
   -- story lose
   else
     print('---- endingcheck: story lose ----')

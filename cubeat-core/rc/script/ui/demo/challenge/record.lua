@@ -5,6 +5,24 @@ local file        = require 'rc/script/ui/file'
 local save_record_ = {}
 
 ------------------------------------------------------
+
+local function save_raw(key, value)
+  local challenge_record = file.load_data('challenge_record', "rb")
+  if not challenge_record then -- didn't fine record file, create one
+    challenge_record = {}
+  end
+  challenge_record[key] = value
+  file.save_data('challenge_record', challenge_record, "wb")
+end
+
+local function load_raw(key)
+  local challenge_record = file.load_data('challenge_record', "rb")
+  if challenge_record==nil then return nil end
+  
+  return challenge_record[key]
+end
+
+------------------------------------------------------
 -- Save mode clear flag
 save_record_[parameter.clear] = function(demo, data)
   local submode     = data.submode
@@ -17,19 +35,10 @@ save_record_[parameter.clear] = function(demo, data)
   else
     k = 'clear_' .. tostring(submode)
   end
-  
-  local challenge_record = file.load_data('challenge_record', "rb")
 
   -- only when win==true we should save clear flag.
   if win then
-    if challenge_record then -- find record file
-      challenge_record[k] = true
-      file.save_data('challenge_record', challenge_record, "wb")
-    else -- not have record file, create one & save it.
-      challenge_record = {}
-      challenge_record[k] = true
-      file.save_data('challenge_record', challenge_record, "wb")
-    end
+    save_raw(k, true)
   end
 end
 
@@ -43,21 +52,10 @@ save_record_[parameter.retry] = function(demo, data)
 
   local k = 'retry_' .. tostring(puzzle_level)
   
-  local challenge_record = file.load_data('challenge_record', "rb")
-  
   -- only when win==true we should save retry record
-  if win then
-    if challenge_record then -- find record file
-      -- only if there is not have retry record, we should save it.
-      if challenge_record[k]==nil then
-        challenge_record[k] = retry
-        file.save_data('challenge_record', challenge_record, "wb")
-      end
-    else -- not have record file, create one & save it.
-      challenge_record = {}
-      challenge_record[k] = retry
-      file.save_data('challenge_record', challenge_record, "wb")
-    end
+  -- only if there is not have retry record, we should save it.
+  if win and not load_raw(k) then
+    save_raw(k, retry)
   end
 end
 
@@ -71,20 +69,14 @@ save_record_[parameter.score] = function(demo, data)
 
   local k = 'score_' .. tostring(submode)
   
-  local challenge_record = file.load_data('challenge_record', "rb")
-  if challenge_record then -- find record file
-  
-    -- insert score to table
-    if challenge_record[k]==nil then challenge_record[k] = {} end
-    table.insert( challenge_record[k], score )
-    file.save_data('challenge_record', challenge_record, "wb")
-    
-  else -- not have record file, create one & save it.
-    challenge_record = {}
-    challenge_record[k] = {}
-    table.insert( challenge_record[k], score )
-    file.save_data('challenge_record', challenge_record, "wb")
+  local this_score_board = load_raw(k)
+  if not this_score_board then 
+    this_score_board = {}
   end
+  
+  table.insert( this_score_board, score )
+  
+  save_raw(k, this_score_board)
 end
 
 ------------------------------------------------------
@@ -95,25 +87,26 @@ save_record_[parameter.story] = function(demo, data)
   
   local k = 'story_' .. tostring(ch)
   
-  local challenge_record = file.load_data('challenge_record', "rb")
-  if challenge_record then -- find record file
-  
-    if challenge_record[k]==nil then
-      challenge_record[k]=true
-      file.save_data('challenge_record', challenge_record, "wb")
-    end
-    
-  else -- not have record file, create one & save it.
-    challenge_record = {}
-    challenge_record[k]=true
-    file.save_data('challenge_record', challenge_record, "wb")
-  end
+  save_raw(k, true)
 end
 
--- Save statistical data record
+-- Save story mode quicksave record
+save_record_[parameter.quicksave] = function(demo, data)
+  local ch    = data.character
+  local stage = data.stage  -- clear stage
+  
+  local k = 'quicksave'
+  
+  save_raw(k, { ch=ch, stage=stage })
+end
+
+-- Save game stats not related to specific game modes
 save_record_[parameter.stat] = function(demo, key, value)
-  local k = 'stat_' .. tostring(key)
   local challenge_record = file.load_data('challenge_record', "rb")
+
+  local k = 'stat_' .. tostring(key)
+
+  save_raw(k, value)  
 end
 
 ------------------------------------------------------
@@ -159,13 +152,6 @@ local function load(load_type, data)
   end
 end
 
-local function load_raw(str)
-  local challenge_record = file.load_data('challenge_record', "rb")
-  if challenge_record==nil then return nil end
-  
-  return challenge_record[str]
-end
-
 local function print_challenge_record_origin_data()
   local challenge_record = file.load_data('challenge_record', "rb")
   if challenge_record then -- find record file
@@ -183,6 +169,14 @@ local function print_challenge_record_data()
   local challenge_record = file.load_data('challenge_record', "rb")
   if challenge_record then -- find record file
     print("------------ challenge_record data ------------")
+  -- Story QuickSave Info
+    local t = "QuickSave :"
+    if challenge_record["quicksave"] then
+      local ch    = challenge_record["quicksave"]["ch"]
+      local stage = challenge_record["quicksave"]["stage"]
+      t = t .. " ch : " .. tostring(ch) .. " stage : " .. tostring(stage)
+    end
+    print(t .. "\n")
   -- Story Clear Info
     local t = "Story Clear :"
     for i=1,6 do
@@ -266,6 +260,7 @@ end
 return {
   save = save,
   load = load,
+  save_raw = save_raw,
   load_raw = load_raw,
   print_challenge_record_origin_data  = print_challenge_record_origin_data,
   print_challenge_record_data         = print_challenge_record_data,

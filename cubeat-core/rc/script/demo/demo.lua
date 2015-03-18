@@ -165,8 +165,7 @@ end
 
 -- used by C++ side to check if record is present
 function record_exist(key)
-  local res = record.load_raw(key) 
-  if res then 
+  if record.load_raw(key) then 
     return true
   end
   return false
@@ -174,8 +173,18 @@ end
 
 -- used by C++ side to read from record data
 function get_record(key)
-  local res = record.load_raw(key)    
+  local res = record.load_raw(key) 
+  if not res then
+    print("Lua: '"..key.."' doesn't exist in the record.")
+    -- it is very inconvenient for C++ to fetch "other types" OR "bool(false) on failure" 
+    -- so just don't bother.
+  end  
   return res
+end
+
+-- used by C++ side to push data only available to C++ to the Lua side
+function save_record(key, value)
+  record.save_raw(key, value)
 end
 
 -- This really should just be a temporary solution, a separated menu page should be better

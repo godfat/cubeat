@@ -79,7 +79,8 @@ namespace utils {
 
 struct any_type : public boost::any
 {
-    any_type():boost::any(0){}
+    any_type():boost::any(){} // NOTE 2015: SHOULD NOT DEFAULT boost::any to ZERO... the non-existent value
+                              //            when trying to cast to any_cast<int> it will be silently ignored!
 
     template<typename ValueType>
     any_type(ValueType const& value)

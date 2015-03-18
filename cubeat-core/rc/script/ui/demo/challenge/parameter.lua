@@ -24,6 +24,8 @@ return {
   retry = 2,
   score = 3,
   story = 4,
+  stat = 98,
+  achieve = 99,
   --
   OneShotClearStageNum  = 18,
   

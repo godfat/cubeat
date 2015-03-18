@@ -387,9 +387,9 @@ local function init(demo, parent, data)
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
   
   -- for easier test for the ending dialogue
-  storystage.set_stage(6)
-  local story_data = storystage.get_data(select_config.ch_choose[1])
-  select_config.ch_choose[2] = story_data.ch
+  -- storystage.set_stage(6)
+  -- local story_data = storystage.get_data(select_config.ch_choose[1])
+  -- select_config.ch_choose[2] = story_data.ch
   -- end of test
   
   local ch_choose = {}

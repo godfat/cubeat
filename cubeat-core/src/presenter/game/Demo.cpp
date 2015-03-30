@@ -234,17 +234,19 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     min_ = 0, sec_ = 0 ,last_garbage_1p_ = 0, last_garbage_2p_ = 0;
 
     /// Demo hacking for presentation purpose:
-    map0_->score( gameplay_.I("score1") );
-    map0_->set_garbage_amount(gameplay_.I("attack2"));
-    map0_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack1"));
-    map1_->score( gameplay_.I("score2") );
-    map1_->set_garbage_amount(gameplay_.I("attack1"));
-    map1_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack2"));
-    int faketime = gameplay_.I("time");
-    min_ = faketime / 60; sec_ = faketime % 60;
-    std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
-    std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
-    ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
+    if( gameplay_.exist("score1") ) map0_->score( gameplay_.I("score1") );
+    if( gameplay_.exist("attack2") ) map0_->set_garbage_amount(gameplay_.I("attack2"));
+    if( gameplay_.exist("attack1") ) map0_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack1"));
+    if( gameplay_.exist("score2") ) map1_->score( gameplay_.I("score2") );
+    if( gameplay_.exist("attack1") ) map1_->set_garbage_amount(gameplay_.I("attack1"));
+    if( gameplay_.exist("attack2") ) map1_->new_garbage_event()(std::vector< std::tr1::tuple<int, int, int> >(), gameplay_.I("attack2"));
+    if( gameplay_.exist("time") ) {
+        int faketime = gameplay_.I("time");
+        min_ = faketime / 60; sec_ = faketime % 60;
+        std::string sec = to_s(sec_); if( sec.size() < 2 ) sec = "0" + sec;
+        std::string min = to_s(min_); if( min.size() < 2 ) min = "0" + min;
+        ui_layout_->getSpriteText("time").changeText( min + ":" + sec );
+    }
     /// ////////////////////////////
 
     if( game_mode_ == GM_TUT ) {
@@ -1573,5 +1575,19 @@ void Demo::cycle()
 
     // temp: hack, just for test
     music_state_old_ = music_state_;
+}
+
+
+
+
+
+// --- Stats and Achievements tracking (end game tracking)
+
+// Where do we put "in-game" tracking? Likely when you achieve a chain of 5 in game,
+// game should instantaenously tell you about it. Not when end game for that data.
+
+void Demo::update_stats_and_achievements()
+{
+    //Something::i().update_stat("stat_highest_chain", highest_chain_);
 }
 

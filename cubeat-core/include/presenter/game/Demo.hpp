@@ -102,6 +102,10 @@ public:
     void eventual_resume();
     void end_sequence1(bool const& ending_theme = false);
 
+    void update_stats_and_achievements_startgame();
+    void update_stats_and_achievements_byframe();
+    void update_stats_and_achievements_endgame();
+
     view::pScene get_ui_scene();
     view::pScene get_game_scene();
 

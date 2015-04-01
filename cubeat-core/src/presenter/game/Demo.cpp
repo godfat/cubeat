@@ -86,6 +86,11 @@ pDemo Demo::init()
 
     audio::Sound::i().playBGM_AB("title_a.ogg", "title_b.ogg");
 
+    // test: reset achievement and stats on game start every time to test the UI effects and debug
+    script::Lua::call(L_, "save_record", "stat_highest_chain", 0);
+    script::Lua::call(L_, "save_record", "achieve_highest_chain_4", false);
+    script::Lua::call(L_, "save_record", "achieve_highest_chain_6", false);
+
     return shared_from_this();
 }
 
@@ -709,6 +714,7 @@ void Demo::starting_effect(bool const& inplace)
             vec2( - Conf::i().SCREEN_W() / 2, - Conf::i().SCREEN_H()/2 ),
             950u, 0, cb);
     }
+
     script::Lua::call(L_, "slide_out", inplace);
 }
 
@@ -815,6 +821,8 @@ void Demo::game_start()
         if( game_mode_ == GM_CVC || game_mode_ == GM_LOG )
             player0_->startThinking();
     }
+
+    update_stats_and_achievements_startgame();
 
     game_state_ = GS_STARTED;
 }
@@ -1211,6 +1219,8 @@ void Demo::end(pMap lose_map)
     if( game_mode_ != GM_SINGLE )
         lose_map->ending_effect();
 
+    update_stats_and_achievements_endgame();
+
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 800);
 }
@@ -1557,6 +1567,10 @@ void Demo::cycle()
             script::Lua::call(L_, "check_ending_condition_by_frame", submode_);
         }
 
+        if( game_state_== GS_STARTED && !btn_pause_ ) {
+            update_stats_and_achievements_byframe();
+        }
+
         t4 = clock();
     }
     if( stage_ ) {
@@ -1567,14 +1581,15 @@ void Demo::cycle()
     t6 = clock();
     ui_scene_->redraw();
 
+    // temp: hack, just for test
+    music_state_old_ = music_state_;
+
     t7 = clock();
     if( t7 - t0 > 14 ) {
         //printf(" -- Demo::profiler: %ld %ld %ld %ld %ld\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4);
         printf(" -- Demo: ui1(%ld) maps(%ld) music(%ld) player(%ld) stage(%ld) scene(%ld) ui2(%ld)\n", t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5, t7-t6);
     }
 
-    // temp: hack, just for test
-    music_state_old_ = music_state_;
 }
 
 
@@ -1586,8 +1601,24 @@ void Demo::cycle()
 // Where do we put "in-game" tracking? Likely when you achieve a chain of 5 in game,
 // game should instantaenously tell you about it. Not when end game for that data.
 
-void Demo::update_stats_and_achievements()
+void Demo::update_stats_and_achievements_endgame()
 {
-    //Something::i().update_stat("stat_highest_chain", highest_chain_);
+}
+
+void Demo::update_stats_and_achievements_byframe()
+{
+    if( statistics_.exist("stat_highest_chain") && map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
+        statistics_["stat_highest_chain"] = map0_->highest_chain();
+        script::Lua::call(L_, "save_record_and_achievement", "stat_highest_chain", map0_->highest_chain());
+    }
+}
+
+void Demo::update_stats_and_achievements_startgame()
+{
+    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_chain") ) {
+        statistics_["stat_highest_chain"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_chain");
+    } else {
+        statistics_["stat_highest_chain"] = 0;
+    }
 }
 

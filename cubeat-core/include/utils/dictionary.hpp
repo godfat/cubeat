@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 //#include <utility>
+#include <cstdio>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -183,22 +184,106 @@ public:
     inline std::string& S(int         const& i) { return boost::any_cast<std::string&>(dict_[i]); }
     inline vector_any&  V(int         const& i) { return boost::any_cast<vector_any&> (dict_[i]); }
     inline map_any&     M(int         const& i) { return boost::any_cast<map_any&>    (dict_[i]); }
-    inline int&         I(std::string const& i) { return boost::any_cast<int&>        (dict_[i]); }
-    inline double&      F(std::string const& i) { return boost::any_cast<double&>     (dict_[i]); }
-    inline std::string& S(std::string const& i) { return boost::any_cast<std::string&>(dict_[i]); }
-    inline vector_any&  V(std::string const& i) { return boost::any_cast<vector_any&> (dict_[i]); }
-    inline map_any&     M(std::string const& i) { return boost::any_cast<map_any&>    (dict_[i]); }
+//    inline int&         I(std::string const& i) { return boost::any_cast<int&>        (dict_[i]); }
+//    inline double&      F(std::string const& i) { return boost::any_cast<double&>     (dict_[i]); }
+//    inline std::string& S(std::string const& i) { return boost::any_cast<std::string&>(dict_[i]); }
+//    inline vector_any&  V(std::string const& i) { return boost::any_cast<vector_any&> (dict_[i]); }
+//    inline map_any&     M(std::string const& i) { return boost::any_cast<map_any&>    (dict_[i]); }
+
+// Dictionary debug:
+    inline int&         I(std::string const& i) {
+        try {
+            return boost::any_cast<int&>        (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (int return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline double&      F(std::string const& i) {
+        try {
+            return boost::any_cast<double&>     (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (double return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline std::string& S(std::string const& i) {
+        try {
+            return boost::any_cast<std::string&>(dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (string return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline vector_any&  V(std::string const& i) {
+        try {
+            return boost::any_cast<vector_any&> (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (vector return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline map_any&     M(std::string const& i) {
+        try {
+            return boost::any_cast<map_any&>    (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (map return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
 
     inline int const &         I(int         const& i) const { return boost::any_cast<int const&>        (dict_[i]); }
     inline double const &      F(int         const& i) const { return boost::any_cast<double const&>     (dict_[i]); }
     inline std::string const & S(int         const& i) const { return boost::any_cast<std::string const&>(dict_[i]); }
     inline vector_any const &  V(int         const& i) const { return boost::any_cast<vector_any const&> (dict_[i]); }
     inline map_any const &     M(int         const& i) const { return boost::any_cast<map_any const&>    (dict_[i]); }
-    inline int const &         I(std::string const& i) const { return boost::any_cast<int const&>        (dict_[i]); }
-    inline double const &      F(std::string const& i) const { return boost::any_cast<double const&>     (dict_[i]); }
-    inline std::string const & S(std::string const& i) const { return boost::any_cast<std::string const&>(dict_[i]); }
-    inline vector_any const &  V(std::string const& i) const { return boost::any_cast<vector_any const&> (dict_[i]); }
-    inline map_any const &     M(std::string const& i) const { return boost::any_cast<map_any const&>    (dict_[i]); }
+//    inline int const &         I(std::string const& i) const { return boost::any_cast<int const&>        (dict_[i]); }
+//    inline double const &      F(std::string const& i) const { return boost::any_cast<double const&>     (dict_[i]); }
+//    inline std::string const & S(std::string const& i) const { return boost::any_cast<std::string const&>(dict_[i]); }
+//    inline vector_any const &  V(std::string const& i) const { return boost::any_cast<vector_any const&> (dict_[i]); }
+//    inline map_any const &     M(std::string const& i) const { return boost::any_cast<map_any const&>    (dict_[i]); }
+
+// Dictionary debug:
+    inline int const &         I(std::string const& i) const {
+        try {
+            return boost::any_cast<int const&>        (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (int return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline double const &      F(std::string const& i) const {
+        try {
+            return boost::any_cast<double const&>     (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (double return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline std::string const & S(std::string const& i) const {
+        try {
+            return boost::any_cast<std::string const&>(dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (string return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline vector_any const &  V(std::string const& i) const {
+        try {
+            return boost::any_cast<vector_any const&> (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (vector return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
+    inline map_any const &     M(std::string const& i) const {
+        try {
+            return boost::any_cast<map_any const&>    (dict_[i]);
+        } catch( boost::bad_any_cast& ) {
+            printf("\n problematic key in dictionary (map return value expected): %s \n", i.c_str());
+            exit(1);
+        }
+    }
 
     template<class T>
     inline T& at(int const& i) { return boost::any_cast<T&>(dict_[i]); }

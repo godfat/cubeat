@@ -187,6 +187,8 @@ protected:
     int game_state_;
     bool puzzle_started_;
 
+    utils::map_any statistics_;
+
     // temp: hack, just for test
     bool music_state_, music_state_old_;
     pDummy timer_music_state_;

@@ -13,16 +13,17 @@ local title_
 local your_score_
 local btn_retry_
 local btn_quit_
+local is_created_ = false
 
 local screen_w_ = C.Get_SCREEN_W()
 local screen_h_ = C.Get_SCREEN_H()
 
 local function set_visible(b)
-  board_:set_visible(b)
-  title_:set_visible(b)
-  your_score_:set_visible(b)
-  btn_retry_:set_visible(b)
-  btn_quit_:set_visible(b)
+  if board_ then board_:set_visible(b) end
+  if title_ then title_:set_visible(b) end
+  if your_score_ then your_score_:set_visible(b) end
+  if btn_retry_ then btn_retry_:set_visible(b) end
+  if btn_quit_ then btn_quit_:set_visible(b) end
   for k,v in pairs(score_list_) do
     if v then v:set_visible(b) end
   end
@@ -32,33 +33,37 @@ local function set_visible(b)
 end
 
 local function create_score_list(scene)
-  local center_x = screen_w_/2
-  local center_y = screen_h_/2
-  
-  board_ = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=600, depth=-100, center=true, alpha=128 }
-  title_      = ui.new_text { parent=scene, x=center_x    , y=center_y-260, size=32, title='SCORE' , depth=-110, center=true }
-  title_:set_scale(1.5)
-  your_score_ = ui.new_text { parent=scene, x=center_x    , y=center_y-210, size=32, title='score' , depth=-110, center=true }
-  btn_retry_  = ui.new_text { parent=scene, x=center_x-80 , y=center_y+260, size=32, title='Retry' , depth=-110, center=true }
-  btn_quit_   = ui.new_text { parent=scene, x=center_x+80 , y=center_y+260, size=32, title='Quit' , depth=-110, center=true }
-  board_:set_color(0,0,0)
-  set_visible(false)
+  if is_created_ == false then
+    local center_x = screen_w_/2
+    local center_y = screen_h_/2
+    
+    board_ = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=600, depth=-100, center=true, alpha=128 }
+    title_      = ui.new_text { parent=scene, x=center_x    , y=center_y-260, size=32, title='SCORE' , depth=-110, center=true }
+    title_:set_scale(1.5)
+    --your_score_ = ui.new_text { parent=scene, x=center_x    , y=center_y-210, size=32, title='score' , depth=-110, center=true }
+    btn_retry_  = ui.new_text { parent=scene, x=center_x-80 , y=center_y+260, size=32, title='Retry' , depth=-110, center=true }
+    btn_quit_   = ui.new_text { parent=scene, x=center_x+80 , y=center_y+260, size=32, title='Quit' , depth=-110, center=true }
+    board_:set_color(0,0,0)
+    set_visible(false)
+    
+    is_created_ = true
+  end
 end
 
-local function remove_score_list()
-  if board_ then board_:remove() end
-  if title_ then title_:remove() end
-  if your_score_ then your_score_:remove() end
-  if btn_retry_ then btn_retry_:remove() end
-  if btn_quit_ then btn_quit_:remove() end
-  for k,v in pairs(score_list_) do
-    if v then v:remove() end
-    score_list_[k]=nil
-  end
-  for k,v in pairs(score_title_) do
-    if v then v:remove() end
-    score_title_[k]=nil
-  end
+local function remove_score()
+    --if board_ then board_:remove() end
+    --if title_ then title_:remove() end
+    if your_score_ then your_score_:remove() end
+    --if btn_retry_ then btn_retry_:remove() end
+    --if btn_quit_ then btn_quit_:remove() end
+    for k,v in pairs(score_list_) do
+      if v then v:remove() end
+      score_list_[k]=nil
+    end
+    for k,v in pairs(score_title_) do
+      if v then v:remove() end
+      score_title_[k]=nil
+    end
 end
 
 local function set_score(t, cur_score, scene)
@@ -66,6 +71,7 @@ local function set_score(t, cur_score, scene)
   local center_y = screen_h_/2
   
   -- set current score
+  your_score_ = ui.new_text { parent=scene, x=center_x    , y=center_y-210, size=32, title='score' , depth=-110, center=true }
   your_score_:change_text(tostring(cur_score))
   
   -- sort socre record
@@ -92,8 +98,8 @@ end
 return{
   set_visible       = set_visible,
   create_score_list = create_score_list,
-  remove_score_list = remove_score_list,
   set_score         = set_score,
+  remove_score      = remove_score,
   --
   on_press_retry    = on_press_retry,
   on_press_quit     = on_press_quit,

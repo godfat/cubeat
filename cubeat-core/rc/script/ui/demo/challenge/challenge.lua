@@ -259,7 +259,7 @@ local function cleanup()
   set_puzzle_level(2)
   set_level_unlimited(false)
   puzzle_retry_ = 0
-  scorelist.remove_score_list()
+  scorelist.remove_score()
 end
 
 

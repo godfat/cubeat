@@ -24,6 +24,8 @@ local scene_
 local refresh_btn_
 local staffroll_btn_
 
+local achievement_ui_text_
+
 --local win_ = false -- win state for SinglePlayer modes.
 --local puzzle_level_ = 2
 
@@ -84,8 +86,7 @@ function init(demo)
   switch.load_page('startscreen')
     
   -- test: add refresh button
-  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=850, y=670, size=32, depth=-1000 }
-  refresh_btn_:set_scale(1.2)
+  refresh_btn_ = ui.new_text{ parent = scene_, title='refresh', x=800, y=0, size=32, depth=-1000 }
   local filelist = require 'rc/script/ui/demo/refresh/filelist'
   local refresh  = require 'rc/script/ui/demo/refresh/refresh'
   refresh_btn_:on_press(function(self)
@@ -97,8 +98,7 @@ function init(demo)
     --demo_:hide_character_animations()
   end)
   -- test: switch to staffroll page
-  staffroll_btn_ = ui.new_text{ parent = scene_, title='staffroll', x=850, y=630, size=32, depth=-1000 }
-  staffroll_btn_:set_scale(1.2)
+  staffroll_btn_ = ui.new_text{ parent = scene_, title='staffroll', x=1000, y=0, size=32, depth=-1000 }
   staffroll_btn_:on_press(function(self)
     switch.load_page('staffroll', {id='storyend'}, {character=1})
   end, C.Input_get_trig1(C.Input_get_input1())) -- only player1 can call staffroll
@@ -112,6 +112,11 @@ function init(demo)
   recordboard.create_record_board(scene_)
   storyend.create(scene_)
   vsend.create(scene_)
+  
+  -- test for achievement pop-up
+  achievement_ui_text_ = ui.new_text{ parent = scene_, title = '_achievement_string_', x=640, y=620, size=32, depth=-1000, center = true }
+  achievement_ui_text_:set_scale(1.2)
+  achievement_ui_text_:set_visible(false)
   
   -- print challenge record data
   local record = require 'rc/script/ui/demo/challenge/record'
@@ -185,6 +190,41 @@ end
 -- used by C++ side to push data only available to C++ to the Lua side
 function save_record(key, value)
   record.save_raw(key, value)
+end
+
+local achievement_string = {
+  highest_chain_4 = "Chain level 4 achieved!",
+  highest_chain_6 = "Chain level 6 achieved!",
+}
+
+local function pop_achievement_ui(key)
+  if achievement_string[key] then
+    achievement_ui_text_:change_text( achievement_string[key] )
+    achievement_ui_text_:set_visible(true)
+    achievement_ui_text_:tween("OElastic", "Scale", ffi.new("v3", 0.1, 0.1, 0.1), ffi.new("v3", 1.2, 1.2, 1.2), 500)
+    event.on_timer("ui", function()
+      achievement_ui_text_:set_visible(false)
+    end, 2000)
+  end
+end
+
+local function update_achievement(key, value)
+  if key == "stat_highest_chain" then
+    if value >= 4 and not record.load_raw("achieve_highest_chain_4") then
+      record.save_raw("achieve_highest_chain_4", true)
+      pop_achievement_ui("highest_chain_4")
+    end
+    if value >= 6 and not record.load_raw("achieve_highest_chain_6") then
+      record.save_raw("achieve_highest_chain_6", true)
+      pop_achievement_ui("highest_chain_6")
+    end
+  end
+end
+
+-- used by C++ side to push data only available to C++ to the Lua side AND also tries to update achievements
+function save_record_and_achievement(key, value)
+  record.save_raw(key, value)
+  update_achievement(key, value) 
 end
 
 -- This really should just be a temporary solution, a separated menu page should be better

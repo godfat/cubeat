@@ -641,6 +641,11 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 match_counter_ += 1;
 //                (*i)->step_one();
             }
+
+            //log highest chain
+            if( (*i)->step() > highest_chain_ ) {
+                highest_chain_ = (*i)->step();
+            }
         }
         (*i)->clear_indices();
 
@@ -658,12 +663,6 @@ void <% debug_hook 'Map::update_chains' do %>(){
                     bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, (*i), id()),
                     o,//self(), Important, throw_garbage relies on the life time of presenter::Map, not model::Map.
                     1000);
-            }
-            //log highest chain
-            //because right after last_step_amounts() is confirmed in the last if-block, chain will call step_one()
-            //to prepare for the next chain. if we want to log the "highest chain here", we have to manually minus 1
-            if( (*i)->step() - 1 > highest_chain_ ) {
-                highest_chain_ = (*i)->step() - 1;
             }
 
             for( std::map< std::pair<wpChain, int>, pTimerDummy >::iterator it = chain_timer_handles_.begin(), iend = chain_timer_handles_.end();

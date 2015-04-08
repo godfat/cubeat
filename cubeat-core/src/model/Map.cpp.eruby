@@ -652,13 +652,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
             }
 
             DyingCubesData current_chain_step_group = dying_cubes_position_[ chain_step_pair ];
-            if( current_chain_step_group.size() > highest_amount_chain_step_ ) {
-                highest_amount_chain_step_ = current_chain_step_group.size();
-                printf(" \n\n\n\n HIGHEST AMOUNT STEP update: %d \n\n\n\n\n", highest_amount_chain_step_ );
-            }
 
             int color_bucket[data::COLOR_MAX] = {0};
             int color_count = 0;
+            int highest_single_color_amount_step = 0;
 
             for( size_t n = 0; n < current_chain_step_group.size() ; ++n ) {
                 pCube c = cubes_[ get<0>(current_chain_step_group[n]) ][ get<1>(current_chain_step_group[n]) ];
@@ -672,6 +669,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
             for( int m = 0; m < data::COLOR_MAX; ++m ) {
                 if( color_bucket[m] > 0 ) {
                     color_count += 1;
+                }
+                if( color_bucket[m] > highest_single_color_amount_step_ ) {
+                    highest_single_color_amount_step_ = color_bucket[m];
+                    printf(" \n\n\n\n HIGHEST SINGLE COLOR AMOUNT STEP update: %d \n\n\n\n\n", highest_single_color_amount_step_ );
                 }
             }
 
@@ -1050,6 +1051,9 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
 void Map::reset_record() {
     match_counter_ = 0;
     highest_chain_ = 0;
+    highest_color_count_ = 0;
+    highest_single_color_amount_step_ = 0;
+    total_cubes_cleared_ = 0;
 
     for( int i = 0; i < data::COLOR_MAX; ++i )
         cubes_cleared_[i] = 0;
@@ -1149,8 +1153,8 @@ int Map::highest_color_count() const {
     return highest_color_count_;
 }
 
-int Map::highest_amount_chain_step() const {
-    return highest_amount_chain_step_;
+int Map::highest_single_color_amount_step() const {
+    return highest_single_color_amount_step_;
 }
 
 int const* Map::cubes_cleared_data() const {

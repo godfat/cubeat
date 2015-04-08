@@ -642,10 +642,44 @@ void <% debug_hook 'Map::update_chains' do %>(){
 //                (*i)->step_one();
             }
 
-            //log highest chain
+            /// logging chain data
+
+            using std::tr1::get;
+            typedef std::vector< std::tr1::tuple<int, int, int> > DyingCubesData;
+
             if( (*i)->step() > highest_chain_ ) {
                 highest_chain_ = (*i)->step();
             }
+
+            DyingCubesData current_chain_step_group = dying_cubes_position_[ chain_step_pair ];
+            if( current_chain_step_group.size() > highest_amount_chain_step_ ) {
+                highest_amount_chain_step_ = current_chain_step_group.size();
+                printf(" \n\n\n\n HIGHEST AMOUNT STEP update: %d \n\n\n\n\n", highest_amount_chain_step_ );
+            }
+
+            int color_bucket[data::COLOR_MAX] = {0};
+            int color_count = 0;
+
+            for( size_t n = 0; n < current_chain_step_group.size() ; ++n ) {
+                pCube c = cubes_[ get<0>(current_chain_step_group[n]) ][ get<1>(current_chain_step_group[n]) ];
+                if( c ) {
+                    color_bucket[ c->color_id() ] += 1;
+                } else {
+                    printf(" \n\n YOU ARE FUCKED! \n\n\n");
+                }
+            }
+
+            for( int m = 0; m < data::COLOR_MAX; ++m ) {
+                if( color_bucket[m] > 0 ) {
+                    color_count += 1;
+                }
+            }
+
+            if( color_count > highest_color_count_ ) {
+                highest_color_count_ = color_count;
+                printf(" \n\n\n\n HIGHEST COLOR COUNT update: %d \n\n\n\n\n", highest_color_count_ );
+            }
+
         }
         (*i)->clear_indices();
 
@@ -1109,6 +1143,14 @@ int Map::match_count() const {
 
 int Map::highest_chain() const {
     return highest_chain_;
+}
+
+int Map::highest_color_count() const {
+    return highest_color_count_;
+}
+
+int Map::highest_amount_chain_step() const {
+    return highest_amount_chain_step_;
 }
 
 int const* Map::cubes_cleared_data() const {

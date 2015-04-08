@@ -45,7 +45,9 @@ public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
         cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), match_counter_(0),
-        highest_chain_(0), one_fadings_per_cycle_(0)
+        highest_chain_(0), highest_color_count_(0), highest_amount_chain_step_(0),
+        one_fadings_per_cycle_(0), dropping_creatable_(false), garbage_dumpable_(false),
+        column_full_num_(0)
     {}
     Map& init_cubes();
     Map& init_cubes(color_map_type const&);
@@ -82,6 +84,8 @@ public:
     int  column_full_num() const;
     int  match_count() const;
     int  highest_chain() const;
+    int  highest_color_count() const;
+    int  highest_amount_chain_step() const;
     int const* cubes_cleared_data() const;
     int const* cubes_matched_data() const;
     bool all_empty() const;
@@ -152,6 +156,8 @@ private:
     int cubes_cleared_[data::COLOR_MAX], cubes_matched_[data::COLOR_MAX], total_cubes_cleared_;
     int match_counter_;
     int highest_chain_;
+    int highest_color_count_;
+    int highest_amount_chain_step_;
     int one_fadings_per_cycle_;
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;

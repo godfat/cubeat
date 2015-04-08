@@ -3,6 +3,7 @@ local file        = require 'rc/script/ui/file'
 local record      = require 'rc/script/ui/demo/challenge/record'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local scorelist   = require 'rc/script/ui/demo/challenge/scorelist'
+local achievement_text = require 'rc/script/ui/demo/challenge/achievement_text'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
@@ -27,6 +28,7 @@ end
 local function get_level_unlimited()
   return level_unlimited_
 end
+
 
 
 ------------------------------------------------------
@@ -262,6 +264,28 @@ local function cleanup()
   scorelist.remove_score()
 end
 
+------------------------------------------------------
+-- Achievement
+------------------------------------------------------
+
+-- Create achievement text
+local function create_achievement_text(scene)
+  achievement_text.create(scene)
+end
+
+-- Update achievement
+local function update_achievement(key, value)
+  if key == "stat_highest_chain" then
+    if value >= 4 and not record.load_raw("achieve_highest_chain_4") then
+      record.save_raw("achieve_highest_chain_4", true)
+      achievement_text.pop_achievement_ui("highest_chain_4")
+    end
+    if value >= 6 and not record.load_raw("achieve_highest_chain_6") then
+      record.save_raw("achieve_highest_chain_6", true)
+      achievement_text.pop_achievement_ui("highest_chain_6")
+    end
+  end
+end
 
 --
 return {
@@ -275,4 +299,7 @@ return {
   check_ending_condition_by_frame = check_ending_condition_by_frame,
   ending                          = ending,
   cleanup                         = cleanup,
+  --
+  create_achievement_text         = create_achievement_text,
+  update_achievement              = update_achievement,
 }

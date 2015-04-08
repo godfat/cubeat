@@ -1598,9 +1598,6 @@ void Demo::cycle()
 
 // --- Stats and Achievements tracking (end game tracking)
 
-// Where do we put "in-game" tracking? Likely when you achieve a chain of 5 in game,
-// game should instantaenously tell you about it. Not when end game for that data.
-
 void Demo::update_stats_and_achievements_endgame()
 {
 }

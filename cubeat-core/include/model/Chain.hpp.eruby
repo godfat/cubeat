@@ -15,7 +15,7 @@ class Chain{
 public:
     typedef std::tr1::shared_ptr<Chain> pointer_type;
     typedef std::tr1::weak_ptr<Chain> wpointer_type;
-    static pointer_type create(int chain_amounts = 3){ return utils::ObjectPool<Chain>::create(chain_amounts); }
+    static pointer_type create(){ return utils::ObjectPool<Chain>::create(); }
     static pointer_type create(pointer_type const& that){ return utils::ObjectPool<Chain>::create(that); }
 
 public:
@@ -96,11 +96,9 @@ public:
 
     void debugging_print();
 
-    Chain(int chain_amounts):
-        chain_amounts_(chain_amounts) {}
+    Chain() {}
 
     Chain(pointer_type const& that):
-        chain_amounts_(that->chain_amounts_),
         chain_step_(that->chain_step_),
         power_step_(that->power_step_),
         step_indices_(that->step_indices_),
@@ -109,7 +107,6 @@ public:
     {}
 
 private:
-    int  chain_amounts_;
     std::vector<int> chain_step_;
     std::vector<int> power_step_;
     std::set<int>    step_indices_;

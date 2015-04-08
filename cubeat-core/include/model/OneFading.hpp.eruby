@@ -24,7 +24,8 @@ public:
 public:
     // begin only used by Map::next_state / next_step
     <% debug_hook 'OneFadingT' do %>(cube_list_type const& list, bool const& extending)
-        : list_(list), extending_(extending), extending_at_step_(0) {<%end%>}
+        : list_(list), extending_(extending), extending_at_step_(0)
+    {<%end%>}
     typename cube_list_type::size_type size() const{ return list_.size(); }
     typename cube_list_type::iterator begin() const{ return list_.begin(); }
     typename cube_list_type::iterator end()   const{ return list_.end(); }
@@ -117,7 +118,7 @@ public:
 
 private:
     pChain get_the_chain(MapType& map, pChain existing_chain){
-        pChain chain = Chain::create(map.ms()->chain_amounts());
+        pChain chain = Chain::create();
 
         //this for loop will get the first Chain it finds in this column or row
         for(typename cube_list_type::iterator i=list_.begin(), iend=list_.end();

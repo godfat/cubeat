@@ -170,6 +170,7 @@ Mt_SpriteText.set_blue            = C.SpriteText_set_blue
 Mt_SpriteText.set_alpha           = C.SpriteText_set_alpha
 Mt_SpriteText.set_visible         = C.SpriteText_set_visible
 Mt_SpriteText.set_center_aligned  = C.SpriteText_set_center_aligned
+Mt_SpriteText.set_pickable        = C.SpriteText_set_pickable
 
 Mt_SpriteText.remove              = function(p)
   remove_callbacks(p)

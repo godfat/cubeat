@@ -62,6 +62,7 @@ APIEXPORT void      SpriteText_set_blue(pSpriteText*, int);
 APIEXPORT void      SpriteText_set_alpha(pSpriteText*, int);
 APIEXPORT void      SpriteText_set_visible(pSpriteText*, bool);
 APIEXPORT void      SpriteText_set_center_aligned(pSpriteText*, bool);
+APIEXPORT void      SpriteText_set_pickable(pSpriteText*, bool);
 
 APIEXPORT pSprite*     Sprite_create(char const*, pObject*, int, int, bool);
 APIEXPORT pSpriteText* SpriteText_create(char const*, pObject*, char const*, int, bool, int, int, int);

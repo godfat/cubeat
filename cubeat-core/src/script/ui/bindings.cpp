@@ -239,6 +239,10 @@ void SpriteText_set_center_aligned(pSpriteText* self, bool center) {
     (*self)->setCenterAligned(center);
 }
 
+void SpriteText_set_pickable(pSpriteText* self, bool flag) {
+    (*self)->setPickable(false);
+}
+
 pSprite* Sprite_create(char const* name, pObject* parent, int w, int h, bool center) {
     pSprite* sp = new pSprite;
     *sp = Sprite::create(name, *parent, w, h, center);

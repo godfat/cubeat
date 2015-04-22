@@ -3,7 +3,7 @@ local file        = require 'rc/script/ui/file'
 local record      = require 'rc/script/ui/demo/challenge/record'
 local recordboard = require 'rc/script/ui/demo/challenge/recordboard'
 local scorelist   = require 'rc/script/ui/demo/challenge/scorelist'
-local achievement_text = require 'rc/script/ui/demo/challenge/achievement_text'
+local achievement_text = require 'rc/script/ui/demo/challenge/achievement_popup'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
@@ -284,6 +284,14 @@ local function update_achievement(key, value)
       record.save_raw("achieve_highest_chain_6", true)
       achievement_text.pop_achievement_ui("highest_chain_6")
     end
+  end
+  
+  if key == "achieve_garbage_left_60" and value == true then
+    achievement_text.pop_achievement_ui("garbage_left_60")
+  end
+  
+  if key == "achieve_two_mice_pvp" and value == true then
+    achievement_text.pop_achievement_ui("two_mice_versus")
   end
 end
 

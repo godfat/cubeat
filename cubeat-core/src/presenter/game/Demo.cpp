@@ -86,10 +86,7 @@ pDemo Demo::init()
 
     audio::Sound::i().playBGM_AB("title_a.ogg", "title_b.ogg");
 
-    // test: reset achievement and stats on game start every time to test the UI effects and debug
-    script::Lua::call(L_, "save_record", "stat_highest_chain", 0);
-    script::Lua::call(L_, "save_record", "achieve_highest_chain_4", false);
-    script::Lua::call(L_, "save_record", "achieve_highest_chain_6", false);
+    load_stats_and_achievements_into_memory();
 
     return shared_from_this();
 }
@@ -1600,22 +1597,71 @@ void Demo::cycle()
 
 void Demo::update_stats_and_achievements_endgame()
 {
+    printf(" \n\n ATTACK MADE PER SESSION 1p: %d\n", map0_->attack_made_per_session());
+    printf(" ATTACK MADE PER SESSION 2p: %d\n\n\n", map1_->attack_made_per_session());
+
+    int cubes_exploded_per_session_1p = 0;
+    int cubes_exploded_per_session_2p = 0;
+    for( int i = 0; i < data::COLOR_MAX; ++i ) {
+        cubes_exploded_per_session_1p += map0_->cubes_cleared_data()[i];
+        cubes_exploded_per_session_2p += map1_->cubes_cleared_data()[i];
+    }
+    int effective_clicks_1p = cubes_exploded_per_session_1p + map0_->cubes_restored();
+    int effective_clicks_2p = cubes_exploded_per_session_2p + map1_->cubes_restored();
+
+    printf(" 1p effective clicks: %d\n", effective_clicks_1p);
+    printf(" 2p effective clicks: %d\n", effective_clicks_2p);
+
+    printf(" 1p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / effective_clicks_1p);
+    printf(" 2p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / effective_clicks_2p);
+
+    double time_in_seconds = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
+
+    printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
+    printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
 }
 
 void Demo::update_stats_and_achievements_byframe()
 {
-    if( statistics_.exist("stat_highest_chain") && map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
+    if( map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
         statistics_["stat_highest_chain"] = map0_->highest_chain();
         script::Lua::call(L_, "save_record_and_achievement", "stat_highest_chain", map0_->highest_chain());
+    }
+
+    if( map1_->garbage_left() >= 60 && statistics_.I("achieve_garbage_left_60") == 0 ) { // note this is map1_
+        statistics_["achieve_garbage_left_60"] = 1;
+        script::Lua::call(L_, "save_record_and_achievement", "achieve_garbage_left_60", true);
     }
 }
 
 void Demo::update_stats_and_achievements_startgame()
 {
+    if( game_mode_ == GM_PVP ) {
+        if ( ctrl::InputMgr::i().manyMouseCount() > 1 && statistics_.I("achieve_two_mice_pvp") == 0 ) {
+            statistics_["achieve_two_mice_pvp"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_two_mice_pvp", true);
+        }
+    }
+}
+
+void Demo::load_stats_and_achievements_into_memory()
+{
     if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_chain") ) {
         statistics_["stat_highest_chain"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_chain");
     } else {
         statistics_["stat_highest_chain"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_garbage_left_60") ) {
+        statistics_["achieve_garbage_left_60"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_garbage_left_60") );
+    } else {
+        statistics_["achieve_garbage_left_60"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_two_mice_pvp") ) {
+        statistics_["achieve_two_mice_pvp"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_two_mice_pvp") );
+    } else {
+        statistics_["achieve_two_mice_pvp"] = 0;
     }
 }
 

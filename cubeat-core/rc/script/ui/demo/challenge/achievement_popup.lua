@@ -36,6 +36,8 @@ local function pop_achievement_ui(key)
       achievement_popup_bg_:set_visible(false)
       achievement_popup_:set_visible(false)
     end, 2000)
+  else
+    print( "\nLua: achievement_popup no such key: ", key )
   end
 end
 

@@ -23,7 +23,7 @@ local achievement_desc = {
   
   two_mice_pvp = { name = "Play Together", hint = "Start the VS Player mode with two USB mice." },
   shoot_opponent = { name = "Outside of the Box", hint = "Shoot at your opponent's cube for the first time.", secret = true },
-  overheated = { name = "Take It Slowly...", hint = "There's no need to rush! Take your time." },
+  overheat = { name = "Take It Slowly...", hint = "There's no need to rush! Take your time." },
   -- tug_of_war = { name = "Zigzagging", hint = "Stay in the Emergency status for more than 25 seconds in a versus game." },
   long_struggle = { name = "That's a Long Fight", hint = "Finish a game in more than 4 minutes.", secret = true },
   

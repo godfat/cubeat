@@ -165,6 +165,19 @@ local function print_challenge_record_origin_data()
   end
 end
 
+local function clear_all_stat_achievement()
+  local challenge_record = file.load_data("challenge_record", "rb")
+  if challenge_record then --
+    print(" -------- DEBUG: all in game stats and achievements cleared ------- ")
+    for k, v in pairs(challenge_record) do
+      if string.sub(k, 0, 4) == "stat" or string.sub(k, 0, 7) == "achieve" then
+        challenge_record[k] = nil
+      end
+    end
+    file.save_data('challenge_record', challenge_record, "wb")
+  end
+end
+
 local function print_challenge_record_data()
   local challenge_record = file.load_data('challenge_record', "rb")
   if challenge_record then -- find record file
@@ -264,4 +277,5 @@ return {
   load_raw = load_raw,
   print_challenge_record_origin_data  = print_challenge_record_origin_data,
   print_challenge_record_data         = print_challenge_record_data,
+  clear_all_stat_achievement = clear_all_stat_achievement,
 }

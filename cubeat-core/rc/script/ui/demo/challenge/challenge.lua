@@ -290,8 +290,8 @@ local function update_achievement(key, value)
     achievement_text.pop_achievement_ui("garbage_left_60")
   end
   
-  if key == "achieve_two_mice_pvp" and value == true then
-    achievement_text.pop_achievement_ui("two_mice_versus")
+  if key == "achieve_two_mice_pvp" and value == true then 
+    achievement_text.pop_achievement_ui("two_mice_pvp")
   end
 end
 

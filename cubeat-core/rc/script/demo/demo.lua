@@ -114,6 +114,9 @@ function init(demo)
   -- test for achievement pop-up
   challenge.create_achievement_text(scene_)
   
+  -- DEBUG: clear all achievements in record when debug
+  record.clear_all_stat_achievement()
+  
   -- print challenge record data
   local record = require 'rc/script/ui/demo/challenge/record'
   record.print_challenge_record_origin_data()

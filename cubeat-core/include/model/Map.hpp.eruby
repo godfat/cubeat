@@ -46,6 +46,7 @@ public:
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
         cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), match_counter_(0),
         highest_chain_(0), highest_color_count_(0), highest_single_color_amount_step_(0),
+        attack_made_per_session_(0), cubes_restored_(0),
         one_fadings_per_cycle_(0), dropping_creatable_(false), garbage_dumpable_(false),
         column_full_num_(0)
     {}
@@ -86,6 +87,8 @@ public:
     int  highest_chain() const;
     int  highest_color_count() const;
     int  highest_single_color_amount_step() const;
+    int  attack_made_per_session() const;
+    int  cubes_restored() const;
     int const* cubes_cleared_data() const;
     int const* cubes_matched_data() const;
     bool all_empty() const;
@@ -106,6 +109,7 @@ public:
     void purge_all();
     void cubes_cleared_add(int const& id);                  //called from model::Cube only.
     void cubes_matched_add(int const& num, int const& id);  //called from model::Cube only.
+    void cubes_restored_add();                               //called from model::Cube only.
     void restore_neighbor(int x, int y, int dying_mode = -1);//called from model::Cube only when go_dying() is called.
 
     bool exist(int x, int y) const;
@@ -153,11 +157,16 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
+
+    // records
     int cubes_cleared_[data::COLOR_MAX], cubes_matched_[data::COLOR_MAX], total_cubes_cleared_;
     int match_counter_;
     int highest_chain_;
     int highest_color_count_;
     int highest_single_color_amount_step_;
+    int attack_made_per_session_;
+    int cubes_restored_;
+
     int one_fadings_per_cycle_;
     bool dropping_creatable_, garbage_dumpable_;
     int column_full_num_;

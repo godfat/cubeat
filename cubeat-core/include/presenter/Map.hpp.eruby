@@ -86,6 +86,8 @@ public:
     int  highest_chain() const { return model()->highest_chain(); }
     int  highest_color_count() const { return model()->highest_color_count(); }
     int  highest_single_color_amount_step() const { return model()->highest_single_color_amount_step(); }
+    int  attack_made_per_session() const { return model()->attack_made_per_session(); }
+    int  cubes_restored() const { return model()->cubes_restored(); }
     int const* cubes_cleared_data() const { return model()->cubes_cleared_data(); }
     int const* cubes_matched_data() const { return model()->cubes_matched_data(); }
     bool all_empty() const { return model()->all_empty(); }

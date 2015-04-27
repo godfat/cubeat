@@ -1049,11 +1049,14 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
 }
 
 void Map::reset_record() {
+    score_ = 0;
     match_counter_ = 0;
     highest_chain_ = 0;
     highest_color_count_ = 0;
     highest_single_color_amount_step_ = 0;
     total_cubes_cleared_ = 0;
+    attack_made_per_session_ = 0;
+    cubes_restored_ = 0;
 
     for( int i = 0; i < data::COLOR_MAX; ++i )
         cubes_cleared_[i] = 0;
@@ -1155,6 +1158,15 @@ int Map::highest_color_count() const {
 
 int Map::highest_single_color_amount_step() const {
     return highest_single_color_amount_step_;
+}
+
+int Map::attack_made_per_session() const {
+    return score_ / 50;
+    //return attack_made_per_session_;
+}
+
+int Map::cubes_restored() const {
+    return cubes_restored_;
 }
 
 int const* Map::cubes_cleared_data() const {
@@ -1259,6 +1271,11 @@ void Map::cubes_matched_add(int const& num, int const& color_id)
 //        cubes_cleared_ = 0;
 //        owner()->push_player_ability();
 //    }
+}
+
+void Map::cubes_restored_add()
+{
+    cubes_restored_ += 1;
 }
 
 void Map::restore_neighbor(int x, int y, int dying_mode)

@@ -203,6 +203,8 @@ void <% debug_hook 'Cube::restore' do %>(int){
 
     //color_id( utils::distributed_random( map()->ms()->rez_chances() ) + 1 );
     restore_internal();
+
+    map()->cubes_restored_add();
 }
 
 void Cube::restore_to(int color){

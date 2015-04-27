@@ -139,6 +139,7 @@ protected:
 
     bool ai_logging(pMap);
     void run_next_log();
+    void load_stats_and_achievements_into_memory();
 
 private:
     void init_(int const&, std::string const&, std::string const&, std::string const&, bool const& inplace = false, int const& submode = 0);

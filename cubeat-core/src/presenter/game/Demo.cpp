@@ -1216,7 +1216,7 @@ void Demo::end(pMap lose_map)
     if( game_mode_ != GM_SINGLE )
         lose_map->ending_effect();
 
-    update_stats_and_achievements_endgame();
+    update_stats_and_achievements_endgame(lose_map);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         std::tr1::bind(&Demo::end_phase2, this, lose_map), shared_from_this(), 800);
@@ -1595,7 +1595,7 @@ void Demo::cycle()
 
 // --- Stats and Achievements tracking (end game tracking)
 
-void Demo::update_stats_and_achievements_endgame()
+void Demo::update_stats_and_achievements_endgame(pMap lose_map)
 {
     printf(" \n\n ATTACK MADE PER SESSION 1p: %d\n", map0_->attack_made_per_session());
     printf(" ATTACK MADE PER SESSION 2p: %d\n\n\n", map1_->attack_made_per_session());
@@ -1619,6 +1619,23 @@ void Demo::update_stats_and_achievements_endgame()
 
     printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
     printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
+
+    if( !player0_->is_controlled_by_AI() ) {
+        // note: there should be win / lose counts for different levels of AI,
+        //       but it's still not possible to just use that stat to determine this achievement
+        //       And not very sure if haste_count() / haste_accumulated_time() are useful or interesting stat to keep
+        if( player0_->haste_count() == 0 && map0_ != lose_map && statistics_.I("achieve_win_veryhard_no_haste") == 0 ) {
+            statistics_["achieve_win_veryhard_no_haste"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_veryhard_no_haste", true);
+        }
+
+        // note: there should be a stat_shortest_time ?
+        if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() < 45000 &&
+            map0_ != lose_map && statistics_.I("achieve_win_lightning_fast") == 0 ) {
+            statistics_["achieve_win_lightning_fast"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_lightning_fast", true);
+        }
+    }
 }
 
 void Demo::update_stats_and_achievements_byframe()
@@ -1640,11 +1657,13 @@ void Demo::update_stats_and_achievements_byframe()
             script::Lua::call(L_, "save_record_and_achievement", "stat_highest_color_count", map0_->highest_color_count());
         }
 
+        // There should really be a stat_highest_garbage_left_opponent
         if( map1_->garbage_left() >= 60 && statistics_.I("achieve_garbage_left_60") == 0 ) { // note this is map1_
             statistics_["achieve_garbage_left_60"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_garbage_left_60", true);
         }
 
+        // There should really be a stat_shoot_opponent_count
         if( player0_->jama_shoot_count() > 0 && statistics_.I("achieve_shoot_opponent") == 0 ) {
             statistics_["achieve_shoot_opponent"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_shoot_opponent", true);
@@ -1655,6 +1674,13 @@ void Demo::update_stats_and_achievements_byframe()
 void Demo::update_stats_and_achievements_startgame()
 {
     if( game_mode_ == GM_PVP ) {
+        // There should be a stat_player_vs_player count
+        // but that alone can't determine this achievement
+        // that said, for local multiplayer, until controller support is in, two mice should be the only legitimate way to do it
+        // so it seemed no sense to make the distinction.
+
+        /// NOTE: We should simply ignore the 2P keyboard setup (it was there mainly for debug purpose when no 2nd mouse was available)
+
         if ( ctrl::InputMgr::i().manyMouseCount() > 1 && statistics_.I("achieve_two_mice_pvp") == 0 ) {
             statistics_["achieve_two_mice_pvp"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_two_mice_pvp", true);
@@ -1698,6 +1724,18 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_shoot_opponent"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_shoot_opponent") );
     } else {
         statistics_["achieve_shoot_opponent"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_veryhard_no_haste") ) {
+        statistics_["achieve_win_veryhard_no_haste"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_veryhard_no_haste") );
+    } else {
+        statistics_["achieve_win_veryhard_no_haste"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_lightning_fast") ) {
+        statistics_["achieve_win_lightning_fast"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_lightning_fast") );
+    } else {
+        statistics_["achieve_win_lightning_fast"] = 0;
     }
 }
 

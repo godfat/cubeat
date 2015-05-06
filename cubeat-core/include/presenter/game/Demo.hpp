@@ -104,7 +104,7 @@ public:
 
     void update_stats_and_achievements_startgame();
     void update_stats_and_achievements_byframe();
-    void update_stats_and_achievements_endgame();
+    void update_stats_and_achievements_endgame(pMap lose_map);
 
     view::pScene get_ui_scene();
     view::pScene get_game_scene();

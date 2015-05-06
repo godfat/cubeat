@@ -655,14 +655,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
 
             int color_bucket[data::COLOR_MAX] = {0};
             int color_count = 0;
-            int highest_single_color_amount_step = 0;
 
             for( size_t n = 0; n < current_chain_step_group.size() ; ++n ) {
                 pCube c = cubes_[ get<0>(current_chain_step_group[n]) ][ get<1>(current_chain_step_group[n]) ];
                 if( c ) {
                     color_bucket[ c->color_id() ] += 1;
                 } else {
-                    printf(" \n\n YOU ARE FUCKED! \n\n\n");
+                    printf(" \n\n\n YOU ARE FUCKED! CHECKING CUBE COLOR BUT NO CUBE!! \n\n\n\n");
                 }
             }
 
@@ -670,15 +669,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 if( color_bucket[m] > 0 ) {
                     color_count += 1;
                 }
-                if( color_bucket[m] > highest_single_color_amount_step_ ) {
-                    highest_single_color_amount_step_ = color_bucket[m];
-                    printf(" \n\n\n\n HIGHEST SINGLE COLOR AMOUNT STEP update: %d \n\n\n\n\n", highest_single_color_amount_step_ );
+                if( color_bucket[m] > highest_single_color_match_ ) {
+                    highest_single_color_match_ = color_bucket[m];
                 }
             }
 
             if( color_count > highest_color_count_ ) {
                 highest_color_count_ = color_count;
-                printf(" \n\n\n\n HIGHEST COLOR COUNT update: %d \n\n\n\n\n", highest_color_count_ );
             }
 
         }
@@ -1053,7 +1050,7 @@ void Map::reset_record() {
     match_counter_ = 0;
     highest_chain_ = 0;
     highest_color_count_ = 0;
-    highest_single_color_amount_step_ = 0;
+    highest_single_color_match_ = 0;
     total_cubes_cleared_ = 0;
     attack_made_per_session_ = 0;
     cubes_restored_ = 0;
@@ -1156,8 +1153,8 @@ int Map::highest_color_count() const {
     return highest_color_count_;
 }
 
-int Map::highest_single_color_amount_step() const {
-    return highest_single_color_amount_step_;
+int Map::highest_single_color_match() const {
+    return highest_single_color_match_;
 }
 
 int Map::attack_made_per_session() const {

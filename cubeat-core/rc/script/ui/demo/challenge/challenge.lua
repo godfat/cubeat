@@ -286,12 +286,30 @@ local function update_achievement(key, value)
     end
   end
   
+  if key == "stat_highest_color_count" then 
+    if value >= 3 and not record.load_raw("achieve_three_color_match") then
+      record.save_raw("achieve_three_color_match", true)
+      achievement_text.pop_achievement_ui("three_color_match")
+    end
+  end 
+  
+  if key == "stat_highest_single_color_match" then 
+    if value >= 9 and not record.load_raw("achieve_single_color_match_9") then
+      record.save_raw("achieve_single_color_match_9", true)
+      achievement_text.pop_achievement_ui("single_color_match_9")
+    end
+  end 
+  
   if key == "achieve_garbage_left_60" and value == true then
     achievement_text.pop_achievement_ui("garbage_left_60")
   end
   
   if key == "achieve_two_mice_pvp" and value == true then 
     achievement_text.pop_achievement_ui("two_mice_pvp")
+  end
+  
+  if key == "achieve_shoot_opponent" and value == true then
+    achievement_text.pop_achievement_ui("shoot_opponent")
   end
 end
 

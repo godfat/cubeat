@@ -1623,14 +1623,32 @@ void Demo::update_stats_and_achievements_endgame()
 
 void Demo::update_stats_and_achievements_byframe()
 {
-    if( map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
-        statistics_["stat_highest_chain"] = map0_->highest_chain();
-        script::Lua::call(L_, "save_record_and_achievement", "stat_highest_chain", map0_->highest_chain());
-    }
+    if( !player0_->is_controlled_by_AI() ) { // this restriction should be for all achievements, right? computer earning achieves for you?
 
-    if( map1_->garbage_left() >= 60 && statistics_.I("achieve_garbage_left_60") == 0 ) { // note this is map1_
-        statistics_["achieve_garbage_left_60"] = 1;
-        script::Lua::call(L_, "save_record_and_achievement", "achieve_garbage_left_60", true);
+        if( map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
+            statistics_["stat_highest_chain"] = map0_->highest_chain();
+            script::Lua::call(L_, "save_record_and_achievement", "stat_highest_chain", map0_->highest_chain());
+        }
+
+        if( map0_->highest_single_color_match() > statistics_.I("stat_highest_single_color_match") ) {
+            statistics_["stat_highest_single_color_match"] = map0_->highest_single_color_match();
+            script::Lua::call(L_, "save_record_and_achievement", "stat_highest_single_color_match", map0_->highest_single_color_match());
+        }
+
+        if( map0_->highest_color_count() > statistics_.I("stat_highest_color_count") ) {
+            statistics_["stat_highest_color_count"] = map0_->highest_color_count();
+            script::Lua::call(L_, "save_record_and_achievement", "stat_highest_color_count", map0_->highest_color_count());
+        }
+
+        if( map1_->garbage_left() >= 60 && statistics_.I("achieve_garbage_left_60") == 0 ) { // note this is map1_
+            statistics_["achieve_garbage_left_60"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_garbage_left_60", true);
+        }
+
+        if( player0_->jama_shoot_count() > 0 && statistics_.I("achieve_shoot_opponent") == 0 ) {
+            statistics_["achieve_shoot_opponent"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_shoot_opponent", true);
+        }
     }
 }
 
@@ -1652,6 +1670,18 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["stat_highest_chain"] = 0;
     }
 
+    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_single_color_match") ) {
+        statistics_["stat_highest_single_color_match"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_single_color_match");
+    } else {
+        statistics_["stat_highest_single_color_match"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_color_count") ) {
+        statistics_["stat_highest_color_count"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_color_count");
+    } else {
+        statistics_["stat_highest_color_count"] = 0;
+    }
+
     if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_garbage_left_60") ) {
         statistics_["achieve_garbage_left_60"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_garbage_left_60") );
     } else {
@@ -1662,6 +1692,12 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_two_mice_pvp"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_two_mice_pvp") );
     } else {
         statistics_["achieve_two_mice_pvp"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_shoot_opponent") ) {
+        statistics_["achieve_shoot_opponent"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_shoot_opponent") );
+    } else {
+        statistics_["achieve_shoot_opponent"] = 0;
     }
 }
 

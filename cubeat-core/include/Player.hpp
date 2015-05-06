@@ -72,6 +72,8 @@ public:
     void lock_heat(bool const& f) { lock_heat_ = f; }
     bool is_controlled_by_AI()    const;
     int  jama_shoot_count()       const;
+    int  haste_count()            const;
+    int  haste_accumulated_time() const;
     //float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
@@ -101,7 +103,11 @@ protected:
     bool      overheat_, hasting_;
     bool      lock_heat_; // 2012 note: setup a state to lock heat value.
     int       ability_kind_;
+
+    /// records
     int       jama_shoot_count_;
+    int       haste_count_; // how many times you click for haste
+    int       haste_accumulated_time_; // in ms
 
     Input*               input_;
 	Weapon*              current_wep_;
@@ -115,6 +121,10 @@ protected:
 
 	std::tr1::function<void()> player_hit_event_;
 	std::tr1::function<void(int, bool)> player_overheat_event_;
+
+private:
+    int haste_accumulated_time_marker_;
+
 public:
 	void player_hit_event(std::tr1::function<void()> const& ev) { player_hit_event_ = ev; }
 	void player_overheat_event(std::tr1::function<void(int, bool)> const& ev) { player_overheat_event_ = ev; }

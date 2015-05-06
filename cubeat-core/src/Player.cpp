@@ -23,7 +23,7 @@ Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
      overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false), ability_kind_(7),
-     jama_shoot_count_(0),
+     jama_shoot_count_(0), haste_count_(0), haste_accumulated_time_(0),
      input_(input), player_hit_event_(0), player_overheat_event_(0)
 {
 }
@@ -373,7 +373,9 @@ bool Player::is_controlled_by_AI()    const {
     return input_->isControlledByAI();
 }
 
-int Player::jama_shoot_count() const { return jama_shoot_count_; }
+int Player::jama_shoot_count()        const { return jama_shoot_count_; }
+int Player::haste_count()             const { return haste_count_; }
+int Player::haste_accumulated_time()  const { return haste_accumulated_time_; }
 
 //2011.03.28 make hasting a player effect.
 void Player::start_haste_effect()
@@ -385,6 +387,9 @@ void Player::start_haste_effect()
         rot.Z -= 360; //will this overflow eventually?
         input_->getCursor()->tween<Linear, Rotation>(rot, 1000u, -1);
         hasting_ = true;
+
+        haste_count_ += 1;
+        haste_accumulated_time_marker_ = EventDispatcher::i().get_timer_dispatcher("game")->get_time();
     }
 }
 
@@ -397,6 +402,9 @@ void Player::remove_haste_effect()
         rot.Z -= 360; //will this overflow eventually?
         input_->getCursor()->tween<Linear, Rotation>(rot, 3000u, -1);
         hasting_ = false;
+
+        haste_accumulated_time_ += EventDispatcher::i().get_timer_dispatcher("game")->get_time() - haste_accumulated_time_marker_;
+        haste_accumulated_time_marker_ = 0;
     }
 }
 

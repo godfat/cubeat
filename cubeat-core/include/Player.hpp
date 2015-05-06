@@ -70,6 +70,8 @@ public:
 
     void generate_heat(double);
     void lock_heat(bool const& f) { lock_heat_ = f; }
+    bool is_controlled_by_AI()    const;
+    int  jama_shoot_count()       const;
     //float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
@@ -99,6 +101,7 @@ protected:
     bool      overheat_, hasting_;
     bool      lock_heat_; // 2012 note: setup a state to lock heat value.
     int       ability_kind_;
+    int       jama_shoot_count_;
 
     Input*               input_;
 	Weapon*              current_wep_;

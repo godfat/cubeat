@@ -23,6 +23,7 @@ Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
      overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false), ability_kind_(7),
+     jama_shoot_count_(0),
      input_(input), player_hit_event_(0), player_overheat_event_(0)
 {
 }
@@ -326,6 +327,7 @@ void Player::shot_delegate //2011.03.28 new normal-jama shooting integration.
             else {
                 hit_cb(1);
                 p->generate_heat(heat_for_jama_shoot_); //if enemy hit, generate extra heat.
+                p->jama_shoot_count_ += 1;
             }
         }
     }
@@ -366,6 +368,12 @@ bool Player::ammo_all_out() const {
         count += wp->ammo();
     return count == 0;
 }
+
+bool Player::is_controlled_by_AI()    const {
+    return input_->isControlledByAI();
+}
+
+int Player::jama_shoot_count() const { return jama_shoot_count_; }
 
 //2011.03.28 make hasting a player effect.
 void Player::start_haste_effect()

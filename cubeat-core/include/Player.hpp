@@ -74,6 +74,7 @@ public:
     int  jama_shoot_count()       const;
     int  haste_count()            const;
     int  haste_accumulated_time() const;
+    int  overheat_count()         const;
     //float haste_speedfunc(float orig_speed) const;
 
     virtual ~Player();
@@ -108,6 +109,7 @@ protected:
     int       jama_shoot_count_;
     int       haste_count_; // how many times you click for haste
     int       haste_accumulated_time_; // in ms
+    int       overheat_count_;
 
     Input*               input_;
 	Weapon*              current_wep_;

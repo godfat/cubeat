@@ -1620,7 +1620,7 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
     printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
     printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
 
-    if( !player0_->is_controlled_by_AI() ) {
+    if( !player0_->is_controlled_by_AI() && map0_ != lose_map ) {
         // note: there should be win / lose counts for different levels of AI,
         //       but it's still not possible to just use that stat to determine this achievement
         //       And not very sure if haste_count() / haste_accumulated_time() are useful or interesting stat to keep
@@ -1629,12 +1629,37 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
             script::Lua::call(L_, "save_record_and_achievement", "achieve_win_veryhard_no_haste", true);
         }
 
-        // note: there should be a stat_shortest_time ?
+        // note: should there be a stat_shortest_time ?
+        //       shortest time vs easy / normal / hard / very hard... etc?
         if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() < 45000 &&
-            map0_ != lose_map && statistics_.I("achieve_win_lightning_fast") == 0 ) {
+            ai_level_ > 0 && statistics_.I("achieve_win_lightning_fast") == 0 ) {
             statistics_["achieve_win_lightning_fast"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_win_lightning_fast", true);
         }
+
+        // note: should there be a record of "overkill" amount ?
+        //       overkill vs easy / normal / hard / very hard... etc?
+        printf(" \n\n\n WHAT THE FUCK? %d   AI: %d  record: %d \n\n\n\n", map1_->garbage_left(), ai_level_, statistics_.I("achieve_win_overkill1"));
+        if( map1_->garbage_left() >= 12 && ai_level_ > 0 && statistics_.I("achieve_win_overkill1") == 0 ) { // note this is map1_
+            statistics_["achieve_win_overkill1"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill1", true);
+        }
+
+        // note: same as above
+        if( map1_->garbage_left() >= 24 && ai_level_ > 2 && statistics_.I("achieve_win_overkill2") == 0 ) { // note this is map1_
+            statistics_["achieve_win_overkill2"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill2", true);
+        }
+
+        // note: Feels like non-sensical to have a "how many times you have entered warning" record.
+        //       So this should just be a reference to determine if player get this achievement or not?
+        if( map0_->alert_triggered_count() == 0 && ai_level_ > 0 && statistics_.I("achieve_win_safety_first") == 0 ) {
+            statistics_["achieve_win_safety_first"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
+        }
+    }
+
+    if( !player0_->is_controlled_by_AI() && map0_ == lose_map ) { // there currently is only one achievement condition here
     }
 }
 
@@ -1667,6 +1692,12 @@ void Demo::update_stats_and_achievements_byframe()
         if( player0_->jama_shoot_count() > 0 && statistics_.I("achieve_shoot_opponent") == 0 ) {
             statistics_["achieve_shoot_opponent"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_shoot_opponent", true);
+        }
+
+        // There should really be a stat_overheat_count
+        if( player0_->overheat_count() > 0 && statistics_.I("achieve_overheat") == 0 ) {
+            statistics_["achieve_overheat"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_overheat", true);
         }
     }
 }
@@ -1736,6 +1767,30 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_win_lightning_fast"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_lightning_fast") );
     } else {
         statistics_["achieve_win_lightning_fast"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_overheat") ) {
+        statistics_["achieve_overheat"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_overheat") );
+    } else {
+        statistics_["achieve_overheat"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill1") ) {
+        statistics_["achieve_win_overkill1"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill1") );
+    } else {
+        statistics_["achieve_win_overkill1"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill2") ) {
+        statistics_["achieve_win_overkill2"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill2") );
+    } else {
+        statistics_["achieve_win_overkill2"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_safety_first") ) {
+        statistics_["achieve_win_safety_first"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_safety_first") );
+    } else {
+        statistics_["achieve_win_safety_first"] = 0;
     }
 }
 

@@ -88,6 +88,7 @@ public:
     int  highest_single_color_match() const { return model()->highest_single_color_match(); }
     int  attack_made_per_session() const { return model()->attack_made_per_session(); }
     int  cubes_restored() const { return model()->cubes_restored(); }
+    bool alert_triggered_count() const { return model()->alert_triggered_count(); }
     int const* cubes_cleared_data() const { return model()->cubes_cleared_data(); }
     int const* cubes_matched_data() const { return model()->cubes_matched_data(); }
     bool all_empty() const { return model()->all_empty(); }

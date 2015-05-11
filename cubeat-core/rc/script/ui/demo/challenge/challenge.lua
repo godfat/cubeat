@@ -311,6 +311,30 @@ local function update_achievement(key, value)
   if key == "achieve_shoot_opponent" and value == true then
     achievement_text.pop_achievement_ui("shoot_opponent")
   end
+  
+  if key == "achieve_win_veryhard_no_haste" and value == true then
+    achievement_text.pop_achievement_ui("win_veryhard_no_haste")
+  end
+  
+  if key == "achieve_win_lightning_fast" and value == true then
+    achievement_text.pop_achievement_ui("win_lightning_fast")
+  end
+  
+  if key == "achieve_overheat" and value == true then
+    achievement_text.pop_achievement_ui("overheat")
+  end
+  
+  if key == "achieve_win_overkill1" and value == true then
+    achievement_text.pop_achievement_ui("win_overkill1")
+  end
+ 
+  if key == "achieve_win_overkill2" and value == true then
+    achievement_text.pop_achievement_ui("win_overkill2")
+  end
+  
+  if key == "achieve_win_safety_first" and value == true then
+    achievement_text.pop_achievement_ui("win_safety_first")
+  end
 end
 
 --

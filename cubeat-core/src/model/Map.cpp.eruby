@@ -989,6 +989,8 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
                     if( fall_through_check_number(inverted_warning_level) ) {
                         animate_alert_bar_ = std::tr1::shared_ptr<int>(new int(0));
                         owner()->alert_bar_animate_event()(warning_level_);
+
+                        alert_triggered_count_ += 1;
                     }
 //                    owner()->alert_bar_freeze_event()(false, warning_level_);
 //
@@ -1164,6 +1166,10 @@ int Map::attack_made_per_session() const {
 
 int Map::cubes_restored() const {
     return cubes_restored_;
+}
+
+int Map::alert_triggered_count() const {
+    return alert_triggered_count_;
 }
 
 int const* Map::cubes_cleared_data() const {

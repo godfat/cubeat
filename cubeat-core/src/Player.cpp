@@ -23,7 +23,7 @@ Player::Player(Input* input, int const& id)
     :id_(id), changetime_(500), changing_wep_(false), weplist_idx_(0), accumulated_heat_(0),
      cooling_speed_(0.06), heat_for_normal_shoot_(0.16), heat_for_haste_(0.03), heat_for_jama_shoot_(0.25),
      overheat_downtime_(2000), overheat_(false), hasting_(false), lock_heat_(false), ability_kind_(7),
-     jama_shoot_count_(0), haste_count_(0), haste_accumulated_time_(0),
+     jama_shoot_count_(0), haste_count_(0), haste_accumulated_time_(0), overheat_count_(0),
      input_(input), player_hit_event_(0), player_overheat_event_(0)
 {
 }
@@ -289,6 +289,8 @@ void Player::generate_heat(double heat)
         remove_haste_effect(); // only call this after you're sure about overheat_ is true
         EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
             bind(&Player::end_overheat, this), shared_from_this(), overheat_downtime_);
+
+        overheat_count_ += 1;
     }
 }
 
@@ -376,6 +378,7 @@ bool Player::is_controlled_by_AI()    const {
 int Player::jama_shoot_count()        const { return jama_shoot_count_; }
 int Player::haste_count()             const { return haste_count_; }
 int Player::haste_accumulated_time()  const { return haste_accumulated_time_; }
+int Player::overheat_count()          const { return overheat_count_; }
 
 //2011.03.28 make hasting a player effect.
 void Player::start_haste_effect()

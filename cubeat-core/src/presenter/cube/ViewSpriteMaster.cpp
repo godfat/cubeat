@@ -87,22 +87,29 @@ void ViewSpriteMaster::column_not_full(int at){
     }
     show_warning_at(at, false);
 
-    if( column_flag_ == 0 && flag_old != 0 ) {
+    if( column_flag_ == 0 ) {
 //        box_top_  ->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
 //        box_left_ ->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
 //        box_right_->tween<Linear, ColorDiffuseVec3>(vec3(255, 255, 255), 800);
 //        box_bottom_->set<ColorDiffuseVec3>(vec3(255, 255, 255)).set<Alpha>(160);
-        box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+
+        // note wtf:
+        // Dunno why, if I don't specify flag_old != 0 here, this can be executed multiple times
+        // even though the column is already clear. However I have to do this so the "DANGER" bar
+        // doesn't glitch out when column is clear. Whatevs.
         box_highest_row_->clearAllTween();
+        box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
 
-        box_top_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
-        box_left_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
-        box_right_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
-        box_bottom_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+        if( flag_old != 0 ) {
+            box_top_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+            box_left_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+            box_right_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
+            box_bottom_->set<ColorDiffuseVec3>(vec3(255,255,255)).set<Alpha>(144);
 
-        // apparently this is the most reliable place to check "out of danger"
-        countdown_text_->tween<Linear, Alpha>(144, 0, 1500u);
-        countdown_text_->tween_outline<Linear, Alpha>(255, 0, 1500u);
+            // apparently this is the most reliable place to check "out of danger"
+            countdown_text_->tween<Linear, Alpha>(144, 0, 1500u);
+            countdown_text_->tween_outline<Linear, Alpha>(255, 0, 1500u);
+        }
     }
 }
 
@@ -118,6 +125,7 @@ void ViewSpriteMaster::new_chain_text(model::wpChain const& chain,
     int combo = ch->step();
     int amounts = ch->last_step_amounts();
     int size = dying_cubes_position.size();
+    int csize = view_setting()->cube_size();
 
     if( amounts < 1 ) combo -= 1;
 
@@ -163,7 +171,17 @@ void ViewSpriteMaster::new_chain_text(model::wpChain const& chain,
     m->getSprite("chain").setDepth(-10).setPickable(false);
     m->getSprite("amounto").set<Pos2D>(vec2(1,39)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
     m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,40)).setPickable(false);
-    m->setDepth(-100).set<Pos2D>( vec2(central_point.X, central_point.Y) )
+
+    // note: so now here's how we decide new chain texts places.
+    // normally it should be 1.5 blocks higher than the central_point,
+    // but if it is very near top, then it should snap to the top, not go over it.
+
+    int chain_text_offset_y = - csize * 1.5;
+    if( central_point.Y + chain_text_offset_y < csize ) {
+        chain_text_offset_y = - ( central_point.Y - csize );
+    }
+
+    m->setDepth(-100).set<Pos2D>( vec2(central_point.X, central_point.Y + chain_text_offset_y) )
       .tween<OElastic, Scale>(vec3(0,0,0), vec3(1 + (0.12*combo),1 + (0.12*combo), 1), 1000u, 0,
                               std::tr1::bind(&ViewSpriteMaster::pop_a_chain_text, this, chain) );
 
@@ -708,7 +726,8 @@ void ViewSpriteMaster::warning_sound(int inverted_warning_level){
 //        warning_strip3_[x]->tween<OExpo, Scale>(vec3(1, 0.125, 1), vec3(1, 1, 1), dur);
 //        warning_strip3_[x]->tween<SineCirc, Green>(64, 255, dur/2, 1);
 
-        box_highest_row_->set<Alpha>(255);
+        box_highest_row_->clearAllTween();
+        box_highest_row_->set<ColorDiffuseVec3>(vec3(255,255,32)).set<Alpha>(255);
         box_highest_row_->tween<SineCirc, Green>(255, 64, dur/2, 1);
     }
 }
@@ -841,7 +860,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 //        alert_flood_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
 
         if( !ui_flag1_ ) {
-            countdown_text_->set< Pos2D >( pos_vec2(3, 5) + vec2(-csize/2, 0) );
+            countdown_text_->set< Pos2D >( pos_vec2(3, 6) + vec2(-csize/2, 0) );
         }
 
         if( column_flag_ != 0 ) {

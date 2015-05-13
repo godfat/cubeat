@@ -358,7 +358,7 @@ void ViewSprite::go_exploding(int color_id){
 }
 
 void ViewSprite::ending(int time_delay){
-    body_->clearAllTween();
+//    body_->clearAllTween();
     body_->setPickable(false);
 
     bodylayer2_.reset();

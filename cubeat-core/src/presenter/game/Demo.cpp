@@ -1620,7 +1620,10 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
     printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
     printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
 
-    if( !player0_->is_controlled_by_AI() && map0_ != lose_map ) {
+    /// SUPER BIG FUCKING PROBLEM! NOTE WTF
+    // Because when the game ends, AI returns input control back to player! is_controlled_by_AI doesn't work here!!!!
+
+    if( ( game_mode_ == GM_PVP || game_mode_ == GM_PVC ) && map0_ != lose_map ) {
         // note: there should be win / lose counts for different levels of AI,
         //       but it's still not possible to just use that stat to determine this achievement
         //       And not very sure if haste_count() / haste_accumulated_time() are useful or interesting stat to keep

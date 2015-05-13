@@ -281,7 +281,7 @@ Map& <% debug_hook 'Map::update_cube_position' do %>(pCube cube, int old_x, int 
 }
 
 Map& Map::ending_effect() {
-    int time_delay = 0;
+    int time_delay = 300;
     for( int y = ms()->height()-2; y >= 0 ; --y ) {
         for( int x = 0; x < ms()->width(); ++x ) {
             if( cubes_[x][y] ) {

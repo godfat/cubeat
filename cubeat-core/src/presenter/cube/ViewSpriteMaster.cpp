@@ -36,6 +36,14 @@ namespace psc{
 namespace presenter{
 namespace cube{
 
+static void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
+    ps->setEmitter(0);
+}
+
+static void remove_particle_system_of(view::pSprite sp) {
+    sp->removeParticleChildren();
+}
+
 using namespace std::tr1::placeholders;
 
 ViewSpriteMaster::ViewSpriteMaster(view::pScene scene, data::pViewSetting setting,
@@ -187,14 +195,6 @@ void ViewSpriteMaster::new_chain_text(model::wpChain const& chain,
 
     chain_texts_[ chain ] = m;
     audio::Sound::i().playBuffer( ("2/2b_" + utils::to_s(combo >= 7 ? 7 : combo) + ".wav"));
-}
-
-static void remove_emitter_of(irr::scene::IParticleSystemSceneNode* ps) {
-    ps->setEmitter(0);
-}
-
-static void remove_particle_system_of(view::pSprite sp) {
-    sp->removeParticleChildren();
 }
 
 void ViewSpriteMaster::new_chain_grouping(std::vector< std::tr1::tuple<int, int, int> > const& dying_cubes_position) {

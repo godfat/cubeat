@@ -796,14 +796,16 @@ void ViewSpriteMaster::alert_bar_freeze(bool freezed, int warning_level){
 //        alert_bar_cover_bottom_->set<Visible>(true).set<ColorDiffuseVec3>(vec3(0,255,255)).set<Alpha>(128);
 
         // Warning strips "exploding" when freeze effect kick in
-        if ( warning_level > 0 ) {
-            for( int x = 0; x < map_setting()->width(); ++x ) {
-                warning_strip2_[x]->clearAllTween();
-                warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2.5,2.5,2.5), 600u);
-                warning_strip2_[x]->tween<OCubic, Alpha>(255, 0, 600u);
-                warning_strip2_[x]->removeParticleChildren();
-            }
-        }
+        /// NOTE: this effect is buggy as hell now. and not in a way any actual player would notice it
+        ///       but when trying to recording the video the glitch will be glaring
+//        for( int x = 0; x < map_setting()->width(); ++x ) {
+//            if( column_flag_ & ( 1 << x ) ) {
+//                warning_strip2_[x]->clearAllTween();
+//                warning_strip2_[x]->tween<OCubic, Scale>(vec3(1,1,1), vec3(2.5,2.5,2.5), 600u);
+//                warning_strip2_[x]->tween<OCubic, Alpha>(255, 0, 600u);
+//                warning_strip2_[x]->removeParticleChildren();
+//            }
+//        }
     } else {
 //        alert_bar_cover_top_->set<Visible>(false);
 //        alert_bar_cover_bottom_->set<Visible>(false);

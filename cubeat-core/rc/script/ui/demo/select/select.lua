@@ -212,7 +212,7 @@ local function init(demo, parent, data)
   local menu = {}
   demo_game_ = demo
   data_ = data
-  ch_lock_ = 2
+  ch_lock_ = 1
   selectlock_ = {false, false}
   config.ch_choose[1] = 1
   config.ch_choose[2] = 2
@@ -337,12 +337,16 @@ local function init(demo, parent, data)
   end
 
   local stories_finished = {}
+  local stories_finished_count = 0
   for i = 1, 5 do
     stories_finished[i] = record.load(parameter.story, {character=i})
+    if stories_finished[i] then 
+      stories_finished_count = stories_finished_count + 1
+    end
   end
-  if stories_finished[1] and stories_finished[2] then ch_lock_ = 4 end
-  if stories_finished[3] and stories_finished[4] then ch_lock_ = 5 end
-  if stories_finished[5] then ch_lock_ = 6 end
+  ch_lock_ = 1 + stories_finished_count
+  if ch_lock_ < 1 then ch_lock_ = 1 end
+  if ch_lock_ > 6 then ch_lock_ = 6 end
   
   if data_ and data_.game_mode ~= 99 then ch_lock_=6 end -- VS CPU / Player mode
   

@@ -18,12 +18,12 @@ local function enter_text(tip, hint)
             tip:change_text(hint)
             tip:set_visible(true)
             
-            local pos_x = C.Input_get_cursor_x(Input1)
-            local pos_y = C.Input_get_cursor_y(Input1)
-            tip:set_pos(pos_x+50, pos_y-50)
+            -- local pos_x = C.Input_get_cursor_x(Input1)
+            -- local pos_y = C.Input_get_cursor_y(Input1)
+            tip:set_pos(view.GET_SCREEN_W()/2, 540)
             
             local s1 = ffi.new("v3", 0.1, 0.1, 0.1)
-            local e1 = ffi.new("v3", 1, 1, 1)
+            local e1 = ffi.new("v3", 0.8, 0.8, 1)
             tip:tween("OElastic", "Scale", s1, e1, 500)
          end
 end
@@ -38,25 +38,30 @@ local function init(demo, parent)
   root_ = view.new_sprite("blahblah", parent, 0, 0, true)
   root_:set_pos(0, 0)
   
-  menu.square = ui.new_image{ parent=root_, path='area_rect', x=(view.GET_SCREEN_W()-400)/2, y=100, w=400, h=600 }
+  menu.square = ui.new_image{ parent=root_, path='blahblah', x=0, y=60, w=1280, h=600 }
+  menu.square:set_alpha(128)
+  menu.square:set_color(0,0,0)
   
-  menu.left_btn   = ui.new_text{ parent=root_, x=200, y=300, size=32, title='<<' }
-  menu.left_btn:set_scale(1.5)
+  menu.left_btn   = ui.new_text{ parent=root_, x=300, y=260, size=32, title='<<' }
+  menu.left_btn:set_scale(2)
+  menu.left_btn:set_depth(-30)
   
-  menu.right_btn  = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()-200, y=300, size=32, title='>>' }
-  menu.right_btn:set_scale(1.5)
+  menu.right_btn  = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()-340, y=260, size=32, title='>>' }
+  menu.right_btn:set_scale(2)
+  menu.right_btn:set_depth(-30)
   
-  menu.btn_back = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()/2, y=640, size=40, title='back', depth=-200, center=true }
+  menu.btn_back = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()/2, y=600, size=40, title='back', depth=-200, center=true }
+  menu.btn_back:set_depth(-30)
   
   local achieve_size= table.getn(achieve_list)
   local page_size   = math.ceil(achieve_size/9)
   
   for i=1,page_size do
-    menu["page_" .. tostring(i)] = ui.new_text{ parent=root_, x=640, y=180, size=40, title="Page " .. tostring(i), center=true }
+    menu["page_" .. tostring(i)] = ui.new_text{ parent=root_, x=640, y=100, size=40, title="Page " .. tostring(i), center=true }
     if i~=1 then menu["page_" .. tostring(i)]:set_visible(false) end
   end
   
-  menu["tip"] = ui.new_text{parent=root_, x=800, y=100, size=40, title="tip"}
+  menu["tip"] = ui.new_text{parent=root_, x=800, y=100, size=40, title="tip", center=true}
   menu["tip"]:set_visible(false)
   
   for i, v in ipairs(achieve_list) do
@@ -67,7 +72,7 @@ local function init(demo, parent)
     else
       name = "???"; hint = "???"
     end
-    menu["achevement_" .. tostring(i)] = ui.new_text{ parent=root_, x=640, y= 200+((i-1)%9+1)*40, size=24, title=name, depth=-300, center=true }
+    menu["achevement_" .. tostring(i)] = ui.new_text{ parent=root_, x=640, y= 120+((i-1)%9+1)*40, size=24, title=name, depth=-300, center=true }
     if not record.load_raw("achieve_" .. tostring(achieve_list[i])) then menu["achevement_" .. tostring(i)]:set_alpha(150) end
     menu["achevement_" .. tostring(i)]:on_enter_focus( enter_text(menu["tip"], hint), Input1 )
     menu["achevement_" .. tostring(i)]:on_leave_focus( leave_text(menu["tip"]), Input1 )

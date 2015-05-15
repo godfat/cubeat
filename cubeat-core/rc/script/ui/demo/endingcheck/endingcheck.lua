@@ -64,6 +64,7 @@ local function story_mode_end(demo, submode)
       print('-------- save story character clear data --------')
       local data = { win='true', character=select_config.ch_choose[1] }
       record.save(demo, parameter.story, data)
+      challenge.update_achievement("achieve_story_"..select_config.ch_choose[1], true)
     end
 
   -- story lose

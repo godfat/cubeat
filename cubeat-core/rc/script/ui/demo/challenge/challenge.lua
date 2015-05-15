@@ -204,12 +204,20 @@ local function ending(demo, submode)
       -- init SinglePlayer, in Submode 0, and Level is decided by puzzle_level_ variable
       -- the last true means "in_place" is true, there won't be slide-in/out effects.
       puzzle_retry_ = 0
-      demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+      if get_level_unlimited() == true then
+        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true)
+      else 
+        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+      end
     end)
     recordboard.on_press_retry(function(self)
       recordboard.hide()
       puzzle_retry_ = puzzle_retry_ + 1
-      demo:init_single(submode, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+      if get_level_unlimited() == true then
+        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true)
+      else 
+        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+      end
     end)
     recordboard.on_press_quit(function(self)
       recordboard.hide() 
@@ -299,6 +307,38 @@ local function update_achievement(key, value)
       achievement_text.pop_achievement_ui("single_color_match_9")
     end
   end 
+  
+  -- NOTE: future cleanup needed
+  
+  if key == "achieve_story_1" and value == true and not record.load_raw("achieve_story_1") then
+    record.save_raw("achieve_story_1", true)
+    achievement_text.pop_achievement_ui("story_1")
+  end
+
+  if key == "achieve_story_2" and value == true and not record.load_raw("achieve_story_2") then
+    record.save_raw("achieve_story_2", true)
+    achievement_text.pop_achievement_ui("story_2")
+  end
+  
+  if key == "achieve_story_3" and value == true and not record.load_raw("achieve_story_3") then
+    record.save_raw("achieve_story_3", true)
+    achievement_text.pop_achievement_ui("story_3")
+  end
+  
+  if key == "achieve_story_4" and value == true and not record.load_raw("achieve_story_4") then
+    record.save_raw("achieve_story_4", true)
+    achievement_text.pop_achievement_ui("story_4")
+  end
+  
+  if key == "achieve_story_5" and value == true and not record.load_raw("achieve_story_5") then
+    record.save_raw("achieve_story_5", true)
+    achievement_text.pop_achievement_ui("story_5")
+  end
+  
+  if key == "achieve_story_6" and value == true and not record.load_raw("achieve_story_6") then
+    record.save_raw("achieve_story_6", true)
+    achievement_text.pop_achievement_ui("story_6")
+  end
   
   if key == "achieve_garbage_left_60" and value == true then
     achievement_text.pop_achievement_ui("garbage_left_60")

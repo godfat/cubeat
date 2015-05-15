@@ -44,7 +44,10 @@ local function init(demo, parent, submode)
     
     menu['unlimited'] = ui.new_text{ parent=root_, x=450, y=-200, size=32, depth=-200, title='unlimited' }
     menu['unlimited']:on_press(function(self)
-      demo:init_single(parameter.OneShotClear, 2, 'char/char1_new', 'stage/jungle1', false)
+      demo:init_single(parameter.OneShotClear, 2 + 20, 'char/char1_new', 'stage/jungle1', false)
+      
+      -- 2 + 20 hackzzzzz 
+      
       challenge.set_puzzle_level(2)
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       --switch.show_effect( {id="slide_out_title"} )

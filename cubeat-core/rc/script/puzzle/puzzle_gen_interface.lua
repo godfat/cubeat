@@ -7,6 +7,13 @@ local PuzzleGen = require 'rc/script/puzzle/puzzle_gen'
 function generate_to_file(chain_limit, w, h, de_bug, color_num, outfile)
   outfile = outfile or "rc/config/tmp/puzzle.zzml"
 
+  -- IN FACT, this can be the "randomize or not" hack for now, because everytime
+  -- MapLoader::generate is called, a new separate luaState will be created, 
+  -- so if we doesn't specify randomseed, it will always have the same series of randoms.
+  if chain_limit >= 20 then
+    math.randomseed(os.time())
+  end
+  
   local ffi = require 'ffi'
   ffi.cdef[[
     char* _getcwd(char * buf, size_t size);
@@ -50,7 +57,10 @@ use_broken_as_garbage:1,
 preset:0,
 cube_colors:
 ]])
-  local map, ans = PuzzleGen:generate(chain_limit, w, h, de_bug, color_num)
+
+  -- chain_limit > 20 means a newly randomized .... hack!
+
+  local map, ans = PuzzleGen:generate(chain_limit % 20, w, h, de_bug, color_num)
   file:write("[\n")
 
   file:write("[")

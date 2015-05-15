@@ -145,6 +145,7 @@ private:
     void update_chains();
     void inc_warning(int&);
     void dec_warning(int&);
+    void dec_warning_emergency_mode(int&);
     presenter::pMap owner() const{ return owner_.lock(); }
     pMap self()             const{ return self_.lock(); }
 

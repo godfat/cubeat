@@ -941,6 +941,14 @@ void Map::dec_warning(int& warning_lv) {
     }
 }
 
+void Map::dec_warning_emergency_mode(int& warning_lv) {
+    if( !column_full_num_ && warning_lv > 0 ) {
+        warning_lv -= 80;
+        if( warning_lv < 0 )
+            warning_lv = 0;
+    }
+}
+
 bool fall_through_check_number(int num) {
     if( num < 4000 && num % 500 == 0 ) return true;
     if( num % 1000 == 0 ) return true;
@@ -972,8 +980,13 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(&Map::inc_warning, this, ref(warning_level_)), warning_handle_, 20/*warning_gap / 20*/, -1);
 
-            ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-                bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 40u/*200u*/, -1);
+            if( ms()->game_submode() >= 10 && ms()->game_submode() < 20 ) {
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&Map::dec_warning_emergency_mode, this, ref(warning_level_)), warning_handle_, 40u/*200u*/, -1);
+            } else {
+                ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
+                    bind(&Map::dec_warning, this, ref(warning_level_)), warning_handle_, 40u/*200u*/, -1);
+            }
 
             ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                 bind(owner()->alert_bar_update_event(), ref(warning_level_)), warning_handle_, 20u/*50u*/, -1);

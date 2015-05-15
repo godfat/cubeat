@@ -313,6 +313,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
         map0_ = utils::MapLoader::generate( mode_level_ );
     } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
+        set0->game_submode(submode_);
         map0_ = presenter::Map::create(set0, player0_);
         map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
     }
@@ -1592,73 +1593,72 @@ void Demo::cycle()
 
 
 
-
 // --- Stats and Achievements tracking (end game tracking)
 
 void Demo::update_stats_and_achievements_endgame(pMap lose_map)
 {
-    printf(" \n\n ATTACK MADE PER SESSION 1p: %d\n", map0_->attack_made_per_session());
-    printf(" ATTACK MADE PER SESSION 2p: %d\n\n\n", map1_->attack_made_per_session());
+    if( game_mode_ == GM_PVP || game_mode_ == GM_PVC ) {
 
-    int cubes_exploded_per_session_1p = 0;
-    int cubes_exploded_per_session_2p = 0;
-    for( int i = 0; i < data::COLOR_MAX; ++i ) {
-        cubes_exploded_per_session_1p += map0_->cubes_cleared_data()[i];
-        cubes_exploded_per_session_2p += map1_->cubes_cleared_data()[i];
-    }
-    int effective_clicks_1p = cubes_exploded_per_session_1p + map0_->cubes_restored();
-    int effective_clicks_2p = cubes_exploded_per_session_2p + map1_->cubes_restored();
+        printf(" \n\n ATTACK MADE PER SESSION 1p: %d\n", map0_->attack_made_per_session());
+        printf(" ATTACK MADE PER SESSION 2p: %d\n\n\n", map1_->attack_made_per_session());
 
-    printf(" 1p effective clicks: %d\n", effective_clicks_1p);
-    printf(" 2p effective clicks: %d\n", effective_clicks_2p);
-
-    printf(" 1p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / effective_clicks_1p);
-    printf(" 2p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / effective_clicks_2p);
-
-    double time_in_seconds = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
-
-    printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
-    printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
-
-    /// SUPER BIG FUCKING PROBLEM! NOTE WTF
-    // Because when the game ends, AI returns input control back to player! is_controlled_by_AI doesn't work here!!!!
-
-    if( ( game_mode_ == GM_PVP || game_mode_ == GM_PVC ) && map0_ != lose_map ) {
-        // note: there should be win / lose counts for different levels of AI,
-        //       but it's still not possible to just use that stat to determine this achievement
-        //       And not very sure if haste_count() / haste_accumulated_time() are useful or interesting stat to keep
-        if( player0_->haste_count() == 0 && map0_ != lose_map && statistics_.I("achieve_win_veryhard_no_haste") == 0 ) {
-            statistics_["achieve_win_veryhard_no_haste"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_veryhard_no_haste", true);
+        int cubes_exploded_per_session_1p = 0;
+        int cubes_exploded_per_session_2p = 0;
+        for( int i = 0; i < data::COLOR_MAX; ++i ) {
+            cubes_exploded_per_session_1p += map0_->cubes_cleared_data()[i];
+            cubes_exploded_per_session_2p += map1_->cubes_cleared_data()[i];
         }
+        int effective_clicks_1p = cubes_exploded_per_session_1p + map0_->cubes_restored();
+        int effective_clicks_2p = cubes_exploded_per_session_2p + map1_->cubes_restored();
 
-        // note: should there be a stat_shortest_time ?
-        //       shortest time vs easy / normal / hard / very hard... etc?
-        if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() < 45000 &&
-            ai_level_ > 0 && statistics_.I("achieve_win_lightning_fast") == 0 ) {
-            statistics_["achieve_win_lightning_fast"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_lightning_fast", true);
-        }
+        printf(" 1p effective clicks: %d\n", effective_clicks_1p);
+        printf(" 2p effective clicks: %d\n", effective_clicks_2p);
 
-        // note: should there be a record of "overkill" amount ?
-        //       overkill vs easy / normal / hard / very hard... etc?
-        printf(" \n\n\n WHAT THE FUCK? %d   AI: %d  record: %d \n\n\n\n", map1_->garbage_left(), ai_level_, statistics_.I("achieve_win_overkill1"));
-        if( map1_->garbage_left() >= 12 && ai_level_ > 0 && statistics_.I("achieve_win_overkill1") == 0 ) { // note this is map1_
-            statistics_["achieve_win_overkill1"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill1", true);
-        }
+        printf(" 1p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / effective_clicks_1p);
+        printf(" 2p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / effective_clicks_2p);
 
-        // note: same as above
-        if( map1_->garbage_left() >= 24 && ai_level_ > 2 && statistics_.I("achieve_win_overkill2") == 0 ) { // note this is map1_
-            statistics_["achieve_win_overkill2"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill2", true);
-        }
+        double time_in_seconds = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
 
-        // note: Feels like non-sensical to have a "how many times you have entered warning" record.
-        //       So this should just be a reference to determine if player get this achievement or not?
-        if( map0_->alert_triggered_count() == 0 && ai_level_ > 0 && statistics_.I("achieve_win_safety_first") == 0 ) {
-            statistics_["achieve_win_safety_first"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
+        printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
+        printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
+
+        if( map0_ != lose_map ) {
+
+            // note: there should be win / lose counts for different levels of AI,
+            //       but it's still not possible to just use that stat to determine this achievement
+            //       And not very sure if haste_count() / haste_accumulated_time() are useful or interesting stat to keep
+            if( player0_->haste_count() == 0 && ai_level_ > 2 && statistics_.I("achieve_win_veryhard_no_haste") == 0 ) {
+                statistics_["achieve_win_veryhard_no_haste"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_veryhard_no_haste", true);
+            }
+
+            // note: should there be a stat_shortest_time ?
+            //       shortest time vs easy / normal / hard / very hard... etc?
+            if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() < 45000 &&
+                ai_level_ > 0 && statistics_.I("achieve_win_lightning_fast") == 0 ) {
+                statistics_["achieve_win_lightning_fast"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_lightning_fast", true);
+            }
+
+            // note: should there be a record of "overkill" amount ?
+            //       overkill vs easy / normal / hard / very hard... etc?
+            if( map1_->garbage_left() >= 12 && ai_level_ > 0 && statistics_.I("achieve_win_overkill1") == 0 ) { // note this is map1_
+                statistics_["achieve_win_overkill1"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill1", true);
+            }
+
+            // note: same as above
+            if( map1_->garbage_left() >= 24 && ai_level_ > 2 && statistics_.I("achieve_win_overkill2") == 0 ) { // note this is map1_
+                statistics_["achieve_win_overkill2"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_overkill2", true);
+            }
+
+            // note: Feels like non-sensical to have a "how many times you have entered warning" record.
+            //       So this should just be a reference to determine if player get this achievement or not?
+            if( map0_->alert_triggered_count() == 0 && ai_level_ > 0 && statistics_.I("achieve_win_safety_first") == 0 ) {
+                statistics_["achieve_win_safety_first"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
+            }
         }
     }
 
@@ -1668,7 +1668,9 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
 
 void Demo::update_stats_and_achievements_byframe()
 {
-    if( !player0_->is_controlled_by_AI() ) { // this restriction should be for all achievements, right? computer earning achieves for you?
+    // Turns out !is_controlled_by_AI() really doesn't help when suddenly it plays a single player challenge mode.
+    // All these achievement's precondition should simply just be PVP or PVC mode.
+    if( game_mode_ == GM_PVP || game_mode_ == GM_PVC ) {
 
         if( map0_->highest_chain() > statistics_.I("stat_highest_chain") ) {
             statistics_["stat_highest_chain"] = map0_->highest_chain();

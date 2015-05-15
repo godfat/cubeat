@@ -27,15 +27,15 @@ local achievement_desc = {
   -- tug_of_war = { name = "Zigzagging", hint = "Stay in the Emergency status for more than 25 seconds in a versus game." },
   long_struggle = { name = "That's a Long Fight", hint = "Finish a game in more than 4 minutes.", secret = true },
   
-  win_veryhard_no_haste = { name = "It's So Easy I Don't Even", hint = "Win a game against Very Hard or above AI opponent without pressing Haste button." },
-  win_lightning_fast = { name = "Blitzkrieg", hint = "Win a game against Normal or above AI opponent in 45 seconds." },
-  win_safety_first = { name = "Safety First", hint = "Win a game against Normal or above AI opponent without ever entering Emergency status." },
-  win_overkill1 = { name = "Overkill", hint = "Win a game against Normal or above AI opponent with at least 12 attack cubes unreleased." },
-  win_overkill2 = { name = "Overkill Masterfully", hint = "Win a game against Very Hard or above AI opponent with at least 24 attack cubes unreleased.", secret = true },
+  win_veryhard_no_haste = { name = "It's So Easy I Don't Even", hint = "Win a game against Very Hard AI or above without\npressing Haste button." },
+  win_lightning_fast = { name = "Blitzkrieg", hint = "Win a game against Normal AI or above\nin 45 seconds." },
+  win_safety_first = { name = "Safety First", hint = "Win a game against Normal AI or above\nwithout entering Emergency status." },
+  win_overkill1 = { name = "Overkill", hint = "Win a game against Normal AI or above with\nat least 12 attack cubes unreleased." },
+  win_overkill2 = { name = "Overkill Masterfully", hint = "Win a game against Very Hard AI or above with\nat least 24 attack cubes unreleased.", secret = true },
   win_so_close = { name = "So Close", hint = "Win a game with less than 1 second to defeat.", secret = true },
   win_turn_the_tide = { name = "Turn the Tide", hint = "Win a game after being very close to defeat." },
-  win_underdog = { name = "Underdog Win", hint = "Win a game against Normal or above AI opponent with a score 2000 less than your opponent.", secret = true },
-  lose_careless = { name = "What Just Happened?", hint = "Lose a game against Normal or above AI opponent with a score 3000 more than your opponent.", secret = true },
+  win_underdog = { name = "Underdog Win", hint = "Win a game against Normal AI or above with\na score 2000 less than your opponent.", secret = true },
+  lose_careless = { name = "What Just Happened?", hint = "Lose a game against Normal AI or above with\na score 3000 more than your opponent.", secret = true },
 }
 
 return achievement_desc

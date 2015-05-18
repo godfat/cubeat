@@ -785,7 +785,12 @@ void Demo::game_start()
     }
 
     // Have to reset timer here again, because the "ready_go" part and scene_ slide effect can't do when timer is stopped.
-    ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0);
+    if( gameplay_.exist("time") ) {
+        int faketime = gameplay_.I("time");
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(faketime * 1000);
+    } else {
+        ctrl::EventDispatcher::i().get_timer_dispatcher("game")->set_time(0);
+    }
     scene_->allowPicking(true);
 
     /// MEMO: replay recording starts here
@@ -1660,6 +1665,13 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
             }
         }
+
+        // note: so, as with stat_shortest_time, should we have a stat_longest_time for each level?
+        if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() >= 240000 &&
+            statistics_.I("achieve_long_struggle") == 0 ) {
+            statistics_["achieve_long_struggle"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_long_struggle", true);
+        }
     }
 
     if( !player0_->is_controlled_by_AI() && map0_ == lose_map ) { // there currently is only one achievement condition here
@@ -1796,6 +1808,12 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_win_safety_first"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_safety_first") );
     } else {
         statistics_["achieve_win_safety_first"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_long_struggle") ) {
+        statistics_["achieve_long_struggle"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_long_struggle") );
+    } else {
+        statistics_["achieve_long_struggle"] = 0;
     }
 }
 

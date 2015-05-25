@@ -18,7 +18,7 @@ local function init(demo, parent)
   menu.btn_mode_1:set_scale(1.5)
   menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=60, size=32, title='emergency mode' }
   menu.btn_mode_2:set_scale(1.5)
-  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=120, size=32, title='unlimited mode'}
+  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=120, size=32, title='score attack'}
   menu.btn_mode_3:set_scale(1.5)
   menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=32, title='go back' }
   menu.btn_back:set_scale(1.5)
@@ -30,7 +30,8 @@ local function init(demo, parent)
     switch.load_page('challengesubmenu', nil, parameter.WarningCondition)
   end)
   menu.btn_mode_3:on_press(function(self)
-    switch.load_page('challengesubmenu', nil, parameter.UnLimited)
+    -- switch.load_page('challengesubmenu', nil, parameter.UnLimited)
+    demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

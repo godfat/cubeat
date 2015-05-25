@@ -314,6 +314,13 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
         set0->game_submode(submode_);
+        if( submode_ == 21 ) {
+            // countdown mode
+            set0->sink_speed(160);
+            set0->sink_speed_add(60);
+            set0->max_warning_count(4);
+            set0->sudden_death_time(90000);
+        }
         map0_ = presenter::Map::create(set0, player0_);
         map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
     }

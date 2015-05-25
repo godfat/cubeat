@@ -1203,6 +1203,10 @@ void Demo::end_phase2(pMap lose_map)
 {
     printf("submode: %d\n", submode_);
     script::Lua::call(L_, "ending", game_mode_, submode_);
+
+    if( game_mode_ != GM_SINGLE && game_mode_ != GM_PVP ) {
+        ctrl::InputMgr::i().returnInputToOrigin(1);
+    }
 }
 
 

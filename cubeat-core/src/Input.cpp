@@ -62,8 +62,15 @@ bool InputMgr::createInputs()
     initManyMouse();
 
     std::cout << "InputMgr created inputs." << std::endl;
-    for( int i = 0; i < MAX_INPUTS; ++i )
+    for( int i = 0; i < MAX_INPUTS; ++i ) {
         inputs_.push_back( new Input( find_input_name_accordingly(i) ) );
+
+        // hardcode the second input to be at "right-top"
+        if( i == 1 ) {
+            inputs_[i]->cursor().x(Conf::i().SCREEN_W());
+        }
+
+    }
 
     initGraphicItems();
     return true;
@@ -206,6 +213,19 @@ bool InputMgr::keyPressed(unsigned char const& code) const {
 
 bool InputMgr::keyReleased(unsigned char const& code) const {
     return MastEventReceiver::i().keyReleased( code );
+}
+
+void InputMgr::returnInputToOrigin(unsigned int i) {
+
+    int xpos = (i == 1) ? Conf::i().SCREEN_W() : 0;
+
+    inputs_[i]->getCursor()->tween<IOExpo, Pos2D>(vec2(Conf::i().SCREEN_W(), 0), 300);
+    inputs_[i]->cursor().x() = xpos;
+    inputs_[i]->cursor().y() = 0;
+
+    // have to reset the underlying MouseState as well
+    inputs_[i]->state_->x = xpos;
+    inputs_[i]->state_->y = 0;
 }
 
 void InputMgr::updateAll()

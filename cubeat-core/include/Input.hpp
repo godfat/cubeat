@@ -73,6 +73,8 @@ public:
     bool keyPressed(unsigned char const& code) const;
     bool keyReleased(unsigned char const& code) const;
 
+    void returnInputToOrigin(unsigned int);
+
     int const MAX_INPUTS;
 
 private:

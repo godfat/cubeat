@@ -1319,6 +1319,11 @@ void Demo::pause_quit()
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
         bind(&Demo::end_sequence1, this, false), shared_from_this(), 1); //1 ms
+
+    // have to return 2P cursor to origin when pause_quit too, this is different code path from end_phase2
+    if( game_mode_ != GM_SINGLE && game_mode_ != GM_PVP ) {
+        ctrl::InputMgr::i().returnInputToOrigin(1);
+    }
 }
 
 void Demo::reinit()

@@ -79,6 +79,7 @@ MapSetting::pointer_type MapSetting::clone() const {
            .drop_normal_chance(drop_normal_chance_)
            .drop_normal_per_bag(drop_normal_per_bag_)
            .game_submode(game_submode_)
+           .sudden_death_time(sudden_death_time_)
            .rez_chances(rez_chances_)
            .preset(preset_)
            .preset_data(preset_data_)

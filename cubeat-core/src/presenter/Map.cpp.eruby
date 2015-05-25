@@ -115,7 +115,7 @@ pMap <% debug_hook 'Map::init' do %>(){
         std::tr1::bind(&Map::speedup, this), self, 30000);
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
-        std::tr1::bind(&Map::crushing_speedup, this), self, 180000);
+        std::tr1::bind(&Map::crushing_speedup, this), self, map_setting()->sudden_death_time());
 
     return self;
 }

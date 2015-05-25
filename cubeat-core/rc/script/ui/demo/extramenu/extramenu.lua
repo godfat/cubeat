@@ -3,6 +3,8 @@ local C     = ffi.C
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
+local random_shuffle = require 'rc/script/helper'.random_shuffle
+local select_config  = require 'rc/script/ui/demo/select/config'
 
 local root_
 
@@ -18,7 +20,9 @@ local function init(demo, parent)
   menu.btn_mode_2:set_scale(1.5)
   menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=120, size=32, title='Option'}
   menu.btn_mode_3:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=32, title='go back' }
+  menu.btn_cpu_demo = ui.new_text{ parent=root_, x=0, y=180, size=32, title='CPU demo mode'}
+  menu.btn_cpu_demo:set_scale(1.5)
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=240, size=32, title='go back' }
   menu.btn_back:set_scale(1.5)
 
   menu.btn_mode_1:on_press(function(self)
@@ -29,6 +33,13 @@ local function init(demo, parent)
   end)
   menu.btn_mode_3:on_press(function(self)
     switch.load_page('optionmenu')
+  end)
+  menu.btn_cpu_demo:on_press(function(self)
+    local bag = {1, 2, 3, 4, 5, 6}
+    random_shuffle(bag)
+    select_config.ch_choose[1] = bag[1]
+    select_config.ch_choose[2] = bag[2]
+    demo:init_cpudemo("char/char"..bag[1].."_new", "char/char"..bag[2].."_new", "stage/jungle"..bag[1])
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

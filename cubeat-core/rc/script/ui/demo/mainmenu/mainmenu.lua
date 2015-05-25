@@ -6,8 +6,7 @@ local switch = require 'rc/script/ui/demo/switch/switch'
 local event  = require 'rc/script/event/event'
 local random = require 'rc/script/helper'.random
 local basepath = require 'rc/script/helper'.basepath
-local select_config = require 'rc/script/ui/demo/select/config'
-local storystage    = require 'rc/script/ui/demo/storyend/config'
+local storystage = require 'rc/script/ui/demo/storyend/config'
 
 -------------------------------------------------------------------
 
@@ -129,12 +128,9 @@ local function init(demo, parent)
   -- menu.btn_option_img:set_alpha(192)            -- grey out btn_option for the moment. 
   -- menu.btn_option_img:set_color(192, 192, 192)  -- grey out btn_option for the moment. 
   
-  menu.btn_cpudemo = ui.new_text{ parent = root_, title='cpu demo mode', x=400, y=660, size=32 }
-  menu.btn_cpudemo:set_scale(1.5)
-  
   -- menu.btn_tut2     = ui.new_text{ parent = root_, title='tutorial test', x=360, y=180, size=32 }
   -- menu.btn_tut2:set_scale(1.5)
-  menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=1050, y=670, size=32 }
+  -- menu.btn_backtostart = ui.new_text{ parent = root_, title='start screen', x=1050, y=670, size=32 }
   
   -- menu.btn_story:on_press(function(self)
     -- storystage.set_stage(1)
@@ -155,15 +151,6 @@ local function init(demo, parent)
   -- menu.btn_chall:on_press(function(self)
     -- switch.load_page('challengemenu')
   -- end)
-  
-  menu.btn_cpudemo:on_press(function(self) 
-    local ch1 = random(6)+1
-    local ch2 = random(6)+1
-    select_config.ch_choose[1] = ch1
-    select_config.ch_choose[2] = ch2
-    demo:init_cpudemo("char/char"..ch1.."_new", "char/char"..ch2.."_new", "stage/jungle"..ch1)
-    --switch.show_effect( {id="slide_out_title"} )
-  end)
     
   -- menu.btn_tut:on_press(function(self) 
     -- switch.load_page('tutorial')
@@ -182,9 +169,9 @@ local function init(demo, parent)
     -- switch.show_effect( {id="slide_out_title"} )
   -- end)  
   
-  menu.btn_backtostart:on_press(function(self)
-    switch.load_page('startscreen')
-  end)
+  -- menu.btn_backtostart:on_press(function(self)
+    -- switch.load_page('startscreen')
+  -- end)
   
   -- menu.btn_test:on_press(function(self)
     -- switch.load_page('testmenu')

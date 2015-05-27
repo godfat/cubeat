@@ -50,12 +50,13 @@ local function tutorial_mode_end(demo)
   end
 end
 
+-- story_mode is inheritly Player vs CPU mode. 
 local function story_mode_end(demo, submode)
   -- story win
   if demo:get_map_warning_level(1) >= demo:get_map_max_warning_count(1) * 1000 then
     print('---- endingcheck: story win ----')
     --storyend.show(demo, storyend_config.story_win)
-    vsend.show(demo, nil, submode, true)
+    vsend.show(demo, config.GM_PVC, submode, true)
     -- save story quicksave data
     local data = { character=select_config.ch_choose[1], stage=storystage.get_stage() }
     record.save(demo, parameter.quicksave, data)
@@ -71,7 +72,7 @@ local function story_mode_end(demo, submode)
   else
     print('---- endingcheck: story lose ----')
     --storyend.show(demo, storyend_config.story_lose)
-    vsend.show(demo, nil, submode, false)
+    vsend.show(demo, config.GM_PVC, submode, false)
     
   end
 end

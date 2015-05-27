@@ -31,7 +31,7 @@ end
 
 local function create(scene)
   
-  blocker_  = ui.new_image{ parent=scene, path="blocker", x=center_x, y=center_y, w=screen_w_, h=368, depth=-10, alpha=144, center=true }
+  blocker_  = ui.new_image{ parent=scene, path="blocker", x=center_x, y=center_y, w=screen_w_, h=384, depth=-10, alpha=144, center=true }
   blocker_:set_gradient_diffuse(0)
   
   win_t_  = ui.new_image { parent=scene, path="win" , x=0, y=0, w=384, h=192, depth=-450, center=true }
@@ -62,53 +62,35 @@ local function show(demo, game_mode, submode, p1_win)
   lose_t_:set_visible(true)
   lose_t_:set_scale(0,0)
   
-  local pos1 = {x=screen_w_/4, y=screen_h_/2}
+  local pos1 = {x=screen_w_/4  , y=screen_h_/2}
   local pos2 = {x=screen_w_/4*3, y=screen_h_/2}
   local char_big_filename1 = "char"..tostring(select_config.ch_choose[1]).."_new"
   local char_big_filename2 = "char"..tostring(select_config.ch_choose[2]).."_new"
   
-  if submode and submode == endingcheck_config.submode_story then
-    -- story mode lose
-    if p1_win==false then
-      lose_t_:set_pos(pos1.x, pos1.y)
-      win_t_:set_pos(pos2.x, pos2.y)
+  -- if p1 lose
+  if p1_win == false then
+    lose_t_:set_pos(pos1.x - 35, pos1.y - 50)
+    win_t_:set_pos(pos2.x  + 35, pos2.y - 50)
+
+    char_big_filename1 = char_big_filename1 .. ("/sad")
+    char_big_filename2 = char_big_filename2 .. ("/glad") 
+    
+    print(" Lua: game_mode: "..game_mode)
+    print(" Lua: (note: endingcheck_config.GM_PVC is "..endingcheck_config.GM_PVC..")")
+    
+    if game_mode and game_mode == endingcheck_config.GM_PVC then
       demo:play_sound("3/3c/lose.wav")
-      char_big_filename1 = char_big_filename1 .. ("/sad")
-      char_big_filename2 = char_big_filename2 .. ("/glad")
-      
-    -- story mode win
     else
-      lose_t_:set_pos(pos2.x, pos2.y)
-      win_t_:set_pos(pos1.x, pos1.y)
       demo:play_sound("3/3c/win.wav")
-      char_big_filename1 = char_big_filename1 .. ("/glad")
-      char_big_filename2 = char_big_filename2 .. ("/sad")
     end
+  else 
+    lose_t_:set_pos(pos2.x + 35, pos2.y - 50)
+    win_t_:set_pos(pos1.x  - 35, pos1.y - 50)
+
+    char_big_filename1 = char_big_filename1 .. ("/glad")
+    char_big_filename2 = char_big_filename2 .. ("/sad")
     
-  else
-    -- vs mode p1 lose
-    if p1_win==false then
-      lose_t_:set_pos(pos1.x, pos1.y)
-      win_t_:set_pos(pos2.x, pos2.y)
-      if game_mode and game_mode == endingcheck_config.GM_PVC then
-        demo:play_sound("3/3c/lose.wav")
-      else
-        demo:play_sound("3/3c/win.wav")
-      end
-      
-      char_big_filename1 = char_big_filename1 .. ("/sad")
-      char_big_filename2 = char_big_filename2 .. ("/glad")
-      
-    -- vs mode p1 win
-    else
-      lose_t_:set_pos(pos2.x, pos2.y)
-      win_t_:set_pos(pos1.x, pos1.y)
-      demo:play_sound("3/3c/win.wav")
-      
-      char_big_filename1 = char_big_filename1 .. ("/glad")
-      char_big_filename2 = char_big_filename2 .. ("/sad")
-    end
-    
+    demo:play_sound("3/3c/win.wav")
   end
   
   --char_big1_ = ui.new_image{ parent=scene_, path=char_big_filename1, x=pos1.x-32, y=pos1.y+64, w=432, h=648, center=true }
@@ -139,9 +121,9 @@ local function show(demo, game_mode, submode, p1_win)
   if submode and submode == endingcheck_config.submode_story and p1_win==true then
     end_text_:change_text("Next") -- story mode win
   else
-    end_text_:change_text("Retry")
+    end_text_:change_text("Rematch")
   end
-  end_text_:set_pos(center_x, center_y - 60)
+  end_text_:set_pos(center_x - 120, center_y + 110)
   end_text_:set_alpha(0)
   end_text_:set_scale(1.3)
   end_text_:set_depth(-450)
@@ -149,7 +131,7 @@ local function show(demo, game_mode, submode, p1_win)
   end_text2_:set_visible(true)
   end_text2_:set_color(255, 255, 255)
   end_text2_:change_text("Leave")
-  end_text2_:set_pos(center_x, center_y + 60)
+  end_text2_:set_pos(center_x + 120, center_y + 110)
   end_text2_:set_alpha(0)
   end_text2_:set_scale(1.3)
   end_text2_:set_depth(-450)

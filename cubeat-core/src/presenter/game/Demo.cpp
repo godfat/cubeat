@@ -320,6 +320,8 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
             set0->sink_speed_add(60);
             set0->max_warning_count(4);
             set0->sudden_death_time(90000);
+        } else if ( submode_ >= 10 && submode_ <= 14 ) {
+            set0->max_warning_count(8);
         }
         map0_ = presenter::Map::create(set0, player0_);
         map0_->lose_event(bind(&Demo::end, this, ref(map0_)));
@@ -752,7 +754,7 @@ void Demo::ready_go(int step)
             ready_go_text_outline_->changeText("Go!");
             ready_go_text_outline_->set<Scale>(vec3(1.07, 1.07, 1.07));
             ready_go_text_outline_->tween<OElastic, Scale>(vec3(2.14, 2.14, 2.14), 900u, 0);
-            ready_go_text_outline_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), vec3(0, 144, 0), 1u);
+            ready_go_text_outline_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), vec3(0, 170, 0), 1u);
 
             blocker_->tween<Linear, Alpha>(144, 0, 1000u);
         }
@@ -877,8 +879,8 @@ void Demo::setup_ui()
     }
 
     //2012.05 attack effect changed. I still need their position but don't show them
-    ui_layout_->getSpriteText("gar1p").set<Visible>(false);
-    ui_layout_->getSpriteText("gar2p").set<Visible>(false);
+//    ui_layout_->getSpriteText("gar1p").set<Visible>(false);
+//    ui_layout_->getSpriteText("gar2p").set<Visible>(false);
     vec2 center_pos1( uiconf_.I("character_center_x1"), uiconf_.I("character_center_y") );
     pview1_ = presenter::PlayerView::create( c1p_, scene_, center_pos1 );
     pview1_->setMap( map0_ );
@@ -897,8 +899,16 @@ void Demo::setup_ui()
     overheat1_->tween<SineCirc, Alpha>(0, 1000u, -1);
     player0_->player_overheat_event( bind(&Demo::set_player_overheat_ui, this, _1, _2) );
 
-    if( game_mode_ == GM_SINGLE ) {    //2011.04.05 make stage number equal to puzzle level.
-        ui_layout_->getSpriteText("stage").changeText( "level" + to_s(mode_level_ - 1) ); //first puzzle have 3 chains.
+    if( game_mode_ == GM_SINGLE ) {
+        if( submode_ == 0 ) {
+            ui_layout_->getSpriteText("stage").changeText( "LEVEL" + to_s(mode_level_ - 1) );
+        }
+        else if( submode_ >= 10 && submode_ <= 14) {
+            ui_layout_->getSpriteText("stage").changeText( "ATK " + to_s( ((submode_-10)+1)*20 ) );
+        }
+        else {
+            ui_layout_->getSpriteText("stage").changeText( "Error" );
+        }
     }
 
     if( game_mode_ != GM_SINGLE ) { // puzzle demo WTF temp

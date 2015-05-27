@@ -732,6 +732,7 @@ void Demo::ready_go(int step)
         if( !gameplay_.exist("dont_show_ready") && game_mode_ != GM_TUT ) {
 
             ready_go_text_->tween<Linear, Alpha>(0, 500u);
+            ready_go_text_outline_->tween<Linear, Alpha>(0, 500u);
 
             blocker_->set<Visible>(false);
             blocker_->set<Alpha>(144);
@@ -748,6 +749,11 @@ void Demo::ready_go(int step)
             ready_go_text_->set<Scale>(vec3(1,1,1));
             ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
+            ready_go_text_outline_->changeText("Go!");
+            ready_go_text_outline_->set<Scale>(vec3(1.05, 1.05, 1.05));
+            ready_go_text_outline_->tween<OElastic, Scale>(vec3(2.1, 2.1, 2.1), 900u, 0);
+            ready_go_text_outline_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), vec3(0, 192, 0), 1u);
+
             blocker_->tween<Linear, Alpha>(144, 0, 1000u);
         }
 
@@ -763,6 +769,12 @@ void Demo::ready_go(int step)
             ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
             ready_go_text_->set<Visible>(true);
             ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
+
+            ready_go_text_outline_->changeText("Ready?");
+            ready_go_text_outline_->set<Scale>(vec3(0.84,0.84,0.84));
+            ready_go_text_outline_->set<Visible>(true);
+            ready_go_text_outline_->tween<OElastic, Scale>(vec3(1.68,1.68,1.68), 900u, 0);
+
             blocker_->set<Visible>(true);
         }
     }
@@ -962,6 +974,10 @@ void Demo::setup_ui()
         ready_go_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
         ready_go_text_->setDepth(-450).setPickable(false);
 
+        ready_go_text_outline_ = view::SpriteText::create("3", ui_scene_, "GN-KillGothic", 72, true, data::Color(255, 32, 32));
+        ready_go_text_outline_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
+        ready_go_text_outline_->setDepth(-400).setPickable(false);
+
         pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "kimberley", 30, true);
         pause_note_text_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() - 30 ) );
         pause_note_text_->tween<SineCirc, Alpha>(0, 3000u, -1);
@@ -983,6 +999,7 @@ void Demo::hide_upper_layer_ui()
         pause_text2_->set<Visible>(false);
         ready_go_text_->set<Visible>(false);
         pause_note_text_->set<Visible>(false);
+        ready_go_text_outline_->set<Visible>(false);
         win_t_->set<Visible>(false);
         lose_t_->set<Visible>(false);
         pause_t_->set<Visible>(false);

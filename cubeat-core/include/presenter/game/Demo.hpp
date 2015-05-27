@@ -173,7 +173,7 @@ protected:
     view::pSprite         heatunit1_[24], heatunit2_[24];
     view::pSprite         overheat1_, overheat2_;
     view::pSprite         char_big1_, char_big2_;
-    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_;
+    view::pSpriteText     end_text_, end_text2_, pause_text_, pause_text2_, pause_note_text_, ready_go_text_, ready_go_text_outline_;
     pDummy timer_ui_, btn_reinit_, btn_pause_;
     std::string c1p_, c2p_, sconf_;
 

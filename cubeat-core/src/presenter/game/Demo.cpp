@@ -744,7 +744,7 @@ void Demo::ready_go(int step)
         /// WTF Hack for demo
         if( !gameplay_.exist("dont_show_ready") && game_mode_ != GM_TUT ) {
             audio::Sound::i().playBuffer("go.wav");
-            ready_go_text_->changeText("go!");
+            ready_go_text_->changeText("Go!");
             ready_go_text_->set<Scale>(vec3(1,1,1));
             ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
@@ -759,7 +759,7 @@ void Demo::ready_go(int step)
             audio::Sound::i().playBuffer("count.wav");
             //ready_go_text_->showNumber(step);
 
-            ready_go_text_->changeText("ready?");
+            ready_go_text_->changeText("Ready?");
             ready_go_text_->set<Scale>(vec3(0.8,0.8,0.8));
             ready_go_text_->set<Visible>(true);
             ready_go_text_->tween<OElastic, Scale>(vec3(1.6,1.6,1.6), 900u, 0);
@@ -847,7 +847,12 @@ void Demo::setup_ui()
         utils::map_any const& attr = boost::any_cast<utils::map_any const>(it.second);
         ui_layout_->
             addSprite(key, 0, attr.I("w"), attr.I("h"), false, attr.S("img"))
-           .getSprite(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) );
+           .getSprite(key).set<Pos2D>( vec2(attr.I("x"), attr.I("y")) )
+                          .setDepth( attr.I("d") );
+
+        if( key == "scr2p_bg" ) {
+            ui_layout_->getSprite(key).textureFlipH();
+        }
     }
 
     utils::map_any const& misc = uiconf_.M("misc");

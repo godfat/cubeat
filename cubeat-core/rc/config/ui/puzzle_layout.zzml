@@ -1,9 +1,9 @@
 
-# 2 players playing in-game UI layout settings.
+# 1 player in-game UI layout settings.
 
 # base size and texture
 base: {
-    infoboard: { img: 'ui/puzzle', w: 170, h: 288, x: 205, y: 28 }
+    infoboard: { img: 'ui/puzzle', w: 170, h: 288, x: 205, y: 28, d: 20 }
 },
 
 # texts setup data

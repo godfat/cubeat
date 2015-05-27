@@ -3,16 +3,21 @@
 
 # base size and texture
 base: {
-    infoboard: { img: 'ui/puzzle', w: 170, h: 288, x: 205, y: 28, d: 20 }
+    scr1p_bg:  { img: 'ui/board1', w: 181, h: 79, x: 200, y: 32,  d: 20 },
+    stage_bg:  { img: 'ui/board1', w: 181, h: 79, x: 200, y: 117, d: 20 },
+    time_bg:   { img: 'ui/board1', w: 181, h: 79, x: 200, y: 203, d: 20 }, 
+    logo:      { img: 'ui/logo'  , w: 256, h: 64, x: 165, y: 320, d: 20 },
+    
+    scr1p_tx: { img: 'ui/score',  w: 72, h: 24, x: 203, y: 31,  d: 10 },
+    stage_tx: { img: 'ui/stage',  w: 72, h: 24, x: 203, y: 116, d: 10 },
+    time_tx:  { img: 'ui/time',   w: 72, h: 24, x: 203, y: 202, d: 10 }
 },
 
 # texts setup data
 misc: {
-    gar1p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 290, y: 425 },
-    gar2p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 710, y: 425 },
-    stage:  { text: 'stage 0', font: 'kimberley', fsize: 25, center: 1, x: 290, y: 137 },
-    time :  { text: '00:00',   font: 'kimberley', fsize: 30, center: 1, x: 290, y: 217 },
-    scr1p:  { text: '00000',   font: 'kimberley', fsize: 30, center: 1, x: 290, y: 60 }
+    scr1p:  { text: '00000',   font: 'kimberley', fsize: 30, center: 1, x: 290, y: 72 },
+    stage:  { text: 'stage 0', font: 'kimberley', fsize: 25, center: 1, x: 290, y: 157 },
+    time :  { text: '00:00',   font: 'kimberley', fsize: 30, center: 1, x: 290, y: 243 }
 },
 
 # 1p & 2p character sprite positions
@@ -24,7 +29,7 @@ mapview0: {
    xoff: 445,
    yoff: 682,
   csize:  64,
-  garbage_src_x: 225,
+  garbage_src_x: 640,
   garbage_src_y: -200,
   garbage_ene_x: 710,
   ability_btn_x: 290,

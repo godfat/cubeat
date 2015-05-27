@@ -18,8 +18,8 @@ base: {
 
 # texts setup data
 misc: {
-    gar1p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 570, y: 425 },
-    gar2p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 715, y: 425 },
+    #gar1p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 570, y: 425 },
+    #gar2p:  { text: '0',       font: 'kimberley', fsize: 30, center: 1, x: 715, y: 425 },
     #stage:  { text: 'stage 0', font: 'kimberley', fsize: 30, center: 1, x: 640, y: 178 },
     time :  { text: '00:00',   font: 'kimberley', fsize: 30, center: 1, x: 640, y: 233 },
     scr1p:  { text: '00000',   font: 'kimberley', fsize: 30, center: 1, x: 597, y: 72 },

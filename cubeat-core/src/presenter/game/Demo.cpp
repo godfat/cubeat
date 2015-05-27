@@ -907,7 +907,7 @@ void Demo::setup_ui()
             ui_layout_->getSpriteText("stage").changeText( "ATK " + to_s( ((submode_-10)+1)*20 ) );
         }
         else {
-            ui_layout_->getSpriteText("stage").changeText( "Error" );
+            ui_layout_->getSpriteText("stage").changeText( "---" );
         }
     }
 

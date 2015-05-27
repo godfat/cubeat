@@ -175,7 +175,7 @@ void ViewSpriteMaster::new_chain_text(model::wpChain const& chain,
       .addSpriteText("amounto", str2,"GN-KillGothic", 0, 24, true, data::Color(255,0,0))
       .addSpriteText("amount",  str2,"GN-KillGothic", 0, 24, true)
       .setPickable(false);
-    m->getSprite("chaino").set<Pos2D>(vec2(1,-1)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
+    m->getSprite("chaino").set<Pos2D>(vec2(1,0)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
     m->getSprite("chain").setDepth(-10).setPickable(false);
     m->getSprite("amounto").set<Pos2D>(vec2(1,39)).set<Scale>(vec3(1.03,1.15,1)).setPickable(false);
     m->getSprite("amount").setDepth(-10).set<Pos2D>(vec2(0,40)).setPickable(false);
@@ -862,7 +862,7 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 //        alert_flood_bg_->set< Pos2D >( -vec2(0, (warning_level)/112.0 * 640) );
 
         if( !ui_flag1_ ) {
-            countdown_text_->set< Pos2D >( pos_vec2(3, 6) + vec2(-csize/2, 0) );
+            countdown_text_->set< Pos2D >( pos_vec2(3, 7) + vec2(-csize/2, 0) );
         }
 
         if( column_flag_ != 0 ) {

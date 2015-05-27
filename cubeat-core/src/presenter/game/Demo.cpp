@@ -750,9 +750,9 @@ void Demo::ready_go(int step)
             ready_go_text_->tween<OElastic, Scale>(vec3(2,2,2), 900u, 0);
 
             ready_go_text_outline_->changeText("Go!");
-            ready_go_text_outline_->set<Scale>(vec3(1.05, 1.05, 1.05));
-            ready_go_text_outline_->tween<OElastic, Scale>(vec3(2.1, 2.1, 2.1), 900u, 0);
-            ready_go_text_outline_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), vec3(0, 192, 0), 1u);
+            ready_go_text_outline_->set<Scale>(vec3(1.07, 1.07, 1.07));
+            ready_go_text_outline_->tween<OElastic, Scale>(vec3(2.14, 2.14, 2.14), 900u, 0);
+            ready_go_text_outline_->tween<Linear, ColorDiffuseVec3>(vec3(255, 32, 32), vec3(0, 144, 0), 1u);
 
             blocker_->tween<Linear, Alpha>(144, 0, 1000u);
         }
@@ -975,7 +975,7 @@ void Demo::setup_ui()
         ready_go_text_->setDepth(-450).setPickable(false);
 
         ready_go_text_outline_ = view::SpriteText::create("3", ui_scene_, "GN-KillGothic", 72, true, data::Color(255, 32, 32));
-        ready_go_text_outline_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 20) ); //hacky
+        ready_go_text_outline_->set<Pos2D>( vec2(Conf::i().SCREEN_W() /2, Conf::i().SCREEN_H() /2 + 22) ); //hacky
         ready_go_text_outline_->setDepth(-400).setPickable(false);
 
         pause_note_text_ = view::SpriteText::create("press middle button to pause", ui_scene_, "kimberley", 30, true);

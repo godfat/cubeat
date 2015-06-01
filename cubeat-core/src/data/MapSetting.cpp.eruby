@@ -18,6 +18,8 @@ MapSetting::MapSetting(utils::map_any const& conf):
     max_warning_count_( conf.I("max_warning_count") ),
     drop_normal_chance_( conf.I("drop_normal_chance") ),
     drop_normal_per_bag_( conf.I("drop_normal_per_bag") ),
+    game_submode_( -1 ),
+    sudden_death_time_( 180000 ),
     sink_speed_( conf.F("sink_speed") ),
     sink_speed_add_( conf.F("sink_speed_add") ),
     sink_speed_limit_( conf.F("sink_speed_limit") ),

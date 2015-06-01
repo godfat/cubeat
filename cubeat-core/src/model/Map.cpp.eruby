@@ -927,8 +927,12 @@ void Map::inc_warning(int& warning_lv) {
     int warning_level_cap = ms()->max_warning_count() * 1000;
     if( column_full_num_ && chains_.empty() && warning_lv < warning_level_cap ) {
         warning_lv += 20;
-        if( warning_lv > warning_level_cap )
+        if( warning_lv >= warning_level_cap - 1000 ) {
+            almost_lost_ = true;
+        }
+        if( warning_lv > warning_level_cap ) {
             warning_lv = warning_level_cap;
+        }
     }
 // 2012 note: separate inc_warning and dec_warning for different countdown speed control
 }
@@ -1183,6 +1187,10 @@ int Map::cubes_restored() const {
 
 int Map::alert_triggered_count() const {
     return alert_triggered_count_;
+}
+
+bool Map::almost_lost() const {
+    return almost_lost_;
 }
 
 int const* Map::cubes_cleared_data() const {

@@ -1712,6 +1712,8 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
                 statistics_["achieve_win_safety_first"] = 1;
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
             }
+
+            printf(" \n\n\n\n Map0 ALMOST LOST: %d \n\n\n\n", static_cast<int>(map0_->almost_lost()) );
         }
 
         // note: so, as with stat_shortest_time, should we have a stat_longest_time for each level?

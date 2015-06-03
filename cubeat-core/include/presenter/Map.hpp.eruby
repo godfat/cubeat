@@ -89,7 +89,8 @@ public:
     int  attack_made_per_session() const { return model()->attack_made_per_session(); }
     int  cubes_restored() const { return model()->cubes_restored(); }
     int  alert_triggered_count() const { return model()->alert_triggered_count(); }
-    bool almost_lost() const { return model()->almost_lost(); }
+    bool turn_the_tide() const { return model()->turn_the_tide(); }
+    bool so_close() const { return model()->so_close(); }
     int const* cubes_cleared_data() const { return model()->cubes_cleared_data(); }
     int const* cubes_matched_data() const { return model()->cubes_matched_data(); }
     bool all_empty() const { return model()->all_empty(); }

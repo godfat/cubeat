@@ -1675,6 +1675,9 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
         printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
 
+        printf(" \n\n\n\n Map0 TURN THE TIDE: %d \n", static_cast<int>(map0_->turn_the_tide()) );
+        printf(" Map0 THAT WAS CLOSE: %d \n", static_cast<int>(map0_->so_close()) );
+
         if( map0_ != lose_map ) {
 
             // note: there should be win / lose counts for different levels of AI,
@@ -1713,7 +1716,17 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
             }
 
-            printf(" \n\n\n\n Map0 ALMOST LOST: %d \n\n\n\n", static_cast<int>(map0_->almost_lost()) );
+            // note: Feels non-sensical to have a "how many times you have turned the tide" record.
+            if( map0_->turn_the_tide() == 1 && statistics_.I("achieve_win_turn_the_tide") == 0 ) {
+                statistics_["achieve_win_turn_the_tide"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_turn_the_tide", true);
+            }
+
+            // note: Feels non-sensical to have a "how many times you have close-call win" record.
+            if( map0_->turn_the_tide() == 1 && statistics_.I("achieve_win_so_close") == 0 ) {
+                statistics_["achieve_win_so_close"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_so_close", true);
+            }
         }
 
         // note: so, as with stat_shortest_time, should we have a stat_longest_time for each level?
@@ -1864,6 +1877,18 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_long_struggle"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_long_struggle") );
     } else {
         statistics_["achieve_long_struggle"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_turn_the_tide") ) {
+        statistics_["achieve_win_turn_the_tide"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_turn_the_tide") );
+    } else {
+        statistics_["achieve_win_turn_the_tide"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_so_close") ) {
+        statistics_["achieve_win_so_close"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_so_close") );
+    } else {
+        statistics_["achieve_win_so_close"] = 0;
     }
 }
 

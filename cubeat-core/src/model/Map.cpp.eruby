@@ -928,7 +928,8 @@ void Map::inc_warning(int& warning_lv) {
     if( column_full_num_ && chains_.empty() && warning_lv < warning_level_cap ) {
         warning_lv += 20;
         if( warning_lv >= warning_level_cap - 1000 ) {
-            almost_lost_ = true;
+            turn_the_tide_ = true;
+            so_close_ = true;
         }
         if( warning_lv > warning_level_cap ) {
             warning_lv = warning_level_cap;
@@ -938,8 +939,12 @@ void Map::inc_warning(int& warning_lv) {
 }
 
 void Map::dec_warning(int& warning_lv) {
+    int warning_level_cap = ms()->max_warning_count() * 1000;
     if( !column_full_num_ && warning_lv > 0 ) {
         warning_lv -= 20;
+        if( warning_lv < warning_level_cap - 1000 ) {
+            so_close_ = false;
+        }
         if( warning_lv < 0 )
             warning_lv = 0;
     }
@@ -1044,8 +1049,15 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
 
     if( warning_handle_ && warning_level_ >= ms()->max_warning_count() * 1000 && owner()->lose_event() ) {
         owner()->alert_bar_update_event()(warning_level_);
-        owner()->lose_event()();
+
+        turn_the_tide_ = false;
+        so_close_ = false;
+
         warning_handle_.reset(); // take out warning_handle_ so that warning_level_ won't change again after we lose for sure.
+
+        /*** Demo::end will trigger on this line ***/
+        owner()->lose_event()();
+        /*******************************************/
     }
 }
 
@@ -1189,8 +1201,12 @@ int Map::alert_triggered_count() const {
     return alert_triggered_count_;
 }
 
-bool Map::almost_lost() const {
-    return almost_lost_;
+bool Map::turn_the_tide() const {
+    return turn_the_tide_;
+}
+
+bool Map::so_close() const {
+    return so_close_;
 }
 
 int const* Map::cubes_cleared_data() const {

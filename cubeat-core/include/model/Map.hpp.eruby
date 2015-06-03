@@ -46,7 +46,8 @@ public:
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
         cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), match_counter_(0),
         highest_chain_(0), highest_color_count_(0), highest_single_color_match_(0),
-        attack_made_per_session_(0), cubes_restored_(0), alert_triggered_count_(0), almost_lost_(false),
+        attack_made_per_session_(0), cubes_restored_(0), alert_triggered_count_(0), turn_the_tide_(false),
+        so_close_(false),
         one_fadings_per_cycle_(0), dropping_creatable_(false), garbage_dumpable_(false),
         column_full_num_(0)
     {}
@@ -90,7 +91,8 @@ public:
     int  attack_made_per_session() const;
     int  cubes_restored() const;
     int  alert_triggered_count() const;
-    bool almost_lost() const;
+    bool turn_the_tide() const;
+    bool so_close() const;
     int const* cubes_cleared_data() const;
     int const* cubes_matched_data() const;
     bool all_empty() const;
@@ -170,7 +172,8 @@ private:
     int attack_made_per_session_;
     int cubes_restored_;
     int alert_triggered_count_;
-    bool almost_lost_;
+    bool turn_the_tide_;
+    bool so_close_;
 
     int one_fadings_per_cycle_;
     bool dropping_creatable_, garbage_dumpable_;

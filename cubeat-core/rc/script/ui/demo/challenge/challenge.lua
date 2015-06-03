@@ -379,6 +379,14 @@ local function update_achievement(key, value)
   if key == "achieve_long_struggle" and value == true then
     achievement_text.pop_achievement_ui("long_struggle")
   end
+  
+  if key == "achieve_win_turn_the_tide" and value == true then
+    achievement_text.pop_achievement_ui("win_turn_the_tide")
+  end
+  
+  if key == "achieve_win_so_close" and value == true then
+    achievement_text.pop_achievement_ui("win_so_close")
+  end
 end
 
 --

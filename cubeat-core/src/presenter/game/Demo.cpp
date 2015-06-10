@@ -1670,13 +1670,19 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         printf(" 1p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / effective_clicks_1p);
         printf(" 2p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / effective_clicks_2p);
 
-        double time_in_seconds = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
+        double time_in_mins = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
+        double efficiency_over_time_1p = static_cast<double>(map0_->attack_made_per_session()) / time_in_mins;
 
-        printf(" 1p ATTACK / Min ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / time_in_seconds);
-        printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_seconds);
+        printf(" 1p ATTACK / Min ratio: %lf \n", efficiency_over_time_1p);
+        printf(" 2p ATTACK / Min ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / time_in_mins);
 
         printf(" \n\n\n\n Map0 TURN THE TIDE: %d \n", static_cast<int>(map0_->turn_the_tide()) );
         printf(" Map0 THAT WAS CLOSE: %d \n", static_cast<int>(map0_->so_close()) );
+
+        if( efficiency_over_time_1p > 90 && statistics_.I("achieve_efficiency_over_time") == 0 ) {
+            statistics_["achieve_efficiency_over_time"] = 1;
+            script::Lua::call(L_, "save_record_and_achievement", "achieve_efficiency_over_time", true);
+        }
 
         if( map0_ != lose_map ) {
 
@@ -1823,6 +1829,12 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_garbage_left_60"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_garbage_left_60") );
     } else {
         statistics_["achieve_garbage_left_60"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_efficiency_over_time") ) {
+        statistics_["achieve_efficiency_over_time"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_efficiency_over_time") );
+    } else {
+        statistics_["achieve_efficiency_over_time"] = 0;
     }
 
     if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_two_mice_pvp") ) {

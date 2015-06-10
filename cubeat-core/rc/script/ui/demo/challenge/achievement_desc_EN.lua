@@ -15,7 +15,7 @@ local achievement_desc = {
   three_color_match = { name = "Colorful Match", hint = "Make a match consists of at least 3 different colors." },
   garbage_left_60 = { name = "He's Going Down", hint = "Accumulate a huge number of attack cubes." },
   
-  efficiency_over_time = { name = "CuBeat Master", hint = "Create more than 100 attack cubes per minute in a versus game." },
+  efficiency_over_time = { name = "CuBeat Master", hint = "Create more than 90 attack cubes per minute in a versus game." },
   
   emergency_stages_cleared = { name = "Don't Panic", hint = "Clear all Emergency mode challenges." },
   puzzle_stages_cleared = { name = "Mind Over Speed", hint = "Clear all Puzzle mode challenges." },

@@ -225,6 +225,9 @@ local function ending(demo, submode)
     end)
     recordboard.show(submode, win_)
     
+    -- need to determine how to distinguish stock levels and rng levels to make achievements
+    -- achieve_puzzle_stages_cleared
+    
   elseif submode==parameter.UnLimited_Normal or submode==parameter.UnLimited_Countdown then
     -- save score
     local data = { win=win_, submode=submode, puzzle_level=get_puzzle_level(), score=demo:get_map_score(parameter.player1) }
@@ -246,6 +249,10 @@ local function ending(demo, submode)
     end)
     scorelist.set_visible(true)
     
+    if data.score >= 15000 then
+      challenge.update_achievement("achieve_score_attack_mastered", true)
+    end
+    
   else
     recordboard.set_title( win_ and 'SUCCESS' or 'FAIL' )
     -- set button on_press function
@@ -259,6 +266,10 @@ local function ending(demo, submode)
     end)
     recordboard.show(submode, win_)
 
+    if win_ and submode == parameter.WarningCondition_100 then
+      challenge.update_achievement("achieve_emergency_stages_cleared", true)
+    end
+    
   end
 end
 
@@ -340,6 +351,21 @@ local function update_achievement(key, value)
     achievement_text.pop_achievement_ui("story_6")
   end
   
+  if key == "achieve_emergency_stages_cleared" and not record.load_raw(key) then
+    record.save_raw(key, true)
+    achievement_text.pop_achievement_ui("emergency_stages_cleared")
+  end
+  
+  if key == "achieve_puzzle_stages_cleared" and not record.load_raw(key) then
+    record.save_raw(key, true)
+    achievement_text.pop_achievement_ui("puzzle_stages_cleared")
+  end
+  
+  if key == "achieve_score_attack_mastered" and not record.load_raw(key) then
+    record.save_raw(key, true)
+    achievement_text.pop_achievement_ui("score_attack_mastered")
+  end
+  
   if key == "achieve_garbage_left_60" and value == true then
     achievement_text.pop_achievement_ui("garbage_left_60")
   end
@@ -390,6 +416,14 @@ local function update_achievement(key, value)
   
   if key == "achieve_win_so_close" and value == true then
     achievement_text.pop_achievement_ui("win_so_close")
+  end
+  
+  if key == "achieve_win_underdog" and value == true then
+    achievement_text.pop_achievement_ui("win_underdog")
+  end
+  
+  if key == "achieve_lose_careless" and value == true then
+    achievement_text.pop_achievement_ui("lose_careless")
   end
 end
 

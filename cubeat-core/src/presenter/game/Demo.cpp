@@ -45,7 +45,7 @@ using namespace std::tr1::placeholders;
 
 Demo::Demo()
     :c1p_("char/char1_new"), c2p_("char/char2_new"), sconf_("stage/jungle1"), game_mode_(GM_PVC),
-     submode_(0), ai_level_(3), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false),
+     submode_(0), ai_level_(-1), ai_logging_times_(0), ai_logging_rounds_(0), some_ui_inited_(false),
      is_countdown_(false), L_(0)
 {
 }
@@ -161,6 +161,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     else if( game_mode_ == GM_CVC || game_mode_ == GM_LOG ) {
         input0->setControlledByAI(true);
         input1->setControlledByAI(true);
+        ai_level_ = 3;
         player0_ = ctrl::AIPlayer::create(input0, 0, ai_level_);
         player1_ = ctrl::AIPlayer::create(input1, 1, ai_level_);
         if( game_mode_ == GM_LOG ) { // AI LOGGING's timer speed will overwrite the gameplay_ one
@@ -1729,11 +1730,25 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
             }
 
             // note: Feels non-sensical to have a "how many times you have close-call win" record.
-            if( map0_->turn_the_tide() == 1 && statistics_.I("achieve_win_so_close") == 0 ) {
+            if( map0_->so_close() == 1 && statistics_.I("achieve_win_so_close") == 0 ) {
                 statistics_["achieve_win_so_close"] = 1;
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_so_close", true);
             }
+
+            // note: Feels non-sensical to have a "how many times you have won underdogly" record.
+            if( map0_->score() <= map1_->score() - 1500 && ai_level_ > 0 && statistics_.I("achieve_win_underdog") == 0 ) {
+                statistics_["achieve_win_underdog"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_underdog", true);
+            }
         }
+        else if( map0_ == lose_map ) { // there currently is only one achievement condition here
+            // note: Feels non-sensical to have a "how many times you have lose carelessly" record.
+            if( map0_->score() >= map1_->score() + 2000 && ai_level_ > 0 && statistics_.I("achieve_lose_careless") == 0 ) {
+                statistics_["achieve_lose_careless"] = 1;
+                script::Lua::call(L_, "save_record_and_achievement", "achieve_lose_careless", true);
+            }
+        }
+
 
         // note: so, as with stat_shortest_time, should we have a stat_longest_time for each level?
         if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() >= 240000 &&
@@ -1741,9 +1756,6 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
             statistics_["achieve_long_struggle"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_long_struggle", true);
         }
-    }
-
-    if( !player0_->is_controlled_by_AI() && map0_ == lose_map ) { // there currently is only one achievement condition here
     }
 }
 
@@ -1901,6 +1913,18 @@ void Demo::load_stats_and_achievements_into_memory()
         statistics_["achieve_win_so_close"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_so_close") );
     } else {
         statistics_["achieve_win_so_close"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_underdog") ) {
+        statistics_["achieve_win_underdog"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_underdog") );
+    } else {
+        statistics_["achieve_win_underdog"] = 0;
+    }
+
+    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_lose_careless") ) {
+        statistics_["achieve_lose_careless"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_lose_careless") );
+    } else {
+        statistics_["achieve_lose_careless"] = 0;
     }
 }
 

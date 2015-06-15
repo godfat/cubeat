@@ -34,8 +34,8 @@ local achievement_desc = {
   win_overkill2 = { name = "Overkill Masterfully", hint = "Win a game against Very Hard AI or above with\nat least 24 attack cubes unreleased.", secret = true },
   win_so_close = { name = "Close Call", hint = "Win a game with less than 1 second to defeat.", secret = true },
   win_turn_the_tide = { name = "Turn the Tide", hint = "Win a game after being very close to defeat." },
-  win_underdog = { name = "Underdog Win", hint = "Win a game against Normal AI or above with\na score 2000 less than your opponent.", secret = true },
-  lose_careless = { name = "What Just Happened?", hint = "Lose a game against Normal AI or above with\na score 3000 more than your opponent.", secret = true },
+  win_underdog = { name = "Underdog Win", hint = "Win a game against Normal AI or above with\na score 1500 less than your opponent.", secret = true },
+  lose_careless = { name = "What Just Happened?", hint = "Lose a game against Normal AI or above with\na score 2000 more than your opponent.", secret = true },
 }
 
 return achievement_desc

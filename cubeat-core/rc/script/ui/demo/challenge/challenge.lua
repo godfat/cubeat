@@ -9,6 +9,7 @@ local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
 local puzzle_retry_     = 0
 local level_unlimited_  = false
+local update_achievement -- function forward decl
 
 -- puzzle_level_
 local function add_puzzle_level(v)
@@ -226,7 +227,7 @@ local function ending(demo, submode)
     recordboard.show(submode, win_)
     
     -- need to determine how to distinguish stock levels and rng levels to make achievements
-    -- achieve_puzzle_stages_cleared
+    -- update_achievement("achieve_puzzle_stages_cleared", true)
     
   elseif submode==parameter.UnLimited_Normal or submode==parameter.UnLimited_Countdown then
     -- save score
@@ -250,7 +251,7 @@ local function ending(demo, submode)
     scorelist.set_visible(true)
     
     if data.score >= 15000 then
-      challenge.update_achievement("achieve_score_attack_mastered", true)
+      update_achievement("achieve_score_attack_mastered", true)
     end
     
   else
@@ -267,7 +268,7 @@ local function ending(demo, submode)
     recordboard.show(submode, win_)
 
     if win_ and submode == parameter.WarningCondition_100 then
-      challenge.update_achievement("achieve_emergency_stages_cleared", true)
+      update_achievement("achieve_emergency_stages_cleared", true)
     end
     
   end
@@ -292,8 +293,8 @@ local function create_achievement_text(scene)
   achievement_text.create(scene)
 end
 
--- Update achievement
-local function update_achievement(key, value)
+-- Update achievement (forward declared) 
+update_achievement = function(key, value)
   if key == "stat_highest_chain" then
     if value >= 4 and not record.load_raw("achieve_highest_chain_4") then
       record.save_raw("achieve_highest_chain_4", true)
@@ -365,6 +366,8 @@ local function update_achievement(key, value)
     record.save_raw(key, true)
     achievement_text.pop_achievement_ui("score_attack_mastered")
   end
+  
+  -- below are achievements that passed in from C++ side
   
   if key == "achieve_garbage_left_60" and value == true then
     achievement_text.pop_achievement_ui("garbage_left_60")

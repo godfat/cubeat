@@ -216,11 +216,12 @@ int App::run(std::tr1::function<void()> tester)
     time_t t0 = realtime(), t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 
     while( IrrDevice::i().run() && !quit_ ) {
-        //if( IrrDevice::i().d()->isWindowActive() )                   //comment: temp for double tasking
-        //{                                                            //comment: temp for double tasking
-        //    if( global_timer_.lock()->isStopped() )        //comment: temp for double tasking
-        //        global_timer_.lock()->start();             //comment: temp for double tasking
-            //if( update_block() ) continue;
+        if( IrrDevice::i().d()->isWindowActive() )
+        {
+            if( global_timer_.lock()->is_stopped() ) {
+                global_timer_.lock()->start();
+                audio::Sound::i().pauseAll(false);
+            }
 
             MastEventReceiver::i().endEventProcess();
 
@@ -266,26 +267,31 @@ int App::run(std::tr1::function<void()> tester)
 
             time_t elapsed_time = realtime() - t0;
 
-            if( elapsed_time > 17 && elapsed_time < 500 ) {
+            if( elapsed_time > 25 && elapsed_time < 500 ) {
                 std::cout << "frame time spike: " << elapsed_time << "\n";
                 printf(" -- App: event(%ld) maspre(%ld) %ld %ld %ld %ld %ld %ld %ld %ld\n", t3-t2, t5-t4, t1-t0, t2-t1, t4-t3, t6-t5, t7-t6, t8-t7, t9-t8, t10-t9);
             }
-            if( elapsed_time < 16 ) { // temp: locked at 60 fps if possible
-                #if defined(WIN32) || defined(_WIN32)
-                //Sleep(15 - elapsed_time);
-                Sleep(1);
-                #else
-                //usleep((15 - elapsed_time) * 1000);
-                usleep(1);
-                #endif
-                while( realtime() - t0 <= 16 );
-            }
+//            if( elapsed_time < 16 ) { // temp: locked at 60 fps if possible
+//                #if defined(WIN32) || defined(_WIN32)
+//                //Sleep(15 - elapsed_time);
+//                Sleep(1);
+//                #else
+//                //usleep((15 - elapsed_time) * 1000);
+//                usleep(1);
+//                #endif
+//                while( realtime() - t0 <= 19 );
+//            }
+
             t0 = realtime();
             //printf("t0: %ld\n", t0);
-        //}                                                      //comment: temp for double tasking
-        //else                                                   //comment: temp for double tasking
-            //if( !timer_->isStopped() ) //comment: temp for double tasking
-                //timer_->stop();        //comment: temp for double tasking
+        }
+        else {
+            IrrDevice::i().d()->yield();
+            if( !global_timer_.lock()->is_stopped() ) {
+                global_timer_.lock()->stop();
+                audio::Sound::i().pauseAll(true);
+            }
+        }
     }
 
     /// Font hack

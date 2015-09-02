@@ -263,6 +263,7 @@ Sound& Sound::stopAll()
 
 Sound& Sound::pauseAll(bool const& f)
 {
+    if( !bgm_[0] ) return *this;
     if( f ) {
         bgm_[main_track_]->pause();
         BOOST_FOREACH(pSoundObject& p, sound_list_)

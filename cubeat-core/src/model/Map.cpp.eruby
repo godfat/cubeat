@@ -749,7 +749,9 @@ void <% debug_hook 'Map::cycle_creation_garbage' do %>(){
     //so here you have a upside-down view of where to drop the garbages.
 
     // don't feeble-drop.
-    if( this_frame_empty_slots < 6 && garbage_left_ >= 6 ) {
+    // 6 was too big and will cause abusing it to just shoot the top row as fast as possible
+    // potentially extending the warning count down
+    if( this_frame_empty_slots < 3 && garbage_left_ >= 3 ) {
         return;
     }
 

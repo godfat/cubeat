@@ -5,10 +5,14 @@ bundle
 option
 rc/config/option
 rc/config/tmp
+rc/config/challenge_record
 
 # generated executable
 bin
 obj
+
+# backups
+*.bak
 
 # resources
 rc/fonts

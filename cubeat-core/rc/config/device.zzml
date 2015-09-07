@@ -1,3 +1,7 @@
 bits        : 32,
-fullscreen  : 0,
+fullscreen  : 1,
 vsync       : 0
+
+#vsync default is 0, will need to add an option to change it to 1.
+#because vsync will cause noticable input lag, 
+#since our cursor movement need to be very precise and fast 

@@ -9,11 +9,14 @@ CuBeat (this program) uses following 3rd party libraries or frameworks:
 * A modified version of Irrlicht 1.7-SVN, hosted at https://github.com/arch-jslin/Irrlicht, which is included under Irrlicht Engine License.
 Please see doc/irrlicht_license.txt or http://irrlicht.sourceforge.net/license.html
 
-* FreeType 2.3.x is included under FreeType License
+* FreeType 2.5.x is included under FreeType License
 Please see doc/freetype_license.txt or http://www.freetype.org/FTL.TXT
 
 * Boost 1.4x.y is included under Boost Software License
 Please see doc/boost_license_1_0.txt or http://www.boost.org/LICENSE_1_0.txt
+
+* The setProcessDpiAware() from SFML library is included under zlib License
+Please see doc/SFML_zlib_license.txt and also the corresponding comments in main.cpp
 
 * ManyMouse is included under zlib License
 Copyright (c) 2005-2008 Ryan C. Gordon and others.

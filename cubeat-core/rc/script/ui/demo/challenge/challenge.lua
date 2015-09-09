@@ -104,7 +104,7 @@ local function init_override(demo, in_place, submode)
     if in_place==false then
       scorelist.create_score_list(demo:get_ui_scene())
     end
-  end
+  end  
 end
 
 ------------------------------------------------------
@@ -123,40 +123,75 @@ check_condition[parameter.OneShotClear] = function(demo)
   end
 end
 ----------------------------------
+
+  --[[ 
+    Just got surprised by a fucking logical problem in Emergency's winning condition: 
+    During the course of game it is POSSIBLE to make warning_level down to ZERO very briefly
+    And if at that instant the garbages happen to have been all dropped & also some chaining condition still exist down below
+    It is possible to win the game even if you still have cubes AT THE TOP ROW 
+    (which should trigger warning under normal circumstance 
+     -- but because chaining condition still exist and/or below_is_empty(), it won't)
+  ]]
+
 --WarningCondition
 check_condition[parameter.WarningCondition_20] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
+  if garbage_left==0 then
+    if demo:is_map_dropping(parameter.player1) then
+      demo:set_map_dropping(parameter.player1, false)
+    end
+    if warning_level == 0 then 
+      endgame(demo, true)
+    end
   end
 end
 check_condition[parameter.WarningCondition_40] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
+  if garbage_left==0 then
+    if demo:is_map_dropping(parameter.player1) then
+      demo:set_map_dropping(parameter.player1, false)
+    end
+    if warning_level == 0 then 
+      endgame(demo, true)
+    end
   end
 end
 check_condition[parameter.WarningCondition_60] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
+  if garbage_left==0 then
+    if demo:is_map_dropping(parameter.player1) then
+      demo:set_map_dropping(parameter.player1, false)
+    end
+    if warning_level == 0 then 
+      endgame(demo, true)
+    end
   end
 end
 check_condition[parameter.WarningCondition_80] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
+  if garbage_left==0 then
+    if demo:is_map_dropping(parameter.player1) then
+      demo:set_map_dropping(parameter.player1, false)
+    end
+    if warning_level == 0 then 
+      endgame(demo, true)
+    end
   end
 end
 check_condition[parameter.WarningCondition_100] = function(demo)
   local garbage_left  = demo:get_map_garbage_left(parameter.player1)
   local warning_level = demo:get_map_warning_level(parameter.player1)
-  if garbage_left==0 and warning_level==0 then
-    endgame(demo, true)
+  if garbage_left==0 then
+    if demo:is_map_dropping(parameter.player1) then
+      demo:set_map_dropping(parameter.player1, false)
+    end
+    if warning_level == 0 then 
+      endgame(demo, true)
+    end
   end
 end
 ----------------------------------

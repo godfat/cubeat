@@ -29,7 +29,7 @@ public:
 <%= accessor :double, :sink_speed, :sink_speed_add, :sink_speed_limit, :drop_speed, :damage_factor, :negate_damage_factor %>
 <%= accessor :int, :centerx %>
 <%= reader :int, :width, :height, :size %>
-<%= accessor :bool, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage, :preset, :tutorial %>
+<%= accessor :bool, :warning_enabled, :dropping_creatable, :garbage_dumpable, :use_broken_as_garbage, :preset, :tutorial %>
 <%= accessor 'std::vector<int>', :preset_data %>
 <%= accessor 'std::vector<int>', :color_bag %>
 
@@ -65,7 +65,7 @@ private:
         drop_normal_per_bag_(0), game_submode_(-1), sudden_death_time_(180000),
         sink_speed_(80.0), sink_speed_add_(10.0), sink_speed_limit_(400.0),
         drop_speed_(450.0), damage_factor_(1.00), negate_damage_factor_(1.0),
-        width_(6), height_(11), dropping_creatable_(true), garbage_dumpable_(true),
+        width_(6), height_(11), warning_enabled_(true), dropping_creatable_(true), garbage_dumpable_(true),
         use_broken_as_garbage_(false), preset_(false), tutorial_(false)
     {
         reset_size();

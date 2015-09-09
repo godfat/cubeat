@@ -15,6 +15,7 @@ MapSetting::MapSetting(utils::map_any const& conf):
     cube_dropping_duration_( conf.I("cube_dropping_duration") ),
     warning_check_delay_( conf.I("warning_check_delay") ),
     warning_gap_( conf.I("warning_gap") ),
+    warning_enabled_( true ),
     max_warning_count_( conf.I("max_warning_count") ),
     drop_normal_chance_( conf.I("drop_normal_chance") ),
     drop_normal_per_bag_( conf.I("drop_normal_per_bag") ),

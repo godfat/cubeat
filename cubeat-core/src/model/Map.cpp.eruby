@@ -354,7 +354,8 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
 
     garbage_dumpable_ = ms()->garbage_dumpable();
     dropping_creatable_ = ms()->dropping_creatable();
-    if( garbage_dumpable_ && dropping_creatable_ ) {
+    //if( garbage_dumpable_ && dropping_creatable_ ) {
+    if( ms()->warning_enabled() ) {
         cycle_warning();
     }
     else {
@@ -954,7 +955,10 @@ void Map::dec_warning(int& warning_lv) {
 
 void Map::dec_warning_emergency_mode(int& warning_lv) {
     if( !column_full_num_ && warning_lv > 0 ) {
-        warning_lv -= 80;
+        warning_lv -= garbage_left_ ? 80 : 240;
+        // Emergency mode -- when there's still garbage left, clearing top row should let you salvage a bit of time
+        //                   but not too much; when there's no garbage left and player cleared top row
+        //                   it should let the counter go back up a lot faster
         if( warning_lv < 0 )
             warning_lv = 0;
     }
@@ -1056,7 +1060,9 @@ void <% debug_hook 'Map::cycle_warning' do %>(){
         so_close_ = false;
 
         warning_handle_.reset(); // take out warning_handle_ so that warning_level_ won't change again after we lose for sure.
-
+        ms()->warning_enabled(false); // Will need to find a better way to synchronize this
+                                      // before a call to map_->stop_dropping() will end calls to cycle_warning()
+                                      // Now the responsiblity is separated
         /*** Demo::end will trigger on this line ***/
         owner()->lose_event()();
         /*******************************************/

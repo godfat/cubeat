@@ -224,6 +224,8 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     map1_->lose_event(bind(&Demo::end, this, ref(map1_)));
     map0_->stop_dropping(); //make them stop dropping from the very beginning.
     map1_->stop_dropping();
+    map0_->map_setting()->warning_enabled(false);
+    map1_->map_setting()->warning_enabled(false);
 
     ///NEW: MAKE PLAYER KNOWS ABOUT MAP
     std::vector< presenter::wpMap > map_list;
@@ -312,6 +314,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     // setup map
     if( submode_ == 0 ) {
         map0_ = utils::MapLoader::generate( mode_level_ );
+        map0_->map_setting()->warning_enabled( false ); // do not enable warning for Puzzle mode
     } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );
         set0->game_submode(submode_);
@@ -329,6 +332,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     }
     map0_->set_view_master( presenter::cube::ViewSpriteMaster::create(scene_, s0, player0_) );
     map0_->stop_dropping(); //make them stop dropping from the very beginning.
+    map0_->map_setting()->warning_enabled(false);
 
     ///NEW: MAKE PLAYER KNOWS ABOUT MAP
     std::vector< presenter::wpMap > map_list;
@@ -618,6 +622,12 @@ bool Demo::is_map_empty(int const& map_id) const {
         map0_->all_empty();
 }
 
+bool Demo::is_map_dropping(int const& map_id) const {
+    return map_id == 1 ?
+       map1_->is_dropping() :
+       map0_->is_dropping();
+}
+
 bool Demo::is_puzzle_started() const {
     return puzzle_started_;
 }
@@ -825,6 +835,7 @@ void Demo::game_start()
     player0_->start_heat_timer();
     if( game_mode_ == GM_SINGLE && submode_ != 0 ) {
         map0_->start_dropping();
+        map0_->map_setting()->warning_enabled(true);
     }
     else if( game_mode_ == GM_TUT ) {
         player1_->subscribe_player_specific_interactions();
@@ -832,9 +843,11 @@ void Demo::game_start()
     }
     else if( game_mode_ != GM_SINGLE ) {
         map0_->start_dropping();
+        map0_->map_setting()->warning_enabled(true);
         player1_->subscribe_player_specific_interactions();
         player1_->start_heat_timer();
         map1_->start_dropping();
+        map1_->map_setting()->warning_enabled(true);
     }
 
     if( App::i().getReplay().is_replaying() ) {
@@ -1155,6 +1168,7 @@ void Demo::game_stop()
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
 
     map0_->stop_dropping();
+    map0_->map_setting()->warning_enabled(false);
     player0_->stopAllActions();
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
 
@@ -1163,6 +1177,7 @@ void Demo::game_stop()
         audio::Sound::i().stopAll(); // don't stop music when puzzle
 
         map1_->stop_dropping();
+        map1_->map_setting()->warning_enabled(false);
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
     }

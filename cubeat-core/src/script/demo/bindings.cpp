@@ -148,6 +148,10 @@ AIPlayer* Demo_get_ai_player(Demo* self) { // not shared_ptr!
     return self->get_ai_player();
 }
 
+bool Demo_is_map_dropping(Demo* self, int map_id) { // not shared_ptr!
+    return self->is_map_dropping(map_id);
+}
+
 bool Demo_is_map_all_waiting(Demo* self, int map_id) { // not shared_ptr!
     return self->is_map_all_waiting(map_id);
 }

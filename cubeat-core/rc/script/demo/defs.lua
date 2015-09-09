@@ -47,6 +47,7 @@ Mt_Demo.get_map_max_warning_count  = C.Demo_get_map_max_warning_count
 Mt_Demo.get_map_cubes_cleared_data = C.Demo_get_map_cubes_cleared_data
 Mt_Demo.get_map_cubes_matched_data = C.Demo_get_map_cubes_matched_data
 Mt_Demo.get_ai_player          = C.Demo_get_ai_player
+Mt_Demo.is_map_dropping        = C.Demo_is_map_dropping
 Mt_Demo.is_map_all_waiting     = C.Demo_is_map_all_waiting
 Mt_Demo.is_map_empty           = C.Demo_is_map_empty
 Mt_Demo.is_puzzle_started      = C.Demo_is_puzzle_started

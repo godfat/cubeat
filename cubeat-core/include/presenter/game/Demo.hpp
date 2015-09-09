@@ -90,6 +90,7 @@ public:
     int const* get_map_cubes_cleared_data(int const& map_id) const;
     int const* get_map_cubes_matched_data(int const& map_id) const;
     ctrl::AIPlayer* get_ai_player() const;
+    bool is_map_dropping(int const& map_id) const;
     bool is_map_all_waiting(int const& map_id) const;
     bool is_map_empty(int const& map_id) const;
     bool is_puzzle_started() const;

@@ -74,6 +74,9 @@ public:
 
     Map& ending_effect();
 
+    bool is_dropping() const { return map_setting()->dropping_creatable() &&
+                                      map_setting()->garbage_dumpable(); }
+
     int  score()        const { return model()->score(); }
     int  garbage_left() const { return model()->garbage_left(); }
     int  current_sum_of_attack() const { return model()->current_sum_of_attack(); }

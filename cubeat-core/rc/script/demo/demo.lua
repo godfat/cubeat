@@ -117,8 +117,10 @@ function init(demo)
   -- DEBUG: clear all achievements in record when debug
   -- record.clear_all_stat_achievement()
   
+  -- for better organize related functions, it's easier to just populate all missing records here at init
+  record.populate_stat_achievement_init_value_in_file()
+  
   -- print challenge record data
-  local record = require 'rc/script/ui/demo/challenge/record'
   record.print_challenge_record_origin_data()
   record.print_challenge_record_data()
   
@@ -169,6 +171,7 @@ end
 
 -- used by C++ side to check if record is present
 function record_exist(key)
+  print("\n save_record_and_achievement: ai_level readout as backup plan: ", demo_:get_ai_level())
   if record.load_raw(key) then 
     return true
   end
@@ -195,6 +198,10 @@ end
 function save_record_and_achievement(key, value)
   record.save_raw(key, value)
   challenge.update_achievement(key, value) 
+end
+
+function init_stats_from_file()
+  record.load_stat_achievement_to_C_side(demo_)
 end
 
 -- This really should just be a temporary solution, a separated menu page should be better

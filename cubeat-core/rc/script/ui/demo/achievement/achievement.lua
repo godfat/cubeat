@@ -66,14 +66,19 @@ local function init(demo, parent)
   
   for i, v in ipairs(achieve_list) do
     local name, hint
-    if not achieve_desc[achieve_list[i]].secret or record.load_raw("achieve_" .. tostring(achieve_list[i])) then
+    local rec_value = record.load_raw("achieve_" .. tostring(achieve_list[i]))
+    if not achieve_desc[achieve_list[i]].secret or rec_value then
       name  = achieve_desc[achieve_list[i]].name
       hint  = achieve_desc[achieve_list[i]].hint
     else
       name = "???"; hint = "???"
     end
     menu["achevement_" .. tostring(i)] = ui.new_text{ parent=root_, x=640, y= 120+((i-1)%9+1)*40, size=24, title=name, depth=-300, center=true }
-    if not record.load_raw("achieve_" .. tostring(achieve_list[i])) then menu["achevement_" .. tostring(i)]:set_alpha(150) end
+    
+    if not rec_value then 
+      menu["achevement_" .. tostring(i)]:set_alpha(150) 
+    end
+    
     menu["achevement_" .. tostring(i)]:on_enter_focus( enter_text(menu["tip"], hint), Input1 )
     menu["achevement_" .. tostring(i)]:on_leave_focus( leave_text(menu["tip"]), Input1 )
     if i > 9 then menu["achevement_" .. tostring(i)]:set_visible(false) end

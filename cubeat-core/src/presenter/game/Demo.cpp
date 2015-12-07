@@ -610,6 +610,10 @@ ctrl::AIPlayer* Demo::get_ai_player() const {
            0;
 }
 
+int Demo::get_ai_level() const {
+    return ai_level_;
+}
+
 bool Demo::is_map_all_waiting(int const& map_id) const {
     return map_id == 1 ?
         map1_->all_waiting() :
@@ -1832,114 +1836,124 @@ void Demo::update_stats_and_achievements_startgame()
     }
 }
 
+void Demo::fill_statistics_from_lua(std::string const& key, int const& value)
+{
+    statistics_[key] = value;
+}
+
 void Demo::load_stats_and_achievements_into_memory()
 {
-    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_chain") ) {
-        statistics_["stat_highest_chain"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_chain");
-    } else {
-        statistics_["stat_highest_chain"] = 0;
-    }
+    script::Lua::call(L_, "init_stats_from_file");
 
-    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_single_color_match") ) {
-        statistics_["stat_highest_single_color_match"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_single_color_match");
-    } else {
-        statistics_["stat_highest_single_color_match"] = 0;
-    }
+    printf("\n\n test test stat_highest_chain %d\n", statistics_.I("stat_highest_chain"));
 
-    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_color_count") ) {
-        statistics_["stat_highest_color_count"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_color_count");
-    } else {
-        statistics_["stat_highest_color_count"] = 0;
-    }
 
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_garbage_left_60") ) {
-        statistics_["achieve_garbage_left_60"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_garbage_left_60") );
-    } else {
-        statistics_["achieve_garbage_left_60"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_efficiency_over_time") ) {
-        statistics_["achieve_efficiency_over_time"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_efficiency_over_time") );
-    } else {
-        statistics_["achieve_efficiency_over_time"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_two_mice_pvp") ) {
-        statistics_["achieve_two_mice_pvp"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_two_mice_pvp") );
-    } else {
-        statistics_["achieve_two_mice_pvp"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_shoot_opponent") ) {
-        statistics_["achieve_shoot_opponent"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_shoot_opponent") );
-    } else {
-        statistics_["achieve_shoot_opponent"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_veryhard_no_haste") ) {
-        statistics_["achieve_win_veryhard_no_haste"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_veryhard_no_haste") );
-    } else {
-        statistics_["achieve_win_veryhard_no_haste"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_lightning_fast") ) {
-        statistics_["achieve_win_lightning_fast"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_lightning_fast") );
-    } else {
-        statistics_["achieve_win_lightning_fast"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_overheat") ) {
-        statistics_["achieve_overheat"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_overheat") );
-    } else {
-        statistics_["achieve_overheat"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill1") ) {
-        statistics_["achieve_win_overkill1"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill1") );
-    } else {
-        statistics_["achieve_win_overkill1"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill2") ) {
-        statistics_["achieve_win_overkill2"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill2") );
-    } else {
-        statistics_["achieve_win_overkill2"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_safety_first") ) {
-        statistics_["achieve_win_safety_first"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_safety_first") );
-    } else {
-        statistics_["achieve_win_safety_first"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_long_struggle") ) {
-        statistics_["achieve_long_struggle"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_long_struggle") );
-    } else {
-        statistics_["achieve_long_struggle"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_turn_the_tide") ) {
-        statistics_["achieve_win_turn_the_tide"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_turn_the_tide") );
-    } else {
-        statistics_["achieve_win_turn_the_tide"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_so_close") ) {
-        statistics_["achieve_win_so_close"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_so_close") );
-    } else {
-        statistics_["achieve_win_so_close"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_underdog") ) {
-        statistics_["achieve_win_underdog"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_underdog") );
-    } else {
-        statistics_["achieve_win_underdog"] = 0;
-    }
-
-    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_lose_careless") ) {
-        statistics_["achieve_lose_careless"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_lose_careless") );
-    } else {
-        statistics_["achieve_lose_careless"] = 0;
-    }
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_chain") ) {
+//        statistics_["stat_highest_chain"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_chain");
+//    } else {
+//        statistics_["stat_highest_chain"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_single_color_match") ) {
+//        statistics_["stat_highest_single_color_match"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_single_color_match");
+//    } else {
+//        statistics_["stat_highest_single_color_match"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_color_count") ) {
+//        statistics_["stat_highest_color_count"] = script::Lua::call_R<int>(L_, "get_record", "stat_highest_color_count");
+//    } else {
+//        statistics_["stat_highest_color_count"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_garbage_left_60") ) {
+//        statistics_["achieve_garbage_left_60"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_garbage_left_60") );
+//    } else {
+//        statistics_["achieve_garbage_left_60"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_efficiency_over_time") ) {
+//        statistics_["achieve_efficiency_over_time"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_efficiency_over_time") );
+//    } else {
+//        statistics_["achieve_efficiency_over_time"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_two_mice_pvp") ) {
+//        statistics_["achieve_two_mice_pvp"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_two_mice_pvp") );
+//    } else {
+//        statistics_["achieve_two_mice_pvp"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_shoot_opponent") ) {
+//        statistics_["achieve_shoot_opponent"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_shoot_opponent") );
+//    } else {
+//        statistics_["achieve_shoot_opponent"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_veryhard_no_haste") ) {
+//        statistics_["achieve_win_veryhard_no_haste"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_veryhard_no_haste") );
+//    } else {
+//        statistics_["achieve_win_veryhard_no_haste"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_lightning_fast") ) {
+//        statistics_["achieve_win_lightning_fast"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_lightning_fast") );
+//    } else {
+//        statistics_["achieve_win_lightning_fast"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_overheat") ) {
+//        statistics_["achieve_overheat"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_overheat") );
+//    } else {
+//        statistics_["achieve_overheat"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill1") ) {
+//        statistics_["achieve_win_overkill1"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill1") );
+//    } else {
+//        statistics_["achieve_win_overkill1"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_overkill2") ) {
+//        statistics_["achieve_win_overkill2"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_overkill2") );
+//    } else {
+//        statistics_["achieve_win_overkill2"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_safety_first") ) {
+//        statistics_["achieve_win_safety_first"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_safety_first") );
+//    } else {
+//        statistics_["achieve_win_safety_first"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_long_struggle") ) {
+//        statistics_["achieve_long_struggle"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_long_struggle") );
+//    } else {
+//        statistics_["achieve_long_struggle"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_turn_the_tide") ) {
+//        statistics_["achieve_win_turn_the_tide"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_turn_the_tide") );
+//    } else {
+//        statistics_["achieve_win_turn_the_tide"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_so_close") ) {
+//        statistics_["achieve_win_so_close"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_so_close") );
+//    } else {
+//        statistics_["achieve_win_so_close"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_win_underdog") ) {
+//        statistics_["achieve_win_underdog"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_win_underdog") );
+//    } else {
+//        statistics_["achieve_win_underdog"] = 0;
+//    }
+//
+//    if( script::Lua::call_R<bool>(L_, "record_exist", "achieve_lose_careless") ) {
+//        statistics_["achieve_lose_careless"] = static_cast<int>( script::Lua::call_R<bool>(L_, "get_record", "achieve_lose_careless") );
+//    } else {
+//        statistics_["achieve_lose_careless"] = 0;
+//    }
 }
 

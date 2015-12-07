@@ -148,6 +148,10 @@ AIPlayer* Demo_get_ai_player(Demo* self) { // not shared_ptr!
     return self->get_ai_player();
 }
 
+int Demo_get_ai_level(Demo* self) { // not shared_ptr!
+    return self->get_ai_level();
+}
+
 bool Demo_is_map_dropping(Demo* self, int map_id) { // not shared_ptr!
     return self->is_map_dropping(map_id);
 }
@@ -162,6 +166,10 @@ bool Demo_is_map_empty(Demo* self, int map_id) { // not shared_ptr!
 
 bool Demo_is_puzzle_started(Demo* self) { // not shared_ptr!
     return self->is_puzzle_started();
+}
+
+void Demo_fill_statistics_from_lua(Demo* self, char const* key, int value) { // not shared_ptr!
+    self->fill_statistics_from_lua(key, value);
 }
 
 void Demo_reinit(Demo* self) { // not shared_ptr!

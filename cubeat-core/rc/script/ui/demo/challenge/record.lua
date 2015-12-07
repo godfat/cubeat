@@ -200,7 +200,7 @@ local function populate_stat_achievement_init_value_in_file()
     local key = "achieve_"..tostring(v)  
     if not challenge_record[key] then 
       print(" record "..key.." not found... populating default value")
-      challenge_record[key] = 0
+      challenge_record[key] = false
     end      
   end  
   

@@ -41,10 +41,13 @@ APIEXPORT int     Demo_get_map_max_warning_count(Demo*, int map_id); // not shar
 APIEXPORT int const* Demo_get_map_cubes_cleared_data(Demo*, int map_id); // not shared_ptr!
 APIEXPORT int const* Demo_get_map_cubes_matched_data(Demo*, int map_id); // not shared_ptr!
 APIEXPORT AIPlayer*  Demo_get_ai_player(Demo*); // not shared_ptr!
+APIEXPORT int     Demo_get_ai_level(Demo*); // not shared_ptr!
 APIEXPORT bool    Demo_is_map_dropping(Demo*, int map_id); // not shared_ptr!
 APIEXPORT bool    Demo_is_map_all_waiting(Demo*, int map_id); // not shared_ptr!
 APIEXPORT bool    Demo_is_map_empty(Demo*, int map_id); // not shared_ptr!
 APIEXPORT bool    Demo_is_puzzle_started(Demo*); // not shared_ptr!
+
+APIEXPORT void    Demo_fill_statistics_from_lua(Demo*, char const*, int); // not shared_ptr!
 
 APIEXPORT void    Demo_eventual_pause(Demo*); // not shared_ptr!
 APIEXPORT void    Demo_eventual_resume(Demo*); // not shared_ptr!

@@ -1,6 +1,7 @@
 local parameter   = require 'rc/script/ui/demo/challenge/parameter'
 local file        = require 'rc/script/ui/file'
-
+local stat_list    = require 'rc/script/ui/demo/challenge/stat_list'
+local achieve_list= require 'rc/script/ui/demo/challenge/achievement_list'
 
 local save_record_ = {}
 
@@ -109,6 +110,15 @@ save_record_[parameter.stat] = function(demo, key, value)
   save_raw(k, value)  
 end
 
+-- Save game achievements
+save_record_[parameter.achieve] = function(demo, key, value)
+  local challenge_record = file.load_data('challenge_record', "rb")
+  
+  local k = "achieve_".. tostring(key)
+  
+  save_raw(k, value)
+end
+
 ------------------------------------------------------
 local function save(demo, save_type, data)
   if save_record_[save_type] then
@@ -178,6 +188,44 @@ local function clear_all_stat_achievement()
       end
     end
     file.save_data('challenge_record', challenge_record, "wb")
+  end
+end
+
+local function populate_stat_achievement_init_value_in_file()
+  local challenge_record = file.load_data("challenge_record", "rb")
+  if not challenge_record then challenge_record = {} end
+  
+  -- populate init value based on achievement_list.lua
+  for _, v in ipairs(achieve_list) do
+    local key = "achieve_"..tostring(v)  
+    if not challenge_record[key] then 
+      print(" record "..key.." not found... populating default value")
+      challenge_record[key] = 0
+    end      
+  end  
+  
+  -- populate init value based on stat_list.lua
+  for _, v in ipairs(stat_list) do
+    local key = "stat_"..tostring(v)
+    if not challenge_record[key] then
+      print(" record "..key.." not found... populating default value")
+      challenge_record[key] = 0
+    end
+  end
+  
+  file.save_data("challenge_record", challenge_record, "wb")
+end
+
+local function load_stat_achievement_to_C_side(demo)
+  print("\n------------- Loading stats from Lua to C ------------------")
+  local challenge_record = file.load_data("challenge_record", "rb")
+  if challenge_record then --
+    for k, v in pairs(challenge_record) do
+      if string.sub(k, 0, 4) == "stat" or string.sub(k, 0, 7) == "achieve" then
+        print(k, v)
+        demo:fill_statistics_from_lua(k, v)
+      end
+    end
   end
 end
 
@@ -281,4 +329,6 @@ return {
   print_challenge_record_origin_data  = print_challenge_record_origin_data,
   print_challenge_record_data         = print_challenge_record_data,
   clear_all_stat_achievement = clear_all_stat_achievement,
+  load_stat_achievement_to_C_side = load_stat_achievement_to_C_side,
+  populate_stat_achievement_init_value_in_file = populate_stat_achievement_init_value_in_file,
 }

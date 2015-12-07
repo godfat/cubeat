@@ -166,6 +166,9 @@ local function print_challenge_record_origin_data()
 end
 
 local function clear_all_stat_achievement()
+  print("\n---------------- * NOTICE * ------------------")
+  print("*** CLEAR ALL STATS AND ACHIEVENEMT called ***")
+  print("----------------------------------------------\n")
   local challenge_record = file.load_data("challenge_record", "rb")
   if challenge_record then --
     print(" -------- DEBUG: all in game stats and achievements cleared ------- ")

@@ -355,6 +355,13 @@ update_achievement = function(key, value)
     end
   end 
   
+  if key == "stat_highest_garbage_left_opponent" then 
+    if value >= 60 and not record.load_raw("achieve_garbage_left_60") then
+      record.save_raw("achieve_garbage_left_60", true)
+      achievement_text.pop_achievement_ui("garbage_left_60")
+    end
+  end
+  
   -- NOTE: future cleanup needed
   
   if key == "achieve_story_1" and value == true and not record.load_raw("achieve_story_1") then
@@ -403,10 +410,6 @@ update_achievement = function(key, value)
   end
   
   -- below are achievements that passed in from C++ side
-  
-  if key == "achieve_garbage_left_60" and value == true then
-    achievement_text.pop_achievement_ui("garbage_left_60")
-  end
   
   if key == "achieve_efficiency_over_time" and value == true then
     achievement_text.pop_achievement_ui("efficiency_over_time")

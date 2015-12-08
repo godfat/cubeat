@@ -45,7 +45,8 @@ public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
         cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), cubes_restored_(0),
-        highest_chain_(0), highest_color_count_(0), highest_single_color_match_(0),
+        highest_chain_(0), chain_made_per_session_(0),
+        highest_color_count_(0), highest_single_color_match_(0),
         attack_made_per_session_(0),
         alert_triggered_count_(0), turn_the_tide_(false),
         so_close_(false),
@@ -86,6 +87,7 @@ public:
     int  grounded_cube_count() const;
     int  column_full_num() const;
     int  highest_chain() const;
+    int  chain_made_per_session() const;
     int  highest_color_count() const;
     int  highest_single_color_match() const;
     int  attack_made_per_session() const;
@@ -168,8 +170,8 @@ private:
     int cubes_cleared_[data::COLOR_MAX], cubes_matched_[data::COLOR_MAX], total_cubes_cleared_;
     int cubes_restored_;
 
-    // match/chain related
-    int highest_chain_;
+    // chain related
+    int highest_chain_, chain_made_per_session_;
     int highest_color_count_;
     int highest_single_color_match_;
 

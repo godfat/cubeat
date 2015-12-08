@@ -1704,6 +1704,10 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
             script::Lua::call(L_, "save_record_and_achievement", "achieve_efficiency_over_time", true);
         }
 
+        // record stats
+        statistics_.I("stat_chain_made_lifetime") += map0_->chain_made_per_session();
+        script::Lua::call(L_, "save_record", "stat_chain_made_lifetime", statistics_.I("stat_chain_made_lifetime"));
+
         if( map0_ != lose_map ) {
 
             // note: there should be win / lose counts for different levels of AI,
@@ -1742,6 +1746,7 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_safety_first", true);
             }
 
+//          NOTE: This overlaps with win_so_close, and hard to visually connect when it happens
             // note: Feels non-sensical to have a "how many times you have turned the tide" record.
             if( map0_->turn_the_tide() == 1 && statistics_.I("achieve_win_turn_the_tide") == 0 ) {
                 statistics_["achieve_win_turn_the_tide"] = 1;
@@ -1762,6 +1767,9 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         }
         else if( map0_ == lose_map ) { // there currently is only one achievement condition here
             // note: Feels non-sensical to have a "how many times you have lose carelessly" record.
+
+            // It sounds funny, but losing as an achievement is kind of weird
+
             if( map0_->score() >= map1_->score() + 2000 && ai_level_ > 0 && statistics_.I("achieve_lose_careless") == 0 ) {
                 statistics_["achieve_lose_careless"] = 1;
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_lose_careless", true);
@@ -1789,20 +1797,23 @@ void Demo::update_stats_and_achievements_byframe()
             script::Lua::call(L_, "save_record_and_achievement", "stat_highest_chain", map0_->highest_chain());
         }
 
+        // NOTE: for this achievement, should we really restrict to a single color?
+        // it's fairly possible and legitmate to have more than 1 color to produce a super big chunk
+        // extendable by multiple colors
         if( map0_->highest_single_color_match() > statistics_.I("stat_highest_single_color_match") ) {
             statistics_["stat_highest_single_color_match"] = map0_->highest_single_color_match();
             script::Lua::call(L_, "save_record_and_achievement", "stat_highest_single_color_match", map0_->highest_single_color_match());
         }
 
+//      NOTE: This achievement really doesn't relate to gameplay in any way
         if( map0_->highest_color_count() > statistics_.I("stat_highest_color_count") ) {
             statistics_["stat_highest_color_count"] = map0_->highest_color_count();
             script::Lua::call(L_, "save_record_and_achievement", "stat_highest_color_count", map0_->highest_color_count());
         }
 
-        // There should really be a stat_highest_garbage_left_opponent
-        if( map1_->garbage_left() >= 60 && statistics_.I("achieve_garbage_left_60") == 0 ) { // note this is map1_
-            statistics_["achieve_garbage_left_60"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_garbage_left_60", true);
+        if( map1_->garbage_left() > statistics_.I("stat_highest_garbage_left_opponent") ) { // note this is map1_
+            statistics_["stat_highest_garbage_left_opponent"] = map1_->garbage_left();
+            script::Lua::call(L_, "save_record_and_achievement", "stat_highest_garbage_left_opponent", map1_->garbage_left());
         }
 
         // There should really be a stat_shoot_opponent_count
@@ -1844,8 +1855,6 @@ void Demo::fill_statistics_from_lua(std::string const& key, int const& value)
 void Demo::load_stats_and_achievements_into_memory()
 {
     script::Lua::call(L_, "init_stats_from_file");
-
-    printf("\n\n test test stat_highest_chain %d\n", statistics_.I("stat_highest_chain"));
 
 
 //    if( script::Lua::call_R<bool>(L_, "record_exist", "stat_highest_chain") ) {

@@ -86,6 +86,7 @@ public:
     int  warning_level() const { return model()->warning_level(); }
     void warning_level(int const& i) { model()->warning_level(i); }
     int  highest_chain() const { return model()->highest_chain(); }
+    int  chain_made_per_session() const { return model()->chain_made_per_session(); }
     int  highest_color_count() const { return model()->highest_color_count(); }
     int  highest_single_color_match() const { return model()->highest_single_color_match(); }
     int  attack_made_per_session() const { return model()->attack_made_per_session(); }

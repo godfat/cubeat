@@ -672,6 +672,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 }
                 if( color_bucket[m] > highest_single_color_match_ ) {
                     highest_single_color_match_ = color_bucket[m];
+
+                    // for this achievement, should we really restrict to a single color?
+                    // it's fairly possible and legitmate to have more than 1 color to produce a super big chunk
+                    // extendable by multiple colors
                 }
             }
 
@@ -709,6 +713,10 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 }
             }
             //chain_timer_handles_.erase( key_wchain );
+
+            /// logging chain data 2
+            chain_made_per_session_ += ((*i)->step() - 1); // the step() here is already advanced one step, so -1
+            printf("\n current chain_made_per_session_ %d\n\n", chain_made_per_session_);
 
             i = chains_.erase(i);
         }
@@ -1087,6 +1095,7 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
 void Map::reset_record() {
     score_ = 0;
     highest_chain_ = 0;
+    chain_made_per_session_ = 0;
     highest_color_count_ = 0;
     highest_single_color_match_ = 0;
     total_cubes_cleared_ = 0;
@@ -1181,6 +1190,10 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
 
 int Map::highest_chain() const {
     return highest_chain_;
+}
+
+int Map::chain_made_per_session() const {
+    return chain_made_per_session_;
 }
 
 int Map::highest_color_count() const {

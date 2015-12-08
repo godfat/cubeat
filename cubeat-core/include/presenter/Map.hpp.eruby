@@ -85,7 +85,6 @@ public:
     int  column_full_num() const { return model()->column_full_num(); }
     int  warning_level() const { return model()->warning_level(); }
     void warning_level(int const& i) { model()->warning_level(i); }
-    int  match_count() const { return model()->match_count(); }
     int  highest_chain() const { return model()->highest_chain(); }
     int  highest_color_count() const { return model()->highest_color_count(); }
     int  highest_single_color_match() const { return model()->highest_single_color_match(); }

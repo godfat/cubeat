@@ -634,14 +634,14 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 bind(o->new_garbage_event(), dying_cubes_position_[ chain_step_pair ] , amount), handle, ms()->cube_dying_duration());
 //            o->new_garbage_event()( dying_cubes_position_[ key_wchain ] , amount);
 
-            if( step == (*i)->step() ) {
+//            if( step == (*i)->step() ) {
                 //2014.6 Originally when we have extending mechanism, we have to consider if the last step is getting
                 //       extended or merged. But since we now treat all chain "steps" separately, there's no need to
                 //       keep track of this by adding booleans flags to chains, because
                 //       it's impossible to extend or merge the last step -- the next "empty step" will always be there
-                match_counter_ += 1;
+
 //                (*i)->step_one();
-            }
+//            }
 
             /// logging chain data
 
@@ -1086,7 +1086,6 @@ int <% debug_hook 'Map::column_full_num' do %>() const{
 
 void Map::reset_record() {
     score_ = 0;
-    match_counter_ = 0;
     highest_chain_ = 0;
     highest_color_count_ = 0;
     highest_single_color_match_ = 0;
@@ -1178,10 +1177,6 @@ std::vector< std::pair<int, int> > Map::count_colors() const{
     }
     std::sort(ret.begin(), ret.end(), sort_by_second_gte);
     return ret;
-}
-
-int Map::match_count() const {
-    return match_counter_;
 }
 
 int Map::highest_chain() const {

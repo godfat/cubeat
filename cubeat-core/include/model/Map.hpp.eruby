@@ -44,9 +44,10 @@ public:
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
         SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
-        cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), match_counter_(0),
+        cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), cubes_restored_(0),
         highest_chain_(0), highest_color_count_(0), highest_single_color_match_(0),
-        attack_made_per_session_(0), cubes_restored_(0), alert_triggered_count_(0), turn_the_tide_(false),
+        attack_made_per_session_(0),
+        alert_triggered_count_(0), turn_the_tide_(false),
         so_close_(false),
         one_fadings_per_cycle_(0), dropping_creatable_(false), garbage_dumpable_(false),
         column_full_num_(0)
@@ -84,7 +85,6 @@ public:
     int  garbage_count() const;
     int  grounded_cube_count() const;
     int  column_full_num() const;
-    int  match_count() const;
     int  highest_chain() const;
     int  highest_color_count() const;
     int  highest_single_color_match() const;
@@ -163,17 +163,23 @@ private:
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
 
-    // records
+    /* ------------ records -------------- */
+    // user click related
     int cubes_cleared_[data::COLOR_MAX], cubes_matched_[data::COLOR_MAX], total_cubes_cleared_;
-    int match_counter_;
+    int cubes_restored_;
+
+    // match/chain related
     int highest_chain_;
     int highest_color_count_;
     int highest_single_color_match_;
+
+    // attack/garbage_count related
     int attack_made_per_session_;
-    int cubes_restored_;
+
     int alert_triggered_count_;
     bool turn_the_tide_;
     bool so_close_;
+    /* --------- end of records ---------- */
 
     int one_fadings_per_cycle_;
     bool dropping_creatable_, garbage_dumpable_;

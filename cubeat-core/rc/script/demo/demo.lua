@@ -171,7 +171,6 @@ end
 
 -- used by C++ side to check if record is present
 function record_exist(key)
-  print("\n save_record_and_achievement: ai_level readout as backup plan: ", demo_:get_ai_level())
   if record.load_raw(key) then 
     return true
   end
@@ -197,7 +196,7 @@ end
 -- used by C++ side to push data only available to C++ to the Lua side AND also tries to update achievements
 function save_record_and_achievement(key, value)
   record.save_raw(key, value)
-  challenge.update_achievement(key, value) 
+  challenge.update_achievement(key, value, demo_:get_ai_level()) 
 end
 
 function init_stats_from_file()

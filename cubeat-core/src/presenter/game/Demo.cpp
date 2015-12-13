@@ -1670,6 +1670,9 @@ void Demo::cycle()
 
 void Demo::update_stats_and_achievements_endgame(pMap lose_map)
 {
+    // This can't be time_t ... because the any_cast in dictionary won't treat them the same way...?
+    int elapsed_time = ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time();
+
     if( game_mode_ == GM_PVP || game_mode_ == GM_PVC ) {
 
         printf(" \n\n ATTACK MADE PER SESSION 1p: %d\n", map0_->attack_made_per_session());
@@ -1690,7 +1693,7 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         printf(" 1p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map0_->attack_made_per_session()) / effective_clicks_1p);
         printf(" 2p ATTACK / CLICK ratio: %lf \n", static_cast<double>(map1_->attack_made_per_session()) / effective_clicks_2p);
 
-        double time_in_mins = static_cast<double>(ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time()) / 60000;
+        double time_in_mins = static_cast<double>(elapsed_time) / 60000;
         double efficiency_over_time_1p = static_cast<double>(map0_->attack_made_per_session()) / time_in_mins;
 
         printf(" 1p ATTACK / Min ratio: %lf \n", efficiency_over_time_1p);
@@ -1724,12 +1727,9 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
                 script::Lua::call(L_, "save_record_and_achievement", "achieve_win_veryhard_no_haste", true);
             }
 
-            // note: should there be a stat_shortest_time ?
-            //       shortest time vs easy / normal / hard / very hard... etc?
-            if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() < 45000 &&
-                ai_level_ > 0 && statistics_.I("achieve_win_lightning_fast") == 0 ) {
-                statistics_["achieve_win_lightning_fast"] = 1;
-                script::Lua::call(L_, "save_record_and_achievement", "achieve_win_lightning_fast", true);
+            if( elapsed_time < statistics_.I("stat_shortest_time") ) {
+                statistics_["stat_shortest_time"] = elapsed_time;
+                script::Lua::call(L_, "save_record_and_achievement", "stat_shortest_time", elapsed_time);
             }
 
             // note: should there be a record of "overkill" amount ?
@@ -1782,12 +1782,9 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
             }
         }
 
-
-        // note: so, as with stat_shortest_time, should we have a stat_longest_time for each level?
-        if( ctrl::EventDispatcher::i().get_timer_dispatcher("game")->get_time() >= 240000 &&
-            statistics_.I("achieve_long_struggle") == 0 ) {
-            statistics_["achieve_long_struggle"] = 1;
-            script::Lua::call(L_, "save_record_and_achievement", "achieve_long_struggle", true);
+        if( elapsed_time >= statistics_.I("stat_longest_time") ) {
+            statistics_["stat_longest_time"] = elapsed_time;
+            script::Lua::call(L_, "save_record_and_achievement", "stat_longest_time", elapsed_time);
         }
     }
 }

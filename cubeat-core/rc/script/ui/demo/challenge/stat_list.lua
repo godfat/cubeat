@@ -8,4 +8,7 @@ return {
   
   "shoot_opponent_count",
   "overheat_count",
+  
+  "shortest_time",
+  "longest_time",
 }

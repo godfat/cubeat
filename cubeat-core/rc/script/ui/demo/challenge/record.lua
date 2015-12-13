@@ -209,7 +209,13 @@ local function populate_stat_achievement_init_value_in_file()
     local key = "stat_"..tostring(v)
     if not challenge_record[key] then
       print(" record "..key.." not found... populating default value")
-      challenge_record[key] = 0
+      
+      -- exception. stat_shortest_time's initial value shouldn't be zero.
+      if key == "stat_shortest_time" then
+        challenge_record[key] = 599000
+      else 
+        challenge_record[key] = 0
+      end
     end
   end
   

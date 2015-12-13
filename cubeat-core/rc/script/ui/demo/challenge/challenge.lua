@@ -329,7 +329,12 @@ local function create_achievement_text(scene)
 end
 
 -- Update achievement (forward declared) 
-update_achievement = function(key, value)
+update_achievement = function(key, value, ai_level)
+
+  if ai_level == nil then 
+    print("\n\n\n YOU FUCKED UP AT update_achievement() !!!!!!!!! \n\n\n")
+  end
+
   if key == "stat_highest_chain" then
     if value >= 4 and not record.load_raw("achieve_highest_chain_4") then
       record.save_raw("achieve_highest_chain_4", true)
@@ -359,6 +364,20 @@ update_achievement = function(key, value)
     if value >= 60 and not record.load_raw("achieve_garbage_left_60") then
       record.save_raw("achieve_garbage_left_60", true)
       achievement_text.pop_achievement_ui("garbage_left_60")
+    end
+  end
+  
+  if key == "stat_shortest_time" then
+    if value <= 45000 and ai_level > 0 and not record.load_raw("achieve_win_lightning_fast") then
+      record.save_raw("achieve_win_lightning_fast", true)
+      achievement_text.pop_achievement_ui("win_lightning_fast")
+    end
+  end
+  
+  if key == "stat_longest_time" then
+    if value > 240000 and ai_level > 0 and not record.load_raw("achieve_long_struggle") then
+      record.save_raw("achieve_long_struggle", true)
+      achievement_text.pop_achievement_ui("long_struggle")
     end
   end
   
@@ -427,10 +446,6 @@ update_achievement = function(key, value)
     achievement_text.pop_achievement_ui("win_veryhard_no_haste")
   end
   
-  if key == "achieve_win_lightning_fast" and value == true then
-    achievement_text.pop_achievement_ui("win_lightning_fast")
-  end
-  
   if key == "achieve_overheat" and value == true then
     achievement_text.pop_achievement_ui("overheat")
   end
@@ -445,10 +460,6 @@ update_achievement = function(key, value)
   
   if key == "achieve_win_safety_first" and value == true then
     achievement_text.pop_achievement_ui("win_safety_first")
-  end
-  
-  if key == "achieve_long_struggle" and value == true then
-    achievement_text.pop_achievement_ui("long_struggle")
   end
   
   if key == "achieve_win_turn_the_tide" and value == true then

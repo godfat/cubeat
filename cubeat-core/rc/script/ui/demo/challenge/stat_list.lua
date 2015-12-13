@@ -5,4 +5,7 @@ return {
   "chain_made_lifetime",
   
   "highest_garbage_left_opponent",
+  
+  "shoot_opponent_count",
+  "overheat_count",
 }

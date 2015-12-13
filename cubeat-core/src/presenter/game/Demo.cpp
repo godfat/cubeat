@@ -1708,6 +1708,12 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         statistics_.I("stat_chain_made_lifetime") += map0_->chain_made_per_session();
         script::Lua::call(L_, "save_record", "stat_chain_made_lifetime", statistics_.I("stat_chain_made_lifetime"));
 
+        statistics_.I("stat_shoot_opponent_count") += player0_->jama_shoot_count();
+        script::Lua::call(L_, "save_record", "stat_shoot_opponent_count", statistics_.I("stat_shoot_opponent_count"));
+
+        statistics_.I("stat_overheat_count") += player0_->overheat_count();
+        script::Lua::call(L_, "save_record", "stat_overheat_count", statistics_.I("stat_overheat_count"));
+
         if( map0_ != lose_map ) {
 
             // note: there should be win / lose counts for different levels of AI,
@@ -1816,13 +1822,11 @@ void Demo::update_stats_and_achievements_byframe()
             script::Lua::call(L_, "save_record_and_achievement", "stat_highest_garbage_left_opponent", map1_->garbage_left());
         }
 
-        // There should really be a stat_shoot_opponent_count
         if( player0_->jama_shoot_count() > 0 && statistics_.I("achieve_shoot_opponent") == 0 ) {
             statistics_["achieve_shoot_opponent"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_shoot_opponent", true);
         }
 
-        // There should really be a stat_overheat_count
         if( player0_->overheat_count() > 0 && statistics_.I("achieve_overheat") == 0 ) {
             statistics_["achieve_overheat"] = 1;
             script::Lua::call(L_, "save_record_and_achievement", "achieve_overheat", true);

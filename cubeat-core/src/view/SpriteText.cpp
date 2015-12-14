@@ -111,6 +111,12 @@ SpriteText& SpriteText::changeText(std::string const& new_text)
         letter_node_.push_back( irrArray[i] );  //irr::core::array and std::vector inconsistency... only way.. *sigh*
         //when debug text nodes un-comment this:
 //        letter_node_[i]->setDebugDataVisible(EDS_BBOX);
+        S3DVertex* ptr = static_cast<S3DVertex*>(
+            static_cast<IMeshSceneNode*>(letter_node_[i])->getMesh()->getMeshBuffer(0)->getVertices());
+        ptr[2].TCoords.Y += 0.001; // upper left
+        ptr[3].TCoords.Y += 0.001; // upper right
+        // Unfortunately some fonts will over-spill and clamping the texture won't do any good because
+        // we are using texture atlas here.
     }
 
     if( body_ )

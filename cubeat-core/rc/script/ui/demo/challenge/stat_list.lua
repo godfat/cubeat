@@ -11,4 +11,8 @@ return {
   
   "shortest_time",
   "longest_time",
+  
+  "wins",
+  "plays",
+  "pvp_plays",
 }

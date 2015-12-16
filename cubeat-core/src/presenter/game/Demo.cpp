@@ -1717,7 +1717,20 @@ void Demo::update_stats_and_achievements_endgame(pMap lose_map)
         statistics_.I("stat_overheat_count") += player0_->overheat_count();
         script::Lua::call(L_, "save_record", "stat_overheat_count", statistics_.I("stat_overheat_count"));
 
+        if( game_mode_ == GM_PVC ) {
+            statistics_.I("stat_plays") += 1;
+            script::Lua::call(L_, "save_record", "stat_plays", statistics_.I("stat_plays"));
+        } else {
+            statistics_.I("stat_pvp_plays") += 1;
+            script::Lua::call(L_, "save_record", "stat_pvp_plays", statistics_.I("stat_pvp_plays"));
+        }
+
         if( map0_ != lose_map ) {
+
+            if( game_mode_ == GM_PVC ) {
+                statistics_.I("stat_wins") += 1;
+                script::Lua::call(L_, "save_record", "stat_wins", statistics_.I("stat_wins"));
+            }
 
             // note: there should be win / lose counts for different levels of AI,
             //       but it's still not possible to just use that stat to determine this achievement

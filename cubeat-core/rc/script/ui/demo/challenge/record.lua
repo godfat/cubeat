@@ -198,7 +198,7 @@ local function populate_stat_achievement_init_value_in_file()
   -- populate init value based on achievement_list.lua
   for _, v in ipairs(achieve_list) do
     local key = "achieve_"..tostring(v)  
-    if not challenge_record[key] then 
+    if challenge_record[key] == nil then 
       print(" record "..key.." not found... populating default value")
       challenge_record[key] = false
     end      
@@ -207,7 +207,7 @@ local function populate_stat_achievement_init_value_in_file()
   -- populate init value based on stat_list.lua
   for _, v in ipairs(stat_list) do
     local key = "stat_"..tostring(v)
-    if not challenge_record[key] then
+    if challenge_record[key] == nil then
       print(" record "..key.." not found... populating default value")
       
       -- exception. stat_shortest_time's initial value shouldn't be zero.

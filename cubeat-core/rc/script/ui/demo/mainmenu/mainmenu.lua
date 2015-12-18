@@ -109,7 +109,7 @@ local function init(demo, parent)
   menu.btn_vs_cpu:set_rotation(-6)
   menu.btn_vs_cpu_img = ui.new_image{ parent = menu.btn_vs_cpu, path='mainmenu/text_vs_cpu', x=-381, y=-146, w=381, h=146 }
   menu.btn_vs_cpu_img:on_press(function(self)
-    switch.load_page('select', nil, { game_mode = 1 })
+    switch.load_page('select', nil, { game_mode = 1, title = "VS CPU Mode" })
   end, view.Input1_left)
   
   menu.btn_vs_ppl     = view.new_sprite("blahblah", root_, 0, 0, true)
@@ -117,7 +117,7 @@ local function init(demo, parent)
   menu.btn_vs_ppl:set_rotation(-7)
   menu.btn_vs_ppl_img = ui.new_image{ parent = menu.btn_vs_ppl, path='mainmenu/text_vs_ppl', x=-453, y=-137, w=453, h=137 }
   menu.btn_vs_ppl_img:on_press(function(self)
-    switch.load_page('select', nil, { game_mode = 0 })
+    switch.load_page('select', nil, { game_mode = 0, title = "VS Player Mode" })
   end, view.Input1_left)
   
   menu.btn_chall     = view.new_sprite("blahblah", root_, 0, 0, true)

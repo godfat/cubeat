@@ -14,14 +14,17 @@ local function init(demo, parent, data)
   
   menu.bg         = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
                                     w=850, h=420, w1=34, w2=32, h1=38, h2=35, center=true }
-                                    
+                           
+  menu.top_text   = ui.new_text{ parent=parent, x=view.GET_SCREEN_W()/2, y=20, title="VS CPU Mode", 
+                                 size=32, depth=-30, center=true}
+  menu.top_text:set_scale(1.3)                         
   menu.title      = ui.new_text{ parent=root_, y=-125, font="GN-KillGothic", size=32, title="Difficulty", depth=-30, center=true}
   menu.title:set_scale(1.3)
   
   menu.blocker_top1    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
-                                       x = -10, y = -15 }
-  menu.blocker_top2    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
                                        x = -10, y = -5 }
+  menu.blocker_top2    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
+                                       x = -10, y = 5 }
   menu.blocker_bottom1 = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
                                        x = -10, y = view.GET_SCREEN_H()-50 }
   menu.blocker_bottom2 = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60,
@@ -40,8 +43,8 @@ local function init(demo, parent, data)
   menu.blocker_bottom1:set_rotation(-0.7)
   menu.blocker_bottom2:set_rotation(-1)
   
-  local pos1s, pos1e = ffi.new("v2", -10, -65), ffi.new("v2", -10, -15)
-  local pos2s, pos2e = ffi.new("v2", -10, -55), ffi.new("v2", -10, -5)
+  local pos1s, pos1e = ffi.new("v2", -10, -65), ffi.new("v2", -10, -5)
+  local pos2s, pos2e = ffi.new("v2", -10, -55), ffi.new("v2", -10, 5)
   local pos3s, pos3e = ffi.new("v2", -10, view.GET_SCREEN_H()), ffi.new("v2", -10, view.GET_SCREEN_H()-50)
   local pos4s, pos4e = ffi.new("v2", -10, view.GET_SCREEN_H()-10), ffi.new("v2", -10, view.GET_SCREEN_H()-60)
   menu.blocker_top1:tween('OSine', 'Pos2D', pos1s, pos1e, 500)
@@ -143,7 +146,7 @@ local function init(demo, parent, data)
     demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
   end)
   menu.btn_back:on_press(function(self)
-    switch.load_page('select', nil, { game_mode = data.game_mode })
+    switch.load_page('select', nil, { game_mode = data.game_mode, title = "VS CPU Mode" })
   end)
 
   return menu

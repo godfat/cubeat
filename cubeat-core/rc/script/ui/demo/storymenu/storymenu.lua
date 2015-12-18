@@ -24,7 +24,7 @@ local function init(demo, parent)
   
   menu.new_game:on_press(function(self)
     storystage.set_stage(1)
-    switch.load_page('select', nil, { game_mode=99, level=0 })
+    switch.load_page('select', nil, { game_mode=99, level=0, title="Story Mode" })
   end)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')

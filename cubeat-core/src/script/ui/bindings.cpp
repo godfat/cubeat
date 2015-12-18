@@ -174,6 +174,10 @@ int Sprite_get_screen_pos_y(pSprite* self) {
     return (int)((*self)->getScreenPos().Y);
 }
 
+bool Sprite_is_visible(pSprite* self) {
+    return (*self)->get<Visible>();
+}
+
 void Sprite_lazy_fix_alpha_artifact(pSprite* self) {
     (*self)->lazyFixAlphaArtifact();
 }

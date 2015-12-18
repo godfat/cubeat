@@ -56,8 +56,8 @@ void Demo_init_ai_logging(Demo* self, char const* c1p, char const* c2p, char con
     self->init_ai_logging(c1p, c2p, scene_name);
 }
 
-void Demo_init_single(Demo* self, int submode, int level, char const* c1p, char const* scene_name, bool in_place) { // not shared_ptr!
-    self->init_single(submode, level, c1p, scene_name, in_place);
+void Demo_init_single(Demo* self, int submode, int level, char const* c1p, char const* scene_name, bool in_place, int color_num) { // not shared_ptr!
+    self->init_single(submode, level, c1p, scene_name, in_place, color_num);
 }
 
 void Demo_init_map_starting_line(Demo* self, int map_id, int n) { // not shared_ptr!

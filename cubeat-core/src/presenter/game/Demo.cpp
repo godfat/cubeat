@@ -275,7 +275,7 @@ void Demo::init_(int const& game_mode, std::string const& c1p, std::string const
     starting_effect(inplace);
 }
 
-void Demo::init_single(int const& submode, int const& level, std::string const& c1p, std::string const& scene_name, bool const& inplace)
+void Demo::init_single(int const& submode, int const& level, std::string const& c1p, std::string const& scene_name, bool const& inplace, int const& color_num)
 {
     btn_reinit_.reset();
 
@@ -287,6 +287,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
     music_state_ = false;
     music_state_old_ = false;
     mode_level_ = level;
+    color_num_ = color_num;
     uiconf_ = Conf::i().config_of("ui/puzzle_layout");
 
     //stop timer for now because the initial loading gonna be some time.
@@ -313,7 +314,7 @@ void Demo::init_single(int const& submode, int const& level, std::string const& 
 
     // setup map
     if( submode_ == 0 ) {
-        map0_ = utils::MapLoader::generate( mode_level_ );
+        map0_ = utils::MapLoader::generate( mode_level_, color_num_ );
         map0_->map_setting()->warning_enabled( false ); // do not enable warning for Puzzle mode
     } else {
         data::pMapSetting set0 = data::MapSetting::create( gameplay_.M("player1") );

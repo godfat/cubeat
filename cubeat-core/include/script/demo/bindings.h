@@ -17,7 +17,7 @@ APIEXPORT void    Demo_init_story(Demo*, char const*, char const*, char const*, 
 APIEXPORT void    Demo_init_tutorial(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_cpudemo(Demo*, char const*, char const*, char const*); // not shared_ptr!
 APIEXPORT void    Demo_init_ai_logging(Demo*, char const*, char const*, char const*); // not shared_ptr!
-APIEXPORT void    Demo_init_single(Demo*, int, int, char const*, char const*, bool); // not shared_ptr!
+APIEXPORT void    Demo_init_single(Demo*, int, int, char const*, char const*, bool, int); // not shared_ptr!
 APIEXPORT void    Demo_init_map_starting_line(Demo*, int map_id, int n); // not shared_ptr!
 APIEXPORT void    Demo_init_map_with_config(Demo*, int map_id, char const*); // not shared_ptr!
 APIEXPORT void    Demo_reset_map_record(Demo*, int map_id); // not shared_ptr!

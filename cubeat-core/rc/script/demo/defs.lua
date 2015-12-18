@@ -24,7 +24,11 @@ Mt_Demo.init_story             = C.Demo_init_story
 Mt_Demo.init_tutorial          = C.Demo_init_tutorial
 Mt_Demo.init_cpudemo           = C.Demo_init_cpudemo
 Mt_Demo.init_ai_logging        = C.Demo_init_ai_logging
-Mt_Demo.init_single            = C.Demo_init_single
+
+Mt_Demo.init_single            = function(self, submode, level, char_name, stage_name, inplace, color_num)
+  C.Demo_init_single(self, submode, level, char_name, stage_name, inplace, color_num or 4)
+end
+
 Mt_Demo.init_map_starting_line = C.Demo_init_map_starting_line
 Mt_Demo.init_map_with_config   = C.Demo_init_map_with_config
 Mt_Demo.reset_map_record       = C.Demo_reset_map_record

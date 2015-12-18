@@ -1,5 +1,6 @@
 local ffi   = require 'ffi'
 local C     = ffi.C
+local random= require 'rc/script/helper'.random
 local view  = require 'rc/script/ui/view'
 local ui    = require 'rc/script/ui/ui'
 local switch= require 'rc/script/ui/demo/switch/switch'
@@ -24,24 +25,28 @@ local function init(demo, parent, submode)
     menu.panel:set_color(0,0,0)
     
     -- create button
-    for i=1, stage_num do
-      local k = 'stage' .. tostring(i)
-      local mx = 150 * math.ceil(i/10)
-      local my = 40 * math.mod(i-1, 10)
-      print(mx, my)
-      menu[k] = ui.new_text{ parent=root_, x=-450+mx, y=-200+my, size=32, depth=-200, title=k }
-      if i==1 or record.load(parameter.clear, {submode=submode, puzzle_level=i}) then
-        menu[k]:on_press(function(self)
-          local level = i+1
-          demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false)
-          challenge.set_puzzle_level(level)
-          --switch.show_effect( {id="slide_out_title"} )
-        end)
-      else
-        menu[k]:set_color(128,128,128)
+    --for i=1, stage_num do
+    for color_num = 4, 2, -1 do 
+      for i=1, 9 do  
+        local k = 'stage' .. tostring(i)..'-'..tostring(5-color_num)
+        local mx = 180 * (5-color_num)
+        local my = 40 * (i-1)
+        print(mx, my)
+        menu[k] = ui.new_text{ parent=root_, x=-450+mx, y=-200+my, size=32, depth=-200, title=k }
+        if i==1 or record.load(parameter.clear, {submode=submode, puzzle_level=i}) then
+          menu[k]:on_press(function(self)
+            local level = i+1
+            demo:init_single(parameter.OneShotClear, level, 'char/char1_new', 'stage/jungle1', false, color_num)
+            challenge.set_puzzle_level(level)
+            challenge.set_puzzle_color(color_num)
+            --switch.show_effect( {id="slide_out_title"} )
+          end)
+        else
+          menu[k]:set_color(128,128,128)
+        end
       end
     end
-    
+      
     menu['unlimited'] = ui.new_text{ parent=root_, x=450, y=-200, size=32, depth=-200, title='unlimited' }
     menu['unlimited']:on_press(function(self)
       demo:init_single(parameter.OneShotClear, 2 + 20, 'char/char1_new', 'stage/jungle1', false)
@@ -49,6 +54,7 @@ local function init(demo, parent, submode)
       -- 2 + 20 hackzzzzz 
       
       challenge.set_puzzle_level(2)
+      challenge.set_puzzle_color(2+random(2))
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       --switch.show_effect( {id="slide_out_title"} )
     end)

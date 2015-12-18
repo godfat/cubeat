@@ -7,6 +7,7 @@ local achievement_text = require 'rc/script/ui/demo/challenge/achievement_popup'
 
 local win_              = false  -- win state for SinglePlayer modes.
 local puzzle_level_     = 2
+local puzzle_color_     = 4
 local puzzle_retry_     = 0
 local level_unlimited_  = false
 local update_achievement -- function forward decl
@@ -20,6 +21,12 @@ local function set_puzzle_level(lv)
 end
 local function get_puzzle_level()
   return puzzle_level_
+end
+local function set_puzzle_color(c)
+  puzzle_color_ = c
+end
+local function get_puzzle_color()
+  return puzzle_color_
 end
 
 -- level_unlimited_
@@ -241,18 +248,18 @@ local function ending(demo, submode)
       -- the last true means "in_place" is true, there won't be slide-in/out effects.
       puzzle_retry_ = 0
       if get_level_unlimited() == true then
-        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true)
+        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true, get_puzzle_color())
       else 
-        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true, get_puzzle_color())
       end
     end)
     recordboard.on_press_retry(function(self)
       recordboard.hide()
       puzzle_retry_ = puzzle_retry_ + 1
       if get_level_unlimited() == true then
-        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true)
+        demo:init_single(0, get_puzzle_level() + 20, 'char/char1_new', 'stage/jungle1', true, get_puzzle_color())
       else 
-        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true)
+        demo:init_single(0, get_puzzle_level(), 'char/char1_new', 'stage/jungle1', true, get_puzzle_color())
       end
     end)
     recordboard.on_press_quit(function(self)
@@ -484,6 +491,8 @@ return {
   add_puzzle_level    = add_puzzle_level,
   set_puzzle_level    = set_puzzle_level,
   get_puzzle_level    = get_puzzle_level,
+  set_puzzle_color    = set_puzzle_color, 
+  get_puzzle_color    = get_puzzle_color,
   set_level_unlimited = set_level_unlimited,
   get_level_unlimited = get_level_unlimited,
   --

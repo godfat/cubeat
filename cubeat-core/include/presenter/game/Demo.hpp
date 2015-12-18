@@ -66,7 +66,7 @@ public:
     void init_vs_ppl(std::string const&, std::string const&, std::string const&);
     void init_cpudemo(std::string const&, std::string const&, std::string const&);
     void init_ai_logging(std::string const&, std::string const&, std::string const&);
-    void init_single(int const&, int const&, std::string const&, std::string const&, bool const& inplace = false);
+    void init_single(int const&, int const&, std::string const&, std::string const&, bool const& inplace = false, int const& color_num = 4);
     void init_map_starting_line(int const& map_id, int const& n);
     void init_map_with_config(int const& map_id, std::string const& fname);
     void reset_map_record(int const& map_id);
@@ -187,7 +187,7 @@ protected:
     bool is_countdown_;
     bool gauge1_flag_, gauge2_flag_;
 
-    int mode_level_;
+    int mode_level_, color_num_;
     int game_state_;
     bool puzzle_started_;
 

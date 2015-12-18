@@ -58,9 +58,9 @@ Mt_Demo.endgame                = C.Demo_endgame
 Mt_Demo.eventual_pause         = C.Demo_eventual_pause
 Mt_Demo.eventual_resume        = C.Demo_eventual_resume
 Mt_Demo.load_stage             = C.Demo_load_stage
-Mt_Demo.leave_and_cleanup      = function(self, ending_theme)
-  ending_theme = ending_theme or false
-  C.Demo_leave_and_cleanup(self, ending_theme)
+Mt_Demo.leave_and_cleanup      = function(self, status)
+  status = status or 0
+  C.Demo_leave_and_cleanup(self, status)
 end
 Mt_Demo.init_mode    = function(self, mode, c1p, c2p, sconf, ai_level)
   if mode == 0 then self:init_vs_ppl(c1p, c2p, sconf)

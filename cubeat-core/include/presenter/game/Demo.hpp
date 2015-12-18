@@ -103,7 +103,7 @@ public:
 
     void eventual_pause();
     void eventual_resume();
-    void end_sequence1(bool const& ending_theme = false);
+    void end_sequence1(int const& status = 0);
 
     void update_stats_and_achievements_startgame();
     void update_stats_and_achievements_byframe();
@@ -119,7 +119,7 @@ protected:
     void game_start();
     void game_stop();
 
-    void leaving_effect(bool const&);
+    void leaving_effect(int const& status);
     void starting_effect(bool const&);
     void end_phase2(pMap lose_map);
 

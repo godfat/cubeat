@@ -11,6 +11,9 @@ local screen_h_ = C.Get_SCREEN_H()
 local center_x = screen_w_/2
 local center_y = screen_h_/2
 
+local ENDING = 2
+local NO_ENDING = 1
+
 local blocker_
 local blocker_left_
 local blocker_right_
@@ -159,9 +162,9 @@ local function show(demo, game_mode, submode, p1_win)
         hide()
         storyend_config.is_story_end = true -- if is_story_end=true, when slide_in(), it will switch.load_page() to story end talk script.
         if storyend_config.get_stage() == 6 then 
-          demo:leave_and_cleanup(true)
+          demo:leave_and_cleanup(ENDING)
         else
-          demo:leave_and_cleanup(false)
+          demo:leave_and_cleanup(NO_ENDING)
         end
       end)
     else -- story mode lose

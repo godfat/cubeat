@@ -703,7 +703,7 @@ void Demo::quit()
     App::i().quit();
 }
 
-void Demo::leaving_effect(bool const& ending_theme)
+void Demo::leaving_effect(int const& status)
 {
     heatgauge1_->set<Visible>(false);
     if( game_mode_ != GM_SINGLE ) heatgauge2_->set<Visible>(false);
@@ -713,10 +713,12 @@ void Demo::leaving_effect(bool const& ending_theme)
 
     audio::Sound::i().stopAll();
 
-    if( ending_theme ) {
+    if( status == 1 ) {
+        audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
+    } else if ( status == 2 ) {
         audio::Sound::i().playBGM("ending.ogg");
     } else {
-        audio::Sound::i().playBGM_AB("day_a.ogg", "day_b.ogg");
+        audio::Sound::i().playBGM_AB("title_a.ogg", "title_b.ogg");
     }
 
     ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
@@ -1342,7 +1344,7 @@ void button_lose_focus(view::pSpriteText& sp)
 //    }
 //}
 
-void Demo::end_sequence1(bool const& ending_theme)
+void Demo::end_sequence1(int const& status)
 {
     audio::Sound::i().playBuffer("4/4c.wav");
     btn_reinit_.reset();
@@ -1353,7 +1355,7 @@ void Demo::end_sequence1(bool const& ending_theme)
     std::cout << "game_demo end completed." << std::endl;
 
     script::Lua::call(L_, "cleanup", submode_);
-    leaving_effect(ending_theme);
+    leaving_effect(status);
 }
 
 void Demo::pause_quit()

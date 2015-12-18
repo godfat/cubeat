@@ -221,6 +221,63 @@ local function new_image(object)
 end
 
 ----------------------------------------------------------------------------
+-- 9-Slice Image
+----------------------------------------------------------------------------
+local function new_image9s(object) 
+  if object.parent == nil then error('parent is nil') end
+  if object.w == nil then error('image-9-slice width required') end
+  if object.h == nil then error('image-9-slice height required') end
+  
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('blocker', object.parent, object.w, object.h, object.center or false) -- center doesn't work for now
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  
+  object.image9s = {}
+  
+  object.image9s[1] = new_image{ parent = object._cdata, path = object.path..'_1', 
+                                 w=object.w1, h=object.h1, x=0, y=0, depth = 0 }
+  object.image9s[2] = new_image{ parent = object._cdata, path = object.path..'_2',
+                                 w = object.w-object.w1-object.w2, 
+                                 h = object.h1, x = object.w1, y = 0, depth = 0 }
+  object.image9s[3] = new_image{ parent = object._cdata, path = object.path..'_3',
+                                 w = object.w2, h = object.h1, 
+                                 x = object.w-object.w2, y = 0, depth = 0 } 
+  object.image9s[4] = new_image{ parent = object._cdata, path = object.path..'_4',
+                                 w = object.w1, h = object.h-object.h1-object.h2, 
+                                 x = 0, y = object.h1, depth = 0 }      
+  object.image9s[5] = new_image{ parent = object._cdata, path = object.path..'_5',
+                                 w = object.w-object.w1-object.w2, 
+                                 h = object.h-object.h1-object.h2, 
+                                 x = object.w1, y = object.h1, depth = 0 } 
+  object.image9s[6] = new_image{ parent = object._cdata, path = object.path..'_6',
+                                 w = object.w2, h = object.h-object.h1-object.h2, 
+                                 x = object.w-object.w2, y = object.h1, depth = 0 } 
+  object.image9s[7] = new_image{ parent = object._cdata, path = object.path..'_7',
+                                 w = object.w1, h = object.h2, 
+                                 x = 0, y = object.h-object.h2, depth = 0 } 
+  object.image9s[8] = new_image{ parent = object._cdata, path = object.path..'_8',
+                                 w = object.w-object.w1-object.w2, h = object.h2, 
+                                 x = object.w1, y = object.h-object.h2, depth = 0 } 
+  object.image9s[9] = new_image{ parent = object._cdata, path = object.path..'_9',
+                                 w = object.w2, h = object.h2, 
+                                 x = object.w-object.w2, y = object.h-object.h2, depth = 0 }    
+                                 
+  if object.center then
+    for i = 1, 9 do 
+      local new_x = object.image9s[i].x - object.w/2
+      local new_y = object.image9s[i].y - object.h/2
+      object.image9s[i]:set_pos(new_x, new_y)
+    end
+  end
+  -- init setting
+  object:set_pos(object.x or 0, object.y or 0)
+  object:set_depth(object.depth or -10)
+  object:set_visible(object.visible==nil or object.visible)
+                                    
+end
+
+----------------------------------------------------------------------------
 -- Text
 ----------------------------------------------------------------------------
 local function new_text(object)
@@ -555,6 +612,7 @@ end
 return{
 view            = view,
 new_image       = new_image,
+new_image9s     = new_image9s,
 new_text        = new_text,
 new_askbox      = new_askbox,
 new_list        = new_list,

@@ -179,6 +179,9 @@ SMaterial Sprite::create_std_material_for_sprite()
     //at the "ColorMaterial" name...
     mat.ColorMaterial = video::ECM_NONE;
 
+    mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+    mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+
     mat.MaterialType = video::EMT_TRANSPARENT_MODULATE;
     mat.MaterialTypeParam = 0.01f;
     mat.DiffuseColor.set(255, 255, 255, 255);

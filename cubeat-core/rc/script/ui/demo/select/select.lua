@@ -230,18 +230,40 @@ local function init(demo, parent, data)
     end
   end)
   
-  menu.up_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=0, w=1280, h=52 }
-  menu.up_blocker:set_color(0, 0, 0)
-  menu.up_blocker:set_alpha(96)
-  menu.up_blocker:set_depth(-150)
+  menu.blocker_top1    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
+                                       x = -10, y = -5 }
+  menu.blocker_top2    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
+                                       x = -10, y = 5 }
+  menu.blocker_bottom1 = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
+                                       x = -10, y = view.GET_SCREEN_H()-50 }
+  menu.blocker_bottom2 = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60,
+                                       x = -10, y = view.GET_SCREEN_H()-60 }
+                                       
+  menu.blocker_top1:set_alpha(96)
+  menu.blocker_top2:set_alpha(96)
+  menu.blocker_bottom1:set_alpha(96)
+  menu.blocker_bottom2:set_alpha(96)
+  menu.blocker_top1:set_color(0,0,0)
+  menu.blocker_top2:set_color(0,0,0)
+  menu.blocker_bottom1:set_color(0,0,0)
+  menu.blocker_bottom2:set_color(0,0,0)
+  menu.blocker_top1:set_rotation(0.7)
+  menu.blocker_top2:set_rotation(1)
+  menu.blocker_bottom1:set_rotation(-0.7)
+  menu.blocker_bottom2:set_rotation(-1)
   
-  menu.bottom_blocker = ui.new_image{ parent = root_, path='nothing', x=0, y=config.screen_h-52, w=1280, h=52 }
-  menu.bottom_blocker:set_color(0, 0, 0)
-  menu.bottom_blocker:set_alpha(96)
-  menu.bottom_blocker:set_depth(-150)
+  local pos1s, pos1e = ffi.new("v2", -10, -65), ffi.new("v2", -10, -5)
+  local pos2s, pos2e = ffi.new("v2", -10, -55), ffi.new("v2", -10, 5)
+  local pos3s, pos3e = ffi.new("v2", -10, view.GET_SCREEN_H()), ffi.new("v2", -10, view.GET_SCREEN_H()-50)
+  local pos4s, pos4e = ffi.new("v2", -10, view.GET_SCREEN_H()-10), ffi.new("v2", -10, view.GET_SCREEN_H()-60)
+  menu.blocker_top1:tween('OSine', 'Pos2D', pos1s, pos1e, 500)
+  menu.blocker_top2:tween('OSine', 'Pos2D', pos2s, pos2e, 500)
+  menu.blocker_bottom1:tween('OSine', 'Pos2D', pos3s, pos3e, 500)
+  menu.blocker_bottom2:tween('OSine', 'Pos2D', pos4s, pos4e, 500)
   
-  menu.menutext = ui.new_text{ parent = root_, x=425, y=-10, size=32, title='character selection'}
-  menu.menutext:set_scale(1.5)
+  menu.menutext = ui.new_text{ parent = root_, x=view.GET_SCREEN_W()/2, y=20, size=32, 
+                               title = data and data.title or 'test', center=true}
+  menu.menutext:set_scale(1.3)
   menu.menutext:set_depth(-300)
 
   -- create select_actor_page

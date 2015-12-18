@@ -37,10 +37,13 @@ local function hide()
 end
 
 local function create(scene)
-  
+  --[[
   blocker_  = ui.new_image{ parent=scene, path="blocker", x=center_x, y=center_y + 210, w=300, h=214, depth=-10, alpha=168, center=true }
   blocker_:set_gradient_diffuse(0)
-  
+  --]]
+  blocker_  = ui.new_image9s{ parent=scene, path='textarea2', x=center_x, y=center_y+210, 
+                              w=300, h=214, w1=34, w2=32, h1=38, h2=35, center=true }
+                              
   blocker_left_ = ui.new_image{ parent=scene, path="blocker", x=95, y=42, w=384, h=640, depth=-10, alpha=96 }
   blocker_left_:set_gradient_diffuse(0)
   blocker_right_= ui.new_image{ parent=scene, path="blocker", x=802, y=42, w=384, h=640, depth=-10, alpha=96 }
@@ -49,8 +52,8 @@ local function create(scene)
   win_t_  = ui.new_image { parent=scene, path="win" , x=0, y=0, w=384, h=192, depth=-450, center=true }
   lose_t_ = ui.new_image { parent=scene, path="lose", x=0, y=0, w=384, h=192, depth=-450, center=true }
   
-  end_text_ = ui.new_text{ parent=scene, x=0, y=0, size=30, title="play again?", center=true }
-  end_text2_= ui.new_text{ parent=scene, x=0, y=0, size=30, title="\nyes: left click\nleave: right click", center=true }
+  end_text_ = ui.new_text{ parent=blocker_._cdata, x=0, y=0, size=32, title="play again?", center=true }
+  end_text2_= ui.new_text{ parent=blocker_._cdata, x=0, y=0, size=32, title="\nyes: left click\nleave: right click", center=true }
   
   --char_big1_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
   --char_big2_ = ui.new_image{ parent=scene, path="char1_new/glad", x=0, y=0, w=432, h=648, center=true }
@@ -64,10 +67,10 @@ local function create(scene)
 end
 
 local function show(demo, game_mode, submode, p1_win)
-  blocker_:set_alpha(0)
-  blocker_:tween("Linear", "Alpha", 0, 144, 500, 0, nil, 1500)
   blocker_:set_visible(true)
-  blocker_:set_pos(center_x, center_y + 120)
+  blocker_:set_pos(center_x, center_y + 500)
+  local s, e = ffi.new("v2", center_x, center_y + 500), ffi.new("v2", center_x, center_y + 175)
+  blocker_:tween("OSine", "Pos2D", s, e, 500, 0, nil, 1500)
   
   blocker_left_:set_alpha(0)
   blocker_left_:set_visible(true)
@@ -142,19 +145,15 @@ local function show(demo, game_mode, submode, p1_win)
   else
     end_text_:change_text("Rematch")
   end
-  end_text_:set_pos(center_x , center_y + 80)
-  end_text_:set_alpha(0)
+  end_text_:set_pos(0, -40)
   end_text_:set_scale(1.3)
   end_text_:set_depth(-450)
-  end_text_:tween("Linear", "Alpha", 0, 255, 500, 0, nil, 2500)
   end_text2_:set_visible(true)
   end_text2_:set_color(255, 255, 255)
   end_text2_:change_text("Leave")
-  end_text2_:set_pos(center_x , center_y + 160)
-  end_text2_:set_alpha(0)
+  end_text2_:set_pos(0, 35)
   end_text2_:set_scale(1.3)
   end_text2_:set_depth(-450)
-  end_text2_:tween("Linear", "Alpha", 0, 255, 500, 0, nil, 2500)
   
   if submode and submode == endingcheck_config.submode_story then
     if p1_win==true then -- story mode win

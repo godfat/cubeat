@@ -100,33 +100,41 @@ local function init(demo, parent)
   menu.btn_story:set_pos(460, 185)
   menu.btn_story:set_rotation(8)
   menu.btn_story_img = ui.new_image{ parent = menu.btn_story, path='mainmenu/text_story', x=0, y=-145, w=339, h=145 }
-  menu.btn_story_img:set_pickable(false) -- so it won't interfere when overlapping with the underlying button
+  menu.btn_story_img:on_press(function(self)
+    switch.load_page('storymenu')
+  end, view.Input1_left)
   
   menu.btn_vs_cpu     = view.new_sprite("blahblah", root_, 0, 0, true)
   menu.btn_vs_cpu:set_pos(980, 226)
   menu.btn_vs_cpu:set_rotation(-6)
   menu.btn_vs_cpu_img = ui.new_image{ parent = menu.btn_vs_cpu, path='mainmenu/text_vs_cpu', x=-381, y=-146, w=381, h=146 }
-  menu.btn_vs_cpu_img:set_pickable(false)
+  menu.btn_vs_cpu_img:on_press(function(self)
+    switch.load_page('select', nil, { game_mode = 1 })
+  end, view.Input1_left)
   
   menu.btn_vs_ppl     = view.new_sprite("blahblah", root_, 0, 0, true)
   menu.btn_vs_ppl:set_pos(970, 497)
   menu.btn_vs_ppl:set_rotation(-7)
   menu.btn_vs_ppl_img = ui.new_image{ parent = menu.btn_vs_ppl, path='mainmenu/text_vs_ppl', x=-453, y=-137, w=453, h=137 }
-  menu.btn_vs_ppl_img:set_pickable(false)
+  menu.btn_vs_ppl_img:on_press(function(self)
+    switch.load_page('select', nil, { game_mode = 0 })
+  end, view.Input1_left)
   
   menu.btn_chall     = view.new_sprite("blahblah", root_, 0, 0, true)
   menu.btn_chall:set_pos(681, 257)
   menu.btn_chall:set_rotation(0)
   menu.btn_chall_img = ui.new_image{ parent = menu.btn_chall, path='mainmenu/text_chall', x=-181, y=-127, w=363, h=127 }
-  menu.btn_chall_img:set_pickable(false)
+  menu.btn_chall_img:on_press(function(self)
+    switch.load_page('challengemenu')
+  end, view.Input1_left)
   
   menu.btn_option     = view.new_sprite("blahblah", root_, 0, 0, true)
   menu.btn_option:set_pos(520, 517)
   menu.btn_option:set_rotation(10)
   menu.btn_option_img = ui.new_image{ parent = menu.btn_option, path='mainmenu/text_option', x=0, y=-127, w=290, h=127 }
-  menu.btn_option_img:set_pickable(false)
-  -- menu.btn_option_img:set_alpha(192)            -- grey out btn_option for the moment. 
-  -- menu.btn_option_img:set_color(192, 192, 192)  -- grey out btn_option for the moment. 
+  menu.btn_option_img:on_press(function(self)
+    switch.load_page('extramenu')
+  end, view.Input1_left)
   
   -- menu.btn_tut2     = ui.new_text{ parent = root_, title='tutorial test', x=360, y=180, size=32 }
   -- menu.btn_tut2:set_scale(1.5)
@@ -183,12 +191,15 @@ local function init(demo, parent)
   return menu
 end
 
-local function show_button(btn_name)
+local function show_button(btn_name, handover_enter, handover_leave)
   if menu_[btn_name] then 
     menu_[btn_name]:set_visible(true)
     local s1 = ffi.new("v3", 0.1, 0.1, 0.1)
     local e1 = ffi.new("v3", 1, 1, 1)
     menu_[btn_name]:tween("OElastic", "Scale", s1, e1, 500)
+    
+    menu_[btn_name..'_img']:on_enter_focus(handover_enter, view.Input1)
+    menu_[btn_name..'_img']:on_leave_focus(handover_leave, view.Input1)
   else
     print('Lua (mainmenu): no button named'..btn_name) 
   end
@@ -202,9 +213,18 @@ local function hide_button(btn_name)
   end
 end
 
+local function is_visible(btn_name)
+  if menu_[btn_name] then 
+    return menu_[btn_name]:is_visible()
+  else
+    error('Lua (mainmenu): no button named'..btn_name)
+  end
+end
+
 return{
   init  = init,
   hide_main_buttons = hide_main_buttons,
   show_button = show_button,
-  hide_button = hide_button
+  hide_button = hide_button,
+  is_visible = is_visible
 }

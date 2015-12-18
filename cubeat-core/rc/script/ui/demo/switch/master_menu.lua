@@ -19,19 +19,56 @@ local menu_ = {}
 local root_
 
 local function setup_focus_effect(item, btn_name)
-  item:on_enter_focus(function()
-    item:tween("SineCirc", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.97, 0.97, 0.97), 1000, -1)
-    if btn_name then
-      mainmenu.show_button(btn_name)
-    end
-  end, view.Input1)
-  item:on_leave_focus(function()
-    -- shit, I don't have clear tween calls here in lua view scripts.
-    item:tween("Linear", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.93, 0.93, 1), 1)
-    if btn_name then
+  if btn_name then
+    local leave_focus_impl = function()
+      -- shit, I don't have clear tween calls here in lua view scripts.
+      item:tween("Linear", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.93, 0.93, 1), 1)
       mainmenu.hide_button(btn_name)
+    end  
+    
+    local hitarea_handover_enter = function() item.hitarea_hit = true end
+    local hitarea_handover_leave = function() 
+      item.hitarea_hit = false 
+      if item.timer_handle then item.timer_handle:remove() end
+      item.timer_handle = event.on_timer("ui", function()
+        if not item.hitarea_hit then 
+          leave_focus_impl()
+        end
+      end, 1)
     end
-  end, view.Input1)
+    
+    local enter_focus_impl = function()
+      item:tween("SineCirc", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.97, 0.97, 0.97), 1000, -1)
+      mainmenu.show_button(btn_name, hitarea_handover_enter, hitarea_handover_leave)    
+    end
+    
+    item:on_enter_focus(function()
+      if item.timer_handle2 then item.timer_handle2:remove() end
+      item.timer_handle2 = event.on_timer("ui", function()
+        item.hitarea_hit = true
+        if item.hitarea_hit == true and not mainmenu.is_visible(btn_name) then
+          enter_focus_impl()
+        end
+      end, 1)
+    end, view.Input1)
+
+    item:on_leave_focus(function()
+      item.hitarea_hit = false
+      if item.timer_handle then item.timer_handle:remove() end
+      item.timer_handle = event.on_timer("ui", function()
+        if not item.hitarea_hit then 
+          leave_focus_impl()
+        end
+      end, 1)
+    end, view.Input1)
+  else -- special case for "Exit"
+    item:on_enter_focus(function()
+      item:tween("SineCirc", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 1, 1, 1), 1000, -1)
+    end, view.Input1)
+    item:on_leave_focus(function()
+      item:tween("Linear", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.93, 0.93, 1), 1)
+    end, view.Input1)
+  end
 end
 
 local function create_startscreen_clouds(parent)
@@ -213,9 +250,9 @@ local function init(parent, demo)
   
   -- actual main menu sprites
   
-  menu_.story = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/story', w=600, h=558, x=250, y=290, center=true }
+  menu_.story = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/story', w=620, h=578, x=250, y=290, center=true }
   menu_.story:set_depth(-50) 
-  menu_.story:set_scale(0.93, 0.93)
+  menu_.story:set_scale(0.95, 0.95)
   menu_.story:on_press(function(self)
     --storystage.set_stage(1)
     --switch.load_page('select', nil, { game_mode=99, level=0 })
@@ -223,7 +260,7 @@ local function init(parent, demo)
   end, view.Input1_left)
   setup_focus_effect(menu_.story, 'btn_story')
   
-  menu_.vscpu = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vscpu', w=500, h=508, x=1060, y=302, center=true }
+  menu_.vscpu = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vscpu', w=520, h=528, x=1060, y=302, center=true }
   menu_.vscpu:set_depth(-50)
   menu_.vscpu:set_scale(0.93, 0.93)
   menu_.vscpu:on_press(function(self)
@@ -232,7 +269,7 @@ local function init(parent, demo)
   end, view.Input1_left)
   setup_focus_effect(menu_.vscpu, 'btn_vs_cpu')
   
-  menu_.challenge = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/challenge', w=438, h=197, x=705, y=300, center=true }
+  menu_.challenge = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/challenge', w=458, h=207, x=705, y=300, center=true }
   menu_.challenge:set_depth(-30) 
   menu_.challenge:set_scale(0.93, 0.93)
   menu_.challenge:on_press(function(self)
@@ -240,7 +277,7 @@ local function init(parent, demo)
   end, view.Input1_left)
   setup_focus_effect(menu_.challenge, 'btn_chall')
   
-  menu_.vsplayer = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vsplayer', w=699, h=290, x=970, y=565, center=true }
+  menu_.vsplayer = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vsplayer', w=719, h=310, x=970, y=565, center=true }
   menu_.vsplayer:set_depth(-60)
   menu_.vsplayer:set_scale(0.93, 0.93)
   menu_.vsplayer:on_press(function(self)
@@ -248,7 +285,7 @@ local function init(parent, demo)
   end, view.Input1_left)
   setup_focus_effect(menu_.vsplayer, 'btn_vs_ppl')
 
-  menu_.option = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/option', w=237, h=283, x=485, y=565, center=true }
+  menu_.option = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/option', w=257, h=303, x=485, y=565, center=true }
   menu_.option:set_depth(-60)
   menu_.option:set_scale(0.93, 0.93)
   menu_.option:on_press(function(self)

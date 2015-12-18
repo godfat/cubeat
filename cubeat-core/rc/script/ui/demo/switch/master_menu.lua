@@ -24,14 +24,14 @@ local function setup_focus_effect(item, btn_name)
     if btn_name then
       mainmenu.show_button(btn_name)
     end
-  end)
+  end, view.Input1)
   item:on_leave_focus(function()
     -- shit, I don't have clear tween calls here in lua view scripts.
     item:tween("Linear", "Scale", ffi.new("v3", 0.93, 0.93, 1), ffi.new("v3", 0.93, 0.93, 1), 1)
     if btn_name then
       mainmenu.hide_button(btn_name)
     end
-  end)
+  end, view.Input1)
 end
 
 local function create_startscreen_clouds(parent)
@@ -220,7 +220,7 @@ local function init(parent, demo)
     --storystage.set_stage(1)
     --switch.load_page('select', nil, { game_mode=99, level=0 })
     switch.load_page('storymenu')
-  end)
+  end, view.Input1_left)
   setup_focus_effect(menu_.story, 'btn_story')
   
   menu_.vscpu = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vscpu', w=500, h=508, x=1060, y=302, center=true }
@@ -229,7 +229,7 @@ local function init(parent, demo)
   menu_.vscpu:on_press(function(self)
     --switch.load_page('difficulty', nil, { game_mode = 1 })
     switch.load_page('select', nil, { game_mode = 1 })
-  end)
+  end, view.Input1_left)
   setup_focus_effect(menu_.vscpu, 'btn_vs_cpu')
   
   menu_.challenge = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/challenge', w=438, h=197, x=705, y=300, center=true }
@@ -237,7 +237,7 @@ local function init(parent, demo)
   menu_.challenge:set_scale(0.93, 0.93)
   menu_.challenge:on_press(function(self)
     switch.load_page('challengemenu')
-  end)
+  end, view.Input1_left)
   setup_focus_effect(menu_.challenge, 'btn_chall')
   
   menu_.vsplayer = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/vsplayer', w=699, h=290, x=970, y=565, center=true }
@@ -245,7 +245,7 @@ local function init(parent, demo)
   menu_.vsplayer:set_scale(0.93, 0.93)
   menu_.vsplayer:on_press(function(self)
     switch.load_page('select', nil, { game_mode = 0 })
-  end)
+  end, view.Input1_left)
   setup_focus_effect(menu_.vsplayer, 'btn_vs_ppl')
 
   menu_.option = ui.new_image { parent = menu_.bg._cdata, path='mainmenu/option', w=237, h=283, x=485, y=565, center=true }
@@ -253,7 +253,7 @@ local function init(parent, demo)
   menu_.option:set_scale(0.93, 0.93)
   menu_.option:on_press(function(self)
     switch.load_page('extramenu')
-  end)
+  end, view.Input1_left)
   setup_focus_effect(menu_.option, 'btn_option')
   -- menu_.option:set_visible(false)
 
@@ -274,7 +274,7 @@ local function init(parent, demo)
   menu_.btn_quit    = ui.new_image{ parent = menu_.bg._cdata, path='mainmenu/text_quit', x=200, y=675, w=168, h=78, center=true }
   menu_.btn_quit:on_press(function(self) 
     demo:quit()
-  end)
+  end, view.Input1_left)
   menu_.btn_quit:set_scale(0.93, 0.93)
   setup_focus_effect(menu_.btn_quit)
   

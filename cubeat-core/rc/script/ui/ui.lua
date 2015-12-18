@@ -275,6 +275,7 @@ local function new_image9s(object)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible==nil or object.visible)
                                     
+  return object
 end
 
 ----------------------------------------------------------------------------

@@ -11,16 +11,22 @@ local root_
 local function init(demo, parent)
   local menu = {}
   
-  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  root_:set_pos(480, 300)
+  local c_w = view.GET_SCREEN_W()/2
+  local c_h = view.GET_SCREEN_H()/2
   
-  menu.btn_mode_1 = ui.new_text{ parent=root_, x=0, y=0, size=32, title='puzzle mode' }
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(c_w, c_h)
+  
+  menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
+                            w=500, h=400, w1=34, w2=32, h1=38, h2=35, center=true }
+  
+  menu.btn_mode_1 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-120, size=32, title='puzzle mode', center=true }
   menu.btn_mode_1:set_scale(1.5)
-  menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=60, size=32, title='emergency mode' }
+  menu.btn_mode_2 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-60, size=32, title='emergency mode', center=true }
   menu.btn_mode_2:set_scale(1.5)
-  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=120, size=32, title='score attack'}
+  menu.btn_mode_3 = ui.new_text{ parent=menu.bg._cdata, x=0, y=0, size=32, title='score attack', center=true }
   menu.btn_mode_3:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=32, title='go back' }
+  menu.btn_back  = ui.new_text{ parent=menu.bg._cdata, x=0, y=120, size=32, title='go back', center=true }
   menu.btn_back:set_scale(1.5)
   
   menu.btn_mode_1:on_press(function(self)

@@ -21,11 +21,11 @@ local function init(demo, parent)
   menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
                             w=400, h=320, w1=34, w2=32, h1=38, h2=35, center=true }
   
-  menu.new_game = ui.new_text{ parent=menu.bg._cdata, x=0, y=-90, size=32, title='new game', center=true }
+  menu.new_game = ui.new_text{ parent=root_, x=0, y=-90, size=32, title='new game', depth=-60, center=true }
   menu.new_game:set_scale(1.5)
-  menu.quick_load = ui.new_text{ parent=menu.bg._cdata, x=0, y=-30, size=32, title='quick load', center=true }
+  menu.quick_load = ui.new_text{ parent=root_, x=0, y=-30, size=32, title='quick load', depth=-60, center=true }
   menu.quick_load:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=menu.bg._cdata, x=0, y=90, size=32, title='go back', center=true }
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=90, size=32, title='go back', depth=-60, center=true }
   menu.btn_back:set_scale(1.5)
   
   menu.new_game:on_press(function(self)

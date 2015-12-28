@@ -20,15 +20,15 @@ local function init(demo, parent)
   menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
                             w=500, h=480, w1=34, w2=32, h1=38, h2=35, center=true }
   
-  menu.btn_mode_1 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-150, size=32, title='Achievement', center=true }
+  menu.btn_mode_1 = ui.new_text{ parent=root_, x=0, y=-150, size=32, title='Achievement', depth=-60, center=true }
   menu.btn_mode_1:set_scale(1.5)
-  menu.btn_mode_2 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-90, size=32, title='Score', center=true }
+  menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=-90, size=32, title='Score', depth=-60, center=true }
   menu.btn_mode_2:set_scale(1.5)
-  menu.btn_mode_3 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-30, size=32, title='Option', center=true }
+  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=-30, size=32, title='Option', depth=-60, center=true }
   menu.btn_mode_3:set_scale(1.5)
-  menu.btn_cpu_demo = ui.new_text{ parent=menu.bg._cdata, x=0, y=30, size=32, title='CPU demo mode', center=true }
+  menu.btn_cpu_demo = ui.new_text{ parent=root_, x=0, y=30, size=32, title='CPU demo mode', depth=-60, center=true }
   menu.btn_cpu_demo:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=menu.bg._cdata, x=0, y=150, size=32, title='go back', center=true }
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=150, size=32, title='go back', depth=-60, center=true }
   menu.btn_back:set_scale(1.5)
 
   menu.btn_mode_1:on_press(function(self)

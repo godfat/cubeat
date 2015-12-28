@@ -20,13 +20,13 @@ local function init(demo, parent)
   menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
                             w=500, h=400, w1=34, w2=32, h1=38, h2=35, center=true }
   
-  menu.btn_mode_1 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-120, size=32, title='puzzle mode', center=true }
+  menu.btn_mode_1 = ui.new_text{ parent=root_, x=0, y=-120, size=32, title='puzzle mode', depth=-60, center=true }
   menu.btn_mode_1:set_scale(1.5)
-  menu.btn_mode_2 = ui.new_text{ parent=menu.bg._cdata, x=0, y=-60, size=32, title='emergency mode', center=true }
+  menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=-60, size=32, title='emergency mode', depth=-60, center=true }
   menu.btn_mode_2:set_scale(1.5)
-  menu.btn_mode_3 = ui.new_text{ parent=menu.bg._cdata, x=0, y=0, size=32, title='score attack', center=true }
+  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=0, size=32, title='score attack', depth=-60, center=true }
   menu.btn_mode_3:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=menu.bg._cdata, x=0, y=120, size=32, title='go back', center=true }
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=120, size=32, title='go back', depth=-60, center=true }
   menu.btn_back:set_scale(1.5)
   
   menu.btn_mode_1:on_press(function(self)

@@ -14,8 +14,8 @@ local function init(demo, parent)
   
   root_ = view.new_sprite("blahblah", parent, 0, 0, true)
   root_:set_pos(c_w, c_h)
-  --local root_x = 200-440
-  --local root_y = 60-300
+  --local root_x = 200
+  --local root_y = 60
   --root_:set_pos(root_x, root_y)
   
   menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 

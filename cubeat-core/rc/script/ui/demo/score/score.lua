@@ -14,13 +14,13 @@ local function init(demo, parent)
   root_ = view.new_sprite("blahblah", parent, 0, 0, false)
   
   -- create ui object
-  menu.score_list = ui.new_list{ parent=root_, depth=-1000, visible=true, x=640, y=400 }
+  menu.score_list = ui.new_list{ parent=root_, depth=-100, visible=true, x=640, y=400 }
   
-  menu.left_btn   = ui.new_text{ parent=root_, x=200, y=300, size=32, title='<<' }
-  menu.left_btn:set_scale(1.5)
+  menu.left_btn   = ui.new_text{ parent=root_, x=340, y=300, size=32, depth=-200, title='<<', center=true }
+  menu.left_btn:set_scale(2)
   
-  menu.right_btn  = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()-200, y=300, size=32, title='>>' }
-  menu.right_btn:set_scale(1.5)
+  menu.right_btn  = ui.new_text{ parent=root_, x=view.GET_SCREEN_W()-340, y=300, size=32, depth=-200, title='>>', center=true }
+  menu.right_btn:set_scale(2)
   
   -- load score data
   local score_data = {}

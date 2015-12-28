@@ -390,14 +390,20 @@ local function new_list(object)
   local screen_w  = C.Get_SCREEN_W()
   local screen_h  = C.Get_SCREEN_H()
   setmetatable(object, Sprite_Based_Mt)
-  object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
+  --object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
+  object._cdata = view.new_sprite('blocker', object.parent, screen_w, screen_h, true)
   object:set_pos(object.x or screen_w/2, object.y or screen_h/2)
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  
+  object.bg = new_image9s{ parent=object._cdata, path='textarea2', x=0, y=0, 
+                           w=width, h=height, w1=34, w2=32, h1=38, h2=35, center=true }
   
   local score_pos_y = 60 - (height/2)
   object.score      = new_text{parent=object._cdata, title='score', x=0, y=score_pos_y, center=true, size=40}
   
   local back_pos_y  = (height/2) - 60
-  object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-10}
+  object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-60}
   
   -- functions
   object.clear_list   = function(self)
@@ -421,10 +427,12 @@ local function new_list(object)
                           object.list = list
                           local pos_y = 120 - (height/2)
                           for k,v in pairs(object.list) do
-                            value = value + 1
-                            object.text_score[value] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, center=true}
-                            object.text_name[value]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
-                            pos_y=pos_y+30
+                            if value+1 <= 10 then -- only show 1st to 10th now
+                              value = value + 1
+                              object.text_score[value] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, depth=-60, center=true}
+                              object.text_name[value]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, depth=-60, center=true}
+                              pos_y=pos_y+30
+                            end
                           end
                         end
   --[[

@@ -456,6 +456,8 @@ local function init(demo, parent, data)
   menu.clickBlock:on_press_r(
                               function(self)
                                 ask_panel_ = ui.new_askbox{ parent = menu.TalkBackGround._cdata,
+                                                            w=500,
+                                                            h=300,
                                                             title = "LEAVE?",
                                                             depth = -500,
                                                             visible=false }

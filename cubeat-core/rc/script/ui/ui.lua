@@ -313,10 +313,8 @@ local function new_askbox(object)
   object:set_color(0, 0, 0)
   object:set_alpha(0)
   
-  object.panel  = new_image{parent=object._cdata, path='nothing',
-                            w=object.w or 600, h=object.h or 300, center=true}
-  object.panel:set_color(0, 0, 0)
-  object.panel:set_alpha(160)
+  object.bg     = new_image9s{ parent=object._cdata, path='textarea2', x=0, y=0, 
+                               w=object.w or 600, h=object.h or 300, w1=34, w2=32, h1=38, h2=35, center=true }
   
   object.text   = new_text{ parent=object._cdata, title=object.title, size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, font=object.font, center=true }
@@ -360,7 +358,6 @@ local function new_askbox(object)
                               object.cancel:on_press(cb)
                             end
   object.remove_cb        = function(self)
-                              object.panel:remove()
                               object.text:remove()
                               object.ok:remove()
                               object.cancel:remove()

@@ -299,6 +299,76 @@ local function new_text(object)
 end
 
 ----------------------------------------------------------------------------
+-- Button
+----------------------------------------------------------------------------
+local function new_button(object)
+  if object.parent == nil then error('parent is nil') end
+  
+  -- create object
+  local width = object.w or 173
+  local height= object.h or 173
+  local x     = object.x or 0
+  local y     = object.y or 0
+  local depth = object.depth or -10
+  
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
+  
+  -- init object setting
+  object:set_pos(x, y)
+  object:set_depth(depth)
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  object:set_visible(object.visible==nil or object.visible)
+  
+  -- create bg, text
+  object.bg = new_image{ parent=object._cdata, path=object.path or 'icon_1', w=width, h=height, depth=depth, center=true }
+  object.bg:set_alpha(128)
+  
+  object.text = new_text{ parent=object._cdata, size=32, title=object.title or 'title', depth=depth-30, center=true }
+  object.text:set_scale(1.3)
+  
+  -- create hit
+  object.hit  = new_image{ parent=object._cdata, path='blocker', w=width, h=height, depth=depth-50, center=true }
+  object.hit:set_alpha(0)
+  
+  -- position check
+  if object.center~=true then
+    object.text :set_pos(width/2, height/2)
+    object.bg   :set_pos(width/2, height/2)
+    object.hit  :set_pos(width/2, height/2)
+  end
+  
+  -- functions
+  object.on_focus     = function(self, input)
+                          if (input==nil or input==Input1 or input==Input2) then
+                            object.hit:on_enter_focus(function()
+                              object.bg:set_alpha(255)
+                              object.text:set_color(64, 255, 255)
+                            end, input)
+                            object.hit:on_leave_focus(function()
+                              object.bg:set_alpha(128)
+                              object.text:set_color(255, 255, 255)
+                            end, input)
+                          end
+                        end
+  object.on_press     = function(self, func, input)
+                          if func and (input==nil or input==Input1_left or input==Input2_left) then
+                            object.func = func
+                            object.hit:on_press(object.func, input)
+                          end
+                        end
+  object.remove_cb    = function(self)
+                          object.bg:remove()
+                          object.text:remove()
+                          object.hit:remove()
+                          if object.func then object.func=nil end
+                        end
+                        
+  return object
+end
+
+----------------------------------------------------------------------------
 -- AskBox
 ----------------------------------------------------------------------------
 local function new_askbox(object)
@@ -620,6 +690,7 @@ view            = view,
 new_image       = new_image,
 new_image9s     = new_image9s,
 new_text        = new_text,
+new_button      = new_button,
 new_askbox      = new_askbox,
 new_list        = new_list,
 new_ratio       = new_ratio,

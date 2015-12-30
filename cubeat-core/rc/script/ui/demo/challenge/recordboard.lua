@@ -58,16 +58,17 @@ end
 local function create_record_board(scene)
   local center_x = screen_w_/2
   local center_y = screen_h_/2
-  board_        = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=300, depth=-100, center=true, alpha=128 }
-  title_        = ui.new_text { parent=scene, x=center_x    , y=center_y-120, size=32, title='Title'  , depth=-110, center=true }
+  --board_        = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=300, depth=-100, center=true, alpha=128 }
+  board_        = ui.new_image9s{ parent=scene, path='textarea2', x=center_x, y=center_y, w=400, h=300, w1=34, w2=32, h1=38, h2=35, center=true }
+  title_        = ui.new_text { parent=scene, x=center_x    , y=center_y-100, size=32, title='Title'  , depth=-110, center=true }
   title_:set_scale(1.5)
   cur_score_title_  = ui.new_text { parent=scene, x=center_x-120, y=center_y-40 , size=32, title='Score'  , depth=-110, center=true }
   cur_score_        = ui.new_text { parent=scene, x=center_x+40 , y=center_y-40 , size=32, title='Record' , depth=-110, center=true }
   best_score_title_ = ui.new_text { parent=scene, x=center_x-120, y=center_y    , size=32, title='Best'   , depth=-110, center=true }
   best_score_       = ui.new_text { parent=scene, x=center_x+40 , y=center_y    , size=32, title='Record' , depth=-110, center=true }
-  btn_next_         = ui.new_text { parent=scene, x=center_x-120, y=center_y+130, size=32, title='Next'   , depth=-110, center=true }
-  btn_retry_        = ui.new_text { parent=scene, x=center_x    , y=center_y+130, size=32, title='Retry'  , depth=-110, center=true }
-  btn_quit_         = ui.new_text { parent=scene, x=center_x+120, y=center_y+130, size=32, title='Quit'   , depth=-110, center=true }
+  btn_next_         = ui.new_text { parent=scene, x=center_x-120, y=center_y+100, size=32, title='Next'   , depth=-110, center=true }
+  btn_retry_        = ui.new_text { parent=scene, x=center_x    , y=center_y+100, size=32, title='Retry'  , depth=-110, center=true }
+  btn_quit_         = ui.new_text { parent=scene, x=center_x+120, y=center_y+100, size=32, title='Quit'   , depth=-110, center=true }
   cur_retry_title_  = ui.new_text { parent=scene, x=center_x-120, y=center_y-40 , size=32, title='Retry'  , depth=-110, center=true }
   cur_retry_        = ui.new_text { parent=scene, x=center_x+40 , y=center_y-40 , size=32, title='Record' , depth=-110, center=true }
   board_:set_color(0,0,0)

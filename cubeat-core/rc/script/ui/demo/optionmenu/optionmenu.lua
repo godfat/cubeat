@@ -32,14 +32,14 @@ local function init(demo, parent)
   menu.sound_scrollbar = ui.new_scrollbar{ parent=root_, x=-60, y=-20, range=100, depth=-60, index=50 }
   
   menu.ratio_1 = ui.new_ratio{ parent=root_, x=-220, y=40, depth=-60, title='Effect 1' }
-  menu.ratio_1:on_press(function(self) end)
+  menu.ratio_1:on_press(function(self) end, view.Input1_left)
   menu.ratio_2 = ui.new_ratio{ parent=root_, x=-220, y=100, depth=-60, title='Effect 2' }
-  menu.ratio_2:on_press(function(self) end)
+  menu.ratio_2:on_press(function(self) end, view.Input1_left)
   
   menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=40, title='back', center=true, depth=-200 }
   menu.btn_back:on_press(function(self)
     switch.load_page('extramenu')
-  end)
+  end, view.Input1_left)
   
   return menu
 end

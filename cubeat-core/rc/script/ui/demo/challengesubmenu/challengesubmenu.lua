@@ -47,7 +47,7 @@ local function init(demo, parent, submode)
             challenge.set_puzzle_level(level)
             challenge.set_puzzle_color(color_num)
             --switch.show_effect( {id="slide_out_title"} )
-          end)
+          end, view.Input1_left)
         else
           menu[k]:set_color(128,128,128)
         end
@@ -64,12 +64,12 @@ local function init(demo, parent, submode)
       challenge.set_puzzle_color(2+random(2))
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     
     menu.back = ui.new_text{ parent=root_, x=-40, y=200, size=40, depth=-200, title='back' }
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   -- WarningCondition
@@ -89,12 +89,12 @@ local function init(demo, parent, submode)
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.WarningCondition_20, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     if record.load(parameter.clear, {submode=parameter.WarningCondition_20}) then
       menu.btn2:on_press(function(self)
         demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn2:set_color(128,128,128)
     end
@@ -102,7 +102,7 @@ local function init(demo, parent, submode)
       menu.btn3:on_press(function(self)
         demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn3:set_color(128,128,128)
     end
@@ -110,7 +110,7 @@ local function init(demo, parent, submode)
       menu.btn4:on_press(function(self)
         demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn4:set_color(128,128,128)
     end
@@ -118,13 +118,13 @@ local function init(demo, parent, submode)
       menu.btn5:on_press(function(self)
         demo:init_single(parameter.WarningCondition_100, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn5:set_color(128,128,128)
     end
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   -- UnLimited
@@ -137,14 +137,14 @@ local function init(demo, parent, submode)
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.UnLimited_Normal, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     menu.btn2:on_press(function(self)
       demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   return menu

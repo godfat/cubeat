@@ -31,17 +31,17 @@ local function init(demo, parent)
   
   menu.btn_mode_1:on_press(function(self)
     switch.load_page('challengesubmenu', nil, parameter.OneShotClear)
-  end)
+  end, view.Input1_left)
   menu.btn_mode_2:on_press(function(self)
     switch.load_page('challengesubmenu', nil, parameter.WarningCondition)
-  end)
+  end, view.Input1_left)
   menu.btn_mode_3:on_press(function(self)
     -- switch.load_page('challengesubmenu', nil, parameter.UnLimited)
     demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
-  end)
+  end, view.Input1_left)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
-  end)
+  end, view.Input1_left)
   
   --[[
   menu.btn_mode_4 = ui.new_text{ parent=root_, x=0, y=180, size=32, title='print record'}

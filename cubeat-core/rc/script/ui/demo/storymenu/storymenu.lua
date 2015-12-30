@@ -31,10 +31,10 @@ local function init(demo, parent)
   menu.new_game:on_press(function(self)
     storystage.set_stage(1)
     switch.load_page('select', nil, { game_mode=99, level=0, title="Story Mode" })
-  end)
+  end, view.Input1_left)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
-  end)
+  end, view.Input1_left)
   
   local challenge_record = file.load_data('challenge_record', "rb")
   
@@ -56,7 +56,7 @@ local function init(demo, parent)
         switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=select_config.ch_choose[2]} )
       end
       switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
-    end)
+    end, view.Input1_left)
   
   -- if we should not use quickload, we will not set on_press() function for quick_load btn
   else

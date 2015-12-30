@@ -513,8 +513,8 @@ local function new_list(object)
   object.set_title    = function(self, t)
                           object.score:change_text(tostring(t))
                         end
-  object.on_press_back= function(self, func)
-                          object.back:on_press(func)
+  object.on_press_back= function(self, func, input)
+                          object.back:on_press(func, input)
                         end
   object.remove_cb    = function(self)
                           object.score:remove()
@@ -546,15 +546,15 @@ local function new_ratio(object)
   object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=0, y=0, size=32}
   
   -- functions
-  object.on_press = function(self, func)
+  object.on_press = function(self, func, input)
                       local press = function(self)
                                       local path = object.pressed and 'cubes/cube1.bak' or 'cubes/cube-b-1'
                                       object.box:set_texture(path)
                                       object.pressed = (object.pressed==false and true) or false
                                       func(self)
                                     end
-                      object.box:on_press(press)
-                      object.text:on_press(press)
+                      object.box:on_press(press, input)
+                      object.text:on_press(press, input)
                     end
   
   -- init setting
@@ -654,14 +654,16 @@ local function new_scrollbar(object)
                                             update_button_position(Input1)
                                             if func then func(self) end
                                           end
+                      --[[
                       local down_input2 = function(self)
                                             update_button_position(Input2)
                                             if func then func(self) end
                                           end
+                      --]]
                       object.button:on_down( down_input1, Input1_left )
-                      object.button:on_down( down_input2, Input2_left )
+                      --object.button:on_down( down_input2, Input2_left )
                       object.line:on_down( down_input1, Input1_left )
-                      object.line:on_down( down_input2, Input2_left )
+                      --object.line:on_down( down_input2, Input2_left )
                     end
   object.remove_cb= function(self)
                       object.text:remove()
@@ -671,7 +673,7 @@ local function new_scrollbar(object)
   
   -- init setting
   object.on_down(nil)
-  set_focus_leave_pic(object.button._cdata, 'cubes/cube-b-1', 'cubes/cube1.bak')
+  set_focus_leave_pic(object.button._cdata, 'cubes/cube-b-1', 'cubes/cube1.bak', Input1)
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible or true)

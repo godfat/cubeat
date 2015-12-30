@@ -124,7 +124,7 @@ local function init(demo, parent)
       end
     end
     menu["page_" .. tostring(current_page)]:set_visible(true)
-  end)
+  end, view.Input1_left)
   
   menu.right_btn:on_press(function(self)
     for i=1,9 do
@@ -143,11 +143,11 @@ local function init(demo, parent)
       end
     end
     menu["page_" .. tostring(current_page)]:set_visible(true)
-  end)
+  end, view.Input1_left)
 
   menu.btn_back:on_press(function(self)
     switch.load_page('extramenu')
-  end)
+  end, view.Input1_left)
   
   return menu
 end

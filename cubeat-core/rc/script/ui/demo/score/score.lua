@@ -49,17 +49,17 @@ local function init(demo, parent)
     menu.score_list:clear_list()
     current_data = (current_data=="Normal" and "Countdown") or (current_data=="Countdown" and "Normal")
     set_data(current_data)
-  end)
+  end, view.Input1_left)
   
   menu.right_btn:on_press(function(self)
     menu.score_list:clear_list()
     current_data = (current_data=="Normal" and "Countdown") or (current_data=="Countdown" and "Normal")
     set_data(current_data)
-  end)
+  end, view.Input1_left)
   
   menu.score_list:on_press_back(function(self)
     switch.load_page('extramenu')
-  end)
+  end, view.Input1_left)
   
   return menu
 end

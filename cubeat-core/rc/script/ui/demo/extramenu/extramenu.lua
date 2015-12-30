@@ -33,23 +33,23 @@ local function init(demo, parent)
 
   menu.btn_mode_1:on_press(function(self)
     switch.load_page('achievement')
-  end)
+  end, view.Input1_left)
   menu.btn_mode_2:on_press(function(self)
     switch.load_page('score')
-  end)
+  end, view.Input1_left)
   menu.btn_mode_3:on_press(function(self)
     switch.load_page('optionmenu')
-  end)
+  end, view.Input1_left)
   menu.btn_cpu_demo:on_press(function(self)
     local bag = {1, 2, 3, 4, 5, 6}
     random_shuffle(bag)
     select_config.ch_choose[1] = bag[1]
     select_config.ch_choose[2] = bag[2]
     demo:init_cpudemo("char/char"..bag[1].."_new", "char/char"..bag[2].."_new", "stage/jungle"..bag[1])
-  end)
+  end, view.Input1_left)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
-  end)
+  end, view.Input1_left)
   
   return menu
 end

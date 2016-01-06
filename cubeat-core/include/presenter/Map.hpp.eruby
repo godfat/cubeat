@@ -51,6 +51,7 @@ public:
     Map& init_cubes(utils::vector_2d<int> const& data) { model()->init_cubes(data); return *this; }
     Map& stop_dropping();
     Map& start_dropping();
+    Map& stop_all_actions();
     Map& reset_record() { model()->reset_record(); return *this; }
 
 public:

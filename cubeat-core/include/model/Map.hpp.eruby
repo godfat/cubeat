@@ -43,7 +43,7 @@ public:
 
 public:
     Map(presenter::wpMap owner, data::pMapSetting setting):
-        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0),
+        SimpleMap(setting), owner_(owner), cubes_(0, 0), now_t_(0), last_t_(0), is_end_(false),
         cubes_cleared_(), cubes_matched_(), total_cubes_cleared_(0), cubes_restored_(0),
         highest_chain_(0), chain_made_per_session_(0),
         highest_color_count_(0), highest_single_color_match_(0),
@@ -79,6 +79,8 @@ public:
 
     // for notifying the ending effect to cubes.
     Map& ending_effect();
+
+    Map& game_end();
 
     color_map_type color_map() const;
 
@@ -164,6 +166,7 @@ private:
 
     // Now map has to keep track of logical state with regard to precise timing
     time_t now_t_, last_t_;
+    bool is_end_;
 
     /* ------------ records -------------- */
     // user click related

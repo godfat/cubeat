@@ -12,23 +12,29 @@ local root_
 local function init(demo, parent)
   local menu = {}
   
-  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  root_:set_pos(480, 300)
+  local c_w = view.GET_SCREEN_W()/2
+  local c_h = view.GET_SCREEN_H()/2
   
-  menu.new_game = ui.new_text{ parent=root_, x=0, y=0, size=32, title='new game' }
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(c_w, c_h)
+  
+  menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
+                            w=400, h=320, w1=34, w2=32, h1=38, h2=35, center=true }
+  
+  menu.new_game = ui.new_text{ parent=root_, x=0, y=-90, size=32, title='new game', depth=-60, center=true }
   menu.new_game:set_scale(1.5)
-  menu.quick_load = ui.new_text{ parent=root_, x=0, y=60, size=32, title='quick load' }
+  menu.quick_load = ui.new_text{ parent=root_, x=0, y=-30, size=32, title='quick load', depth=-60, center=true }
   menu.quick_load:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=180, size=32, title='go back' }
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=90, size=32, title='go back', depth=-60, center=true }
   menu.btn_back:set_scale(1.5)
   
   menu.new_game:on_press(function(self)
     storystage.set_stage(1)
     switch.load_page('select', nil, { game_mode=99, level=0, title="Story Mode" })
-  end)
+  end, view.Input1_left)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
-  end)
+  end, view.Input1_left)
   
   local challenge_record = file.load_data('challenge_record', "rb")
   
@@ -50,7 +56,7 @@ local function init(demo, parent)
         switch.show_effect( {id="slide_out_transfer_to_talk", stage_id=select_config.ch_choose[2]} )
       end
       switch.show_effect( { id="slide_in_transfer", cb=load_talk_page } )
-    end)
+    end, view.Input1_left)
   
   -- if we should not use quickload, we will not set on_press() function for quick_load btn
   else

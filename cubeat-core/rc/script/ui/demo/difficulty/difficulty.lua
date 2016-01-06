@@ -52,99 +52,36 @@ local function init(demo, parent, data)
   menu.blocker_bottom1:tween('OSine', 'Pos2D', pos3s, pos3e, 500)
   menu.blocker_bottom2:tween('OSine', 'Pos2D', pos4s, pos4e, 500)
   
-  menu.btn_easy_bg     = ui.new_image{ parent=root_, path='icon_1', w=173, h=173, x=-270, y=30, depth=-30, center=true }
-  menu.btn_normal_bg   = ui.new_image{ parent=root_, path='icon_2', w=173, h=173, x=-90, y=30, depth=-30, center=true }
-  menu.btn_hard_bg     = ui.new_image{ parent=root_, path='icon_3', w=173, h=173, x=90, y=30, depth=-30, center=true }
-  menu.btn_veryhard_bg = ui.new_image{ parent=root_, path='icon_4', w=173, h=173, x=270, y=30, depth=-30, center=true }
+  menu.btn_easy     = ui.new_button{ parent=root_, path='icon_1', title='easy',       x=-270, y=30, depth=-30, center=true }
+  menu.btn_normal   = ui.new_button{ parent=root_, path='icon_1', title='normal',     x= -90, y=30, depth=-30, center=true }
+  menu.btn_hard     = ui.new_button{ parent=root_, path='icon_1', title='hard',       x=  90, y=30, depth=-30, center=true }
+  menu.btn_veryhard = ui.new_button{ parent=root_, path='icon_1', title='very\nhard', x= 270, y=30, depth=-30, center=true }
   
-  menu.btn_easy_bg:set_alpha(128)
-  menu.btn_normal_bg:set_alpha(128)
-  menu.btn_hard_bg:set_alpha(128)   
-  menu.btn_veryhard_bg:set_alpha(128)
+  menu.btn_easy     :on_focus(view.Input1)
+  menu.btn_normal   :on_focus(view.Input1)
+  menu.btn_hard     :on_focus(view.Input1)
+  menu.btn_veryhard :on_focus(view.Input1)
   
-  menu.btn_easy   = ui.new_text{ parent=menu.btn_easy_bg._cdata, size=32, title='easy', depth=-60, center=true }
-  menu.btn_easy:set_scale(1.3)
-  menu.btn_normal = ui.new_text{ parent=menu.btn_normal_bg._cdata, size=32, title='normal', depth=-60, center=true }
-  menu.btn_normal:set_scale(1.3)
-  menu.btn_hard   = ui.new_text{ parent=menu.btn_hard_bg._cdata, size=32, title='hard', depth=-60, center=true }
-  menu.btn_hard:set_scale(1.3)
-  menu.btn_veryhard= ui.new_text{ parent=menu.btn_veryhard_bg._cdata, size=32, title='very\nhard', depth=-60, center=true }
-  menu.btn_veryhard:set_scale(1.3)
-  
+  menu.btn_easy:on_press    ( function(self)
+                                data.level = 0
+                                demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
+                              end, view.Input1_left )
+  menu.btn_normal:on_press  ( function(self)
+                                data.level = 1
+                                demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
+                              end, view.Input1_left )
+  menu.btn_hard:on_press    ( function(self)
+                                data.level = 2
+                                demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
+                              end, view.Input1_left )
+  menu.btn_veryhard:on_press( function(self)
+                                data.level = 3
+                                demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
+                              end, view.Input1_left )
+
   menu.btn_back   = ui.new_text{ parent=root_, x= - view.GET_SCREEN_W()/2 + 10, y=view.GET_SCREEN_H()/2-60, 
                                  size=32, title='< go back', depth=-60 }
   menu.btn_back:set_scale(1.5)
-  
-  menu.btn_easy_hit      = ui.new_image{ parent=menu.btn_easy_bg._cdata, path='blocker', w=173, h=173, depth=-80, center=true }
-  menu.btn_normal_hit    = ui.new_image{ parent=menu.btn_normal_bg._cdata, path='blocker', w=173, h=173, depth=-80, center=true }
-  menu.btn_hard_hit      = ui.new_image{ parent=menu.btn_hard_bg._cdata, path='blocker', w=173, h=173, depth=-80, center=true }
-  menu.btn_veryhard_hit  = ui.new_image{ parent=menu.btn_veryhard_bg._cdata, path='blocker', w=173, h=173, depth=-80, center=true }
-  
-  menu.btn_easy_hit:set_alpha(0)
-  menu.btn_normal_hit:set_alpha(0)
-  menu.btn_hard_hit:set_alpha(0)
-  menu.btn_veryhard_hit:set_alpha(0)
-  
-  menu.btn_easy_hit:on_enter_focus(function()
-    menu.btn_easy_bg:set_alpha(255)
-    menu.btn_easy:set_color(64, 255, 255)
-  end, view.Input1)
-  menu.btn_easy_hit:on_leave_focus(function()
-    menu.btn_easy_bg:set_alpha(128)
-    menu.btn_easy:set_color(255, 255, 255)
-  end, view.Input1)
-
-  menu.btn_normal_hit:on_enter_focus(function()
-    menu.btn_normal_bg:set_alpha(255)
-    menu.btn_normal:set_color(64, 255, 255)
-  end, view.Input1)
-  menu.btn_normal_hit:on_leave_focus(function()
-    menu.btn_normal_bg:set_alpha(128)
-    menu.btn_normal:set_color(255, 255, 255)
-  end, view.Input1)
-  
-  menu.btn_hard_hit:on_enter_focus(function()
-    menu.btn_hard_bg:set_alpha(255)
-    menu.btn_hard:set_color(64, 255, 255)
-  end, view.Input1)
-  menu.btn_hard_hit:on_leave_focus(function()
-    menu.btn_hard_bg:set_alpha(128)
-    menu.btn_hard:set_color(255, 255, 255)
-  end, view.Input1)  
-
-  menu.btn_veryhard_hit:on_enter_focus(function()
-    menu.btn_veryhard_bg:set_alpha(255)
-    menu.btn_veryhard:set_color(64, 255, 255)
-  end, view.Input1)
-  menu.btn_veryhard_hit:on_leave_focus(function()
-    menu.btn_veryhard_bg:set_alpha(128)
-    menu.btn_veryhard:set_color(255, 255, 255)
-  end, view.Input1)
-  
-  menu.btn_easy_hit:on_press(function(self)
-    data.level = 0
-    -- data.last_menu = 'difficulty'
-    -- switch.load_page('select', nil, data)
-    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
-  end)
-  menu.btn_normal_hit:on_press(function(self)
-    data.level = 1
-    -- data.last_menu = 'difficulty'
-    -- switch.load_page('select', nil, data)
-    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
-  end)
-  menu.btn_hard_hit:on_press(function(self)
-    data.level = 2
-    -- data.last_menu = 'difficulty'
-    -- switch.load_page('select', nil, data)
-    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
-  end)
-  menu.btn_veryhard_hit:on_press(function(self)
-    data.level = 3
-    -- data.last_menu = 'difficulty'
-    -- switch.load_page('select', nil, data)
-    demo:init_mode(data.game_mode, data.c1p, data.c2p, data.sconf, data.level)
-  end)
   menu.btn_back:on_press(function(self)
     switch.load_page('select', nil, { game_mode = data.game_mode, title = "VS CPU Mode" })
   end)

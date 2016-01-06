@@ -299,6 +299,76 @@ local function new_text(object)
 end
 
 ----------------------------------------------------------------------------
+-- Button
+----------------------------------------------------------------------------
+local function new_button(object)
+  if object.parent == nil then error('parent is nil') end
+  
+  -- create object
+  local width = object.w or 173
+  local height= object.h or 173
+  local x     = object.x or 0
+  local y     = object.y or 0
+  local depth = object.depth or -10
+  
+  setmetatable(object, Sprite_Based_Mt)
+  object._cdata = view.new_sprite('', object.parent, width, height, object.center or false)
+  
+  -- init object setting
+  object:set_pos(x, y)
+  object:set_depth(depth)
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  object:set_visible(object.visible==nil or object.visible)
+  
+  -- create bg, text
+  object.bg = new_image{ parent=object._cdata, path=object.path or 'icon_1', w=width, h=height, depth=depth, center=true }
+  object.bg:set_alpha(128)
+  
+  object.text = new_text{ parent=object._cdata, size=32, title=object.title or 'title', depth=depth-30, center=true }
+  object.text:set_scale(1.3)
+  
+  -- create hit
+  object.hit  = new_image{ parent=object._cdata, path='blocker', w=width, h=height, depth=depth-50, center=true }
+  object.hit:set_alpha(0)
+  
+  -- position check
+  if object.center~=true then
+    object.text :set_pos(width/2, height/2)
+    object.bg   :set_pos(width/2, height/2)
+    object.hit  :set_pos(width/2, height/2)
+  end
+  
+  -- functions
+  object.on_focus     = function(self, input)
+                          if (input==nil or input==Input1 or input==Input2) then
+                            object.hit:on_enter_focus(function()
+                              object.bg:set_alpha(255)
+                              object.text:set_color(64, 255, 255)
+                            end, input)
+                            object.hit:on_leave_focus(function()
+                              object.bg:set_alpha(128)
+                              object.text:set_color(255, 255, 255)
+                            end, input)
+                          end
+                        end
+  object.on_press     = function(self, func, input)
+                          if func and (input==nil or input==Input1_left or input==Input2_left) then
+                            object.func = func
+                            object.hit:on_press(object.func, input)
+                          end
+                        end
+  object.remove_cb    = function(self)
+                          object.bg:remove()
+                          object.text:remove()
+                          object.hit:remove()
+                          if object.func then object.func=nil end
+                        end
+                        
+  return object
+end
+
+----------------------------------------------------------------------------
 -- AskBox
 ----------------------------------------------------------------------------
 local function new_askbox(object)
@@ -313,10 +383,8 @@ local function new_askbox(object)
   object:set_color(0, 0, 0)
   object:set_alpha(0)
   
-  object.panel  = new_image{parent=object._cdata, path='nothing',
-                            w=object.w or 600, h=object.h or 300, center=true}
-  object.panel:set_color(0, 0, 0)
-  object.panel:set_alpha(160)
+  object.bg     = new_image9s{ parent=object._cdata, path='textarea2', x=0, y=0, 
+                               w=object.w or 600, h=object.h or 300, w1=34, w2=32, h1=38, h2=35, center=true }
   
   object.text   = new_text{ parent=object._cdata, title=object.title, size=object.size or 30,
                             r=object.r, g=object.g, b=object.b, font=object.font, center=true }
@@ -360,7 +428,6 @@ local function new_askbox(object)
                               object.cancel:on_press(cb)
                             end
   object.remove_cb        = function(self)
-                              object.panel:remove()
                               object.text:remove()
                               object.ok:remove()
                               object.cancel:remove()
@@ -390,14 +457,20 @@ local function new_list(object)
   local screen_w  = C.Get_SCREEN_W()
   local screen_h  = C.Get_SCREEN_H()
   setmetatable(object, Sprite_Based_Mt)
-  object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
+  --object._cdata = view.new_sprite('area_rect', object.parent, width, height, true)
+  object._cdata = view.new_sprite('blocker', object.parent, screen_w, screen_h, true)
   object:set_pos(object.x or screen_w/2, object.y or screen_h/2)
+  object:set_color(0, 0, 0)
+  object:set_alpha(0)
+  
+  object.bg = new_image9s{ parent=object._cdata, path='textarea2', x=0, y=0, 
+                           w=width, h=height, w1=34, w2=32, h1=38, h2=35, center=true }
   
   local score_pos_y = 60 - (height/2)
   object.score      = new_text{parent=object._cdata, title='score', x=0, y=score_pos_y, center=true, size=40}
   
   local back_pos_y  = (height/2) - 60
-  object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-10}
+  object.back       = new_text{parent=object._cdata, title='back', x=0, y=back_pos_y, center=true, size=40, depth=-60}
   
   -- functions
   object.clear_list   = function(self)
@@ -421,10 +494,12 @@ local function new_list(object)
                           object.list = list
                           local pos_y = 120 - (height/2)
                           for k,v in pairs(object.list) do
-                            value = value + 1
-                            object.text_score[value] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, center=true}
-                            object.text_name[value]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, center=true}
-                            pos_y=pos_y+30
+                            if value+1 <= 10 then -- only show 1st to 10th now
+                              value = value + 1
+                              object.text_score[value] = new_text{parent=object._cdata, title=tostring(k), x=-100, y=pos_y, depth=-60, center=true}
+                              object.text_name[value]  = new_text{parent=object._cdata, title=tostring(v), x= 100, y=pos_y, depth=-60, center=true}
+                              pos_y=pos_y+30
+                            end
                           end
                         end
   --[[
@@ -438,8 +513,8 @@ local function new_list(object)
   object.set_title    = function(self, t)
                           object.score:change_text(tostring(t))
                         end
-  object.on_press_back= function(self, func)
-                          object.back:on_press(func)
+  object.on_press_back= function(self, func, input)
+                          object.back:on_press(func, input)
                         end
   object.remove_cb    = function(self)
                           object.score:remove()
@@ -471,15 +546,15 @@ local function new_ratio(object)
   object.text   = new_text{parent=object._cdata, title=object.title or 'ratio', x=0, y=0, size=32}
   
   -- functions
-  object.on_press = function(self, func)
+  object.on_press = function(self, func, input)
                       local press = function(self)
                                       local path = object.pressed and 'cubes/cube1.bak' or 'cubes/cube-b-1'
                                       object.box:set_texture(path)
                                       object.pressed = (object.pressed==false and true) or false
                                       func(self)
                                     end
-                      object.box:on_press(press)
-                      object.text:on_press(press)
+                      object.box:on_press(press, input)
+                      object.text:on_press(press, input)
                     end
   
   -- init setting
@@ -579,14 +654,16 @@ local function new_scrollbar(object)
                                             update_button_position(Input1)
                                             if func then func(self) end
                                           end
+                      --[[
                       local down_input2 = function(self)
                                             update_button_position(Input2)
                                             if func then func(self) end
                                           end
+                      --]]
                       object.button:on_down( down_input1, Input1_left )
-                      object.button:on_down( down_input2, Input2_left )
+                      --object.button:on_down( down_input2, Input2_left )
                       object.line:on_down( down_input1, Input1_left )
-                      object.line:on_down( down_input2, Input2_left )
+                      --object.line:on_down( down_input2, Input2_left )
                     end
   object.remove_cb= function(self)
                       object.text:remove()
@@ -596,7 +673,7 @@ local function new_scrollbar(object)
   
   -- init setting
   object.on_down(nil)
-  set_focus_leave_pic(object.button._cdata, 'cubes/cube-b-1', 'cubes/cube1.bak')
+  set_focus_leave_pic(object.button._cdata, 'cubes/cube-b-1', 'cubes/cube1.bak', Input1)
   object:set_pos(object.x or 0, object.y or 0)
   object:set_depth(object.depth or -10)
   object:set_visible(object.visible or true)
@@ -615,6 +692,7 @@ view            = view,
 new_image       = new_image,
 new_image9s     = new_image9s,
 new_text        = new_text,
+new_button      = new_button,
 new_askbox      = new_askbox,
 new_list        = new_list,
 new_ratio       = new_ratio,

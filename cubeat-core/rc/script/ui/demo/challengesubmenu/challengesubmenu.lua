@@ -13,16 +13,23 @@ local root_
 local function init(demo, parent, submode)
   local menu = {}
   
+  local c_w = view.GET_SCREEN_W()/2
+  local c_h = view.GET_SCREEN_H()/2
+  
   root_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  root_:set_pos(480, 300)
+  root_:set_pos(c_w, c_h)
+  --root_:set_pos(480, 300)
   
   -- OneShotClear
   if submode == parameter.OneShotClear then
     local stage_num = parameter.OneShotClearStageNum  -- how many puzzle stage, use for create btn and puzzle_level in init_single function.
     
-    menu.panel = ui.new_image{ parent = root_, path='blahblah', x=-320, y=-200, w=1000, h=500, alpha=168 }
-    menu.panel:set_depth(-150)
-    menu.panel:set_color(0,0,0)
+    --menu.panel = ui.new_image{ parent = root_, path='blahblah', x=-320, y=-200, w=1000, h=500, alpha=168 }
+    --menu.panel:set_depth(-150)
+    --menu.panel:set_color(0,0,0)
+    
+    menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
+                              w=1000, h=580, w1=34, w2=32, h1=38, h2=35, center=true }
     
     -- create button
     --for i=1, stage_num do
@@ -32,7 +39,7 @@ local function init(demo, parent, submode)
         local mx = 180 * (5-color_num)
         local my = 40 * (i-1)
         print(mx, my)
-        menu[k] = ui.new_text{ parent=root_, x=-450+mx, y=-200+my, size=32, depth=-200, title=k }
+        menu[k] = ui.new_text{ parent=root_, x=-610+mx, y=-260+my, size=32, depth=-200, title=k }
         if i==1 or record.load(parameter.clear, {submode=submode, puzzle_level=i}) then
           menu[k]:on_press(function(self)
             local level = i+1
@@ -40,14 +47,14 @@ local function init(demo, parent, submode)
             challenge.set_puzzle_level(level)
             challenge.set_puzzle_color(color_num)
             --switch.show_effect( {id="slide_out_title"} )
-          end)
+          end, view.Input1_left)
         else
           menu[k]:set_color(128,128,128)
         end
       end
     end
       
-    menu['unlimited'] = ui.new_text{ parent=root_, x=450, y=-200, size=32, depth=-200, title='unlimited' }
+    menu['unlimited'] = ui.new_text{ parent=root_, x=290, y=-260, size=32, depth=-200, title='unlimited' }
     menu['unlimited']:on_press(function(self)
       demo:init_single(parameter.OneShotClear, 2 + 20, 'char/char1_new', 'stage/jungle1', false)
       
@@ -57,33 +64,37 @@ local function init(demo, parent, submode)
       challenge.set_puzzle_color(2+random(2))
       challenge.set_level_unlimited(true) -- puzzle unlimited level mode
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     
-    menu.back = ui.new_text{ parent=root_, x=120, y=240, size=32, depth=-200, title='back' }
+    menu.back = ui.new_text{ parent=root_, x=-40, y=200, size=40, depth=-200, title='back' }
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   -- WarningCondition
   if submode == parameter.WarningCondition then
-    menu.panel = ui.new_image{ parent = root_, path='area_rect', x=0, y=0, w=300, h=350 }
-    menu.panel:set_depth(-150)
-    menu.btn1 = ui.new_text{ parent=root_, x=80, y= 40, size=32, depth=-200, title='garbage20' }
-    menu.btn2 = ui.new_text{ parent=root_, x=80, y= 80, size=32, depth=-200, title='garbage40' }
-    menu.btn3 = ui.new_text{ parent=root_, x=80, y=120, size=32, depth=-200, title='garbage60' }
-    menu.btn4 = ui.new_text{ parent=root_, x=80, y=160, size=32, depth=-200, title='garbage80' }
-    menu.btn5 = ui.new_text{ parent=root_, x=80, y=200, size=32, depth=-200, title='garbage100' }
-    menu.back = ui.new_text{ parent=root_, x=80, y=280, size=32, depth=-200, title='back' }
+    --menu.panel = ui.new_image{ parent = root_, path='area_rect', x=0, y=0, w=300, h=350 }
+    --menu.panel:set_depth(-150)
+    
+    menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
+                              w=300, h=350, w1=34, w2=32, h1=38, h2=35, center=true }
+    
+    menu.btn1 = ui.new_text{ parent=root_, x=0, y=-120, size=32, depth=-200, title='garbage20', center=true }
+    menu.btn2 = ui.new_text{ parent=root_, x=0, y= -80, size=32, depth=-200, title='garbage40', center=true }
+    menu.btn3 = ui.new_text{ parent=root_, x=0, y= -40, size=32, depth=-200, title='garbage60', center=true }
+    menu.btn4 = ui.new_text{ parent=root_, x=0, y=   0, size=32, depth=-200, title='garbage80', center=true }
+    menu.btn5 = ui.new_text{ parent=root_, x=0, y=  40, size=32, depth=-200, title='garbage100', center=true }
+    menu.back = ui.new_text{ parent=root_, x=0, y= 120, size=40, depth=-200, title='back', center=true }
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.WarningCondition_20, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     if record.load(parameter.clear, {submode=parameter.WarningCondition_20}) then
       menu.btn2:on_press(function(self)
         demo:init_single(parameter.WarningCondition_40, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn2:set_color(128,128,128)
     end
@@ -91,7 +102,7 @@ local function init(demo, parent, submode)
       menu.btn3:on_press(function(self)
         demo:init_single(parameter.WarningCondition_60, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn3:set_color(128,128,128)
     end
@@ -99,7 +110,7 @@ local function init(demo, parent, submode)
       menu.btn4:on_press(function(self)
         demo:init_single(parameter.WarningCondition_80, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn4:set_color(128,128,128)
     end
@@ -107,13 +118,13 @@ local function init(demo, parent, submode)
       menu.btn5:on_press(function(self)
         demo:init_single(parameter.WarningCondition_100, 1, 'char/char1_new', 'stage/jungle1', false)
         --switch.show_effect( {id="slide_out_title"} )
-      end)
+      end, view.Input1_left)
     else
       menu.btn5:set_color(128,128,128)
     end
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   -- UnLimited
@@ -126,14 +137,14 @@ local function init(demo, parent, submode)
     menu.btn1:on_press(function(self)
       demo:init_single(parameter.UnLimited_Normal, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     menu.btn2:on_press(function(self)
       demo:init_single(parameter.UnLimited_Countdown, 1, 'char/char1_new', 'stage/jungle1', false)
       --switch.show_effect( {id="slide_out_title"} )
-    end)
+    end, view.Input1_left)
     menu.back:on_press(function(self)
       switch.load_page('challengemenu')
-    end)
+    end, view.Input1_left)
   end
   
   return menu

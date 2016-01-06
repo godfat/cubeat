@@ -11,39 +11,45 @@ local root_
 local function init(demo, parent)
   local menu = {}
   
-  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
-  root_:set_pos(480, 300)
+  local c_w = view.GET_SCREEN_W()/2
+  local c_h = view.GET_SCREEN_H()/2
   
-  menu.btn_mode_1 = ui.new_text{ parent=root_, x=0, y=0, size=32, title='Achievement' }
+  root_ = view.new_sprite("blahblah", parent, 0, 0, true)
+  root_:set_pos(c_w, c_h)
+  
+  menu.bg = ui.new_image9s{ parent=root_, path='textarea2', x=0, y=0, 
+                            w=500, h=480, w1=34, w2=32, h1=38, h2=35, center=true }
+  
+  menu.btn_mode_1 = ui.new_text{ parent=root_, x=0, y=-150, size=32, title='Achievement', depth=-60, center=true }
   menu.btn_mode_1:set_scale(1.5)
-  menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=60, size=32, title='Score' }
+  menu.btn_mode_2 = ui.new_text{ parent=root_, x=0, y=-90, size=32, title='Score', depth=-60, center=true }
   menu.btn_mode_2:set_scale(1.5)
-  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=120, size=32, title='Option'}
+  menu.btn_mode_3 = ui.new_text{ parent=root_, x=0, y=-30, size=32, title='Option', depth=-60, center=true }
   menu.btn_mode_3:set_scale(1.5)
-  menu.btn_cpu_demo = ui.new_text{ parent=root_, x=0, y=180, size=32, title='CPU demo mode'}
+  menu.btn_cpu_demo = ui.new_text{ parent=root_, x=0, y=30, size=32, title='CPU demo mode', depth=-60, center=true }
   menu.btn_cpu_demo:set_scale(1.5)
-  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=240, size=32, title='go back' }
+  menu.btn_back  = ui.new_text{ parent=root_, x=0, y=150, size=32, title='go back', depth=-60, center=true }
   menu.btn_back:set_scale(1.5)
 
   menu.btn_mode_1:on_press(function(self)
     switch.load_page('achievement')
-  end)
+  end, view.Input1_left)
   menu.btn_mode_2:on_press(function(self)
     switch.load_page('score')
-  end)
+  end, view.Input1_left)
   menu.btn_mode_3:on_press(function(self)
     switch.load_page('optionmenu')
-  end)
+  end, view.Input1_left)
   menu.btn_cpu_demo:on_press(function(self)
     local bag = {1, 2, 3, 4, 5, 6}
     random_shuffle(bag)
     select_config.ch_choose[1] = bag[1]
     select_config.ch_choose[2] = bag[2]
     demo:init_cpudemo("char/char"..bag[1].."_new", "char/char"..bag[2].."_new", "stage/jungle"..bag[1])
-  end)
+  end, view.Input1_left)
   menu.btn_back:on_press(function(self)
     switch.load_page('mainmenu')
-  end)
+  end, view.Input1_left)
   
   return menu
 end

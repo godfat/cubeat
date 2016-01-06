@@ -212,6 +212,9 @@ int App::run(std::tr1::function<void()> tester)
     using namespace ctrl;
 
     IVideoDriver* driver = IrrDevice::i().d()->getVideoDriver();
+
+    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+
     int lastFPS = -1;
     time_t t0 = realtime(), t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 

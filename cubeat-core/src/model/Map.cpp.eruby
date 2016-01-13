@@ -295,6 +295,12 @@ Map& Map::ending_effect() {
     return *this;
 }
 
+Map& Map::game_end() {
+    is_end_ = true;
+
+    return *this;
+}
+
 // used Waiting::cycle
 state::pState <% debug_hook 'Map::next_state' do %>(pCube cube){
 <% end %>
@@ -365,9 +371,20 @@ Map& <% debug_hook 'Map::cycle' do %>(){ <% end %>
     }
     one_fadings_per_cycle_ = 0;
 
-    update_chains();
-    cycle_cubes();
-    check_one_fadings();
+    if( !is_end_ ) { // see below
+        update_chains();
+    }
+
+    cycle_cubes(); // 2016.1 I remember there was a reason for why update_chains() has to come before cycle_cubes();
+                   //        Anyway I don't what to mess up the causality now.
+
+    if( !is_end_ ) { // see above
+        check_one_fadings();
+    } else {
+        if( !chains_.empty() ) {
+            chains_.clear();
+        }
+    }
 
     using std::tr1::get;
     using std::tr1::make_tuple;
@@ -695,10 +712,13 @@ void <% debug_hook 'Map::update_chains' do %>(){
                 //current_sum_of_attack_ -= amount;
                 //o->throw_garbage( amount );
 
+                /// IF chain iterators can actually be passed as wpvoid? The reference count won't increment,
+                /// So why not let it be the life-guard to its own related timer? Why use o(self()) in the first place?
+
                 std::tr1::function<void(double)> func = bind(&presenter::Map::throw_garbage, o.get(), _1);
                 ctrl::EventDispatcher::i().get_timer_dispatcher("game")->subscribe(
                     bind(&delay_suber_and_throw_garbage, ref(current_sum_of_attack_), func, amount, (*i), id()),
-                    o,//self(), Important, throw_garbage relies on the life time of presenter::Map, not model::Map.
+                    *i,//self(), Important, throw_garbage relies on the life time of presenter::Map, not model::Map.
                     1000);
             }
 

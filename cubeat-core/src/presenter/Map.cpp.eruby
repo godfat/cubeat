@@ -21,6 +21,13 @@ using namespace psc;
 using namespace presenter;
 using psc::utils::to_s;
 
+Map& Map::stop_all_actions()
+{
+    stop_dropping();
+    map_setting()->warning_enabled(false);
+    model()->game_end();
+}
+
 Map& Map::stop_dropping()
 {
     map_setting()->garbage_dumpable(false).dropping_creatable(false);

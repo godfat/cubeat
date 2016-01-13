@@ -1174,8 +1174,7 @@ void Demo::game_stop()
     ctrl::EventDispatcher::i().clear_btn_event();
     ctrl::EventDispatcher::i().clear_obj_event( scene_ );
 
-    map0_->stop_dropping();
-    map0_->map_setting()->warning_enabled(false);
+    map0_->stop_all_actions();
     player0_->stopAllActions();
     ctrl::InputMgr::i().getInputByIndex(0)->setControlledByAI(false);
 
@@ -1183,8 +1182,7 @@ void Demo::game_stop()
 
         audio::Sound::i().stopAll(); // don't stop music when puzzle
 
-        map1_->stop_dropping();
-        map1_->map_setting()->warning_enabled(false);
+        map1_->stop_all_actions();
         player1_->stopAllActions();
         ctrl::InputMgr::i().getInputByIndex(1)->setControlledByAI(false);
     }

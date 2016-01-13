@@ -88,11 +88,11 @@ local function set_score(t, cur_score, scene)
 end
 
 local function on_press_retry(f)
-  btn_retry_:on_press(f)
+  btn_retry_:on_press(f, view.Input1_left) -- only player1 can input
 end
 
 local function on_press_quit(f)
-  btn_quit_:on_press(f)
+  btn_quit_:on_press(f, view.Input1_left) -- only player1 can input
 end
 
 return{

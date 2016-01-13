@@ -37,7 +37,8 @@ local function create_score_list(scene)
     local center_x = screen_w_/2
     local center_y = screen_h_/2
     
-    board_ = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=600, depth=-100, center=true, alpha=128 }
+    --board_ = ui.new_image{ parent=scene, path="blahblah", x=center_x, y=center_y, w=400, h=600, depth=-100, center=true, alpha=128 }
+    board_      = ui.new_image9s{ parent=scene, path='textarea2', x=center_x, y=center_y, w=400, h=640, w1=34, w2=32, h1=38, h2=35, center=true }
     title_      = ui.new_text { parent=scene, x=center_x    , y=center_y-260, size=32, title='SCORE' , depth=-110, center=true }
     title_:set_scale(1.5)
     --your_score_ = ui.new_text { parent=scene, x=center_x    , y=center_y-210, size=32, title='score' , depth=-110, center=true }

@@ -246,9 +246,9 @@ Map& <% debug_hook 'Map::cycle' do %>(){
 //    model()->cycle_fast();
     model()->cycle();
     BOOST_FOREACH(cube::pViewMaster& view, view_slaves_){
-        view->cycle(*this);
+        view->cycle(model()->warning_level());
     }
-    if( view_master_ ) view_master_->cycle(*this);
+    if( view_master_ ) view_master_->cycle(model()->warning_level());
     return *this;
 }
 

@@ -54,8 +54,6 @@ typedef std::tr1::weak_ptr<SpriteText2> wpSpriteText2;
 
 namespace presenter {
 
-class Map;
-
 namespace cube {
 
 class ViewSpriteMaster: public ViewMaster, public std::tr1::enable_shared_from_this<ViewSpriteMaster> {
@@ -87,7 +85,7 @@ public:
 
     virtual void setup_ability_button();
 
-    virtual void cycle(Map const& map);
+    virtual void cycle(int warning_level);
 
     void cleanup_chaintext();
 

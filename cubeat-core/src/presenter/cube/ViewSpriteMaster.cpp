@@ -838,7 +838,8 @@ void ViewSpriteMaster::alert_bar_update(int warning_level){
 //        alert_flood_bg_->set< Scale >( vec3(1, 0.0001, 1) );
 //        alert_flood_bg_->set< Pos2D >( vec2(0, 0) );
 
-        countdown_text_->set< Pos2D >( vec2( 4000, 0 ) );
+//        2016.1 Moved this line to cycle()
+//        countdown_text_->set< Pos2D >( vec2( 4000, 0 ) );
 
     } else {
 //        alert_bar_top_->set< ScaleWithUV >( vec2((warning_level)/112.0, 1) );
@@ -1198,7 +1199,7 @@ vec2 ViewSpriteMaster::pos_from_orig(int const& x, int const& y) const{
                 (y*view_setting()->cube_size() + view_setting()->cube_size()/2)*-1);
 }
 
-void ViewSpriteMaster::cycle(Map const& map) {
+void ViewSpriteMaster::cycle(int warning_level) {
 
     using namespace accessor; using namespace easing;
 
@@ -1214,6 +1215,12 @@ void ViewSpriteMaster::cycle(Map const& map) {
     if( ui_flag1_ ) {
         vec2 pos_cursor = player_.lock()->input()->getCursor()->get< Pos2D >();
         countdown_text_->set< Pos2D >( pos_cursor + vec2( 0, 72 ) );
+    }
+
+    // 2016.1 Make sure when the warning_level return to 0, the counter disappear immediately,
+    //        and not wait for the fade out
+    if( warning_level < 1 ) {
+        countdown_text_->set< Pos2D >( vec2( 4000, 0 ) );
     }
 
     cleanup_chaintext();

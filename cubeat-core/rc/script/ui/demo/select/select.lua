@@ -228,7 +228,7 @@ local function init(demo, parent, data)
     else
       switch.load_page('mainmenu')
     end
-  end)
+  end, view.Input1_left)
   
   menu.blocker_top1    = ui.new_image{ parent=parent, path='blocker', w=view.GET_SCREEN_W()+50, h=60, 
                                        x = -10, y = -5 }
